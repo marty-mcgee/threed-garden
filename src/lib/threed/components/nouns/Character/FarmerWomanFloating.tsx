@@ -51,7 +51,7 @@ import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 // ** ECCRTL CHARACTER ANIMATION
 import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
 // ** ECCRTL ZUSTAND STATE
-import { useGame } from '#/lib/ecctrl/src/stores/useGame'
+import { useGame, type AnimationSet } from '#/lib/ecctrl/src/stores/useGame'
 
 // ** GLTF to JSX
 // import * as THREE from 'three'
@@ -590,10 +590,10 @@ export default function CharacterModel(props: CharacterModelProps) {
       />
 
     {/* ANIMATED CHARACTER */}
-    <EcctrlAnimation
+    {/* <EcctrlAnimation
       characterURL={file} // Must have property
       animationSet={animationSet} // Must have property
-    >
+    > */}
       {/* ANIMATED CHARACTER Model Group */}
       <group
         ref={group}
@@ -707,7 +707,7 @@ export default function CharacterModel(props: CharacterModelProps) {
       {/* END CharacterModel group */}
       </group>
 
-    </EcctrlAnimation>
+    {/* </EcctrlAnimation> */}
     </Suspense>
   )
 }

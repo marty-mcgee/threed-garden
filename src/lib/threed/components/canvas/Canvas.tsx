@@ -69,7 +69,23 @@ import {
   Text,
 } from '@radix-ui/themes'
 
+// ** THREED Config
+import {
+  Config, 
+  INITIAL, 
+  detailLevels, 
+  modifyConfigsFromUrlParams, 
+  getFocusFromUrlParams,
+  seasonProperties,
+} from "#/lib/farmbot/threed-farmbot/config-threed"
+import { 
+  PrivateOverlay, 
+  PublicOverlay, 
+  ToolTip 
+} from "#/lib/farmbot/threed-farmbot/config_overlays"
+
 // ** THREED EXPERIENCE Imports
+import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
 import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
@@ -302,6 +318,25 @@ export const ThreeDCanvas = (
   // ** REF-erences using REACT
   const ref: any = useRef<any>()
 
+  
+  const [config, setConfig] = useState<Config>(INITIAL);
+  const [toolTip, setToolTip] = useState<ToolTip>({ timeoutId: 0, text: "" });
+  const [activeFocus, setActiveFocus] = useState("");
+
+  useEffect(() => {
+    setConfig(modifyConfigsFromUrlParams(config));
+    setActiveFocus(getFocusFromUrlParams());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally empty dependency array
+
+  const common = {
+    config, setConfig,
+    toolTip, setToolTip,
+    activeFocus, setActiveFocus,
+  };
+
+
+
   // ** CREATE THREED CAMERA
   let threedCamera = { 
     // position: new THREE.Vector3(x, y, z),
@@ -378,6 +413,42 @@ export const ThreeDCanvas = (
       {/* <Button onClick={() => FooGetCamera()}>get cameraPosition</Button> */}
       {/* <Button onClick={() => getCameraState()}>Get Camera State</Button> */}
 
+      {/* export const Garden = () => {
+        return <div className={"garden-bed-3d-model"}>
+          <Canvas shadows={true}>
+            <Model {...common} />
+          </Canvas>
+          <PublicOverlay {...common} />
+          {!config.config && <img className={"gear"} src={ASSETS.other.gear}
+            onClick={() => setConfig({ ...config, config: true })} />}
+          {config.config &&
+            <PrivateOverlay {...common} />}
+          <span className={"tool-tip"} hidden={!toolTip.text}>
+            {toolTip.text}
+          </span>
+        </div>;
+      }; */}
+      
+      {/* 
+      <PublicOverlay {...common} />
+      */}
+      
+      {
+        !config.config && 
+        <img className={"gear"} src={'/favicon/favicon.png'} // {ASSETS.other.gear}
+          onClick={() => setConfig({ ...config, config: true })} 
+        />
+      }
+
+      {
+        config.config &&
+        <PrivateOverlay {...common} />
+      }
+
+      {/* <span className={"tool-tip"} hidden={!toolTip.text}>
+        {toolTip.text}
+      </span> */}
+
       {/* THREED CANVAS */}
       <Canvas
         key={_id}
@@ -388,10 +459,10 @@ export const ThreeDCanvas = (
         }}
 
         shadows={true}
-        // dpr={[1, 2]} // dpr = target pixel ratio (need ???)
+        dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         
         // ** CAMERA (not using declarative inside canvas)
-        camera={threedCamera}
+        // camera={threedCamera}
 
         // ** SCENE (needs to be declarative inside canvas)
         scene={{
@@ -443,6 +514,7 @@ export const ThreeDCanvas = (
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
+        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
         {/* using react-three-drei Loader + useProgress */}
         <Suspense fallback={
           <Html center>
@@ -457,19 +529,27 @@ export const ThreeDCanvas = (
             />
           </Html>
         }>
-        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
           
           {/* THREED EXPERIENCE : VIEWER */}
-          {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
-          {/* @ ts-expect-error */}
-          <ThreeDExperienceViewer 
+          <ThreeDExperienceViewer
+            // children={null}
+            enableOrbit={true}
+            enableGizmoCube={true}
+            enableAxesHelper={true}
+            enableGridHelper={true}
+            enablePerf={true}
+
+            threeds={threeds} 
+            
             ref={ref} // when using function as a forwardRef // THREED IO
-            enableOrbit={true} 
-            enablePerf={false}
-            threeds={threeds}
-            children={null}
-            // camera={threedCamera}
-            // camera={children.camera} available inside this component
+
+            // config: Object, // Config
+            config={config}
+            setConfig={setConfig}
+            // activeFocus: string,
+            activeFocus={activeFocus}
+            // setActiveFocus(focus: string): void,
+            setActiveFocus={setActiveFocus}
           />
 
         </Suspense>

@@ -23,7 +23,6 @@ const texture = '/textures/3.jpg'
 export type CharacterModelProps = JSX.IntrinsicElements['group']
 
 export default function CharacterModel(props: CharacterModelProps) {
-  // Change the character src to yours
   const group = useRef<THREE.Group>()
   // @ts-expect-error: ignore a compile error, like this type mismatch
   const { nodes, animations } = useGLTF(theCharacterModelFile) as GLTF & {

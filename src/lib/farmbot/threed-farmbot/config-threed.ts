@@ -401,6 +401,34 @@ export const modifyConfigsFromUrlParams = (config: Config) => {
   return newConfig
 }
 
+
+
+
+
+
+export const setUrlFocusParam = (value: string) => {
+  const url = new URL(window.location.href)
+  if (value) {
+    url.searchParams.set("focus", value)
+  } else {
+    url.searchParams.delete("focus")
+  }
+  window.history.replaceState({}, "", url.toString())
+}
+
+export const getFocusFromUrlParams = () => {
+  const urlParams = new URLSearchParams(window.location.search)
+  return urlParams.get("focus") || ""
+}
+
+
+
+
+
+
+
+
+
 type SeasonProperties = {
   sunIntensity: number
   sunColor: string
