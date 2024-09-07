@@ -85,7 +85,7 @@ import {
 } from "#/lib/farmbot/threed-farmbot/config_overlays"
 
 // ** THREED EXPERIENCE Imports
-import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
+// import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
 import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
