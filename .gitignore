@@ -65,8 +65,6 @@ public/objects/**
 
 ## threed
 
-src/app/participate/character-control
-
 ## libraries
 
 # # wordpress cms plugin
@@ -78,5 +76,7 @@ src/lib/farmbot/farmbot-3d-demo-react
 # src/lib/wp-threed
 # src/lib/wp-threed/assets
 
+# # ecctrl -- character controls
+src/app/participate/character-control
 # # ecctrl-new
 src/lib/ecctrl-new
