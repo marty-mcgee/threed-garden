@@ -63,9 +63,10 @@ import {
   Cross2Icon,
 } from '@radix-ui/react-icons'
 import {
+  Grid,
+  Flex,
   Box,
   Button,
-  Grid,
   Text,
 } from '@radix-ui/themes'
 
@@ -319,6 +320,7 @@ export const ThreeDCanvas = (
   const ref: any = useRef<any>()
 
   
+  {/* ⚙️ &#x2699; */}
   const [config, setConfig] = useState<Config>(INITIAL);
   const [toolTip, setToolTip] = useState<ToolTip>({ timeoutId: 0, text: "" });
   const [activeFocus, setActiveFocus] = useState("");
@@ -413,42 +415,6 @@ export const ThreeDCanvas = (
       {/* <Button onClick={() => FooGetCamera()}>get cameraPosition</Button> */}
       {/* <Button onClick={() => getCameraState()}>Get Camera State</Button> */}
 
-      {/* export const Garden = () => {
-        return <div className={"garden-bed-3d-model"}>
-          <Canvas shadows={true}>
-            <Model {...common} />
-          </Canvas>
-          <PublicOverlay {...common} />
-          {!config.config && <img className={"gear"} src={ASSETS.other.gear}
-            onClick={() => setConfig({ ...config, config: true })} />}
-          {config.config &&
-            <PrivateOverlay {...common} />}
-          <span className={"tool-tip"} hidden={!toolTip.text}>
-            {toolTip.text}
-          </span>
-        </div>;
-      }; */}
-      
-      {/* 
-      <PublicOverlay {...common} />
-      */}
-      
-      {
-        !config.config && 
-        <img className={"gear"} src={'/favicon/favicon.png'} // {ASSETS.other.gear}
-          onClick={() => setConfig({ ...config, config: true })} 
-        />
-      }
-
-      {
-        config.config &&
-        <PrivateOverlay {...common} />
-      }
-
-      {/* <span className={"tool-tip"} hidden={!toolTip.text}>
-        {toolTip.text}
-      </span> */}
-
       {/* THREED CANVAS */}
       <Canvas
         key={_id}
@@ -529,6 +495,9 @@ export const ThreeDCanvas = (
             />
           </Html>
         }>
+
+          {/* PLANTS from THREED FARMBOT */}
+          {/* <Model {...common} /> */}
           
           {/* THREED EXPERIENCE : VIEWER */}
           <ThreeDExperienceViewer

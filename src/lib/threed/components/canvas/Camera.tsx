@@ -28,9 +28,6 @@ import {
 
 export type VectorXyz = [x: number, y: number, z: number]
 
-
-
-
 // ** THREED Config
 import {
   Config, 
@@ -40,10 +37,6 @@ import {
   // getFocusFromUrlParams,
   seasonProperties,
 } from "#/lib/farmbot/threed-farmbot/config-threed"
-
-
-
-
 
 
 interface Camera {
@@ -481,7 +474,7 @@ export default function ThreeDCamera({ config, activeFocus }: { config: Config, 
     // position: isXL ? [7500, -3500, 3200]
     // position: [5000, -2500, 3200], // Small screens
     // position: [2200, -3500, 2000], // Large screens
-    position: [96, 8, 64],
+    position: [-16, 8, 8],
     target: [0, 0, 0],
   }
   const camera = getCamera(config, activeFocus, initCamera)
@@ -506,12 +499,12 @@ export default function ThreeDCamera({ config, activeFocus }: { config: Config, 
         <Camera 
           makeDefault={true} 
           name={"camera"}
-          fov={40} 
-          near={10} 
-          far={75000}
+          fov={24} 
+          // near={10} 
+          // far={75000}
           position={camera.position}
-          rotation={[0, 0, 0]}
-          up={[0, 0, 1]}
+          // rotation={[0, 0, 0]}
+          // up={[0, 0, 0]}
         />
       </animated.group>
     </>

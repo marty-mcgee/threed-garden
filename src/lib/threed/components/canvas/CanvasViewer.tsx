@@ -13,6 +13,7 @@ import {
 } from '#/lib/stores/apollo'
 // temporarily while coding
 import { useState } from 'react'
+import { useEffect } from 'react'
 
 // ** RADIX-UI Imports
 import * as Collapsible from '@radix-ui/react-collapsible'
@@ -75,17 +76,44 @@ const ThreeDCanvasCamera = (
       <Accordion.Header
         className='AccordionHeader'
       >
-        <Accordion.Trigger 
-          className='AccordionTrigger'
-        >
-          <ChevronDownIcon 
-            className='AccordionChevron' 
-            aria-hidden 
-          />
-          <span style={{ position: 'absolute', left: '28px' }}>
-            Camera {index}
-          </span>
-        </Accordion.Trigger>
+        <Flex
+          id={'threed_configs_overlays_' + index}
+          direction='row'
+        > 
+          {/* ⚙️ &#x2699; */}
+          {
+            // !config.config && 
+            // <img className={"gear"} src={'/favicon/favicon-16x16.png'} // {ASSETS.other.gear}
+            <img className={'gear'} src={'/images/icons/gear.svg'} width={16} height={16}
+              style={{ color: 'gray', backgroundColor: 'darkgreen', paddingLeft: '10px', paddingRight: '10px', paddingTop: '2px', paddingBottom: '2px' }}
+              // onClick={() => setConfig({ ...config, config: true })} 
+            />
+          }
+
+          {/* <PublicOverlay {...common} /> */}
+
+          {/* {
+            config.config &&
+            <PrivateOverlay {...common} />
+          } */}
+
+          {/* <span className={"tool-tip"} hidden={!toolTip.text}>
+            {toolTip.text}
+          </span> */}
+
+          <Accordion.Trigger 
+            className='AccordionTrigger'
+          >
+            {/* <ChevronDownIcon 
+              className='AccordionChevron' 
+              aria-hidden 
+            /> */}
+            <span style={{ position: 'relative' }}>
+              Camera {index}
+            </span>
+          </Accordion.Trigger>
+          
+        </Flex>
       </Accordion.Header>
 
       <Accordion.Content 
@@ -101,10 +129,12 @@ const ThreeDCanvasCamera = (
           // maxWidth: '90vw',
         }}
       >
+
         <ThreeDCanvas
           _id={'_r3fCanvas' + index}
           threeds={threeds}
         />
+        
       </Accordion.Content>
     </Accordion.Item>
   )
@@ -117,7 +147,7 @@ export const ThreeDCanvasViewer = () => {
   const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
   // console.debug(`%c=======================================================`, ccm.orange)
   // if (debug || DEBUG) 
-  console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert, word)
+  console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
   // console.debug(`%c=======================================================`, ccm.black)
 
   // ** USE CLIENT
@@ -165,6 +195,7 @@ export const ThreeDCanvasViewer = () => {
       console.error(ERROR)
     }
   }
+  
 
   // console.debug(`%c=======================================================`, ccm.orange)
   return (
@@ -236,7 +267,7 @@ export const ThreeDCanvasViewer = () => {
       </Accordion.Root>
 
       {/* THREED CANVAS VIEWER 2 */}
-      <Accordion.Root 
+      {/* <Accordion.Root 
         key={'Canvas2'} 
         type='multiple' // single | multiple
         // orientation='horizontal' // vertical | horizontal 
@@ -256,7 +287,7 @@ export const ThreeDCanvasViewer = () => {
           // maxWidth: '90vw',
           // width: '100%',
         }}
-      >
+      > */}
         {/* THREED CANVAS 2 : CAMERA 1 */}
         {/* <ThreeDCanvasCamera 
           index={4} 
@@ -273,7 +304,7 @@ export const ThreeDCanvasViewer = () => {
           threeds={threeds}
         /> */}
         {/**/}
-      </Accordion.Root>
+      {/* </Accordion.Root> */}
 
       {/* [MM] HEY HEY HEY
         * [MM] TESTING -- RADIX-UI.primitive.Collapsible */}

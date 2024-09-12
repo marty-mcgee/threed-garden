@@ -361,25 +361,26 @@ const ThreeDExperienceViewer = forwardRef((
               <OrbitControls
                 makeDefault
                 minDistance={0.25}
-                maxDistance={640}
-                // minZoom={10}
-                // maxZoom={20}
-                // minAzimuthAngle={-Math.PI / 4}
-                // maxAzimuthAngle={Math.PI / 4}
-                minPolarAngle={-1.75}
-                maxPolarAngle={Math.PI / 2}
+                maxDistance={6400}
+                // // minZoom={10}
+                // // maxZoom={20}
+                // // minAzimuthAngle={-Math.PI / 4}
+                // // maxAzimuthAngle={Math.PI / 4}
+                // minPolarAngle={-1.75}
+                // maxPolarAngle={Math.PI / 1.75}
                 enableZoom={true}
                 zoomToCursor={false} // default is false
                 zoomSpeed={1.0} // default is 1.0
                 enableRotate={true}
                 autoRotate={prefs.doAutoRotate} // default is false
-                // autoRotate={preferencesDataVar().doAutoRotate} // default is false
                 autoRotateSpeed={1.0} // default is 2.0
                 rotateSpeed={1.0} // default is 1.0
                 enableDamping={true} // slows down rotation after mouse release
-                dampingFactor={0.04} // default is 0.05
+                dampingFactor={0.2} // default is 0.05
                 enablePan={true}
                 screenSpacePanning={true}
+
+                // target={camera.target}
               />
 
               {/* ORBIT CONTROLS GIZMO HELPER */}
@@ -405,20 +406,10 @@ const ThreeDExperienceViewer = forwardRef((
               )}
             </>
           )}
-          {/* 
-          <OrbitControls maxPolarAngle={Math.PI / 2}
-            enableZoom={config.zoom} enablePan={config.pan} dampingFactor={0.2}
-            target={camera.target}
-            minDistance={500} maxDistance={12000} />
-          <axesHelper args={[5000]} visible={config.threeAxes} />
-          {config.viewCube && <GizmoHelper>
-            <GizmoViewcube />
-          </GizmoHelper>} 
-          */}
           
           {enablePerf && (
             <Perf
-              position='bottom-left'
+              position='bottom-right'
               minimal
             />
           )}
