@@ -60,7 +60,7 @@ import { Solar } from "./solar"
 import { Sun, sunPosition } from "./sun"
 import { LabEnvironment } from "./lab-threed"
 import { ZoomBeacons } from "./zoom_beacons-threed"
-import { VectorXyz, getCamera } from "./zoom_beacons_constants-threed"
+import { VectorXyz, getCamera, getFocusFromUrlParams } from "./zoom_beacons_constants-threed"
 
 
 import "./styles/garden.css"
@@ -108,7 +108,7 @@ interface Plant {
 const Model = (props: ModelProps) => {
   const { config } = props
   const groundZ = config.bedZOffset + config.bedHeight
-  const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera
+  // const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera
 
   const gardenPlants = GARDENS[config.plants] || []
   const calculatePlantPositions = (): Plant[] => {
@@ -277,8 +277,8 @@ const Model = (props: ModelProps) => {
     >
       {plants.map((plant, i) =>
         <>
-          {/* <Plant key={i} i={i} plant={plant} /> */}
-          <Plant key={i} i={i} plant={plant} labelOnly={true} />
+          <Plant key={i} i={i} plant={plant} />
+          {/* <Plant key={i} i={i} plant={plant} labelOnly={true} /> */}
         </>
       )}
     </group>
@@ -412,20 +412,6 @@ export const Garden = () => {
 
   return (
     <Model {...common} />
-    // ** from main repo
-    // <div className={"garden-bed-3d-model"}>
-    //   <Canvas shadows={true}>
-    //     <Model {...common} />
-    //   </Canvas>
-    //   <PublicOverlay {...common} />
-    //   {!config.config && <img className={"gear"} src={ASSETS.other.gear}
-    //     onClick={() => setConfig({ ...config, config: true })} />}
-    //   {config.config &&
-    //     <PrivateOverlay {...common} />}
-    //   <span className={"tool-tip"} hidden={!toolTip.text}>
-    //     {toolTip.text}
-    //   </span>
-    // </div>
   )
 }
 

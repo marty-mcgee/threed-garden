@@ -124,6 +124,8 @@ const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => 
         method.
       </p> */}
       <SessionData session={session} />
+
+      
     </>
   )
 }

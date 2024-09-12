@@ -92,8 +92,6 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 
 // ** ThreeD using Leva GUI
 import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
-// ** ThreeD using dat.GUI
-import * as dat from 'dat.gui'
 
 // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
 import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
@@ -137,11 +135,8 @@ import ccm from '#/lib/utils/console-colors'
 const debug: boolean = false
 const DEBUG: boolean = true
 
-const appVersion: string = 'v0.16.0-canary' // almost ready to fly
-// const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
-// const appVersion = process.env.npm_package_version
-// const appVersion: string = require('package.json').version
-// const appVersion: string = require('../../package.json').version
+// const appVersion: string = 'v0.16.1'
+const appVersion: string = require('package.json').version
 
 if (debug || DEBUG) {
   console.debug('%c🥕 ThreeDGarden<FC,R3F>: {.tsx}', ccm.green)
@@ -270,10 +265,10 @@ const ThreeDGarden = (): React.ReactNode => {
 
   // ==========================================================
   // ** USE SESSION
-  const { data: sessionData, status: sessionStatus } = useSession()
   // const { data, status } = useSession()
-  console.debug('useSession().data', sessionData)
-  console.debug('useSession().status', sessionStatus)
+  const { data: sessionData, status: sessionStatus } = useSession()
+  // console.debug('useSession().data', sessionData)
+  // console.debug('useSession().status', sessionStatus)
 
   // ==========================================================
   // ** USE CLIENT
@@ -288,7 +283,6 @@ const ThreeDGarden = (): React.ReactNode => {
   // ** INIT PREFERENCES
   const [isThreeDGardenLoaded, setIsThreeDGardenLoaded] = useState(false)
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
-  const [isDatGuiLoaded, setIsDatGuiLoaded] = useState(false)
 
   // ==========================================================
   // Component onMount hook
@@ -306,23 +300,26 @@ const ThreeDGarden = (): React.ReactNode => {
             const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
             // const preferencesFromDataSource = async () => await preferencesStore.actions.loadFromDataSource(client)
             // preferencesFromDataSource()
-            if (DEBUG) console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
+            if (DEBUG) 
+              console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
             if (preferencesFromDataSource) {
-              if (DEBUG) console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
+              if (DEBUG) 
+                console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
             }
           }
 
-          const loadPreferencesMM = await preferencesStore.store.get('one')
-          // const loadPreferencesMM = await preferencesStore.store.useStore('one')
-          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesMM', ccm.redAlert, loadPreferencesMM)
-          preferencesDataVar(loadPreferencesMM.data)
+          const loadPreferencesOne = await preferencesStore.store.get('one')
+          // const loadPreferencesOne = await preferencesStore.store.useStore('one')
+          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
+          preferencesDataVar(loadPreferencesOne.data)
           // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
           isPreferencesSetVar(true)
           setIsPrefsLoaded(isPreferencesSetVar())
           // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
           if (preferencesDataVar().doAutoLoadData) {
             const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-            if (DEBUG) console.debug('%c projects loading...', ccm.orangeAlert, projectsFromDataSource)
+            if (DEBUG) 
+              console.debug('%c projects loading...', ccm.orangeAlert, projectsFromDataSource)
             //   if (projectsFromDataSource) {
             //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
             //     // ** TODO
@@ -349,18 +346,6 @@ const ThreeDGarden = (): React.ReactNode => {
         }
         // return <Box>true</Box> // true
       }
-    
-      // dat.gui
-      if (!isDatGuiLoaded) {
-        const datgui = new dat.GUI({ 
-          autoPlace: true, 
-          closed: false,
-          closeOnTop: true // keyboard toggle 'h'
-        })
-        console.debug('datgui', datgui)
-        setIsDatGuiLoaded(true)
-        setIsThreeDGardenLoaded(true)
-      }
       
     } else if (isThreeDGardenLoaded) {
       console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isThreeDGardenLoaded)
@@ -368,7 +353,7 @@ const ThreeDGarden = (): React.ReactNode => {
       // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
 
-  }, [isPrefsLoaded]) // useEffect
+  }, []) // useEffect
 
   // ==========================================================
   // ** USE CONTEXT
@@ -376,30 +361,14 @@ const ThreeDGarden = (): React.ReactNode => {
   // const abilities = ['read', 'write', 'delete']
 
   // ==========================================================
-  // TESTING: 'GUI CONTROL PANEL' + 'THREED PROJECT' NAME
-  //
-  // const [projectName, setProjectName] = useState(projectStore.store.get('one').data.title)
-  // const [doAutoLoadData, setDoAutoLoadData] = useState(preferencesStore.store.get('one').doAutoLoadData)
-  // const [doAutoRotate, setDoAutoRotate] = useState(preferencesStore.store.get('one').doAutoRotate)
-  // **
-  // const onClickSetProjectName = (projectName) => {
-  //   setProjectName(projectName)
-  //   localStorage.setItem('threed_projectName', projectName)
-  // }
-  // const onClickSetDoAutoLoadData = (bool) => {
-  //   setDoAutoLoadData(bool)
-  //   localStorage.setItem('threed_doAutoLoadData', bool)
-  // }
-
-  // ==========================================================
 
   if (DEBUG || debug) 
-    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert, word)
+    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert)
 
   let project_title = 'NOT EVEN CLOSE'
 
   // ==========================================================
-  // ** React returns JSX
+  // ** RETURN JSX
   return (
     <Grid
       id='threed_garden'
@@ -407,7 +376,6 @@ const ThreeDGarden = (): React.ReactNode => {
       width='100%'
       px='2'
       py='1'
-      // justify='end'
     >
 
       { !isPrefsLoaded && (
@@ -419,16 +387,8 @@ const ThreeDGarden = (): React.ReactNode => {
         <Grid
           // container
           id='threed_container'
-          // columns={{ initial: '1', md: '1' }} 
-          // gap='0'
-          // flexGrow='1'
-          // justify='between'
-          // display='none'
-          // direction='row'
-          // direction='column'
           width='100%'
           style={{
-            // borderTop: '1px solid darkgreen',
             border: '1px solid darkgreen',
             marginLeft: '2px',
             marginRight: '0px',
@@ -442,9 +402,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // md={12}
             // xs={12}
             style={{
-              display: 'none',
-              // display: 'flex', 
-              // justifyContent: 'flex-end',
+              // display: 'none',
               // borderTop: '1px solid darkgreen',
               paddingLeft: '5px',
             }}
@@ -459,16 +417,8 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_canvas_viewer'
-            // md={12}
-            // xs={12}
             style={{ 
-              // display: 'flex', 
-              // justifyContent: 'flex-end',
-              // mx: 0,
-              // px: 2,
               // borderTop: '1px solid darkgreen',
-              // zIndex: 0, // this does not work.. no negative numbers !!!!
-              width: '100%',
             }}
             direction='column'
           >
@@ -481,8 +431,6 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_control_panels'
-            // md={12}
-            // xs={12}
             style={{ 
               borderTop: '1px solid darkgreen' 
             }}
@@ -497,8 +445,6 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_views'
-            // md={12}
-            // xs={12}
             style={{ 
               borderTop: '0px solid darkgreen' 
             }}
@@ -515,8 +461,6 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_modals'
-            // md={12}
-            // xs={12}
             style={{ 
               borderTop: '0px solid darkgreen' 
             }}
@@ -533,8 +477,6 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_farmbot'
-            // md={12}
-            // xs={12}
             style={{ 
               // borderTop: '1px solid darkgreen', 
               // padding: '16px' 
@@ -557,58 +499,24 @@ const ThreeDGarden = (): React.ReactNode => {
         <Grid
           // item
           id='threed_controls'
-          // columns={{ initial: '2', md: '2' }} 
-          // gap='0' 
-          // width='auto'
           width='50%'
           // direction='row'
           style={{
-            // display: 'flex', 
-            // justifyContent: 'between',
-            // paddingLeft: '2px',
             // borderTop: '1px solid darkgreen',
             // width: '360px',
-            // minWidth: '320px',
-            // maxWidth: '480px',
-            // position: 'absolute',
-            // // minHeight: '48px',
-            // // display: 'inline',
-            // // position: 'fixed',
-            // top: 2,
-            // // left: 0,
-            // right: '10%', 
-            // // zIndex: 9999,
           }}
         >
 
           {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
           {/* <Flex
             // item
-            id='leva_controls'
-            // justify='start'
-            // width='100%'
-            // pl={'10px'}
-            // md={4}
-            // xs={12}
+            id='threed_leva_controls'
             style={{
-              // display: 'flex', 
-              // justifyContent: 'flex-start',
-              // paddingLeft: 12,
-              // px: 2.5, 
-              // py: 2,
               // borderTop: '1px solid darkgreen',
               // width: '100%',
               width: '400px',
               minWidth: '320px',
               maxWidth: '480px',
-              // position: 'absolute',
-              // // minHeight: '48px',
-              // // display: 'inline',
-              // // position: 'fixed',
-              // top: 2,
-              // // left: 0,
-              // right: '10%', 
-              zIndex: 9999,
             }}
           > */}
             <Box
@@ -623,13 +531,6 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* <Flex
             // item
             id='threed_actions'
-            // md={8}
-            // xs={12}
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'flex-end' 
-            }}
-            gap='1'
           > */}
             {/*
             <Button onClick={() => loadNounData('project', [])}>load project</Button>

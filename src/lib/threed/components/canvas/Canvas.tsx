@@ -63,13 +63,30 @@ import {
   Cross2Icon,
 } from '@radix-ui/react-icons'
 import {
+  Grid,
+  Flex,
   Box,
   Button,
-  Grid,
   Text,
 } from '@radix-ui/themes'
 
+// ** THREED Config
+import {
+  Config, 
+  INITIAL, 
+  detailLevels, 
+  modifyConfigsFromUrlParams, 
+  getFocusFromUrlParams,
+  seasonProperties,
+} from "#/lib/farmbot/threed-farmbot/config-threed"
+import { 
+  PrivateOverlay, 
+  PublicOverlay, 
+  ToolTip 
+} from "#/lib/farmbot/threed-farmbot/config_overlays"
+
 // ** THREED EXPERIENCE Imports
+// import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
 import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
@@ -199,7 +216,7 @@ const storeCamera = createStore('threedCamera')(({
 // storeCamera.get.state()
 // **
 // console.debug('%c storeCamera.get.state()', ccm.redAlert, storeCamera.get.state())
-console.debug('%c storeCamera.get.state().position()', ccm.redAlert, storeCamera.get.position())
+console.debug('%c STORE storeCamera.get.state().position()', ccm.redAlert, storeCamera.get.position())
 // console.debug('%c storeCamera.useTracked.position()', ccm.redAlert, storeCamera.useTracked.position())
 
 
@@ -299,8 +316,28 @@ export const ThreeDCanvas = (
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug('%c prefs', ccm.red, prefs)
 
-  // ** REF-erences using REACT ???
+  // ** REF-erences using REACT
   const ref: any = useRef<any>()
+
+  
+  {/* ⚙️ &#x2699; */}
+  const [config, setConfig] = useState<Config>(INITIAL);
+  const [toolTip, setToolTip] = useState<ToolTip>({ timeoutId: 0, text: "" });
+  const [activeFocus, setActiveFocus] = useState("");
+
+  useEffect(() => {
+    setConfig(modifyConfigsFromUrlParams(config));
+    setActiveFocus(getFocusFromUrlParams());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally empty dependency array
+
+  const common = {
+    config, setConfig,
+    toolTip, setToolTip,
+    activeFocus, setActiveFocus,
+  };
+
+
 
   // ** CREATE THREED CAMERA
   let threedCamera = { 
@@ -357,6 +394,8 @@ export const ThreeDCanvas = (
   //   console.debug('HEY HEY HEY')
   // })
 
+
+  // ==========================================================
   // ** RETURN JSX
   return (
     <>
@@ -386,10 +425,10 @@ export const ThreeDCanvas = (
         }}
 
         shadows={true}
-        // dpr={[1, 2]} // dpr = target pixel ratio (need ???)
+        dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         
         // ** CAMERA (not using declarative inside canvas)
-        camera={threedCamera}
+        // camera={threedCamera}
 
         // ** SCENE (needs to be declarative inside canvas)
         scene={{
@@ -441,6 +480,7 @@ export const ThreeDCanvas = (
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
+        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
         {/* using react-three-drei Loader + useProgress */}
         <Suspense fallback={
           <Html center>
@@ -455,17 +495,30 @@ export const ThreeDCanvas = (
             />
           </Html>
         }>
-        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
+
+          {/* PLANTS from THREED FARMBOT */}
+          {/* <Model {...common} /> */}
           
           {/* THREED EXPERIENCE : VIEWER */}
-          {/* ExperienceViewer = forwardRef(({ children, enableOrbit, ...props }, ref) => {} */}
-          {/* @ ts-expect-error */}
-          <ThreeDExperienceViewer 
+          <ThreeDExperienceViewer
+            // children={null}
+            enableOrbit={true}
+            enableGizmoCube={true}
+            enableAxesHelper={true}
+            enableGridHelper={true}
+            enablePerf={true}
+
+            threeds={threeds} 
+            
             ref={ref} // when using function as a forwardRef // THREED IO
-            enableOrbit={true} 
-            enablePerf={false}
-            threeds={threeds}
-            children={null}
+
+            // config: Object, // Config
+            config={config}
+            setConfig={setConfig}
+            // activeFocus: string,
+            activeFocus={activeFocus}
+            // setActiveFocus(focus: string): void,
+            setActiveFocus={setActiveFocus}
           />
 
         </Suspense>

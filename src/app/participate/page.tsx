@@ -62,7 +62,8 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
   // }
 
   return (
-    <Suspense fallback={<Spinner />}>
+    <>
+    {/* <Suspense fallback={<Spinner />}> */}
     
       <Grid
         container
@@ -128,7 +129,8 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
         
     
       </Grid>
-    </Suspense>
+    {/* </Suspense> */}
+    </>
   )
 }
 
