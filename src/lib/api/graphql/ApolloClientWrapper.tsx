@@ -27,7 +27,7 @@ const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL    // 'https://threed.d
 console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 apollo loaded 🍄', ccm.green)
 console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
 // console.debug('%c🦆 - REST API', ccm.darkgreen, uri_rest)
-console.debug('%c=======================================================', ccm.green)
+console.debug('%c=============================================', ccm.green)
 
 // have a function to create a client for you
 function makeClient() {
