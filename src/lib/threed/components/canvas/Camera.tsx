@@ -468,7 +468,15 @@ export const getFocusFromUrlParams = () => {
 
 // ** ==================================
 // ** THREED CAMERA
-export default function ThreeDCamera({ config, activeFocus }: { config: Config, activeFocus: string }) {
+export default function ThreeDCamera(
+  { 
+    config, 
+    activeFocus 
+  }: { 
+    config: Config, 
+    activeFocus: string 
+  }
+) {
 
   const initCamera: { position: VectorXyz, target: VectorXyz } = {
     // position: isXL ? [7500, -3500, 3200]
@@ -499,7 +507,7 @@ export default function ThreeDCamera({ config, activeFocus }: { config: Config, 
         <Camera 
           makeDefault={true} 
           name={"camera"}
-          fov={24} 
+          fov={48} 
           // near={10} 
           // far={75000}
           position={camera.position}
