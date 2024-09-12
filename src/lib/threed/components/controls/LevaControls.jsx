@@ -159,7 +159,7 @@ export function ThreeDLevaControls() {
   const sizes = useControls(
     {
       sizes: folder({
-        rootWidth: '100%',
+        rootWidth: '400px',
         controlWidth: '60%',
         numberInputMinWidth: '48px',
         scrubberWidth: '8px',
@@ -237,7 +237,7 @@ export function ThreeDLevaControls() {
       title: { value: 'START HERE: Project Settings', render: (get) => get('Panel.showTitleBar') },
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
-      position: { value: { x: 0, y: 0 }, render: (get) => get('Panel.showTitleBar') },
+      position: { value: { x: -160, y: -5 }, render: (get) => get('Panel.showTitleBar') },
       // fullScreen: true,
       // oneLineLabels: false,
       // **
@@ -384,7 +384,7 @@ export function ThreeDLevaControls() {
     <Flex
       style={{
         // display: 'grid',
-        // width: 300,
+        width: 300,
         // gap: 10,
         // paddingBottom: 0,
         // marginRight: 0,
@@ -400,11 +400,11 @@ export function ThreeDLevaControls() {
           titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
           hideTitleBar={false} // default = false. true hides the GUI header
           theme={theme} // you can pass a custom theme (see the styling section)
-          collapsed={false} // default = false. true makes the GUI collapsed to start
-          fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
+          collapsed={true} // default = false. true makes the GUI collapsed to start
+          fill={false} // default = false. true makes the pane fill the parent dom node it's rendered in
           flat={false} // default = false. true removes border radius and shadow
           hidden={false} // default = false. true hides the GUI
-          neverHide={false} // default = true. false allows hiding of the GUI
+          neverHide={true} // default = true. false allows hiding of the GUI
           oneLineLabels={false} // default = false. true makes labels + fields on separate rows
           hideCopyButton={true} // default = false. true hides the onHover copy button
         />
