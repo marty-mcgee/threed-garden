@@ -25,6 +25,7 @@ import * as THREE from 'three'
 import { 
   KeyboardControls, 
   Grid,
+  Bounds, useBounds,
 } from '@react-three/drei'
 // ** PHYSICS LIBRARY
 import { Physics } from '@react-three/rapier'
@@ -278,22 +279,29 @@ const ThreeDExperience = forwardRef((
   // ==========================================================
   // ** RETURN JSX
   return (
+
+    <Suspense fallback={null}>
     <group ref={ref}>
 
       {/* EXAMPLES: BIRDS */}
-      {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
         <Birds />
-      </group> */}
+      </group>
 
       {/* THREED USING PHYSICS */}
       <Physics
-        // debug={prefs.doWorldPhysics}
-        debug={true}
-        // timeStep={1/60} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
+        debug={prefs.doWorldPhysics}
+        // debug={true}
+        timeStep={1/15} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
         paused={pausedPhysics}
       >
 
-        {/* <Suspense fallback={null}> */}
+        <Bounds 
+          // fit 
+          // clip 
+          // observe 
+          // margin={1.2}
+        >
 
         {/* baby steps */}
         {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
@@ -438,9 +446,11 @@ const ThreeDExperience = forwardRef((
           />
         </group>
 
-        {/* </Suspense> */}
+        </Bounds>
+
       </Physics>
     </group>
+    </Suspense>
   )
 }
 ) // end forwardRef
