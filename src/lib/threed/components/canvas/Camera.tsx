@@ -26,18 +26,13 @@ import {
   animated 
 } from '@react-spring/three'
 
-export type VectorXyz = [x: number, y: number, z: number]
-
-// ** THREED Config
+// ** THREED Config Type
 import {
-  Config, 
-  INITIAL, 
-  detailLevels, 
-  modifyConfigsFromUrlParams, 
-  // getFocusFromUrlParams,
-  seasonProperties,
+  type Config
 } from "#/lib/farmbot/threed-farmbot/config-threed"
 
+// ** TYPES + INTERFACES
+type VectorXyz = [x: number, y: number, z: number]
 
 interface Camera {
   position: VectorXyz
