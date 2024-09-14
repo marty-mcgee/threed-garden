@@ -32,10 +32,6 @@ import {
   useBounds, // inside Model
 } from '@react-three/drei'
 
-
-import { 
-} from '@react-three/drei'
-
 // Three Loaders
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -62,6 +58,16 @@ import CoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
+// ** SPINNER
+import Spinner from '#/layout/ui/components/spinner'
+// ** CANVAS LOADER
+// import Loader from '@react-three/drei'
+// ** CANVAS HTML
+// import Html from '@react-three/drei'
+import { 
+  Html,
+  Loader,
+} from '@react-three/drei'
 
 // ==========================================
 // ** VARIABLES
@@ -1053,7 +1059,13 @@ const ThreeDModels = ({ threeds }) => {
 
   // DEFAULT 0, RETURN BLANK JSX (no need to render this component)
   if (!threeds.length) {
-    return <></>
+    // return <></>
+    return (
+      <Html center>
+        <Spinner />
+        <Loader />
+      </Html>
+    )
   }
 
   // RENDER THIS COMPONENT
@@ -1081,11 +1093,13 @@ const ThreeDModels = ({ threeds }) => {
             <group
               // key={newUUID()}
               // key={index}
-              key={threed.group.group_id + '_' + newUUID()} // no duplicates
+              key={threed.group.group_id + '_' + index + '_' + newUUID()} // no duplicates
               // ref={ref}
+              // ref={threed.group.group_ref}
               // position={threed.group.group_position}
               // rotation={threed.group.group_rotation}
               // scale={threed.group.group_scale}
+              // quaternion={threed.group.group_quaternion}
             >
             { _threed.files.nodes &&
               _threed.files.nodes.map((_file, index) => {
