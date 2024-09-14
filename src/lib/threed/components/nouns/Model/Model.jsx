@@ -3,31 +3,39 @@
 // RESOURCES
 
 // ** VALTIO (State) Imports
-import { proxy, useSnapshot } from 'valtio'
+import { 
+  proxy, 
+  useSnapshot,
+} from 'valtio'
 
 // ** REACT Imports
 import {
   useEffect,
   useState,
   useRef,
-  Suspense
+  Suspense,
 } from 'react'
 
-// ** R3F Imports
+// ** REACT THREE Imports
 import {
   useThree,
   useFrame,
   useLoader,
 } from '@react-three/fiber'
 import {
-  Loader,
   useCursor,
   useGLTF,
   useFBX,
   useAnimations,
   useTexture,
-  // ContactShadows,
+  // Bounds, 
+  useBounds, // inside Model
 } from '@react-three/drei'
+
+
+import { 
+} from '@react-three/drei'
+
 // Three Loaders
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -1057,7 +1065,8 @@ const ThreeDModels = ({ threeds }) => {
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
-      <Suspense fallback={null}>
+      {/* <Suspense fallback={null}> */}
+      <>
         {threeds.map((_threed, index) => {
           // if (debug || DEBUG) console.debug('_threed', index + ': ', _threed)
           // if (debug || DEBUG) console.debug(`%c======================================`, ccm.red)
@@ -1081,38 +1090,58 @@ const ThreeDModels = ({ threeds }) => {
             { _threed.files.nodes &&
               _threed.files.nodes.map((_file, index) => {
               if (debug || DEBUG) console.debug('%c MODEL _file', ccm.redAlert, index + ': ', _file)
-              if (debug || DEBUG) console.debug(`%c ======================================`, ccm.redAlert)
+              // if (debug || DEBUG) console.debug(`%c ================================`, ccm.redAlert)
 
               // const threed = new ThreeD()
-              // threed.name = _file.title
+              threed.name = _file.title
               threed.file = _file
               // threed.group = threed.group
 
               return (
                 <RigidBody 
                   type='fixed'
-                  key={index + '_' + newUUID()}
+                  key={'RigidBody' + index + '_' + newUUID()}
                 >
-                  <Model
-                    // key={_file.fileId} // no, duplicates
-                    // key={newUUID()}
-                    // key={index}
-                    // key={index + '_' + newUUID()}
-                    threed={threed}
-                  />
+                  {/* BOUNDS */}
+                  <SelectToZoom>
+                    <Model
+                      // key={_file.fileId} // no, duplicates
+                      // key={newUUID()}
+                      // key={index}
+                      // key={index + '_' + newUUID()}
+                      key={threed.name + '_' + index + '_' + newUUID()}
+                      threed={threed}
+                    />
+                  {/* END: BOUNDS */}
+                  </SelectToZoom>
                 </RigidBody>
               )
             })}
             </group>
           )
         })}
-      </Suspense>
+      </>
+      {/* </Suspense> */}
     </group>
   )
 }
+
+
+// This component wraps children in a group with a click handler
+// Clicking any object will refresh and fit bounds
+function SelectToZoom({ children }) {
+  const api = useBounds()
+  return (
+    <group onClick={(e) => (e.stopPropagation(), e.delta <= 2 && api.refresh(e.object).fit())} onPointerMissed={(e) => e.button === 0 && api.refresh().fit()}>
+      {children}
+    </group>
+  )
+}
+
 
 // const ThreeDModel_UseClient = dynamic(() => Promise.resolve(ThreeDModels), {
 //   ssr: false
 // })
 // export default ThreeDModel_UseClient
 export default ThreeDModels
+
