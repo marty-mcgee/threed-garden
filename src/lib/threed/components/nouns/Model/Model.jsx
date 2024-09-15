@@ -59,7 +59,7 @@ import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // ** SPINNER
-import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** CANVAS LOADER
 // import Loader from '@react-three/drei'
 // ** CANVAS HTML
@@ -1062,7 +1062,7 @@ const ThreeDModels = ({ threeds }) => {
     // return <></>
     return (
       <Html center>
-        <Spinner />
+        {/* <Spinner /> */}
         <Loader />
       </Html>
     )
@@ -1080,7 +1080,7 @@ const ThreeDModels = ({ threeds }) => {
       {/* <Suspense fallback={null}> */}
       <>
         {threeds.map((_threed, index) => {
-          // if (debug || DEBUG) console.debug('_threed', index + ': ', _threed)
+          if (debug || DEBUG) console.debug('_threed', index + ': ', _threed)
           // if (debug || DEBUG) console.debug(`%c======================================`, ccm.red)
           const threed = new ThreeD()
           threed.name = _threed.title
@@ -1093,7 +1093,7 @@ const ThreeDModels = ({ threeds }) => {
             <group
               // key={newUUID()}
               // key={index}
-              key={threed.group.group_id + '_' + index + '_' + newUUID()} // no duplicates
+              key={threed.group.group_id + '_' + index + '_' + newUUID()}
               // ref={ref}
               // ref={threed.group.group_ref}
               // position={threed.group.group_position}
@@ -1101,23 +1101,21 @@ const ThreeDModels = ({ threeds }) => {
               // scale={threed.group.group_scale}
               // quaternion={threed.group.group_quaternion}
             >
-            { _threed.files.nodes &&
-              _threed.files.nodes.map((_file, index) => {
-              if (debug || DEBUG) console.debug('%c MODEL _file', ccm.redAlert, index + ': ', _file)
-              // if (debug || DEBUG) console.debug(`%c ================================`, ccm.redAlert)
+              { _threed.files.nodes &&
+                _threed.files.nodes.map((_file, index) => {
+                if (debug || DEBUG) console.debug('%c MODEL _file', ccm.redAlert, index + ': ', _file)
+                // if (debug || DEBUG) console.debug(`%c ================================`, ccm.redAlert)
 
-              // const threed = new ThreeD()
-              threed.name = _file.title
-              threed.file = _file
-              // threed.group = threed.group
+                // const threed = new ThreeD()
+                threed.name = _file.title
+                threed.file = _file
+                // threed.group = threed.group
 
-              return (
-                <RigidBody 
-                  type='fixed'
-                  key={'RigidBody' + index + '_' + newUUID()}
-                >
-                  {/* BOUNDS */}
-                  <SelectToZoom>
+                return (
+                  <RigidBody 
+                    type='fixed'
+                    key={'RigidBody' + index + '_' + newUUID()}
+                  >
                     <Model
                       // key={_file.fileId} // no, duplicates
                       // key={newUUID()}
@@ -1126,11 +1124,9 @@ const ThreeDModels = ({ threeds }) => {
                       key={threed.name + '_' + index + '_' + newUUID()}
                       threed={threed}
                     />
-                  {/* END: BOUNDS */}
-                  </SelectToZoom>
-                </RigidBody>
-              )
-            })}
+                  </RigidBody>
+                )
+              })}
             </group>
           )
         })}
@@ -1140,22 +1136,8 @@ const ThreeDModels = ({ threeds }) => {
   )
 }
 
-
-// This component wraps children in a group with a click handler
-// Clicking any object will refresh and fit bounds
-function SelectToZoom({ children }) {
-  const api = useBounds()
-  return (
-    <group onClick={(e) => (e.stopPropagation(), e.delta <= 2 && api.refresh(e.object).fit())} onPointerMissed={(e) => e.button === 0 && api.refresh().fit()}>
-      {children}
-    </group>
-  )
-}
-
-
 // const ThreeDModel_UseClient = dynamic(() => Promise.resolve(ThreeDModels), {
 //   ssr: false
 // })
 // export default ThreeDModel_UseClient
 export default ThreeDModels
-

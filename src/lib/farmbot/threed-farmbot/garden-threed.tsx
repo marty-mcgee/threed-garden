@@ -63,6 +63,12 @@ import { ZoomBeacons } from "./zoom_beacons-threed"
 import { VectorXyz, getCamera, getFocusFromUrlParams } from "./zoom_beacons_constants-threed"
 
 
+// HELPERS Imports
+// ** UUID Generator
+import { v4 as newUUID } from 'uuid'
+
+
+// ** CSS
 import "./styles/garden.css"
 
 
@@ -181,30 +187,45 @@ const Model = (props: ModelProps) => {
 
     const alwaysShowLabels = config.labels && !config.labelsOnHover
     
-    return <Billboard follow={true}
-      position={new Vector3(
-        threeSpace(plant.x, config.bedLengthOuter),
-        threeSpace(plant.y, config.bedWidthOuter),
-        zZero(config) - config.soilHeight + plant.size / 2,
-      )}>
-      {labelOnly
-        ? <Text visible={alwaysShowLabels || i === hoveredPlant}
-          renderOrder={2}
-          material-depthTest={false}
-          fontSize={50}
-          position={[0, plant.size / 2 + 40, 0]}
-          font={ASSETS.fonts.cabinBold}
-          outlineColor={"black"}
-          outlineWidth={3}
-          outlineBlur={15}
-          outlineOpacity={0.7}>
-          {plant.label}
-        </Text>
-        // @ts-expect-error
-        : <Image url={plant.icon} scale={plant.size} name={"" + i}
-          transparent={true}
-          renderOrder={1} />}
-    </Billboard>
+    return (
+      <Billboard 
+        follow={true}
+        position={new Vector3(
+          threeSpace(plant.x, config.bedLengthOuter),
+          threeSpace(plant.y, config.bedWidthOuter),
+          zZero(config) - config.soilHeight + plant.size / 2,
+        )}
+        // key={'ThreeDFarmBotGardenBillboard_' + newUUID()}
+      >
+        {labelOnly
+        ? 
+          <Text 
+            visible={alwaysShowLabels || i === hoveredPlant}
+            renderOrder={2}
+            material-depthTest={false}
+            fontSize={50}
+            position={[0, plant.size / 2 + 40, 0]}
+            font={ASSETS.fonts.cabinBold}
+            outlineColor={"black"}
+            outlineWidth={3}
+            outlineBlur={15}
+            outlineOpacity={0.7}
+          >
+            {plant.label}
+          </Text>
+        : 
+          <Image 
+            // @ts-expect-error
+            url={plant.icon} 
+            scale={(plant.size/200)} 
+            name={"" + i}
+            transparent={true}
+            renderOrder={1} 
+            // key={'Image_' + newUUID()}
+          />
+        }
+      </Billboard>
+    )
   }
   const isXL = config.sizePreset == "Genesis XL"
   const { scale } = useSpring({
@@ -238,7 +259,10 @@ const Model = (props: ModelProps) => {
 
 
   return (
-  <group dispose={null}>
+  <group 
+    dispose={null} 
+    // key={'ThreeDFarmBotGarden_' + newUUID()}
+  >
     
     {/* {config.stats && <Stats />} */}
 
@@ -260,13 +284,21 @@ const Model = (props: ModelProps) => {
     {/* 2D PLANTS (FARMBOT AVIF) */}
     <group name={"plant-icon-preload"} visible={false}>
       {Object.values(PLANTS).map((plant, i) =>
-        // @ts-expect-error
-        <Image key={i} url={plant.icon} />
+        <Image 
+          key={'Image_' + i + '_' + newUUID()} 
+          // @ts-expect-error
+          url={plant.icon} 
+        />
       )}
     </group>
     <group name={"plant-labels"} visible={!props.activeFocus}>
       {plants.map((plant, i) =>
-        <Plant key={i} i={i} plant={plant} labelOnly={true} />
+        <Plant 
+          key={'Plant_' + i + '_' + newUUID()} 
+          i={i} 
+          plant={plant} 
+          labelOnly={true} 
+        />
       )}
     </group>
     <group name={"plants"}
@@ -277,8 +309,12 @@ const Model = (props: ModelProps) => {
     >
       {plants.map((plant, i) =>
         <>
-          <Plant key={i} i={i} plant={plant} />
-          {/* <Plant key={i} i={i} plant={plant} labelOnly={true} /> */}
+          <Plant 
+            key={'PlantImage_' + i + '_' + newUUID()} 
+            i={i} 
+            plant={plant}
+            // labelOnly={true} // TESTING|DEBUGGING
+          />
         </>
       )}
     </group>
@@ -411,7 +447,10 @@ export const Garden = () => {
   }
 
   return (
-    <Model {...common} />
+    <Model 
+      {...common} 
+      key={'ThreeDFarmBotGardenModel_' + newUUID()}
+    />
   )
 }
 

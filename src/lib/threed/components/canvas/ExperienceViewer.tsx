@@ -320,7 +320,10 @@ const ThreeDExperienceViewer = forwardRef((
           {/* <ThreeDEnvironment /> */}
 
           {/* THREED EXPERIENCE */}
-          <ThreeDExperience threeds={threeds} ref={ref} />
+          <ThreeDExperience 
+            threeds={threeds} 
+            ref={ref} 
+          />
           {/* <ThreeDExperienceNew /> */}
 
           {/* SHADOW EFFECTS */}
