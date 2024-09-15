@@ -3,16 +3,13 @@
 // RESOURCES
 
 import {
-  // Stats,
-  // GizmoHelper, GizmoViewcube,
-  // OrbitControls, 
   PerspectiveCamera,
   OrthographicCamera,
-  Circle, Billboard, 
-  Text, Image, 
+  // Circle, Billboard, 
+  // Text, Image, 
   // Clouds, Cloud, 
   // Detailed, 
-  Sphere,
+  // Sphere,
 } from "@react-three/drei"
 
 /* eslint-disable react-refresh/only-export-components */
@@ -57,7 +54,7 @@ interface Focus {
 // const { config } = props
 // const groundZ = config.bedZOffset + config.bedHeight
 // const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera
-const Camera = PerspectiveCamera
+const Camera = true ? PerspectiveCamera : OrthographicCamera
 
 
 export const FOCI = (config: Config): Focus[] => [
@@ -498,7 +495,7 @@ export default function ThreeDCamera(
         // attach='shadow-camera'
         // args={[-5, 5, 5, -5, 1, 50]}
       /> */}
-      <animated.group scale={activeFocus ? 1 : scale}>
+      {/* <animated.group scale={activeFocus ? 1 : scale}> */}
         <Camera 
           makeDefault={true} 
           name={"camera"}
@@ -509,7 +506,7 @@ export default function ThreeDCamera(
           // rotation={[0, 0, 0]}
           // up={[0, 0, 0]}
         />
-      </animated.group>
+      {/* </animated.group> */}
     </>
   )
 }

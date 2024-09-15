@@ -26,7 +26,7 @@ import {
   KeyboardControls, 
   Grid,
   Bounds, 
-  // useBounds, // inside Model
+  useBounds,
 } from '@react-three/drei'
 
 // ** PHYSICS LIBRARY
@@ -91,11 +91,13 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
 import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
 
-// ** HELPER Imports
-import Spinner from '#/layout/ui/components/spinner'
+// HELPERS Imports
+// ** UUID Generator
+import { v4 as newUUID } from 'uuid'
+// import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-import { EcctrlAnimation } from '~/src/lib/ecctrl/src/EcctrlAnimation'
+// import { EcctrlAnimation } from '~/src/lib/ecctrl/src/EcctrlAnimation'
 
 // ** THREED.AI
 // import ThreeDAI from '#/lib/threed/components/tools/ThreeDAI' // TODO
@@ -105,8 +107,23 @@ import { EcctrlAnimation } from '~/src/lib/ecctrl/src/EcctrlAnimation'
 // **
 // ** DEBUGGING
 // **
-const debug = false
-const DEBUG = false
+const debug: boolean = false
+const DEBUG: boolean = false
+
+// ** BOUNDS
+// This function component wraps children in a group with a click handler
+// Clicking any object will refresh and fit bounds
+const SelectToZoom = ({ children }: { children: any }) => {
+  const api = useBounds()
+  return (
+    <group 
+      onClick={(e) => (e.stopPropagation(), e.delta <= 2 && api.refresh(e.object).fit())} 
+      // onPointerMissed={(e) => e.button === 0 && api.refresh().fit()}
+    >
+      {children}
+    </group>
+  )
+}
 
 // ** RETURN ThreeDExperience
 // export default function ThreeDExperience({ threeds }: { threeds: object[]}, ref: any) {
@@ -136,9 +153,7 @@ const ThreeDExperience = forwardRef((
     return () => clearTimeout(timeout)
   }, [])
 
-  /**
-   * World Preferences
-   */
+  // ** World Preferences
   const [{
     doWorldDebug,
     doWorldTesting,
@@ -166,7 +181,7 @@ const ThreeDExperience = forwardRef((
     }),
     {
       color: 'darkgreen',
-      collapsed: true, // !!! bug: true throws error !!!
+      collapsed: false,
       order: 10,
     },
   )
@@ -278,6 +293,17 @@ const ThreeDExperience = forwardRef((
 
   // const camera = new THREE.PerspectiveCamera()
 
+  // ** BOUNDS behavior
+  const bounds_fit = false
+  const bounds_clip = false
+  const bounds_observe = false
+  const bounds_margin = 1.2
+  const bounds_maxDuration = 1
+  const bounds_interpolateFunc0 = (t: number) => 1 - Math.exp(-5 * t) + 0.007 * t // Matches the default Bounds behavior
+  const bounds_interpolateFunc1 = (t: number) => -t * t * t + 2 * t * t           // Start smoothly, finish linearly
+  const bounds_interpolateFunc2 = (t: number) => -t * t * t + t * t + t           // Start linearly, finish smoothly
+
+
   // ==========================================================
   // ** RETURN JSX
   return (
@@ -299,11 +325,15 @@ const ThreeDExperience = forwardRef((
         >
 
           <Bounds 
-            // fit 
-            // clip 
-            observe 
-            margin={1.2}
+            fit={bounds_fit} 
+            clip={bounds_clip}
+            observe={bounds_observe}
+            margin={bounds_margin}
+            maxDuration={bounds_maxDuration} 
+            interpolateFunc={bounds_interpolateFunc2}
           >
+          {/* BOUNDS */}
+          <SelectToZoom>
 
             {/* baby steps */}
             {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
@@ -341,32 +371,11 @@ const ThreeDExperience = forwardRef((
               <ShotCube />
             </group> */}
 
-            {/* solid steps (levels, safety) */}
-            {/* The Floor (Plane 0) */}
-            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-              <Floor color={'darkgreen'} opacity={0.8} />
-            </group>
-
-            {/* backup solid steps (levels[1+], safety) */}
-            {/* Sub-Floor[s] (Plane < 0) */}
-            {/* <SubFloor level={`${level[index]}`} /> */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-              <Floor color={'saddlebrown'} opacity={0.4} />
-            </group> */}
-            {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-                DEEP BELOW SEA LEVEL */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
-              <Floor color={'darkblue'} opacity={0.2} />
-            </group> */}
-            {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
-                DEEP DEEP DEEP BELOW SEA LEVEL */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
-              <Ground color={'black'} opacity={0.0} />
-            </group> */}
-
             {/* THREED FARMBOT */}
             <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
-              {/* <ThreeDFarmBotGarden /> */}
+              <ThreeDFarmBotGarden 
+                key={'ThreeDFarmBotGarden_' + newUUID()} 
+              />
             </group>
             {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
               <ThreeDFarmBotMain />
@@ -375,6 +384,7 @@ const ThreeDExperience = forwardRef((
             {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
             {/* CHARACTER MODELS */}
             <KeyboardControls map={keyboardMap}>
+
               {/* CHARACTER MODEL */}
               {/* <group key='character0' position={[-1.6, 0.396, -1.6]}>
                 <CharacterControls
@@ -397,6 +407,7 @@ const ThreeDExperience = forwardRef((
                 </CharacterControls>
               </group> */}
               {/* END: CHARACTER MODEL */}
+              
               {/* CHARACTER MODEL */}
               <group key='character1' position={[0, 0.396, 0]}>
                 {/* <CharacterControls
@@ -422,6 +433,7 @@ const ThreeDExperience = forwardRef((
                 {/* </CharacterControls> */}
               </group>
               {/* END: CHARACTER MODEL */}
+            
             </KeyboardControls>
 
             {/* // import Map from './Map' */}
@@ -433,21 +445,44 @@ const ThreeDExperience = forwardRef((
               <Map />
             </group> */}
               
-            {/* THREED MODELS as props.children */}
+            {/* THREED MODELS as props.threeds */}
             <group
               key='threed_models_children'
               scale={0.3}
             >
-              {/* {children} */}
-              {/* THREED MODELS: WORKING !!! */}
-              {/* SEND THREEDS OF MODEL[S] TO A CANVAS */}
               <ThreeDModels
                 threeds={threeds} // threeds={{}}
                 // position={[ -4, 0, 0 ]}
               />
             </group>
 
+            {/* END: BOUNDS */}
+            </SelectToZoom>
           </Bounds>
+
+          {/* ** FLOORS ** */}
+          {/* solid steps (levels, safety) */}
+          {/* The Floor (Plane 0) */}
+          <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+            <Floor color={'darkgreen'} opacity={0.8} />
+          </group>
+          {/* backup solid steps (levels[1+], safety) */}
+          {/* Sub-Floor[s] (Plane < 0) */}
+          {/* <SubFloor level={`${level[index]}`} /> */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+            <Floor color={'saddlebrown'} opacity={0.4} />
+          </group> */}
+          {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
+              DEEP BELOW SEA LEVEL */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
+            <Floor color={'darkblue'} opacity={0.2} />
+          </group> */}
+          {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
+              DEEP DEEP DEEP BELOW SEA LEVEL */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
+            <Ground color={'black'} opacity={0.0} />
+          </group> */}
+
         </Physics>
       </group>
     </Suspense>
