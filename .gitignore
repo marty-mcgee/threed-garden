@@ -80,3 +80,9 @@ src/lib/farmbot/farmbot-3d-demo-react
 src/app/participate/character-control
 # # ecctrl-new
 src/lib/ecctrl-new
+
+# # ai
+src/app/ai
+src/layout/ai
+src/lib/ai
+src/lib/types/ai*
