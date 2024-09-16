@@ -33,6 +33,10 @@
     // "rootDirs": [".", "../common/src"],
     "baseUrl": ".",
     "paths": {
+      // next-auth
+      "auth": [
+        "src/lib/auth/auth"
+      ],
       // global root
       "~/*": [
         "*"
@@ -42,12 +46,25 @@
         "src/*"
       ],
       // threed (next-14)
+      // "@/*": [
+      //   "src/app/*"
+      // ],
+      // threed (ai next-15)
       "@/*": [
-        "src/app/*"
+        "src/*"
       ],
-      // next-auth
-      "auth": [
+      // ** ai
+      "@/auth": [
         "src/lib/auth/auth"
+      ],
+      "@/app/*": [
+        "src/app/ai/*"
+      ],
+      "@/components/*": [
+        "src/layout/ai/*"
+      ],
+      "@/lib/*": [
+        "src/lib/ai/*"
       ],
     },
     // ** TYPES
@@ -77,5 +94,6 @@
     ".yalc/**/*",
     "src/lib/farmbot/farmbot-3d-demo-react",
     // "src/lib/farmbot/threed-farmbot",
+    "src/app/ai",
   ]
 }

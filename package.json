@@ -152,14 +152,24 @@
 
 
     
-    "ai": "^3.3.17",
-    "openai": "^4.56.0",
+    "ai": "^3.3.37",
+    "openai": "^4.61.0",
     "zod": "^3.23.8",
-    "@ai-sdk/openai": "^0.0.53",
+    "@ai-sdk/openai": "^0.0.60",
     
     "@vercel/analytics": "^1.3.1",
-    "@vercel/kv": "^2.0.0"
+    "@vercel/kv": "^2.0.0",
 
+    "sonner": "^1.5.0",
+    "react-markdown": "^8.0.7",
+    "framer-motion": "^11.3.30",
+    "geist": "^1.3.1",
+    "nanoid": "^5.0.7",
+    "react-intersection-observer": "^9.10.3",
+    "react-syntax-highlighter": "^15.5.0",
+    "react-textarea-autosize": "^8.5.3",
+    "remark-gfm": "^3.0.1",
+    "remark-math": "^5.1.1"
 
   },
 
