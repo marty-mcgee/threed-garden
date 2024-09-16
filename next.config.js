@@ -111,7 +111,8 @@ const nextConfig = {
   images: {
     
     // domains: [
-    //   process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], // Valid WP Image domain.
+    //   process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL.match(/(?!(w+)\.)\w*(?:\w+\.)+\w+/)[0], 
+    // Valid WP Image domain.
     //   '0.gravatar.com',
     //   '1.gravatar.com',
     //   '2.gravatar.com',
@@ -119,18 +120,24 @@ const nextConfig = {
     //   'images.cdndomain.com',
     // ],
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 's3.amazonaws.com',
-        port: '443',
-        pathname: '/threedpublic/**',
-      },
       // {
       //   protocol: 'http',
       //   hostname: '**',
       //   // port: '7777',
       //   // pathname: '/**',
       // },
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+        port: '443',
+        pathname: '/threedpublic/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        port: '',
+        pathname: '**'
+      },
     ],
     // loader: 'default',
     // // path: 'https://somedomain.com/mydirectory/',
@@ -164,6 +171,12 @@ const nextConfig = {
       // We're in the browser build, so we can safely exclude the sharp module
       config.externals.push('sharp')
     }
+
+    // // next webpack ignore stuff
+    // config.module.rules.push({
+    //   test: /src\/app\/ai/,
+    //   loader: 'ignore-loader',
+    // });
 
     // shader support
     config.module.rules.push({
