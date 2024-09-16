@@ -114,13 +114,13 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   slopeUpExtraForce = 0.1,
   slopeDownExtraForce = 0.2,
   // AutoBalance Force setups
-  autoBalance = true,
+  autoBalance = false, // [MM] true
   autoBalanceSpringK = 0.3,
   autoBalanceDampingC = 0.03,
   autoBalanceSpringOnY = 0.5,
   autoBalanceDampingOnY = 0.015,
   // Animation temporary setups
-  animated = false,
+  animated = true, // [MM] false,
   // Mode setups
   mode = null,
   // Controller setups

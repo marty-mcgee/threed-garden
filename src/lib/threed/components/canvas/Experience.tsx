@@ -410,27 +410,27 @@ const ThreeDExperience = forwardRef((
               
               {/* CHARACTER MODEL */}
               <group key='character1' position={[0, 0.396, 0]}>
-                {/* <CharacterControls
-                  debug={prefs.doWorldDebug}
-                  // debug={false}
-                  // animated={prefs.doCharacterAnimation}
-                  animated={true}
-                  disableFollowCam={prefs.doWorldUnfollowCam}
-                  // disableFollowCam={true}
-                  followLight={true}
-                  springK={2}
-                  dampingC={0.2}
-                  autoBalanceSpringK={1.2}
-                  autoBalanceDampingC={0.04}
-                  // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-                  // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-                  mode='FixedCamera'
-                > */}
+                <CharacterControls
+                  // debug={prefs.doWorldDebug}
+                  // // debug={false}
+                  // // animated={prefs.doCharacterAnimation}
+                  // animated={true}
+                  // disableFollowCam={prefs.doWorldUnfollowCam}
+                  // // disableFollowCam={true}
+                  // followLight={true}
+                  // springK={2}
+                  // dampingC={0.2}
+                  // autoBalanceSpringK={1.2}
+                  // autoBalanceDampingC={0.04}
+                  // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+                  // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+                  // mode='FixedCamera'
+                >
                   {/* <CharacterModel /> */}
-                  {/* <CharacterModelFloating /> */}
+                  <CharacterModelFloating />
                   {/* <CharacterModelFarmerWomanFloating /> */}
                   {/* <CharacterModelFarmerManFloating /> */}
-                {/* </CharacterControls> */}
+                </CharacterControls>
               </group>
               {/* END: CHARACTER MODEL */}
             
