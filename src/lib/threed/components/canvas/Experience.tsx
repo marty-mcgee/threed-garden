@@ -374,7 +374,7 @@ const ThreeDExperience = forwardRef((
             {/* THREED FARMBOT */}
             <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
               <ThreeDFarmBotGarden 
-                key={'ThreeDFarmBotGarden_' + newUUID()} 
+                // key={'ThreeDFarmBotGarden_' + newUUID()} 
               />
             </group>
             {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
@@ -464,7 +464,7 @@ const ThreeDExperience = forwardRef((
           {/* solid steps (levels, safety) */}
           {/* The Floor (Plane 0) */}
           <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-            <Floor color={'darkgreen'} opacity={0.8} />
+            <Floor color={'darkgreen'} opacity={0.6} />
           </group>
           {/* backup solid steps (levels[1+], safety) */}
           {/* Sub-Floor[s] (Plane < 0) */}

@@ -366,7 +366,7 @@ const ThreeDExperienceViewer = forwardRef((
               <OrbitControls
                 makeDefault
                 minDistance={0.25}
-                maxDistance={6400}
+                maxDistance={640}
                 // // minZoom={10}
                 // // maxZoom={20}
                 // // minAzimuthAngle={-Math.PI / 4}
@@ -380,7 +380,7 @@ const ThreeDExperienceViewer = forwardRef((
                 autoRotate={prefs.doAutoRotate} // default is false
                 autoRotateSpeed={1.0} // default is 2.0
                 rotateSpeed={1.0} // default is 1.0
-                enableDamping={true} // slows down rotation after mouse release
+                enableDamping={false} // slows down rotation after mouse release
                 dampingFactor={0.2} // default is 0.05
                 enablePan={true}
                 screenSpacePanning={true}
