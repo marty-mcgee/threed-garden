@@ -320,18 +320,23 @@ const ThreeDExperienceViewer = forwardRef((
           {/* <ThreeDEnvironment /> */}
 
           {/* THREED EXPERIENCE */}
-          <ThreeDExperience threeds={threeds} ref={ref} />
+          <ThreeDExperience 
+            threeds={threeds} 
+            ref={ref} 
+          />
           {/* <ThreeDExperienceNew /> */}
 
           {/* SHADOW EFFECTS */}
-          {/* <ContactShadows
-            position={[0, -1.4, 0]}
-            opacity={0.75}
-            scale={10}
-            blur={2.5}
-            far={4}
-          />
-          <BakeShadows /> */}
+          {/* 
+            <ContactShadows
+              position={[0, -1.4, 0]}
+              opacity={0.75}
+              scale={10}
+              blur={2.5}
+              far={4}
+            />
+            <BakeShadows /> 
+          */}
 
           {/* Transform Model using TransformControls */}
           {/*
@@ -361,13 +366,13 @@ const ThreeDExperienceViewer = forwardRef((
               <OrbitControls
                 makeDefault
                 minDistance={0.25}
-                maxDistance={6400}
+                maxDistance={640}
                 // // minZoom={10}
                 // // maxZoom={20}
                 // // minAzimuthAngle={-Math.PI / 4}
                 // // maxAzimuthAngle={Math.PI / 4}
-                // minPolarAngle={-1.75}
-                // maxPolarAngle={Math.PI / 1.75}
+                minPolarAngle={-Math.PI / 1.8}
+                maxPolarAngle={Math.PI / 1.8}
                 enableZoom={true}
                 zoomToCursor={false} // default is false
                 zoomSpeed={1.0} // default is 1.0
@@ -375,7 +380,7 @@ const ThreeDExperienceViewer = forwardRef((
                 autoRotate={prefs.doAutoRotate} // default is false
                 autoRotateSpeed={1.0} // default is 2.0
                 rotateSpeed={1.0} // default is 1.0
-                enableDamping={true} // slows down rotation after mouse release
+                enableDamping={false} // slows down rotation after mouse release
                 dampingFactor={0.2} // default is 0.05
                 enablePan={true}
                 screenSpacePanning={true}
@@ -414,7 +419,8 @@ const ThreeDExperienceViewer = forwardRef((
             />
           )}
 
-        {/* </ThreeDViewImpl>
+      {/* 
+        </ThreeDViewImpl>
       </ThreedIO> 
       */}
     </>

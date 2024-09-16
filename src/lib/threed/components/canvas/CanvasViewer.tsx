@@ -2,8 +2,14 @@
 // ==========================================================
 // RESOURCES
 
+// ** NEXT Imports
+import Image from 'next/image'
+
 // ** APOLLO CLIENT STORE+STATE Imports
-import { useApolloClient, useReactiveVar } from '@apollo/client'
+import { 
+  useApolloClient, 
+  useReactiveVar,
+} from '@apollo/client'
 import {
   isPreferencesSetVar,
   preferencesDataVar,
@@ -51,26 +57,14 @@ const DEBUG: boolean = false
 
 const ThreeDCanvasCamera = (
   { index = 0, canvasKey = '0', threeds = [] }: 
-  { index: number, canvasKey: string, threeds: any[] }
+  { index: number, canvasKey: string, threeds: object[] }
 ) => {
   return (
     <Accordion.Item 
       value={'Canvas 1 Camera ' + index}
       className='AccordionItem'
       style={{ 
-        // borderTop: '1px solid darkgreen',
-        // height: '100%',
-        // minHeight: '30%',
-        // minHeight: '100vh',
-        // display: 'flex', 
-        // alignItems: 'start', 
-        // justifyContent: 'space-between',
-        // flexDirection: 'row',
-        // width: '100%',
-        // minHeight: '40vh',
-        // maxHeight: '50vh',
-        // minWidth: '50vw',
-        // maxWidth: '90vw',
+        // borderTop: '1px solid black',
       }}
     >
       <Accordion.Header
@@ -79,27 +73,20 @@ const ThreeDCanvasCamera = (
         <Flex
           id={'threed_configs_overlays_' + index}
           direction='row'
-        > 
+          style={{
+            alignItems: 'start',
+            width: '100%',
+          }}
+        >
           {/* ⚙️ &#x2699; */}
-          {
+          { true && 
             // !config.config && 
             // <img className={"gear"} src={'/favicon/favicon-16x16.png'} // {ASSETS.other.gear}
-            <img className={'gear'} src={'/images/icons/gear.svg'} width={16} height={16}
+            <Image alt='gear' className={'gearrrrr'} src={'/images/icons/gear.svg'} width={16} height={16}
               style={{ color: 'gray', backgroundColor: 'darkgreen', paddingLeft: '10px', paddingRight: '10px', paddingTop: '2px', paddingBottom: '2px' }}
               // onClick={() => setConfig({ ...config, config: true })} 
             />
           }
-
-          {/* <PublicOverlay {...common} /> */}
-
-          {/* {
-            config.config &&
-            <PrivateOverlay {...common} />
-          } */}
-
-          {/* <span className={"tool-tip"} hidden={!toolTip.text}>
-            {toolTip.text}
-          </span> */}
 
           <Accordion.Trigger 
             className='AccordionTrigger'

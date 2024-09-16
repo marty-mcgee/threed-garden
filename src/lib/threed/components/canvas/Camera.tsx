@@ -3,16 +3,13 @@
 // RESOURCES
 
 import {
-  // Stats,
-  // GizmoHelper, GizmoViewcube,
-  // OrbitControls, 
   PerspectiveCamera,
   OrthographicCamera,
-  Circle, Billboard, 
-  Text, Image, 
+  // Circle, Billboard, 
+  // Text, Image, 
   // Clouds, Cloud, 
   // Detailed, 
-  Sphere,
+  // Sphere,
 } from "@react-three/drei"
 
 /* eslint-disable react-refresh/only-export-components */
@@ -26,18 +23,13 @@ import {
   animated 
 } from '@react-spring/three'
 
-export type VectorXyz = [x: number, y: number, z: number]
-
-// ** THREED Config
+// ** THREED Config Type
 import {
-  Config, 
-  INITIAL, 
-  detailLevels, 
-  modifyConfigsFromUrlParams, 
-  // getFocusFromUrlParams,
-  seasonProperties,
+  type Config
 } from "#/lib/farmbot/threed-farmbot/config-threed"
 
+// ** TYPES + INTERFACES
+type VectorXyz = [x: number, y: number, z: number]
 
 interface Camera {
   position: VectorXyz
@@ -62,7 +54,7 @@ interface Focus {
 // const { config } = props
 // const groundZ = config.bedZOffset + config.bedHeight
 // const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera
-const Camera = PerspectiveCamera
+const Camera = true ? PerspectiveCamera : OrthographicCamera
 
 
 export const FOCI = (config: Config): Focus[] => [
@@ -482,7 +474,7 @@ export default function ThreeDCamera(
     // position: isXL ? [7500, -3500, 3200]
     // position: [5000, -2500, 3200], // Small screens
     // position: [2200, -3500, 2000], // Large screens
-    position: [-16, 8, 8],
+    position: [-16, 6, 16],
     target: [0, 0, 0],
   }
   const camera = getCamera(config, activeFocus, initCamera)
@@ -503,18 +495,18 @@ export default function ThreeDCamera(
         // attach='shadow-camera'
         // args={[-5, 5, 5, -5, 1, 50]}
       /> */}
-      <animated.group scale={activeFocus ? 1 : scale}>
+      {/* <animated.group scale={activeFocus ? 1 : scale}> */}
         <Camera 
           makeDefault={true} 
           name={"camera"}
-          fov={48} 
+          fov={64} 
           // near={10} 
           // far={75000}
           position={camera.position}
           // rotation={[0, 0, 0]}
           // up={[0, 0, 0]}
         />
-      </animated.group>
+      {/* </animated.group> */}
     </>
   )
 }
