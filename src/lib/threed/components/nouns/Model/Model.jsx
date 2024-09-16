@@ -1,33 +1,37 @@
 // 'use client'
-// ==========================================================
+// ================================================
 // RESOURCES
 
 // ** VALTIO (State) Imports
-import { proxy, useSnapshot } from 'valtio'
+import { 
+  proxy, 
+  useSnapshot,
+} from 'valtio'
 
 // ** REACT Imports
 import {
   useEffect,
   useState,
   useRef,
-  Suspense
+  Suspense,
 } from 'react'
 
-// ** R3F Imports
+// ** REACT THREE Imports
 import {
   useThree,
   useFrame,
   useLoader,
 } from '@react-three/fiber'
 import {
-  Loader,
   useCursor,
   useGLTF,
   useFBX,
   useAnimations,
   useTexture,
-  // ContactShadows,
+  // Bounds, 
+  useBounds, // inside Model
 } from '@react-three/drei'
+
 // Three Loaders
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
@@ -54,14 +58,24 @@ import CoffeeCup from '#/lib/threed/components/examples/CoffeeCup/CoffeeCup'
 import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
+// ** SPINNER
+// import Spinner from '#/layout/ui/components/spinner'
+// ** CANVAS LOADER
+// import Loader from '@react-three/drei'
+// ** CANVAS HTML
+// import Html from '@react-three/drei'
+import { 
+  Html,
+  Loader,
+} from '@react-three/drei'
 
-// ==============================================================
+// ==========================================
 // ** VARIABLES
 
-const debug = true // false | true // ts: boolean
-const DEBUG = true // false | true // ts: boolean
+const debug = false // false | true // ts: boolean
+const DEBUG = false // false | true // ts: boolean
 
-// ==============================================================
+// ==========================================
 // ** ThreeD == Group of > Files of > Nodes of > 3DObjects
 // interface IThreeD {
 // ** TODO
@@ -153,16 +167,16 @@ const Model = ({
   // const snap = useSnapshot(modelVState)
 
   // **
-  console.debug(`%c====================================`, ccm.black)
-  console.debug('%c🖊️ Model props.threed', ccm.red, threed.name, threed)
-  // console.debug('%c🖊️ Model props.threed.name', ccm.red, threed.name)
-  // console.debug('%c🖊️ Model props.threed.group', ccm.red, threed.group)
-  // console.debug('%c🖊️ Model props.threed.file', ccm.red, threed.file)
-  console.debug(`%c====================================`, ccm.black)
-  // console.debug('%c🖊️ Model modelVState', ccm.red, modelVState)
-  // console.debug('%c🖊️ Model snap', ccm.red, snap)
-  // console.debug('Model props.sceneState', sceneState)
-  // console.debug('Model props.storeState', storeState)
+  // if (debug || DEBUG) console.debug(`%c====================================`, ccm.black)
+  if (debug || DEBUG) console.debug('%c🖊️ Model props.threed', ccm.red, threed.name, threed)
+  // if (debug || DEBUG) console.debug('%c🖊️ Model props.threed.name', ccm.red, threed.name)
+  // if (debug || DEBUG) console.debug('%c🖊️ Model props.threed.group', ccm.red, threed.group)
+  // if (debug || DEBUG) console.debug('%c🖊️ Model props.threed.file', ccm.red, threed.file)
+  // if (debug || DEBUG) console.debug(`%c====================================`, ccm.black)
+  // if (debug || DEBUG) console.debug('%c🖊️ Model modelVState', ccm.red, modelVState)
+  // if (debug || DEBUG) console.debug('%c🖊️ Model snap', ccm.red, snap)
+  // if (debug || DEBUG) console.debug('Model props.sceneState', sceneState)
+  // if (debug || DEBUG) console.debug('Model props.storeState', storeState)
 
   // set a default file to load for Model (for testing)
   // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
@@ -220,7 +234,7 @@ const Model = ({
     type: 'tbd', // fbx | gltf | obj | threed | threed_node | png | texture
     // ** decide file type from file extension (and other qualifiers)
     // const testExt = /\.(glb|gltf|fbx|obj|mtl|gif|jpe?g|tiff?|png|webp|bmp)$/i.test(fileUrl)
-    // console.debug('testExt', testExt)
+    // if (debug || DEBUG) console.debug('testExt', testExt)
     is: {
       // is Ready to go?
       isReadyForCanvas: false,
@@ -259,8 +273,8 @@ const Model = ({
   // fetch the file (GLTF, FBX, OBJ, etc)
   if (model.is.isSupported) {
 
-    console.debug('%c🌱 model.is.isSupported: true', ccm.darkgreen, model.name, model.file)
-    console.debug(`%c======================================`, ccm.darkgreen)
+    if (debug || DEBUG) console.debug('%c🌱 model.is.isSupported: true', ccm.darkgreen, model.name, model.file)
+    // if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkgreen)
     
     
     if (model.is.isObject3D) {
@@ -291,29 +305,29 @@ const Model = ({
           loader.manager.addHandler(/\.tga$/i, new TGALoader())
           // loader.manager.addHandler(/\.png$/i, new TextureLoader())
         })
-        console.debug('%c📐 FBX NODES: fbx', ccm.green, model.name, fbx)
-        console.debug(`%c======================================`, ccm.darkgreen)
+        if (debug || DEBUG) console.debug('%c📐 FBX NODES: fbx', ccm.green, model.name, fbx)
+        // if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkgreen)
         if (fbx) {
           // ** NODES
           // model.node = fbx
           model.nodes = fbx
-          // console.debug('RETURN ONLY NODE AS NODES: true', model.nodes)
+          // if (debug || DEBUG) console.debug('RETURN ONLY NODE AS NODES: true', model.nodes)
 
           if (model.texture) {
-            console.debug(`%c LOADING TEXTURE ...`, ccm.orangeAlert, model.texture)
+            if (debug || DEBUG) console.debug(`%c LOADING TEXTURE ...`, ccm.orangeAlert, model.texture)
             let texture = useTexture(TextureLoader, model.texture, loader => {
               loader.manager.addHandler(/\.tga$/i, new TGALoader())
               // loader.manager.addHandler(/\.png$/i, new TextureLoader())
             })
-            console.debug(`%c TEXTURE`, ccm.orangeAlert, texture)
+            if (debug || DEBUG) console.debug(`%c TEXTURE`, ccm.orangeAlert, texture)
           }
 
           // ** ANIMATIONS
           if (fbx.animations) {
-            console.debug('%c FBX animations', ccm.orangeAlert, fbx.animations)
+            if (debug || DEBUG) console.debug('%c FBX animations', ccm.orangeAlert, fbx.animations)
             // Extract animation actions
             const { ref, mixer, actions, names, clips } = useAnimations(fbx.animations)
-            // console.debug('FBX useAnimations', ref, mixer, actions, names, clips)
+            // if (debug || DEBUG) console.debug('FBX useAnimations', ref, mixer, actions, names, clips)
             model.ani.ref = ref
             model.ani.mixer = mixer
             model.ani.actions = actions
@@ -333,26 +347,26 @@ const Model = ({
         const gltf = useLoader(GLTFLoader, model.file) // , loader => {
           // loader.manager.addHandler(/\.tga$/i, new TGALoader())
         // })
-        // console.debug('%c📐 GLB NODES: gltf', ccm.greenAlert, model.name, gltf)
-        // console.debug(`%c======================================`, ccm.darkgreen)
+        // if (debug || DEBUG) console.debug('%c📐 GLB NODES: gltf', ccm.greenAlert, model.name, gltf)
+        // if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkgreen)
         if (gltf) {
           // ** NODES
           // if (gltf.nodes?.RootNode) {
           //   model.nodes = gltf.nodes.RootNode.children
-          //   console.debug('%c📐 RETURN RootNode CHILDREN NODES: true', ccm.orangeAlert, model.name, model.nodes)
-          //   console.debug(`%c======================================`, ccm.orange)
+          //   if (debug || DEBUG) console.debug('%c📐 RETURN RootNode CHILDREN NODES: true', ccm.orangeAlert, model.name, model.nodes)
+          //   if (debug || DEBUG) console.debug(`%c======================================`, ccm.orange)
           // }
           // else if (model.nodes[model.name]) {
           //   model.nodes[model.name] = gltf[model.name]
-          //   console.debug('%c📐 RETURN ONE NODE: true', ccm.orangeAlert, model.name, model.nodes[model.name])
-          //   console.debug(`%c======================================`, ccm.orange)
+          //   if (debug || DEBUG) console.debug('%c📐 RETURN ONE NODE: true', ccm.orangeAlert, model.name, model.nodes[model.name])
+          //   if (debug || DEBUG) console.debug(`%c======================================`, ccm.orange)
           // }
           // else
           if (gltf.nodes) {
             // let gltfAsArray = new Array()
             // gltfAsArray.push([...Array(gltf.nodes)])
             // for (const [key, value] of Object.entries(gltf.nodes))  {
-            //   console.debug(`key: ${key}, value: ${value}`)
+            //   if (debug || DEBUG) console.debug(`key: ${key}, value: ${value}`)
             //   gltfAsArray.push([key: value])
             // }
             // let gltfObjectParent = gltf
@@ -363,7 +377,7 @@ const Model = ({
             // let gltfAsArray = new Array()
             // let gltfObjectCount = 48 // maximum to return
             // gltfObjectKeys = Object.keys(gltfObject) // returns all keys [5446]
-            // // console.debug('%c📐 gltfObjectKeys', ccm.orangeAlert, gltfObjectKeys)
+            // // if (debug || DEBUG) console.debug('%c📐 gltfObjectKeys', ccm.orangeAlert, gltfObjectKeys)
             // let gltfObjectectAsArray = gltfObjectKeys.slice(0, gltfObjectCount).map((key, index) => {
             //   // let kvpair = {}
             //   // // kvpair[key] = gltfObject[key]
@@ -373,24 +387,24 @@ const Model = ({
             // })
             // gltfAsArray = objectAsArray
             // // model.nodes = gltfAsArray
-            // // console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
+            // // if (debug || DEBUG) console.debug('%c📐 gltfAsArray', ccm.orangeAlert, gltfAsArray)
             // // model.nodes = gltf.nodes
             // // model.nodes = gltf
-            console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.green, model.name, model.nodes)
-            console.debug(`%c======================================`, ccm.darkgreen)
+            if (debug || DEBUG) console.debug('%c📐 RETURN ALL GLTF NODES: default', ccm.green, model.name, model.nodes)
+            // if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkgreen)
           }
           else {
             model.nodes = gltf.nodes // []
-            console.debug('%c📐 RETURN ALL/BLANK NODES: default', ccm.redAlert, model.name, model.nodes)
-            console.debug(`%c======================================`, ccm.red)
+            if (debug || DEBUG) console.debug('%c📐 RETURN ALL/BLANK NODES: default', ccm.redAlert, model.name, model.nodes)
+            // if (debug || DEBUG) console.debug(`%c======================================`, ccm.red)
           }
 
           // ** ANIMATIONS
           if (gltf.animations) {
-            console.debug('%c GLTF animations', ccm.orangeAlert, gltf.animations)
+            if (debug || DEBUG) console.debug('%c GLTF animations', ccm.orangeAlert, gltf.animations)
             // Extract animation actions
             const { ref, mixer, actions, names, clips } = useAnimations(gltf.animations)
-            // console.debug('GLTF useAnimations', ref, mixer, actions, names, clips)
+            // if (debug || DEBUG) console.debug('GLTF useAnimations', ref, mixer, actions, names, clips)
             model.ani.ref = ref
             model.ani.mixer = mixer
             model.ani.actions = actions
@@ -406,45 +420,45 @@ const Model = ({
         model.type = 'obj'
         // const nodes = useOBJ(model.file)
         const obj = new OBJLoader().load(model.file)
-        console.debug('%c🌱 OBJ NODES: obj', ccm.orange, obj)
-        console.debug(`%c======================================`, ccm.orange)
+        if (debug || DEBUG) console.debug('%c🌱 OBJ NODES: obj', ccm.orange, obj)
+        // if (debug || DEBUG) console.debug(`%c======================================`, ccm.orange)
         if (obj) {
           model.nodes = obj
-          // console.debug('RETURN ONLY NODE AS NODES: true')
+          // if (debug || DEBUG) console.debug('RETURN ONLY NODE AS NODES: true')
         }
       }
 
       // finally, decide if ready for _r3f canvas
       if (model.nodes && model.is.isFBX) {
         model.is.isReadyForCanvas = true // true | false
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model.file)
-        console.debug(`%c===========================================================`, ccm.greenAlert)
+        if (debug || DEBUG) console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.greenAlert, model.name, model.file)
+        // if (debug || DEBUG) console.debug(`%c==========================================`, ccm.greenAlert)
       }
       else if (model.nodes && model.is.isGLTF) {
         model.is.isReadyForCanvas = true // true | false
-        console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.orangeAlert, model.name, model.file)
-        console.debug(`%c===========================================================`, ccm.orangeAlert)
+        if (debug || DEBUG) console.debug('%c✔️📐 THREED MODEL IS READY FOR CANVAS', ccm.orangeAlert, model.name, model.file)
+        // if (debug || DEBUG) console.debug(`%c==========================================`, ccm.orangeAlert)
       }
       else { // if (model.nodes && model.is.isOBJ) {
         model.is.isReadyForCanvas = false
-        console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model.name, model.file)
-        console.debug(`%c===========================================================`, ccm.redAlert)
+        if (debug || DEBUG) console.debug('%c✖️📐 THREED MODEL IS NOT READY FOR CANVAS', ccm.redAlert, model.name, model.file)
+        // if (debug || DEBUG) console.debug(`%c==========================================`, ccm.redAlert)
       }
     }
-    // console.debug(`%c======================================`, ccm.black)
+    // if (debug || DEBUG) console.debug(`%c======================================`, ccm.black)
   } else {
-    console.debug('%c✖️📐 MODEL.is.isSupported: false', ccm.redAlert, model.name)
-    console.debug(`%c===========================================================`, ccm.red)
+    if (debug || DEBUG) console.debug('%c✖️📐 MODEL.is.isSupported: false', ccm.redAlert, model.name)
+    // if (debug || DEBUG) console.debug(`%c==========================================`, ccm.red)
   }
-  console.debug('%cmodel', ccm.greenAlert, model)
-  console.debug(`%c======================================`, ccm.greenAlert)
+  if (debug || DEBUG) console.debug('%cmodel', ccm.greenAlert, model)
+  // if (debug || DEBUG) console.debug(`%c======================================`, ccm.greenAlert)
 
   const [index, setIndex] = useState(0)
-  console.debug(`%c======================================`, ccm.greenAlert)
+  // if (debug || DEBUG) console.debug(`%c======================================`, ccm.greenAlert)
 
-  // ==============================================================
-  // ==============================================================
-  // ==============================================================
+  // ==========================================
+  // ==========================================
+  // ==========================================
   // ** HOVER STATE (w support for ANIMATIONS ...)
 
   // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
@@ -461,13 +475,13 @@ const Model = ({
   // useEffect(
   //   () => void (document.body.style.cursor = isHovered ? 'pointer' : 'auto'), [isHovered])
 
-  // ==============================================================
-  // ==============================================================
-  // ==============================================================
+  // ==========================================
+  // ==========================================
+  // ==========================================
   // ** ANIMATIONS
 
   // let index = 0 // testing
-  // console.debug('index', index)
+  // if (debug || DEBUG) console.debug('index', index)
 
   // Change animation when the index changes
   useEffect(() => {
@@ -476,23 +490,23 @@ const Model = ({
       && model.ani.names[index] != undefined
       // && model.ani.actions[model.ani.names[index]] != undefined
     ) {
-      console.debug('index', index)
-      console.debug('model', model)
-      // console.debug('model.ani', model.ani)
-      // console.debug('model.ani.actions', model.ani.actions)
-      // console.debug('model.ani.names', model.ani.names)
-      // console.debug('model.ani.names[index]', model.ani.names[index])
-      // console.debug('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
-      // console.debug('model.ani.actions["Take 001"]', model.ani.actions["Take 001"]))
-      console.debug('Object.values(model.ani.actions)', Object.values(model.ani.actions))
-      console.debug('Object.keys(model.ani.actions)', Object.keys(model.ani.actions))
-      // console.debug('Object.keys(model.ani.actions)[index]', Object.keys(model.ani.actions)[index])
+      if (debug || DEBUG) console.debug('index', index)
+      if (debug || DEBUG) console.debug('model', model)
+      // if (debug || DEBUG) console.debug('model.ani', model.ani)
+      // if (debug || DEBUG) console.debug('model.ani.actions', model.ani.actions)
+      // if (debug || DEBUG) console.debug('model.ani.names', model.ani.names)
+      // if (debug || DEBUG) console.debug('model.ani.names[index]', model.ani.names[index])
+      // if (debug || DEBUG) console.debug('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
+      // if (debug || DEBUG) console.debug('model.ani.actions["Take 001"]', model.ani.actions["Take 001"]))
+      if (debug || DEBUG) console.debug('Object.values(model.ani.actions)', Object.values(model.ani.actions))
+      if (debug || DEBUG) console.debug('Object.keys(model.ani.actions)', Object.keys(model.ani.actions))
+      // if (debug || DEBUG) console.debug('Object.keys(model.ani.actions)[index]', Object.keys(model.ani.actions)[index])
       let theAnimation = Object.keys(model.ani.actions)[index]
       // if (model.ani.actions[model.ani.names[index]]) {
-        // console.debug('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
+        // if (debug || DEBUG) console.debug('model.ani.actions[model.ani.names[index]]', model.ani.actions[model.ani.names[index]])
       if (theAnimation) {
-        console.debug('Object.keys(model.ani.actions)[index] EXISTS', theAnimation)
-        console.debug('model.ani.actions[theAnimation]', model.ani.actions[theAnimation])
+        if (debug || DEBUG) console.debug('Object.keys(model.ani.actions)[index] EXISTS', theAnimation)
+        if (debug || DEBUG) console.debug('model.ani.actions[theAnimation]', model.ani.actions[theAnimation])
 
         try {
           // model.ani.actions[model.ani.names[index]]
@@ -526,7 +540,7 @@ const Model = ({
   }, [index])
   // }, [])
 
-  // ==============================================================
+  // ==========================================
   // ANIMATIONS (FOR ALL MODELS !!!)
 
   const getThreeDClock = useFrame(({ clock }) => {
@@ -536,14 +550,14 @@ const Model = ({
     return ThreeDClock
   })
 
-  // ==============================================================
+  // ==========================================
   // ** RETURN JSX
 
   if (model.is.isReadyForCanvas) {
-    // console.debug(`%c===========================================================`, ccm.blue)
-    // console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue, model.name) // , model
-    console.debug(`%c✔️📐 DRAW MODEL.nodes: ${model.type}`, ccm.blue, model.name, model.nodes)
-    console.debug(`%c===========================================================`, ccm.blue)
+    // if (debug || DEBUG) console.debug(`%c==========================================`, ccm.blue)
+    // if (debug || DEBUG) console.debug(`%c✔️📐 DRAW MODEL ${model.type}`, ccm.blue, model.name) // , model
+    if (debug || DEBUG) console.debug(`%c✔️📐 DRAW MODEL.nodes: ${model.type}`, ccm.blue, model.name, model.nodes)
+    // if (debug || DEBUG) console.debug(`%c==========================================`, ccm.blue)
 
 
     // ** FBX
@@ -579,8 +593,8 @@ const Model = ({
     // ** GLTF
     // return GLTF node
     else if (model.is.isGLTF) {
-      // console.debug('GLTF: model.nodes', model.name, model.nodes)
-      // console.debug('GLTF: model.nodes.scene', model.name, model.nodes.scene)
+      // if (debug || DEBUG) console.debug('GLTF: model.nodes', model.name, model.nodes)
+      // if (debug || DEBUG) console.debug('GLTF: model.nodes.scene', model.name, model.nodes.scene)
       return (
         // LOOP OVER NODE ARRAY TO RETURN MULTIPLE MESHES ([5000])
         <group
@@ -668,24 +682,24 @@ const Model = ({
         // onClick={(e) => (
         //   e.stopPropagation(),
         //   (modelVState.current = model.name),
-        //   console.debug('modelVState.current', model.name),
-        //   console.debug('snap.current', snap.current)
+        //   if (debug || DEBUG) console.debug('modelVState.current', model.name),
+        //   if (debug || DEBUG) console.debug('snap.current', snap.current)
         // )}
         // // If a click happened but this mesh wasn't hit we null out the target,
         // // This works because missed pointers fire before the actual hits
         // onPointerMissed={(e) => (
         //   e.type === 'click',
         //   (modelVState.current = null),
-        //   console.debug('modelVState.current', null),
-        //   console.debug('snap.current', snap.current)
+        //   if (debug || DEBUG) console.debug('modelVState.current', null),
+        //   if (debug || DEBUG) console.debug('snap.current', snap.current)
         // )}
         // // Right click cycles through the transform ThreeD.actionModes
         // onContextMenu={(e) =>
         //   snap.current === model.name &&
         //   (e.stopPropagation(),
         //   (modelVState.mode = (snap.mode + 1) % ThreeD.actionModes.length),
-        //   console.debug('modelVState.mode', modelVState.mode),
-        //   console.debug('snap.current', snap.current))
+        //   if (debug || DEBUG) console.debug('modelVState.mode', modelVState.mode),
+        //   if (debug || DEBUG) console.debug('snap.current', snap.current))
         // }
         // onPointerOver={(e) => (e.stopPropagation(), setIsHovered(true))}
         // onPointerOut={(e) => setIsHovered(false)}
@@ -710,9 +724,9 @@ function ThreeDControls() {
   // const storeState = undefined
   const sceneState = useThree((sceneState) => sceneState.scene)
   if (sceneState) {
-    if (debug || DEBUG) console.debug('%c sceneState to load to ThreeDCanvas', ccm.yellow, sceneState)
+    if (debug || DEBUG) if (debug || DEBUG) console.debug('%c sceneState to load to ThreeDCanvas', ccm.yellow, sceneState)
     if (sceneState.length) {
-      // if (debug) console.debug('sceneState.length', sceneState.length)
+      // if (debug) if (debug || DEBUG) console.debug('sceneState.length', sceneState.length)
     }
   }
 
@@ -795,35 +809,35 @@ function ThreeDControls() {
 
 // let loadNextAnim = function (loader) {
 //   let anim = anims.pop()
-//   // console.debug("-----------------------")
-//   // console.debug("anim-------------------")
-//   // console.debug(anim)
-//   // console.debug("-----------------------")
+//   // if (debug || DEBUG) console.debug("-----------------------")
+//   // if (debug || DEBUG) console.debug("anim-------------------")
+//   // if (debug || DEBUG) console.debug(anim)
+//   // if (debug || DEBUG) console.debug("-----------------------")
 //   loader.load( `${params.assetsPath}fbx/anims2/${anim}.fbx`, function(object) {
-//     // console.debug("-----------------------")
-//     // console.debug("object-----------------")
-//     // console.debug(object)
-//     // console.debug("-----------------------")
+//     // if (debug || DEBUG) console.debug("-----------------------")
+//     // if (debug || DEBUG) console.debug("object-----------------")
+//     // if (debug || DEBUG) console.debug(object)
+//     // if (debug || DEBUG) console.debug("-----------------------")
 //     animations[anim] = object.animations[0]
 //     if (anims.length > 0){
-//       // console.debug("-----------------------")
-//       // console.debug("anims.length-----------")
-//       // console.debug(anims.length)
-//       // console.debug("-----------------------")
-//       // console.debug("-----------------------")
-//       // console.debug("getAction()-----------")
-//       // console.debug(getAction())
-//       // console.debug("-----------------------")
-//       // console.debug("player.action----------")
-//       // console.debug(player.action)
-//       // console.debug("-----------------------")
+//       // if (debug || DEBUG) console.debug("-----------------------")
+//       // if (debug || DEBUG) console.debug("anims.length-----------")
+//       // if (debug || DEBUG) console.debug(anims.length)
+//       // if (debug || DEBUG) console.debug("-----------------------")
+//       // if (debug || DEBUG) console.debug("-----------------------")
+//       // if (debug || DEBUG) console.debug("getAction()-----------")
+//       // if (debug || DEBUG) console.debug(getAction())
+//       // if (debug || DEBUG) console.debug("-----------------------")
+//       // if (debug || DEBUG) console.debug("player.action----------")
+//       // if (debug || DEBUG) console.debug(player.action)
+//       // if (debug || DEBUG) console.debug("-----------------------")
 //       loadNextAnim(loader)
 //     }
 //     else {
-//       // console.debug("-----------------------")
-//       // console.debug("anims.length = 0-------")
-//       // console.debug(anims.length)
-//       // console.debug("-----------------------")
+//       // if (debug || DEBUG) console.debug("-----------------------")
+//       // if (debug || DEBUG) console.debug("anims.length = 0-------")
+//       // if (debug || DEBUG) console.debug(anims.length)
+//       // if (debug || DEBUG) console.debug("-----------------------")
 //       anims = []
 //       setAction("Idle")
 //       animate()
@@ -837,17 +851,17 @@ function ThreeDControls() {
 // function setAction(name) {
 // const action = player.mixer.clipAction( animations[name] )
 // action.time = 0
-// console.debug("-----------------------")
-// console.debug("animations-----------------")
-// console.debug(animations)
-// console.debug("-----------------------")
+// if (debug || DEBUG) console.debug("-----------------------")
+// if (debug || DEBUG) console.debug("animations-----------------")
+// if (debug || DEBUG) console.debug(animations)
+// if (debug || DEBUG) console.debug("-----------------------")
 // player.mixer.stopAllAction()
 // player.action = name
 // player.actionTime = Date.now()
-// // console.debug("-----------------------")
-// // console.debug("player-----------------")
-// // console.debug(player)
-// // console.debug("-----------------------")
+// // if (debug || DEBUG) console.debug("-----------------------")
+// // if (debug || DEBUG) console.debug("player-----------------")
+// // if (debug || DEBUG) console.debug(player)
+// // if (debug || DEBUG) console.debug("-----------------------")
 
 // action.fadeIn(0.5)
 // action.play()
@@ -870,10 +884,10 @@ function ThreeDControls() {
 // }
 
 // function movePlayer1(dt) {
-// // console.debug("-------------------------")
-// // console.debug("player.move.forward------")
-// // console.debug(player.move.forward)
-// // console.debug("-------------------------")
+// // if (debug || DEBUG) console.debug("-------------------------")
+// // if (debug || DEBUG) console.debug("player.move.forward------")
+// // if (debug || DEBUG) console.debug(player.move.forward)
+// // if (debug || DEBUG) console.debug("-------------------------")
 // if ( player.move.forward > 0 ) {
 //   const speed = ( player.action == "Running" ) ? 24 : 8
 //   player.object.translateZ( dt * speed )
@@ -1011,7 +1025,7 @@ function ThreeDControls() {
 //   // }
 // }
 
-// ===============================================================
+// ===========================================
 // EXAMPLE -- LOOP OVER ARRAY OF NODES TO CREATE INDIVIDUAL MODELS
 // **
 // interface IThreeD {
@@ -1030,14 +1044,14 @@ function ThreeDControls() {
 //   return (<Elements threeds={threedsArray} />)
 // }
 
-// ===============================================================
+// ===========================================
 // **
 const ThreeDModels = ({ threeds }) => {
   // **
-  // console.debug(`%c======================================`, ccm.darkredAlert)
-  // console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
-  // console.debug('%c🌱 threeds ==========================', ccm.darkredAlert)
-  // console.debug(`%c======================================`, ccm.darkredAlert)
+  // if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkredAlert)
+  // if (debug || DEBUG) console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
+  // if (debug || DEBUG) console.debug('%c🌱 threeds ==========================', ccm.darkredAlert)
+  // if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkredAlert)
   // **
 
   // ** TESTING
@@ -1045,7 +1059,13 @@ const ThreeDModels = ({ threeds }) => {
 
   // DEFAULT 0, RETURN BLANK JSX (no need to render this component)
   if (!threeds.length) {
-    return <></>
+    // return <></>
+    return (
+      <Html center>
+        {/* <Spinner /> */}
+        <Loader />
+      </Html>
+    )
   }
 
   // RENDER THIS COMPONENT
@@ -1057,10 +1077,11 @@ const ThreeDModels = ({ threeds }) => {
       {/* <CoffeeCup /> */}
       {/* <ThreeDControls /> */}
       {/* THREED: LOOP OVER NODES FOR EACH FILE = MODEL */}
-      <Suspense fallback={null}>
+      {/* <Suspense fallback={null}> */}
+      <>
         {threeds.map((_threed, index) => {
-          // console.debug('_threed', index + ': ', _threed)
-          // console.debug(`%c======================================`, ccm.red)
+          if (debug || DEBUG) console.debug('_threed', index + ': ', _threed)
+          // if (debug || DEBUG) console.debug(`%c======================================`, ccm.red)
           const threed = new ThreeD()
           threed.name = _threed.title
           threed.data = _threed
@@ -1072,38 +1093,45 @@ const ThreeDModels = ({ threeds }) => {
             <group
               // key={newUUID()}
               // key={index}
-              key={threed.group.group_id + '_' + newUUID()} // no duplicates
+              key={threed.group.group_id + '_' + index + '_' + newUUID()}
               // ref={ref}
+              // ref={threed.group.group_ref}
               // position={threed.group.group_position}
               // rotation={threed.group.group_rotation}
               // scale={threed.group.group_scale}
+              // quaternion={threed.group.group_quaternion}
             >
-            { _threed.files.nodes &&
-              _threed.files.nodes.map((_file, index) => {
-              console.debug('%c MODEL _file', ccm.redAlert, index + ': ', _file)
-              console.debug(`%c ======================================`, ccm.redAlert)
+              { _threed.files.nodes &&
+                _threed.files.nodes.map((_file, index) => {
+                if (debug || DEBUG) console.debug('%c MODEL _file', ccm.redAlert, index + ': ', _file)
+                // if (debug || DEBUG) console.debug(`%c ================================`, ccm.redAlert)
 
-              // const threed = new ThreeD()
-              // threed.name = _file.title
-              threed.file = _file
-              // threed.group = threed.group
+                // const threed = new ThreeD()
+                threed.name = _file.title
+                threed.file = _file
+                // threed.group = threed.group
 
-              return (
-                <RigidBody type='fixed'>
-                  <Model
-                    // key={_file.fileId} // no, duplicates
-                    // key={newUUID()}
-                    // key={index}
-                    key={index + '_' + newUUID()}
-                    threed={threed}
-                  />
-                </RigidBody>
-              )
-            })}
+                return (
+                  <RigidBody 
+                    type='fixed'
+                    key={'RigidBody' + index + '_' + newUUID()}
+                  >
+                    <Model
+                      // key={_file.fileId} // no, duplicates
+                      // key={newUUID()}
+                      // key={index}
+                      // key={index + '_' + newUUID()}
+                      key={threed.name + '_' + index + '_' + newUUID()}
+                      threed={threed}
+                    />
+                  </RigidBody>
+                )
+              })}
             </group>
           )
         })}
-      </Suspense>
+      </>
+      {/* </Suspense> */}
     </group>
   )
 }
