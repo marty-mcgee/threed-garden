@@ -294,15 +294,16 @@ const ThreeDExperience = forwardRef((
   // const camera = new THREE.PerspectiveCamera()
 
   // ** BOUNDS behavior
-  const bounds_fit = false
-  const bounds_clip = false
-  const bounds_observe = false
-  const bounds_margin = 1.2
-  const bounds_maxDuration = 1
-  const bounds_interpolateFunc0 = (t: number) => 1 - Math.exp(-5 * t) + 0.007 * t // Matches the default Bounds behavior
-  const bounds_interpolateFunc1 = (t: number) => -t * t * t + 2 * t * t           // Start smoothly, finish linearly
-  const bounds_interpolateFunc2 = (t: number) => -t * t * t + t * t + t           // Start linearly, finish smoothly
-
+  const configBounds = {
+    fit: false,
+    clip: false,
+    observe: false,
+    margin: 1.2,
+    maxDuration: 1,
+    interpolateFunc0: (t: number) => 1 - Math.exp(-5 * t) + 0.007 * t, // Matches the default Bounds behavior
+    interpolateFunc1: (t: number) => -t * t * t + 2 * t * t,           // Start smoothly, finish linearly
+    interpolateFunc2: (t: number) => -t * t * t + t * t + t,           // Start linearly, finish smoothly
+  }
 
   // ==========================================================
   // ** RETURN JSX
@@ -325,12 +326,12 @@ const ThreeDExperience = forwardRef((
         >
 
           <Bounds 
-            fit={bounds_fit} 
-            clip={bounds_clip}
-            observe={bounds_observe}
-            margin={bounds_margin}
-            maxDuration={bounds_maxDuration} 
-            interpolateFunc={bounds_interpolateFunc2}
+            fit={configBounds.fit} 
+            clip={configBounds.clip}
+            observe={configBounds.observe}
+            margin={configBounds.margin}
+            maxDuration={configBounds.maxDuration} 
+            interpolateFunc={configBounds.interpolateFunc2}
           >
           {/* BOUNDS */}
           <SelectToZoom>
