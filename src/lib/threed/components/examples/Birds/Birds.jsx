@@ -12,7 +12,7 @@ export default function Birds() {
         const bird = ['stork', 'parrot', 'flamingo'][
           Math.round(Math.random() * 2)
         ]
-        const speed = bird === 'stork' ? 0.5 : bird === 'flamingo' ? 2 : 5
+        const speed = bird === 'stork' ? 0.5 : bird === 'flamingo' ? 2.5 : 5
         const factor =
           bird === 'stork'
             ? 0.5 + Math.random()
