@@ -396,7 +396,7 @@ const ThreeDGarden = (): React.ReactNode => {
         >
 
           {/* THREED TOOLBAR */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_toolbar'
             // md={12}
@@ -409,7 +409,7 @@ const ThreeDGarden = (): React.ReactNode => {
             direction='column'
           >
             <ThreeDToolbar />
-          </Flex>
+          </Flex> */}
           {/* END: THREED TOOLBAR */}
           
           {/* THREED CANVAS VIEWER */}
