@@ -57,7 +57,7 @@ const DEBUG: boolean = false
 
 const ThreeDCanvasCamera = (
   { index = 0, canvasKey = '0', threeds = [] }: 
-  { index: number, canvasKey: string, threeds: object[] }
+  { index: number, canvasKey: string, threeds: Object[] }
 ) => {
   return (
     <Accordion.Item 

@@ -102,7 +102,7 @@ interface ViewerProps {
   enableAxesHelper: boolean,
   enableGridHelper: boolean,
   enablePerf: boolean, 
-  threeds: object[],
+  threeds: Object[],
   // ModelProps
   config: Config,
   setConfig: Function, // setConfig REACT.useState props cascading...

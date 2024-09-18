@@ -126,10 +126,16 @@ const SelectToZoom = ({ children }: { children: any }) => {
 }
 
 // ** RETURN ThreeDExperience
-// export default function ThreeDExperience({ threeds }: { threeds: object[]}, ref: any) {
+// export default function ThreeDExperience({ threeds }: { threeds: Object[]}, ref: any) {
 const ThreeDExperience = forwardRef((
-  { threeds, ...props }:
-  { threeds: object[]}, 
+  { 
+    threeds, 
+    ...props 
+  }:
+  { 
+    threeds: Object[],
+    // props
+  }, 
   ref: any
 ) => {
 
