@@ -373,7 +373,7 @@ const ThreeDExperience = forwardRef((
             </group> */}
 
             {/* THREED FARMBOT */}
-            <group rotation={[-Math.PI/2, 0, Math.PI]} scale={0.002} position={[-8, 0.665, -2]}>
+            <group rotation={[-Math.PI/2, 0, 0]} scale={0.002} position={[-8, 0.665, -2]}>
               <ThreeDFarmBotGarden 
                 // key={'ThreeDFarmBotGarden_' + newUUID()} 
               />
