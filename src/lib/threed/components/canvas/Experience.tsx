@@ -387,8 +387,8 @@ const ThreeDExperience = forwardRef((
             <KeyboardControls map={keyboardMap}>
 
               {/* CHARACTER MODEL */}
-              {/* <group key='character0' position={[-1.6, 0.396, -1.6]}>
-                <CharacterControls
+              <group key='character0' position={[-1.6, 0.396, -1.6]}>
+                {/* <CharacterControls
                   // debug={prefs.doWorldDebug}
                   debug={false}
                   // animated={prefs.doCharacterAnimation}
@@ -403,15 +403,15 @@ const ThreeDExperience = forwardRef((
                   // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
                   // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
                   // mode='FixedCamera'
-                >
+                > */}
                   <CharacterModelChicken />
-                </CharacterControls>
-              </group> */}
+                {/* </CharacterControls> */}
+              </group>
               {/* END: CHARACTER MODEL */}
               
               {/* CHARACTER MODEL */}
               <group key='character1' position={[0, 0.396, 0]}>
-                <CharacterControls
+                {/* <CharacterControls
                   // debug={prefs.doWorldDebug}
                   // // debug={false}
                   // // animated={prefs.doCharacterAnimation}
@@ -426,12 +426,12 @@ const ThreeDExperience = forwardRef((
                   // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
                   // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
                   // mode='FixedCamera'
-                >
+                > */}
                   {/* <CharacterModel /> */}
                   <CharacterModelFloating />
                   {/* <CharacterModelFarmerWomanFloating /> */}
                   {/* <CharacterModelFarmerManFloating /> */}
-                </CharacterControls>
+                {/* </CharacterControls> */}
               </group>
               {/* END: CHARACTER MODEL */}
             
