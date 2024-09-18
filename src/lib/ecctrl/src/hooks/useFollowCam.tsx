@@ -39,7 +39,7 @@ export const useFollowCam = function (props: UseFollowCamProps) {
   /** Camera collison detect setups */
   let smallestDistance = null;
   let cameraDistance = null;
-  let intersects = null;
+  let intersects: Object[] = [];
   let intersectObjects: THREE.Object3D[] = [];
   const cameraRayDir = useMemo(() => new THREE.Vector3(), []);
   const cameraRayOrigin = useMemo(() => new THREE.Vector3(), []);
@@ -200,7 +200,7 @@ export const useFollowCam = function (props: UseFollowCamProps) {
     // casting ray hit, if object in between character and camera,
     // change the smallestDistance to the ray hit toi
     // otherwise the smallestDistance is same as camera original position (originZDis)
-    intersects = camRayCast.intersectObjects(intersectObjects);
+    intersects = [] // camRayCast.intersectObjects(intersectObjects);
     if (intersects.length && intersects[0].distance <= -originZDis) {
       smallestDistance =
         -intersects[0].distance * camCollisionOffset < -0.7

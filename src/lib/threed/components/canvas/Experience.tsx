@@ -53,9 +53,9 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 // import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
 
 // ** THREED CHARACTER CONTROL Imports
-import CharacterControls from '~/src/lib/ecctrl/src-old/Ecctrl'
+// import CharacterControls from '~/src/lib/ecctrl/src-old/Ecctrl'
 // import CharacterControls from '~/src/lib/ecctrl/src-old/CharacterControls'
-// import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
+import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
 
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
