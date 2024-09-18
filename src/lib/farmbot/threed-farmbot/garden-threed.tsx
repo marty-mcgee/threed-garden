@@ -51,7 +51,7 @@ import {
 } from "./config-threed"
 
 import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
-console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
+// console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
 
 import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
 
@@ -62,15 +62,12 @@ import { LabEnvironment } from "./lab-threed"
 import { ZoomBeacons } from "./zoom_beacons-threed"
 import { VectorXyz, getCamera, getFocusFromUrlParams } from "./zoom_beacons_constants-threed"
 
-
-// HELPERS Imports
+// ** HELPER Imports
 // ** UUID Generator
 import { v4 as newUUID } from 'uuid'
 
-
-// ** CSS
+// ** CSS STYLE Imports
 import "./styles/garden.css"
-
 
 
 // const grassTexture = new TextureLoader()
@@ -88,11 +85,6 @@ import "./styles/garden.css"
 //       texture.wrapT = RepeatWrapping
 //       texture.repeat.set(16, 24)
 //     })
-
-
-
-
-
 
 
 interface ModelProps {
@@ -459,7 +451,7 @@ export const Garden = () => {
   return (
     <Model 
       {...common} 
-      key={'ThreeDFarmBotGardenModel_' + newUUID()}
+      // key={'ThreeDFarmBotGardenModel_' + newUUID()}
     />
   )
 }
