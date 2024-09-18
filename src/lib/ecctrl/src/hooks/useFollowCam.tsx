@@ -235,7 +235,7 @@ export const useFollowCam = function (props: UseFollowCamProps) {
   }, [])
 
    // If followCam is disabled set to disableFollowCamPos, target to disableFollowCamTarget
-   useEffect(() => {
+  useEffect(() => {
     if (disableFollowCam) {
       if (disableFollowCamPos) camera.position.set(disableFollowCamPos.x, disableFollowCamPos.y, disableFollowCamPos.z)
       if (disableFollowCamTarget) camera.lookAt(new THREE.Vector3(disableFollowCamTarget.x, disableFollowCamTarget.y, disableFollowCamTarget.z))
