@@ -388,7 +388,7 @@ const ThreeDExperience = forwardRef((
 
               {/* CHARACTER MODEL */}
               <group key='character0' position={[-1.6, 0.396, -1.6]}>
-                {/* <CharacterControls
+                <CharacterControls
                   // debug={prefs.doWorldDebug}
                   debug={false}
                   // animated={prefs.doCharacterAnimation}
@@ -403,9 +403,9 @@ const ThreeDExperience = forwardRef((
                   // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
                   // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
                   // mode='FixedCamera'
-                > */}
+                >
                   <CharacterModelChicken />
-                {/* </CharacterControls> */}
+                </CharacterControls>
               </group>
               {/* END: CHARACTER MODEL */}
               
@@ -428,7 +428,7 @@ const ThreeDExperience = forwardRef((
                   // mode='FixedCamera'
                 > */}
                   {/* <CharacterModel /> */}
-                  <CharacterModelFloating />
+                  {/* <CharacterModelFloating /> */}
                   {/* <CharacterModelFarmerWomanFloating /> */}
                   {/* <CharacterModelFarmerManFloating /> */}
                 {/* </CharacterControls> */}
