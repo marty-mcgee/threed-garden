@@ -201,14 +201,14 @@ export const useFollowCam = function (props: UseFollowCamProps) {
     // change the smallestDistance to the ray hit toi
     // otherwise the smallestDistance is same as camera original position (originZDis)
     intersects = [] // camRayCast.intersectObjects(intersectObjects);
-    if (intersects.length && intersects[0].distance <= -originZDis) {
-      smallestDistance =
-        -intersects[0].distance * camCollisionOffset < -0.7
-          ? -intersects[0].distance * camCollisionOffset
-          : -0.7;
-    } else {
+    // if (intersects.length && intersects[0].distance <= -originZDis) {
+    //   smallestDistance =
+    //     -intersects[0].distance * camCollisionOffset < -0.7
+    //       ? -intersects[0].distance * camCollisionOffset
+    //       : -0.7;
+    // } else {
       smallestDistance = originZDis;
-    }
+    // }
 
     // Rapier ray hit setup (optional)
     // rayHit = world.castRay(rayCast, rayLength + 1, true, null, null, character);

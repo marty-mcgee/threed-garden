@@ -159,21 +159,21 @@ export function ThreeDLevaControls() {
   const sizes = useControls(
     {
       sizes: folder({
-        rootWidth: '400px',
+        rootWidth: 'auto',
         controlWidth: '60%',
         numberInputMinWidth: '48px',
         scrubberWidth: '8px',
         scrubberHeight: '16px',
-        rowHeight: '24px',
-        folderHeight: '24px',
-        folderTitleHeight: '24px',
-        checkboxSize: '16px',
-        joystickWidth: '100px',
-        joystickHeight: '100px',
-        colorPickerWidth: '200px',
-        colorPickerHeight: '100px',
+        rowHeight: '16px',
+        folderHeight: '16px',
+        folderTitleHeight: '16px',
+        checkboxSize: '12px',
+        joystickWidth: '64px',
+        joystickHeight: '64px',
+        colorPickerWidth: '100px',
+        colorPickerHeight: '20px',
         monitorHeight: '64px',
-        titleBarHeight: '36px',
+        titleBarHeight: '16px',
       }),
     },
     { store: sizesStore }
@@ -237,7 +237,7 @@ export function ThreeDLevaControls() {
       title: { value: 'START HERE: Project Settings', render: (get) => get('Panel.showTitleBar') },
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
-      position: { value: { x: -160, y: -5 }, render: (get) => get('Panel.showTitleBar') },
+      position: { value: { x: 10, y: 60 }, render: (get) => get('Panel.showTitleBar') },
       // fullScreen: true,
       // oneLineLabels: false,
       // **
@@ -380,28 +380,33 @@ export function ThreeDLevaControls() {
   // ==========================================================
 
   return (
-    <>
     <Flex
-      style={{
-        // display: 'grid',
-        width: 300,
-        // gap: 10,
-        // paddingBottom: 0,
-        // marginRight: 0,
-        // float: 'left',
-        // background: '#181C20',
-        // position: 'fixed',
-        zIndex: 9999,
-        // top: 30,
-        // left: 10,
-      }}>
+      display={'column'}
+      width={'100%'}
+    >
+      <Flex
+        display={'column'}
+        style={{
+          // display: 'grid',
+          width: '420px',
+          // gap: 10,
+          // paddingBottom: 0,
+          // marginRight: 0,
+          // float: 'left',
+          // background: '#181C20',
+          position: 'fixed',
+          // zIndex: 9600,
+          top: 14,
+          left: -10,
+        }}
+      >
         <Leva
-          isRoot={true}
+          isRoot={false}
           titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
           hideTitleBar={false} // default = false. true hides the GUI header
           theme={theme} // you can pass a custom theme (see the styling section)
           collapsed={true} // default = false. true makes the GUI collapsed to start
-          fill={false} // default = false. true makes the pane fill the parent dom node it's rendered in
+          fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
           flat={false} // default = false. true removes border radius and shadow
           hidden={false} // default = false. true hides the GUI
           neverHide={true} // default = true. false allows hiding of the GUI
@@ -429,7 +434,8 @@ export function ThreeDLevaControls() {
         {/* <LevaPanel fill flat titleBar={false} store={fontWeightsStore} /> */}
         {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
       {/* </Box> */}
-    </>
+    
+    </Flex>
   )
 }
 
