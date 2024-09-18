@@ -183,7 +183,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   let floatingRayDebug = null;
   let slopeRayDebug = null;
   let autoBalanceForceDebug = null;
-  if (debug) {
+  if (false && debug) {
     // Character Controls
     characterControlsDebug = useControls(
       "Character Controls",

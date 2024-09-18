@@ -20,6 +20,7 @@ query GetPreferences {
       doWorldDebug
       doWorldTesting
       doWorldPhysics
+      doWorldControl
       doWorldUnfollowCam
       version
       # owner
