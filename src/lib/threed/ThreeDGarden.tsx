@@ -437,7 +437,7 @@ const ThreeDGarden = (): React.ReactNode => {
             style={{ 
               borderTop: '1px solid darkgreen' 
             }}
-            direction='column'
+            // direction='column'
           >
             <ThreeDControlPanels />
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
@@ -449,9 +449,9 @@ const ThreeDGarden = (): React.ReactNode => {
             // item
             id='threed_views'
             style={{ 
-              borderTop: '0px solid darkgreen' 
+              // borderTop: '0px solid darkgreen' 
             }}
-            direction='column'
+            // direction='column'
           >
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
@@ -465,9 +465,9 @@ const ThreeDGarden = (): React.ReactNode => {
             // item
             id='threed_modals'
             style={{ 
-              borderTop: '0px solid darkgreen' 
+              // borderTop: '0px solid darkgreen' 
             }}
-            direction='column'
+            // direction='column'
           >
             <ModalAbout />
             {/* <ModalModel3d /> */}
