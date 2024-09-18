@@ -160,20 +160,20 @@ export function ThreeDLevaControls() {
     {
       sizes: folder({
         rootWidth: 'auto',
-        controlWidth: '60%',
-        numberInputMinWidth: '48px',
-        scrubberWidth: '8px',
-        scrubberHeight: '16px',
+        controlWidth: '50%',
         rowHeight: '16px',
         folderHeight: '16px',
         folderTitleHeight: '16px',
+        titleBarHeight: '16px',
         checkboxSize: '12px',
         joystickWidth: '64px',
         joystickHeight: '64px',
         colorPickerWidth: '100px',
         colorPickerHeight: '20px',
         monitorHeight: '64px',
-        titleBarHeight: '16px',
+        numberInputMinWidth: '48px',
+        scrubberWidth: '8px',
+        scrubberHeight: '16px',
       }),
     },
     { store: sizesStore }
@@ -401,13 +401,13 @@ export function ThreeDLevaControls() {
         }}
       >
         <Leva
-          isRoot={false}
+          isRoot={true}
           titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
-          hideTitleBar={false} // default = false. true hides the GUI header
+          hideTitleBar={true} // default = false. true hides the GUI header
           theme={theme} // you can pass a custom theme (see the styling section)
           collapsed={true} // default = false. true makes the GUI collapsed to start
           fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
-          flat={false} // default = false. true removes border radius and shadow
+          flat={true} // default = false. true removes border radius and shadow
           hidden={false} // default = false. true hides the GUI
           neverHide={true} // default = true. false allows hiding of the GUI
           oneLineLabels={false} // default = false. true makes labels + fields on separate rows
