@@ -193,7 +193,7 @@ const Model = (props: ModelProps) => {
         position={new Vector3(
           threeSpace(plant.x, config.bedLengthOuter),
           threeSpace(plant.y, config.bedWidthOuter),
-          zZero(config) - config.soilHeight + plant.size / 2,
+          zZero(config) - config.soilHeight + plant.size / 200,
         )}
         // key={'ThreeDFarmBotGardenBillboard_' + newUUID()}
       >
@@ -203,13 +203,14 @@ const Model = (props: ModelProps) => {
             visible={alwaysShowLabels || i === hoveredPlant}
             renderOrder={2}
             material-depthTest={false}
-            fontSize={50}
-            position={[0, plant.size / 2 + 40, 0]}
+            fontSize={1}
+            position={[0, plant.size / 200 + 4, 0]}
             font={ASSETS.fonts.cabinBold}
             outlineColor={"black"}
-            outlineWidth={3}
-            outlineBlur={15}
+            outlineWidth={0.3}
+            outlineBlur={1.5}
             outlineOpacity={0.7}
+            key={'Text_' + newUUID()}
           >
             {plant.label}
           </Text>
@@ -221,7 +222,7 @@ const Model = (props: ModelProps) => {
             name={"" + i}
             transparent={true}
             renderOrder={1} 
-            // key={'Image_' + newUUID()}
+            key={'Icon_' + newUUID()}
           />
         }
       </Billboard>
@@ -282,7 +283,11 @@ const Model = (props: ModelProps) => {
     {/* END: THREED FARMBOT */}
     
     {/* 2D PLANTS (FARMBOT AVIF) */}
-    <group name={"plant-icon-preload"} visible={false}>
+    <group 
+      name={"plant-icon-preload"} 
+      visible={false}
+      key={'GroupPlantIconPreload_' + newUUID()} 
+    >
       {Object.values(PLANTS).map((plant, i) =>
         <Image 
           key={'Image_' + i + '_' + newUUID()} 
@@ -291,7 +296,11 @@ const Model = (props: ModelProps) => {
         />
       )}
     </group>
-    <group name={"plant-labels"} visible={!props.activeFocus}>
+    <group 
+      name={"plant-labels"} 
+      visible={!props.activeFocus}
+      key={'GroupPlantLabels_' + newUUID()} 
+    >
       {plants.map((plant, i) =>
         <Plant 
           key={'Plant_' + i + '_' + newUUID()} 
@@ -301,21 +310,21 @@ const Model = (props: ModelProps) => {
         />
       )}
     </group>
-    <group name={"plants"}
+    <group 
+      name={"plants"}
       visible={props.activeFocus != "Planter bed"}
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}
+      key={'GroupPlants_' + newUUID()} 
     >
       {plants.map((plant, i) =>
-        <>
-          <Plant 
-            key={'PlantImage_' + i + '_' + newUUID()} 
-            i={i} 
-            plant={plant}
-            // labelOnly={true} // TESTING|DEBUGGING
-          />
-        </>
+        <Plant 
+          key={'PlantImage_' + i + '_' + newUUID()} 
+          i={i} 
+          plant={plant}
+          // labelOnly={true} // TESTING|DEBUGGING
+        />
       )}
     </group>
     {/* END: 2D PLANTS (FARMBOT AVIF) */}
