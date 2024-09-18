@@ -370,8 +370,10 @@ const ThreeDGarden = (): React.ReactNode => {
   // ==========================================================
   // ** RETURN JSX
   return (
-    <Grid
+    <Suspense fallback={<Spinner />}>
+    <Flex
       id='threed_garden'
+      direction='column'
       // columns={{ initial: '1', md: '1' }} 
       width='100%'
       px='2'
@@ -383,10 +385,11 @@ const ThreeDGarden = (): React.ReactNode => {
       )}
 
       { isPrefsLoaded && (
-        <>
-        <Grid
+        
+        <Flex
           // container
           id='threed_container'
+          direction='column'
           width='100%'
           style={{
             border: '1px solid darkgreen',
@@ -474,7 +477,7 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* END: THREED MODALS */}
 
           {/* THREED FARMBOT */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_farmbot'
             style={{ 
@@ -483,69 +486,70 @@ const ThreeDGarden = (): React.ReactNode => {
             }}
             direction='column'
           >
-            {/* <ThreeDFarmBotMain /> */}
-          </Flex>
+            <ThreeDFarmBotMain />
+          </Flex> */}
           {/* END: THREED FARMBOT */}
 
           {/* [MM] HEY HEY HEY */}
           {/* <Text>{project_title}</Text> */}
           {/* [MM] HEY HEY HEY */}
-          
-        </Grid>
 
         
 
-        {/* THREED CONTROLS: ALL */}
-        <Grid
-          // item
-          id='threed_controls'
-          width='50%'
-          // direction='row'
-          style={{
-            // borderTop: '1px solid darkgreen',
-            // width: '360px',
-          }}
-        >
-
-          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-          {/* <Flex
+          {/* THREED CONTROLS: ALL */}
+          <Flex
             // item
-            id='threed_leva_controls'
+            id='threed_controls'
+            // width='50%'
+            // direction='row'
+            // direction='column'
             style={{
               // borderTop: '1px solid darkgreen',
-              // width: '100%',
-              width: '400px',
-              minWidth: '320px',
-              maxWidth: '480px',
             }}
-          > */}
-            <Box
-              width={'400px'}
-            >
-              <ThreeDLevaControls />
-            </Box>
-          {/* </Flex> */}
-          {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+          >
 
-          {/* THREED CLICK LOADERS */}
-          {/* <Flex
-            // item
-            id='threed_actions'
-          > */}
-            {/*
-            <Button onClick={() => loadNounData('project', [])}>load project</Button>
-            <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
-            <Button onClick={() => loadNounData('character', [])}>load character</Button>
-            <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-            */}
-          {/* </Flex> */}
-          {/* END THREED CLICK LOADERS */}
+            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+            {/* <Flex
+              // item
+              id='threed_leva_controls'
+              style={{
+                // borderTop: '1px solid darkgreen',
+                // width: '100%',
+                width: '400px',
+                minWidth: '320px',
+                maxWidth: '480px',
+              }}
+            > */}
+              {/* <Box
+                // width={'400px'}
+              > */}
+                <ThreeDLevaControls />
+              {/* </Box> */}
+            {/* </Flex> */}
+            {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
-        </Grid>
-        {/* END: THREED CONTROLS: ALL */}
-        </>
+            {/* THREED CLICK LOADERS */}
+            {/* <Flex
+              // item
+              id='threed_actions'
+            > */}
+              {/*
+              <Button onClick={() => loadNounData('project', [])}>load project</Button>
+              <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
+              <Button onClick={() => loadNounData('character', [])}>load character</Button>
+              <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
+              */}
+            {/* </Flex> */}
+            {/* END THREED CLICK LOADERS */}
+
+          </Flex>
+          {/* END: THREED CONTROLS: ALL */}
+          
+        </Flex>
+        
       )}
-    </Grid>
+    </Flex>
+    </Suspense>
   )
 }
 
