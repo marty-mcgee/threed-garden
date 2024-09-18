@@ -155,7 +155,7 @@ const Model = (props: ModelProps) => {
         nextX += (plant.spread / 2) + (nextPlant.spread / 2)
       }
     }
-    console.debug('Plant positions', positions)
+    // console.debug('Plant positions', positions)
     return positions
   }
   const plants = calculatePlantPositions()
