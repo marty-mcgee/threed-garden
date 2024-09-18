@@ -155,6 +155,7 @@ const Model = (props: ModelProps) => {
         nextX += (plant.spread / 2) + (nextPlant.spread / 2)
       }
     }
+    console.debug('Plant positions', positions)
     return positions
   }
   const plants = calculatePlantPositions()
@@ -193,7 +194,7 @@ const Model = (props: ModelProps) => {
         position={new Vector3(
           threeSpace(plant.x, config.bedLengthOuter),
           threeSpace(plant.y, config.bedWidthOuter),
-          zZero(config) - config.soilHeight + plant.size / 200,
+          zZero(config) - config.soilHeight + plant.size / 2,
         )}
         // key={'ThreeDFarmBotGardenBillboard_' + newUUID()}
       >
@@ -210,7 +211,7 @@ const Model = (props: ModelProps) => {
             outlineWidth={0.3}
             outlineBlur={1.5}
             outlineOpacity={0.7}
-            key={'Text_' + newUUID()}
+            // key={'Text_' + newUUID()}
           >
             {plant.label}
           </Text>
@@ -222,7 +223,7 @@ const Model = (props: ModelProps) => {
             name={"" + i}
             transparent={true}
             renderOrder={1} 
-            key={'Icon_' + newUUID()}
+            // key={'Icon_' + newUUID()}
           />
         }
       </Billboard>
@@ -283,10 +284,10 @@ const Model = (props: ModelProps) => {
     {/* END: THREED FARMBOT */}
     
     {/* 2D PLANTS (FARMBOT AVIF) */}
-    <group 
+    {/* <group 
       name={"plant-icon-preload"} 
       visible={false}
-      key={'GroupPlantIconPreload_' + newUUID()} 
+      // key={'GroupPlantIconPreload_' + newUUID()} 
     >
       {Object.values(PLANTS).map((plant, i) =>
         <Image 
@@ -299,7 +300,7 @@ const Model = (props: ModelProps) => {
     <group 
       name={"plant-labels"} 
       visible={!props.activeFocus}
-      key={'GroupPlantLabels_' + newUUID()} 
+      // key={'GroupPlantLabels_' + newUUID()} 
     >
       {plants.map((plant, i) =>
         <Plant 
@@ -316,7 +317,7 @@ const Model = (props: ModelProps) => {
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}
-      key={'GroupPlants_' + newUUID()} 
+      // key={'GroupPlants_' + newUUID()} 
     >
       {plants.map((plant, i) =>
         <Plant 
@@ -326,7 +327,7 @@ const Model = (props: ModelProps) => {
           // labelOnly={true} // TESTING|DEBUGGING
         />
       )}
-    </group>
+    </group> */}
     {/* END: 2D PLANTS (FARMBOT AVIF) */}
 
     {/* 3D TEXT LABEL */}
