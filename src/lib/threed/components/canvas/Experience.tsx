@@ -52,16 +52,10 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 // import Shoes from '#/lib/threed/components/examples/Shoes/App'
 // import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
 
-// ** THREED OBJECTS
-// import Camera from '#/lib/threed/components/canvas/Camera'
-// import Lights from '#/lib/threed/components/canvas/Lights'
-import Floor from '#/lib/threed/components/canvas/Floor'
-import Ground from '#/lib/threed/components/canvas/Ground'
-
 // ** THREED CHARACTER CONTROL Imports
-import CharacterControls from '~/src/lib/ecctrl-new/src/Ecctrl'
+import CharacterControls from '~/src/lib/ecctrl/src-old/Ecctrl'
+// import CharacterControls from '~/src/lib/ecctrl/src-old/CharacterControls'
 // import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
-// import CharacterControls from '~/src/lib/ecctrl/src/CharacterControls'
 
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
@@ -74,6 +68,12 @@ import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Cha
 // import CharacterModelFarmerBoyFloating from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
 // import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chicken'
+
+// ** THREED OBJECTS
+// import Lights from '#/lib/threed/components/canvas/Lights'
+// import Camera from '#/lib/threed/components/canvas/Camera'
+import Floor from '#/lib/threed/components/canvas/Floor'
+import Ground from '#/lib/threed/components/canvas/Ground'
 
 // ** THREED OBJECT INTERACTIVE EXAMPLES
 import Steps from '#/lib/threed/components/examples/Steps'
@@ -140,6 +140,7 @@ const ThreeDExperience = forwardRef((
   //   doWorldDebug: false,
   //   doWorldTesting: false,
   //   doWorldPhysics: false,
+  //   doWorldControl: false,
   //   doWorldUnfollowCam: false,
   // }
   // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
@@ -418,9 +419,10 @@ const ThreeDExperience = forwardRef((
                 <CharacterControls
                   // debug={prefs.doWorldDebug}
                   debug={false}
-                  // animated={prefs.doCharacterAnimation}
-                  animated={false}
+                  animated={prefs.doCharacterAnimation}
+                  // animated={false}
                   disableControl={prefs.doWorldControl}
+                  // disableControl={false}
                   disableFollowCam={prefs.doWorldUnfollowCam}
                   // disableFollowCam={true}
                   followLight={true}
