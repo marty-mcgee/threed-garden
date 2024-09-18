@@ -59,8 +59,8 @@ import Floor from '#/lib/threed/components/canvas/Floor'
 import Ground from '#/lib/threed/components/canvas/Ground'
 
 // ** THREED CHARACTER CONTROL Imports
-import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
-// import CharacterControls from '~/src/lib/ecctrl/src/EcctrlNew'
+import CharacterControls from '~/src/lib/ecctrl-new/src/Ecctrl'
+// import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
 // import CharacterControls from '~/src/lib/ecctrl/src/CharacterControls'
 
 // ** THREED CHARACTER MODEL Imports
@@ -158,6 +158,7 @@ const ThreeDExperience = forwardRef((
     doWorldDebug,
     doWorldTesting,
     doWorldPhysics,
+    doWorldControl, // disableControl
     doWorldUnfollowCam,
   }, setWorldPreferencesLeva] = useControls(
     'World Preferences',
@@ -173,6 +174,10 @@ const ThreeDExperience = forwardRef((
       doWorldPhysics: {
         label: 'Physics Debugger?',
         value: prefs.doWorldPhysics,
+      },
+      doWorldControl: {
+        label: 'Character Control?',
+        value: prefs.doWorldControl,
       },
       doWorldUnfollowCam: {
         label: 'Unfollow Character?',
@@ -250,6 +255,28 @@ const ThreeDExperience = forwardRef((
     // }
     if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldPhysics', ccm.greenAlert, prefs.doWorldPhysics)
   }, [prefs.doWorldPhysics])
+
+
+  // ==========================================================
+    // ** doWorldControl
+    // **
+    useEffect(() => {
+      let newData = {...prefs}
+      // if (debug) console.debug('%c preset newData', ccm.green, newData)
+      newData.doWorldControl = doWorldControl
+      // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
+      preferencesDataVar(newData)
+      // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+      if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldControl', ccm.yellowAlert, prefs.doWorldControl)
+    }, [doWorldControl])
+  
+    // **
+    useEffect(() => {
+      // if (prefs.doWorldControl != undefined) {
+        setWorldPreferencesLeva({ doWorldControl: prefs.doWorldControl })
+      // }
+      if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldControl', ccm.greenAlert, prefs.doWorldControl)
+    }, [prefs.doWorldControl])
 
 
 // ==========================================================
@@ -393,8 +420,9 @@ const ThreeDExperience = forwardRef((
                   debug={false}
                   // animated={prefs.doCharacterAnimation}
                   animated={false}
-                  // disableFollowCam={prefs.doWorldUnfollowCam}
-                  disableFollowCam={true}
+                  disableControl={prefs.doWorldControl}
+                  disableFollowCam={prefs.doWorldUnfollowCam}
+                  // disableFollowCam={true}
                   followLight={true}
                   // springK={2}
                   // dampingC={0.2}
