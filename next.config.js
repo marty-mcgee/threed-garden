@@ -59,7 +59,7 @@ const nextConfig = {
   // https://github.com/vercel/next.js/issues/36221
   // swcMinify: true, // true throws error at ErrorBoundary
 
-  transpilePackages: [
+  // transpilePackages: [
     // ** (ORDER DOES NOT MATTER)
 
     // '@radix-ui/themes',
@@ -80,7 +80,7 @@ const nextConfig = {
     // '@fullcalendar/timegrid',
 
     // 'react-github-btn',
-  ],
+  // ],
 
   async headers() {
     return [
