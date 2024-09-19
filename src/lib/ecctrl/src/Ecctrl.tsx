@@ -1,3 +1,18 @@
+
+// import React from "react";
+import { 
+  useEffect, 
+  useMemo, 
+  useState, 
+  useRef, 
+  forwardRef, 
+  type ForwardRefRenderFunction, 
+  type RefObject,
+  type ReactNode,  
+} from "react";
+
+import * as THREE from "three";
+
 import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import {
@@ -9,18 +24,16 @@ import {
   type RigidBodyProps,
   CylinderCollider,
 } from "@react-three/rapier";
-import { useEffect, useRef, useMemo, useState, type ReactNode, forwardRef, type ForwardRefRenderFunction, type RefObject } from "react";
-import * as THREE from "three";
-import { useControls } from "leva";
-import { useFollowCam } from "./hooks/useFollowCam";
-import { useGame } from "./stores/useGame";
-import { useJoystickControls } from "./stores/useJoystickControls";
 import type {
   Collider,
   RayColliderHit,
   Vector,
 } from "@dimforge/rapier3d-compat";
-import React from "react";
+
+import { useControls } from "leva";
+import { useFollowCam } from "./hooks/useFollowCam";
+import { useGame } from "./stores/useGame";
+import { useJoystickControls } from "./stores/useJoystickControls";
 
 export { EcctrlAnimation } from "./EcctrlAnimation";
 export { useFollowCam } from "./hooks/useFollowCam";
@@ -29,7 +42,8 @@ export { EcctrlJoystick } from "../src/EcctrlJoystick";
 export { useJoystickControls } from "./stores/useJoystickControls";
 
 // Retrieve current moving direction of the character
-const getMovingDirection = (forward: boolean,
+const getMovingDirection = (
+  forward: boolean,
   backward: boolean,
   leftward: boolean,
   rightward: boolean,
@@ -52,7 +66,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   capsuleHalfHeight = 0.35,
   capsuleRadius = 0.3,
   floatHeight = 0.3,
-  characterInitDir = 0, // in rad
+  characterInitDir = Math.PI/2, // 0, // in rad
   followLight = false,
   disableControl = false,
   disableFollowCam = false,
@@ -90,7 +104,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   moveImpulsePointY = 0.5,
   camFollowMult = 11,
   camLerpMult = 25,
-  fallingGravityScale = 2.5,
+  fallingGravityScale = 1, // 2.5,
   fallingMaxVel = -20,
   wakeUpDelay = 200,
   // Floating Ray setups
@@ -110,7 +124,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   slopeUpExtraForce = 0.1,
   slopeDownExtraForce = 0.2,
   // AutoBalance Force setups
-  autoBalance = true,
+  autoBalance = false, // true,
   autoBalanceSpringK = 0.3,
   autoBalanceDampingC = 0.03,
   autoBalanceSpringOnY = 0.5,
@@ -1455,7 +1469,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
     <RigidBody
       colliders={false}
       ref={characterRef}
-      position={props.position || [0, 5, 0]}
+      position={props.position || [0, 0.5, 0]}
       friction={props.friction || -0.5}
       onContactForce={(e) => bodyContactForce.set(e.totalForce.x, e.totalForce.y, e.totalForce.z)}
       onCollisionExit={() => bodyContactForce.set(0, 0, 0)}

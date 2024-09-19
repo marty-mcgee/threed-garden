@@ -342,191 +342,191 @@ const ThreeDExperience = forwardRef((
   // ==========================================================
   // ** RETURN JSX
   return (
+    <group ref={ref}>
 
-    <Suspense fallback={null}>
-      <group ref={ref}>
-
-        {/* EXAMPLES: BIRDS */}
-        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
-          <Birds />
-        </group>
-
-        {/* THREED USING PHYSICS */}
-        <Physics
-          debug={prefs.doWorldPhysics}
-          // debug={true}
-          timeStep={1/15} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
-          paused={pausedPhysics}
-        >
-
-          <Bounds 
-            fit={configBounds.fit} 
-            clip={configBounds.clip}
-            observe={configBounds.observe}
-            margin={configBounds.margin}
-            maxDuration={configBounds.maxDuration} 
-            interpolateFunc={configBounds.interpolateFunc2}
-          >
-          {/* BOUNDS */}
-          <SelectToZoom>
-
-            {/* baby steps */}
-            {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
-            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.1, 0]}>
-              <Steps />
-            </group>
-
-            {/* toddler steps (advanced degrees) */}
-            {/* Rough Plane */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
-              <RoughPlane />
-            </group> */}
-            {/* Slopes + Stairs */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
-              <Slopes />
-            </group> */}
-            {/* Rigid Body Objects */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
-              <RigidObjects />
-            </group> */}
-
-            {/* kinder steps (active objects) */}
-            {/* Floating Platforms */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0}>
-              <FloatingPlatforms />
-            </group> */}
-
-            {/* elementary steps (random active objects) */}
-            {/* Dynamic Platforms */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2.01, 0]}>
-              <DynamicPlatforms />
-            </group> */}
-            {/* Shot Cubes */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
-              <ShotCube />
-            </group> */}
-
-            {/* THREED FARMBOT */}
-            <group rotation={[-Math.PI/2, 0, 0]} scale={0.002} position={[-8, 0.665, -2]}>
-              <ThreeDFarmBotGarden 
-                // key={'ThreeDFarmBotGarden_' + newUUID()} 
-              />
-            </group>
-            {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
-              <ThreeDFarmBotMain />
-            </group> */}
-
-            {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
-            {/* CHARACTER MODELS */}
-            <KeyboardControls map={keyboardMap}>
-
-              {/* CHARACTER MODEL */}
-              {/* <group key='character0' position={[-1.6, 0.396, -1.6]}>
-                <CharacterControls
-                  // debug={prefs.doWorldDebug}
-                  debug={false}
-                  animated={prefs.doCharacterAnimation}
-                  // animated={false}
-                  disableControl={prefs.doWorldControl}
-                  // disableControl={false}
-                  disableFollowCam={prefs.doWorldUnfollowCam}
-                  // disableFollowCam={true}
-                  followLight={true}
-                  // springK={2}
-                  // dampingC={0.2}
-                  // autoBalanceSpringK={1.2}
-                  // autoBalanceDampingC={0.04}
-                  // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-                  // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-                  // mode='FixedCamera'
-                >
-                  <CharacterModelChicken />
-                </CharacterControls>
-              </group> */}
-              {/* END: CHARACTER MODEL */}
-              
-              {/* CHARACTER MODEL */}
-              <Suspense fallback={null}>
-              <group key='character1' position={[0, 0.396, 0]}>
-              <CharacterControls
-                  // debug={prefs.doWorldDebug}
-                  debug={false}
-                  animated={prefs.doCharacterAnimation}
-                  // animated={false}
-                  disableControl={prefs.doWorldControl}
-                  // disableControl={false}
-                  // disableFollowCam={prefs.doWorldUnfollowCam}
-                  disableFollowCam={true}
-                  followLight={false}
-                  // springK={2}
-                  // dampingC={0.2}
-                  // autoBalanceSpringK={1.2}
-                  // autoBalanceDampingC={0.04}
-                  // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-                  // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-                  // mode='FixedCamera'
-                >
-                  {/* <CharacterModel /> */}
-                  {/* <CharacterModelFloating /> */}
-                  <CharacterModelFarmerWomanFloating />
-                  {/* <CharacterModelFarmerManFloating /> */}
-                </CharacterControls>
-              </group>
-              </Suspense>
-              {/* END: CHARACTER MODEL */}
-            
-            </KeyboardControls>
-
-            {/* // import Map from './Map' */}
-            {/* <group 
-              rotation={[(-Math.PI/2) + 0, (-Math.PI/2), (-Math.PI/2) + 0]} 
-              scale={1.4} 
-              position={[0, 2, 26]}
-            >
-              <Map />
-            </group> */}
-              
-            {/* THREED MODELS as props.threeds */}
-            <group
-              key='threed_models_children'
-              scale={0.3}
-            >
-              <ThreeDModels
-                threeds={threeds} // threeds={{}}
-                // position={[ -4, 0, 0 ]}
-              />
-            </group>
-
-            {/* END: BOUNDS */}
-            </SelectToZoom>
-          </Bounds>
-
-          {/* ** FLOORS ** */}
-          {/* solid steps (levels, safety) */}
-          {/* The Floor (Plane 0) */}
-          <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-            <Floor color={'darkgreen'} opacity={0.6} />
-          </group>
-          {/* backup solid steps (levels[1+], safety) */}
-          {/* Sub-Floor[s] (Plane < 0) */}
-          {/* <SubFloor level={`${level[index]}`} /> */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-            <Floor color={'saddlebrown'} opacity={0.4} />
-          </group> */}
-          {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-              DEEP BELOW SEA LEVEL */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
-            <Floor color={'darkblue'} opacity={0.2} />
-          </group> */}
-          {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
-              DEEP DEEP DEEP BELOW SEA LEVEL */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
-            <Ground color={'black'} opacity={0.0} />
-          </group> */}
-
-        </Physics>
+      {/* EXAMPLES: BIRDS */}
+      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+        <Birds />
       </group>
-    </Suspense>
+
+      {/* THREED USING PHYSICS */}
+      <Physics
+        debug={prefs.doWorldPhysics}
+        // debug={true}
+        // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
+        paused={pausedPhysics}
+      >
+
+        <Bounds 
+          fit={configBounds.fit} 
+          clip={configBounds.clip}
+          observe={configBounds.observe}
+          margin={configBounds.margin}
+          maxDuration={configBounds.maxDuration} 
+          interpolateFunc={configBounds.interpolateFunc2}
+        >
+        {/* BOUNDS */}
+        <SelectToZoom>
+
+          {/* baby steps */}
+          {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
+          <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0.1, 0]}>
+            <Steps />
+          </group>
+
+          {/* toddler steps (advanced degrees) */}
+          {/* Rough Plane */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
+            <RoughPlane />
+          </group> */}
+          {/* Slopes + Stairs */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
+            <Slopes />
+          </group> */}
+          {/* Rigid Body Objects */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
+            <RigidObjects />
+          </group> */}
+
+          {/* kinder steps (active objects) */}
+          {/* Floating Platforms */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0}>
+            <FloatingPlatforms />
+          </group> */}
+
+          {/* elementary steps (random active objects) */}
+          {/* Dynamic Platforms */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2.01, 0]}>
+            <DynamicPlatforms />
+          </group> */}
+          {/* Shot Cubes */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
+            <ShotCube />
+          </group> */}
+
+          {/* THREED FARMBOT */}
+          <group rotation={[-Math.PI/2, 0, 0]} scale={0.002} position={[-8, 0.665, -2]}>
+            <ThreeDFarmBotGarden 
+              // key={'ThreeDFarmBotGarden_' + newUUID()} 
+            />
+          </group>
+          {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
+            <ThreeDFarmBotMain />
+          </group> */}
+
+          {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
+          {/* CHARACTER MODELS */}
+            {/* <Suspense fallback={null}> */}
+          <KeyboardControls map={keyboardMap}>
+
+            {/* CHARACTER MODEL */}
+            <group key='character0' position={[-1.6, 0.396, -1.6]}>
+              <CharacterControls
+                debug={prefs.doWorldDebug}
+                // debug={false}
+                animated={prefs.doCharacterAnimation}
+                // animated={false}
+                disableControl={prefs.doWorldControl}
+                // disableControl={false}
+                // disableFollowCam={prefs.doWorldUnfollowCam}
+                disableFollowCam={true}
+                followLight={true}
+                // springK={2}
+                // dampingC={0.2}
+                // autoBalanceSpringK={1.2}
+                // autoBalanceDampingC={0.04}
+                // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+                // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+                // mode='FixedCamera'
+                // mode='CameraBasedMovement'
+              >
+                <CharacterModelChicken />
+              </CharacterControls>
+            </group>
+            {/* END: CHARACTER MODEL */}
+            
+            {/* CHARACTER MODEL */}
+            <group key='character1' position={[0, 0.396, 0]}>
+              <CharacterControls
+                debug={prefs.doWorldDebug}
+                // debug={false}
+                animated={prefs.doCharacterAnimation}
+                // animated={false}
+                disableControl={prefs.doWorldControl}
+                // disableControl={false}
+                // disableFollowCam={prefs.doWorldUnfollowCam}
+                disableFollowCam={true}
+                followLight={true}
+                // springK={2}
+                // dampingC={0.2}
+                // autoBalanceSpringK={1.2}
+                // autoBalanceDampingC={0.04}
+                // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+                // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+                // mode='FixedCamera'
+                // mode='CameraBasedMovement'
+              >
+                {/* <CharacterModel /> */}
+                {/* <CharacterModelFloating /> */}
+                <CharacterModelFarmerWomanFloating />
+                {/* <CharacterModelFarmerManFloating /> */}
+              </CharacterControls>
+            </group>
+            {/* END: CHARACTER MODEL */}
+          
+          </KeyboardControls>
+            {/* </Suspense> */}
+
+          {/* // import Map from './Map' */}
+          <group 
+            rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
+            quaternion={[0,0,0,0]}
+            scale={1.4} 
+            position={[0, 2, -26]}
+          >
+            <Map />
+          </group>
+            
+          {/* THREED MODELS as props.threeds */}
+          <group
+            key='threed_models_children'
+            scale={0.3}
+          >
+            <ThreeDModels
+              threeds={threeds} // threeds={{}}
+              // position={[ -4, 0, 0 ]}
+            />
+          </group>
+
+          {/* END: BOUNDS */}
+          </SelectToZoom>
+        </Bounds>
+
+        {/* ** FLOORS ** */}
+        {/* solid steps (levels, safety) */}
+        {/* The Floor (Plane 0) */}
+        <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+          <Floor color={'darkgreen'} opacity={0.6} />
+        </group>
+        {/* backup solid steps (levels[1+], safety) */}
+        {/* Sub-Floor[s] (Plane < 0) */}
+        {/* <SubFloor level={`${level[index]}`} /> */}
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+          <Floor color={'saddlebrown'} opacity={0.4} />
+        </group> */}
+        {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
+            DEEP BELOW SEA LEVEL */}
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
+          <Floor color={'darkblue'} opacity={0.2} />
+        </group> */}
+        {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
+            DEEP DEEP DEEP BELOW SEA LEVEL */}
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
+          <Ground color={'black'} opacity={0.0} />
+        </group> */}
+
+      </Physics>
+    </group>
   )
 }
 ) // end forwardRef

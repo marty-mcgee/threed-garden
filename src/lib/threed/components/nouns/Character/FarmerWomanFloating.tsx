@@ -390,7 +390,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
   useEffect(() => {
     // Initialize animation set
-    initializeAnimationSet(animationSet)
+    initializeAnimationSet(animationSetNew)
   }, [])
 
   useEffect(() => {
@@ -504,7 +504,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
     }
     else if (!action) {
-      if (debug) console.debug(`%c FarmerWomanFloating: no action :|`, ccm.redAlert, word)
+      if (debug) console.debug(`%c FarmerWomanFloating: no action :|`, ccm.redAlert)
     }
     // [MM] END HEY HEY HEY
 
