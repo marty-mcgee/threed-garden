@@ -66,8 +66,8 @@ import { GLTF } from 'three-stdlib'
 import ccm from '#/lib/utils/console-colors'
 
 
-const debug: boolean = true
-const debugAnimation: boolean = true
+const debug: boolean = false
+const debugAnimation: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
@@ -468,7 +468,8 @@ export default function CharacterModel(props: CharacterModelProps) {
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
     // Play animation
-    let action = false // actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    const action = false // actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    // const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
 
     // [MM] HEY HEY HEY
     if (action) {
@@ -600,8 +601,8 @@ export default function CharacterModel(props: CharacterModelProps) {
         {...props}
         dispose={null}
         // scale={1.0}
-        scale={0.016}
-        position={[0, -0.64, 0]}
+        // scale={0.016}
+        // position={[0, -0.64, 0]}
         name='ThreeD_Animated_Character'
       >
 
@@ -648,14 +649,6 @@ export default function CharacterModel(props: CharacterModelProps) {
             receiveShadow
             castShadow
           />
-          {/* <skinnedMesh
-            name='SK_Chr_Farmer_Female_01'
-            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
-            material={materials.lambert2}
-            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
-            receiveShadow
-            castShadow
-          /> */}
 
           <Trail
             width={1.5}

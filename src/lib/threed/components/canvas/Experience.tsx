@@ -420,7 +420,7 @@ const ThreeDExperience = forwardRef((
           <KeyboardControls map={keyboardMap}>
 
             {/* CHARACTER MODEL */}
-            <group key='character0' position={[-1.6, 0.396, -1.6]}>
+            <group key='character0' position={[-1.6, 0.396 - 0.396, -1.6]}>
               <CharacterControls
                 debug={prefs.doWorldDebug}
                 // debug={false}
@@ -440,7 +440,7 @@ const ThreeDExperience = forwardRef((
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
               >
-                <CharacterModelChicken />
+                <CharacterModelChicken scale={2.0} />
               </CharacterControls>
             </group>
             {/* END: CHARACTER MODEL */}
@@ -468,7 +468,7 @@ const ThreeDExperience = forwardRef((
               >
                 {/* <CharacterModel /> */}
                 {/* <CharacterModelFloating /> */}
-                <CharacterModelFarmerWomanFloating />
+                <CharacterModelFarmerWomanFloating scale={0.016} />
                 {/* <CharacterModelFarmerManFloating /> */}
               </CharacterControls>
             </group>

@@ -65,23 +65,33 @@ import { GLTF } from 'three-stdlib'
 import ccm from '#/lib/utils/console-colors'
 
 
-const debug: boolean = false
+const debug: boolean = true
 const debugAnimation: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
-const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/Hen_HP.glb'
+// const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/Hen_HP.glb'
+const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/Chicken-Red-Hen.glb'
 const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/textures/Hen&Chicken_A.png'
 
 
 // ** TYPES for this GLTF
 // **
+// type GLTFResult = GLTF & {
+//   nodes: {
+//     Hen_HP: THREE.Mesh
+//     skeleton: THREE.Skeleton
+//   }
+//   materials: {
+//     lambert2: THREE.MeshStandardMaterial
+//   }
+// }
 type GLTFResult = GLTF & {
   nodes: {
-    Hen_HP: THREE.Mesh
+    Hen_HP002: THREE.Mesh
   }
   materials: {
-    lambert2: THREE.MeshStandardMaterial
+    Material: THREE.MeshStandardMaterial
   }
 }
 // **
@@ -147,7 +157,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
   gradientMapTexture.minFilter = THREE.NearestFilter
   gradientMapTexture.magFilter = THREE.NearestFilter
-  gradientMapTexture.generateMipmaps = false
+  gradientMapTexture.generateMipmaps = true
 
   /**
    * Prepare Hands+Body Refs+Memos for actions[action4]
@@ -212,23 +222,23 @@ export default function CharacterModel(props: CharacterModelProps) {
   /**
    * Prepare replacing materials
    */
-  const meshToonMaterial = useMemo(
-    () =>
-      new THREE.MeshToonMaterial({
-        color: prefs.characterMainColor,
-        gradientMap: gradientMapTexture,
-        transparent: true,
-      }),
-    [prefs.characterMainColor]
-  )
-  const outlineMaterial = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color: prefs.characterOutlineColor,
-        transparent: true,
-      }),
-    [prefs.characterOutlineColor]
-  )
+  // const meshToonMaterial = useMemo(
+  //   () =>
+  //     new THREE.MeshToonMaterial({
+  //       color: prefs.characterMainColor,
+  //       gradientMap: gradientMapTexture,
+  //       transparent: true,
+  //     }),
+  //   [prefs.characterMainColor]
+  // )
+  // const outlineMaterial = useMemo(
+  //   () =>
+  //     new THREE.MeshBasicMaterial({
+  //       color: prefs.characterOutlineColor,
+  //       transparent: true,
+  //     }),
+  //   [prefs.characterOutlineColor]
+  // )
   // const trailMaterial = useMemo(
   //   () =>
   //     new THREE.MeshToonMaterial({
@@ -336,7 +346,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
   useEffect(() => {
     // Initialize animation set
-    initializeAnimationSet(animationSet)
+    initializeAnimationSet(animationSetNew)
   }, [])
 
   useEffect(() => {
@@ -412,7 +422,8 @@ export default function CharacterModel(props: CharacterModelProps) {
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
     // Play animation
-    const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    const action = false // actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    // const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
 
     // [MM] HEY HEY HEY
     if (action) {
@@ -448,7 +459,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
     }
     else if (!action) {
-      if (debug) console.debug(`%c Chicken: no action :|`, ccm.darkgrayAlert, word)
+      if (debug) console.debug(`%c Chicken: no action :|`, ccm.darkredAlert)
     }
     // [MM] END HEY HEY HEY
 
@@ -543,10 +554,10 @@ export default function CharacterModel(props: CharacterModelProps) {
         ref={group}
         {...props}
         dispose={null}
-        // scale={1.0}
-        scale={0.024}
-        position={[0, -0.64, 0]}
-        name='ThreeD_Animated_Character'
+        // scale={2.0}
+        // scale={0.024}
+        // position={[0, 0, 0]}
+        name='ThreeD_Animated_Character_Chicken'
       >
 
         {/* CUSTOM ANIMATION 'PUNCH EFFECT' */}
@@ -574,19 +585,31 @@ export default function CharacterModel(props: CharacterModelProps) {
             name='Hen_HP'
             geometry={nodes.Hen_HP.geometry}
             // material={materials.lambert2}
-            material={nodes.Hen_HP.material}
-            // skeleton={nodes.Hen_HP.skeleton}
+            // material={nodes.Hen_HP.material}
+            material={meshToonMaterial}
+            // skeleton={nodes.Hen_HP}
+            // skeleton={nodes.skeleton}
+            skeleton={nodes.Hen_HP}
             receiveShadow
             castShadow
           /> */}
-          <mesh
+          {/* <mesh
             name="Hen_HP"
             castShadow
             receiveShadow
             geometry={nodes.Hen_HP.geometry}
             material={nodes.Hen_HP.material}
+          /> */}
+          <mesh
+            name="Hen_HP002"
+            castShadow
+            receiveShadow
+            geometry={nodes.Hen_HP002.geometry}
+            material={materials.Material}
+            rotation={[Math.PI / 2, 0, 0]}
           />
 
+          { true && 
           <Trail
             width={1.5}
             color={prefs.characterTrailColor}
@@ -594,8 +617,10 @@ export default function CharacterModel(props: CharacterModelProps) {
             decay={2}
             attenuation={(width) => width}
           >
-            <primitive object={nodes.Hen_HP} />
+            {/* <primitive object={nodes.Hen_HP} /> */}
+            <primitive object={nodes.Hen_HP002} />
           </Trail>
+          }
 
           {/* <group name='Root'>
             <group name='Pelvis_$AssimpFbx$_Translation' position={[0, 87.628, 0]}>
