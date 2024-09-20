@@ -8,7 +8,7 @@ export default function Footer() {
       id='ThreeDAppFooter'
       // removed className='w-full'
       className='flex flex-row space-x-2 text-xs mr-2 items-center'
-      style={{position: 'absolute', bottom: '8px', left: '8px', }}
+      style={{position: 'absolute', bottom: '8px', left: '6px', }}
     >
       {/* <CustomLink href='https://github.com/marty-mcgee/threed-garden/#readme' style={{color: 'gray'}}>
         Documentation

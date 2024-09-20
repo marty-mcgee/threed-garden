@@ -1,9 +1,9 @@
-// @ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
+// @ ts-nocheck /* OR @ ts-ignore OR @ ts-expect-error */
 // 'use client'
 // ==========================================================
 // RESOURCES
 
-// ** APOLLO Imports (NOT HERE?, preferably)
+// ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
 import { preferencesDataVar } from '#/lib/stores/apollo'
 
@@ -21,6 +21,15 @@ import {
 
 // ** THREE Imports
 import * as THREE from 'three'
+
+// ** GLTF to JSX
+// import * as THREE from 'three'
+// import React, { useRef } from 'react'
+// import { useGLTF, useAnimations } from '@react-three/drei'
+import { GLTF } from 'three-stdlib'
+
+// ** TYPES Imports
+import type { GLTF as GLTFType } from 'three/examples/jsm/loaders/GLTFLoader'
 
 // ** REACT-THREE Imports
 import { useFrame } from '@react-three/fiber'
@@ -44,19 +53,10 @@ import {
   vec3,
 } from '@react-three/rapier'
 
-// ** TYPES Imports
-import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
-
 // ** ECCRTL CHARACTER ANIMATION
 import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
 // ** ECCRTL ZUSTAND STATE
 import { useGame } from '#/lib/ecctrl/src/stores/useGame'
-
-// ** GLTF to JSX
-// import * as THREE from 'three'
-// import React, { useRef } from 'react'
-// import { useGLTF, useAnimations } from '@react-three/drei'
-import { GLTF } from 'three-stdlib'
 
 // ** HELPER Imports
 // import { Perf } from 'r3f-perf'
@@ -86,7 +86,7 @@ const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/
 //     lambert2: THREE.MeshStandardMaterial
 //   }
 // }
-type GLTFResult = GLTF & {
+type GLTFResult = GLTFType & {
   nodes: {
     Hen_HP002: THREE.Mesh
   }
@@ -126,16 +126,9 @@ export default function CharacterModel(props: CharacterModelProps) {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
-  // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-  // let prefs = {
-  //   doAutoLoadData: true,
-  //   doCharacterAnimation: true,
-  //   characterMainColor: 'mediumslateblue',
-  //   characterOutlineColor: 'black',
-  //   characterTrailColor: 'violet',
-  // }
-  // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
+  // console.debug(`%c CHARACTER MODEL: APOLLO prefs`, ccm.orangeAlert, prefs)
 
+  // ** TESTING instances of character model
   // const instances = useContext(context)
 
   const group = useRef<THREE.Group>()
@@ -149,7 +142,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   }
   if (debug) console.debug(`%c nodes, materials, animations`, ccm.yellowAlert, nodes, materials, animations)
 
-  // const { actions } = useAnimations(animations, group)
+  // @ts-expect-error // TODO: match Type GLTFActions
   const { actions } = useAnimations<GLTFActions>(animations, group)
   if (debug) console.debug(`%c animations.actions, group`, ccm.yellowAlert, actions, materials, group)
 
@@ -329,19 +322,20 @@ export default function CharacterModel(props: CharacterModelProps) {
     action3:  'Pointing Gesture',
     action4:  'Pointing',
   }
-  const animationSet = {
-    idle: 'Idle',
-    walk: 'Walk',
-    run: 'Run',
-    jump: 'Jump_Start',
-    jumpIdle: 'Jump_Idle',
-    jumpLand: 'Jump_Land',
-    fall: 'Climbing', // This is for falling from high sky
-    action1: 'Wave',
-    action2: 'Dance',
-    action3: 'Cheer',
-    action4: 'Attack(1h)',
-  }
+  // const animationSet = {
+  //   idle: 'Idle',
+  //   walk: 'Walk',
+  //   run: 'Run',
+  //   jump: 'Jump_Start',
+  //   jumpIdle: 'Jump_Idle',
+  //   jumpLand: 'Jump_Land',
+  //   fall: 'Climbing', // This is for falling from high sky
+  //   action1: 'Wave',
+  //   action2: 'Dance',
+  //   action3: 'Cheer',
+  //   action4: 'Attack(1h)',
+  // }
+  const animationSet = animationSetNew
   // console.debug('animationSet', animationSet)
 
   useEffect(() => {
@@ -367,9 +361,9 @@ export default function CharacterModel(props: CharacterModelProps) {
   useFrame(() => {
 
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
-    const wordX: string = group.current.getWorldPosition(bodyPosition).x
-    const wordY: string = group.current.getWorldPosition(bodyPosition).y
-    const wordZ: string = group.current.getWorldPosition(bodyPosition).z
+    const wordX: string = group.current.getWorldPosition(bodyPosition).x.toString()
+    const wordY: string = group.current.getWorldPosition(bodyPosition).y.toString()
+    const wordZ: string = group.current.getWorldPosition(bodyPosition).z.toString()
     if (debugAnimation) {
       // console.debug(`%c Chicken: useFrame :(`, ccm.redAlert, word)
       if (debug) console.debug(`%c Chicken: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
@@ -422,8 +416,9 @@ export default function CharacterModel(props: CharacterModelProps) {
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
     // Play animation
-    const action = false // actions[curAnimation ? curAnimation : animationSet.jumpIdle]
-    // const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    // @ts-expect-error // TODO: ???
+    const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    // const action = false
 
     // [MM] HEY HEY HEY
     if (action) {
@@ -612,7 +607,8 @@ export default function CharacterModel(props: CharacterModelProps) {
           { true && 
           <Trail
             width={1.5}
-            color={prefs.characterTrailColor}
+            // color={prefs.characterTrailColor}
+            color={'violet'}
             length={3}
             decay={2}
             attenuation={(width) => width}
