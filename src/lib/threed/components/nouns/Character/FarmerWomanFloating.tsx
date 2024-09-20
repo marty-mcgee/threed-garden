@@ -65,8 +65,8 @@ import { GLTF } from 'three-stdlib'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-
-const debug: boolean = false
+// ** DEBUG
+const debug: boolean = true
 const debugAnimation: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
@@ -373,19 +373,20 @@ export default function CharacterModel(props: CharacterModelProps) {
     action3:  'Pointing Gesture',
     action4:  'Pointing',
   }
-  const animationSet = {
-    idle: 'Idle',
-    walk: 'Walk',
-    run: 'Run',
-    jump: 'Jump_Start',
-    jumpIdle: 'Jump_Idle',
-    jumpLand: 'Jump_Land',
-    fall: 'Climbing', // This is for falling from high sky
-    action1: 'Wave',
-    action2: 'Dance',
-    action3: 'Cheer',
-    action4: 'Attack(1h)',
-  }
+  // const animationSet = {
+  //   idle: 'Idle',
+  //   walk: 'Walk',
+  //   run: 'Run',
+  //   jump: 'Jump_Start',
+  //   jumpIdle: 'Jump_Idle',
+  //   jumpLand: 'Jump_Land',
+  //   fall: 'Climbing', // This is for falling from high sky
+  //   action1: 'Wave',
+  //   action2: 'Dance',
+  //   action3: 'Cheer',
+  //   action4: 'Attack(1h)',
+  // }
+  const animationSet = animationSetNew
   // console.debug('animationSet', animationSet)
 
   useEffect(() => {
@@ -468,8 +469,8 @@ export default function CharacterModel(props: CharacterModelProps) {
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
     // Play animation
-    const action = false // actions[curAnimation ? curAnimation : animationSet.jumpIdle]
-    // const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    // const action = false
 
     // [MM] HEY HEY HEY
     if (action) {
