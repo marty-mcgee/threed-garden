@@ -835,13 +835,13 @@ export const preferencesDataVar = makeVar(
   {
     // user prefs
     ownerId: 1,
-    version: '0.0.0',
+    version: '0.0.1',
     doAutoLoadData: false, // boolean: false | true
     doAutoRotate: false, // boolean: false | true
     // project prefs
     projectName: 'client should never see this string', // string: ''
     // scene prefs
-    environmentPreset: 'warehouse', // default (client should never see this)
+    environmentPreset: 'forest', // default (client should never see this)
     environmentBgBlur: 0.20, // default (our chosen maximum blur)
     // character prefs
     doCharacterAnimation: true, // boolean: false | true
@@ -849,6 +849,7 @@ export const preferencesDataVar = makeVar(
     doWorldDebug: false, // boolean: false | true
     doWorldTesting: false, // boolean: false | true
     doWorldPhysics: false, // boolean: false | true
+    doWorldControl: false, // boolean: false | true
     doWorldUnfollowCam: false, // boolean: false | true
     setPreferencesDataVar: () => {}, // function: set properties of "this"
     setUserPreferencesDataVar: () => {}, // function: set properties of "this"

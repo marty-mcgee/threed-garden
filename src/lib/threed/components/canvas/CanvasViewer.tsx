@@ -57,7 +57,7 @@ const DEBUG: boolean = false
 
 const ThreeDCanvasCamera = (
   { index = 0, canvasKey = '0', threeds = [] }: 
-  { index: number, canvasKey: string, threeds: object[] }
+  { index: number, canvasKey: string, threeds: Object[] }
 ) => {
   return (
     <Accordion.Item 
@@ -108,7 +108,7 @@ const ThreeDCanvasCamera = (
         style={{ 
           // borderTop: '1px solid darkgreen',
           // height: '100%',
-          height: '48vh',
+          height: '60vh',
           // minHeight: '40%',
           // maxHeight: '40vh',
           // width: '100%',
@@ -239,17 +239,17 @@ export const ThreeDCanvasViewer = () => {
           threeds={threeds} 
         />
         {/* THREED CANVAS 1 : CAMERA 2 */}
-        <ThreeDCanvasCamera 
+        {/* <ThreeDCanvasCamera 
           index={2} 
           canvasKey={'1'}
           threeds={threeds} 
-        />
+        /> */}
         {/* THREED CANVAS 1 : CAMERA 3 */}
-        <ThreeDCanvasCamera 
+        {/* <ThreeDCanvasCamera 
           index={3} 
           canvasKey={'1'}
           threeds={threeds}
-        />
+        /> */}
         {/**/}
       </Accordion.Root>
 

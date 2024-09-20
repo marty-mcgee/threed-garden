@@ -102,7 +102,7 @@ interface ViewerProps {
   enableAxesHelper: boolean,
   enableGridHelper: boolean,
   enablePerf: boolean, 
-  threeds: object[],
+  threeds: Object[],
   // ModelProps
   config: Config,
   setConfig: Function, // setConfig REACT.useState props cascading...
@@ -305,10 +305,10 @@ const ThreeDExperienceViewer = forwardRef((
               args={[320, 320]} // x = 20rem, z = 20rem
               sectionColor={'black'}
               cellColor={'black'}
-              position={[0, -8, 0]} // sea level?
-              userData={{
-                camExcludeCollision: true, // collide by camera ray? true | false
-              }}
+              position={[0, -1, 0]} // sea level?
+              // userData={{
+              //   camExcludeCollision: true, // collide by camera ray? true | false
+              // }}
             />
           )}
 
@@ -327,16 +327,14 @@ const ThreeDExperienceViewer = forwardRef((
           {/* <ThreeDExperienceNew /> */}
 
           {/* SHADOW EFFECTS */}
-          {/* 
-            <ContactShadows
-              position={[0, -1.4, 0]}
-              opacity={0.75}
-              scale={10}
-              blur={2.5}
-              far={4}
-            />
-            <BakeShadows /> 
-          */}
+          {/* <ContactShadows
+            // position={[0, 0, 0]}
+            // opacity={0.75}
+            // scale={10}
+            // blur={2.5}
+            // far={4}
+          /> */}
+          {/* <BakeShadows /> */}
 
           {/* Transform Model using TransformControls */}
           {/*
@@ -366,7 +364,7 @@ const ThreeDExperienceViewer = forwardRef((
               <OrbitControls
                 makeDefault
                 minDistance={0.25}
-                maxDistance={640}
+                maxDistance={480}
                 // // minZoom={10}
                 // // maxZoom={20}
                 // // minAzimuthAngle={-Math.PI / 4}

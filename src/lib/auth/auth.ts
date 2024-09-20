@@ -14,7 +14,7 @@ import type { NextAuthConfig } from 'next-auth'
 
 export const config = {
   theme: {
-    logo: '/favicon/apple-touch-icon.png',
+    logo: '/favicon/favicon.png',
   },
   providers: [
     // Apple,

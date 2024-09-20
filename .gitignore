@@ -80,6 +80,7 @@ src/lib/farmbot/farmbot-3d-demo-react
 src/app/participate/character-control
 # # ecctrl-new
 src/lib/ecctrl-new
+src/lib/ecctrl/src-old
 
 # # ai
 src/app/ai
