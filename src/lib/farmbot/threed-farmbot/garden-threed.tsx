@@ -51,7 +51,7 @@ import {
 } from "./config-threed"
 
 import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
-console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
+// console.debug('ASSETS, GARDENS, PLANTS', ASSETS, GARDENS, PLANTS)
 
 import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
 
@@ -62,15 +62,12 @@ import { LabEnvironment } from "./lab-threed"
 import { ZoomBeacons } from "./zoom_beacons-threed"
 import { VectorXyz, getCamera, getFocusFromUrlParams } from "./zoom_beacons_constants-threed"
 
-
-// HELPERS Imports
+// ** HELPER Imports
 // ** UUID Generator
 import { v4 as newUUID } from 'uuid'
 
-
-// ** CSS
+// ** CSS STYLE Imports
 import "./styles/garden.css"
-
 
 
 // const grassTexture = new TextureLoader()
@@ -88,11 +85,6 @@ import "./styles/garden.css"
 //       texture.wrapT = RepeatWrapping
 //       texture.repeat.set(16, 24)
 //     })
-
-
-
-
-
 
 
 interface ModelProps {
@@ -155,6 +147,7 @@ const Model = (props: ModelProps) => {
         nextX += (plant.spread / 2) + (nextPlant.spread / 2)
       }
     }
+    // console.debug('Plant positions', positions)
     return positions
   }
   const plants = calculatePlantPositions()
@@ -203,13 +196,14 @@ const Model = (props: ModelProps) => {
             visible={alwaysShowLabels || i === hoveredPlant}
             renderOrder={2}
             material-depthTest={false}
-            fontSize={50}
-            position={[0, plant.size / 2 + 40, 0]}
+            fontSize={1}
+            position={[0, plant.size / 200 + 4, 0]}
             font={ASSETS.fonts.cabinBold}
             outlineColor={"black"}
-            outlineWidth={3}
-            outlineBlur={15}
+            outlineWidth={0.3}
+            outlineBlur={1.5}
             outlineOpacity={0.7}
+            // key={'Text_' + newUUID()}
           >
             {plant.label}
           </Text>
@@ -221,7 +215,7 @@ const Model = (props: ModelProps) => {
             name={"" + i}
             transparent={true}
             renderOrder={1} 
-            // key={'Image_' + newUUID()}
+            // key={'Icon_' + newUUID()}
           />
         }
       </Billboard>
@@ -282,7 +276,11 @@ const Model = (props: ModelProps) => {
     {/* END: THREED FARMBOT */}
     
     {/* 2D PLANTS (FARMBOT AVIF) */}
-    <group name={"plant-icon-preload"} visible={false}>
+    {/* <group 
+      name={"plant-icon-preload"} 
+      visible={false}
+      // key={'GroupPlantIconPreload_' + newUUID()} 
+    >
       {Object.values(PLANTS).map((plant, i) =>
         <Image 
           key={'Image_' + i + '_' + newUUID()} 
@@ -291,7 +289,11 @@ const Model = (props: ModelProps) => {
         />
       )}
     </group>
-    <group name={"plant-labels"} visible={!props.activeFocus}>
+    <group 
+      name={"plant-labels"} 
+      visible={!props.activeFocus}
+      // key={'GroupPlantLabels_' + newUUID()} 
+    >
       {plants.map((plant, i) =>
         <Plant 
           key={'Plant_' + i + '_' + newUUID()} 
@@ -301,23 +303,23 @@ const Model = (props: ModelProps) => {
         />
       )}
     </group>
-    <group name={"plants"}
+    <group 
+      name={"plants"}
       visible={props.activeFocus != "Planter bed"}
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}
+      // key={'GroupPlants_' + newUUID()} 
     >
       {plants.map((plant, i) =>
-        <>
-          <Plant 
-            key={'PlantImage_' + i + '_' + newUUID()} 
-            i={i} 
-            plant={plant}
-            // labelOnly={true} // TESTING|DEBUGGING
-          />
-        </>
+        <Plant 
+          key={'PlantImage_' + i + '_' + newUUID()} 
+          i={i} 
+          plant={plant}
+          // labelOnly={true} // TESTING|DEBUGGING
+        />
       )}
-    </group>
+    </group> */}
     {/* END: 2D PLANTS (FARMBOT AVIF) */}
 
     {/* 3D TEXT LABEL */}
@@ -449,7 +451,7 @@ export const Garden = () => {
   return (
     <Model 
       {...common} 
-      key={'ThreeDFarmBotGardenModel_' + newUUID()}
+      // key={'ThreeDFarmBotGardenModel_' + newUUID()}
     />
   )
 }

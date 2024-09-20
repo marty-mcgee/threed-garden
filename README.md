@@ -14,16 +14,16 @@
 
 🤖 ["name": "threed-garden"](https://www.npmjs.com/package/threed-garden)
 
-🤖 ["version": "0.16.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=versions)
+🤖 ["version": "0.16.1-x"](https://www.npmjs.com/package/threed-garden?activeTab=versions)
 
-🤖 ["code": "0.16.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=code)
+🤖 ["code": "0.16.1-x"](https://www.npmjs.com/package/threed-garden?activeTab=code)
 
 ### Install + Run
 
 #### npm i threed-garden
 #### git clone https://github.com/marty-mcgee/threed-garden.git
 
-- app currently requires yarn: `npm install -G yarn`
+- app currently requires yarn: `npm install -g yarn`
 - (you can instead, of course, use pnpm or npm easily)
 
 1. install app: `yarn install`

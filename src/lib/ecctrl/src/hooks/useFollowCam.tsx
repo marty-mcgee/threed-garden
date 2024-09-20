@@ -1,40 +1,45 @@
 import { useThree } from "@react-three/fiber";
-import { useRapier } from "@react-three/rapier";
+// import { useRapier } from "@react-three/rapier";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
+import type { camListenerTargetType } from "../Ecctrl";
 
 export const useFollowCam = function (props: UseFollowCamProps) {
-  // [MM] HEY HEY HEY
   const { scene, camera, gl } = useThree();
-  console.debug('%c useFollowCam camera from useThree: ', camera, scene, gl)
-  // [MM] HEY HEY HEY
   const disableFollowCam = props.disableFollowCam;
   const disableFollowCamPos = props.disableFollowCamPos;
   const disableFollowCamTarget = props.disableFollowCamTarget;
-  const { rapier, world } = useRapier();
+  // const { rapier, world } = useRapier();
 
-  let isMouseDown: boolean = false;
+  let isMouseDown = false;
   let previousTouch1: Touch = null;
   let previousTouch2: Touch = null;
 
   let originZDis = props.camInitDis;
   const camMaxDis = props.camMaxDis;
   const camMinDis = props.camMinDis;
+  const camUpLimit = props.camUpLimit;
+  const camLowLimit = props.camLowLimit
   const camInitDir = props.camInitDir;
   const camMoveSpeed = props.camMoveSpeed;
   const camZoomSpeed = props.camZoomSpeed;
   const camCollisionOffset = props.camCollisionOffset;
+  const camListenerTarget = props.camListenerTarget
   const pivot = useMemo(() => new THREE.Object3D(), []);
   const followCam = useMemo(() => {
     const origin = new THREE.Object3D();
-    origin.position.set(0, 0, originZDis);
+    origin.position.set(
+      0,
+      originZDis * Math.sin(-camInitDir.x),
+      originZDis * Math.cos(-camInitDir.x)
+    );
     return origin;
   }, []);
 
   /** Camera collison detect setups */
-  let smallestDistance = originZDis ? originZDis : null; // [MM] HEY HEY HEY
+  let smallestDistance = null;
   let cameraDistance = null;
-  let intersects = null;
+  let intersects: Object[] = [];
   let intersectObjects: THREE.Object3D[] = [];
   const cameraRayDir = useMemo(() => new THREE.Vector3(), []);
   const cameraRayOrigin = useMemo(() => new THREE.Vector3(), []);
@@ -47,9 +52,9 @@ export const useFollowCam = function (props: UseFollowCamProps) {
     -camMaxDis
   );
   // Rapier ray setup (optional)
-  const rayCast = new rapier.Ray(cameraRayOrigin, cameraRayDir);
-  let rayLength = null;
-  let rayHit = null;
+  // const rayCast = new rapier.Ray(cameraRayOrigin, cameraRayDir);
+  // let rayLength = null;
+  // let rayHit = null;
 
   // Mouse move event
   const onDocumentMouseMove = (e: MouseEvent) => {
@@ -59,7 +64,7 @@ export const useFollowCam = function (props: UseFollowCamProps) {
 
       cameraDistance = followCam.position.length();
 
-      if (vy >= -0.5 && vy <= 1.5) {
+      if (vy >= camLowLimit && vy <= camUpLimit) {
         followCam.rotation.x = vy;
         followCam.position.y = -cameraDistance * Math.sin(-vy);
         followCam.position.z = -cameraDistance * Math.cos(-vy);
@@ -109,7 +114,7 @@ export const useFollowCam = function (props: UseFollowCamProps) {
 
       cameraDistance = followCam.position.length();
 
-      if (vy >= -0.5 && vy <= 1.5) {
+      if (vy >= camLowLimit && vy <= camUpLimit) {
         followCam.rotation.x = vy;
         followCam.position.y = -cameraDistance * Math.sin(-vy);
         followCam.position.z = -cameraDistance * Math.cos(-vy);
@@ -145,12 +150,12 @@ export const useFollowCam = function (props: UseFollowCamProps) {
    * Gamepad second joystick event
    */
   const joystickCamMove = (movementX: number, movementY: number) => {
-    pivot.rotation.y -= movementX * 0.005 * camMoveSpeed * 3;
-    const vy = followCam.rotation.x + movementY * 0.005 * camMoveSpeed * 3;
+    pivot.rotation.y -= movementX * 0.005 * camMoveSpeed * 5;
+    const vy = followCam.rotation.x + movementY * 0.005 * camMoveSpeed * 5;
 
     cameraDistance = followCam.position.length();
 
-    if (vy >= -0.5 && vy <= 1.5) {
+    if (vy >= camLowLimit && vy <= camUpLimit) {
       followCam.rotation.x = vy;
       followCam.position.y = -cameraDistance * Math.sin(-vy);
       followCam.position.z = -cameraDistance * Math.cos(vy);
@@ -190,14 +195,12 @@ export const useFollowCam = function (props: UseFollowCamProps) {
     cameraRayOrigin.copy(pivot.position);
     camera.getWorldPosition(cameraPosition);
     cameraRayDir.subVectors(cameraPosition, pivot.position);
-    rayLength = cameraRayDir.length();
+    // rayLength = cameraRayDir.length();
 
     // casting ray hit, if object in between character and camera,
     // change the smallestDistance to the ray hit toi
     // otherwise the smallestDistance is same as camera original position (originZDis)
-    // [MM] HEY HEY HEY camera is null
-    // intersects = camRayCast.intersectObjects(intersectObjects);
-    // [MM] HEY HEY HEY
+    intersects = [] // camRayCast.intersectObjects(intersectObjects);
     // if (intersects.length && intersects[0].distance <= -originZDis) {
     //   smallestDistance =
     //     -intersects[0].distance * camCollisionOffset < -0.7
@@ -207,11 +210,10 @@ export const useFollowCam = function (props: UseFollowCamProps) {
       smallestDistance = originZDis;
     // }
 
-    // [MM] HEY HEY HEY testing
     // Rapier ray hit setup (optional)
     // rayHit = world.castRay(rayCast, rayLength + 1, true, null, null, character);
-    // if (rayHit && rayHit.timeOfImpact && rayHit.timeOfImpact > originZDis) {
-    //   smallestDistance = -rayHit.timeOfImpact + 0.5;
+    // if (rayHit && rayHit.toi && rayHit.toi > originZDis) {
+    //   smallestDistance = -rayHit.toi + 0.5;
     // } else if (rayHit == null) {
     //   smallestDistance = originZDis;
     // }
@@ -223,8 +225,7 @@ export const useFollowCam = function (props: UseFollowCamProps) {
       smallestDistance * Math.cos(-followCam.rotation.x)
     );
 
-    // [MM] HEY HEY HEY testing
-    followCam.position.lerp(camLerpingPoint, delta * 2); // delta * 4 for non-rapier ray setup
+    followCam.position.lerp(camLerpingPoint, delta * 4); // delta * 2 for rapier ray setup
   };
 
   // Initialize camera facing direction
@@ -233,19 +234,11 @@ export const useFollowCam = function (props: UseFollowCamProps) {
     followCam.rotation.x = camInitDir.x
   }, [])
 
-  // [MM] HEY HEY HEY testing
-  // Set camera position to (0,0,0), if followCam is disabled set to disableFollowCamPos (default 0,0,-5)
+   // If followCam is disabled set to disableFollowCamPos, target to disableFollowCamTarget
   useEffect(() => {
     if (disableFollowCam) {
-      // [MM] HEY HEY HEY testing
-      // camera.position.set(disableFollowCamPos.x, disableFollowCamPos.y, disableFollowCamPos.z)
-      // camera.lookAt(new THREE.Vector3(disableFollowCamTarget.x, disableFollowCamTarget.y, disableFollowCamTarget.z))
-    } else {
-      // [MM] HEY HEY HEY testing
-      // camera.position.set(0, 0, 0)
-      camera.position.set(-12, 8, 16)
-      // camera.lookAt(new THREE.Vector3(disableFollowCamTarget.x, disableFollowCamTarget.y, disableFollowCamTarget.z))
-      // [MM] HEY HEY HEY
+      if (disableFollowCamPos) camera.position.set(disableFollowCamPos.x, disableFollowCamPos.y, disableFollowCamPos.z)
+      if (disableFollowCamTarget) camera.lookAt(new THREE.Vector3(disableFollowCamTarget.x, disableFollowCamTarget.y, disableFollowCamTarget.z))
     }
   }, [disableFollowCam]);
 
@@ -254,34 +247,47 @@ export const useFollowCam = function (props: UseFollowCamProps) {
     scene.children.forEach((child) => customTraverse(child));
 
     // Prepare for followCam and pivot point
-    if (disableFollowCam) {
-      // [MM] HEY HEY HEY testing
-      // followCam.remove(camera)
-    } else {
-      // [MM] HEY HEY HEY testing
-      // followCam.add(camera)
-    }
+    // disableFollowCam ? followCam.remove(camera) : followCam.add(camera);
     pivot.add(followCam);
     scene.add(pivot);
 
-    gl.domElement.addEventListener("mousedown", () => { isMouseDown = true });
-    gl.domElement.addEventListener("mouseup", () => { isMouseDown = false });
-    gl.domElement.addEventListener("mousemove", onDocumentMouseMove);
-    gl.domElement.addEventListener("mousewheel", onDocumentMouseWheel);
-    // Touch event
-    gl.domElement.addEventListener("touchend", onTouchEnd);
-    gl.domElement.addEventListener("touchmove", onTouchMove, { passive: false });
+    if (camListenerTarget === "domElement") {
+      gl.domElement.addEventListener("mousedown", () => { isMouseDown = true });
+      gl.domElement.addEventListener("mouseup", () => { isMouseDown = false });
+      gl.domElement.addEventListener("mousemove", onDocumentMouseMove);
+      gl.domElement.addEventListener("mousewheel", onDocumentMouseWheel);
+      // Touch event
+      gl.domElement.addEventListener("touchend", onTouchEnd);
+      gl.domElement.addEventListener("touchmove", onTouchMove, { passive: false });
+    } else if (camListenerTarget === "document") {
+      document.addEventListener("mousedown", () => { isMouseDown = true });
+      document.addEventListener("mouseup", () => { isMouseDown = false });
+      document.addEventListener("mousemove", onDocumentMouseMove);
+      document.addEventListener("mousewheel", onDocumentMouseWheel);
+      // Touch event
+      document.addEventListener("touchend", onTouchEnd);
+      document.addEventListener("touchmove", onTouchMove, { passive: false });
+    }
 
     return () => {
-      gl.domElement.removeEventListener("mousedown", () => { isMouseDown = true });
-      gl.domElement.removeEventListener("mouseup", () => { isMouseDown = false });
-      gl.domElement.removeEventListener("mousemove", onDocumentMouseMove);
-      gl.domElement.removeEventListener("mousewheel", onDocumentMouseWheel);
-      // Touch event
-      gl.domElement.removeEventListener("touchend", onTouchEnd);
-      gl.domElement.removeEventListener("touchmove", onTouchMove);
+      if (camListenerTarget === "domElement") {
+        gl.domElement.removeEventListener("mousedown", () => { isMouseDown = true });
+        gl.domElement.removeEventListener("mouseup", () => { isMouseDown = false });
+        gl.domElement.removeEventListener("mousemove", onDocumentMouseMove);
+        gl.domElement.removeEventListener("mousewheel", onDocumentMouseWheel);
+        // Touch event
+        gl.domElement.removeEventListener("touchend", onTouchEnd);
+        gl.domElement.removeEventListener("touchmove", onTouchMove);
+      } else if (camListenerTarget === "document") {
+        document.removeEventListener("mousedown", () => { isMouseDown = true });
+        document.removeEventListener("mouseup", () => { isMouseDown = false });
+        document.removeEventListener("mousemove", onDocumentMouseMove);
+        document.removeEventListener("mousewheel", onDocumentMouseWheel);
+        // Touch event
+        document.removeEventListener("touchend", onTouchEnd);
+        document.removeEventListener("touchmove", onTouchMove);
+      }
       // Remove camera from followCam
-      // [MM] HEY HEY HEY testing
       // followCam.remove(camera);
     };
   });
@@ -296,8 +302,11 @@ export type UseFollowCamProps = {
   camInitDis?: number;
   camMaxDis?: number;
   camMinDis?: number;
+  camUpLimit?: number;
+  camLowLimit?: number;
   camInitDir?: { x: number, y: number };
   camMoveSpeed?: number;
   camZoomSpeed?: number;
   camCollisionOffset?: number;
+  camListenerTarget?: camListenerTargetType;
 };
