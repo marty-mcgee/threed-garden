@@ -90,8 +90,6 @@ import {
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
 import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
-// ** THREED JOYSTICK
-import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
@@ -163,25 +161,6 @@ function ThreeDLoaderSimple() {
 //     // state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.01)
 //   })
 // }
-
-
-const EcctrlJoystickControls = () => {
-  const [isTouchScreen, setIsTouchScreen] = useState(false)
-  useEffect(() => {
-    // Check if using a touch control device, show/hide joystick
-    if (('ontouchstart' in window) ||
-      (navigator.maxTouchPoints > 0)) {
-      setIsTouchScreen(true)
-    } else {
-      setIsTouchScreen(false)
-    }
-  }, [])
-  return (
-    <>
-      {isTouchScreen && <EcctrlJoystick buttonNumber={5} />}
-    </>
-  )
-}
 
 
 // ==========================================================
@@ -403,9 +382,6 @@ export const ThreeDCanvas = (
       {/* TUNNELING R3F with tunnelrat IO */}
       {/* <threedIO.Out /> */}
 
-      {/* CHARACTER CONTROL JOYSTICK */}
-      {/* <EcctrlJoystick ButtonNumber={5} /> */}
-      <EcctrlJoystickControls />
 
       {/* CAMERA INTERACTIONS */}
       {/* <CameraPositionTestApp /> */}
@@ -414,6 +390,7 @@ export const ThreeDCanvas = (
       {/* <Button onClick={() => fooGetCamera()}>get cameraPosition</Button> */}
       {/* <Button onClick={() => FooGetCamera()}>get cameraPosition</Button> */}
       {/* <Button onClick={() => getCameraState()}>Get Camera State</Button> */}
+
 
       {/* THREED CANVAS */}
       <Canvas
@@ -480,11 +457,10 @@ export const ThreeDCanvas = (
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
-        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
+        <Suspense fallback={<ThreeDLoaderSimple />}>
         {/* using react-three-drei Loader + useProgress */}
-        <Suspense fallback={
+        {/* <Suspense fallback={
           <Html center>
-            {/* <Spinner /> */}
             <Loader
               // containerStyles={...container} // Flex layout styles
               // innerStyles={...inner} // Inner container styles
@@ -494,7 +470,7 @@ export const ThreeDCanvas = (
               initialState={(active = false) => active} // Initial black out state
             />
           </Html>
-        }>
+        }> */}
 
           {/* PLANTS from THREED FARMBOT */}
           {/* <Model {...common} /> */}
