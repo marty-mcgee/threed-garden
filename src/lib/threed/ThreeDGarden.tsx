@@ -297,34 +297,34 @@ const ThreeDGarden = (): React.ReactNode => {
           // ** GET PREFERENCES
           if (!isPrefsLoaded) {
             // **
-            const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
-            // const preferencesFromDataSource = async () => await preferencesStore.actions.loadFromDataSource(client)
-            // preferencesFromDataSource()
+            // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
+            const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
             if (DEBUG) 
-              console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
+              console.debug('%c preferences loading...', ccm.greenAlert)
             if (preferencesFromDataSource) {
               if (DEBUG) 
-                console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
+                console.debug('%c preferencesFromDataSource', ccm.greenAlert)
             }
           }
 
           const loadPreferencesOne = await preferencesStore.store.get('one')
           // const loadPreferencesOne = await preferencesStore.store.useStore('one')
-          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
+          // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
           preferencesDataVar(loadPreferencesOne.data)
-          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
           isPreferencesSetVar(true)
           setIsPrefsLoaded(isPreferencesSetVar())
-          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
           if (preferencesDataVar().doAutoLoadData) {
-            const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
             if (DEBUG) 
-              console.debug('%c projects loading...', ccm.orangeAlert, projectsFromDataSource)
-            //   if (projectsFromDataSource) {
-            //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
-            //     // ** TODO
-            //     // ** do more tasks here ??
-            //   }
+              console.debug('%c projects loading...', ccm.orangeAlert)
+            if (projectsFromDataSource) {
+              // console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
+              // ** TODO
+              // ** do more tasks here ??
+            }
           }
 
         } catch (error) {
