@@ -19,7 +19,7 @@ import {
   // useCallback,
   // ReactNode,
   // FC,
-  Suspense,
+  // Suspense,
   PointerEventHandler,
   SyntheticEvent,
 } from 'react'
@@ -107,6 +107,9 @@ import ThreeDModals from '#/lib/threed/components/modals/Modals'
 import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsPools'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsCities'
+
+// ** THREED JOYSTICK
+import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
 // ** CSS Styles Imports
 // import stylesDemo from '#/layout/ui/styles/demo/demo.module.css'
@@ -367,10 +370,35 @@ const ThreeDGarden = (): React.ReactNode => {
 
   let project_title = 'NOT EVEN CLOSE'
 
+
+  
+
+
+  const EcctrlJoystickControls = () => {
+    const [isTouchScreen, setIsTouchScreen] = useState(false)
+    useEffect(() => {
+      // Check if using a touch control device, show/hide joystick
+      if (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0)) {
+        setIsTouchScreen(true)
+      } else {
+        setIsTouchScreen(false)
+      }
+    }, [])
+    return (
+      // {/* {isTouchScreen && <EcctrlJoystick buttonNumber={5} />} */}
+      // {/* {true && <EcctrlJoystick buttonNumber={5} />} */}
+      <EcctrlJoystick 
+        // buttonNumber={5} 
+      />
+    )
+  }
+
+
+
   // ==========================================================
   // ** RETURN JSX
   return (
-    <Suspense fallback={<Spinner />}>
     <Flex
       id='threed_garden'
       direction='column'
@@ -544,12 +572,32 @@ const ThreeDGarden = (): React.ReactNode => {
 
           </Flex>
           {/* END: THREED CONTROLS: ALL */}
+
+          
+          {/* THREED JOYSTICK */}
+          <Flex
+            // item
+            id='threed_joystick'
+            // width='50%'
+            // direction='row'
+            // direction='column'
+            style={{
+              // borderTop: '1px solid darkgreen',
+              width: '50%',
+            }}
+          >
+            {/* CHARACTER CONTROL JOYSTICK */}
+            {/* <EcctrlJoystick buttonNumber={0} /> */}
+            {/* <EcctrlJoystick buttonNumber={5} /> */}
+            <EcctrlJoystickControls />
+
+          </Flex>
+          {/* END: THREED JOYSTICK */}
           
         </Flex>
         
       )}
     </Flex>
-    </Suspense>
   )
 }
 
