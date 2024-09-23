@@ -16,19 +16,23 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // ** REACT Imports
 import { Suspense } from 'react'
 
-// ** MUI Imports
-import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
+// ** RADIX-UI Imports
+import {
+  Grid,
+} from '@radix-ui/themes'
+// // ** MUI Imports
+// import Grid from '@mui/material/Grid'
+// import Card from '@mui/material/Card'
+// import CardHeader from '@mui/material/CardHeader'
+// import Typography from '@mui/material/Typography'
+// import CardContent from '@mui/material/CardContent'
 
 // ** THREED GARDEN Imports
 // import ThreeDGarden from '#/lib/threed/ThreeDGarden'
 const ThreeDGarden = dynamic(() => import('#/lib/threed/ThreeDGarden'), { ssr: false })
 
 // ** HELPER Imports
-import Spinner from '#/layout/ui/components/spinner'
+// // import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -66,8 +70,8 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
     {/* <Suspense fallback={<Spinner />}> */}
     
       <Grid
-        container
-        spacing={1}
+        // container
+        // spacing={1}
       >
 
         {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}

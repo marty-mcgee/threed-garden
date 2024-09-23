@@ -19,7 +19,7 @@ import {
   // useCallback,
   // ReactNode,
   // FC,
-  Suspense,
+  // Suspense,
   PointerEventHandler,
   SyntheticEvent,
 } from 'react'
@@ -101,12 +101,15 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 import ThreeDToolbar from '~/src/lib/threed/components/controls/Toolbar'
 
 // ** Modal Imports
-import ThreeDModals from '#/lib/threed/components/modals/Modals'
+// import ThreeDModals from '#/lib/threed/components/modals/Modals'
 
 // ** View Imports
 import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsPools'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsCities'
+
+// ** THREED JOYSTICK
+import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
 // ** CSS Styles Imports
 // import stylesDemo from '#/layout/ui/styles/demo/demo.module.css'
@@ -123,7 +126,7 @@ import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // const ThreeDFarmBotMain = dynamic(() => import('#/lib/threed/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
-import Spinner from '#/layout/ui/components/spinner'
+// // import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -230,12 +233,12 @@ if (debug) {
 // COMPONENTS
 
 // ** HTML Modal Windows
-const {
-  ModalAbout,
-  ModalLoading,
-  ModalModel3d,
-  ModalShare
-} = ThreeDModals
+// const {
+//   ModalAbout,
+//   ModalLoading,
+//   ModalModel3d,
+//   ModalShare
+// } = ThreeDModals
 
 // ** Views
 const {
@@ -297,34 +300,34 @@ const ThreeDGarden = (): React.ReactNode => {
           // ** GET PREFERENCES
           if (!isPrefsLoaded) {
             // **
-            const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
-            // const preferencesFromDataSource = async () => await preferencesStore.actions.loadFromDataSource(client)
-            // preferencesFromDataSource()
+            // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
+            const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
             if (DEBUG) 
-              console.debug('%c preferences loading...', ccm.greenAlert) // , preferencesFromDataSource
+              console.debug('%c preferences loading...', ccm.greenAlert)
             if (preferencesFromDataSource) {
               if (DEBUG) 
-                console.debug('%c preferencesFromDataSource', ccm.greenAlert) // , preferencesFromDataSource
+                console.debug('%c preferencesFromDataSource', ccm.greenAlert)
             }
           }
 
           const loadPreferencesOne = await preferencesStore.store.get('one')
           // const loadPreferencesOne = await preferencesStore.store.useStore('one')
-          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
+          // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
           preferencesDataVar(loadPreferencesOne.data)
-          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
           isPreferencesSetVar(true)
           setIsPrefsLoaded(isPreferencesSetVar())
-          // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: POST FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
           if (preferencesDataVar().doAutoLoadData) {
-            const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
             if (DEBUG) 
-              console.debug('%c projects loading...', ccm.orangeAlert, projectsFromDataSource)
-            //   if (projectsFromDataSource) {
-            //     console.debug('%c🥕 projectsFromDataSource', ccm.redAlert, projectsFromDataSource)
-            //     // ** TODO
-            //     // ** do more tasks here ??
-            //   }
+              console.debug('%c projects loading...', ccm.orangeAlert)
+            if (projectsFromDataSource) {
+              // console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
+              // ** TODO
+              // ** do more tasks here ??
+            }
           }
 
         } catch (error) {
@@ -367,10 +370,35 @@ const ThreeDGarden = (): React.ReactNode => {
 
   let project_title = 'NOT EVEN CLOSE'
 
+
+  
+
+
+  const EcctrlJoystickControls = () => {
+    const [isTouchScreen, setIsTouchScreen] = useState(false)
+    useEffect(() => {
+      // Check if using a touch control device, show/hide joystick
+      if (('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0)) {
+        setIsTouchScreen(true)
+      } else {
+        setIsTouchScreen(false)
+      }
+    }, [])
+    return (
+      // {/* {isTouchScreen && <EcctrlJoystick buttonNumber={5} />} */}
+      // {/* {true && <EcctrlJoystick buttonNumber={5} />} */}
+      <EcctrlJoystick 
+        // buttonNumber={5} 
+      />
+    )
+  }
+
+
+
   // ==========================================================
   // ** RETURN JSX
   return (
-    <Suspense fallback={<Spinner />}>
     <Flex
       id='threed_garden'
       direction='column'
@@ -381,7 +409,8 @@ const ThreeDGarden = (): React.ReactNode => {
     >
 
       { !isPrefsLoaded && (
-        <Spinner />
+        // <Spinner />
+        <>LOADING...</>
       )}
 
       { isPrefsLoaded && (
@@ -469,7 +498,7 @@ const ThreeDGarden = (): React.ReactNode => {
             }}
             // direction='column'
           >
-            <ModalAbout />
+            {/* <ModalAbout /> */}
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
@@ -544,12 +573,32 @@ const ThreeDGarden = (): React.ReactNode => {
 
           </Flex>
           {/* END: THREED CONTROLS: ALL */}
+
+          
+          {/* THREED JOYSTICK */}
+          <Flex
+            // item
+            id='threed_joystick'
+            // width='50%'
+            // direction='row'
+            // direction='column'
+            style={{
+              // borderTop: '1px solid darkgreen',
+              width: '50%',
+            }}
+          >
+            {/* CHARACTER CONTROL JOYSTICK */}
+            {/* <EcctrlJoystick buttonNumber={0} /> */}
+            {/* <EcctrlJoystick buttonNumber={5} /> */}
+            <EcctrlJoystickControls />
+
+          </Flex>
+          {/* END: THREED JOYSTICK */}
           
         </Flex>
         
       )}
     </Flex>
-    </Suspense>
   )
 }
 
