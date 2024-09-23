@@ -1,5 +1,8 @@
 import { signIn, signOut } from '~/src/lib/auth/auth'
-import { Button } from './ui/button'
+// import { Button } from './ui/button'
+import {
+  Button,
+} from '@radix-ui/themes'
 
 export function SignIn({
   provider,
