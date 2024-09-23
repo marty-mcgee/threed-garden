@@ -1,5 +1,8 @@
 import { ReactNode } from 'react'
-import Box from '@mui/material/Box'
+// import Box from '@mui/material/Box'
+import {
+  Box,
+} from '@radix-ui/themes'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -16,10 +19,16 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      sx={{ overflow: 'scroll' }}
+      // sx={{ overflow: 'scroll' }}
       {...other}
     >
-      {value === index && <Box sx={{ overflow: 'scroll' }}>{children}</Box>}
+      {value === index && 
+        <Box 
+          // sx={{ overflow: 'scroll' }}
+        >
+          {children}
+        </Box>
+      }
     </Box>
   )
 }

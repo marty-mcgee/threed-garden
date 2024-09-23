@@ -88,10 +88,9 @@ import {
 // ** THREED EXPERIENCE Imports
 // import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
-import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
-import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
-// ** THREED JOYSTICK
-import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
+// import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
+import tunnel from 'tunnel-rat'
+// import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
@@ -106,6 +105,13 @@ import ccm from '#/lib/utils/console-colors'
 
 const debug = false // false | true // ts: boolean
 const DEBUG = false // false | true // ts: boolean
+
+
+// ** TUNNEL: THREEDIO
+// const t = tunnel()
+const threedIO = tunnel()
+const threedOI = tunnel()
+
 
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
@@ -163,25 +169,6 @@ function ThreeDLoaderSimple() {
 //     // state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.01)
 //   })
 // }
-
-
-const EcctrlJoystickControls = () => {
-  const [isTouchScreen, setIsTouchScreen] = useState(false)
-  useEffect(() => {
-    // Check if using a touch control device, show/hide joystick
-    if (('ontouchstart' in window) ||
-      (navigator.maxTouchPoints > 0)) {
-      setIsTouchScreen(true)
-    } else {
-      setIsTouchScreen(false)
-    }
-  }, [])
-  return (
-    <>
-      {isTouchScreen && <EcctrlJoystick buttonNumber={5} />}
-    </>
-  )
-}
 
 
 // ==========================================================
@@ -401,11 +388,18 @@ export const ThreeDCanvas = (
     <>
 
       {/* TUNNELING R3F with tunnelrat IO */}
-      {/* <threedIO.Out /> */}
+      <threedIO.Out />
+      {/* TUNNELING R3F with tunnelrat OI */}
+      <div id="oi">
+        {/* Let's beam something into the R3F Canvas! */}
+        <threedOI.In>
+          <mesh>
+            <sphereGeometry args={[0.4,0.4,0.4]} />
+            <meshBasicMaterial color={'blue'} />
+          </mesh>
+        </threedOI.In>
+      </div>
 
-      {/* CHARACTER CONTROL JOYSTICK */}
-      {/* <EcctrlJoystick ButtonNumber={5} /> */}
-      <EcctrlJoystickControls />
 
       {/* CAMERA INTERACTIONS */}
       {/* <CameraPositionTestApp /> */}
@@ -414,6 +408,7 @@ export const ThreeDCanvas = (
       {/* <Button onClick={() => fooGetCamera()}>get cameraPosition</Button> */}
       {/* <Button onClick={() => FooGetCamera()}>get cameraPosition</Button> */}
       {/* <Button onClick={() => getCameraState()}>Get Camera State</Button> */}
+
 
       {/* THREED CANVAS */}
       <Canvas
@@ -471,8 +466,21 @@ export const ThreeDCanvas = (
         {/* <FooGetCamera /> */}
 
 
-        {/* TUNNEL RAT IO: TODO */}
-        {/* <threedIO.Out /> */}
+        {/* TUNNELING R3F with tunnelrat IO */}
+        <threedIO.In>
+          {/* <Html key="io"> */}
+            <span key='foo_span'>Very cool!</span>
+            {/* <h1 key='foo_title'>Very cool!</h1> */}
+            {/* <p key='foo_paragraph'>These will appear somewhere else!</p> */}
+            {/* <h1 key='bar_title'>Also Very cool!</h1> */}
+            {/* <p key='bar_paragraph'>Also These will appear somewhere else!</p> */}
+          {/* </Html> */}
+        </threedIO.In>
+        {/* TUNNELING R3F with tunnelrat OI */}
+        {/* Render anything sent through the tunnel! */}
+        {/* <Html key="oi"> */}
+          <threedOI.Out />
+        {/* </Html> */}
 
 
         {/* SUSPENSEFUL... */}
@@ -480,11 +488,10 @@ export const ThreeDCanvas = (
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
-        {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
+        <Suspense fallback={<ThreeDLoaderSimple />}>
         {/* using react-three-drei Loader + useProgress */}
-        <Suspense fallback={
+        {/* <Suspense fallback={
           <Html center>
-            {/* <Spinner /> */}
             <Loader
               // containerStyles={...container} // Flex layout styles
               // innerStyles={...inner} // Inner container styles
@@ -494,7 +501,7 @@ export const ThreeDCanvas = (
               initialState={(active = false) => active} // Initial black out state
             />
           </Html>
-        }>
+        }> */}
 
           {/* PLANTS from THREED FARMBOT */}
           {/* <Model {...common} /> */}

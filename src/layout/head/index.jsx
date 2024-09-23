@@ -7,7 +7,7 @@ const meta = {
   favicon: '/favicon/favicon.png',
   author: 'Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)',
   description:
-    '"threed-garden" demonstrates active development use of the "threed-ai" platform. "threed-ai" is a functioning, legit, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on "ThreeJS, WebGL, React, TypeScript <Fiber>, GraphQL", in active development.',
+    '"threed-garden" demonstrates active development use of the "threed-ai" platform. "threed-ai" is a low-dependency package supporting a monorepo of workspaces that utilize/depend on "ThreeJS, WebGL, React, TypeScript <Fiber>, GraphQL", in active development.',
   keywords:
     'Architecture, Planning, 3D Plans, Home Ideas, Floor Plans, Garden Planning, 3D Design, Building Plans, Lanscaping Design, Landscaping, Design, 3D Design App, React 3D, ThreeD Garden',
 }
@@ -32,12 +32,12 @@ const Header = ({ title = meta.title }) => {
 
       {/* Favicons */}
       <link rel='shortcut icon' href={meta.favicon} />
-      <link rel='apple-touch-icon' href='/favicon/apple-touch-icon.png' />
-      <link rel='apple-touch-icon' sizes='16x16' href='/favicon/favicon-16x16.png' />
-      <link rel='apple-touch-icon' sizes='32x32' href='/favicon/favicon-32x32.png' />
-      <link rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-touch-icon.png' />
-      <link rel='mask-icon' color='#000000' href='/favicon/safari-pinned-tab.svg' />
-      <link rel='apple-touch-startup-image' href='/favicon/apple-touch-icon.png' />
+      <link rel='favicon' href='/favicon/favicon.png' />
+      <link rel='favicon' sizes='16x16' href='/favicon/favicon-16x16.png' />
+      <link rel='favicon' sizes='32x32' href='/favicon/favicon-32x32.png' />
+      <link rel='favicon' sizes='180x180' href='/favicon/favicon.png' />
+      <link rel='mask-icon' color='#000000' href='/favicon/favicon.png' />
+      <link rel='apple-touch-startup-image' href='/favicon/favicon.png' />
       <meta name='msapplication-TileColor' content='#da532c' />
 
       {/* Manifest */}
@@ -57,7 +57,7 @@ const Header = ({ title = meta.title }) => {
       <meta property='og:type' content='website' />
       <meta property='og:description' content={meta.description} />
       <meta property='og:url' content={meta.url} />
-      <meta property='og:image' content='/favicon/android-chrome-512x512.png' />
+      <meta property='og:image' content='/favicon/favicon.png' />
       <meta property='og:image:width' content='512' />
       <meta property='og:image:height' content='512' />
 

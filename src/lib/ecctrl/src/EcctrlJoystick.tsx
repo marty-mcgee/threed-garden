@@ -259,10 +259,10 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: EcctrlJoystickProps) =
         return () => {
             buttonDiv.removeEventListener("pointerup", onPointerUp)
         }
-    })
+    }, [])
 
     return (
-        <Suspense fallback="null">
+        <Suspense fallback={null}>
             {/* Button 1 */}
             {buttonNumber > 0 &&
                 <animated.group
