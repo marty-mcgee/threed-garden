@@ -88,8 +88,9 @@ import {
 // ** THREED EXPERIENCE Imports
 // import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
-import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
-import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
+// import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
+import tunnel from 'tunnel-rat'
+// import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
@@ -104,6 +105,13 @@ import ccm from '#/lib/utils/console-colors'
 
 const debug = false // false | true // ts: boolean
 const DEBUG = false // false | true // ts: boolean
+
+
+// ** TUNNEL: THREEDIO
+// const t = tunnel()
+const threedIO = tunnel()
+const threedOI = tunnel()
+
 
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
@@ -380,7 +388,17 @@ export const ThreeDCanvas = (
     <>
 
       {/* TUNNELING R3F with tunnelrat IO */}
-      {/* <threedIO.Out /> */}
+      <threedIO.Out />
+      {/* TUNNELING R3F with tunnelrat OI */}
+      <div id="oi">
+        {/* Let's beam something into the R3F Canvas! */}
+        <threedOI.In>
+          <mesh>
+            <sphereGeometry args={[0.4,0.4,0.4]} />
+            <meshBasicMaterial color={'blue'} />
+          </mesh>
+        </threedOI.In>
+      </div>
 
 
       {/* CAMERA INTERACTIONS */}
@@ -448,8 +466,21 @@ export const ThreeDCanvas = (
         {/* <FooGetCamera /> */}
 
 
-        {/* TUNNEL RAT IO: TODO */}
-        {/* <threedIO.Out /> */}
+        {/* TUNNELING R3F with tunnelrat IO */}
+        <threedIO.In>
+          {/* <Html key="io"> */}
+            <span key='foo_span'>Very cool!</span>
+            {/* <h1 key='foo_title'>Very cool!</h1> */}
+            {/* <p key='foo_paragraph'>These will appear somewhere else!</p> */}
+            {/* <h1 key='bar_title'>Also Very cool!</h1> */}
+            {/* <p key='bar_paragraph'>Also These will appear somewhere else!</p> */}
+          {/* </Html> */}
+        </threedIO.In>
+        {/* TUNNELING R3F with tunnelrat OI */}
+        {/* Render anything sent through the tunnel! */}
+        {/* <Html key="oi"> */}
+          <threedOI.Out />
+        {/* </Html> */}
 
 
         {/* SUSPENSEFUL... */}

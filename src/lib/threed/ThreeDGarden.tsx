@@ -101,7 +101,7 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 import ThreeDToolbar from '~/src/lib/threed/components/controls/Toolbar'
 
 // ** Modal Imports
-import ThreeDModals from '#/lib/threed/components/modals/Modals'
+// import ThreeDModals from '#/lib/threed/components/modals/Modals'
 
 // ** View Imports
 import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
@@ -126,7 +126,7 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // const ThreeDFarmBotMain = dynamic(() => import('#/lib/threed/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
-import Spinner from '#/layout/ui/components/spinner'
+// // import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -233,12 +233,12 @@ if (debug) {
 // COMPONENTS
 
 // ** HTML Modal Windows
-const {
-  ModalAbout,
-  ModalLoading,
-  ModalModel3d,
-  ModalShare
-} = ThreeDModals
+// const {
+//   ModalAbout,
+//   ModalLoading,
+//   ModalModel3d,
+//   ModalShare
+// } = ThreeDModals
 
 // ** Views
 const {
@@ -409,7 +409,8 @@ const ThreeDGarden = (): React.ReactNode => {
     >
 
       { !isPrefsLoaded && (
-        <Spinner />
+        // <Spinner />
+        <>LOADING...</>
       )}
 
       { isPrefsLoaded && (
@@ -497,7 +498,7 @@ const ThreeDGarden = (): React.ReactNode => {
             }}
             // direction='column'
           >
-            <ModalAbout />
+            {/* <ModalAbout /> */}
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}

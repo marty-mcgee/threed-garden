@@ -46,10 +46,12 @@
 
     "leva": "^0.9.35",
 
-    "next": "^14.2.13",
+    "next": "^14.2.12",
     "@next/third-parties": "^14.2.12",
     "next-auth": "^5.0.0-beta.21",
     "next-themes": "^0.3.0",
+    
+    "swr": "^2.2.5",
 
     "tunnel-rat": "^0.1.2",
 
@@ -82,9 +84,20 @@
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
-
+    
+    "@mui/icons-material": "^5.15.20",
+    "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.20",
+    "@mui/styled-engine": "^5.15.14",
+    "@mui/system": "^5.15.20",
+    "@mui/utils": "^5.15.20",
+    "@mui/x-data-grid": "^6.19.6",
+    "mdi-material-ui": "^7.9.1",
     "styled-components": "^6.1.11",
+    
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
 
     "tailwindcss": "^3.4.10",
     "tailwind-merge": "^2.5.2",
@@ -116,10 +129,15 @@
     "@heroicons/react": "^1.0.6",
 
 
+
+
+
+
+    
     "ai": "^3.3.37",
     "openai": "^4.61.0",
     "zod": "^3.23.8",
-    "@ai-sdk/openai": "^0.0.61",
+    "@ai-sdk/openai": "^0.0.60",
     
     "@vercel/analytics": "^1.3.1",
     "@vercel/kv": "^2.0.0",
@@ -139,7 +157,7 @@
 
   "devDependencies": {
 
-    "typescript": "^5.6.2",
+    "typescript": "^5.5.4",
     "@types/chroma-js": "^2.1.4",
     "@types/cors": "^2.8.12",
     "@types/lodash": "^4.17.4",
