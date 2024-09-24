@@ -127,15 +127,115 @@ type GLTFResult = GLTF & {
     Foot_L: THREE.Bone
     ball_l: THREE.Bone
     toes_l: THREE.Bone
+    // actions
+    mixamorigHips: THREE.Bone
   }
   materials: {
     lambert2: THREE.MeshStandardMaterial
   }
 }
 // **
-type ActionName = 'Take 001'
 // **
+  // ** ANIMATIONS ****************************************
+  // **
+  const anims = [
+    'Breathing Idle',
+    'Crouch To Stand',
+    'Crouching Idle',
+    'Crouching',
+    'Driving',
+    'Entering Car',
+    'Exiting Car',
+    'Idle',
+    'Left Turn',
+    'Moonwalk',
+    'Planting A Plant',
+    'Pointing Gesture',
+    'Pointing',
+    'Push Up',
+    'Right Turn',
+    'Running',
+    'Standing To Crouched',
+    'Talking',
+    'Turn',
+    'Walking Backwards',
+    'Walking',
+  ]
+  const animsFarming = [
+    'farming/box idle',
+    'farming/box idle',
+    'farming/box turn (2)',
+    'farming/box turn',
+    'farming/box walk arc',
+    'farming/cow milking',
+    'farming/dig and plant seeds',
+    'farming/holding idle',
+    'farming/holding turn left',
+    'farming/holding turn right',
+    'farming/holding walk',
+    'farming/kneeling idle',
+    'farming/pick fruit (2)',
+    'farming/pick fruit (3)',
+    'farming/pick fruit',
+    'farming/plant a plant',
+    'farming/plant tree',
+    'farming/pull plant (2)',
+    'farming/pull plant',
+    'farming/watering',
+    'farming/wheelbarrow dump',
+    'farming/wheelbarrow idle',
+    'farming/wheelbarrow walk (2)',
+    'farming/wheelbarrow walk turn (2)',
+    'farming/wheelbarrow walk turn',
+    'farming/wheelbarrow walk',
+  ]
+  anims.push(...animsFarming)
+  // console.debug('anims', anims)
+
+  // Rename your character animations here
+  const animationSetNew = {
+    idle:     'Breathing Idle',
+    walk:     'Walking',
+    run:      'Running',
+    jump:     'Crouch To Stand',
+    jumpIdle: 'Crouching',
+    jumpLand: 'Standing To Crouched',
+    fall:     'Idle',
+    action1:  'Planting A Plant',
+    action2:  'Talking',
+    action3:  'Pointing Gesture',
+    action4:  'Pointing',
+  }
+  // const animationSet = {
+  //   idle: 'Idle',
+  //   walk: 'Walk',
+  //   run: 'Run',
+  //   jump: 'Jump_Start',
+  //   jumpIdle: 'Jump_Idle',
+  //   jumpLand: 'Jump_Land',
+  //   fall: 'Climbing', // This is for falling from high sky
+  //   action1: 'Wave',
+  //   action2: 'Dance',
+  //   action3: 'Cheer',
+  //   action4: 'Attack(1h)',
+  // }
+  const animationSet = animationSetNew
+  // console.debug('animationSet', animationSet)
+// type ActionName = 'Take 001'
+type ActionName =
+  | 'pockets'
+  | 'rope'
+  | 'swingdance'
+  | 'jump'
+  | 'react'
+  | 'shrug'
+  | 'wave'
+  | 'golf'
+  | 'idle'
+  // { [key: string]: any }
+  // string
 type GLTFActions = Record<ActionName, THREE.AnimationAction>
+// **
 
 // **
 // ** TESTING -- Instances Of <CharacterModel>
@@ -180,12 +280,12 @@ export default function CharacterModel(props: CharacterModelProps) {
   }
   if (debug) 
     // console.debug(`%c model nodes, materials, animations`, ccm.yellow, nodes, materials, animations)
-    console.debug(`%c model group`, ccm.yellowAlert, group)
+    console.debug(`%c model group`, ccm.orangeAlert, group)
 
   // @ts-expect-error // TODO: match Type GLTFActions
   const { actions } = useAnimations<GLTFActions>(animations, group)
   if (debug) 
-    console.debug(`%c model group animations.actions`, ccm.yellow, actions)
+    console.debug(`%c model group -- animations.actions`, ccm.orangeAlert, actions)
 
   // gradientMapTexture for MeshToonMaterial
   const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
@@ -292,93 +392,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     (state) => state.initializeAnimationSet
   )
 
-  // **
-  // ** ANIMATIONS ****************************************
-  // **
-  const anims = [
-    'Breathing Idle',
-    'Crouch To Stand',
-    'Crouching Idle',
-    'Crouching',
-    'Driving',
-    'Entering Car',
-    'Exiting Car',
-    'Idle',
-    'Left Turn',
-    'Moonwalk',
-    'Planting A Plant',
-    'Pointing Gesture',
-    'Pointing',
-    'Push Up',
-    'Right Turn',
-    'Running',
-    'Standing To Crouched',
-    'Talking',
-    'Turn',
-    'Walking Backwards',
-    'Walking',
-  ]
-  const animsFarming = [
-    'farming/box idle',
-    'farming/box idle',
-    'farming/box turn (2)',
-    'farming/box turn',
-    'farming/box walk arc',
-    'farming/cow milking',
-    'farming/dig and plant seeds',
-    'farming/holding idle',
-    'farming/holding turn left',
-    'farming/holding turn right',
-    'farming/holding walk',
-    'farming/kneeling idle',
-    'farming/pick fruit (2)',
-    'farming/pick fruit (3)',
-    'farming/pick fruit',
-    'farming/plant a plant',
-    'farming/plant tree',
-    'farming/pull plant (2)',
-    'farming/pull plant',
-    'farming/watering',
-    'farming/wheelbarrow dump',
-    'farming/wheelbarrow idle',
-    'farming/wheelbarrow walk (2)',
-    'farming/wheelbarrow walk turn (2)',
-    'farming/wheelbarrow walk turn',
-    'farming/wheelbarrow walk',
-  ]
-  anims.push(...animsFarming)
-  // console.debug('anims', anims)
-
-  // Rename your character animations here
-  const animationSetNew = {
-    idle:     'Breathing Idle',
-    walk:     'Walking',
-    run:      'Running',
-    jump:     'Crouch To Stand',
-    jumpIdle: 'Crouching',
-    jumpLand: 'Standing To Crouched',
-    fall:     'Idle',
-    action1:  'Planting A Plant',
-    action2:  'Talking',
-    action3:  'Pointing Gesture',
-    action4:  'Pointing',
-  }
-  // const animationSet = {
-  //   idle: 'Idle',
-  //   walk: 'Walk',
-  //   run: 'Run',
-  //   jump: 'Jump_Start',
-  //   jumpIdle: 'Jump_Idle',
-  //   jumpLand: 'Jump_Land',
-  //   fall: 'Climbing', // This is for falling from high sky
-  //   action1: 'Wave',
-  //   action2: 'Dance',
-  //   action3: 'Cheer',
-  //   action4: 'Attack(1h)',
-  // }
-  const animationSet = animationSetNew
-  // console.debug('animationSet', animationSet)
-
+  // ** ANIMATIONS
   useEffect(() => {
     // Initialize animation set
     initializeAnimationSet(animationSetNew)
@@ -402,13 +416,14 @@ export default function CharacterModel(props: CharacterModelProps) {
   // if ('areyouready?' == 'youareready.') {
   useFrame(() => {
 
-    const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
-    const wordX: string = group.current.getWorldPosition(bodyPosition).x.toString()
-    const wordY: string = group.current.getWorldPosition(bodyPosition).y.toString()
-    const wordZ: string = group.current.getWorldPosition(bodyPosition).z.toString()
-    if (debugAnimation) {
-      if (debug) console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
-    }
+    // const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
+    // const wordX: string = group.current.getWorldPosition(bodyPosition).x.toString()
+    // const wordY: string = group.current.getWorldPosition(bodyPosition).y.toString()
+    // const wordZ: string = group.current.getWorldPosition(bodyPosition).z.toString()
+    // if (debugAnimation) {
+    //   if (debug) console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
+    // }
+
     // [MM] END HEY HEY HEY
 
     if (curAnimation === animationSet.action4) {
@@ -618,6 +633,23 @@ export default function CharacterModel(props: CharacterModelProps) {
         /> */}
 
         <group name='RootNode'>
+          {/* model */}
+          <skinnedMesh
+            name='SK_Chr_Farmer_Female_01'
+            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
+            material={materials.lambert2}
+            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
+            receiveShadow
+            castShadow
+          >
+            {/* texture map */}
+            <meshStandardMaterial 
+              map={gradientMapTexture} 
+              map-flipY={false}
+              // @ts-expect-error
+              skinning
+            />
+          </skinnedMesh>
           {/* <skinnedMesh
             name='outline'
             geometry={nodes.outline.geometry}
@@ -632,14 +664,6 @@ export default function CharacterModel(props: CharacterModelProps) {
             receiveShadow
             castShadow
           /> */}
-          <skinnedMesh
-            name='SK_Chr_Farmer_Female_01'
-            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
-            material={materials.lambert2}
-            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
-            receiveShadow
-            castShadow
-          />
 
           <Trail
             width={1.5}

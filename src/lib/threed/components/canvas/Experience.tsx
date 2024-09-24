@@ -68,6 +68,7 @@ import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Cha
 // import CharacterModelFarmerBoyFloating from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
 // import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chicken'
+import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
 
 // ** THREED OBJECTS
 // import Lights from '#/lib/threed/components/canvas/Lights'
@@ -440,7 +441,8 @@ const ThreeDExperience = forwardRef((
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
               >
-                <CharacterModelChicken scale={2.0} />
+                <CharacterModelStacy scale={1.6} />
+                {/* <CharacterModelChicken scale={2.0} /> */}
               </CharacterControls>
             </group>
             {/* END: CHARACTER MODEL */}
@@ -468,6 +470,7 @@ const ThreeDExperience = forwardRef((
               >
                 {/* <CharacterModel /> */}
                 {/* <CharacterModelFloating /> */}
+                {/* <CharacterModelStacy /> */}
                 <CharacterModelFarmerWomanFloating scale={0.016} />
                 {/* <CharacterModelFarmerManFloating /> */}
               </CharacterControls>

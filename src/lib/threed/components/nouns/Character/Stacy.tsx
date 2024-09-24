@@ -5,6 +5,7 @@ all actions and sets up a THREE.AnimationMixer for it so that you don't have to.
 All of the assets actions, action-names and clips are available in its output.
 */
 
+import * as THREE from 'three'
 import React, { useEffect, useState } from 'react'
 import { useGLTF, useTexture, useAnimations } from '@react-three/drei'
 import { a, useSpring } from '@react-spring/three'
@@ -30,7 +31,10 @@ type ActionName =
   | 'idle'
 type GLTFActions = Record<ActionName, THREE.AnimationAction>
 
-export function Model(props: JSX.IntrinsicElements['group']) {
+// export this type?
+type CharacterModelProps = JSX.IntrinsicElements['group']
+
+export default function CharacterModel(props: CharacterModelProps) {
   // Fetch model and a separate texture
   const { nodes, animations } = useGLTF('/objects/examples/stacy.glb')
   const texture = useTexture('/objects/examples/stacy.jpg')
@@ -52,7 +56,7 @@ export function Model(props: JSX.IntrinsicElements['group']) {
   useEffect(() => void (document.body.style.cursor = hovered ? 'pointer' : 'auto'), [hovered])
 
   // Change animation when the index changes
-  useEffect(() => {
+  useEffect((): any => {
     // Reset and fade in animation after an index has been changed
     actions[names[index]].reset().fadeIn(0.5).play()
 
@@ -65,9 +69,17 @@ export function Model(props: JSX.IntrinsicElements['group']) {
   }, [index, actions, names])
 
   return (
-    <group ref={ref} {...props} dispose={null}>
-      <group rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
-        {/* actions */}
+    <group 
+      // @ts-expect-error
+      ref={ref} 
+      {...props} 
+      dispose={null}
+    >
+      <group 
+        rotation={[Math.PI / 2, 0, 0]} 
+        scale={0.01}
+      >
+        {/* THREE.Bone(s) */}
         <primitive object={nodes.mixamorigHips} />
         {/* model */}
         <skinnedMesh
@@ -76,11 +88,20 @@ export function Model(props: JSX.IntrinsicElements['group']) {
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}
           onClick={() => setIndex((index + 1) % names.length)}
+          // @ts-expect-error
           geometry={nodes.stacy.geometry}
+          // @ts-expect-error
           skeleton={nodes.stacy.skeleton}
           rotation={[-Math.PI / 2, 0, 0]}
-          scale={100}>
-          <meshStandardMaterial map={texture} map-flipY={false} skinning />
+          scale={100}
+        >
+          {/* texture map */}
+          <meshStandardMaterial 
+            map={texture} 
+            map-flipY={false} 
+            // @ts-expect-error
+            skinning
+          />
         </skinnedMesh>
       </group>
       {/* background circle
@@ -91,3 +112,5 @@ export function Model(props: JSX.IntrinsicElements['group']) {
     </group>
   )
 }
+
+useGLTF.preload('/objects/examples/stacy.glb')
