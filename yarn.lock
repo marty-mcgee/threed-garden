@@ -518,10 +518,10 @@
     prop-types "^15.8.1"
     react-is "^18.3.1"
 
-"@next/bundle-analyzer@^14.2.4":
-  version "14.2.4"
-  resolved "https://registry.yarnpkg.com/@next/bundle-analyzer/-/bundle-analyzer-14.2.4.tgz#11bf77810154f45fa1d6d6e3c7649c570047127c"
-  integrity sha512-ydSDikSgGhYmBlnvzS4tgdGyn40SCFI9uWDldbkRSwXS60tg4WBJR4qJoTSERTmdAFb1PeUYCyFdfC80i2WL1w==
+"@next/bundle-analyzer@^14.2.13":
+  version "14.2.13"
+  resolved "https://registry.yarnpkg.com/@next/bundle-analyzer/-/bundle-analyzer-14.2.13.tgz#9a3358b00997c03f5f390de6ccea4af42bd3fd88"
+  integrity sha512-CQOVKmfenD9HsG4AmyXG2ElMvtGKAT9TlS2JLgpL/EORi4WX+QMiQ8Ri6b+A7HRT+AiUGjsYnocIOET59i6Jfw==
   dependencies:
     webpack-bundle-analyzer "4.10.1"
 
@@ -582,10 +582,10 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.2.13.tgz#5a920eea82a58affa6146192586716cec6c87fed"
   integrity sha512-WwzOEAFBGhlDHE5Z73mNU8CO8mqMNLqaG+AO9ETmzdCQlJhVtWZnOl2+rqgVQS+YHunjOWptdFmNfbpwcUuEsw==
 
-"@next/third-parties@^14.2.12":
-  version "14.2.12"
-  resolved "https://registry.yarnpkg.com/@next/third-parties/-/third-parties-14.2.12.tgz#c909f7b828cd3ccfa0cd7d5ef114784676b62deb"
-  integrity sha512-V7iRRie7KISDOK/xWgvHJWvskykrzJeHOdCRy6ArchgaC718Sp0A8Pk9f4XIbrJvWatT8XsCH9q5sPTonJQg0Q==
+"@next/third-parties@^14.2.13":
+  version "14.2.13"
+  resolved "https://registry.yarnpkg.com/@next/third-parties/-/third-parties-14.2.13.tgz#6bb7ee9fb5a0740c909dbc625a1985616e916c0a"
+  integrity sha512-OSqD2E9JO0/GE8HT5QAUsYVXwjWtPLScAX70kO2xopwDAdRzakrsQS55Cihd862X/4bUB37ApVZ9DlHcExzeOg==
   dependencies:
     third-party-capital "1.0.20"
 

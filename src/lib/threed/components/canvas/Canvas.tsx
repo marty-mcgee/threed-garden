@@ -89,7 +89,8 @@ import {
 // import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 // import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
-import tunnel from 'tunnel-rat'
+// import tunnel from 'tunnel-rat'
+import tunnel from '~/src/lib/threed/threed.io/tunnelrat'
 // import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
 
 // ** HELPER Components
@@ -387,11 +388,11 @@ export const ThreeDCanvas = (
   return (
     <>
 
-      {/* TUNNELING R3F with tunnelrat IO */}
+      {/* TUNNELING R3F with tunnelrat IO
       <threedIO.Out />
-      {/* TUNNELING R3F with tunnelrat OI */}
+      */}
+      {/* TUNNELING R3F with tunnelrat OI
       <div id="oi">
-        {/* Let's beam something into the R3F Canvas! */}
         <threedOI.In>
           <mesh>
             <sphereGeometry args={[0.4,0.4,0.4]} />
@@ -399,6 +400,7 @@ export const ThreeDCanvas = (
           </mesh>
         </threedOI.In>
       </div>
+      */}
 
 
       {/* CAMERA INTERACTIONS */}
@@ -466,21 +468,14 @@ export const ThreeDCanvas = (
         {/* <FooGetCamera /> */}
 
 
-        {/* TUNNELING R3F with tunnelrat IO */}
+        {/* TUNNELING R3F with tunnelrat IO
         <threedIO.In>
-          {/* <Html key="io"> */}
-            <span key='foo_span'>Very cool!</span>
-            {/* <h1 key='foo_title'>Very cool!</h1> */}
-            {/* <p key='foo_paragraph'>These will appear somewhere else!</p> */}
-            {/* <h1 key='bar_title'>Also Very cool!</h1> */}
-            {/* <p key='bar_paragraph'>Also These will appear somewhere else!</p> */}
-          {/* </Html> */}
+          <span key='foo_span'>Very cool!</span>
         </threedIO.In>
-        {/* TUNNELING R3F with tunnelrat OI */}
-        {/* Render anything sent through the tunnel! */}
-        {/* <Html key="oi"> */}
-          <threedOI.Out />
-        {/* </Html> */}
+        */}
+        {/* TUNNELING R3F with tunnelrat OI
+        <threedOI.Out />
+        */}
 
 
         {/* SUSPENSEFUL... */}
