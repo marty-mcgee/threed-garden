@@ -28,7 +28,7 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // import { SessionWrapper } from '#/layout/SessionWrapper'
-const SessionWrapper = dynamic(() => import('~/src/layout/SessionWrapper'), { ssr: false })
+const SessionWrapper = dynamic(() => import('#//layout/SessionWrapper'), { ssr: false })
 
 // ** Redux Store
 // import { Provider as ReduxProvider } from 'react-redux'
@@ -69,7 +69,7 @@ import '#/layout/styles/custom-styles.css' // custom css
 
 // ** LAYOUT Components
 import ThemeWrapper from '#/layout/ThemeWrapper'
-// const ThemeWrapper = dynamic(() => import('~/src/layout/ThemeWrapper'), { ssr: false })
+// const ThemeWrapper = dynamic(() => import('#//layout/ThemeWrapper'), { ssr: false })
 // import { Theme, ThemePanel } from '@radix-ui/themes'
 // import { ThemeProvider } from 'next-themes'
 // ** Layouts

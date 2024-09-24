@@ -88,10 +88,10 @@ import {
 // ** THREED EXPERIENCE Imports
 // import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
-// import { threedIO } from '~/src/lib/threed/threed.io/threedIO'
+// import { threedIO } from '#//lib/threed/threed.io/threedIO'
 // import tunnel from 'tunnel-rat'
-import tunnel from '~/src/lib/threed/threed.io/tunnelrat'
-// import { threedAI } from '~/src/lib/threed/threed.ai/threedAI'
+import tunnel from '#//lib/threed/threed.io/tunnelrat'
+// import { threedAI } from '#//lib/threed/threed.ai/threedAI'
 
 // ** HELPER Components
 import Spinner from '#/layout/ui/components/spinner'
