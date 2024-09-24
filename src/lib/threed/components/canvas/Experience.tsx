@@ -53,9 +53,9 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 // import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
 
 // ** THREED CHARACTER CONTROL Imports
-// import CharacterControls from '~/src/lib/ecctrl/src-old/Ecctrl'
-// import CharacterControls from '~/src/lib/ecctrl/src-old/CharacterControls'
-import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
+// import CharacterControls from '#//lib/ecctrl/src-old/Ecctrl'
+// import CharacterControls from '#//lib/ecctrl/src-old/CharacterControls'
+import CharacterControls from '#//lib/ecctrl/src/Ecctrl'
 
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
@@ -68,6 +68,7 @@ import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Cha
 // import CharacterModelFarmerBoyFloating from '#/lib/threed/components/nouns/Character/FarmerBoyFloating'
 // import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chicken'
+import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
 
 // ** THREED OBJECTS
 // import Lights from '#/lib/threed/components/canvas/Lights'
@@ -97,7 +98,7 @@ import { v4 as newUUID } from 'uuid'
 // import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-// import { EcctrlAnimation } from '~/src/lib/ecctrl/src/EcctrlAnimation'
+// import { EcctrlAnimation } from '#//lib/ecctrl/src/EcctrlAnimation'
 
 // ** THREED.AI
 // import ThreeDAI from '#/lib/threed/components/tools/ThreeDAI' // TODO
@@ -440,7 +441,8 @@ const ThreeDExperience = forwardRef((
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
               >
-                <CharacterModelChicken scale={2.0} />
+                <CharacterModelStacy scale={1.6} />
+                {/* <CharacterModelChicken scale={2.0} /> */}
               </CharacterControls>
             </group>
             {/* END: CHARACTER MODEL */}
@@ -468,6 +470,7 @@ const ThreeDExperience = forwardRef((
               >
                 {/* <CharacterModel /> */}
                 {/* <CharacterModelFloating /> */}
+                {/* <CharacterModelStacy /> */}
                 <CharacterModelFarmerWomanFloating scale={0.016} />
                 {/* <CharacterModelFarmerManFloating /> */}
               </CharacterControls>

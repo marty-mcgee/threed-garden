@@ -1,4 +1,4 @@
-export { auth as middleware } from '~/src/lib/auth/auth'
+export { auth as middleware } from '#//lib/auth/auth'
 
 // Read more: https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
 export const config = {
