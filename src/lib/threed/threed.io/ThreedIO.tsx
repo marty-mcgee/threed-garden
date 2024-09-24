@@ -17,15 +17,3 @@ export const ThreedIO = ({ children }: { children: any }) => {
 export const ThreedOI = ({ children }: { children: any }) => {
   return <threedIO.Out />
 }
-
-
-
-
-
-
-
-
-
-
-
-
