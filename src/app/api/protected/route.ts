@@ -1,4 +1,4 @@
-import { auth } from '~/src/lib/auth/auth'
+import { auth } from '#//lib/auth/auth'
 
 export const GET = auth((req) => {
   // const reqJSON = req.json()

@@ -1,4 +1,4 @@
-import { signIn, signOut } from '~/src/lib/auth/auth'
+import { signIn, signOut } from '#//lib/auth/auth'
 // import { Button } from './ui/button'
 import {
   Button,

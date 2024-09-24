@@ -1,4 +1,4 @@
-import { auth } from "~/src/lib/auth/auth"
+import { auth } from "#//lib/auth/auth"
 import { NextRequest } from "next/server"
 
 // Review if we need this, and why

@@ -31,9 +31,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # lock files
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 # next
 .next
@@ -63,27 +63,24 @@ public/objects/**
 # public/objects/threeds/synty/simple/*
 # !public/objects/threeds/synty/polygon/*
 
-## threed
-
 ## libraries
 
-# # wordpress cms plugin
+# wordpress cms plugin
 src/lib/threed/plugins/threed-garden/assets
 
-# # farmbot
+# farmbot
 src/lib/farmbot/farmbot-3d-demo-react
 # src/lib/farmbot/threed-farmbot
 # src/lib/wp-threed
 # src/lib/wp-threed/assets
 
-# # ecctrl -- character controls
+# ecctrl -- character controls
 src/app/participate/character-control
-# # ecctrl-new
+# ecctrl-new
 src/lib/ecctrl-new
 src/lib/ecctrl/src-old
 
-# # ai
+# threed.ai
 src/app/ai
 src/layout/ai
-src/lib/ai
-src/lib/types/ai*
+src/lib/threed/threed.ai

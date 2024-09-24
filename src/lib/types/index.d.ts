@@ -1,3 +1,5 @@
+// index wink wink
+
 declare module '*.vert' {
     const content: string
     export default content
