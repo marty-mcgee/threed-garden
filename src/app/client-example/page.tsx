@@ -1,4 +1,4 @@
-import { auth } from '~/src/lib/auth/auth'
+import { auth } from '#//lib/auth/auth'
 import ClientExample from '#/layout/client-example'
 import { SessionProvider } from 'next-auth/react'
 

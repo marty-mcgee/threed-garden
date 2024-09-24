@@ -13,7 +13,7 @@ import {
 
 import Image from 'next/image'
 
-import { cn } from '~/src/lib/utils/tailwind-utils'
+import { cn } from '#//lib/utils/tailwind-utils'
 import CustomLink from './custom-link'
 import {
   NavigationMenu,

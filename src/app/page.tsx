@@ -8,7 +8,7 @@
 
 import CustomLink from "#/layout/custom-link"
 import SessionData from "#/layout/session-data"
-import { auth } from "~/src/lib/auth/auth"
+import { auth } from "#//lib/auth/auth"
 
 // ** Next
 import type { NextPage, NextPageContext } from 'next'

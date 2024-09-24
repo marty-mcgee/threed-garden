@@ -67,7 +67,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ** DEBUG
 const debug: boolean = true
-const debugAnimation: boolean = false
+const debugAnimation: boolean = true
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
@@ -407,7 +407,6 @@ export default function CharacterModel(props: CharacterModelProps) {
     const wordY: string = group.current.getWorldPosition(bodyPosition).y.toString()
     const wordZ: string = group.current.getWorldPosition(bodyPosition).z.toString()
     if (debugAnimation) {
-      // console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.redAlert, word)
       if (debug) console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
     }
     // [MM] END HEY HEY HEY
