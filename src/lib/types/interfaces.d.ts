@@ -1,3 +1,5 @@
+// ** THREED Title Interfaces
+
 export type TPage = {
   title: {
     rendered: string

@@ -1,3 +1,5 @@
+// ** Material UI (MUI) Imports
+
 // ** Extend MUI Theme (Module Augmentation)
 import { Theme } from '@mui/material/styles'
 // in the file where you are creating the theme (invoking the function `createTheme()`)
