@@ -56,11 +56,12 @@ export default function ClientExample() {
       </p>
       <p>
         It needs the{" "}
-        <CustomLink href="https://react.devreference/nextjs/react/use-client">
+        
           <code>'use client'</code>
-        </CustomLink>{" "}
-        directive at the top of the file to enable client side rendering, and
-        the{" "}
+        
+        directive at the top of the file to enable client side rendering,
+        <br/>
+        and the {" "}
         <CustomLink href="https://nextjs.authjs.dev/react#sessionprovider">
           <code>SessionProvider</code>
         </CustomLink>{" "}
@@ -76,7 +77,7 @@ export default function ClientExample() {
       ) : (
         <SessionData session={session} />
       )}
-      <UpdateForm />
+      {/* <UpdateForm /> */}
     </div>
   )
 }
