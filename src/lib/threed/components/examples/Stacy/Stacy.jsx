@@ -8,29 +8,8 @@ All of the assets actions, action-names and clips are available in its output.
 import React, { useEffect, useState } from 'react'
 import { useGLTF, useTexture, useAnimations } from '@react-three/drei'
 import { a, useSpring } from '@react-spring/three'
-import { GLTF } from 'three-stdlib'
 
-type GLTFResult = GLTF & {
-  nodes: {
-    stacy: THREE.SkinnedMesh
-    mixamorigHips: THREE.Bone
-  }
-  materials: {}
-}
-
-type ActionName =
-  | 'pockets'
-  | 'rope'
-  | 'swingdance'
-  | 'jump'
-  | 'react'
-  | 'shrug'
-  | 'wave'
-  | 'golf'
-  | 'idle'
-type GLTFActions = Record<ActionName, THREE.AnimationAction>
-
-export function Model(props: JSX.IntrinsicElements['group']) {
+export default function Model(props) {
   // Fetch model and a separate texture
   const { nodes, animations } = useGLTF('/objects/examples/stacy.glb')
   const texture = useTexture('/objects/examples/stacy.jpg')
@@ -83,8 +62,8 @@ export function Model(props: JSX.IntrinsicElements['group']) {
           <meshStandardMaterial map={texture} map-flipY={false} skinning />
         </skinnedMesh>
       </group>
-      {/* background circle
-      <a.mesh receiveShadow position={[0, 1, -1]} scale={scale}>
+      {/* background circle */}
+      {/* <a.mesh receiveShadow position={[0, 1, -1]} scale={scale}>
         <circleGeometry args={[1, 64]} />
         <a.meshStandardMaterial color={color} />
       </a.mesh> */}
