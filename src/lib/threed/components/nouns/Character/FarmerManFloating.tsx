@@ -553,10 +553,10 @@ export default function CharacterModel(props: CharacterModelProps) {
       {/* ANIMATED CHARACTER Model Group */}
       <group
         ref={group}
-        {...props}
         dispose={null}
-        scale={1.0}
+        scale={1.0} // default | get from props
         name='ThreeD_Animated_Character'
+        {...props}
       >
 
         {/* CUSTOM ANIMATION 'PUNCH EFFECT' */}

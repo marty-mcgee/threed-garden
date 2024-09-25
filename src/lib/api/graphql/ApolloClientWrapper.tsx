@@ -8,10 +8,10 @@ import {
 } from '@apollo/client'
 import {
   ApolloNextAppProvider,
-  NextSSRInMemoryCache,
-  NextSSRApolloClient,
+  InMemoryCache,
+  ApolloClient,
   SSRMultipartLink,
-} from '@apollo/experimental-nextjs-app-support/ssr'
+} from '@apollo/experimental-nextjs-app-support'
 
 // import { setVerbosity } from 'ts-invariant'
 // setVerbosity('debug')
@@ -24,10 +24,10 @@ import ccm from '#/lib/utils/console-colors'
 const uri_gql = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL    // 'https://threed.design/wp-json/wp/v2'
 // console.clear()
-console.debug('%c🥕 ThreeD Garden 🌱 ... 🦆 apollo loaded 🍄', ccm.green)
+console.debug('%c🥕 ThreeD Garden 🌱.🦆 Apollo loaded 🍄', ccm.green)
 console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
 // console.debug('%c🦆 - REST API', ccm.darkgreen, uri_rest)
-console.debug('%c=============================================', ccm.green)
+console.debug('%c====================================', ccm.green)
 
 // have a function to create a client for you
 function makeClient() {
@@ -46,9 +46,9 @@ function makeClient() {
   })
 
   // **
-  return new NextSSRApolloClient({
-    // use the `NextSSRInMemoryCache`, not the normal `InMemoryCache`
-    cache: new NextSSRInMemoryCache(),
+  return new ApolloClient({
+    // use the `InMemoryCache`, not the normal `InMemoryCache`
+    cache: new InMemoryCache(),
     connectToDevTools: true,
     link:
       typeof window === 'undefined'
@@ -69,9 +69,9 @@ function makeClient() {
 export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
   // ** makeClient()
   // const madeClient = makeClient()
-  // console.debug('%c🦆 ApolloClientWrapper makeClient() => madeClient', ccm.greenAlert, madeClient) // NextSSRApolloClient
-  // console.debug('%c🦆 ApolloClientWrapper madeClient.cache', ccm.greenAlert, madeClient.cache) // NextSSRApolloClient.cache
-  // console.debug('%c🦆 ApolloClientWrapper madeClient.query', ccm.greenAlert, madeClient.query) // NextSSRApolloClient.query GetPreferences
+  // console.debug('%c🦆 ApolloClientWrapper makeClient() => madeClient', ccm.greenAlert, madeClient) // ApolloClient
+  // console.debug('%c🦆 ApolloClientWrapper madeClient.cache', ccm.greenAlert, madeClient.cache) // ApolloClient.cache
+  // console.debug('%c🦆 ApolloClientWrapper madeClient.query', ccm.greenAlert, madeClient.query) // ApolloClient.query GetPreferences
   // **
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
