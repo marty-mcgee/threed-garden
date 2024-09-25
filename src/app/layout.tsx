@@ -296,7 +296,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                 >
                                   
                                   <Header 
-                                    // key='ThreeDAppHeader'
+                                    key='ThreeDAppHeader'
                                   />
 
                                   <div 
@@ -306,7 +306,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                   </div>
 
                                   <Footer
-                                    // key='ThreeDAppFooter'
+                                    key='ThreeDAppFooter'
                                   />
                                 
                                 </div>

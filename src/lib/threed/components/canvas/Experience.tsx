@@ -56,7 +56,6 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 // import CharacterControls from '#//lib/ecctrl/src-old/Ecctrl'
 // import CharacterControls from '#//lib/ecctrl/src-old/CharacterControls'
 import CharacterControls from '#//lib/ecctrl/src/Ecctrl'
-
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
 import CharacterModelDemon from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -69,6 +68,8 @@ import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Cha
 // import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chicken'
 import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
+// ** THREED ANIMATIONS for Characters
+import ThreeDAnimations from '#/lib/threed/components/nouns/Character/Animations'
 
 // ** THREED OBJECTS
 // import Lights from '#/lib/threed/components/canvas/Lights'
@@ -92,18 +93,14 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
 import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
 
-// HELPERS Imports
+// HELPER Imports
 // ** UUID Generator
 import { v4 as newUUID } from 'uuid'
-// import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-// import { EcctrlAnimation } from '#//lib/ecctrl/src/EcctrlAnimation'
 
 // ** THREED.AI
 // import ThreeDAI from '#/lib/threed/components/tools/ThreeDAI' // TODO
-
-// ** IMPORT RESOURCES complete
 
 // **
 // ** DEBUGGING
@@ -137,7 +134,7 @@ const ThreeDExperience = forwardRef((
     threeds: Object[],
     // props
   }, 
-  ref: any
+  refCanvas: any
 ) => {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
@@ -153,7 +150,7 @@ const ThreeDExperience = forwardRef((
   // console.debug(`%c CHARACTER MODEL: prefs`, ccm.redAlert, prefs)
 
   // ** Delay physics activate
-  const [pausedPhysics, setPausedPhysics] = useState(true)
+  const [pausedPhysics, setPausedPhysics] = useState(prefs.doWorldPhysics)
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
@@ -310,9 +307,7 @@ const ThreeDExperience = forwardRef((
 
 
   // ==========================================================
-  /**
-   * Keyboard control preset
-   */
+  // ** KEYBOARD control presets
   const keyboardMap = [
     { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
     { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
@@ -326,9 +321,7 @@ const ThreeDExperience = forwardRef((
     { name: 'action4', keys: ['KeyF'] },
   ]
 
-  // const camera = new THREE.PerspectiveCamera()
-
-  // ** BOUNDS behavior
+  // ** R3F BOUNDS behavior
   const configBounds = {
     fit: false,
     clip: false,
@@ -343,7 +336,7 @@ const ThreeDExperience = forwardRef((
   // ==========================================================
   // ** RETURN JSX
   return (
-    <group ref={ref}>
+    <group ref={refCanvas}>
 
       {/* EXAMPLES: BIRDS */}
       <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
@@ -358,6 +351,7 @@ const ThreeDExperience = forwardRef((
         paused={pausedPhysics}
       >
 
+        {/* R3F BOUNDS */}
         <Bounds 
           fit={configBounds.fit} 
           clip={configBounds.clip}
@@ -417,10 +411,14 @@ const ThreeDExperience = forwardRef((
 
           {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
           {/* CHARACTER MODELS */}
-            {/* <Suspense fallback={null}> */}
+          {/* <Suspense fallback={null}> */}
+          
+          <ThreeDAnimations />
+
           <KeyboardControls map={keyboardMap}>
 
             {/* CHARACTER MODEL */}
+            { false && (
             <group key='character0' position={[-1.6, 0.396 - 0.396, -1.6]}>
               <CharacterControls
                 debug={prefs.doWorldDebug}
@@ -445,9 +443,11 @@ const ThreeDExperience = forwardRef((
                 {/* <CharacterModelChicken scale={2.0} /> */}
               </CharacterControls>
             </group>
+            )}
             {/* END: CHARACTER MODEL */}
             
             {/* CHARACTER MODEL */}
+            { false && (
             <group key='character1' position={[0, 0.396, 0]}>
               <CharacterControls
                 debug={prefs.doWorldDebug}
@@ -472,13 +472,18 @@ const ThreeDExperience = forwardRef((
                 {/* <CharacterModelFloating /> */}
                 {/* <CharacterModelStacy /> */}
                 <CharacterModelFarmerWomanFloating scale={0.016} />
-                {/* <CharacterModelFarmerManFloating /> */}
+                {/* <CharacterModelFarmerManFloating scale={0.016} /> */}
               </CharacterControls>
             </group>
+            )}
             {/* END: CHARACTER MODEL */}
           
           </KeyboardControls>
-            {/* </Suspense> */}
+
+          {/* </Suspense> */}
+          {/* END: CHARACTER MODELS */}
+
+          {/* BEGIN: RIGID OBJECTS */}
 
           {/* // import Map from './Map' */}
           <group 
@@ -493,17 +498,19 @@ const ThreeDExperience = forwardRef((
           {/* THREED MODELS as props.threeds */}
           <group
             key='threed_models_children'
+            // scale all threeds?
             scale={0.3}
           >
             <ThreeDModels
               threeds={threeds} // threeds={{}}
-              // position={[ -4, 0, 0 ]}
+              // master position for all threeds?
+              // position={[-4, 0, 0]}
             />
           </group>
 
-          {/* END: BOUNDS */}
           </SelectToZoom>
         </Bounds>
+        {/* END: R3F BOUNDS */}
 
         {/* ** FLOORS ** */}
         {/* solid steps (levels, safety) */}
@@ -511,22 +518,22 @@ const ThreeDExperience = forwardRef((
         <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
           <Floor color={'darkgreen'} opacity={0.6} />
         </group>
-        {/* backup solid steps (levels[1+], safety) */}
-        {/* Sub-Floor[s] (Plane < 0) */}
-        {/* <SubFloor level={`${level[index]}`} /> */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-          <Floor color={'saddlebrown'} opacity={0.4} />
-        </group> */}
-        {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-            DEEP BELOW SEA LEVEL */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
-          <Floor color={'darkblue'} opacity={0.2} />
-        </group> */}
-        {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
-            DEEP DEEP DEEP BELOW SEA LEVEL */}
-        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
-          <Ground color={'black'} opacity={0.0} />
-        </group> */}
+          {/* backup solid steps (levels[1+], safety) */}
+          {/* Sub-Floor[s] (Plane < 0) */}
+          {/* <SubFloor level={`${level[index]}`} /> */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+            <Floor color={'saddlebrown'} opacity={0.4} />
+          </group> */}
+          {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
+              DEEP BELOW SEA LEVEL */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
+            <Floor color={'darkblue'} opacity={0.2} />
+          </group> */}
+          {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
+              DEEP DEEP DEEP BELOW SEA LEVEL */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
+            <Ground color={'black'} opacity={0.0} />
+          </group> */}
 
       </Physics>
     </group>

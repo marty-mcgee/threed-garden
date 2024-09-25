@@ -126,7 +126,7 @@ import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 // const ThreeDFarmBotMain = dynamic(() => import('#/lib/threed/threed-farmbot/main'), { ssr: false })
 
 // ** HELPER Components
-// // import Spinner from '#/layout/ui/components/spinner'
+import Spinner from '#/layout/ui/components/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -409,8 +409,8 @@ const ThreeDGarden = (): React.ReactNode => {
     >
 
       { !isPrefsLoaded && (
-        // <Spinner />
-        <>LOADING...</>
+        <Spinner />
+        // <>LOADING...</>
       )}
 
       { isPrefsLoaded && (

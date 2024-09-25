@@ -305,7 +305,7 @@ export const ThreeDCanvas = (
   // console.debug('%c prefs', ccm.red, prefs)
 
   // ** REF-erences using REACT
-  const ref: any = useRef<any>()
+  const refCanvas: any = useRef<any>()
 
   
   {/* ⚙️ &#x2699; */}
@@ -512,7 +512,7 @@ export const ThreeDCanvas = (
 
             threeds={threeds} 
             
-            ref={ref} // when using function as a forwardRef // THREED IO
+            ref={refCanvas} // when using function as a forwardRef // THREED IO
 
             // config: Object, // Config
             config={config}

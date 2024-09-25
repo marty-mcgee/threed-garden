@@ -27,7 +27,7 @@ import * as THREE from 'three'
 // import * as THREE from 'three'
 // import React, { useRef } from 'react'
 // import { useGLTF, useAnimations } from '@react-three/drei'
-import { GLTF} from 'three-stdlib'
+import { GLTF } from 'three-stdlib'
 
 // ** TYPES Imports
 import type { GLTF as GLTFType } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -43,6 +43,9 @@ import {
   // // (instances of):
   // Merged,
 } from '@react-three/drei'
+
+// ** REACT SPRING Imports
+import { a, useSpring } from '@react-spring/three'
 
 // ** LEVA Imports
 import { useControls } from 'leva'
@@ -127,8 +130,8 @@ type GLTFResult = GLTF & {
     Foot_L: THREE.Bone
     ball_l: THREE.Bone
     toes_l: THREE.Bone
-    // actions
-    mixamorigHips: THREE.Bone
+    // actions?
+    // mixamorigHips: THREE.Bone
   }
   materials: {
     lambert2: THREE.MeshStandardMaterial
@@ -136,91 +139,92 @@ type GLTFResult = GLTF & {
 }
 // **
 // **
-  // ** ANIMATIONS ****************************************
-  // **
-  const anims = [
-    'Breathing Idle',
-    'Crouch To Stand',
-    'Crouching Idle',
-    'Crouching',
-    'Driving',
-    'Entering Car',
-    'Exiting Car',
-    'Idle',
-    'Left Turn',
-    'Moonwalk',
-    'Planting A Plant',
-    'Pointing Gesture',
-    'Pointing',
-    'Push Up',
-    'Right Turn',
-    'Running',
-    'Standing To Crouched',
-    'Talking',
-    'Turn',
-    'Walking Backwards',
-    'Walking',
-  ]
-  const animsFarming = [
-    'farming/box idle',
-    'farming/box idle',
-    'farming/box turn (2)',
-    'farming/box turn',
-    'farming/box walk arc',
-    'farming/cow milking',
-    'farming/dig and plant seeds',
-    'farming/holding idle',
-    'farming/holding turn left',
-    'farming/holding turn right',
-    'farming/holding walk',
-    'farming/kneeling idle',
-    'farming/pick fruit (2)',
-    'farming/pick fruit (3)',
-    'farming/pick fruit',
-    'farming/plant a plant',
-    'farming/plant tree',
-    'farming/pull plant (2)',
-    'farming/pull plant',
-    'farming/watering',
-    'farming/wheelbarrow dump',
-    'farming/wheelbarrow idle',
-    'farming/wheelbarrow walk (2)',
-    'farming/wheelbarrow walk turn (2)',
-    'farming/wheelbarrow walk turn',
-    'farming/wheelbarrow walk',
-  ]
-  anims.push(...animsFarming)
-  // console.debug('anims', anims)
+// ** ANIMATIONS ****************************************
+// **
+const anims = [
+  'Breathing Idle',
+  'Crouch To Stand',
+  'Crouching Idle',
+  'Crouching',
+  'Driving',
+  'Entering Car',
+  'Exiting Car',
+  'Idle',
+  'Left Turn',
+  'Moonwalk',
+  'Planting A Plant',
+  'Pointing Gesture',
+  'Pointing',
+  'Push Up',
+  'Right Turn',
+  'Running',
+  'Standing To Crouched',
+  'Talking',
+  'Turn',
+  'Walking Backwards',
+  'Walking',
+]
+const animsFarming = [
+  'farming/box idle',
+  'farming/box idle',
+  'farming/box turn (2)',
+  'farming/box turn',
+  'farming/box walk arc',
+  'farming/cow milking',
+  'farming/dig and plant seeds',
+  'farming/holding idle',
+  'farming/holding turn left',
+  'farming/holding turn right',
+  'farming/holding walk',
+  'farming/kneeling idle',
+  'farming/pick fruit (2)',
+  'farming/pick fruit (3)',
+  'farming/pick fruit',
+  'farming/plant a plant',
+  'farming/plant tree',
+  'farming/pull plant (2)',
+  'farming/pull plant',
+  'farming/watering',
+  'farming/wheelbarrow dump',
+  'farming/wheelbarrow idle',
+  'farming/wheelbarrow walk (2)',
+  'farming/wheelbarrow walk turn (2)',
+  'farming/wheelbarrow walk turn',
+  'farming/wheelbarrow walk',
+]
+anims.push(...animsFarming)
+// console.debug('anims', anims)
 
-  // Rename your character animations here
-  const animationSetNew = {
-    idle:     'Breathing Idle',
-    walk:     'Walking',
-    run:      'Running',
-    jump:     'Crouch To Stand',
-    jumpIdle: 'Crouching',
-    jumpLand: 'Standing To Crouched',
-    fall:     'Idle',
-    action1:  'Planting A Plant',
-    action2:  'Talking',
-    action3:  'Pointing Gesture',
-    action4:  'Pointing',
-  }
-  // const animationSet = {
-  //   idle: 'Idle',
-  //   walk: 'Walk',
-  //   run: 'Run',
-  //   jump: 'Jump_Start',
-  //   jumpIdle: 'Jump_Idle',
-  //   jumpLand: 'Jump_Land',
-  //   fall: 'Climbing', // This is for falling from high sky
-  //   action1: 'Wave',
-  //   action2: 'Dance',
-  //   action3: 'Cheer',
-  //   action4: 'Attack(1h)',
-  // }
-  const animationSet = animationSetNew
-  // console.debug('animationSet', animationSet)
+// Rename your character animations here
+const animationSetNew = {
+  idle:     'Breathing Idle',
+  walk:     'Walking',
+  run:      'Running',
+  jump:     'Crouch To Stand',
+  jumpIdle: 'Crouching',
+  jumpLand: 'Standing To Crouched',
+  fall:     'Idle',
+  action1:  'Planting A Plant',
+  action2:  'Talking',
+  action3:  'Pointing Gesture',
+  action4:  'Pointing',
+}
+// const animationSet = {
+//   idle: 'Idle',
+//   walk: 'Walk',
+//   run: 'Run',
+//   jump: 'Jump_Start',
+//   jumpIdle: 'Jump_Idle',
+//   jumpLand: 'Jump_Land',
+//   fall: 'Climbing', // This is for falling from high sky
+//   action1: 'Wave',
+//   action2: 'Dance',
+//   action3: 'Cheer',
+//   action4: 'Attack(1h)',
+// }
+const animationSet = animationSetNew
+// console.debug('animationSet', animationSet)
+
 // type ActionName = 'Take 001'
 type ActionName =
   | 'pockets'
@@ -266,8 +270,10 @@ export default function CharacterModel(props: CharacterModelProps) {
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c CHARACTER MODEL: APOLLO prefs`, ccm.orangeAlert, prefs)
 
+
   // ** TESTING instances of character model
   // const instances = useContext(context)
+
 
   const group = useRef<THREE.Group>()
 
@@ -282,10 +288,40 @@ export default function CharacterModel(props: CharacterModelProps) {
     // console.debug(`%c model nodes, materials, animations`, ccm.yellow, nodes, materials, animations)
     console.debug(`%c model group`, ccm.orangeAlert, group)
 
-  // @ts-expect-error // TODO: match Type GLTFActions
-  const { actions } = useAnimations<GLTFActions>(animations, group)
+
+  // Extract animation actions
+  const { ref, actions, names } = useAnimations(animations)
+  // @ ts-expect-error // TODO: match Type GLTFActions
+  // const { actions } = useAnimations<GLTFActions>(animations, group)
   if (debug) 
-    console.debug(`%c model group -- animations.actions`, ccm.orangeAlert, actions)
+    console.debug(`%c model group -- animations.actions`, ccm.orangeAlert, actions, names, ref)
+
+  // Hover and animation-index states
+  const [hovered, setHovered] = useState(false)
+  const [index, setIndex] = useState(4)
+
+  // Animate the selection halo
+  const { color, scale } = useSpring({
+    scale: hovered ? [1.15, 1.15, 1] : [1, 1, 1],
+    color: hovered ? '#ff6d6d' : '#569AFF',
+  })
+
+  // Change cursor on hover-state
+  useEffect(() => void (document.body.style.cursor = hovered ? 'pointer' : 'auto'), [hovered])
+
+  // Change animation when the index changes
+  useEffect((): any => {
+    // Reset and fade in animation after an index has been changed
+    actions[names[index]].reset().fadeIn(0.5).play()
+
+    // In the clean-up phase, fade it out
+    // (page route may have changed)
+    if (actions[names[index]]) {
+      return () => actions[names[index]].fadeOut(0.5)
+    }
+    return null
+  }, [index, actions, names])
+
 
   // gradientMapTexture for MeshToonMaterial
   const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
@@ -473,7 +509,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
     // Play animation
-    // @ts-expect-error // TODO: ???
+    // @ ts-expect-error // TODO: ???
     const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
     // const action = false
 
@@ -520,6 +556,7 @@ export default function CharacterModel(props: CharacterModelProps) {
       
       if (action) {
         // Fade out previous action
+        // @ts-expect-error
         action.fadeOut(0.2)
 
         // Clean up mixer listener, and empty the _listeners array
@@ -603,13 +640,20 @@ export default function CharacterModel(props: CharacterModelProps) {
     > */}
       {/* ANIMATED CHARACTER Model Group */}
       <group
+        // // ref={group}
+        // // @ts-expect-error
+        // ref={ref}
+        // {...props}
+        // dispose={null}
+        // // scale={1.0}
+        // // scale={0.016}
+        // // position={[0, -0.64, 0]}
+        // name='ThreeD_Animated_Character'
         ref={group}
-        {...props}
         dispose={null}
-        // scale={1.0}
-        // scale={0.016}
-        // position={[0, -0.64, 0]}
+        scale={1.0} // default | get from props
         name='ThreeD_Animated_Character'
+        {...props}
       >
 
         {/* CUSTOM ANIMATION 'PUNCH EFFECT' */}
@@ -639,8 +683,13 @@ export default function CharacterModel(props: CharacterModelProps) {
             geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
             material={materials.lambert2}
             skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
-            receiveShadow
             castShadow
+            receiveShadow
+            onPointerOver={() => setHovered(true)}
+            onPointerOut={() => setHovered(false)}
+            onClick={() => setIndex((index + 1) % names.length)}
+            rotation={[-Math.PI / 2, 0, 0]}
+            scale={1}
           >
             {/* texture map */}
             <meshStandardMaterial 

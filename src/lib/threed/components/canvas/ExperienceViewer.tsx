@@ -258,7 +258,7 @@ const ThreeDExperienceViewer = forwardRef((
     activeFocus,
     setActiveFocus,
   }: ViewerProps, 
-  ref // the forwarded ref
+  refCanvas // the forwarded ref
 ) => {
 
   // ** HOOKS
@@ -322,7 +322,7 @@ const ThreeDExperienceViewer = forwardRef((
           {/* THREED EXPERIENCE */}
           <ThreeDExperience 
             threeds={threeds} 
-            ref={ref} 
+            ref={refCanvas} 
           />
           {/* <ThreeDExperienceNew /> */}
 
