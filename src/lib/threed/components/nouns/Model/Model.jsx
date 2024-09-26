@@ -59,7 +59,7 @@ import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // ** SPINNER
-// import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** CANVAS LOADER
 // import Loader from '@react-three/drei'
 // ** CANVAS HTML

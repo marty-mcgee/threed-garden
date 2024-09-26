@@ -94,7 +94,7 @@ import tunnel from '#//lib/threed/threed.io/tunnelrat'
 // import { threedAI } from '#//lib/threed/threed.ai/threedAI'
 
 // ** HELPER Components
-import Spinner from '#/layout/ui/components/spinner'
+import Spinner from '#/layout/ui/spinner'
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)

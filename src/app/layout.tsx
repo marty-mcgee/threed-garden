@@ -90,7 +90,7 @@ import Footer from '#/layout/footer'
 // const roboto = Roboto({ weight: '400', subsets: ['latin'] })
 
 // ** HELPER Components
-// import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 // ** Google Analytics

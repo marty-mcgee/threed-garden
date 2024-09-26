@@ -68,8 +68,6 @@ import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Cha
 // import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chicken'
 import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
-// ** THREED ANIMATIONS for Characters
-import ThreeDAnimations from '#/lib/threed/components/nouns/Character/Animations'
 
 // ** THREED OBJECTS
 // import Lights from '#/lib/threed/components/canvas/Lights'
@@ -412,8 +410,6 @@ const ThreeDExperience = forwardRef((
           {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
           {/* CHARACTER MODELS */}
           {/* <Suspense fallback={null}> */}
-          
-          <ThreeDAnimations />
 
           <KeyboardControls map={keyboardMap}>
 
