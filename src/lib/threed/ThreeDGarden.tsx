@@ -257,28 +257,27 @@ const {
 const ThreeDGarden = (): React.ReactNode => {
   // **
   // ==========================================================
-  // ** LOCAL VARS
-
-  const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
-
+  // ** TESTING: JSX
   // return <Spinner />
+
+  // ==========================================================
+  // ** LOCAL VARS
+  // const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
 
   // ==========================================================
   // ** HOOKS
 
-  // ==========================================================
   // ** USE SESSION
   // const { data, status } = useSession()
   const { data: sessionData, status: sessionStatus } = useSession()
   // console.debug('useSession().data', sessionData)
   // console.debug('useSession().status', sessionStatus)
 
-  // ==========================================================
   // ** USE CLIENT
   const client = useApolloClient()
   // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
-  // ** GET PREFERENCES
+  // ** USE PREFERENCES
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert) // , prefs
