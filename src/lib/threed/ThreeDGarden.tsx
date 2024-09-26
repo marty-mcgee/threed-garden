@@ -415,6 +415,10 @@ const ThreeDGarden = (): React.ReactNode => {
       // pr='2'
     >
 
+      {/* [MM] HEY HEY HEY */}
+      {/* <Text>{project_title}</Text> */}
+      {/* [MM] HEY HEY HEY */}
+
       { !isThreeDGardenLoaded && !isPrefsLoaded && (
         <>
           LOADING...
@@ -568,11 +572,6 @@ const ThreeDGarden = (): React.ReactNode => {
             {/* <ThreeDFarmBotMain /> */}
           </Flex>
           {/* END: THREED FARMBOT */}
-
-          {/* [MM] HEY HEY HEY */}
-          {/* <Text>{project_title}</Text> */}
-          {/* [MM] HEY HEY HEY */}
-
           
           {/* THREED JOYSTICK */}
           <Flex
