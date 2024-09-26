@@ -87,6 +87,7 @@ const animationFiles = [
 //   'farming/wheelbarrow walk',
 // ]
 // animationFiles.push(...animationFilesFarming)
+export const names = animationFiles
 
 let animations: Object[] = []
 // let name: String = 'Idle'
