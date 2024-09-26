@@ -44,7 +44,7 @@ import {
 // ** HELPER Imports
 import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
 // import Cubes from './Cubes' // for PerfHeadless
-import Spinner from '#/layout/ui/components/spinner'
+import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 

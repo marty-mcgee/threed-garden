@@ -41,7 +41,7 @@ import {
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 
 // ** HELPER Components
-// import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 

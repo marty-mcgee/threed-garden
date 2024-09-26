@@ -62,9 +62,12 @@ import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
 // ** ECCRTL ZUSTAND STATE
 import { useGame, type AnimationSet } from '#/lib/ecctrl/src/stores/useGame'
 
+// ** THREED ANIMATIONS for Characters
+import ThreeDAnimations from '#/lib/threed/components/nouns/Character/Animations'
+
 // ** HELPER Imports
 // import { Perf } from 'r3f-perf'
-// import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -137,63 +140,11 @@ type GLTFResult = GLTF & {
     lambert2: THREE.MeshStandardMaterial
   }
 }
-// **
+
 // **
 // ** ANIMATIONS ****************************************
 // **
-const anims = [
-  'Breathing Idle',
-  'Crouch To Stand',
-  'Crouching Idle',
-  'Crouching',
-  'Driving',
-  'Entering Car',
-  'Exiting Car',
-  'Idle',
-  'Left Turn',
-  'Moonwalk',
-  'Planting A Plant',
-  'Pointing Gesture',
-  'Pointing',
-  'Push Up',
-  'Right Turn',
-  'Running',
-  'Standing To Crouched',
-  'Talking',
-  'Turn',
-  'Walking Backwards',
-  'Walking',
-]
-const animsFarming = [
-  'farming/box idle',
-  'farming/box idle',
-  'farming/box turn (2)',
-  'farming/box turn',
-  'farming/box walk arc',
-  'farming/cow milking',
-  'farming/dig and plant seeds',
-  'farming/holding idle',
-  'farming/holding turn left',
-  'farming/holding turn right',
-  'farming/holding walk',
-  'farming/kneeling idle',
-  'farming/pick fruit (2)',
-  'farming/pick fruit (3)',
-  'farming/pick fruit',
-  'farming/plant a plant',
-  'farming/plant tree',
-  'farming/pull plant (2)',
-  'farming/pull plant',
-  'farming/watering',
-  'farming/wheelbarrow dump',
-  'farming/wheelbarrow idle',
-  'farming/wheelbarrow walk (2)',
-  'farming/wheelbarrow walk turn (2)',
-  'farming/wheelbarrow walk turn',
-  'farming/wheelbarrow walk',
-]
-anims.push(...animsFarming)
-// console.debug('anims', anims)
+const animations = ThreeDAnimations
 
 // Rename your character animations here
 const animationSetNew = {
