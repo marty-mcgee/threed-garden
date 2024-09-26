@@ -329,14 +329,17 @@ const ThreeDGarden = (): React.ReactNode => {
             }
           }
 
+          // ** READY TO GO ???
+          setIsThreeDGardenLoaded(true)
+
         } catch (error) {
           console.error('Error fetching data:', error);
         }
-      }
-
+      }      
       fetchData()
       if (DEBUG) 
         console.debug('%c fetching data ...', ccm.blue)
+
 
       // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
       const loadNounData = (_type: string = 'project', threeds: any = []) => {
@@ -412,18 +415,20 @@ const ThreeDGarden = (): React.ReactNode => {
       // pr='2'
     >
 
-      { !isPrefsLoaded && (
-        <Spinner />
-        // <>LOADING...</>
+      { !isThreeDGardenLoaded && !isPrefsLoaded && (
+        <>
+          LOADING...
+          <Spinner />  
+        </>
+        
       )}
 
-      { isPrefsLoaded && (
+      { isThreeDGardenLoaded && isPrefsLoaded && (
         
         <Flex
           // container
           id='threed_container'
           direction='column'
-          // width='100%'
           // ml='2'
           mr='2'
           // mt='1'
@@ -437,8 +442,6 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_controls'
-            // width='50%'
-            // direction='row'
             direction='column'
             // style={{
             //   // borderTop: '1px solid darkgreen',
@@ -449,16 +452,12 @@ const ThreeDGarden = (): React.ReactNode => {
             <Flex
               // item
               id='threed_leva_controls'
-              // style={{
-              //   // borderTop: '1px solid darkgreen',
-              //   // width: '100%',
-              //   width: '400px',
-              //   minWidth: '320px',
-              //   maxWidth: '480px',
-              // }}
+              style={{
+                // borderTop: '1px solid darkred',
+              }}
               direction='column'
             >
-              <ThreeDLevaControls />
+              {/* <ThreeDLevaControls /> */}
             </Flex>
             {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
@@ -467,14 +466,12 @@ const ThreeDGarden = (): React.ReactNode => {
               // item
               id='threed_actions'
               direction='column'
-            > */}
-              {/*
+            >
               <Button onClick={() => loadNounData('project', [])}>load project</Button>
               <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
               <Button onClick={() => loadNounData('character', [])}>load character</Button>
               <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-              */}
-            {/* </Flex> */}
+            </Flex> */}
             {/* END THREED CLICK LOADERS */}
 
           </Flex>
@@ -488,10 +485,10 @@ const ThreeDGarden = (): React.ReactNode => {
             // xs={12}
             // style={{
             //   // display: 'none',
-            //   // borderTop: '1px solid darkgreen',
+            //   borderTop: '1px solid darkgreen',
             //   // paddingLeft: '5px',
             // }}
-            direction='column'
+            // direction='column'
           >
             {/* <ThreeDToolbar /> */}
           </Flex>
