@@ -404,8 +404,9 @@ const ThreeDGarden = (): React.ReactNode => {
       direction='column'
       // columns={{ initial: '1', md: '1' }} 
       width='100%'
-      px='2'
-      py='1'
+      // px='2'
+      // py='1'
+      // pr='2'
     >
 
       { !isPrefsLoaded && (
@@ -419,13 +420,62 @@ const ThreeDGarden = (): React.ReactNode => {
           // container
           id='threed_container'
           direction='column'
-          width='100%'
+          // width='100%'
+          // ml='2'
+          mr='2'
+          // mt='1'
+          // mb='1'
           style={{
             border: '1px solid darkgreen',
-            marginLeft: '2px',
-            marginRight: '0px',
           }}
         >
+
+        
+
+        {/* THREED CONTROLS: ALL */}
+        <Flex
+          // item
+          id='threed_controls'
+          // width='50%'
+          // direction='row'
+          // direction='column'
+          // style={{
+          //   // borderTop: '1px solid darkgreen',
+          // }}
+        >
+
+          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+          {/* <Flex
+            // item
+            id='threed_leva_controls'
+            style={{
+              // borderTop: '1px solid darkgreen',
+              // width: '100%',
+              width: '400px',
+              minWidth: '320px',
+              maxWidth: '480px',
+            }}
+          > */}
+            <ThreeDLevaControls />
+          {/* </Flex> */}
+          {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+
+          {/* THREED CLICK LOADERS */}
+          {/* <Flex
+            // item
+            id='threed_actions'
+          > */}
+            {/*
+            <Button onClick={() => loadNounData('project', [])}>load project</Button>
+            <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
+            <Button onClick={() => loadNounData('character', [])}>load character</Button>
+            <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
+            */}
+          {/* </Flex> */}
+          {/* END THREED CLICK LOADERS */}
+
+        </Flex>
+        {/* END: THREED CONTROLS: ALL */}
 
           {/* THREED TOOLBAR */}
           {/* <Flex
@@ -449,10 +499,10 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_canvas_viewer'
-            style={{ 
-              // borderTop: '1px solid darkgreen',
-            }}
-            direction='column'
+            // style={{ 
+            //   // borderTop: '1px solid darkgreen',
+            // }}
+            // direction='column'
           >
             <ThreeDCanvasViewer />
           </Flex>
@@ -463,9 +513,9 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_control_panels'
-            style={{ 
-              borderTop: '1px solid darkgreen' 
-            }}
+            // style={{ 
+            //   borderTop: '1px solid darkgreen' 
+            // }}
             // direction='column'
           >
             <ThreeDControlPanels />
@@ -477,9 +527,9 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_views'
-            style={{ 
-              // borderTop: '0px solid darkgreen' 
-            }}
+            // style={{ 
+            //   // borderTop: '0px solid darkgreen' 
+            // }}
             // direction='column'
           >
             {/* <CatalogView /> */}
@@ -493,9 +543,9 @@ const ThreeDGarden = (): React.ReactNode => {
           <Flex
             // item
             id='threed_modals'
-            style={{ 
-              // borderTop: '0px solid darkgreen' 
-            }}
+            // style={{ 
+            //   // borderTop: '0px solid darkgreen' 
+            // }}
             // direction='column'
           >
             {/* <ModalAbout /> */}
@@ -523,57 +573,6 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* <Text>{project_title}</Text> */}
           {/* [MM] HEY HEY HEY */}
 
-        
-
-          {/* THREED CONTROLS: ALL */}
-          <Flex
-            // item
-            id='threed_controls'
-            // width='50%'
-            // direction='row'
-            // direction='column'
-            style={{
-              // borderTop: '1px solid darkgreen',
-            }}
-          >
-
-            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-            {/* <Flex
-              // item
-              id='threed_leva_controls'
-              style={{
-                // borderTop: '1px solid darkgreen',
-                // width: '100%',
-                width: '400px',
-                minWidth: '320px',
-                maxWidth: '480px',
-              }}
-            > */}
-              {/* <Box
-                // width={'400px'}
-              > */}
-                <ThreeDLevaControls />
-              {/* </Box> */}
-            {/* </Flex> */}
-            {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-
-            {/* THREED CLICK LOADERS */}
-            {/* <Flex
-              // item
-              id='threed_actions'
-            > */}
-              {/*
-              <Button onClick={() => loadNounData('project', [])}>load project</Button>
-              <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
-              <Button onClick={() => loadNounData('character', [])}>load character</Button>
-              <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-              */}
-            {/* </Flex> */}
-            {/* END THREED CLICK LOADERS */}
-
-          </Flex>
-          {/* END: THREED CONTROLS: ALL */}
-
           
           {/* THREED JOYSTICK */}
           <Flex
@@ -582,10 +581,10 @@ const ThreeDGarden = (): React.ReactNode => {
             // width='50%'
             // direction='row'
             // direction='column'
-            style={{
-              // borderTop: '1px solid darkgreen',
-              width: '50%',
-            }}
+            // style={{
+            //   // borderTop: '1px solid darkgreen',
+            //   width: '50%',
+            // }}
           >
             {/* CHARACTER CONTROL JOYSTICK */}
             {/* <EcctrlJoystick buttonNumber={0} /> */}
