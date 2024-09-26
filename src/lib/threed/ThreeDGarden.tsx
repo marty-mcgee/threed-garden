@@ -368,23 +368,27 @@ const ThreeDGarden = (): React.ReactNode => {
   if (DEBUG || debug) 
     console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert)
 
+    
   let project_title = 'NOT EVEN CLOSE'
+  if (DEBUG || debug) 
+    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreen, project_title)
 
 
   
 
 
   const EcctrlJoystickControls = () => {
-    const [isTouchScreen, setIsTouchScreen] = useState(false)
-    useEffect(() => {
-      // Check if using a touch control device, show/hide joystick
-      if (('ontouchstart' in window) ||
-        (navigator.maxTouchPoints > 0)) {
-        setIsTouchScreen(true)
-      } else {
-        setIsTouchScreen(false)
-      }
-    }, [])
+    const [isTouchScreen, setIsTouchScreen] = useState(true)
+    // const [isTouchScreen, setIsTouchScreen] = useState(false)
+    // useEffect(() => {
+    //   // Check if using a touch control device, show/hide joystick
+    //   if (('ontouchstart' in window) ||
+    //     (navigator.maxTouchPoints > 0)) {
+    //     setIsTouchScreen(true)
+    //   } else {
+    //     setIsTouchScreen(false)
+    //   }
+    // }, [])
     return (
       // {/* {isTouchScreen && <EcctrlJoystick buttonNumber={5} />} */}
       // {/* {true && <EcctrlJoystick buttonNumber={5} />} */}
@@ -403,7 +407,7 @@ const ThreeDGarden = (): React.ReactNode => {
       id='threed_garden'
       direction='column'
       // columns={{ initial: '1', md: '1' }} 
-      width='100%'
+      // width='100%'
       // px='2'
       // py='1'
       // pr='2'
@@ -430,68 +434,68 @@ const ThreeDGarden = (): React.ReactNode => {
           }}
         >
 
-        
-
-        {/* THREED CONTROLS: ALL */}
-        <Flex
-          // item
-          id='threed_controls'
-          // width='50%'
-          // direction='row'
-          // direction='column'
-          // style={{
-          //   // borderTop: '1px solid darkgreen',
-          // }}
-        >
-
-          {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-          {/* <Flex
+          {/* THREED CONTROLS: ALL */}
+          <Flex
             // item
-            id='threed_leva_controls'
-            style={{
-              // borderTop: '1px solid darkgreen',
-              // width: '100%',
-              width: '400px',
-              minWidth: '320px',
-              maxWidth: '480px',
-            }}
-          > */}
-            <ThreeDLevaControls />
-          {/* </Flex> */}
-          {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+            id='threed_controls'
+            // width='50%'
+            // direction='row'
+            direction='column'
+            // style={{
+            //   // borderTop: '1px solid darkgreen',
+            // }}
+          >
 
-          {/* THREED CLICK LOADERS */}
-          {/* <Flex
-            // item
-            id='threed_actions'
-          > */}
-            {/*
-            <Button onClick={() => loadNounData('project', [])}>load project</Button>
-            <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
-            <Button onClick={() => loadNounData('character', [])}>load character</Button>
-            <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-            */}
-          {/* </Flex> */}
-          {/* END THREED CLICK LOADERS */}
+            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
+            <Flex
+              // item
+              id='threed_leva_controls'
+              // style={{
+              //   // borderTop: '1px solid darkgreen',
+              //   // width: '100%',
+              //   width: '400px',
+              //   minWidth: '320px',
+              //   maxWidth: '480px',
+              // }}
+              direction='column'
+            >
+              <ThreeDLevaControls />
+            </Flex>
+            {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
-        </Flex>
-        {/* END: THREED CONTROLS: ALL */}
+            {/* THREED CLICK LOADERS */}
+            {/* <Flex
+              // item
+              id='threed_actions'
+              direction='column'
+            > */}
+              {/*
+              <Button onClick={() => loadNounData('project', [])}>load project</Button>
+              <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
+              <Button onClick={() => loadNounData('character', [])}>load character</Button>
+              <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
+              */}
+            {/* </Flex> */}
+            {/* END THREED CLICK LOADERS */}
+
+          </Flex>
+          {/* END: THREED CONTROLS: ALL */}
 
           {/* THREED TOOLBAR */}
-          {/* <Flex
+          <Flex
             // item
             id='threed_toolbar'
             // md={12}
             // xs={12}
-            style={{
-              // display: 'none',
-              // borderTop: '1px solid darkgreen',
-              paddingLeft: '5px',
-            }}
+            // style={{
+            //   // display: 'none',
+            //   // borderTop: '1px solid darkgreen',
+            //   // paddingLeft: '5px',
+            // }}
             direction='column'
           >
-            <ThreeDToolbar />
-          </Flex> */}
+            {/* <ThreeDToolbar /> */}
+          </Flex>
           {/* END: THREED TOOLBAR */}
           
           {/* THREED CANVAS VIEWER */}
@@ -502,7 +506,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // style={{ 
             //   // borderTop: '1px solid darkgreen',
             // }}
-            // direction='column'
+            direction='column'
           >
             <ThreeDCanvasViewer />
           </Flex>
@@ -516,7 +520,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // style={{ 
             //   borderTop: '1px solid darkgreen' 
             // }}
-            // direction='column'
+            direction='column'
           >
             <ThreeDControlPanels />
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
@@ -530,7 +534,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // style={{ 
             //   // borderTop: '0px solid darkgreen' 
             // }}
-            // direction='column'
+            direction='column'
           >
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
@@ -546,7 +550,7 @@ const ThreeDGarden = (): React.ReactNode => {
             // style={{ 
             //   // borderTop: '0px solid darkgreen' 
             // }}
-            // direction='column'
+            direction='column'
           >
             {/* <ModalAbout /> */}
             {/* <ModalModel3d /> */}
@@ -556,7 +560,7 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* END: THREED MODALS */}
 
           {/* THREED FARMBOT */}
-          {/* <Flex
+          <Flex
             // item
             id='threed_farmbot'
             style={{ 
@@ -565,8 +569,8 @@ const ThreeDGarden = (): React.ReactNode => {
             }}
             direction='column'
           >
-            <ThreeDFarmBotMain />
-          </Flex> */}
+            {/* <ThreeDFarmBotMain /> */}
+          </Flex>
           {/* END: THREED FARMBOT */}
 
           {/* [MM] HEY HEY HEY */}
@@ -580,7 +584,7 @@ const ThreeDGarden = (): React.ReactNode => {
             id='threed_joystick'
             // width='50%'
             // direction='row'
-            // direction='column'
+            direction='column'
             // style={{
             //   // borderTop: '1px solid darkgreen',
             //   width: '50%',
