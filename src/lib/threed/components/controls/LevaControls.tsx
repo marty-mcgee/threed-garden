@@ -13,7 +13,7 @@ import {
 } from 'leva'
 // import { useFullscreen } from 'react-use'
 // import { spring } from '@leva-ui/plugin-spring'
-import { Noise } from 'noisejs'
+// import Noise from 'noisejs'
 
 // ** APOLLO Imports
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
@@ -39,7 +39,7 @@ const debug = false
 const DEBUG = false
 
 // ** WAVEFORM SUPPORT
-const noise = new Noise(Math.random())
+// const noise = new Noise(Math.random())
 
 // ==========================================================
 
@@ -206,18 +206,6 @@ export function ThreeDLevaControls() {
 
   const theme = { colors, radii, space, fontSizes, sizes, borderWidths, fontWeights }
 
-  // // **
-  // const refMon = useRef(4) // 4 ?
-  // // **
-  // useEffect(() => {
-  //   let x = 0
-  //   setInterval(() => {
-  //     x += 0.1
-  //     const t = Date.now()
-  //     refMon.current = 2 * noise.simplex2(3 * x + t, x) + (3 * Math.sin(x)) / x
-  //   }, 30)
-  // }, [])
-
   // ** LEVA GUI CONTROL PANEL
   const [{
     showTitleBar,
@@ -225,10 +213,9 @@ export function ThreeDLevaControls() {
     drag,
     filter,
     position,
-    fullScreen,
-    oneLineLabels,
-    // **
-    refMonitor
+    // fullScreen,
+    // oneLineLabels,
+    // refMonitor
   }, setControlPanelLeva] = useControls(
     'ThreeD Control Panel',
     () => ({
@@ -240,8 +227,10 @@ export function ThreeDLevaControls() {
       position: { value: { x: 10, y: 60 }, render: (get) => get('Panel.showTitleBar') },
       // fullScreen: true,
       // oneLineLabels: false,
-      // **
-      // refMonitor: { value: monitor(refMon, { graph: true, interval: 60 }), render: (get) => get('Panel.showTitleBar') },
+      // refMonitor: { 
+      //   value:  monitor(refMon, { graph: true, interval: 60 }), 
+      //           render: (get) => get('Panel.showTitleBar') 
+      // },
     }),
     {
       color: 'darkgreen',
@@ -373,6 +362,18 @@ export function ThreeDLevaControls() {
 
   // ==========================================================
 
+  // // **
+  // const refMon = useRef(4) // 4 ?
+  // // **
+  // useEffect(() => {
+  //   let x = 0
+  //   setInterval(() => {
+  //     x += 0.1
+  //     const t = Date.now()
+  //     refMon.current = 2 * noise.simplex2(3 * x + t, x) + (3 * Math.sin(x)) / x
+  //   }, 30)
+  // }, [])
+
   // useFullscreen({ current: document.documentElement }, fullScreen, {
   //   onClose: () => setControlPanelLeva({ fullScreen: false }),
   // })
@@ -380,12 +381,9 @@ export function ThreeDLevaControls() {
   // ==========================================================
 
   return (
-    <Flex
-      display={'column'}
-      width={'100%'}
-    >
-      <Flex
-        display={'column'}
+    <>
+      <Box
+        // display={'column'}
         style={{
           // display: 'grid',
           width: '420px',
@@ -394,18 +392,18 @@ export function ThreeDLevaControls() {
           // marginRight: 0,
           // float: 'left',
           // background: '#181C20',
-          // position: 'absolute',
+          position: 'absolute',
           // // zIndex: 9600,
-          // top: 4,
-          // left: 140,
+          top: 4,
+          left: 140,
         }}
       >
         <Leva
           isRoot={true}
           titleBar={showTitleBar && { drag, title, filter, position }} // TITLE | PROJECT_NAME
-          hideTitleBar={true} // default = false. true hides the GUI header
+          // hideTitleBar={true} // default = false. true hides the GUI header
           theme={theme} // you can pass a custom theme (see the styling section)
-          collapsed={true} // default = false. true makes the GUI collapsed to start
+          collapsed={false} // default = false. true makes the GUI collapsed to start
           fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
           flat={true} // default = false. true removes border radius and shadow
           hidden={false} // default = false. true hides the GUI
@@ -413,7 +411,7 @@ export function ThreeDLevaControls() {
           oneLineLabels={false} // default = false. true makes labels + fields on separate rows
           hideCopyButton={true} // default = false. true hides the onHover copy button
         />
-      </Flex>
+      </Box>
       {/* <Box
         style={{
           // display: 'grid',
@@ -435,7 +433,7 @@ export function ThreeDLevaControls() {
         {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
       {/* </Box> */}
     
-    </Flex>
+    </>
   )
 }
 
