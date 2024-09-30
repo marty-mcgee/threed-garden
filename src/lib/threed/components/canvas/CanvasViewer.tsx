@@ -2,6 +2,10 @@
 // ==========================================================
 // RESOURCES
 
+// ** REACT Imports
+import { useState } from 'react'
+import { useEffect } from 'react'
+
 // ** NEXT Imports
 import Image from 'next/image'
 
@@ -17,9 +21,6 @@ import {
   projectStore,
   // ...stores
 } from '#/lib/stores/apollo'
-// temporarily while coding
-import { useState } from 'react'
-import { useEffect } from 'react'
 
 // ** RADIX-UI Imports
 import * as Collapsible from '@radix-ui/react-collapsible'
@@ -47,6 +48,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE
+// SETUP VARIABLES...
 // ==========================================================
 
 // DEBUG PREFERENCES FOR THIS MODULE
