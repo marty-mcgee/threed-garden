@@ -1,7 +1,7 @@
 // ==============================================================
 // ** RESOURCES
 
-// import * as THREE from 'three'
+import * as THREE from 'three'
 // import { TextureLoader } from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -89,32 +89,62 @@ const animationFiles = [
 // animationFiles.push(...animationFilesFarming)
 export const names = animationFiles
 
-let animations: Object[] = []
+// let animations: Object[] = []
 // let name: String = 'Idle'
+let animations: any = []
 
-const player = {
+let player = {
   action: 'Idle',
   actionTime: Date.now(),
   // animations: new Array(),
-  mixer: {
-    clipAction: new Function(),
-    stopAllAction: new Function(),
-  }
+  // mixer: {
+  //   clipAction: new Function(),
+  //   stopAllAction: new Function(),
+  // }
+  mixer: new THREE.AnimationMixer(new THREE.Object3D()),
 }
 
-function setAction(name: any = 'Idle') {
-  // **
-  const action = player.mixer.clipAction( animations[name] )
-  action.time = 0
-  player.mixer.stopAllAction()
-  player.action = name
-  player.actionTime = Date.now()
-  console.debug("%c player", ccm.yellow, player)
-  action.fadeIn(0.5)	
-  action.play()
+/**
+ * THREED CHARACTER "PLAYER" ACTIONS
+ */
+export const ThreeDPlayer = {
+  // ** 
+  player: player,
+  mixer: new THREE.AnimationMixer(new THREE.Object3D()),
+  move: () => {},
+  setAction(name: string = 'Idle') {
+    const action = this.player.mixer.clipAction(animations[0]) // [name]
+    action.time = 0
+    console.log('CHARACTER: action name', name)
+    // console.log("CHARACTER: animations[name]", animations[name])
+    // console.log("CHARACTER: action object", action)
+    this.player.mixer.stopAllAction()
+    this.player.action = name
+    this.player.actionTime = Date.now()
+    console.debug("%c this.player", ccm.yellow, this.player)
+    // action.fadeIn(0.5) // causes arms to move awkwardly
+    action.play()
+  },
+  getAction() {
+    if (this.player === undefined 
+      || this.player.action === undefined) {
+      return "doesn't exist yet"
+    }
+    return this.player.action
+  },
+  toggleAnimation() {
+    if (this.player.action === 'Idle') {
+      this.setAction('Pointing Gesture')
+    } else {
+      this.setAction('Idle')
+    }
+  },
 }
+// const player = character
+// const player = ThreeDPlayer
 
-const ThreeDAnimations = () => {
+
+export const ThreeDAnimations = () => {
 
   console.debug('%c animationFiles', ccm.darkred, animationFiles)
   // console.debug("%c animations", ccm.red, animations)

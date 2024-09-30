@@ -58,12 +58,19 @@ import {
 } from '@react-three/rapier'
 
 // ** ECCRTL CHARACTER ANIMATION
-import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
+// import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
 // ** ECCRTL ZUSTAND STATE
-import { useGame, type AnimationSet } from '#/lib/ecctrl/src/stores/useGame'
+import { 
+  useGame, 
+  type AnimationSet,
+} from '#/lib/ecctrl/src/stores/useGame'
 
-// ** THREED ANIMATIONS for Characters
-import ThreeDAnimations, { names } from '#/lib/threed/components/nouns/Character/Animations'
+// ** THREED ANIMATIONS for Characters/Players
+import { 
+  ThreeDPlayer, 
+  ThreeDAnimations, 
+  names,
+} from '#/lib/threed/components/nouns/Character/Animations'
 
 // ** HELPER Imports
 // import { Perf } from 'r3f-perf'
@@ -144,7 +151,7 @@ type GLTFResult = GLTF & {
 // **
 // ** ANIMATIONS ****************************************
 // **
-const animations = ThreeDAnimations
+// const animations = ThreeDAnimations
 
 // Rename your character animations here
 const animationSetNew = {
@@ -393,10 +400,10 @@ export default function CharacterModel(props: CharacterModelProps) {
         if (obj.name === 'handSlotLeft') leftHand = obj
       }
       // Prepare mug model for cheer action
-      if (obj.name === 'mug') {
-        mugModel = obj
-        mugModel.visible = false
-      }
+      // if (obj.name === 'mug') {
+      //   mugModel = obj
+      //   mugModel.visible = false
+      // }
     })
   })
 
@@ -414,6 +421,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     // [MM] END HEY HEY HEY
 
     if (curAnimation === animationSet.action4) {
+      
       if (rightHand) {
         rightHand.getWorldPosition(rightHandPos)
         group.current.getWorldPosition(bodyPosition)

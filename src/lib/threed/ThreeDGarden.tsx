@@ -90,25 +90,31 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 // import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
-// ** ThreeD using Leva GUI
-import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+// ** ThreeD Controls Imports
+import ThreeDControls from '#/lib/threed/components/controls/Controls'
 
-// ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
-import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
-// const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
+// // ** ThreeD using Leva GUI
+// import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
-// ** ThreeD Toolbar
-import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
+// // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
+// import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
+// // const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
 
-// ** Modal Imports
+// // ** ThreeD Toolbar
+// import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
+
+
+
+
+// ** ThreeD Modal Imports
 // import ThreeDModals from '#/lib/threed/components/modals/Modals'
 
-// ** View Imports
+// ** ThreeD View Imports
 import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsPools'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsCities'
 
-// ** THREED JOYSTICK
+// ** ThreeD Joystick Imports
 import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
 // ** CSS Styles Imports
@@ -405,9 +411,9 @@ const ThreeDGarden = (): React.ReactNode => {
   // ==========================================================
   // ** RETURN JSX
   return (
-    <Flex
+    <Box
       id='threed_garden'
-      direction='column'
+      // direction='column'
       // columns={{ initial: '1', md: '1' }} 
       // width='100%'
       // px='2'
@@ -451,9 +457,10 @@ const ThreeDGarden = (): React.ReactNode => {
             //   // borderTop: '1px solid darkgreen',
             // }}
           >
+            <ThreeDControls />
 
             {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-            <Flex
+            {/* <Flex
               // item
               id='threed_leva_controls'
               style={{
@@ -461,17 +468,18 @@ const ThreeDGarden = (): React.ReactNode => {
               }}
               direction='column'
             >
-              {/* <ThreeDLevaControls /> */}
-            </Flex>
+              <ThreeDLevaControls />
+            </Flex> */}
             {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
             {/* THREED CLICK LOADERS */}
             {/* <Flex
               // item
               id='threed_actions'
-              direction='column'
+              direction='row'
             >
-              <Button onClick={() => loadNounData('project', [])}>load project</Button>
+              <ThreeDToolbar />
+              <Button onClick={() => loadNounData('proj`ect', [])}>load project</Button>
               <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
               <Button onClick={() => loadNounData('character', [])}>load character</Button>
               <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
@@ -499,7 +507,6 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* END: THREED TOOLBAR */}
           
           {/* THREED CANVAS VIEWER */}
-          {/* HEY HEY HEY -- THREED CANVAS: VIEWER COMPONENT WRAPPER */}
           <Flex
             // item
             id='threed_canvas_viewer'
@@ -513,54 +520,54 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* END: THREED CANVAS VIEWER */}
 
           {/* THREED CONTROL PANELS */}
-          {/* -- STORE ACCESS (apollo, valtio, leva) */}
-          <Flex
+          {/* -- STORE ACCESS (apollo, zustand, valtio, leva) */}
+          {/* <Flex
             // item
             id='threed_control_panels'
             // style={{ 
             //   borderTop: '1px solid darkgreen' 
             // }}
             direction='column'
-          >
-            <ThreeDControlPanels />
+          > */}
+            {/* <ThreeDControlPanels /> */}
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED CONTROL PANELS */}
 
           {/* THREED VIEWS */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_views'
             // style={{ 
             //   // borderTop: '0px solid darkgreen' 
             // }}
             direction='column'
-          >
+          > */}
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
             {/* <PlanView /> */}
             {/* <TheBottom /> */}
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED VIEWS */}
 
           {/* THREED MODALS */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_modals'
             // style={{ 
             //   // borderTop: '0px solid darkgreen' 
             // }}
             direction='column'
-          >
+          > */}
             {/* <ModalAbout /> */}
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED MODALS */}
 
           {/* THREED FARMBOT */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_farmbot'
             style={{ 
@@ -568,9 +575,9 @@ const ThreeDGarden = (): React.ReactNode => {
               // padding: '16px' 
             }}
             direction='column'
-          >
+          > */}
             {/* <ThreeDFarmBotMain /> */}
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED FARMBOT */}
           
           {/* THREED JOYSTICK */}
@@ -596,7 +603,7 @@ const ThreeDGarden = (): React.ReactNode => {
         </Flex>
         
       )}
-    </Flex>
+    </Box>
   )
 }
 
