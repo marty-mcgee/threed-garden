@@ -479,13 +479,13 @@ export const ThreeDCanvas = (
 
 
         {/* SUSPENSEFUL... */}
-        <Suspense fallback={null}>
+        {/* <Suspense fallback={null}> */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
         {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
         {/* using react-three-drei Loader + useProgress */}
-        {/* <Suspense fallback={
+        <Suspense fallback={
           <Html center>
             <Loader
               // containerStyles={...container} // Flex layout styles
@@ -496,7 +496,7 @@ export const ThreeDCanvas = (
               initialState={(active = false) => active} // Initial black out state
             />
           </Html>
-        }> */}
+        }>
 
           {/* PLANTS from THREED FARMBOT */}
           {/* <Model {...common} /> */}
