@@ -14,6 +14,8 @@ import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
 
 const ThreeDControls = () => {
 
+  // ** THREED CONTROL(S)
+  console.debug('THREED CONTROL(S)')
   return (
     <>
       {/* <h1>ThreeD Controls</h1> */}
