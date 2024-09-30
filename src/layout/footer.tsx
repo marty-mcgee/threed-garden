@@ -1,4 +1,5 @@
 import CustomLink from './custom-link'
+// import MainNav from './main-nav'
 
 export default function Footer() {
   // const appVersion: string = 'v0.16.1'
@@ -31,6 +32,9 @@ export default function Footer() {
       <CustomLink href='/home' style={{color: 'gray'}}>
         Home Page
       </CustomLink> */}
+
+      {/* <MainNav /> */}
+    
     </footer>
   )
 }
