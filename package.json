@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.16.1-beta.1",
+  "version": "0.16.1-beta.2",
   "description": "ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, APIs: WordPress, Apollo GraphQL, Leva Control GUI, Radix-UI, Tailwind CSS, 3D FarmBot React (Beta), Open AI",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -82,8 +82,11 @@
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
 
-    "@mui/material": "^5.15.20",
+    "@mui/material": "^6.1.1",
+    "@mui/icons-material": "^6.1.1",
     "styled-components": "^6.1.11",
+    "@emotion/styled": "^11.13.0",
+    "@emotion/react": "^11.13.3",
 
     "tailwindcss": "^3.4.10",
     "tailwind-merge": "^2.5.2",

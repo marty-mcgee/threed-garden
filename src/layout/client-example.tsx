@@ -1,20 +1,20 @@
-"use client"
+'use client'
 
-import { useSession } from "next-auth/react"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { useState } from "react"
-import SessionData from "./session-data"
-import CustomLink from "./custom-link"
+import { useSession } from 'next-auth/react'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { useState } from 'react'
+import SessionData from './session-data'
+import CustomLink from './ui/custom-link'
 
 const UpdateForm = () => {
   const { data: session, update } = useSession()
-  const [name, setName] = useState(session?.user?.name ?? "")
+  const [name, setName] = useState(session?.user?.name ?? '')
 
   if (!session?.user) return null
   return (
     <>
-      <h2 className="text-xl font-bold">Updating the session</h2>
+      <h2 className='text-xl font-bold'>Updating the session</h2>
       <form
         onSubmit={async () => {
           if (session) {
@@ -25,17 +25,17 @@ const UpdateForm = () => {
             console.log({ newSession })
           }
         }}
-        className="flex items-center w-full max-w-sm space-x-2"
+        className='flex items-center w-full max-w-sm space-x-2'
       >
         <Input
-          type="text"
-          placeholder={session.user.name ?? ""}
+          type='text'
+          placeholder={session.user.name ?? ''}
           value={name}
           onChange={(e) => {
             setName(e.target.value)
           }}
         />
-        <Button type="submit">Update</Button>
+        <Button type='submit'>Update</Button>
       </form>
     </>
   )
@@ -44,35 +44,35 @@ const UpdateForm = () => {
 export default function ClientExample() {
   const { data: session, status } = useSession()
   return (
-    <div className="space-y-2">
-      <h1 className="text-3xl font-bold">🌱 Client Side Rendering Usage {session?.user?.name}</h1>
+    <div className='space-y-2'>
+      <h1 className='text-3xl font-bold'>🌱 Client Side Rendering Usage {session?.user?.name}</h1>
       <h2>threed:next14:app:client-example:page</h2>
       <p>
-        This page fetches session data client side using the{" "}
-        <CustomLink href="https://nextjs.authjs.dev/react#usesession">
+        This page fetches session data client side using the{' '}
+        <CustomLink href='https://nextjs.authjs.dev/react#usesession'>
           <code>useSession</code>
-        </CustomLink>{" "}
+        </CustomLink>{' '}
         React Hook.
       </p>
       <p>
-        It needs the{" "}
+        It needs the{' '}
         
           <code>'use client'</code>
         
         directive at the top of the file to enable client side rendering,
         <br/>
-        and the {" "}
-        <CustomLink href="https://nextjs.authjs.dev/react#sessionprovider">
+        and the {' '}
+        <CustomLink href='https://nextjs.authjs.dev/react#sessionprovider'>
           <code>SessionProvider</code>
-        </CustomLink>{" "}
-        component in{" "}
+        </CustomLink>{' '}
+        component in{' '}
         <strong>
           <code>client-example/page.tsx</code>
-        </strong>{" "}
+        </strong>{' '}
         to provide the session data.
       </p>
 
-      {status === "loading" ? (
+      {status === 'loading' ? (
         <div>Loading...</div>
       ) : (
         <SessionData session={session} />

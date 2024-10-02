@@ -59,7 +59,7 @@ import { GLTF } from 'three-stdlib'
 
 // ** HELPER Imports
 // import { Perf } from 'r3f-perf'
-// import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
@@ -553,10 +553,10 @@ export default function CharacterModel(props: CharacterModelProps) {
       {/* ANIMATED CHARACTER Model Group */}
       <group
         ref={group}
-        {...props}
         dispose={null}
-        scale={1.0}
+        scale={1.0} // default | get from props
         name='ThreeD_Animated_Character'
+        {...props}
       >
 
         {/* CUSTOM ANIMATION 'PUNCH EFFECT' */}

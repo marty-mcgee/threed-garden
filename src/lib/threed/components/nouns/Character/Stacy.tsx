@@ -11,6 +11,16 @@ import { useGLTF, useTexture, useAnimations } from '@react-three/drei'
 import { a, useSpring } from '@react-spring/three'
 import { GLTF } from 'three-stdlib'
 
+// ** HELPER Imports
+// import { Perf } from 'r3f-perf'
+// import Spinner from '#/layout/ui/spinner'
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
+
+// ** DEBUG
+const debug: boolean = true
+const debugAnimation: boolean = true
+
 type GLTFResult = GLTF & {
   nodes: {
     stacy: THREE.SkinnedMesh
@@ -41,6 +51,8 @@ export default function CharacterModel(props: CharacterModelProps) {
 
   // Extract animation actions
   const { ref, actions, names } = useAnimations(animations)
+  if (debug) 
+    console.debug(`%c Stacy -- animations.actions`, ccm.darkredAlert, actions, names, ref)
 
   // Hover and animation-index states
   const [hovered, setHovered] = useState(false)

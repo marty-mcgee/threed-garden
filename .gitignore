@@ -55,6 +55,8 @@ public/demo/objects
 public/objects/**
 !public/objects/glb
 !public/objects/glb/**
+!public/objects/animations
+!public/objects/animations/**
 # !public/objects/threeds
 # public/objects/threeds/*
 # !public/objects/threeds/characters
