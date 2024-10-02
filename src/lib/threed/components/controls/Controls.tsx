@@ -1,7 +1,14 @@
-// @ts-no-check
+// @ :) ts-no-check
+
+// THREED: COMPONENTS
+// ** ThreeD: Garden
+import ThreeDGarden from '~/src/lib/threed/threed'
 
 // ** ThreeD using Leva GUI
-import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+import { 
+  ThreeDLevaControls, 
+  ThreeDLevaComponent,
+} from '#/lib/threed/components/controls/LevaControls'
 
 // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
 import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
@@ -10,16 +17,25 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 // ** ThreeD Toolbar
 import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
 
-
-
+// ** ThreeD : JSX Export
+// export default
 const ThreeDControls = () => {
 
   // ** THREED CONTROL(S)
-  console.debug('THREED CONTROL(S)')
+  console.debug('THREED CONTROL[S]: ALL')
   return (
     <>
-      {/* <h1>ThreeD Controls</h1> */}
       <ThreeDLevaControls />
+      <ThreeDControlPanels />
+      <ThreeDToolbar />
+      <ThreeDGarden />
+      <ThreeDLevaComponent 
+        projectName={'ThreeD: MM projectName'}
+        setProjectName={() => (<></>)}
+        projectNameFromLeva={'ThreeD: MM projectName'}
+        setProjectNameFromLeva={() => (<></>)}
+      />
+      <h1>ThreeD Control[s]: All</h1>
     </>
   )
 }

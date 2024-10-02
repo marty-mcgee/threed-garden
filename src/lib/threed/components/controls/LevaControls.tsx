@@ -454,35 +454,37 @@ export const ThreeDLevaComponent = (
   // **
   const word = `[MM] ThreeDLevaComponent @ ${new Date().toISOString()}`
   // **
-  var [{ projectNameFromLeva }, set] = useControls(
-    () => (
-      {
-        projectNameFromLeva: projectName,
-        projectName: projectName,
-        word: word,
-      }
-    )
-  )
+  // const [{ projectNameFromLeva }, set] = useControls(
+  //   () => (
+  //     {
+  //       projectName: projectName,
+  //       projectNameFromLeva: projectName,
+  //       word: word,
+  //     }
+  //   )
+  // )
 
   // ** onMount (on component loaded)
   useEffect(() => {
+    // react set state
+    // setProjectName(projectName)
+    setProjectName(projectNameFromLeva)
     // leva set store (from react state)
     setProjectNameFromLeva(projectName)
-    // react set state
-    setProjectName(projectName)
+    // setProjectNameFromLeva(projectNameFromLeva)
     // **
-  }, [projectName])
+  }, [projectName, projectNameFromLeva])
 
-  // console.debug('MyComponent')
-  useEffect(() => {
-    setProjectName(projectName)
-  //   console.debug('MyComponent onMount')
-  //   return () => {
-  //     console.debug('MyComponent onUnmount')
-  //   }
-  }, [projectName])
-
-  return <div>{projectNameFromLeva}: {projectName}</div>
+  return (
+    <>
+      <div>
+        {projectNameFromLeva}: {projectName}
+      </div>
+      <div>
+        {projectName}: {projectNameFromLeva}
+      </div>
+    </>
+  )
 }
 
 export default ThreeDLevaControls
