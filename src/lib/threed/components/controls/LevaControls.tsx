@@ -477,12 +477,12 @@ export const ThreeDLevaComponent = (
 
   return (
     <>
-      <div>
+      {/* <div>
         {projectNameFromLeva}: {projectName}
       </div>
       <div>
         {projectName}: {projectNameFromLeva}
-      </div>
+      </div> */}
     </>
   )
 }

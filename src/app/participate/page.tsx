@@ -27,15 +27,18 @@ import {
 // import Typography from '@mui/material/Typography'
 // import CardContent from '@mui/material/CardContent'
 
-// ** THREED GARDEN Imports
-import ThreeD from '~/src/lib/threed/threed'
+// ** THREED Imports
+// import ThreeD from '~/src/lib/threed/threed'
+const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
+// import ThreeDControls from '~/src/lib/threed/Controls'
+// const ThreeDControls = dynamic(() => import('#/lib/threed/Controls'), { ssr: false })
+// import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'
 // const ThreeDGarden = dynamic(() => import('#/lib/threed/ThreeDGarden'), { ssr: false })
-// ** THREED CONTROLS Imports
 // import ThreeDControls from '#/lib/threed/components/controls/Controls'
 // const ThreeDControls = dynamic(() => import('#/lib/threed/components/controls/Controls'), { ssr: false })
 
 // ** HELPER Imports
-// // import Spinner from '#/layout/ui/spinner'
+import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 // import ccm from '#/lib/utils/console-colors'
 
@@ -70,7 +73,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
 
   return (
     <>
-    {/* <Suspense fallback={<Spinner />}> */}
+    <Suspense fallback={<Spinner />}>
     
       <Grid
         // container
@@ -143,7 +146,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
         
     
       </Grid>
-    {/* </Suspense> */}
+    </Suspense>
     </>
   )
 }
