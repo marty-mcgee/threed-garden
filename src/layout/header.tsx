@@ -29,7 +29,7 @@ export default async function Header() {
           justify='start'
           align='center'
         >
-          <Logo />
+          {/* <Logo /> */}
           <MainNav />
         </Flex>
         <Grid
