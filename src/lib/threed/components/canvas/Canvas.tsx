@@ -323,22 +323,22 @@ export const ThreeDCanvas = (
   const refCanvas: any = useRef<any>()
 
   
-  {/* ⚙️ &#x2699; */}
-  const [config, setConfig] = useState<Config>(INITIAL);
-  const [toolTip, setToolTip] = useState<ToolTip>({ timeoutId: 0, text: "" });
-  const [activeFocus, setActiveFocus] = useState("");
+  {/* ⚙️ &#x2699 */}
+  const [config, setConfig] = useState<Config>(INITIAL)
+  const [toolTip, setToolTip] = useState<ToolTip>({ timeoutId: 0, text: "" })
+  const [activeFocus, setActiveFocus] = useState("")
 
   useEffect(() => {
-    setConfig(modifyConfigsFromUrlParams(config));
-    setActiveFocus(getFocusFromUrlParams());
+    setConfig(modifyConfigsFromUrlParams(config))
+    setActiveFocus(getFocusFromUrlParams())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // intentionally empty dependency array
+  }, []) // intentionally empty dependency array
 
   const common = {
     config, setConfig,
     toolTip, setToolTip,
     activeFocus, setActiveFocus,
-  };
+  }
 
 
 
