@@ -91,7 +91,7 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
 // ** ThreeD Controls Imports
-import ThreeDControls from '#/lib/threed/components/controls/Controls'
+import ThreeDControls from '~/src/lib/threed/Controls'
 
 // // ** ThreeD using Leva GUI
 // import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
