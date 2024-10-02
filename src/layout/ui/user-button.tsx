@@ -2,14 +2,14 @@
 'use server'
 // ^^ this file requires server pragma
 
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Button } from './ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '#/layout/ui/avatar'
+import { Button } from '#/layout/ui/button'
 
 // ** AUTH GUARD
 import { auth } from '#//lib/auth/auth'
 // import { SessionProvider } from 'next-auth/react'
 // import { useSession } from 'next-auth/react'
-import { SignIn, SignOut } from './auth-components'
+import { SignIn, SignOut } from '#/layout/ui/auth-components'
 
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu'
+} from '#/layout/ui/dropdown-menu'
 
 export default async function UserButton() {
   const session = await auth()
@@ -33,8 +33,8 @@ export default async function UserButton() {
       //   p-2
       // '
       style={{
-        marginTop: 4, // wtf !!!
-        marginRight: 2, // wtf !!!
+        marginTop: 4, // wth? !!!
+        marginRight: 2, // wth? !!!
       }}
     >
       {/* <span className='hidden text-sm sm:inline-flex'>

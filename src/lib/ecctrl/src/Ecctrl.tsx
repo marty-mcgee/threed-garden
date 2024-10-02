@@ -136,14 +136,34 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   // Mode setups
   mode = null,
   // Controller setups
-  controllerKeys = { forward: 12, backward: 13, leftward: 14, rightward: 15, jump: 2, action1: 11, action2: 3, action3: 1, action4: 0 },
+  controllerKeys = { 
+    forward: 12, 
+    backward: 13, 
+    leftward: 14, 
+    rightward: 15, 
+    jump: 2, 
+    action1: 11, 
+    action2: 3, 
+    action3: 1, 
+    action4: 0,
+  },
   // Other rigibody props from parent
   ...props
 }: EcctrlProps, ref) => {
   const characterRef = ref as RefObject<RapierRigidBody> || useRef<RapierRigidBody>()
   const characterModelRef = useRef<THREE.Group>();
   const characterModelIndicator: THREE.Object3D = useMemo(() => new THREE.Object3D(), [])
-  const defaultControllerKeys = { forward: 12, backward: 13, leftward: 14, rightward: 15, jump: 2, action1: 11, action2: 3, action3: 1, action4: 0 }
+  const defaultControllerKeys = { 
+    forward: 12, 
+    backward: 13, 
+    leftward: 14, 
+    rightward: 15, 
+    jump: 2, 
+    action1: 11, 
+    action2: 3, 
+    action3: 1, 
+    action4: 0,
+  }
 
   /**
    * Mode setup
@@ -179,18 +199,16 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   const camBasedMoveCrossVecOnY: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
 
   // Animation change functions
-  const idleAnimation = !animated ? null : useGame((state) => state.idle);
-  const walkAnimation = !animated ? null : useGame((state) => state.walk);
-  const runAnimation = !animated ? null : useGame((state) => state.run);
-  const jumpAnimation = !animated ? null : useGame((state) => state.jump);
-  const jumpIdleAnimation = !animated
-    ? null
-    : useGame((state) => state.jumpIdle);
-  const fallAnimation = !animated ? null : useGame((state) => state.fall);
-  const action1Animation = !animated ? null : useGame((state) => state.action1);
-  const action2Animation = !animated ? null : useGame((state) => state.action2);
-  const action3Animation = !animated ? null : useGame((state) => state.action3);
-  const action4Animation = !animated ? null : useGame((state) => state.action4);
+  const idleAnimation =     !animated ? null : useGame((state) => state.idle);
+  const walkAnimation =     !animated ? null : useGame((state) => state.walk);
+  const runAnimation =      !animated ? null : useGame((state) => state.run);
+  const jumpAnimation =     !animated ? null : useGame((state) => state.jump);
+  const jumpIdleAnimation = !animated ? null : useGame((state) => state.jumpIdle);
+  const fallAnimation =     !animated ? null : useGame((state) => state.fall);
+  const action1Animation =  !animated ? null : useGame((state) => state.action1);
+  const action2Animation =  !animated ? null : useGame((state) => state.action2);
+  const action3Animation =  !animated ? null : useGame((state) => state.action3);
+  const action4Animation =  !animated ? null : useGame((state) => state.action4);
 
   /**
    * Debug settings

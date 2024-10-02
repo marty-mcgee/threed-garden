@@ -83,7 +83,7 @@ import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 // import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 
 // ** HELPER Components
-// import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** UUID Imports
 // import { v4 as newUUID } from 'uuid'
 // ** Performance Monitor
@@ -258,7 +258,7 @@ const ThreeDExperienceViewer = forwardRef((
     activeFocus,
     setActiveFocus,
   }: ViewerProps, 
-  ref // the forwarded ref
+  refCanvas // the forwarded ref
 ) => {
 
   // ** HOOKS
@@ -322,7 +322,7 @@ const ThreeDExperienceViewer = forwardRef((
           {/* THREED EXPERIENCE */}
           <ThreeDExperience 
             threeds={threeds} 
-            ref={ref} 
+            ref={refCanvas} 
           />
           {/* <ThreeDExperienceNew /> */}
 

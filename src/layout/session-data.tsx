@@ -1,14 +1,14 @@
-import type { Session } from "next-auth"
+import type { Session } from 'next-auth'
 
 export default function SessionData({ session }: { session: Session | null }) {
   if (session?.user) {
     return (
-      <div className="w-full space-y-2 overflow-auto">
-        <h2 className="text-xl font-bold">Current Session Data</h2>
+      <div className='w-full space-y-2 overflow-auto'>
+        <h2 className='text-xl font-bold'>Current Session Data</h2>
         {Object.keys(session.user).length > 3 ? (
           <p>
             {/* In this example, the whole session object is passed to the page,
-            including the raw user object. Our recommendation is to{" "}
+            including the raw user object. Our recommendation is to{' '}
             <em>only pass the necessary fields</em> to the page, as the raw user
             object may contain sensitive information. */}
           </p>

@@ -28,7 +28,7 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // import { SessionWrapper } from '#/layout/SessionWrapper'
-const SessionWrapper = dynamic(() => import('#//layout/SessionWrapper'), { ssr: false })
+const SessionWrapper = dynamic(() => import('#/layout/SessionWrapper'), { ssr: false })
 
 // ** Redux Store
 // import { Provider as ReduxProvider } from 'react-redux'
@@ -90,7 +90,7 @@ import Footer from '#/layout/footer'
 // const roboto = Roboto({ weight: '400', subsets: ['latin'] })
 
 // ** HELPER Components
-// import Spinner from '#/layout/ui/components/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 // ** Google Analytics
@@ -296,7 +296,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                 >
                                   
                                   <Header 
-                                    // key='ThreeDAppHeader'
+                                    key='ThreeDAppHeader'
                                   />
 
                                   <div 
@@ -306,7 +306,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                   </div>
 
                                   <Footer
-                                    // key='ThreeDAppFooter'
+                                    key='ThreeDAppFooter'
                                   />
                                 
                                 </div>

@@ -34,6 +34,7 @@ import {
   useFrame,
   useThree,
   // extend, // if using function extend({ OrbitControls })
+  useLoader,
 } from '@react-three/fiber'
 // ** QUESTION: do stuff with IMPORTS ??
 // extend({ OrbitControls })
@@ -94,7 +95,7 @@ import tunnel from '#//lib/threed/threed.io/tunnelrat'
 // import { threedAI } from '#//lib/threed/threed.ai/threedAI'
 
 // ** HELPER Components
-import Spinner from '#/layout/ui/components/spinner'
+import Spinner from '#/layout/ui/spinner'
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
@@ -153,6 +154,20 @@ function ThreeDLoaderSimple() {
     )
   // }
   // export default ProgressDisplay
+}
+
+export function ThreeDLoaderMesh() {
+  const [scale, setScale] = useState(1)
+  const texture = useLoader(THREE.TextureLoader, "https://raw.githubusercontent.com/AaronClaes/my-site/main/public/react.webp")
+
+  const handleClick = () => setScale(p => p + 0.1)
+
+  return (
+    <mesh onClick={handleClick} scale={scale}>
+      <boxGeometry />
+      <meshBasicMaterial map={texture} />
+    </mesh>
+  )
 }
 
 // const controls = new OrbitControls(camera, renderer.domElement)
@@ -305,25 +320,25 @@ export const ThreeDCanvas = (
   // console.debug('%c prefs', ccm.red, prefs)
 
   // ** REF-erences using REACT
-  const ref: any = useRef<any>()
+  const refCanvas: any = useRef<any>()
 
   
-  {/* ⚙️ &#x2699; */}
-  const [config, setConfig] = useState<Config>(INITIAL);
-  const [toolTip, setToolTip] = useState<ToolTip>({ timeoutId: 0, text: "" });
-  const [activeFocus, setActiveFocus] = useState("");
+  {/* ⚙️ &#x2699 */}
+  const [config, setConfig] = useState<Config>(INITIAL)
+  const [toolTip, setToolTip] = useState<ToolTip>({ timeoutId: 0, text: "" })
+  const [activeFocus, setActiveFocus] = useState("")
 
   useEffect(() => {
-    setConfig(modifyConfigsFromUrlParams(config));
-    setActiveFocus(getFocusFromUrlParams());
+    setConfig(modifyConfigsFromUrlParams(config))
+    setActiveFocus(getFocusFromUrlParams())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // intentionally empty dependency array
+  }, []) // intentionally empty dependency array
 
   const common = {
     config, setConfig,
     toolTip, setToolTip,
     activeFocus, setActiveFocus,
-  };
+  }
 
 
 
@@ -479,13 +494,13 @@ export const ThreeDCanvas = (
 
 
         {/* SUSPENSEFUL... */}
-        <Suspense fallback={null}>
+        {/* <Suspense fallback={null}> */}
         {/* <Suspense fallback={<Html>HEY HEY HEY</Html>}> */}
         {/* <Suspense fallback={<Html center><Spinner /></Html>}> */}
         {/* using radix-ui + react-three-drei */}
         {/* <Suspense fallback={<ThreeDLoaderSimple />}> */}
         {/* using react-three-drei Loader + useProgress */}
-        {/* <Suspense fallback={
+        <Suspense fallback={
           <Html center>
             <Loader
               // containerStyles={...container} // Flex layout styles
@@ -496,7 +511,7 @@ export const ThreeDCanvas = (
               initialState={(active = false) => active} // Initial black out state
             />
           </Html>
-        }> */}
+        }>
 
           {/* PLANTS from THREED FARMBOT */}
           {/* <Model {...common} /> */}
@@ -512,7 +527,7 @@ export const ThreeDCanvas = (
 
             threeds={threeds} 
             
-            ref={ref} // when using function as a forwardRef // THREED IO
+            ref={refCanvas} // when using function as a forwardRef // THREED IO
 
             // config: Object, // Config
             config={config}

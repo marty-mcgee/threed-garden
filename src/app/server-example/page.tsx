@@ -1,4 +1,4 @@
-import CustomLink from '#/layout/custom-link'
+import CustomLink from '~/src/layout/ui/custom-link'
 import SessionData from '#/layout/session-data'
 import { auth } from '#//lib/auth/auth'
 
