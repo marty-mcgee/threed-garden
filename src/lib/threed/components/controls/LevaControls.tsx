@@ -437,7 +437,16 @@ export function ThreeDLevaControls() {
   )
 }
 
-export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
+export const ThreeDLevaComponent = (
+  { 
+    projectName,
+    setProjectName,
+  }:
+  { 
+    projectName: string,
+    setProjectName: Function,
+  }
+) => {
   // **
   const word = `[MM] ThreeDLevaComponent @ ${new Date().toISOString()}`
   // **
