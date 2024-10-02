@@ -1,4 +1,4 @@
-import CustomLink from './custom-link'
+import CustomLink from './ui/custom-link'
 // import MainNav from './main-nav'
 
 export default function Footer() {

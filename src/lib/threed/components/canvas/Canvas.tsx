@@ -34,6 +34,7 @@ import {
   useFrame,
   useThree,
   // extend, // if using function extend({ OrbitControls })
+  useLoader,
 } from '@react-three/fiber'
 // ** QUESTION: do stuff with IMPORTS ??
 // extend({ OrbitControls })
@@ -153,6 +154,20 @@ function ThreeDLoaderSimple() {
     )
   // }
   // export default ProgressDisplay
+}
+
+export function ThreeDLoaderMesh() {
+  const [scale, setScale] = useState(1)
+  const texture = useLoader(THREE.TextureLoader, "https://raw.githubusercontent.com/AaronClaes/my-site/main/public/react.webp")
+
+  const handleClick = () => setScale(p => p + 0.1)
+
+  return (
+    <mesh onClick={handleClick} scale={scale}>
+      <boxGeometry />
+      <meshBasicMaterial map={texture} />
+    </mesh>
+  )
 }
 
 // const controls = new OrbitControls(camera, renderer.domElement)

@@ -28,7 +28,7 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // import { SessionWrapper } from '#/layout/SessionWrapper'
-const SessionWrapper = dynamic(() => import('#//layout/SessionWrapper'), { ssr: false })
+const SessionWrapper = dynamic(() => import('#/layout/SessionWrapper'), { ssr: false })
 
 // ** Redux Store
 // import { Provider as ReduxProvider } from 'react-redux'
