@@ -28,8 +28,8 @@ import {
 // import CardContent from '@mui/material/CardContent'
 
 // ** THREED Imports
-// import ThreeD from '~/src/lib/threed/threed'
-const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
+import ThreeD from '~/src/lib/threed/threed'
+// const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
 // import ThreeDControls from '~/src/lib/threed/Controls'
 // const ThreeDControls = dynamic(() => import('#/lib/threed/Controls'), { ssr: false })
 // import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'
