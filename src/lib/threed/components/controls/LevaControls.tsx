@@ -441,47 +441,48 @@ export const ThreeDLevaComponent = (
   { 
     projectName,
     setProjectName,
+    projectNameFromLeva,
+    setProjectNameFromLeva,
   }:
   { 
     projectName: string,
     setProjectName: Function,
+    projectNameFromLeva: string,
+    setProjectNameFromLeva: Function,
   }
 ) => {
   // **
   const word = `[MM] ThreeDLevaComponent @ ${new Date().toISOString()}`
   // **
-  // var [{ projectNameFromLeva }, set] = useControls(
-  //   () => (
-  //     {
-  //       // projectNameFromLeva: projectName,
-  //       projectName: projectName,
-  //       doAutoLoadData: doAutoLoadData,
-  //       doAutoRotate: doAutoRotate,
-  //       word: word,
-  //     }
-  //   )
-  // )
+  var [{ projectNameFromLeva }, set] = useControls(
+    () => (
+      {
+        projectNameFromLeva: projectName,
+        projectName: projectName,
+        word: word,
+      }
+    )
+  )
 
-  // // ** onMount (on component loaded)
-  // useEffect(() => {
-  //   // leva set store (from react state)
-  //   set({ projectNameFromLeva: projectName })
-  //   // react set state
-  //   setProjectName(projectName)
-  //   // **
-  // }, [projectName, set])
-  // // }, [projectName])
+  // ** onMount (on component loaded)
+  useEffect(() => {
+    // leva set store (from react state)
+    setProjectNameFromLeva(projectName)
+    // react set state
+    setProjectName(projectName)
+    // **
+  }, [projectName])
 
-  // // console.debug('MyComponent')
-  // useEffect(() => {
-  //   setProjectName(projectName)
-  // //   console.debug('MyComponent onMount')
-  // //   return () => {
-  // //     console.debug('MyComponent onUnmount')
-  // //   }
-  // }, [projectName])
+  // console.debug('MyComponent')
+  useEffect(() => {
+    setProjectName(projectName)
+  //   console.debug('MyComponent onMount')
+  //   return () => {
+  //     console.debug('MyComponent onUnmount')
+  //   }
+  }, [projectName])
 
-  // return <div>{projectNameFromLeva}: {projectName}</div>
+  return <div>{projectNameFromLeva}: {projectName}</div>
 }
 
 export default ThreeDLevaControls
