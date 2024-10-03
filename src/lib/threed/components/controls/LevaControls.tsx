@@ -404,7 +404,7 @@ export function ThreeDLevaControls() {
           // hideTitleBar={true} // default = false. true hides the GUI header
           theme={theme} // you can pass a custom theme (see the styling section)
           collapsed={false} // default = false. true makes the GUI collapsed to start
-          fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
+          fill={false} // default = false. true makes the pane fill the parent dom node it's rendered in
           flat={true} // default = false. true removes border radius and shadow
           hidden={false} // default = false. true hides the GUI
           neverHide={true} // default = true. false allows hiding of the GUI

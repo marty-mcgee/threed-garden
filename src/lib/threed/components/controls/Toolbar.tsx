@@ -1102,7 +1102,10 @@ const ThreeDToolbar: FC = (): React.ReactNode => {
           </Box>
 
           <Box
-            sx={{ flexGrow: 0 }} // , display: { xs: 'none', md: 'flex' }
+            sx={{ 
+              display: 'none', // , display: { xs: 'none', md: 'flex' }
+              flexGrow: 0 
+            }}
           >
             <Tooltip title='Pointer Tool'>
               <IconButton
