@@ -1,5 +1,9 @@
 // @ :) ts-no-check
 
+// ** REACT Imports
+import { Suspense } from 'react'
+
+// **
 // THREED: this
 
 // THREED: COMPONENTS
@@ -14,7 +18,6 @@ import {
 
 // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
 import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
-// const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
 
 // ** ThreeD Toolbar
 import ThreeDToolbar from '#/lib/threed/components/controls/Toolbar'
@@ -27,17 +30,19 @@ const ThreeDControls = () => {
   // console.debug('THREED CONTROL[S]: ALL')
   return (
     <>
-      <ThreeDLevaControls />
-      <ThreeDControlPanels />
-      <ThreeDToolbar />
-      <ThreeDGarden />
-      <ThreeDLevaComponent 
-        projectName={'ThreeD: MM projectName'}
-        setProjectName={() => (<></>)}
-        projectNameFromLeva={'ThreeD: MM projectName'}
-        setProjectNameFromLeva={() => (<></>)}
-      />
-      {/* <h1>ThreeD Control[s]: All</h1> */}
+      {/* <ThreeDToolbar /> */}
+      <Suspense fallback={null}>
+        <ThreeDGarden />
+        <ThreeDLevaControls />
+        <ThreeDLevaComponent 
+          projectName={'ThreeD: MM projectName'}
+          setProjectName={() => (<></>)}
+          projectNameFromLeva={'ThreeD: MM projectName'}
+          setProjectNameFromLeva={() => (<></>)}
+        />
+        <ThreeDControlPanels />
+        {/* <h1>ThreeD Control[s]: All</h1> */}
+      </Suspense>
     </>
   )
 }
