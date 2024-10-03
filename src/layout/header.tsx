@@ -25,14 +25,18 @@ export default async function Header() {
           justify='start'
           align='center'
         >
+
           {/* <Logo /> */}
           <MainNav />
+        
         </Flex>
         <Flex
           justify='end'
           align='center'
         >
+          
           <UserButton />
+        
         </Flex>
       </Grid>
     </>
