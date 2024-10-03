@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 // ^ needs the 'use client' pragma (inheriting from parent page)
 // ==============================================================
 // ** RESOURCES
@@ -91,7 +91,7 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 // import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
 // ** ThreeD Controls Imports
-import ThreeDControls from '#/lib/threed/components/controls/Controls'
+// import ThreeDControls from '~/src/lib/threed/Controls'
 
 // // ** ThreeD using Leva GUI
 // import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
@@ -455,7 +455,7 @@ const ThreeDGarden = (): React.ReactNode => {
             //   // borderTop: '1px solid darkgreen',
             // }}
           >
-            <ThreeDControls />
+            {/* <ThreeDControls /> */}
 
             {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
             {/* <Flex
