@@ -404,7 +404,7 @@ export function ThreeDLevaControls() {
           // hideTitleBar={true} // default = false. true hides the GUI header
           theme={theme} // you can pass a custom theme (see the styling section)
           collapsed={false} // default = false. true makes the GUI collapsed to start
-          fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
+          fill={false} // default = false. true makes the pane fill the parent dom node it's rendered in
           flat={true} // default = false. true removes border radius and shadow
           hidden={false} // default = false. true hides the GUI
           neverHide={true} // default = true. false allows hiding of the GUI
@@ -437,42 +437,54 @@ export function ThreeDLevaControls() {
   )
 }
 
-export const ThreeDLevaComponent = ({ projectName, setProjectName }) => {
+export const ThreeDLevaComponent = (
+  { 
+    projectName,
+    setProjectName,
+    projectNameFromLeva,
+    setProjectNameFromLeva,
+  }:
+  { 
+    projectName: string,
+    setProjectName: Function,
+    projectNameFromLeva: string,
+    setProjectNameFromLeva: Function,
+  }
+) => {
   // **
   const word = `[MM] ThreeDLevaComponent @ ${new Date().toISOString()}`
   // **
-  // var [{ projectNameFromLeva }, set] = useControls(
+  // const [{ projectNameFromLeva }, set] = useControls(
   //   () => (
   //     {
-  //       // projectNameFromLeva: projectName,
   //       projectName: projectName,
-  //       doAutoLoadData: doAutoLoadData,
-  //       doAutoRotate: doAutoRotate,
+  //       projectNameFromLeva: projectName,
   //       word: word,
   //     }
   //   )
   // )
 
-  // // ** onMount (on component loaded)
-  // useEffect(() => {
-  //   // leva set store (from react state)
-  //   set({ projectNameFromLeva: projectName })
-  //   // react set state
-  //   setProjectName(projectName)
-  //   // **
-  // }, [projectName, set])
-  // // }, [projectName])
+  // ** onMount (on component loaded)
+  useEffect(() => {
+    // react set state
+    // setProjectName(projectName)
+    setProjectName(projectNameFromLeva)
+    // leva set store (from react state)
+    setProjectNameFromLeva(projectName)
+    // setProjectNameFromLeva(projectNameFromLeva)
+    // **
+  }, [projectName, projectNameFromLeva])
 
-  // // console.debug('MyComponent')
-  // useEffect(() => {
-  //   setProjectName(projectName)
-  // //   console.debug('MyComponent onMount')
-  // //   return () => {
-  // //     console.debug('MyComponent onUnmount')
-  // //   }
-  // }, [projectName])
-
-  // return <div>{projectNameFromLeva}: {projectName}</div>
+  return (
+    <>
+      {/* <div>
+        {projectNameFromLeva}: {projectName}
+      </div>
+      <div>
+        {projectName}: {projectNameFromLeva}
+      </div> */}
+    </>
+  )
 }
 
 export default ThreeDLevaControls
