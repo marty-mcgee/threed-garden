@@ -19,30 +19,25 @@ export default async function Header() {
     <>
       <Grid
         id='ThreeDAppHeader'
-        columns='2' 
-        // gap='3'
-        // justify='end'
-        // align='center'
+        columns='2'
       >
         <Flex
-          // columns='1'
           justify='start'
           align='center'
         >
+
           {/* <Logo /> */}
           <MainNav />
+        
         </Flex>
-        <Grid
-          columns='1'
-          // justify='end'
+        <Flex
+          justify='end'
           align='center'
         >
-          <Flex
-            justify='end'
-          >
-            <UserButton />
-          </Flex>
-        </Grid>
+          
+          <UserButton />
+        
+        </Flex>
       </Grid>
     </>
   )
