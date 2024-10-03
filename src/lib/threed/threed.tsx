@@ -24,7 +24,7 @@ import ThreeDToolbar from '#/lib/threed/components/controls/Toolbar'
 const ThreeDControls = () => {
 
   // ** THREED CONTROL(S)
-  console.debug('THREED CONTROL[S]: ALL')
+  // console.debug('THREED CONTROL[S]: ALL')
   return (
     <>
       <ThreeDLevaControls />
@@ -37,7 +37,7 @@ const ThreeDControls = () => {
         projectNameFromLeva={'ThreeD: MM projectName'}
         setProjectNameFromLeva={() => (<></>)}
       />
-      <h1>ThreeD Control[s]: All</h1>
+      {/* <h1>ThreeD Control[s]: All</h1> */}
     </>
   )
 }
