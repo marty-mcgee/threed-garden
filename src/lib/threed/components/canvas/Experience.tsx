@@ -501,6 +501,7 @@ const ThreeDExperience = forwardRef((
               threeds={threeds} // threeds={{}}
               // master position for all threeds?
               // position={[-4, 0, 0]}
+              // position={[0, -1, 0]}
             />
           </group>
 
