@@ -492,7 +492,7 @@ const ThreeDExperience = forwardRef((
           </group> */}
             
           {/* THREED MODELS as props.threeds */}
-          {/* <group
+          <group
             key='threed_models_children'
             // scale all threeds?
             scale={0.3}
@@ -501,8 +501,9 @@ const ThreeDExperience = forwardRef((
               threeds={threeds} // threeds={{}}
               // master position for all threeds?
               // position={[-4, 0, 0]}
+              // position={[0, -1, 0]}
             />
-          </group> */}
+          </group>
 
           </SelectToZoom>
         </Bounds>
