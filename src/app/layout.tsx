@@ -62,10 +62,10 @@ const SessionWrapper = dynamic(() => import('#/layout/SessionWrapper'), { ssr: f
 // ** TAILWIND CSS
 import '#/layout/styles/globals.css' // global tailwind css
 // ** Radix UI CSS
-// import '@radix-ui/themes/styles.css' // radix-ui theme default css in node_modules
-import '#/layout/styles/radix-ui-themes-styles.css' // copied from default, for editing
+import '@radix-ui/themes/styles.css' // radix-ui theme default css in node_modules
+// import '#/layout/styles/radix-ui-themes-styles.css' // copied from default, for editing
 // ** CUSTOM CSS (DOMINANT OVERRIDES)
-import '#/layout/styles/custom-styles.css' // custom css
+// import '#/layout/styles/custom-styles.css' // custom css
 
 // ** LAYOUT Components
 import ThemeWrapper from '#/layout/ThemeWrapper'
