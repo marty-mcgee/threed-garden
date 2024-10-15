@@ -36,8 +36,6 @@ import {
   // extend, // if using function extend({ OrbitControls })
   useLoader,
 } from '@react-three/fiber'
-// ** QUESTION: do stuff with IMPORTS ??
-// extend({ OrbitControls })
 
 // ** R3F HELPERS Imports
 import {
@@ -53,6 +51,8 @@ import {
   Html, Center,
   // useGLTF, useFBX,
 } from '@react-three/drei'
+// ** QUESTION: do stuff with IMPORTS ??
+// extend({ OrbitControls })
 
 // ** RADIX-UI Imports
 import * as Progress from '@radix-ui/react-progress'

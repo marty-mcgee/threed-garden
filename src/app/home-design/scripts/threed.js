@@ -93,6 +93,8 @@ function onCanvasResize() {
     camera.updateProjectionMatrix(),
     renderer.setSize(window.innerWidth, window.innerHeight)
 }
+
+
 function initThreeJS() {
   ; (scene = new THREE.Scene()), (scene.background = new THREE.Color(0))
   var e = new THREE.PlaneBufferGeometry(100 * groundWidth, 100 * groundLength)
@@ -264,6 +266,8 @@ function initThreeJS() {
     (floorMaterial.depthWrite = !1),
     (floorMaterial.side = THREE.DoubleSide)
 }
+
+
 function showModel3dView() {
   var e = modalModel3dThreedId
   e !== -1 &&
@@ -8871,11 +8875,13 @@ $(document).ready(function () {
     paper.install(window),
     paper.setup(planCanvas),
     (paper.settings.hitTolerance = 3),
+
     initPlanView(),
     initThreeJS(),
     resize3dView(),
     resizePlanView(),
     animate(),
+    
     (threedDragDiv = document.getElementById("threedDragDiv")),
     (document.getElementById("catalogTextFilter").oninput = function (e) {
       var t = this.value.toLowerCase()

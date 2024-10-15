@@ -49,9 +49,9 @@
 
     "leva": "^0.9.35",
 
-    "next": "^14.2.14",
-    "@next/bundle-analyzer": "^14.2.14",
-    "@next/third-parties": "^14.2.14",
+    "next": "^14.2.15",
+    "@next/bundle-analyzer": "^14.2.15",
+    "@next/third-parties": "^14.2.15",
     "next-auth": "^5.0.0-beta.21",
     "next-themes": "^0.3.0",
 
@@ -65,7 +65,7 @@
     "zustand": "^4.5.2",
     "zustand-x": "^3.0.3",
     "scheduler": "^0.23.2",
-    "valtio": "^1.13.2", 
+    "valtio": "^1.13.2",
     
     "@radix-ui/themes": "3.0.5",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -138,7 +138,10 @@
     "react-syntax-highlighter": "^15.5.0",
     "react-textarea-autosize": "^8.5.3",
     "remark-gfm": "^3.0.1",
-    "remark-math": "^5.1.1"
+    "remark-math": "^5.1.1",
+
+    
+    "paper": "^0.12.18"
 
   },
 
