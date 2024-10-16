@@ -111,6 +111,24 @@ export default async function MainNav() {
                 Demo: 2
               </NavigationMenuLink>
             </NavigationMenuItem>
+        
+        <NavigationMenuItem>
+          <NavigationMenuLink
+            href='/demo/index.html'
+            className={navigationMenuTriggerStyle()}
+            style={{
+              // backgroundColor: '#222222', 
+              color: '#DDDDDD', 
+              // textDecoration: 'underline',
+              // borderWidth: 0,
+              // margin: 0,
+              // padding: 0,
+              fontSize: 12,
+            }}
+          >
+            Demo: 3
+          </NavigationMenuLink>
+        </NavigationMenuItem>
 
             {/*
             <NavigationMenuItem>
