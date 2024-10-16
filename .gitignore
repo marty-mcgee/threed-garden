@@ -90,4 +90,5 @@ src/lib/threed/threed.ai
 # threed.home-design
 # src/app/home-design
 # src/layout/home-design
-src/lib/home-design
+src/lib/home-design/*
+!src/lib/home-design/src

@@ -1,0 +1,7 @@
+{
+  "glitch-help-instructions": "For a custom domain, change the 'url' parameter from 'glitch-default' to your domain _without_ a traling slash, like 'https://threedgarden.com'",
+  "title": "ThreeD.AI",
+  "description": "'threed' is a functioning, legit, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'ThreeJS, WebGL, React, TypeScript <Fiber>, GraphQL', in extremely active development",
+  "url": "https://threedgarden.com",
+  "image": "https://threedgarden.com/demo/favicon/favicon.png"
+}
