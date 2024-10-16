@@ -50,7 +50,7 @@ public/workbox-*
 
 public/assets
 public/assets/**
-public/demo
+# public/demo
 public/demo/objects
 public/objects/**
 !public/objects/glb
