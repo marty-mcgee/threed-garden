@@ -173,6 +173,11 @@ const nextConfig = {
       config.externals.push('sharp')
     }
 
+    // paper.js support
+    if (isServer) {
+      config.resolve.alias['paper'] = false
+    }
+
     // // next webpack ignore stuff
     // config.module.rules.push({
     //   test: /src\/app\/ai/,
