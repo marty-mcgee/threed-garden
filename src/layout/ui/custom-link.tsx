@@ -12,7 +12,14 @@ const CustomLink = ({
   className,
   ...rest
 }: CustomLinkProps) => {
-  const isInternalLink = href.startsWith("/")
+  // ** internal link?
+  let isInternalLink = false
+  isInternalLink = href.startsWith("/")
+  // exceptions
+  if (href == "/demo/index.html") {
+    isInternalLink = false
+  }
+  // ** anchor link?
   const isAnchorLink = href.startsWith("#")
 
   if (isInternalLink || isAnchorLink) {
@@ -32,7 +39,8 @@ const CustomLink = ({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn("items-center underline", className)}
+      // className={cn("items-center underline", className)}
+      className={className} 
       {...rest}
     >
       {children}

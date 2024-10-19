@@ -874,7 +874,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
           style={{
             // position: 'absolute',
             // bottom: '32px',
-            paddingLeft: '2px',
+            paddingLeft: '7px',
           }}
         >
           {/* MAIN ACTIONS DROPDOWN MENU */}

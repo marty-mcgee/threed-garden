@@ -1,5 +1,5 @@
-'use client'
-// 'use server'
+// 'use client'
+'use server'
 // ^^ does this file require client or server pragma ???
 
 // ** UI Imports
@@ -15,22 +15,13 @@ import Image from 'next/image'
 
 import { cn } from '#//lib/utils/tailwind-utils'
 import CustomLink from './custom-link'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from './navigation-menu'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {
 	HamburgerMenuIcon,
 	DotFilledIcon,
 	CheckIcon,
 	ChevronRightIcon,
-} from "@radix-ui/react-icons";
+} from '@radix-ui/react-icons'
 
 import '#/lib/home-design/src/styles/radix-ui.css'
 
@@ -38,9 +29,9 @@ import React from 'react'
 // import { Button } from './button'
 
 export default async function MainNav() {
-	const [bookmarksChecked, setBookmarksChecked] = React.useState(true);
-	const [urlsChecked, setUrlsChecked] = React.useState(false);
-	const [person, setPerson] = React.useState("pedro");
+	// const [bookmarksChecked, setBookmarksChecked] = React.useState(true);
+	// const [urlsChecked, setUrlsChecked] = React.useState(false);
+	// const [person, setPerson] = React.useState("pedro");
 
   return (
     <Flex 
@@ -48,17 +39,14 @@ export default async function MainNav() {
       // justify={'between'}
       // gap={'2'}
       align={'center'}
-      // className='
-      //   m-0
-      // '
       style={{
-        marginTop: -4, // wth !!!
+        marginTop: 4, // wth !!!
         marginLeft: 4,
+        marginBottom: 4,
+        paddingBottom: 4,
       }}
     >
       <Flex
-        // justify={'between'}
-        // gap={'2'}
         align={'center'}
       >
         <CustomLink href='/#home'>
@@ -86,421 +74,135 @@ export default async function MainNav() {
         // justify={'between'}
         // gap={'2'}
         align={'center'}
+        style={{
+          // position: 'absolute',
+          // bottom: '32px',
+          // paddingTop: '2px',
+        }}
       >
-        <NavigationMenu>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button className="IconButton" aria-label="Start Here">
+              <HamburgerMenuIcon />
+            </button>
+          </DropdownMenu.Trigger>
 
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button className="IconButton" aria-label="Customise options">
-                <HamburgerMenuIcon />
-              </button>
-            </DropdownMenu.Trigger>
-
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content className="DropdownMenuContent" sideOffset={5}>
-                <DropdownMenu.Item className="DropdownMenuItem">
-                  New Tab <div className="RightSlot">⌘+T</div>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item className="DropdownMenuItem">
-                  New Window <div className="RightSlot">⌘+N</div>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item className="DropdownMenuItem" disabled>
-                  New Private Window <div className="RightSlot">⇧+⌘+N</div>
-                </DropdownMenu.Item>
-                <DropdownMenu.Sub>
-                  <DropdownMenu.SubTrigger className="DropdownMenuSubTrigger">
-                    More Tools
-                    <div className="RightSlot">
-                      <ChevronRightIcon />
-                    </div>
-                  </DropdownMenu.SubTrigger>
-                  <DropdownMenu.Portal>
-                    <DropdownMenu.SubContent
-                      className="DropdownMenuSubContent"
-                      sideOffset={2}
-                      alignOffset={-5}
-                    >
-                      <DropdownMenu.Item className="DropdownMenuItem">
-                        Save Page As… <div className="RightSlot">⌘+S</div>
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item className="DropdownMenuItem">
-                        Create Shortcut…
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item className="DropdownMenuItem">
-                        Name Window…
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Separator className="DropdownMenu.Separator" />
-                      <DropdownMenu.Item className="DropdownMenuItem">
-                        Developer Tools
-                      </DropdownMenu.Item>
-                    </DropdownMenu.SubContent>
-                  </DropdownMenu.Portal>
-                </DropdownMenu.Sub>
-
-                <DropdownMenu.Separator className="DropdownMenuSeparator" />
-
-                <DropdownMenu.CheckboxItem
-                  className="DropdownMenuCheckboxItem"
-                  checked={bookmarksChecked}
-                  onCheckedChange={setBookmarksChecked}
-                >
-                  <DropdownMenu.ItemIndicator className="DropdownMenuItemIndicator">
-                    <CheckIcon />
-                  </DropdownMenu.ItemIndicator>
-                  Show Bookmarks <div className="RightSlot">⌘+B</div>
-                </DropdownMenu.CheckboxItem>
-                <DropdownMenu.CheckboxItem
-                  className="DropdownMenuCheckboxItem"
-                  checked={urlsChecked}
-                  onCheckedChange={setUrlsChecked}
-                >
-                  <DropdownMenu.ItemIndicator className="DropdownMenuItemIndicator">
-                    <CheckIcon />
-                  </DropdownMenu.ItemIndicator>
-                  Show Full URLs
-                </DropdownMenu.CheckboxItem>
-
-                <DropdownMenu.Separator className="DropdownMenuSeparator" />
-
-                <DropdownMenu.Label className="DropdownMenuLabel">
-                  People
-                </DropdownMenu.Label>
-                <DropdownMenu.RadioGroup value={person} onValueChange={setPerson}>
-                  <DropdownMenu.RadioItem
-                    className="DropdownMenuRadioItem"
-                    value="pedro"
-                  >
-                    <DropdownMenu.ItemIndicator className="DropdownMenuItemIndicator">
-                      <DotFilledIcon />
-                    </DropdownMenu.ItemIndicator>
-                    Pedro Duarte
-                  </DropdownMenu.RadioItem>
-                  <DropdownMenu.RadioItem
-                    className="DropdownMenuRadioItem"
-                    value="colm"
-                  >
-                    <DropdownMenu.ItemIndicator className="DropdownMenuItemIndicator">
-                      <DotFilledIcon />
-                    </DropdownMenu.ItemIndicator>
-                    Colm Tuite
-                  </DropdownMenu.RadioItem>
-                </DropdownMenu.RadioGroup>
-
-                <DropdownMenu.Arrow className="DropdownMenuArrow" />
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-
-          <NavigationMenuList>
-        
-            {/* */}
-            {/* <NavigationMenuItem> */}
-              {/* <NavigationMenuLink
-                href='/demo/index.html'
-                target='_blank'
-                className={navigationMenuTriggerStyle()}
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // textDecoration: 'underline',
-                  // borderWidth: 0,
-                  // margin: 0,
-                  // padding: 0,
-                  fontSize: 12,
-                }}
-              >
-                Demo: 3: ThreeD Home Design 2D+3D
-              </NavigationMenuLink> */}
-              {/* <NavigationMenuTrigger 
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  borderWidth: 0,
-                  textDecoration: 'none',
-                }}
-              >
-                <CustomLink href='/demo/index.html' 
-                  style={{
-                    color: '#DDDDDD', 
-                    textDecoration: 'none',
-                  }}
-                >
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content className="DropdownMenuContent" sideOffset={5}>
+              
+              <DropdownMenu.Sub>
+                <DropdownMenu.SubTrigger className="DropdownMenuSubTrigger">
                   Demos
-                </CustomLink>
-              </NavigationMenuTrigger>
-              <NavigationMenuContent 
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // listStyleType: 'none'
-                  textDecoration: 'none',
-                }}
-              >
-                <ul 
-                  className='
-                    grid 
-                    gap-0 
-                    p-1
-                    md:w-[400px] 
-                    lg:w-[500px] 
-                    lg:grid-cols-[.75fr_1fr]
-                  '
-                  style={{
-                    listStyleType: 'none',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <ListItem href='/participate' title='ThreeD Garden'>
-                    ThreeD Garden
-                  </ListItem>
-                  <ListItem href='/home-design' title='ThreeD Home Design'>
-                    ThreeD Home Design
-                  </ListItem>
-                  <ListItem href='/demo/index.html' title='ThreeD Home Design: Legacy'>
-                    ThreeD Home Design: Legacy
-                  </ListItem>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem> */}
-            {/* */}
+                  <div className="RightSlot">
+                    <ChevronRightIcon />
+                  </div>
+                </DropdownMenu.SubTrigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.SubContent
+                    className="DropdownMenuSubContent"
+                    sideOffset={2}
+                    alignOffset={-5}
+                  >
+                    <DropdownMenu.Separator className="DropdownMenuSeparator" />
+                    <DropdownMenu.Item className="DropdownMenuItem">
+                      <CustomLink href='/participate'>
+                        ThreeD Garden
+                      </CustomLink> 
+                      <div className="RightSlot">⌘+1</div>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator className="DropdownMenuSeparator" />
+                    <DropdownMenu.Item className="DropdownMenuItem">
+                      <CustomLink href='/home-design'>
+                        ThreeD Home Design
+                      </CustomLink>
+                      <div className="RightSlot">⌘+2</div>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator className="DropdownMenuSeparator" />
+                    <DropdownMenu.Item className="DropdownMenuItem">
+                      <CustomLink href='/demo/index.html'>
+                        ThreeD Legacy Home Design 
+                      </CustomLink>
+                      <div className="RightSlot">⌘+3</div>
+                    </DropdownMenu.Item>
+                    {/* <DropdownMenu.Separator className="DropdownMenuSeparator" />
+                    <DropdownMenu.Item className="DropdownMenuItem">
+                      <CustomLink href='https://companyjuice.mintlify.app'>
+                        Documentation
+                      </CustomLink>
+                      <div className="RightSlot">⌘+4</div>
+                    </DropdownMenu.Item> */}
+                    <DropdownMenu.Separator className="DropdownMenuSeparator" />
+                  </DropdownMenu.SubContent>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Sub>
 
-            {/* */}
-            {/* <NavigationMenuItem>
-              <NavigationMenuTrigger 
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  borderWidth: 0,
-                  textDecoration: 'none',
-                }}
-              >
-                <CustomLink href='/participate' 
-                  style={{
-                    color: '#DDDDDD', 
-                    textDecoration: 'none',
-                  }}
-                >
-                  Participate
-                </CustomLink>
-              </NavigationMenuTrigger>
-              <NavigationMenuContent 
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // listStyleType: 'none'
-                  textDecoration: 'none',
-                }}
-              >
-                <ul 
-                  className='
-                    grid 
-                    gap-0 
-                    p-1
-                    md:w-[400px] 
-                    lg:w-[500px] 
-                    lg:grid-cols-[.75fr_1fr]
-                  '
-                  style={{
-                    listStyleType: 'none',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <ListItem href='/home' title='Home'>
-                    Go to the home page of this app.
-                  </ListItem>
-                  <ListItem href='/participate' title='Participate'>
-                    Use the ThreeD Garden user interface.
-                  </ListItem>
-                  <ListItem href='/page' title='About Page'>
-                    Read more about this project's pages.
-                  </ListItem>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem> */}
+              <DropdownMenu.Separator className="DropdownMenuSeparator" />
 
-            {/* <NavigationMenuItem>
-              <NavigationMenuTrigger 
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  borderWidth: 0,
-                }}
-              >
-                <CustomLink href='/server-example' 
-                  style={{
-                    color: '#DDDDDD', 
-                    textDecoration: 'none',
-                  }}
-                >
-                  Server
+              <DropdownMenu.Item className="DropdownMenuItem">
+                <CustomLink href='https://companyjuice.mintlify.app'>
+                  Documentation
                 </CustomLink>
-              </NavigationMenuTrigger>
-              <NavigationMenuContent 
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // listStyleType: 'none'
-                }}
-              >
-              <ul 
-                className='
-                  grid 
-                  gap-0 
-                  p-1
-                  md:w-[400px] 
-                  lg:w-[500px] 
-                  lg:grid-cols-[.75fr_1fr]
-                '
-                style={{
-                  listStyleType: 'none',
-                }}  
-              >
-                  <ListItem href='/server-example' title='RSC Example'>
-                    Protecting React Server Component.
-                  </ListItem>
-                  <ListItem href='/middleware-example' title='Middleware Example'>
-                    Using Middleware to protect pages & APIs.
-                  </ListItem>
-                  <ListItem href='/api-example' title='Route Handler Example'>
-                    Getting the session inside an API Route.
-                  </ListItem>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
+                <div className="RightSlot">⇧+⌘+D</div>
+              </DropdownMenu.Item>
 
-            <NavigationMenuItem>
-              <NavigationMenuTrigger 
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  borderWidth: 0,
-                }}
-              >
-                <CustomLink href='/client-example' 
-                  style={{
-                    color: '#DDDDDD', 
-                    textDecoration: 'none',
-                  }}
-                >
-                  Client
-                </CustomLink>
-              </NavigationMenuTrigger>
-              <NavigationMenuContent 
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // listStyleType: 'none'
-                }}
-              >
-                <ul 
-                  className='
-                    grid 
-                    gap-0 
-                    p-1
-                    md:w-[400px] 
-                    lg:w-[500px] 
-                    lg:grid-cols-[.75fr_1fr]
-                  '
-                  style={{
-                    listStyleType: 'none',
-                  }}
-                >
-                  <ListItem href='/participate' title='ThreeD Garden: Participate'>
-                    Participate
-                  </ListItem>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem> */}
-            {/* */}
-        
-            {/* <NavigationMenuItem>
-              <NavigationMenuLink
-                href='/participate'
-                className={navigationMenuTriggerStyle()}
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // textDecoration: 'underline',
-                  // borderWidth: 0,
-                  // margin: 0,
-                  // padding: 0,
-                  fontSize: 12,
-                }}
-              >
-                Demo: 1: ThreeD Garden
-              </NavigationMenuLink>
-            </NavigationMenuItem> */}
-        
-            {/* <NavigationMenuItem>
-              <NavigationMenuLink
-                href='/home-design'
-                className={navigationMenuTriggerStyle()}
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // textDecoration: 'underline',
-                  // borderWidth: 0,
-                  // margin: 0,
-                  // padding: 0,
-                  fontSize: 12,
-                }}
-              >
-                Demo: 2: ThreeD Home Design
-              </NavigationMenuLink>
-            </NavigationMenuItem> */}
+              {/* <DropdownMenu.Separator className="DropdownMenuSeparator" /> */}
 
-          </NavigationMenuList>
-        </NavigationMenu>
+              {/* <DropdownMenu.CheckboxItem
+                className="DropdownMenuCheckboxItem"
+                // checked={bookmarksChecked}
+                // onCheckedChange={setBookmarksChecked}
+              >
+                <DropdownMenu.ItemIndicator className="DropdownMenuItemIndicator">
+                  <CheckIcon />
+                </DropdownMenu.ItemIndicator>
+                Show Bookmarks <div className="RightSlot">⌘+B</div>
+              </DropdownMenu.CheckboxItem> */}
+              {/* <DropdownMenu.CheckboxItem
+                className="DropdownMenuCheckboxItem"
+                // checked={urlsChecked}
+                // onCheckedChange={setUrlsChecked}
+              >
+                <DropdownMenu.ItemIndicator className="DropdownMenuItemIndicator">
+                  <CheckIcon />
+                </DropdownMenu.ItemIndicator>
+                Show Full URLs
+              </DropdownMenu.CheckboxItem> */}
+
+              {/* <DropdownMenu.Separator className="DropdownMenuSeparator" /> */}
+
+              {/* <DropdownMenu.Label className="DropdownMenuLabel">
+                People
+              </DropdownMenu.Label>
+              <DropdownMenu.RadioGroup 
+                // value={person} 
+                // onValueChange={setPerson}
+              >
+                <DropdownMenu.RadioItem
+                  className="DropdownMenuRadioItem"
+                  value="pedro"
+                >
+                  <DropdownMenu.ItemIndicator className="DropdownMenuItemIndicator">
+                    <DotFilledIcon />
+                  </DropdownMenu.ItemIndicator>
+                  Pedro Duarte
+                </DropdownMenu.RadioItem>
+                <DropdownMenu.RadioItem
+                  className="DropdownMenuRadioItem"
+                  value="colm"
+                >
+                  <DropdownMenu.ItemIndicator className="DropdownMenuItemIndicator">
+                    <DotFilledIcon />
+                  </DropdownMenu.ItemIndicator>
+                  Colm Tuite
+                </DropdownMenu.RadioItem>
+              </DropdownMenu.RadioGroup>
+
+              <DropdownMenu.Arrow className="DropdownMenuArrow" /> */}
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
       </Flex>
 
     </Flex>
   )
 }
-
-const ListItem = React.forwardRef<
-  React.ElementRef<'a'>,
-  React.ComponentPropsWithoutRef<'a'>
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li
-      className='
-        p-2
-      '
-    >
-      {/* <NavigationMenuLink> */}
-        <div 
-          className='
-            p-2
-            text-sm 
-            font-medium 
-            leading-none
-          '
-        >
-          <a
-            ref={ref}
-            className={cn(
-              // 'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
-              className
-            )}
-            {...props}
-          >
-            {title}
-          </a>
-        </div>
-        <div
-          className='
-            p-2
-            text-sm 
-            leading-snug 
-            line-clamp-2 
-            text-muted-foreground
-          '
-        >
-          {children}
-        </div>
-        
-      {/* </NavigationMenuLink> */}
-    </li>
-  )
-})
-ListItem.displayName = 'ListItem'

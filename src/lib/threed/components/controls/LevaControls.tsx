@@ -394,7 +394,7 @@ export function ThreeDLevaControls() {
           // background: '#181C20',
           position: 'absolute',
           // // zIndex: 9600,
-          top: -51,
+          top: -48,
           left: 180,
         }}
       >
