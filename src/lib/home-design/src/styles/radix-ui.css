@@ -190,7 +190,7 @@ input {
 	all: unset;
 } */
 
-/* 
+/* */
 .DialogOverlay {
 	background-color: var(--black-a9);
 	position: fixed;
@@ -274,9 +274,9 @@ input {
 	align-items: center;
 	justify-content: center;
 	color: var(--violet-11);
-	position: absolute;
-	top: 10px;
-	right: 10px;
+	/* position: absolute; */
+	/* top: 10px; */
+	/* right: 10px; */
 }
 .IconButton:hover {
 	background-color: var(--violet-4);
@@ -284,6 +284,7 @@ input {
 .IconButton:focus {
 	box-shadow: 0 0 0 2px var(--violet-7);
 }
+
 
 .Fieldset {
 	display: flex;
@@ -315,11 +316,12 @@ input {
 }
 .Input:focus {
 	box-shadow: 0 0 0 2px var(--violet-8);
-}
+} 
+
 
 @keyframes overlayShow {
 	from {
-		opacity: 0;
+		opacity: 0.8;
 	}
 	to {
 		opacity: 1;
@@ -328,11 +330,11 @@ input {
 
 @keyframes contentShow {
 	from {
-		opacity: 0;
+		opacity: 0.8;
 		transform: translate(-50%, -48%) scale(0.96);
 	}
 	to {
 		opacity: 1;
 		transform: translate(-50%, -50%) scale(1);
 	}
-} */
+}

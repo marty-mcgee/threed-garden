@@ -62,7 +62,7 @@ import {
 	CheckIcon,
 	ChevronRightIcon,
 } from '@radix-ui/react-icons'
-import '#/lib/home-design/src/styles/radix-ui.css'
+// import '#/lib/home-design/src/styles/radix-ui.css'
 
 // ==============================================================
 // ** THREED CSS Imports
