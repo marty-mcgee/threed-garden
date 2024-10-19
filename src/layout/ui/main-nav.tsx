@@ -112,10 +112,11 @@ export default async function MainNav() {
               </NavigationMenuLink>
             </NavigationMenuItem>
         
-            {/* 
+            {/* */}
             <NavigationMenuItem>
               <NavigationMenuLink
                 href='/demo/index.html'
+                target='_blank'
                 className={navigationMenuTriggerStyle()}
                 style={{
                   // backgroundColor: '#222222', 
@@ -130,7 +131,7 @@ export default async function MainNav() {
                 Demo: 3: ThreeD Home Design 2D+3D
               </NavigationMenuLink>
             </NavigationMenuItem> 
-            */}
+            {/* */}
 
             {/*
             <NavigationMenuItem>
