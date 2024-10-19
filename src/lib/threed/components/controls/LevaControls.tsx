@@ -386,7 +386,7 @@ export function ThreeDLevaControls() {
         // display={'column'}
         style={{
           // display: 'grid',
-          width: '420px',
+          width: '360px',
           // gap: 10,
           // paddingBottom: 0,
           // marginRight: 0,
@@ -394,7 +394,7 @@ export function ThreeDLevaControls() {
           // background: '#181C20',
           position: 'absolute',
           // // zIndex: 9600,
-          top: -48,
+          top: -47,
           left: 180,
         }}
       >
