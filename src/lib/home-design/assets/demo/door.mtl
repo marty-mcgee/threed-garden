@@ -1,0 +1,52 @@
+# door1.mtl
+#
+# Copyrights (C) 2010  Peter Smolik
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl revolvedSurface42_1_1
+illum 2
+Ka 0.0 0.0 0.0
+Kd 0.6472 0.579584 0.443332
+Ks 0.5 0.5 0.5
+Ns 8.0
+
+newmtl revolvedSurface41_2_2
+illum 2
+Ka 0.0 0.0 0.0
+Kd 0.6472 0.6472 0.6472
+Ks 0.5 0.5 0.5
+Ns 8.0
+
+newmtl pCube222_5_5
+illum 2
+Ka 0.0 0.0 0.0
+Kd 0.750448 0.750448 0.750448
+Ks 0.5 0.5 0.5
+Ns 8.0
+
+newmtl pCube55_32_32
+illum 2
+Ka 0.0 0.0 0.0
+Kd 0.2816 0.111035 0.0918016
+Ks 0.5 0.5 0.5
+Ns 8.0
+
+newmtl HingeTube1_36_36
+illum 2
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 8.0
+map_Kd Hinge.jpg
+
+newmtl HingePlate2_37_37
+illum 2
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.5 0.5 0.5
+Ns 8.0
+map_Kd Hingeplate.jpg

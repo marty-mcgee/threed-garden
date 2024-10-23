@@ -1,0 +1,32 @@
+# accordionFoldDoors.mtl Produced by Art of Illusion 2.6, Thu Jan 08 20:20:29 EST 2009
+#
+# Created by Pencilart
+#
+# Updated panes size by Emmanuel Puybaret / eTeks
+#
+# 2019 Sean Bradley rescaled for optimisation in HomeIdea3D http://homeidea3d.seanwasere.com
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Glass
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.900000 0.900000 0.900000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.500000
+illum 2
+
+newmtl white
+Ns 74.509804
+Ka 0.000000 0.000000 0.000000
+Kd 0.850000 0.850000 0.850000
+Ks 0.310000 0.310000 0.310000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

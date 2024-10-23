@@ -1,0 +1,20 @@
+# Blender MTL File: 'redsymbzone_mebler.blend'
+# Material Count: 2
+
+newmtl Material.032
+Ns 50
+Ka 0.000000 0.000000 0.000000
+Kd 1 1 1
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Material.034
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.299738 0.299738 0.299738
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1

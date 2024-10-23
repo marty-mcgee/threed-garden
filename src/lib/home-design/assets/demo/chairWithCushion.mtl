@@ -1,0 +1,41 @@
+# Blender MTL File: 'Country-Kitchen.blend'
+# Material Count: 4
+
+newmtl Cushion-Ties
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd cushion-red.jpg
+
+newmtl Cushion1
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks  0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd cushion-red.jpg
+
+newmtl Table-Cross
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.9
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl Table-Cross_NONE
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.85
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2

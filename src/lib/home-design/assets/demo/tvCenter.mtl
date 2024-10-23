@@ -1,0 +1,44 @@
+# TVCenter.mtl Produced by Art of Illusion
+#
+# Created by Pencilart
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+newmtl BlackTV
+Ns 100.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.136000 0.136000 0.136000
+Ks 0.600000 0.600000 0.600000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Default_Texture
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.75 0.75 0.75
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Screen
+Ns 100.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.280000 0.280000 0.280000
+Ks 0.200000 0.200000 0.200000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl woodenflooring
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd TVCenter1.jpg

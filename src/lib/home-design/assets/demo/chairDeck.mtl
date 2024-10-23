@@ -1,0 +1,21 @@
+# Blender MTL File: 'chair_deck0000.blend'
+# Material Count: 2
+
+newmtl Chrome
+Ns 120
+Ka 0.000000 0.000000 0.000000
+Kd 0.65 0.65 0.65
+Ks 1 1 1
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Wood
+Ns 15
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.1 0.1 0.1
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd wood5.jpg

@@ -1,0 +1,21 @@
+# Blender MTL File: 'sofa.blend'
+# Material Count: 2
+
+newmtl Leather
+Ns 96.078431
+Ka 0.005605 0.005605 0.005605
+Kd 0.2 0.2 0.2
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Material.001
+Ns 96.078431
+Ka 0.005605 0.005605 0.005605
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /Users/manu/Documents/Eyrolles/Cahier Swing/Models/Download/media/STORE N GO/ROSSINI 15/BLENDER/Rossini/arredi/Dark Wood.jpg

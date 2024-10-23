@@ -1,0 +1,66 @@
+# Blender MTL File: 'Country-Kitchen.blend'
+# Material Count: 7
+
+newmtl Aluminum
+Ns 50
+Ka 0.000000 0.000000 0.000000
+Kd 0.75 0.75 0.75
+Ks 0.8 0.8 0.8
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Chrome
+Ns 128
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 1 1 1
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Hole
+Ns 1
+Ka 0.000000 0.000000 0.000000
+Kd 0.2 0.2 0.2
+Ks 0 0 0 
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Cupboard-units
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 1 1 1
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Metal-Handles
+Ns 100
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 0.9 0.9 0.9
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Wood-top-suround
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 1 1 1
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Worktops-main
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.1 0.1 0.1
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd worktops-light.jpg

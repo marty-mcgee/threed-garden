@@ -1,0 +1,115 @@
+# staircase_90_landing.mtl
+#
+# Created by Ola-Kristian HOFF
+# Assembled with handrail by Emmanuel Puybaret / eTeks
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Baluster_bottom_left
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Baluster_bottom_right
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Baluster_landing
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Baluster_landing_2
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Baluster_top_left
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Baluster_top_right
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Handrail_bottom_left
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Handrail_bottom_right
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Handrail_landing
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Handrail_landing_2
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Handrail_top_left
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Handrail_top_right
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Stringer
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Tread
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
