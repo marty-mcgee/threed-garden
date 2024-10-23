@@ -139,6 +139,18 @@ const nextConfig = {
         port: '',
         pathname: '**'
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'vercel.com',
+        port: '',
+        pathname: '**'
+      },
     ],
     // loader: 'default',
     // // path: 'https://somedomain.com/mydirectory/',
@@ -152,17 +164,22 @@ const nextConfig = {
   },
 
   // ** REDIRECTS
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: '/',
-  //       destination: '/home',
-  //       destination: '/participate',
-  //       // destination: '/dashboards/sales',
-  //       permanent: false,
-  //     },
-  //   ]
-  // },
+  async redirects() {
+    return [
+      // {
+      //   source: '/',
+      //   destination: '/home',
+      //   destination: '/participate',
+      //   // destination: '/dashboards/sales',
+      //   permanent: false,
+      // },
+      {
+        source: "/github",
+        destination: "https://github.com/marty-mcgee/threed-garden",
+        permanent: false,
+      },
+    ]
+  },
 
   // ** WEBPACK
   webpack(config, { isServer }) {
@@ -171,6 +188,11 @@ const nextConfig = {
     if (!isServer) {
       // We're in the browser build, so we can safely exclude the sharp module
       config.externals.push('sharp')
+    }
+
+    // paper.js support
+    if (isServer) {
+      config.resolve.alias['paper'] = false
     }
 
     // // next webpack ignore stuff
