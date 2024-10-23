@@ -13,7 +13,7 @@ import { auth } from '#/lib/auth/auth' // this goes in page?
 // import dynamic from 'next/dynamic'
 // const ExperienceViewer = dynamic(() => import('#/lib/threed/components/canvas/ExperienceViewer'), { ssr: false })
 
-const SessionWrapper = async ({ children }: { children: ReactNode}) => {
+const SessionWrapper = async ({ children }: { children: ReactNode}): Promise<JSX.Element> => {
   // **
   const id: string = 'ThreeDAppSession'
   // const ref: any = useRef<any>()

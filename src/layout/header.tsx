@@ -1,5 +1,5 @@
 // 'use client'
-// 'use server'
+'use server'
 // ^^ does this file require client or server pragma ???
 
 // ** COMPONENT Imports
@@ -27,6 +27,7 @@ export default async function Header() {
         >
 
           {/* <Logo /> */}
+          {/* @ts-expect-error Async Server Component */}
           <MainNav />
         
         </Flex>
@@ -34,7 +35,8 @@ export default async function Header() {
           justify='end'
           align='center'
         >
-          
+
+          {/* @ts-expect-error Async Server Component */}
           <UserButton />
         
         </Flex>
