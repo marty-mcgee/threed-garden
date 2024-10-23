@@ -1,0 +1,31 @@
+# Blender MTL File: 'SlingChairs_Export.blend'
+# Material Count: 3
+
+newmtl ChairFrame
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.456900 0.229953 0.137153
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd BEuropean_Beech.jpg
+
+newmtl Chair_Fabric
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd BlueWhite_Stripes.jpg
+
+newmtl Metal
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.8 0.8 0.8
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2

@@ -1,0 +1,102 @@
+# staircase_180_long.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/329/
+# Assembled with handrail by Emmanuel Puybaret / eTeks
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+newmtl Baluster_right
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Handrail_right
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Baluster_left
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Handrail_left
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Baluster_bottom_left
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Handrail_bottom_left
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Baluster_top_left
+illum 2
+Ka 0.68 0.68 0.68 
+Kd 0.68 0.68 0.68
+Ks 0.5 0.5 0.5
+Ns 80
+
+newmtl Handrail_top_left
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd texture.png
+
+newmtl Riser
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 1.000000 1.000000 1.000000
+Ks 0.007812 0.007812 0.007812
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd texture.png
+
+newmtl Stringer
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd texture.png
+
+newmtl Tread
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd texture.png

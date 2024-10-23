@@ -1,0 +1,28 @@
+# barbecue.mtl produced by Art of Illusion 2.8.1 and Blender
+#
+# Created by Sophie PUYBARET / eTeks for Sweet Home 3D
+# Copyright (c) 2015 Emmanuel PUYBARET / eTeks <info@eteks.com>
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+# Material Count: 2
+
+newmtl Grille
+Ns 100
+Ka 0.000000 0.000000 0.000000
+Kd 0.648000 0.648000 0.648000
+Ks 0.400000 0.400000 0.400000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Noir
+Ns 50
+Ka 0.000000 0.000000 0.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.5 0.5 0.5
+Ni 1.000000
+d 1.000000
+illum 2

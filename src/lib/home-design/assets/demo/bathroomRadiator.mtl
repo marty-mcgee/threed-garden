@@ -1,0 +1,20 @@
+# Blender MTL File: 'bath-units.blend'
+# Material Count: 2
+
+newmtl 1orange.tkan
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.630244 0.788508 0.613480
+Ks 0.1 0.1 0.1
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl chrome.005
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.953327 0.953327 0.953327
+Ks 0.722082 0.722082 0.722082
+Ni 1.000000
+d 1.000000
+illum 2

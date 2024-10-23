@@ -1,0 +1,23 @@
+# gaz.mtl produced by Art of Illusion 2.8.1, Tue Aug 25 19:02:19 CEST 2015
+#
+# Created by Sophie PUYBARET / eTeks for Sweet Home 3D
+# Copyright (c) 2015 Emmanuel PUYBARET / eTeks <info@eteks.com>
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Gris_clair
+Ns 10
+Kd 0.93 0.93 0.93
+Ks 0.1 0.1 0.1
+Ka 0.2 0.2 0.2
+illum 1
+
+newmtl Bleu
+Ns 10
+Kd 0.5525 0.7072 0.85
+Ks 0.1 0.1 0.1
+Ka 0.26 0.35 0.42
+illum 1

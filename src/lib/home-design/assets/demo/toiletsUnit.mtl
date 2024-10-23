@@ -1,0 +1,30 @@
+# Blender MTL File: 'bathroom fixtures.blend'
+# Material Count: 3
+
+newmtl chrome
+Ns 120
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 0.9 0.9 0.9
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl fayence
+Ns 50
+Ka 0.000000 0.000000 0.000000
+Kd 0.95 0.95 0.95
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl cover
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.95 0.95 0.95
+Ks 0.1 0.1 0.1
+Ni 1.000000
+d 1.000000
+illum 2
+

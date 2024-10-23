@@ -1,0 +1,89 @@
+# washer_dryer.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/379/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Body
+illum 3
+Ka 0.2 0.2 0.2
+Kd 1.0 0.9803922 0.9803922
+Ks 0.6 0.6 0.6
+Ns 60
+
+newmtl Door
+illum 3
+Ka 0.2 0.2 0.2
+Kd 0.7529412 0.7529412 0.7529412
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl Button
+illum 2
+Ka 0.2 0.2 0.2
+Kd 0.7686275 0.7490196 0.7882353
+Ks 0.4921875 0.4921875 0.4921875
+Ns 63.0
+
+newmtl Dial
+illum 2
+Ka 0.2 0.2 0.2
+Kd 1.0 0.9647059 0.9215686
+Ks 0.453125 0.453125 0.453125
+Ns 58.0
+
+newmtl Top_rim
+illum 3
+Ka 0.2 0.2 0.2
+Kd 1.0 0.9921569 0.972549
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl Drum
+illum 3
+Ka 0.2 0.2 0.2
+Kd 0.5254902 0.6 0.6627451
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl Glass
+illum 3
+Ka 0.2 0.2 0.2
+Kd 0.5294118 0.8078431 0.9215686
+Ks 1.0 1.0 1.0
+Ns 128.0
+Ni 1.0
+d 0.4
+
+newmtl Feet
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.4117647 0.4117647 0.4117647
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl Letter
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 0.8431373 0.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl Display
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.2941176 0.0 0.5098039
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl Top
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.9 0.9 0.9
+Ks 0.01 0.01 0.01
+Ns 1.0
+

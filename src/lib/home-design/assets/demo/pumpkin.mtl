@@ -1,0 +1,19 @@
+# citrouille.mtl produced by Art of Illusion 2.8.1, Tue Aug 25 18:50:54 CEST 2015
+#
+# Created by Sophie PUYBARET / eTeks for Sweet Home 3D
+# Copyright (c) 2015 Emmanuel PUYBARET / eTeks <info@eteks.com>
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+newmtl Vert
+Kd 0.49845 0.58 0.3654
+Ks 0 0 0
+Ka 0.49845 0.58 0.3654
+illum 1
+newmtl Citrouille
+Kd 0.74 0.47449 0.1628
+Ks 0 0 0
+Ka 0.74 0.47449 0.1628
+illum 1

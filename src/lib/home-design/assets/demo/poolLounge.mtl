@@ -1,0 +1,20 @@
+# Blender MTL File: 'LowPolyPoolLounge.blend'
+# Material Count: 2
+
+newmtl lounge
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.608420 0.608420 0.608420
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl lounge_cloth
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.07 0.08 0.28
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2

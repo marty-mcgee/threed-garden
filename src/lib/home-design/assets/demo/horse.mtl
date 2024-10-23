@@ -1,0 +1,12 @@
+# Blender MTL File: 'horse.blend'
+# Material Count: 1
+
+newmtl horse_mat
+Ns 15
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.15 0.15 0.15
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd color.jpg

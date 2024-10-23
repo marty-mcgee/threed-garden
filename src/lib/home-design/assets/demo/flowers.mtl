@@ -1,0 +1,29 @@
+# flowers.mtl
+#
+# Copyrights (C) 2010  Peter Smolik
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl Flowers_1
+illum 2
+Ka 0.89 0.88 1
+Kd 0.89 0.88 1
+Ks 0.5 0.5 0.5
+Ns 50
+
+newmtl Flowers_2
+illum 2
+Ka 0.301961 0.427451 0.203922
+Kd 0.301961 0.427451 0.203922
+Ks 0.309804 0.568627 0.360784
+Ns 30
+
+newmtl Flowers_3
+illum 2
+Ka 1 0.634 0.634
+Kd 0.699 0 0
+Ks 0.7 0.7 0.6
+Ns 30
