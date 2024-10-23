@@ -1,0 +1,15 @@
+# sofa3Single.mtl
+#
+# Copyrights (C) 2010  Peter Smolik
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl LR_chair_1_1
+illum 2
+Ka 0.0 0.0 0.0
+Kd 0.270588 0.266667 0.266667
+Ks 0.752941 0.752941 0.752941
+Ns 9.18959

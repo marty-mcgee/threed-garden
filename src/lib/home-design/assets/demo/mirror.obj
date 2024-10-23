@@ -1,0 +1,51 @@
+# Blender3D v245 OBJ File: mirror.blend
+#
+# Created by Emmanuel Puybaret / eTeks for Sweet Home 3D
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+# www.blender3d.org
+mtllib mirror.mtl
+v 20.066208 19.999985 -0.231418
+v 20.066208 -19.999994 -0.231418
+v -19.933777 -19.999992 -0.231418
+v -19.933777 19.999990 -0.231418
+v 20.066223 19.999973 0.268582
+v 20.066193 -20.000010 0.268582
+v -19.933777 -19.999990 0.268582
+v -19.933777 19.999983 0.268582
+vt 1.000000 1.000000 0.0
+vt 0.000000 1.000000 0.0
+vt 0.000000 0.000000 0.0
+vt 1.000000 0.000000 0.0
+vt 1.000000 1.000000 0.0
+vt 0.000000 1.000000 0.0
+vt 0.000000 0.000000 0.0
+vt 1.000000 0.000000 0.0
+vt 1.000000 1.000000 0.0
+vt 0.000000 1.000000 0.0
+vt 0.000000 0.000000 0.0
+vt 1.000000 0.000000 0.0
+vt 1.000000 1.000000 0.0
+vt 0.000000 1.000000 0.0
+vt 0.000000 0.000000 0.0
+vt 1.000000 0.000000 0.0
+vt 1.000000 1.000000 0.0
+vt 0.000000 1.000000 0.0
+vt 0.000000 0.000000 0.0
+vt 1.000000 0.000000 0.0
+vt 1.000000 1.000000 0.0
+vt 0.000000 1.000000 0.0
+vt 0.000000 0.000000 0.0
+vt 1.000000 0.000000 0.0
+g sweethome3d_window_mirror
+usemtl Material_mirror.jpg
+s off
+f 1/1 2/2 3/3 4/4
+f 5/5 8/6 7/7 6/8
+f 1/9 5/10 6/11 2/12
+f 2/13 6/14 7/15 3/16
+f 3/17 7/18 8/19 4/20
+f 5/21 1/22 4/23 8/24

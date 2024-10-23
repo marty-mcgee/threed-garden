@@ -1,0 +1,50 @@
+# Blender MTL File: 'Succulunt_plant.blend'
+# Material Count: 5
+
+newmtl Material
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd succulent_leaf.jpg
+
+newmtl Soil
+Ns 5
+Ka 0.000000 0.000000 0.000000
+Kd 0.04 0.03 0.02
+Ks 0.1 0.1 0.1
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Stem
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd stem.jpg
+
+newmtl leaf
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd leaf.jpg
+
+newmtl pot
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.25 0.25 0.25
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2

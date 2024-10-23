@@ -1,0 +1,27 @@
+# prism.obj
+#
+# Copyright 2019 Sean Bradley
+#
+# Created by Sean Bradley for HomeIdea3D http://homeidea3d.com
+#
+# This file is distributed under Attribution 4.0 International (CC BY 4.0)  license, see https://creativecommons.org/licenses/by/4.0/
+#
+mtllib prism.mtl
+o Cone_Cone.001
+v 0.144597 -48.999981 -49.311352
+v 50.144596 -48.999981 0.688650
+v 0.144592 -48.999981 50.688648
+v -49.855404 -48.999981 0.688647
+v 0.144597 51.000019 0.688648
+vn 0.6667 0.3333 -0.6667
+vn 0.6667 0.3333 0.6667
+vn -0.6667 0.3333 0.6667
+vn -0.6667 0.3333 -0.6667
+vn 0.0000 -1.0000 0.0000
+usemtl Material.001
+s off
+f 1//1 5//1 2//1
+f 2//2 5//2 3//2
+f 3//3 5//3 4//3
+f 4//4 5//4 1//4
+f 1//5 2//5 3//5 4//5

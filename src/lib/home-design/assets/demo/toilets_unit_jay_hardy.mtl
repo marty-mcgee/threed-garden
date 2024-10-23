@@ -1,0 +1,55 @@
+# Blender MTL File: 'Bathroom-suite-Jay-Hardy.blend'
+# Material Count: 6
+
+newmtl Ceramic
+Ns 50
+Ka 0.000000 0.000000 0.000000
+Kd 0.95 0.95 0.95
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl None
+Ns 1
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.9
+Ks 0.1 0.1 0.1
+d 1
+illum 2
+
+newmtl Steel
+Ns 120
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 0.9 0.9 0.9
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Steel-chrome
+Ns 120
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 0.9 0.9 0.9
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Toilet-plastic
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.9
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl White-plastic
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.9
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2

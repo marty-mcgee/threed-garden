@@ -1,0 +1,21 @@
+# Blender MTL File: 'Country-Kitchen.blend'
+# Material Count: 2
+
+newmtl Tea-Towel
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.8 0.8 0.8
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Tea-Towel.jpg
+
+newmtl Tea-Towel-loop
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.8 0.8 0.8
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2

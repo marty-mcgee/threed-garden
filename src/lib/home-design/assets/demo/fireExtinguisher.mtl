@@ -1,0 +1,75 @@
+# Blender MTL File: 'Fire_Extinguisher.blend'
+# Material Count: 8
+
+newmtl Black_Plastic
+Ns 30
+Ka 0.000000 0.000000 0.000000
+Kd 0.019180 0.019180 0.019180
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Label
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.91 0 0.1
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd label.jpg
+
+newmtl Red_Metal
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.91 0 0.1
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Red_Plastic
+Ns 30
+Ka 0.000000 0.000000 0.000000
+Kd 0.91 0.24 0.25
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Rough_Metal
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.49 0.49 0.49
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Rubber
+Ns 30
+Ka 0.000000 0.000000 0.000000
+Kd 0.016168 0.016168 0.016168
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Smooth_Metal
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.54 0.54 0.54
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Yellow_Plastic
+Ns 30
+Ka 0.000000 0.000000 0.000000
+Kd 0.91 0.84 0
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2

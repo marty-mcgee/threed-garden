@@ -1,0 +1,31 @@
+# kit.mtl 3D model
+#
+# Created by Gael Bettinelli
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl wenge
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd lit_wenge.png
+
+newmtl Gris
+illum 2
+Ka 0.0 0.0 0.0
+Kd 0.7566 0.7566 0.7566
+Ks 0.09 0.09 0.09
+Ns 81.0
+
+newmtl tissu
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd lit_tissu.png

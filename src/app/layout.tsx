@@ -28,6 +28,7 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // import { stores, queries, mutations } from '#/lib/stores/apollo'
 
 // import { SessionWrapper } from '#/layout/SessionWrapper'
+// @ ts-expect-error
 const SessionWrapper = dynamic(() => import('#/layout/SessionWrapper'), { ssr: false })
 
 // ** Redux Store
@@ -265,6 +266,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
   // ** Return JSX
   return (
     <ThreeDAppProvider>
+      {/* @ ts-expect-error */}
       <SessionWrapper>
       {/* <ObjectStateReference> */}
         {/* <AuthProvider> */}
@@ -294,7 +296,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                 <div 
                                   id='ThreeDAppLayout'
                                 >
-                                  
+                                  {/* @ ts-expect-error Async Server Component */}
                                   <Header 
                                     key='ThreeDAppHeader'
                                   />

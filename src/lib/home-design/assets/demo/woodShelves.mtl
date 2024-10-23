@@ -1,0 +1,24 @@
+# shelves_storage_wood.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/379/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Hylle
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+map_Kd wood.jpg
+
+newmtl Support
+illum 2
+Ka 0.2 0.2 0.2
+Kd 0.6627451 0.6627451 0.6627451
+Ks 1.0 1.0 1.0
+Ns 64.0

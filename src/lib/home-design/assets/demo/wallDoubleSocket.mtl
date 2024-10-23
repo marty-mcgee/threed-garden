@@ -1,0 +1,38 @@
+# Blender MTL File: 'Country-Kitchen.blend'
+# Material Count: 4
+
+newmtl Wall-socket.black
+Ns 1
+Ka 0.000000 0.000000 0.000000
+Kd 0.4 0.4 0.4
+Ks 0 0 0
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Wall-socket1
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.95 0.95 0.95
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Wall-socket1.screw
+Ns 100
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 0.7 0.7 0.7
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Wall-socket1.switch
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.95 0.95 0.95
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2
