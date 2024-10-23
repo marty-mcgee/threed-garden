@@ -27,7 +27,7 @@ export default async function Header() {
         >
 
           {/* <Logo /> */}
-          {/* @ts-expect-error Async Server Component */}
+          {/* @ ts-expect-error Async Server Component */}
           <MainNav />
         
         </Flex>
@@ -36,7 +36,7 @@ export default async function Header() {
           align='center'
         >
 
-          {/* @ts-expect-error Async Server Component */}
+          {/* @ ts-expect-error Async Server Component */}
           <UserButton />
         
         </Flex>

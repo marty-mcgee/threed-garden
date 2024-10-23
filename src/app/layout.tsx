@@ -296,7 +296,7 @@ const RootLayout = ({ children }: React.PropsWithChildren): JSX.Element => {
                                 <div 
                                   id='ThreeDAppLayout'
                                 >
-                                  {/* @ts-expect-error Async Server Component */}
+                                  {/* @ ts-expect-error Async Server Component */}
                                   <Header 
                                     key='ThreeDAppHeader'
                                   />
