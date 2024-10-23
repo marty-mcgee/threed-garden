@@ -1,0 +1,39 @@
+# staircase_90_high_open.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/329/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Stringer
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 0.749020 0.568627 0.345098
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Railing
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 0.745098 0.568627 0.349020
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Tread
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 0.631373 0.458824 0.243137
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

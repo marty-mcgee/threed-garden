@@ -1,0 +1,31 @@
+# gate_grind.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/317/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl wood
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.11764706 0.11764706 0.09411765
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl metal
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.36862746 0.4392157 0.42745098
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl sign
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0078125 0.0078125 0.0078125
+Ns 1.0
+map_Kd beite.png

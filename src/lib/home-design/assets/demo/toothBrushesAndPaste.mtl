@@ -1,0 +1,34 @@
+# potBrossesADent.mtl produced by Art of Illusion 2.8.1, Tue Jul 09 14:05:45 CEST 2013
+#
+# Created by Thomas PUYBARET / eTeks for Sweet Home 3D
+# Copyright (c) 2013 Emmanuel PUYBARET / eTeks <info@eteks.com>
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+newmtl bordeaux
+Kd 0.55 0.132 0.2574
+Ks 0 0 0
+Ka 0 0 0
+illum 1
+newmtl rouge
+Kd 1 0 0
+Ks 0 0 0
+Ka 1 0 0
+illum 1
+newmtl bleu
+Kd 0.67 0.78 0.92
+Ks 0 0 0
+Ka 0 0 0
+illum 1
+newmtl Blanc
+Kd 0.86 0.86 0.86
+Ks 0 0 0
+Ka 1 1 1
+illum 1
+newmtl dentifrice
+Kd 1 1 1
+Ks 0 0 0
+Ka 0 0 0
+illum 1

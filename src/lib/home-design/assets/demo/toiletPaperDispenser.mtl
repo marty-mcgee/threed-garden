@@ -1,0 +1,29 @@
+# Blender MTL File: 'bathroom fixtures.blend'
+# Material Count: 3
+
+newmtl cardboard
+Ns 1
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 0 0 0
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl chrome.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 0.7 0.7 0.7
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl toilet_paper
+Ns 1
+Ka 0.000000 0.000000 0.000000
+Kd 0.95 0.92 0.92
+Ks 0 0 0
+Ni 1.000000
+d 1.000000
+illum 2

@@ -1,0 +1,23 @@
+# chair_office_x.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/288/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Chair
+illum 2
+Ka 0.2 0.2 0.2
+Kd 0.7098039 0.5921569 0.4235294
+Ks 0.515625 0.515625 0.515625
+Ns 60.0
+
+newmtl Upholstry
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.3921569 0.04313725 0.08235294
+Ks 0.0 0.0 0.0
+Ns 1.0

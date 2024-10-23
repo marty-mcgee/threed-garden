@@ -1,0 +1,51 @@
+# stairs_legal.mtl
+#
+# Created by Ola-Kristian HOFF
+# Handrail added by Emmanuel Puybaret / eTeks
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Tread
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.5764706 0.32156864 0.21960784
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl Stairs_side
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.8 0.5411765 0.3882353
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl Stairs_under
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl Riser
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.5764706 0.32156864 0.21960784
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl Baluster
+Ns 1.0
+Ka 0.0 0.0 0.0
+Kd 0.0 0.0 0.0
+Ks 0.0 0.0 0.0
+illum 2
+
+newmtl Handrail
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.64705884 0.2901961 0.14901961
+Ks 0.0 0.0 0.0
+Ns 1.0

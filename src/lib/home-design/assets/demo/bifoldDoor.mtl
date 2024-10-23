@@ -1,0 +1,18 @@
+# bifoldDoor.mtl
+#
+# Copyright 2019 Sean Bradley
+#
+# Created by Sean Bradley for HomeIdea3D http://homeidea3d.seanwasere.com
+#
+# This file is distributed under Attribution 4.0 International (CC BY 4.0)  license, see https://creativecommons.org/licenses/by/4.0/
+#
+
+newmtl Material.001
+Ns 194.117647
+Ka 1.000000 1.000000 1.000000
+Kd 0.195988 0.195988 0.195988
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

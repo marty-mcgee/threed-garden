@@ -1,0 +1,20 @@
+# Blender MTL File: 'sofa.blend'
+# Material Count: 2
+
+newmtl leather
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.85 0.85 0.85
+Ks 0.1 0.1 0.1
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl wood
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.6 0.6 0.6
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
