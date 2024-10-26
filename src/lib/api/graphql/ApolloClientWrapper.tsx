@@ -66,7 +66,8 @@ function makeClient() {
 }
 
 // you need to create a component to wrap your app in
-export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
+// export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
+export function ApolloClientWrapper({ children }: { children: any }) {
   // ** makeClient()
   // const madeClient = makeClient()
   // console.debug('%c🦆 ApolloClientWrapper makeClient() => madeClient', ccm.greenAlert, madeClient) // ApolloClient

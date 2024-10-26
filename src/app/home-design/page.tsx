@@ -53,6 +53,12 @@ import {
   Heading,
   Text,
 } from '@radix-ui/themes'
+// ** PANELS Imports
+import { 
+  Panel, 
+  PanelGroup,
+  PanelResizeHandle,
+} from 'react-resizable-panels'
 
 // import React from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'

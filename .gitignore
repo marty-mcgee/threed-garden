@@ -46,6 +46,9 @@ public/sw.js
 public/sw.js.map
 public/workbox-*
 
+# __test scripts
+src/app/__*
+
 ## assets
 
 public/assets

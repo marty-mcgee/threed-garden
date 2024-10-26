@@ -195,6 +195,12 @@ h3
 }
 
 
+.Heading {
+  /* color: var(--violet-11); */
+  color: white;
+  /* font-size: 15px; */
+  /* line-height: 25px; */
+}
 .Text {
   /* color: var(--violet-11); */
   color: white;
@@ -234,6 +240,9 @@ h3
 }
 
 /* ============================================================================= */
+/* TESTING ONLY: 
+** REALLY REALLY FINAL CUSTOM CSS 
+*/
 
 #ThreeDApp {
   /* padding: 4px 0; */
@@ -244,19 +253,6 @@ h3
   /* border: 2px solid darkred; */
 }
 
-/* 
-*/
-body {
-  /* margin: 0; */
-  /* background-color: #111111; */
-}
-
-/* JOYSTICK */ 
-/*  */
-* {
-  /* box-sizing: border-box; */
-}
-
 html,
 body,
 #root {
@@ -265,13 +261,25 @@ body,
   /* margin: 0; */
   /* padding: 0; */
   /* overflow: hidden; */
+  /* background-color: #111111; */
 }
 
 body {
   /* position: fixed; */
   /* overflow: hidden; */
+  /* color: #3D3D3D; */
 }
 
+/*
+.footer {
+  margin-top: 2rem;
+}
+*/
+
+/* JOYSTICK */ 
+* {
+  /* box-sizing: border-box; */
+}
 .controlKeys {
   /* position: absolute; */
   /* width: 18rem; */
@@ -315,8 +323,6 @@ body {
     display: none;
   }
 } */
-
-
 
 
 /* Set min-height to avoid page reflow while session loading */
@@ -414,12 +420,7 @@ body {
 } */
 
 
-
-
-/* .footer {
-  margin-top: 2rem;
-}
-
+/*
 .navItems {
   margin-bottom: 1rem;
   padding: 0;
