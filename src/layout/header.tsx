@@ -1,11 +1,11 @@
 // 'use client'
-'use server'
+// 'use server'
 // ^^ does this file require client or server pragma ???
 
 // ** COMPONENT Imports
 import Logo from '#/layout/ui/logo'
-import MainNav from '#/layout/ui/main-nav'
-import UserButton from '#/layout/ui/user-button'
+// import MainNav from '#/layout/ui/main-nav'
+// import UserButton from '#/layout/ui/user-button'
 
 // ** UI Imports
 import {
@@ -14,33 +14,31 @@ import {
 } from '@radix-ui/themes'
 
 // ** EXPORT Header
-export default async function Header() {
+export default function Header() {
   return (
-    <>
-      <Grid
-        id='ThreeDAppHeader'
-        columns='2'
+    <Grid
+      id='ThreeDAppHeader'
+      columns='2'
+    >
+      <Flex
+        justify='start'
+        align='center'
       >
-        <Flex
-          justify='start'
-          align='center'
-        >
 
-          {/* <Logo /> */}
-          {/* @ ts-expect-error Async Server Component */}
-          <MainNav />
-        
-        </Flex>
-        <Flex
-          justify='end'
-          align='center'
-        >
+        <Logo />
+        {/* @ ts-expect-error Async Server Component */}
+        {/* <MainNav /> */}
+      
+      </Flex>
+      <Flex
+        justify='end'
+        align='center'
+      >
 
-          {/* @ ts-expect-error Async Server Component */}
-          <UserButton />
-        
-        </Flex>
-      </Grid>
-    </>
+        {/* @ ts-expect-error Async Server Component */}
+        {/* <UserButton /> */}
+      
+      </Flex>
+    </Grid>
   )
 }

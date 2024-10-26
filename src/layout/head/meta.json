@@ -1,7 +1,0 @@
-{
-  "title": "ThreeDGarden.com on ThreeD.AI",
-  "description": "'threed-garden' demonstrates active development use of the 'threed-ai' platform. 'threed-ai' is a functioning, legit, low-dependency app, a package supporting a monorepo of workspaces that utilize/depend on 'ThreeJS, WebGL, React, TypeScript <Fiber>, GraphQL', in active development.",
-  "url": "https://threedgarden.com",
-  "favicon": "https://threedgarden.com/favicon/favicon.png",
-  "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)"
-}

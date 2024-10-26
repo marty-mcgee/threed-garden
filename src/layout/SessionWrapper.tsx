@@ -1,28 +1,18 @@
 // 'use client'
-'use server'
-// ^^ this file requires server pragma
+// 'use server'
+// ^^ this file uses server pragma
 
-// ** React
-import type { ReactNode } from 'react'
-
-// SESSSSSSION PROVIDERRRRRR
+// ** NEXT AUTH -- SESSION PROVIDER + MIDDLEWARE CONFIG
 import { SessionProvider } from 'next-auth/react'
-import { auth } from '#/lib/auth/auth' // this goes in page?
+import { auth } from '#/lib/auth/auth'
 
-// import { useRef } from 'react'
-// import dynamic from 'next/dynamic'
-// const ExperienceViewer = dynamic(() => import('#/lib/threed/components/canvas/ExperienceViewer'), { ssr: false })
-
-const SessionWrapper = async ({ children }: { children: ReactNode}): Promise<JSX.Element> => {
+export default async function SessionWrapper({ children }: { children: any }) {
   // **
   const id: string = 'ThreeDAppSession'
-  // const ref: any = useRef<any>()
 
   // get session from next-auth
   const session = await auth()
-  // console.debug('auth() session', session)
-  // // const session = async () => await auth()
-  // // console.debug('auth() session', session())
+  console.debug('auth() session', session)
   // set session to static data
   // const session = {
   //   user: {
@@ -36,14 +26,10 @@ const SessionWrapper = async ({ children }: { children: ReactNode}): Promise<JSX
   return (
     <SessionProvider session={session}>
       <div
-        id='ThreeDAppSession'
-        key={id}
-        // ref={ref}
+        id={id}
       >
         {children}
       </div>
     </SessionProvider>
   )
 }
-
-export default SessionWrapper
