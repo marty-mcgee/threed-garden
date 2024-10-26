@@ -101,7 +101,6 @@ const AppPage = ({children}: {children: any}) => {
   // ** Return JSX
   return (
   <Suspense fallback={<Spinner />}>
-    {/* <Navbar /> */}
     <Grid
       // gap={'3'}
       style={{

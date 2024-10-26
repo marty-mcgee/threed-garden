@@ -6,6 +6,8 @@
 import Logo from '#/layout/ui/logo'
 // import MainNav from '#/layout/ui/main-nav'
 // import UserButton from '#/layout/ui/user-button'
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs"
+import { LayoutDashboard } from "lucide-react"
 
 // ** UI Imports
 import {
@@ -26,6 +28,24 @@ export default function Header() {
       >
 
         <Logo />
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button className="rounded-full border border-black bg-black px-4 py-1.5 text-sm text-white transition-colors hover:bg-white hover:text-black">
+              Sign In
+            </button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton>
+            <UserButton.MenuItems>
+              <UserButton.Link
+                label="Dashboard"
+                labelIcon={<LayoutDashboard className="h-4 w-4" />}
+                href="/"
+              />
+            </UserButton.MenuItems>
+          </UserButton>
+        </SignedIn>
         {/* @ ts-expect-error Async Server Component */}
         {/* <MainNav /> */}
       
