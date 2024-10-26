@@ -27,7 +27,19 @@ export default function Header() {
         align='center'
       >
 
-        <Logo />
+        {/* <Logo /> */}
+        {/* @ ts-expect-error Async Server Component */}
+        {/* <MainNav /> */}
+      
+      </Flex>
+      <Flex
+        justify='end'
+        align='center'
+      >
+
+        {/* @ ts-expect-error Async Server Component */}
+        {/* <UserButton /> */}
+        
         <SignedOut>
           <SignInButton mode="modal">
             <button className="rounded-full border border-black bg-black px-4 py-1.5 text-sm text-white transition-colors hover:bg-white hover:text-black">
@@ -46,17 +58,6 @@ export default function Header() {
             </UserButton.MenuItems>
           </UserButton>
         </SignedIn>
-        {/* @ ts-expect-error Async Server Component */}
-        {/* <MainNav /> */}
-      
-      </Flex>
-      <Flex
-        justify='end'
-        align='center'
-      >
-
-        {/* @ ts-expect-error Async Server Component */}
-        {/* <UserButton /> */}
       
       </Flex>
     </Grid>

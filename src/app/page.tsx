@@ -109,13 +109,25 @@ const AppPage = ({children}: {children: any}) => {
         // paddingRight: '8px',
       }}
     > 
-      <Flex 
-        direction="column" 
+      {/* @ ts-expect-error Async Server Component */}
+      <Header 
+        key='ThreeDAppHeader'
+        // style={{
+        //   // height: '80vh',
+        //   width: '100%',
+        //   border: '1px solid darkgreen',
+        // }}
+      />
+
+
+
+      <Grid 
+        // direction="column" 
         // autoSaveId="ThreeDAppLayout"
         style={{
           height: '99vh',
           width: '100%',
-          border: '1px solid darkgreen',
+          border: '1px solid darkgray',
         }}
       >
         <PanelGroup 
@@ -132,10 +144,6 @@ const AppPage = ({children}: {children: any}) => {
               border: '1px solid darkgreen',
             }}
           >
-            {/* @ ts-expect-error Async Server Component */}
-            <Header 
-              key='ThreeDAppHeader'
-            />
             {/* <Text>
               Main Header
             </Text> */}
@@ -260,16 +268,25 @@ const AppPage = ({children}: {children: any}) => {
               border: '1px solid darkgreen',
             }}
           >
-            <Footer
-              key='ThreeDAppFooter'
-            />
             <Text>
-              Main Footer
+              Sub-Footer
             </Text>
           </Panel>
         </PanelGroup>
         
-      </Flex>
+      </Grid>
+
+
+
+      {/* @ ts-expect-error Async Server Component */}
+      <Footer 
+        key='ThreeDAppFooter'
+        // style={{
+        //   // height: '80vh',
+        //   width: '100%',
+        //   border: '1px solid darkgreen',
+        // }}
+      />
     </Grid>
   </Suspense>
   )
