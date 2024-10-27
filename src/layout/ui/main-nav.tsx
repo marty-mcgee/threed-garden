@@ -1,5 +1,5 @@
 // 'use client'
-'use server'
+// 'use server'
 // ^^ does this file require client or server pragma ???
 
 // ** UI Imports
@@ -27,25 +27,25 @@ import {
 import React from 'react'
 // import { Button } from './button'
 
-export default async function MainNav() {
+export default function MainNav() {
   return (
     <Flex 
-      // display={'inline-flex'}
+      // direction='row'
       // justify={'between'}
       // gap={'2'}
-      align={'center'}
+      // align={'center'}
       // className='
       //   m-0
       // '
-      style={{
-        marginTop: -4, // wth !!!
-        marginLeft: 4,
-      }}
+      // style={{
+      //   marginTop: -4, // wth !!!
+      //   marginLeft: 4,
+      // }}
     >
       <Flex
         // justify={'between'}
         // gap={'2'}
-        align={'center'}
+        // align={'center'}
       >
         <CustomLink href='/#home'>
           <Button variant='ghost'>  
@@ -71,7 +71,7 @@ export default async function MainNav() {
       <Flex
         // justify={'between'}
         // gap={'2'}
-        align={'center'}
+        // align={'center'}
       >
         <NavigationMenu>
           <NavigationMenuList>
@@ -112,7 +112,7 @@ export default async function MainNav() {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/*
+            
             <NavigationMenuItem>
               <NavigationMenuTrigger 
                 style={{
@@ -165,7 +165,8 @@ export default async function MainNav() {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-
+            
+            {/*
             <NavigationMenuItem>
               <NavigationMenuTrigger 
                 style={{

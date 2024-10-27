@@ -7,10 +7,10 @@
 // RESOURCES (to import)
 
 import { useSession } from 'next-auth/react'
-// import { auth } from "#/lib/auth/auth"
+// import { auth } from '#/lib/auth/auth'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
-import SessionData from "#/layout/session-data"
-// import CustomLink from "~/src/layout/ui/custom-link"
+import SessionData from '#/layout/session-data'
+// import CustomLink from '~/src/layout/ui/custom-link'
 
 // ** Next
 // import type { NextPage, NextPageContext } from 'next'
@@ -52,6 +52,8 @@ import Footer from '#/layout/footer'
 // // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
 // const Header = dynamic(() => import('#/layout/header'), { ssr: false })
 // const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
+// ** COMPONENT Imports
+import Logo from '#/layout/ui/logo'
 
 // ** Helper Components
 import Spinner from '#/layout/ui/spinner'
@@ -101,37 +103,43 @@ const AppPage = ({children}: {children: any}) => {
   // ** Return JSX
   return (
   <Suspense fallback={<Spinner />}>
-    <Grid
+    <Flex
       // gap={'3'}
       style={{
+        height: '99%',
         width: '99%',
         // paddingLeft: '8px',
         // paddingRight: '8px',
       }}
     > 
-      {/* @ ts-expect-error Async Server Component */}
-      <Header 
-        key='ThreeDAppHeader'
-        // style={{
-        //   // height: '80vh',
-        //   width: '100%',
-        //   border: '1px solid darkgreen',
-        // }}
-      />
-
-
-
-      <Grid 
-        // direction="column" 
-        // autoSaveId="ThreeDAppLayout"
+    
+      <Flex
         style={{
-          height: '99vh',
+          // height: '10vh',
+          // minHeight: '5vh',
+          width: '100%',
+          border: '4px solid darkblue',
+        }}
+      >
+        <Header 
+          key='ThreeDAppHeader'
+        />
+      </Flex>
+
+
+
+      <Flex 
+        // direction='column' 
+        style={{
+          height: '80vh',
+          minHeight: '50vh',
           width: '100%',
           border: '1px solid darkgray',
         }}
       >
         <PanelGroup 
-          direction="vertical"
+          direction='vertical'
+          autoSaveId='ThreeDAppLayout'
           id='MAINMAINPANELGROUP'
         >
           <Panel 
@@ -140,7 +148,7 @@ const AppPage = ({children}: {children: any}) => {
             // maxSize={64}
             style={{
               // height: '80vh',
-              width: '100%',
+              // width: '100%',
               border: '1px solid darkgreen',
             }}
           >
@@ -158,12 +166,12 @@ const AppPage = ({children}: {children: any}) => {
             // maxSize={64}
             style={{
               // height: '80vh',
-              width: '100%',
+              // width: '100%',
               border: '1px solid darkgreen',
             }}
           >
             <PanelGroup 
-              direction="vertical"
+              direction='vertical'
               id='MAINPANELGROUP'
             >
               <Panel
@@ -172,7 +180,7 @@ const AppPage = ({children}: {children: any}) => {
                 // maxSize={640}
                 style={{
                   // height: '80vh',
-                  width: '100%',
+                  // width: '100%',
                   border: '1px solid darkgreen',
                 }}
               >
@@ -180,7 +188,7 @@ const AppPage = ({children}: {children: any}) => {
                   className={stylesPanels.PanelContent}
                 >
                   {/* <Text>
-                    Sub-Header
+                    Sub Header
                   </Text> */}
                   <Heading as='h2'>
                     🌱 ThreeD: Next.js 14+ : app (router): page .tsx
@@ -207,7 +215,7 @@ const AppPage = ({children}: {children: any}) => {
                   }}
                 >
                   <PanelGroup 
-                    direction="horizontal"
+                    direction='horizontal'
                   >
                     <Panel
                       // className={stylesPanels.Panel}
@@ -220,7 +228,7 @@ const AppPage = ({children}: {children: any}) => {
                       }}
                     >
                       <Text>
-                        Sub-Left
+                        Sub Left
                       </Text>
                     </Panel>
                     <PanelResizeHandle />
@@ -234,20 +242,25 @@ const AppPage = ({children}: {children: any}) => {
                         border: '1px solid darkblue',
                       }}
                     >
-                      <div 
+                      <Grid 
                         id='ThreeDAppMain'
                         style={{
-                          height: '100%',
-                          width: '100%',
+                          // height: '100%',
+                          // width: '100%',
                           border: '1px solid darkgreen',
                         }}
                       >
                         <Text>
                           Main Content (children)
                         </Text>
-                        <SessionData session={session} />
-                        {false && children}
-                      </div>
+                        <SessionData 
+                          session={session} 
+                        />
+                        {
+                          false && 
+                          children
+                        }
+                      </Grid>
                     </Panel>
                   </PanelGroup>
                 </Grid>
@@ -269,25 +282,30 @@ const AppPage = ({children}: {children: any}) => {
             }}
           >
             <Text>
-              Sub-Footer
+              Sub Footer
             </Text>
           </Panel>
         </PanelGroup>
         
-      </Grid>
+      </Flex>
 
 
-
-      {/* @ ts-expect-error Async Server Component */}
-      <Footer 
-        key='ThreeDAppFooter'
-        // style={{
-        //   // height: '80vh',
-        //   width: '100%',
-        //   border: '1px solid darkgreen',
-        // }}
-      />
-    </Grid>
+      <Flex
+        style={{
+          height: '5vh',
+          minHeight: '5vh',
+          width: '100%',
+          border: '4px solid darkblue',
+        }}
+      >
+        <Text>
+          Main Footer
+        </Text>
+        <Footer 
+          key='ThreeDAppFooter'
+        />
+      </Flex>
+    </Flex>
   </Suspense>
   )
 }
