@@ -29,7 +29,7 @@ import React from 'react'
 
 export default function MainNav() {
   return (
-    <Flex 
+    < 
       // direction='row'
       // justify={'between'}
       // gap={'2'}
@@ -42,38 +42,45 @@ export default function MainNav() {
       //   marginLeft: 4,
       // }}
     >
-      <Flex
+      <div
         // justify={'between'}
         // gap={'2'}
         // align={'center'}
       >
-        <CustomLink href='/#home'>
-          <Button variant='ghost'>  
-            <Image src='/favicon/favicon.png' priority={true} alt='Home' width='32' height='32' />
-          </Button>
-        </CustomLink>
+        {/* <CustomLink href='/#home'> */}
+          {/* <Button variant='ghost'> */}
+            <Image 
+              src='/favicon/favicon.png' 
+              priority={true} 
+              alt='Home' 
+              width='32' 
+              height='32' 
+            />
+          {/* </Button> */}
+        {/* </CustomLink> */}
         <Text
-          as={'label'}
-          weight={'medium'}
-          className='pl-2'
+          // as={'label'}
+          // weight={'medium'}
+          // className='pl-2'
         >
           <CustomLink href='/#threedgarden' 
             style={{
-              color: '#DDDDDD',
-              textDecoration: 'none',
+              // color: '#DDDDDD',
+              // textDecoration: 'none',
             }}
           >
             THREED GARDEN
           </CustomLink>
         </Text>
-      </Flex>
+      </div>
       
-      <Flex
+      {/* 
+      <div
         // justify={'between'}
         // gap={'2'}
         // align={'center'}
-      >
-        <NavigationMenu>
+      > */}
+        {/* <NavigationMenu>
           <NavigationMenuList>
         
             <NavigationMenuItem>
@@ -164,7 +171,7 @@ export default function MainNav() {
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
             
             {/*
             <NavigationMenuItem>
@@ -262,11 +269,11 @@ export default function MainNav() {
             </NavigationMenuItem>
             */}
 
-          </NavigationMenuList>
-        </NavigationMenu>
-      </Flex>
+          {/* </NavigationMenuList>
+        </NavigationMenu> */}
+      {/* </div> */}
 
-    </Flex>
+    </>
   )
 }
 
