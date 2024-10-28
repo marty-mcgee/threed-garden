@@ -3,7 +3,6 @@
 // ^^ does this file require client or server pragma ???
 
 // ** COMPONENT Imports
-import Logo from '#/layout/ui/logo'
 import MainNav from '#/layout/ui/main-nav'
 // import UserButton from '#/layout/ui/user-button'
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
@@ -19,38 +18,57 @@ import {
 // ** RETURN JSX
 export default function Header() {
   return (
-    <div>
-      {/* <Flex
-        // columns='2'
-        direction='row'
-        justify='start'
-        align='center'
-      > */}
-        {/* <Flex
-          id='ThreeDAppHeaderLogo'
-          direction='row'
-          justify='start'
-          align='center'
-        > */}
-
-          {/* <Logo /> */}
+    <>
+      <Flex
+        id='ThreeDAppHeader'
+        className='flex'
+        display='inline-flex'
+        // direction='row'
+        // width='100%'
+        // style={{
+        //   display: 'inline-flex',
+        //   flexDirection: 'row',
+        // }}
+      >
+        <Flex
+          // className='flex'
+          // justify='start'
+          // flexGrow='1'
+          style={{
+            flexGrow: 1,
+          }}
+        >
+          {/* HEY HEY HEY */}
           <MainNav />
-
-        {/* </Flex> */}
-        {/* <Flex
-          id='ThreeDAppHeaderOther'
-          // columns='2'
-          direction='row'
-          justify='end'
-          align='center'
-        > */}
-
+        </Flex>
+        <Flex
+          // className='flex'
+          // justify='end'
+          // flexGrow='0'
+          style={{
+            flexGrow: 0,
+          }}
+        >
+          {/* YO YO YO */}
           {/* @ ts-expect-error Async Server Component */}
           {/* <UserButton /> */}
-          
-          {/* <SignedOut>
+          <SignedOut>
             <SignInButton mode='modal'>
-              <button className='rounded-full border border-black bg-black px-4 py-1.5 text-sm text-white transition-colors hover:bg-white hover:text-black'>
+              <button 
+                className='
+                  rounded 
+                  border 
+                  border-black 
+                  bg-black 
+                  px-3 
+                  py-1.5 
+                  text-sm 
+                  text-white 
+                  transition-colors 
+                  hover:bg-white 
+                  hover:text-black
+                '
+              >
                 Sign In
               </button>
             </SignInButton>
@@ -65,10 +83,9 @@ export default function Header() {
                 />
               </UserButton.MenuItems>
             </UserButton>
-          </SignedIn> */}
-
-        {/* </Flex> */}
-      {/* </Flex> */}
-    </div>
+          </SignedIn>
+        </Flex>
+      </Flex>
+    </>
   )
 }

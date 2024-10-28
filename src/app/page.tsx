@@ -41,17 +41,16 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from 'react-resizable-panels'
+
 // ** STYLE Imports
-import '#/layout/styles/styles-radix-ui-custom.css'
+// import '#/layout/styles/styles-radix-ui-themes.css'
+// import '#/layout/styles/styles-radix-ui-custom.css'
 import stylesPanels from '#/layout/styles/styles-panels.module.css'
 
 // ** LAYOUT Components (Head, Body, Foot)
 import Header from '#/layout/header'
 import Footer from '#/layout/footer'
-// // const Header = dynamic(() => import('#/layout/header').then((mod) => mod), { ssr: false })
-// // const Footer = dynamic(() => import('#/layout/footer').then((mod) => mod), { ssr: false })
-// const Header = dynamic(() => import('#/layout/header'), { ssr: false })
-// const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
+
 // ** COMPONENT Imports
 import Logo from '#/layout/ui/logo'
 
@@ -98,27 +97,31 @@ const AppPage = ({children}: {children: any}) => {
       // console.debug('NEXT-AUTH session', session)
     }
     return // nothing
-  }, []) // [session] ??
+  }, [session]) // [session] ??
 
   // ** Return JSX
   return (
+  
+  <>
   <Suspense fallback={<Spinner />}>
     <Flex
-      // gap={'3'}
+      direction='row'
+
       style={{
-        height: '99%',
-        width: '99%',
+        // height: '99%',
+        // width: '99%',
         // paddingLeft: '8px',
         // paddingRight: '8px',
       }}
     > 
     
       <Flex
+        direction='row'
         style={{
           // height: '10vh',
           // minHeight: '5vh',
-          width: '100%',
-          border: '4px solid darkblue',
+          // width: '100%',
+          // border: '4px solid darkblue',
         }}
       >
         <Header 
@@ -129,12 +132,12 @@ const AppPage = ({children}: {children: any}) => {
 
 
       <Flex 
-        // direction='column' 
+        direction='row'
         style={{
           height: '80vh',
           minHeight: '50vh',
           width: '100%',
-          border: '1px solid darkgray',
+          // border: '1px solid darkgray',
         }}
       >
         <PanelGroup 
@@ -149,7 +152,7 @@ const AppPage = ({children}: {children: any}) => {
             style={{
               // height: '80vh',
               // width: '100%',
-              border: '1px solid darkgreen',
+              // border: '1px solid darkgreen',
             }}
           >
             {/* <Text>
@@ -167,7 +170,7 @@ const AppPage = ({children}: {children: any}) => {
             style={{
               // height: '80vh',
               // width: '100%',
-              border: '1px solid darkgreen',
+              // border: '1px solid darkgreen',
             }}
           >
             <PanelGroup 
@@ -181,7 +184,7 @@ const AppPage = ({children}: {children: any}) => {
                 style={{
                   // height: '80vh',
                   // width: '100%',
-                  border: '1px solid darkgreen',
+                  // border: '1px solid darkgreen',
                 }}
               >
                 <Container
@@ -205,13 +208,13 @@ const AppPage = ({children}: {children: any}) => {
                 style={{
                   // height: '80vh',
                   // width: '100%',
-                  border: '1px solid darkgreen',
+                  // border: '1px solid darkgreen',
                 }}
               >
                 <Grid
                   style={{
                     height: '100%',
-                    border: '1px solid purple',
+                    // border: '1px solid purple',
                   }}
                 >
                   <PanelGroup 
@@ -224,7 +227,7 @@ const AppPage = ({children}: {children: any}) => {
                       style={{
                         // height: '80vh',
                         // width: '30%',
-                        border: '1px solid darkred',
+                        // border: '1px solid darkred',
                       }}
                     >
                       <Text>
@@ -239,7 +242,7 @@ const AppPage = ({children}: {children: any}) => {
                       style={{
                         // height: '80vh',
                         // width: '70%',
-                        border: '1px solid darkblue',
+                        // border: '1px solid darkblue',
                       }}
                     >
                       <Grid 
@@ -247,7 +250,7 @@ const AppPage = ({children}: {children: any}) => {
                         style={{
                           // height: '100%',
                           // width: '100%',
-                          border: '1px solid darkgreen',
+                          // border: '1px solid darkgreen',
                         }}
                       >
                         <Text>
@@ -278,7 +281,7 @@ const AppPage = ({children}: {children: any}) => {
             style={{
               // height: '80vh',
               width: '100%',
-              border: '1px solid darkgreen',
+              // border: '1px solid darkgreen',
             }}
           >
             <Text>
@@ -291,11 +294,12 @@ const AppPage = ({children}: {children: any}) => {
 
 
       <Flex
+        direction='row'
         style={{
-          height: '5vh',
-          minHeight: '5vh',
-          width: '100%',
-          border: '4px solid darkblue',
+          // height: '5vh',
+          // minHeight: '5vh',
+          // width: '100%',
+          // border: '4px solid darkblue',
         }}
       >
         <Text>
@@ -307,6 +311,7 @@ const AppPage = ({children}: {children: any}) => {
       </Flex>
     </Flex>
   </Suspense>
+  </>
   )
 }
 
