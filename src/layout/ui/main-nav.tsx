@@ -130,7 +130,7 @@ export default function MainNav() {
               >
                 <CustomLink href='/participate' 
                   style={{
-                  // backgroundColor: '#222222',
+                    // backgroundColor: '#222222',
                     color: '#DDDDDD', 
                     textDecoration: 'none',
                   }}
@@ -141,23 +141,24 @@ export default function MainNav() {
               <NavigationMenuContent 
                 style={{
                   backgroundColor: '#222222',
-                  color: '#DDDDDD', 
-                  // listStyleType: 'none'
+                  color: '#DDDDDD',
                   textDecoration: 'none',
+                  // listStyleType: 'none',
                 }}
               >
                 <ul 
                   className='
                     grid 
                     gap-0 
-                    p-1
+                    p-2
                     md:w-[400px] 
                     lg:w-[500px] 
                     lg:grid-cols-[.75fr_1fr]
                   '
                   style={{
-                    listStyleType: 'none',
+                    // backgroundColor: '#111111',
                     textDecoration: 'none',
+                    listStyleType: 'none',
                   }}
                 >
                   <ListItem href='/home' title='Home'>
@@ -289,16 +290,22 @@ const ListItem = React.forwardRef<
       '
     >
       {/* <NavigationMenuLink> */}
-        <div 
+        <div
           className='
             p-2
             text-sm 
             font-medium 
             leading-none
           '
+          style={{
+            // color: '#DDDDDD',
+          }}
         >
           <a
             ref={ref}
+            style={{
+              color: '#DDDDDD',
+            }}
             className={cn(
               // 'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
               className
