@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.17.0-alpha.1",
+  "version": "0.17.0-alpha.2",
   "description": "ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, APIs: WordPress, Apollo GraphQL, Leva Control GUI, Radix-UI, Tailwind CSS, 3D FarmBot React (Beta), Open AI",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -13,7 +13,7 @@
   },
   "homepage": "https://threedgarden.com",
   "scripts": {
-    "___________________1": "____ active scripts ____________________________________",
+    "_________________NEXT": "____ active scripts ____________________________________",
     "start": "next",
     "dev": "next dev -p 7777",
     "build": "next build",
@@ -22,12 +22,15 @@
     "test": "next test",
     "lint": "next lint",
     "___________________AI": "____ ___________________________________________________",
-    "dev-ai": "next dev --turbo",
+    "dev-ai": "next dev -p 4000",
     "build-ai": "next build",
     "start-ai": "next start",
-    "type-check": "tsc --noEmit",
-    "format:write": "prettier --write \"{app,lib,components}/**/*.{ts,tsx,mdx}\" --cache",
-    "format:check": "prettier --check \"{app,lib,components}**/*.{ts,tsx,mdx}\" --cache"
+    "_________________TEST": "____ ___________________________________________________",
+    "type-check": "tsc --noEmit",,
+    "format:prettier": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
+    "format:write": "prettier --write \"{app,lib,layout}/**/*.{ts,tsx,mdx}\" --cache",
+    "format:check": "prettier --check \"{app,lib,layout}**/*.{ts,tsx,mdx}\" --cache",
+    "__________________END": "____ ___________________________________________________"
   },
   "dependencies": {
     

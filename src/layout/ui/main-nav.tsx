@@ -4,7 +4,7 @@
 
 // ** UI Imports
 import {
-  Box,
+  Container,
   Grid,
   Flex,
   Text,
@@ -29,58 +29,57 @@ import React from 'react'
 
 export default function MainNav() {
   return (
-    < 
+    <>
+    <Flex
       // direction='row'
-      // justify={'between'}
-      // gap={'2'}
-      // align={'center'}
+      // justify='between'
+      // gap='2'
+      // align='start'
       // className='
       //   m-0
       // '
-      // style={{
-      //   marginTop: -4, // wth !!!
-      //   marginLeft: 4,
-      // }}
+      style={{
+        display: 'inline-flex',
+        marginLeft: '2px',
+      }}
     >
-      <div
-        // justify={'between'}
-        // gap={'2'}
-        // align={'center'}
+      <Flex
+        align='center'
+        style={{
+          display: 'inline-flex',
+          flexGrow: '0',
+          alignItems: 'center'
+        }}
       >
-        {/* <CustomLink href='/#home'> */}
-          {/* <Button variant='ghost'> */}
-            <Image 
-              src='/favicon/favicon.png' 
-              priority={true} 
-              alt='Home' 
-              width='32' 
-              height='32' 
-            />
-          {/* </Button> */}
-        {/* </CustomLink> */}
-        <Text
-          // as={'label'}
-          // weight={'medium'}
-          // className='pl-2'
+        <CustomLink href='/#home'>
+          <Image 
+            src='/favicon/favicon.png' 
+            priority={true} 
+            alt='Home' 
+            width='32' 
+            height='32' 
+          />
+        </CustomLink>
+        <CustomLink href='/#threedgarden' 
+          style={{
+            color: '#DDDDDD',
+            textDecoration: 'none',
+            marginLeft: '4px',
+          }}
         >
-          <CustomLink href='/#threedgarden' 
-            style={{
-              // color: '#DDDDDD',
-              // textDecoration: 'none',
-            }}
-          >
-            THREED GARDEN
-          </CustomLink>
-        </Text>
-      </div>
+          ThreeD Garden
+        </CustomLink>
+      </Flex>
       
-      {/* 
-      <div
+      <Flex
         // justify={'between'}
         // gap={'2'}
         // align={'center'}
-      > */}
-        {/* <NavigationMenu>
+        style={{
+          flexGrow: '1'
+        }}
+      >
+        <NavigationMenu>
           <NavigationMenuList>
         
             <NavigationMenuItem>
@@ -171,7 +170,7 @@ export default function MainNav() {
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
-            </NavigationMenuItem> */}
+            </NavigationMenuItem>
             
             {/*
             <NavigationMenuItem>
@@ -269,10 +268,11 @@ export default function MainNav() {
             </NavigationMenuItem>
             */}
 
-          {/* </NavigationMenuList>
-        </NavigationMenu> */}
-      {/* </div> */}
+          </NavigationMenuList>
+        </NavigationMenu>
+      </Flex>
 
+    </Flex>
     </>
   )
 }
