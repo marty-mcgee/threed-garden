@@ -1,5 +1,5 @@
 // 'use client' // do not use
-// 'use server' // use the default
+// 'use server' // use this default
 // ^ this file should need NO pragma: default is 'use server'
 
 // ==============================================================
@@ -33,7 +33,7 @@ export const metadata = {
 }
 
 // ==============================================================
-// MAIN APP ROOT LAYOUT ('server')
+// MAIN APP ROOT LAYOUT ('use server')
 
 // basic React Provider context node with props.children
 export default function RootLayout({ children }: { children: any }) {
