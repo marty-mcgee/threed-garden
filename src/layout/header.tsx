@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 // 'use server'
 // ^^ does this file require client or server pragma ???
 
