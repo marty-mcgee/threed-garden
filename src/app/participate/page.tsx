@@ -27,6 +27,10 @@ import {
 // import Typography from '@mui/material/Typography'
 // import CardContent from '@mui/material/CardContent'
 
+// ** LAYOUT Components (Head, Body, Foot)
+import Header from '#/layout/header'
+import Footer from '#/layout/footer'
+
 // ** THREED Imports
 // import ThreeD from '~/src/lib/threed/threed'
 const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
@@ -79,6 +83,10 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
         // container
         // spacing={1}
       >
+
+        <Header 
+          key='ThreeDAppHeader'
+        />
 
         {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
         <ThreeD />
@@ -143,7 +151,10 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
           </Card>
         </Grid> 
         */}
-        
+
+        <Footer 
+          key='ThreeDAppFooter'
+        />
     
       </Grid>
     </Suspense>
