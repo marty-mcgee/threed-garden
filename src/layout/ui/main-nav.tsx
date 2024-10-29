@@ -88,8 +88,8 @@ export default function MainNav() {
                 className={navigationMenuTriggerStyle()}
                 style={{
                   // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // textDecoration: 'underline',
+                  color: '#DDDDDD',
+                  textDecoration: 'none',
                   // borderWidth: 0,
                   // margin: 0,
                   // padding: 0,
@@ -106,8 +106,8 @@ export default function MainNav() {
                 className={navigationMenuTriggerStyle()}
                 style={{
                   // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // textDecoration: 'underline',
+                  color: '#DDDDDD',
+                  textDecoration: 'none',
                   // borderWidth: 0,
                   // margin: 0,
                   // padding: 0,
@@ -122,7 +122,7 @@ export default function MainNav() {
             <NavigationMenuItem>
               <NavigationMenuTrigger 
                 style={{
-                  // backgroundColor: '#222222', 
+                  backgroundColor: '#222222',
                   color: '#DDDDDD', 
                   borderWidth: 0,
                   textDecoration: 'none',
@@ -130,6 +130,7 @@ export default function MainNav() {
               >
                 <CustomLink href='/participate' 
                   style={{
+                  // backgroundColor: '#222222',
                     color: '#DDDDDD', 
                     textDecoration: 'none',
                   }}
@@ -139,7 +140,7 @@ export default function MainNav() {
               </NavigationMenuTrigger>
               <NavigationMenuContent 
                 style={{
-                  // backgroundColor: '#222222', 
+                  backgroundColor: '#222222',
                   color: '#DDDDDD', 
                   // listStyleType: 'none'
                   textDecoration: 'none',
