@@ -14,12 +14,12 @@ import dynamic from 'next/dynamic'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** REACT Imports
-import { Suspense } from 'react'
+// import { Suspense } from 'react'
 
 // ** RADIX-UI Imports
-import {
-  Grid,
-} from '@radix-ui/themes'
+// import {
+//   Grid,
+// } from '@radix-ui/themes'
 // // ** MUI Imports
 // import Grid from '@mui/material/Grid'
 // import Card from '@mui/material/Card'
@@ -32,8 +32,8 @@ import Header from '#/layout/header'
 import Footer from '#/layout/footer'
 
 // ** THREED Imports
-import ThreeD from '~/src/lib/threed/threed'
-// const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
+// import ThreeD from '~/src/lib/threed/threed'
+const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
 // import ThreeDControls from '~/src/lib/threed/Controls'
 // const ThreeDControls = dynamic(() => import('#/lib/threed/Controls'), { ssr: false })
 // import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'
