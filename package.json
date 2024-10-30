@@ -167,7 +167,7 @@
     "eslint": "^9.13.0",
     "@typescript-eslint/eslint-plugin": "^8.11.0",
     "@typescript-eslint/parser": "^8.11.0",
-    "eslint-config-next": "^14.2.16",
+    "eslint-config-next": "^15.0.2",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-import": "^2.31.0",
