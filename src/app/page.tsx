@@ -71,7 +71,8 @@ console.debug('%c🥕 ThreeDGarden<ThreeD>: {page.tsx}', ccm.greenAlert)
 // const AppPage: NextPage = (): JSX.Element => {
 // const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => {
 // const AppPage: NextPage = (props) => {
-const AppPage = ({children}: {children: any}) => {
+// const AppPage = ({children}: {children: any}) => {
+const AppPage = () => {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
