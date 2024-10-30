@@ -42,7 +42,7 @@ const Page: TNextPageWithProps = (pages: any): JSX.Element => {
     <>
       <Header />
       <main style={{ padding: '1em' }}>
-        <h1>[ThreeD] Boilerplate Page</h1>
+        <h1>[ThreeD] Next.js Boilerplate Page</h1>
         <div>User Agent: {word}</div>
         {/* {pages.map(
           (
