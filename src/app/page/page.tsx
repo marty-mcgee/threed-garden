@@ -7,7 +7,7 @@ import Footer from '#/layout/footer'
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 import { GetServerSideProps } from 'next'
-import { IPage, IBooleans, IValues, IStructures } from '#/lib/types/interfaces' // "@threed/garden/ts"
+import { IPage, IBooleans, IValues, IStructures } from '#/lib/types/interfaces' // "ITypeThreeD"
 import type { TPage } from '#/lib/types/interfaces'
 
 // import NextApp from 'next/app'
@@ -43,10 +43,11 @@ const Page: TNextPageWithProps = (pages: any): JSX.Element => {
       <Header />
       <main style={{ padding: '1em' }}>
         <h1>[ThreeD] Next.js Boilerplate Page</h1>
-        <div>User Agent: {word}</div>
+        <h2>About</h2>
+        <p>User Agent: {word}</p>
         {/* {pages.map(
           (
-            page: IPage // ooooo, interesting [MM] HEY HEY HEY
+            page: IPage // ITypeThreeDPage
           ) => (
             <div
               key={Math.floor(100000 + Math.random() * 900000)}
