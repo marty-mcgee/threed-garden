@@ -37,37 +37,38 @@ export default function MainNav() {
       // direction='row'
       // justify='between'
       // gap='2'
-      // align='start'
+      // align='center'
       // className='
       //   m-0
       // '
       style={{
         display: 'inline-flex',
         marginLeft: '2px',
+        marginTop: '-4px',
       }}
     >
       <Flex
-        align='center'
         style={{
           display: 'inline-flex',
-          flexGrow: '0',
+          // flexGrow: '0',
           alignItems: 'center'
         }}
       >
-        <CustomLink href='/#home'>
+        {/* <CustomLink href='/#home'> */}
           <Image 
             src='/favicon/favicon.png' 
-            priority={true} 
-            alt='Home' 
-            width='32' 
-            height='32' 
+            // priority={true} 
+            alt='ThreeD App Home'
+            width='30'
+            height='30'
           />
-        </CustomLink>
+        {/* </CustomLink> */}
         <CustomLink href='/#threedgarden' 
           style={{
             color: '#DDDDDD',
             textDecoration: 'none',
             marginLeft: '4px',
+            marginBottom: '2px',
           }}
         >
           ThreeD Garden
@@ -100,7 +101,7 @@ export default function MainNav() {
                   // borderWidth: 0,
                   // margin: 0,
                   // padding: 0,
-                  fontSize: 12,
+                  // fontSize: 12,
                 }}
               >
                 Demo: 1
@@ -118,7 +119,7 @@ export default function MainNav() {
                   // borderWidth: 0,
                   // margin: 0,
                   // padding: 0,
-                  fontSize: 12,
+                  // fontSize: 12,
                 }}
               >
                 Demo: 2

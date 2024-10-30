@@ -53,8 +53,8 @@ export default function Header() {
           // flexGrow='0'
           style={{
             flexGrow: 0,
-            marginTop: 4,
-            marginRight: 4,
+            marginTop: 8,
+            marginRight: 8,
           }}
         >
           {/* YO YO YO */}
