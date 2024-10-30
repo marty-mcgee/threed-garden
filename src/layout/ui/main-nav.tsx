@@ -79,7 +79,11 @@ export default function MainNav() {
           flexGrow: '1'
         }}
       >
-        <NavigationMenu>
+        <NavigationMenu
+          style={{
+            zIndex: '99998 !important',
+          }}
+        >
           <NavigationMenuList>
         
             <NavigationMenuItem>
@@ -288,6 +292,9 @@ const ListItem = React.forwardRef<
       className='
         p-2
       '
+      style={{
+        // zIndex: '99998 !important',
+      }}
     >
       {/* <NavigationMenuLink> */}
         <div
@@ -299,6 +306,7 @@ const ListItem = React.forwardRef<
           '
           style={{
             // color: '#DDDDDD',
+            // zIndex: '99999 !important',
           }}
         >
           <a
