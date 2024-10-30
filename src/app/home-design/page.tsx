@@ -2,7 +2,15 @@
 // Home Design Page (main landing page for 2D-3D Demo)
 
 'use client'
+
 // ==============================================================
+// RESOURCES
+
+import { useSession } from 'next-auth/react'
+// import { auth } from '#/lib/auth/auth'
+// import { useAuth } from '#/lib/auth/hooks/useAuth'
+import SessionData from '#/layout/session-data'
+// import CustomLink from '~/src/layout/ui/custom-link'
 
 // ** NEXT Imports
 import type { NextPage } from 'next'
@@ -13,6 +21,7 @@ import {
   useState,
   useRef,
   useEffect,
+  Suspense,
 } from 'react'
 
 // ** PAPER Imports
@@ -49,6 +58,7 @@ import {
 import {
   Flex,
   Grid,
+  Container,
   Button, 
   Heading,
   Text,
@@ -60,6 +70,24 @@ import {
   PanelResizeHandle,
 } from 'react-resizable-panels'
 
+// ** STYLE Imports
+// import '#/layout/styles/styles-radix-ui-themes.css'
+// import '#/layout/styles/styles-radix-ui-custom.css'
+import '#/lib/home-design/src/styles/radix-ui.css'
+import stylesPanels from '#/layout/styles/styles-panels.module.css'
+
+// ** LAYOUT Components (Head, Body, Foot)
+import Header from '#/layout/header'
+import Footer from '#/layout/footer'
+
+// ** COMPONENT Imports
+import Logo from '#/layout/ui/logo'
+
+// ** Helper Components
+import Spinner from '#/layout/ui/spinner'
+// ** Colorful Console Messages: Utility
+import ccm from '#/lib/utils/console-colors'
+
 // import React from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {
@@ -68,7 +96,6 @@ import {
 	CheckIcon,
 	ChevronRightIcon,
 } from '@radix-ui/react-icons'
-import '#/lib/home-design/src/styles/radix-ui.css'
 
 // ==============================================================
 // ** THREED CSS Imports
@@ -559,7 +586,11 @@ const PaperCanvas = (props: any) => {
       ref={planCanvasRef} 
       {...props} 
       id='planCanvas' 
-      resize='true' 
+      resize='true'
+      style={{
+        height: '100%',
+        width: '100%',
+      }}
     />
   )
 }
@@ -568,10 +599,13 @@ const PaperCanvas = (props: any) => {
 
 
 // const HomeDesignPage = (props) => {
-// const HomeDesignPage: FC<TPageProps> = (props) => {
 // const HomeDesignPage: NextPage<TPageProps> = (props) => {
 // const HomeDesignPage: TNextPageWithProps = (): JSX.Element => {
 const HomeDesignPage: NextPage = (): JSX.Element => {
+  
+  // ** Hooks
+  // const auth = useAuth()
+  const session = useSession()
   
   // ** MODALS
   const [showModalAbout, setShowModalAbout] = useState(false)
@@ -844,1337 +878,1488 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
 
 
   // ** RETURN JSX
+  // ** Return JSX
   return (
-
+  
     <>
+    <Suspense fallback={<Spinner />}>
       <Flex
-        // columns='2'
-        direction='column'
-        // gap='2'
+        direction='row'
+  
         style={{
-          // padding: '8px',
-          // display: 'inline-block'
-          // position: 'fixed'
+          // height: '99%',
+          // width: '99%',
+          // paddingLeft: '8px',
+          // paddingRight: '8px',
         }}
-        // justify='start'
-      >
-
-        {/* <Heading as='h5'>
-          🥕 ThreeD Home Design
-        </Heading>
-        <Heading as='h6'>
-          🌱 part of the threed.ai family
-        </Heading>
-        <Text as='p'>
-          🦆 Home Design Page (/app/home-design/page.tsx)
-        </Text>
-        <Text as='p'>
-          🦉 This is the 'Home Design' Landing Page.
-        </Text>  */}
-        
-        <Flex 
-          id='toolBar'
-          // direction='row'
-          justify='start'
-          align='center'
+      > 
+      
+        <Flex
+          direction='row'
           style={{
-            // position: 'absolute',
-            // bottom: '32px',
-            paddingLeft: '7px',
+            // height: '10vh',
+            // minHeight: '5vh',
+            // width: '100%',
+            // border: '4px solid darkblue',
           }}
         >
-          {/* MAIN ACTIONS DROPDOWN MENU */}
-          <DropdownMenuThreeD />
-          {/* BASIC ACTION BUTTONS */}
-          <Flex>
-            {/* <Button onClick={() => handleShowModalAbout()}>
-              Show Modal: About
-            </Button>
-            <Button onClick={() => handleShowModal3dModel()}>
-              Show Modal: 3D Model
-            </Button>
-            <Button onClick={() => handleShowModalShare()}>
-              Show Modal: Share
-            </Button>
-            <Button onClick={() => handleShowModalLoading()}>
-              Show Modal: Loading
-            </Button> */}
-          </Flex>
-          {/* TESTING COMPONENTS */}
-          {/* <DialogModals /> */}
+          <Header 
+            key='ThreeDAppHeader'
+          />
         </Flex>
-
-
-        <Flex
-          // direction='column'
-          // columns='2'
-          // columns={{ initial: "1", md: "2" }}
+  
+  
+  
+        <Flex 
+          direction='row'
+          style={{
+            height: '80vh',
+            minHeight: '50vh',
+            width: '100%',
+            // border: '1px solid darkgray',
+          }}
         >
-          
-          <Grid
-            style={{
-              width: '33%',    
-            }}
+          <PanelGroup 
+            direction='vertical'
+            autoSaveId='ThreeDHomeDesignLayout'
+            id='MAINHOMEDESIGNPANELGROUP'
           >
-            <div id='catalogView'>
-              <div id='catalogFilters'>
-                <input type='text' id='catalogTextFilter' placeholder='Filter' />
-              </div>
-              <div id='catalogItems'>
-              </div>
-            </div>
-          </Grid>
-
-          <Grid
-            style={{
-              width: '67%',    
-            }}
-          >
-            {/* THREED HOME DESIGN: 2D PAPER PLAN VIEW */}
-            <div
-              id='planView'
+            <Panel 
+              className={stylesPanels.Panel}
+              defaultSize={4}
+              // maxSize={64}
               style={{
-                width: '99%',
-                // height: '100%',
-                minHeight: '100px',
-                height: '200px',
-                border: '1px solid #222222',
-                marginBottom: '4px',
+                // height: '80vh',
+                // width: '100%',
+                // border: '1px solid darkgreen',
               }}
             >
-              {/* <Canvas 
-                id='planCanvas'
-                key={'planCanvas'}
+              {/* <Text>
+                Main Header
+              </Text> */}
+              {/* <Heading as='h1'>
+                🥕 Welcome {session?.user?.name} to ThreeD Garden
+              </Heading> */}
+              {/* MAIN ACTIONS DROPDOWN MENU */}
+              <DropdownMenuThreeD />
+              {/* BASIC ACTION BUTTONS */}
+              {/* <Flex>
+                <Button onClick={() => handleShowModalAbout()}>
+                  Show Modal: About
+                </Button>
+                <Button onClick={() => handleShowModal3dModel()}>
+                  Show Modal: 3D Model
+                </Button>
+                <Button onClick={() => handleShowModalShare()}>
+                  Show Modal: Share
+                </Button>
+                <Button onClick={() => handleShowModalLoading()}>
+                  Show Modal: Loading
+                </Button>
+              </Flex> */}
+              {/* TESTING COMPONENTS */}
+              {/* <DialogModals /> */}
+            </Panel>
+            <PanelResizeHandle />
+            <Panel 
+              className={stylesPanels.Panel}
+              defaultSize={100}
+              // maxSize={64}
+              style={{
+                // height: '80vh',
+                // width: '100%',
+                // border: '1px solid darkgreen',
+              }}
+            >
+              <PanelGroup 
+                direction='vertical'
+                id='HOMEDESIGNPANELGROUP'
               >
-                <Preload all />
-                <></>
-              </Canvas> */}
-              <PaperCanvas />
-              <div id='overlayLogoPlanView' className='overlayLogo'>
-                <a href='https://threedgarden.com/demo/'
-                  // style='float:leftpadding:0px margin-top:0px'
+                {/* <Panel
+                  className={stylesPanels.Panel}
+                  defaultSize={10}
+                  // maxSize={640}
+                  style={{
+                    // height: '80vh',
+                    // width: '100%',
+                    // border: '1px solid darkgreen',
+                  }}
                 >
-                  <img
-                    src='/favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' 
-                  />
-                </a>
-                &nbsp
-                <a href='https://threedgarden.com/demo/'
-                  // style='padding-left: 10px text-decoration: none font-size: 32px'
+                  <Container
+                    className={stylesPanels.PanelContent}
+                  >
+                    <Text>
+                      Sub Header
+                    </Text>
+                    <Heading as='h2'>
+                      🌱 ThreeD: Next.js: app (router): home-design: page .tsx
+                    </Heading>
+                  </Container>
+                </Panel>
+                
+                <PanelResizeHandle /> */}
+                
+                <Panel
+                  className={stylesPanels.Panel}
+                  defaultSize={100}
+                  // maxSize={64}
+                  style={{
+                    // height: '80vh',
+                    // width: '100%',
+                    // border: '1px solid darkgreen',
+                  }}
                 >
-                  ThreeD Home Design
-                </a>
-              </div>
-              {/* 
-              <div id='overlayMenuPlanView'>
-                <button id='overlayPlanViewRecenterBtn' onClick='recenterPlanView()' className='smallButton'>Recenter</button>
-                <button id='overlayPlanViewGoto3dViewBtn' onClick='goto3dView()' className='smallButton'>3d View</button>
-              </div>
-              */}
-            </div>
-
-            {/* THREED HOME DESIGN: 3D CANVAS */}
-            <div id='view3d'>
-              <Canvas
-                id={'threeCanvas'}
-                key={'threeCanvas'}
-
-                style={{
-                  width: '99%',
-                  // height: '100%',
-                  minHeight: '100px',
-                  height: '200px',
-                  border: '1px solid #222222',
-                }}
-
-                shadows={true}
-                dpr={[1, 2]} // dpr = target pixel ratio (need ???)
-                
-                // ** CAMERA (not using declarative inside canvas)
-                // camera={threedCamera}
-
-                // ** SCENE (needs to be declarative inside canvas)
-                scene={{
-                  // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-                  background: new THREE.Color(0x171717),
-                }}
-                // onCreated={
-                //   (state) => {
-                //     // console.debug('%c Canvas onCreated state', ccm.darkred, state)
-                //     // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
-                //     console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
-                //     // state.gl.toneMapping = THREE.AgXToneMapping
-                //     // state.camera.fov = 32 // 8
-                //     // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
-                //     // threedCamera.position = new THREE.Vector3(2, -4, 8)
-                //     // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
-                //   }
-                // }
-                
-                // ** JOYSTICK as mouse (optional)
-                // onPointerDown={(e) => {
-                //   if (e.pointerType === 'mouse') {
-                //     // testing
-                //     (e.target as HTMLCanvasElement).requestPointerLock()
-                //   }
-                // }}
-                
-              >
-                <Preload all />
-              
-                {/* ORBIT CONTROLS (CAMERA CONTROLS) */}
-                {/* makeDefault makes the controls known to r3f,
-                    now transform-controls can auto-disable them when active */}
-                {enableOrbit && (
-                  <>
-                    <OrbitControls
-                      makeDefault
-                      minDistance={0.25}
-                      maxDistance={480}
-                      // // minZoom={10}
-                      // // maxZoom={20}
-                      // // minAzimuthAngle={-Math.PI / 4}
-                      // // maxAzimuthAngle={Math.PI / 4}
-                      minPolarAngle={-Math.PI / 1.8}
-                      maxPolarAngle={Math.PI / 1.8}
-                      enableZoom={true}
-                      zoomToCursor={false} // default is false
-                      zoomSpeed={1.0} // default is 1.0
-                      enableRotate={true}
-                      // autoRotate={prefs.doAutoRotate} // default is false
-                      autoRotate={false}
-                      autoRotateSpeed={1.0} // default is 2.0
-                      rotateSpeed={1.0} // default is 1.0
-                      enableDamping={false} // slows down rotation after mouse release
-                      dampingFactor={0.2} // default is 0.05
-                      enablePan={true}
-                      screenSpacePanning={true}
-
-                      // target={camera.target}
-                    />
-
-                    {/* ORBIT CONTROLS GIZMO HELPER */}
-                    {enableGizmoCube && (
-                      <GizmoHelper
-                        alignment='top-right'
-                        margin={[64, 48]}
-                      >
-                        <group scale={0.7}>
-                          <GizmoViewcube />
-                        </group>
-                        <group
-                          scale={1.4}
-                          position={[-24, -24, -24]}
-                        >
-                          <GizmoViewport
-                            labelColor='white'
-                            axisHeadScale={0.5}
-                            hideNegativeAxes
-                          />
-                        </group>
-                      </GizmoHelper>
-                    )}
-                  </>
-                )}
-
-              </Canvas>
-              {/* <div id='overlayLogo3dView' className='overlayLogo'>
-                <a href='https://threedgarden.com/home-design/'><img
-                    src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
-                <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
-              </div>
-              <div id='overlayMenu3dView'>
-                <button id='overlay3dviewRecenterBtn' onClick='recenter3dview()' className='smallButton'>Recenter</button>
-                <button id='overlay3dviewGotoPlanViewBtn' onClick='gotoPlanView()' className='smallButton'>Plan View</button>
-              </div> */}
-            </div>
-
-            {/*
-            <canvas id='rulerLeft' width='30' height='500' onmousedown='addVerticalGuide()'
-              onmouseup='removeVerticalGuide()'></canvas>
-            <canvas id='rulerBottom' width='1024' height='20' onmousedown='addHorizontalGuide()'
-              onmouseup='removeHorizontalGuide()'></canvas>
-            */}
-
-            <div id='mouseIndicatorY'></div>
-            <div id='mouseIndicatorX'></div>
-
-            <div id='compass'></div>
-
-            <div id='verticalSlider'></div>
-            <div id='horizontalSliderLeft'></div>
-            <div id='horizontalSliderRight'></div>
-
-            <div id='threedDragDiv'></div>
-
-            {/*
-            <img id='fullscreenPlanViewBtn' src='media/fullscreen.png' width='30' height='30'
-              onClick='openFullscreen('planView')' />
-            <img id='fullscreen3dViewBtn' src='media/fullscreen.png' width='30' height='30'
-              onClick='openFullscreen('view3d')' />
-            */}
-
-            {/* 
-            <progress value='50' max='100' className='center' id='progressBar'></progress> 
-            */}
-
-          </Grid>
-        </Flex>
-    
-
-
-        <Grid>
-          {/* MODALS: OPTIONS */}
-          <Flex 
-            id='modals'
-            direction='row'
-            align='center'
-            justify='center'
-            // style={{
-            //   position: 'absolute',
-            //   bottom: '32px',
-            // }}
-          >
-            { showModalAbout && (
-              <div 
-                id='modalAbout' 
-                // className='modal'
-              >
-                <div className='modal-content'>
-                  <div className='modal-header'>
-                    <span 
-                      className='close'
-                      onClick={() => setShowModalAbout(false)}
+                    <PanelGroup 
+                      direction='horizontal'
                     >
-                      -X-
-                    </span>
-                    <h2>ThreeD Home Design</h2>
-                  </div>
-                  <div className='modal-body'>
-
-                    <div className='tab'>
-                      <button 
-                        className='tablinks active' 
-                        onClick={() => openTab('tab1')} 
-                        id='tab1'
+                      <Panel
+                        // className={stylesPanels.Panel}
+                        defaultSize={24}
+                        maxSize={32}
+                        style={{
+                          // height: '80vh',
+                          // width: '30%',
+                          // border: '1px solid darkred',
+                        }}
                       >
-                        Intro
-                      </button>
-                    </div>
-
-                    <div id='tab1Content' className='tabcontent' style={{display: 'block'}}>
-                      <h3>ThreeD Home Design Introduction</h3>
-                      <p>Plan + Share Ideas for your Home Design in 2D + 3D</p>
-                      <div style={{padding: '12px'}}>
-                        <div>
-                          Save Plan Edits to local web storage? 
-                          <input 
-                            type='checkbox' 
-                            id='saveEditsToLocalStorage' 
-                            onChange={() => handleSaveEditsLocalStorageOption()}
-                          />
-                          <span className='tooltip'>
-                            {/* <img src='media/info.png' className='tooltip' /> */}
-                            <span className='tooltiptext'>
-                              <div>
-                                Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='http://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
-                                More info about 
-                                <a href='https://www.w3schools.com/HTML/html5_webstorage.asp' target='_blank' rel='noreferrer'>
-                                  Local Web Storage
-                                </a>.
+                        {/* <Text>
+                          Sub Left
+                        </Text> */}
+                        {/* CATALOG VIEW */}
+                        <div id='catalogView'>
+                          <div id='catalogFilters'>
+                            <input type='text' id='catalogTextFilter' placeholder='Filter' />
+                          </div>
+                          <div id='catalogItems'>
+                          </div>
+                        </div>
+                      </Panel>
+                      <PanelResizeHandle />
+                      <Panel
+                        // className={stylesPanels.Panel}
+                        defaultSize={76}
+                        // maxSize={100}
+                        style={{
+                          // height: '80vh',
+                          // width: '70%',
+                          // border: '1px solid darkblue',
+                        }}
+                      >
+                        <PanelGroup 
+                          direction='vertical'
+                        >
+                          <Panel
+                            className={stylesPanels.Panel}
+                            defaultSize={40}
+                            maxSize={60}
+                          >
+                            <Grid 
+                              id='planView'
+                              style={{
+                                // height: '100%',
+                                // width: '100%',
+                                border: '1px solid #222222',
+                              }}
+                            >
+                              {/* <Text>
+                                Main Content (children)
+                              </Text> */}
+                              {/* <SessionData 
+                                session={session} 
+                              /> */}
+                              {/* THREED HOME DESIGN: 2D PAPER PLAN VIEW */}
+                              {/* <Canvas 
+                                id='planCanvas'
+                                key={'planCanvas'}
+                              >
+                                <Preload all />
+                                <></>
+                              </Canvas> */}
+                              <PaperCanvas />
+                              <div id='overlayLogoPlanView' className='overlayLogo'>
+                                <a href='https://threedgarden.com/demo/'
+                                  // style='float:leftpadding:0px margin-top:0px'
+                                >
+                                  <img
+                                    src='/favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' 
+                                  />
+                                </a>
+                                &nbsp
+                                <a href='https://threedgarden.com/demo/'
+                                  // style='padding-left: 10px text-decoration: none font-size: 32px'
+                                >
+                                  ThreeD Home Design
+                                </a>
                               </div>
-                            </span>
+                              {/* 
+                              <div id='overlayMenuPlanView'>
+                                <button id='overlayPlanViewRecenterBtn' onClick='recenterPlanView()' className='smallButton'>Recenter</button>
+                                <button id='overlayPlanViewGoto3dViewBtn' onClick='goto3dView()' className='smallButton'>3d View</button>
+                              </div>
+                              */}
+                            </Grid>
+                          </Panel>
+                          <PanelResizeHandle />
+                          <Panel
+                            className={stylesPanels.Panel}
+                            defaultSize={40}
+                            maxSize={60}
+                            style={{
+                              // height: '80vh',
+                              // height: '100%',
+                              // width: '70%',
+                              // border: '1px solid darkblue',
+                            }}
+                          >
+                            <Grid 
+                              id='view3d'
+                              style={{
+                                height: '100%',
+                                // width: '100%',
+                                border: '1px solid #222222',
+                              }}
+                            >
+                              {/* <Text>
+                                Main Content (2nd Level)
+                              </Text> */}
+                              {/* <SessionData 
+                                session={session} 
+                              /> */}
+                              {/* THREED HOME DESIGN: 3D CANVAS */}
+                              <Canvas
+                                id={'threeCanvas'}
+                                key={'threeCanvas'}
+
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  // height: '200px',
+                                  // minHeight: '100px',
+                                  // border: '1px solid #222222',
+                                }}
+
+                                shadows={true}
+                                dpr={[1, 2]} // dpr = target pixel ratio (need ???)
+                                
+                                // ** CAMERA (not using declarative inside canvas)
+                                // camera={threedCamera}
+
+                                // ** SCENE (needs to be declarative inside canvas)
+                                scene={{
+                                  // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+                                  background: new THREE.Color(0x171717),
+                                }}
+                                // onCreated={
+                                //   (state) => {
+                                //     // console.debug('%c Canvas onCreated state', ccm.darkred, state)
+                                //     // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
+                                //     console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
+                                //     // state.gl.toneMapping = THREE.AgXToneMapping
+                                //     // state.camera.fov = 32 // 8
+                                //     // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
+                                //     // threedCamera.position = new THREE.Vector3(2, -4, 8)
+                                //     // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
+                                //   }
+                                // }
+                                
+                                // ** JOYSTICK as mouse (optional)
+                                // onPointerDown={(e) => {
+                                //   if (e.pointerType === 'mouse') {
+                                //     // testing
+                                //     (e.target as HTMLCanvasElement).requestPointerLock()
+                                //   }
+                                // }}
+                                
+                              >
+                                <Preload all />
+                              
+                                {/* ORBIT CONTROLS (CAMERA CONTROLS) */}
+                                {/* makeDefault makes the controls known to r3f,
+                                    now transform-controls can auto-disable them when active */}
+                                {enableOrbit && (
+                                  <>
+                                    <OrbitControls
+                                      makeDefault
+                                      minDistance={0.25}
+                                      maxDistance={480}
+                                      // // minZoom={10}
+                                      // // maxZoom={20}
+                                      // // minAzimuthAngle={-Math.PI / 4}
+                                      // // maxAzimuthAngle={Math.PI / 4}
+                                      minPolarAngle={-Math.PI / 1.8}
+                                      maxPolarAngle={Math.PI / 1.8}
+                                      enableZoom={true}
+                                      zoomToCursor={false} // default is false
+                                      zoomSpeed={1.0} // default is 1.0
+                                      enableRotate={true}
+                                      // autoRotate={prefs.doAutoRotate} // default is false
+                                      autoRotate={false}
+                                      autoRotateSpeed={1.0} // default is 2.0
+                                      rotateSpeed={1.0} // default is 1.0
+                                      enableDamping={false} // slows down rotation after mouse release
+                                      dampingFactor={0.2} // default is 0.05
+                                      enablePan={true}
+                                      screenSpacePanning={true}
+
+                                      // target={camera.target}
+                                    />
+
+                                    {/* ORBIT CONTROLS GIZMO HELPER */}
+                                    {enableGizmoCube && (
+                                      <GizmoHelper
+                                        alignment='top-right'
+                                        margin={[64, 48]}
+                                      >
+                                        <group scale={0.7}>
+                                          <GizmoViewcube />
+                                        </group>
+                                        <group
+                                          scale={1.4}
+                                          position={[-24, -24, -24]}
+                                        >
+                                          <GizmoViewport
+                                            labelColor='white'
+                                            axisHeadScale={0.5}
+                                            hideNegativeAxes
+                                          />
+                                        </group>
+                                      </GizmoHelper>
+                                    )}
+                                  </>
+                                )}
+
+                              </Canvas>
+                              {/* <div id='overlayLogo3dView' className='overlayLogo'>
+                                <a href='https://threedgarden.com/home-design/'><img
+                                    src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
+                                <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
+                              </div>
+                              <div id='overlayMenu3dView'>
+                                <button id='overlay3dviewRecenterBtn' onClick='recenter3dview()' className='smallButton'>Recenter</button>
+                                <button id='overlay3dviewGotoPlanViewBtn' onClick='gotoPlanView()' className='smallButton'>Plan View</button>
+                              </div> */}
+                            </Grid>
+
+                            {/*
+                            <canvas id='rulerLeft' width='30' height='500' onmousedown='addVerticalGuide()'
+                              onmouseup='removeVerticalGuide()'></canvas>
+                            <canvas id='rulerBottom' width='1024' height='20' onmousedown='addHorizontalGuide()'
+                              onmouseup='removeHorizontalGuide()'></canvas>
+                            */}
+
+                            <div id='mouseIndicatorY'></div>
+                            <div id='mouseIndicatorX'></div>
+
+                            <div id='compass'></div>
+
+                            <div id='verticalSlider'></div>
+                            <div id='horizontalSliderLeft'></div>
+                            <div id='horizontalSliderRight'></div>
+
+                            <div id='threedDragDiv'></div>
+
+                            {/*
+                            <img id='fullscreenPlanViewBtn' src='media/fullscreen.png' width='30' height='30'
+                              onClick='openFullscreen('planView')' />
+                            <img id='fullscreen3dViewBtn' src='media/fullscreen.png' width='30' height='30'
+                              onClick='openFullscreen('view3d')' />
+                            */}
+
+                            {/* 
+                            <progress value='50' max='100' className='center' id='progressBar'></progress> 
+                            */}
+                          </Panel>
+                        </PanelGroup>
+                      </Panel>
+                    </PanelGroup>
+                </Panel>
+              </PanelGroup>
+  
+            </Panel>
+            
+            <PanelResizeHandle />
+            
+            <Panel 
+              className={stylesPanels.Panel}
+              defaultSize={10}
+              // maxSize={100}
+              style={{
+                // height: '80vh',
+                width: '100%',
+                alignItems: 'center',
+                // border: '1px solid darkgreen',
+              }}
+            >
+              <Text>
+                Sub Footer
+              </Text>
+              <Grid>
+                {/* MODALS: OPTIONS */}
+                <Flex 
+                  id='modals'
+                  direction='row'
+                  align='center'
+                  justify='center'
+                  // style={{
+                  //   position: 'absolute',
+                  //   bottom: '32px',
+                  // }}
+                >
+                  { showModalAbout && (
+                    <div 
+                      id='modalAbout' 
+                      // className='modal'
+                    >
+                      <div className='modal-content'>
+                        <div className='modal-header'>
+                          <span 
+                            className='close'
+                            onClick={() => setShowModalAbout(false)}
+                          >
+                            -X-
                           </span>
-                          <div id='localStoragePlanDiv'>
-                            <table>
+                          <h2>ThreeD Home Design</h2>
+                        </div>
+                        <div className='modal-body'>
+
+                          <div className='tab'>
+                            <button 
+                              className='tablinks active' 
+                              onClick={() => openTab('tab1')} 
+                              id='tab1'
+                            >
+                              Intro
+                            </button>
+                          </div>
+
+                          <div id='tab1Content' className='tabcontent' style={{display: 'block'}}>
+                            <h3>ThreeD Home Design Introduction</h3>
+                            <p>Plan + Share Ideas for your Home Design in 2D + 3D</p>
+                            <div style={{padding: '12px'}}>
+                              <div>
+                                Save Plan Edits to local web storage? 
+                                <input 
+                                  type='checkbox' 
+                                  id='saveEditsToLocalStorage' 
+                                  onChange={() => handleSaveEditsLocalStorageOption()}
+                                />
+                                <span className='tooltip'>
+                                  {/* <img src='media/info.png' className='tooltip' /> */}
+                                  <span className='tooltiptext'>
+                                    <div>
+                                      Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='http://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
+                                      More info about 
+                                      <a href='https://www.w3schools.com/HTML/html5_webstorage.asp' target='_blank' rel='noreferrer'>
+                                        Local Web Storage
+                                      </a>.
+                                    </div>
+                                  </span>
+                                </span>
+                                <div id='localStoragePlanDiv'>
+                                  <table>
+                                    <tbody>
+                                      <tr>
+                                        <td style={{ textAlign: 'center'}}>
+                                          Most Recent Edit saved in Local Web Storage.
+                                          <br />
+                                          <button 
+                                            id='loadLocalStoragePlanBtn'
+                                            onClick={() => loadFromLocalStorage()}
+                                          >
+                                            Load Plan
+                                          </button>
+                                          <br />
+                                          <br />
+                                          <span id='localStoragePlanLastSavedDate'></span>
+                                        </td>
+                                        <td>
+                                          <div>
+                                            <img 
+                                              id='localStoragePlanImage' 
+                                              onClick={() => loadFromLocalStorage()}
+                                            />
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                              <div id='featuredPlan'>
+                                <table>
+                                  <tbody>
+                                    <tr>
+                                      <td style={{ textAlign: 'center', width: '300px'}}>
+                                        <button 
+                                          id='loadFeaturedPlanBtn'
+                                          className='largeButton'
+                                          onClick={() => loadExamplePlan()}
+                                        >
+                                          Load Example Plan
+                                        </button>
+                                        <br /><br />
+                                        or
+                                        <br />
+                                        <button onClick={() => closeAllModals()} className='largeButton'>Start New Plan</button>
+                                      </td>
+                                      <td>
+                                        <div><img id='featuredPlanImage' onClick={() => loadExamplePlan()} /></div>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+                        <div className='modal-footer'>
+                          <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  { showModal3dModel && (
+                    <div 
+                      id='modal3dModel' 
+                      // className='modal'
+                    >
+                      <div className='modal-content'>
+                        <div className='modal-header'>
+                          <span 
+                            className='close'
+                            onClick={() => setShowModal3dModel(false)}
+                          >
+                            -X-
+                          </span>
+                          <h2>ThreeD Home Design</h2>
+                        </div>
+                        <div className='modal-body'>
+                          <div id='model3dView'>
+                            <canvas id='model3dViewCanvas'></canvas>
+                          </div>
+                          <div id='modalModelDescription'>
+                            <h3>3d Model Properties</h3>
+                            <table className='propertiesTable'>
                               <tbody>
                                 <tr>
-                                  <td style={{ textAlign: 'center'}}>
-                                    Most Recent Edit saved in Local Web Storage.
-                                    <br />
-                                    <button 
-                                      id='loadLocalStoragePlanBtn'
-                                      onClick={() => loadFromLocalStorage()}
-                                    >
-                                      Load Plan
-                                    </button>
-                                    <br />
-                                    <br />
-                                    <span id='localStoragePlanLastSavedDate'></span>
-                                  </td>
-                                  <td>
-                                    <div>
-                                      <img 
-                                        id='localStoragePlanImage' 
-                                        onClick={() => loadFromLocalStorage()}
-                                      />
-                                    </div>
-                                  </td>
+                                  <td width='70'>Name</td>
+                                  <td><span id='model3dNameModal'></span></td>
+                                </tr>
+                                <tr>
+                                  <td>Author</td>
+                                  <td><span id='model3dAuthorModal'></span></td>
+                                </tr>
+                                <tr>
+                                  <td>License</td>
+                                  <td><span id='model3dLicenseModal'></span></td>
+                                </tr>
+                                <tr>
+                                  <td>OBJ&nbspFile&nbspComments</td>
                                 </tr>
                               </tbody>
                             </table>
+                            <textarea id='modalModel3dObjHeader'></textarea>
+
                           </div>
                         </div>
-                        <div id='featuredPlan'>
-                          <table>
+                        <div className='modal-footer'>
+                          <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  { showModalShare && (
+                    <div 
+                      id='modalShare' 
+                      // className='modal-small'
+                    >
+                      <div className='modal-small-content'>
+                        <div className='modal-small-header'>
+                          <span 
+                            className='close'
+                            onClick={() => setShowModalShare(false)}
+                          >
+                            -X-
+                          </span>
+                          <h2>ThreeD Home Design</h2>
+                        </div>
+                        <div className='modal-small-body'>
+                          <h3>Share Plan</h3>
+                          <button 
+                            id='getShareLinkBtn' 
+                            className='mediumButton' 
+                            // onClick='generateShareLink()'
+                          >
+                            Generate Share Link
+                          </button>
+                          {/* <div style='margin:10px 0px 10px 0px'>
+                            <div style='padding-top:6px'>
+                              <label for='shareLinkUrl'>Editable Copy</label><br />
+                              <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
+                                style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                              <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink()'>Copy</button>
+                            </div>
+
+                            <div style='padding-top:6px'>
+                              <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
+                              <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
+                                style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                              <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink3d()'>Copy</button>
+                            </div>
+
+                            <div style='padding-top:6px'>
+                              <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
+                              <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
+                                style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                              <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLinkPlan()'>Copy</button>
+                            </div>
+                          </div> */}
+                        </div>
+                        <div className='modal-small-footer'>
+                          <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  { showModalLoading && (
+                    <div 
+                      id='modalLoading' 
+                      // className='modal-small'
+                    >
+                      <div className='modal-small-content'>
+                        <div className='modal-small-header'>
+                          <span 
+                            className='close'
+                            onClick={() => setShowModalLoading(false)}
+                          >
+                            -X-
+                          </span>
+                          <h2>ThreeD Home Design</h2>
+                        </div>
+                        <div className='modal-small-body'>
+                          <h3>Loading Model Progress</h3>
+                          <textarea id='modalLoadingDataInfo'></textarea>
+                        </div>
+                        <div className='modal-small-footer'>
+                          <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  
+                  {/* <ul> */}
+                    {/* <li className='brandImg'>
+                      <a onClick={() => showModalAbout()} 
+                        style={{padding: '0px', margin: '0px'}}
+                      >
+                        <img
+                          src='favicon/favicon.png' 
+                          width='48px' 
+                          height='48px' 
+                          title='ThreeD Home Design' 
+                          alt='ThreeD Home Design' 
+                        />
+                      </a>
+                    </li> */}
+                    {/* <li className='brand'>
+                      <a onClick={() => showModalAbout()} 
+                        style={{textAlign: 'center', paddingTop: '15px', paddingLeft: '18px', paddingRight: '24px', paddingBottom: '15px', textDecoration: 'none', fontSize: '21px',}}
+                      >
+                        ThreeD Home Design
+                      </a>
+                    </li> */}
+                    {/* <li className='dropdown'>
+                      <a href='#javascript:void(0)' className='dropbtn'>File</a>
+                      <div className='dropdown-content'>
+                        <a onClick='setNewPlan()'>New</a>
+                        <a onClick='loadExamplePlan()'>Load Demo</a>
+                        <a id='loadBtn' onClick='document.getElementById('file').click()'>Load</a>
+                        <input type='file' style='display:none' id='file' name='file' onchange='loadFileAsText(event)' />
+                        <a id='saveBtn' onClick='savePlan()'>Save</a>
+                        <a id='shareBtn' onClick='openShareDialog()'>Share</a>
+                        <a id='defaultsBtn' onClick='setPropertiesView('defaults')'>Defaults</a>
+                        <!--<a  id='groundPropertiesButton' onClick='setToolMode('ground')'>Ground Properties</a>-->
+                        <a id='fullscreenApp' onClick='openFullscreen('appBody')'>Fullscreen</a>
+                      </div>
+                    </li> */}
+                    {/* <li className='dropdown'>
+                      <a href='#javascript:void(0)' className='dropbtn'>Edit</a>
+                      <div className='dropdown-content'>
+                        <a id='undoBtn' onClick='doUndo()'>Undo</a>
+                        <a id='redoBtn' onClick='doRedo()'>Redo</a>
+                      </div>
+                    </li> */}
+                    {/* <li className='dropdown'>
+                      <a href='#javascript:void(0)' className='dropbtn'>Plan View</a>
+                      <div className='dropdown-content'>
+                        <a onClick='setPropertiesView('planView')'>Background Template</a>
+                        <a onClick='newLevel()'>Add Level</a>
+                        <a onClick='openFullscreen('planView')'>Fullscreen</a>
+                      </div>
+                    </li> */}
+                    {/* <li className='dropdown'>
+                      <a href='#javascript:void(0)' className='dropbtn'>3D View</a>
+                      <div className='dropdown-content'>
+                        <a onClick='setPropertiesView('3dView')'>Properties</a>
+                        <a onClick='openFullscreen('view3d')'>Fullscreen</a>
+                        <a onClick='exportToObj()'>Export As OBJ</a>
+                        <!--<a  id='createThumb' onClick='createThumbForHistory()'>Create Thumb</a>-->
+                      </div>
+                    </li> */}
+                    {/* <!--<li>
+                      <a  onClick='doLog()'>Log</a>
+                    </li>-->
+                    <!-- <li>
+                      <a onClick='showModalAbout()'>About</a>
+                    </li> --> */}
+                    {/* <li>
+                      <a id='pointerTool' onClick='setToolMode('pointer')' className='toolButton activeTool'
+                        title='Pointer Select' alt='Pointer Select'>
+                        <img src='media/pointericonWhite.png' height='42px'>
+                      </a>
+                    </li> */}
+                    {/* <!-- <li>
+                      <a onClick='setToolMode('hand')'>
+                        <img src='media/handicon.png' width='50px'>
+                      </a>
+                    </li> --> */}
+                    {/* <li>
+                      <a id='addWallTool' onClick='setToolMode('walls')' className='toolButton' title='Add Wall' alt='Add Wall'>
+                        <img src='media/newWallWhite2.png' height='42px'>
+                      </a>
+                    </li> */}
+                    {/* <li>
+                      <a id='addFloorTool' onClick='setToolMode('floor')' className='toolButton' title='Add Floor'
+                        alt='Add Floor'>
+                        <img src='media/newFloorWhite2.png' height='42px'>
+                      </a>
+                    </li> */}
+                    {/* <li>
+                      <a id='addRoofTool' onClick='setToolMode('roof')' className='toolButton' title='Add Roof' alt='Add Roof'>
+                        <img src='media/newRoofWhite2.png' height='42px'>
+                      </a>
+                    </li> */}
+                    {/* <li>
+                      <a id='addRulerTool' onClick='setToolMode('dimension')' className='toolButton' title='Add Dimension'
+                        alt='Add Dimension'>
+                        <img src='media/newRulerWhite2.png' height='42px'>
+                      </a>
+                    </li> */}
+                    {/* <li>
+                      <a id='addTextTool' onClick='setToolMode('text')' className='toolButton' title='Add Text Annotation'
+                        alt='Add Text Annotation'>
+                        <img src='media/newTextWhite.png' height='42px'>
+                      </a>
+                    </li> */}
+                  {/* </ul> */}
+                </Flex>
+
+                {/* MODALS: CONTAINERS */}
+                <Flex>
+
+                  <div id='modal3dModel' className='modal'>
+                    <div className='modal-content'>
+                      <div className='modal-header'>
+                        <span className='close'>-X-</span>
+                        <img src='favicon/favicon.png' height='48px' 
+                          title='ThreeD Home Design' alt='ThreeD Home Design' />
+                        <h2>ThreeD Home Design</h2>
+                      </div>
+                      <div className='modal-body'>
+                        <div id='model3dView'>
+                          <canvas id='model3dViewCanvas'></canvas>
+                        </div>
+                        <div id='modalModelDescription'>
+                          <h3>3d Model Properties</h3>
+                          <table className='propertiesTable' style={{ width: '400px'}}>
                             <tbody>
                               <tr>
-                                <td style={{ textAlign: 'center', width: '300px'}}>
-                                  <button 
-                                    id='loadFeaturedPlanBtn'
-                                    className='largeButton'
-                                    onClick={() => loadExamplePlan()}
-                                  >
-                                    Load Example Plan
-                                  </button>
-                                  <br /><br />
-                                  or
-                                  <br />
-                                  <button onClick={() => closeAllModals()} className='largeButton'>Start New Plan</button>
-                                </td>
-                                <td>
-                                  <div><img id='featuredPlanImage' onClick={() => loadExamplePlan()} /></div>
-                                </td>
+                                <td width='70'>Name</td>
+                                <td><span id='model3dNameModal'></span></td>
+                              </tr>
+                              <tr>
+                                <td>Author</td>
+                                <td><span id='model3dAuthorModal'></span></td>
+                              </tr>
+                              <tr>
+                                <td>License</td>
+                                <td><span id='model3dLicenseModal'></span></td>
+                              </tr>
+                              <tr>
+                                <td>OBJ&nbspFile&nbspComments</td>
                               </tr>
                             </tbody>
                           </table>
+                          <textarea id='modalModel3dObjHeader'></textarea>
+
                         </div>
                       </div>
+                      <div className='modal-footer'>
+                        <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+                      </div>
                     </div>
+                  </div>
 
-                  </div>
-                  <div className='modal-footer'>
-                    <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
-                  </div>
-                </div>
-              </div>
-            )}
-            { showModal3dModel && (
-              <div 
-                id='modal3dModel' 
-                // className='modal'
-              >
-                <div className='modal-content'>
-                  <div className='modal-header'>
-                    <span 
-                      className='close'
-                      onClick={() => setShowModal3dModel(false)}
-                    >
-                      -X-
-                    </span>
-                    <h2>ThreeD Home Design</h2>
-                  </div>
-                  <div className='modal-body'>
-                    <div id='model3dView'>
-                      <canvas id='model3dViewCanvas'></canvas>
+                  <div id='modalLoading' className='modal-small'>
+                    <div className='modal-small-content'>
+                      <div className='modal-small-header'>
+                        <img src='favicon/favicon.png' height='48px' 
+                          title='ThreeD Home Design' alt='ThreeD Home Design' />
+                        <h2>ThreeD Home Design</h2>
+                      </div>
+                      <div className='modal-small-body'>
+                        <h3>Loading Model Progress</h3>
+                        <textarea id='modalLoadingDataInfo'></textarea>
+                      </div>
+                      <div className='modal-small-footer'>
+                        <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+                      </div>
                     </div>
-                    <div id='modalModelDescription'>
+                  </div>
+
+                  <div id='modalShare' className='modal-small'>
+                    <div className='modal-small-content'>
+                      <div className='modal-small-header'>
+                        <span className='close'>-X-</span>
+                        <img src='favicon/favicon.png' height='48px' 
+                          title='ThreeD Home Design' alt='ThreeD Home Design' />
+                        <h2>ThreeD Home Design</h2>
+                      </div>
+                      <div className='modal-small-body'>
+                        <h3>Share Plan</h3>
+                        {/* <button id='getShareLinkBtn' className='mediumButton' onClick='generateShareLink()'>Generate Share
+                          Link</button>
+                        <div style='margin:10px 0px 10px 0px'>
+                          <div style='padding-top:6px'>
+                            <label for='shareLinkUrl'>Editable Copy</label><br />
+                            <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
+                              style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                            <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink()'>Copy</button>
+                          </div>
+
+                          <div style='padding-top:6px'>
+                            <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
+                            <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
+                              style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                            <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink3d()'>Copy</button>
+                          </div>
+
+                          <div style='padding-top:6px'>
+                            <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
+                            <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
+                              style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                            <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLinkPlan()'>Copy</button>
+                          </div>
+                        </div> */}
+                      </div>
+                      <div className='modal-small-footer'>
+                        <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* <div id='propertiesView' style='padding-left: 10px'>
+                    <div id='threed3DModelPropertiesView' style='display: none'>
                       <h3>3d Model Properties</h3>
-                      <table className='propertiesTable'>
-                        <tbody>
-                          <tr>
-                            <td width='70'>Name</td>
-                            <td><span id='model3dNameModal'></span></td>
-                          </tr>
-                          <tr>
-                            <td>Author</td>
-                            <td><span id='model3dAuthorModal'></span></td>
-                          </tr>
-                          <tr>
-                            <td>License</td>
-                            <td><span id='model3dLicenseModal'></span></td>
-                          </tr>
-                          <tr>
-                            <td>OBJ&nbspFile&nbspComments</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <textarea id='modalModel3dObjHeader'></textarea>
-
-                    </div>
-                  </div>
-                  <div className='modal-footer'>
-                    <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
-                  </div>
-                </div>
-              </div>
-            )}
-            { showModalShare && (
-              <div 
-                id='modalShare' 
-                // className='modal-small'
-              >
-                <div className='modal-small-content'>
-                  <div className='modal-small-header'>
-                    <span 
-                      className='close'
-                      onClick={() => setShowModalShare(false)}
-                    >
-                      -X-
-                    </span>
-                    <h2>ThreeD Home Design</h2>
-                  </div>
-                  <div className='modal-small-body'>
-                    <h3>Share Plan</h3>
-                    <button 
-                      id='getShareLinkBtn' 
-                      className='mediumButton' 
-                      // onClick='generateShareLink()'
-                    >
-                      Generate Share Link
-                    </button>
-                    {/* <div style='margin:10px 0px 10px 0px'>
-                      <div style='padding-top:6px'>
-                        <label for='shareLinkUrl'>Editable Copy</label><br />
-                        <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
-                          style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                        <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink()'>Copy</button>
-                      </div>
-
-                      <div style='padding-top:6px'>
-                        <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
-                        <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
-                          style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                        <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink3d()'>Copy</button>
-                      </div>
-
-                      <div style='padding-top:6px'>
-                        <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
-                        <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
-                          style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                        <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLinkPlan()'>Copy</button>
-                      </div>
-                    </div> */}
-                  </div>
-                  <div className='modal-small-footer'>
-                    <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
-                  </div>
-                </div>
-              </div>
-            )}
-            { showModalLoading && (
-              <div 
-                id='modalLoading' 
-                // className='modal-small'
-              >
-                <div className='modal-small-content'>
-                  <div className='modal-small-header'>
-                    <span 
-                      className='close'
-                      onClick={() => setShowModalLoading(false)}
-                    >
-                      -X-
-                    </span>
-                    <h2>ThreeD Home Design</h2>
-                  </div>
-                  <div className='modal-small-body'>
-                    <h3>Loading Model Progress</h3>
-                    <textarea id='modalLoadingDataInfo'></textarea>
-                  </div>
-                  <div className='modal-small-footer'>
-                    <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            
-            {/* <ul> */}
-              {/* <li className='brandImg'>
-                <a onClick={() => showModalAbout()} 
-                  style={{padding: '0px', margin: '0px'}}
-                >
-                  <img
-                    src='favicon/favicon.png' 
-                    width='48px' 
-                    height='48px' 
-                    title='ThreeD Home Design' 
-                    alt='ThreeD Home Design' 
-                  />
-                </a>
-              </li> */}
-              {/* <li className='brand'>
-                <a onClick={() => showModalAbout()} 
-                  style={{textAlign: 'center', paddingTop: '15px', paddingLeft: '18px', paddingRight: '24px', paddingBottom: '15px', textDecoration: 'none', fontSize: '21px',}}
-                >
-                  ThreeD Home Design
-                </a>
-              </li> */}
-              {/* <li className='dropdown'>
-                <a href='#javascript:void(0)' className='dropbtn'>File</a>
-                <div className='dropdown-content'>
-                  <a onClick='setNewPlan()'>New</a>
-                  <a onClick='loadExamplePlan()'>Load Demo</a>
-                  <a id='loadBtn' onClick='document.getElementById('file').click()'>Load</a>
-                  <input type='file' style='display:none' id='file' name='file' onchange='loadFileAsText(event)' />
-                  <a id='saveBtn' onClick='savePlan()'>Save</a>
-                  <a id='shareBtn' onClick='openShareDialog()'>Share</a>
-                  <a id='defaultsBtn' onClick='setPropertiesView('defaults')'>Defaults</a>
-                  <!--<a  id='groundPropertiesButton' onClick='setToolMode('ground')'>Ground Properties</a>-->
-                  <a id='fullscreenApp' onClick='openFullscreen('appBody')'>Fullscreen</a>
-                </div>
-              </li> */}
-              {/* <li className='dropdown'>
-                <a href='#javascript:void(0)' className='dropbtn'>Edit</a>
-                <div className='dropdown-content'>
-                  <a id='undoBtn' onClick='doUndo()'>Undo</a>
-                  <a id='redoBtn' onClick='doRedo()'>Redo</a>
-                </div>
-              </li> */}
-              {/* <li className='dropdown'>
-                <a href='#javascript:void(0)' className='dropbtn'>Plan View</a>
-                <div className='dropdown-content'>
-                  <a onClick='setPropertiesView('planView')'>Background Template</a>
-                  <a onClick='newLevel()'>Add Level</a>
-                  <a onClick='openFullscreen('planView')'>Fullscreen</a>
-                </div>
-              </li> */}
-              {/* <li className='dropdown'>
-                <a href='#javascript:void(0)' className='dropbtn'>3D View</a>
-                <div className='dropdown-content'>
-                  <a onClick='setPropertiesView('3dView')'>Properties</a>
-                  <a onClick='openFullscreen('view3d')'>Fullscreen</a>
-                  <a onClick='exportToObj()'>Export As OBJ</a>
-                  <!--<a  id='createThumb' onClick='createThumbForHistory()'>Create Thumb</a>-->
-                </div>
-              </li> */}
-              {/* <!--<li>
-                <a  onClick='doLog()'>Log</a>
-              </li>-->
-              <!-- <li>
-                <a onClick='showModalAbout()'>About</a>
-              </li> --> */}
-              {/* <li>
-                <a id='pointerTool' onClick='setToolMode('pointer')' className='toolButton activeTool'
-                  title='Pointer Select' alt='Pointer Select'>
-                  <img src='media/pointericonWhite.png' height='42px'>
-                </a>
-              </li> */}
-              {/* <!-- <li>
-                <a onClick='setToolMode('hand')'>
-                  <img src='media/handicon.png' width='50px'>
-                </a>
-              </li> --> */}
-              {/* <li>
-                <a id='addWallTool' onClick='setToolMode('walls')' className='toolButton' title='Add Wall' alt='Add Wall'>
-                  <img src='media/newWallWhite2.png' height='42px'>
-                </a>
-              </li> */}
-              {/* <li>
-                <a id='addFloorTool' onClick='setToolMode('floor')' className='toolButton' title='Add Floor'
-                  alt='Add Floor'>
-                  <img src='media/newFloorWhite2.png' height='42px'>
-                </a>
-              </li> */}
-              {/* <li>
-                <a id='addRoofTool' onClick='setToolMode('roof')' className='toolButton' title='Add Roof' alt='Add Roof'>
-                  <img src='media/newRoofWhite2.png' height='42px'>
-                </a>
-              </li> */}
-              {/* <li>
-                <a id='addRulerTool' onClick='setToolMode('dimension')' className='toolButton' title='Add Dimension'
-                  alt='Add Dimension'>
-                  <img src='media/newRulerWhite2.png' height='42px'>
-                </a>
-              </li> */}
-              {/* <li>
-                <a id='addTextTool' onClick='setToolMode('text')' className='toolButton' title='Add Text Annotation'
-                  alt='Add Text Annotation'>
-                  <img src='media/newTextWhite.png' height='42px'>
-                </a>
-              </li> */}
-            {/* </ul> */}
-          </Flex>
-
-          {/* MODALS: CONTAINERS */}
-          <Flex>
-
-            <div id='modal3dModel' className='modal'>
-              <div className='modal-content'>
-                <div className='modal-header'>
-                  <span className='close'>-X-</span>
-                  <img src='favicon/favicon.png' height='48px' 
-                    title='ThreeD Home Design' alt='ThreeD Home Design' />
-                  <h2>ThreeD Home Design</h2>
-                </div>
-                <div className='modal-body'>
-                  <div id='model3dView'>
-                    <canvas id='model3dViewCanvas'></canvas>
-                  </div>
-                  <div id='modalModelDescription'>
-                    <h3>3d Model Properties</h3>
-                    <table className='propertiesTable' style={{ width: '400px'}}>
-                      <tbody>
+                      <table className='propertiesTable' style='min-width: 290px'>
+                        <tr>
+                          <td colspan='2' style='text-align: center'>
+                            <div onmousedown='beginDrag(event, modalModel3dThreedId)' className='disableSelection'><img
+                                id='model3dLargeThumb' className='disableSelection' style='pointer-events: none' /></div>
+                          </td>
+                        </tr>
                         <tr>
                           <td width='70'>Name</td>
-                          <td><span id='model3dNameModal'></span></td>
+                          <td><span id='model3dName'></span></td>
                         </tr>
                         <tr>
                           <td>Author</td>
-                          <td><span id='model3dAuthorModal'></span></td>
+                          <td><span id='model3dAuthor'></span></td>
                         </tr>
                         <tr>
                           <td>License</td>
-                          <td><span id='model3dLicenseModal'></span></td>
+                          <td><span id='model3dLicense'></span></td>
                         </tr>
                         <tr>
-                          <td>OBJ&nbspFile&nbspComments</td>
+                          <td>3D Model</td>
+                          <td>
+                            <button className='moreInfoBtn' onClick='showModel3dView()'>View</button>
+                          </td>
                         </tr>
-                      </tbody>
-                    </table>
-                    <textarea id='modalModel3dObjHeader'></textarea>
-
-                  </div>
-                </div>
-                <div className='modal-footer'>
-                  <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
-                </div>
-              </div>
-            </div>
-
-            <div id='modalLoading' className='modal-small'>
-              <div className='modal-small-content'>
-                <div className='modal-small-header'>
-                  <img src='favicon/favicon.png' height='48px' 
-                    title='ThreeD Home Design' alt='ThreeD Home Design' />
-                  <h2>ThreeD Home Design</h2>
-                </div>
-                <div className='modal-small-body'>
-                  <h3>Loading Model Progress</h3>
-                  <textarea id='modalLoadingDataInfo'></textarea>
-                </div>
-                <div className='modal-small-footer'>
-                  <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
-                </div>
-              </div>
-            </div>
-
-            <div id='modalShare' className='modal-small'>
-              <div className='modal-small-content'>
-                <div className='modal-small-header'>
-                  <span className='close'>-X-</span>
-                  <img src='favicon/favicon.png' height='48px' 
-                    title='ThreeD Home Design' alt='ThreeD Home Design' />
-                  <h2>ThreeD Home Design</h2>
-                </div>
-                <div className='modal-small-body'>
-                  <h3>Share Plan</h3>
-                  {/* <button id='getShareLinkBtn' className='mediumButton' onClick='generateShareLink()'>Generate Share
-                    Link</button>
-                  <div style='margin:10px 0px 10px 0px'>
-                    <div style='padding-top:6px'>
-                      <label for='shareLinkUrl'>Editable Copy</label><br />
-                      <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
-                        style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                      <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink()'>Copy</button>
+                      </table>
+                    </div>
+                    <div id='threedPropertiesView' style='display: none'>
+                      <h3>Threed Properties</h3>
+                      <table className='propertiesTable' style='min-width: 290px'>
+                        <tr>
+                          <td width='70'>Id</td>
+                          <td><span id='objectId'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Name</td>
+                          <td><span id='objectName'></span></td>
+                        </tr>
+                        <tr>
+                          <td>X</td>
+                          <td><input type='text' id='threedXProp'
+                              style='width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosX)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Z</td>
+                          <td><input type='text' id='threedZProp'
+                              style='width: 80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosZ)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Y</td>
+                          <td><input type='text' id='threedYProp'
+                              style='width: 80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosY)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Width</td>
+                          <td>
+                            <input type='text' id='threedWidthProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateThreedWidth)' maxlength='8' />
+                            cm
+                            <input type='checkbox' id='flipX' onchange='flipX(this.checked)'>Flip X
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Depth</td>
+                          <td>
+                            <input type='text' id='threedDepthProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateThreedDepth)' maxlength='8' />
+                            cm
+                            <input type='checkbox' id='flipZ' onchange='flipZ(this.checked)'>Flip Z
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Height</td>
+                          <td><input type='text' id='threedHeightProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedHeight)'
+                              maxlength='8' /> cm</td>
+                        </tr>
+                        <tr>
+                          <td>Angle</td>
+                          <td><span id='threedAngleProp'></span>°</td>
+                        </tr>
+                        <tr>
+                          <td>Level</td>
+                          <td><span id='threedLevelProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>3D Model</td>
+                          <td><button className='moreInfoBtn' onClick='showModel3dView()'>View</button></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='defaultsPropertiesView' style='display:none'>
+                      <h3>Default Settings</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td>Compass Heading</td>
+                          <td><input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' value='0'
+                              oninput='rotateCompass(this.value)' onchange='rotateCompass(this.value)' />
+                            <span id='compassHdgLbl'>0°</span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='wallDefaultsPropertiesView' style='display:none'>
+                      <h3>Default Wall Settings</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>Wall Height</td>
+                          <td><input type='text' id='defaultWallHeightProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateDefaultWallHeight)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Wall Thickness</td>
+                          <td><input type='text' id='defaultWallThicknessProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateDefaultWallThickness)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='floorDefaultsPropertiesView' style='display:none'>
+                      <h3>Default Floor Settings</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td>Floor Thickness</td>
+                          <td><input type='text' id='defaultFloorThicknessProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateDefaultFloorThickness)'
+                              maxlength='8' /> cm</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='roofDefaultsPropertiesView' style='display:none'>
+                      <h3>Default Roof Settings</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td>Roof Thickness</td>
+                          <td><input type='text' id='defaultRoofThicknessProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateDefaultRoofThickness)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Rise</td>
+                          <td><input type='text' id='defaultRoofRiseProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateDefaultRoofRise)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Base Offset</td>
+                          <td><input type='text' id='defaultRoofStartHeightProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Run</td>
+                          <td><input type='text' id='defaultRoofWidthProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateDefaultRoofWidth)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Rafter Length</td>
+                          <td><span id='defaultRafterLengthProp'></span> cm</td>
+                        </tr>
+                        <tr>
+                          <td>Roof Pitch</td>
+                          <td><span id='defaultRoofPitchProp'></span>°</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='dimensionDefaultsPropertiesView' style='display:none'>
+                      <h3>Default Dimension Settings</h3>
+                    </div>
+                    <div id='textDefaultsPropertiesView' style='display:none'>
+                      <h3>Default Text Settings</h3>
                     </div>
 
-                    <div style='padding-top:6px'>
-                      <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
-                      <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
-                        style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                      <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink3d()'>Copy</button>
+                    <div id='planViewPropertiesView' style='display:none'>
+                      <h3>Background Template</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>File</td>
+                          <td>
+                            <input type='file' id='backgroundImageFile' name='backgroundImageFile'
+                              onchange='loadBackgroundImage(event)' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Opacity</td>
+                          <td>
+                            <input type='range' id='bgTemplateOpacity' name='bgTemplateOpacity' min='0' max='1.0' step='.01'
+                              value='0.33' oninput='setBgTemplateOpacity(this.value)'
+                              onchange='setBgTemplateOpacity(this.value)' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Flip Horizontal</td>
+                          <td>
+                            <input type='checkbox' id='bgTplFlipX' onchange='flipBackgroundTemplateX(this.checked)'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Flip Vertical</td>
+                          <td>
+                            <input type='checkbox' id='bgTplFlipZ' onchange='flipBackgroundTemplateZ(this.checked)'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width='60'></td>
+                          <td><button id='resizeBackgroundImageBtn' onClick='enableResizeBackgroundTemplate()'
+                              className='moreInfoBtn'>Resize</button></td>
+                        </tr>
+                        <tr>
+                          <td width='60'></td>
+                          <td><button id='deleteBackgroundImageBtn' onClick='deleteBackgroundImage()'
+                              className='moreInfoBtn'>Delete</button></td>
+                        </tr>
+                      </table>
                     </div>
-
-                    <div style='padding-top:6px'>
-                      <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
-                      <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
-                        style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                      <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLinkPlan()'>Copy</button>
+                    <div id='3dViewPropertiesView' style='display:none'>
+                      <h3>3d View Properties</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>Wall Color</td>
+                          <td>
+                            <input type='hidden' id='wallDiffuse' value='rgba(255,255,255,0.5)'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width='70'>Wall Specular</td>
+                          <td>
+                            <input type='hidden' id='wallSpecular' value='#00ff00'>
+                          </td>
+                        </tr>
+                        <!--<tr>
+                          <td width='70'>Wall Emissive</td>
+                          <td>
+                            <input type='hidden' id='wallEmissive' value='#ffffff'>
+                          </td>
+                        </tr>-->
+                        <tr>
+                          <td width='70'>Floor Color</td>
+                          <td>
+                            <input type='hidden' id='floorDiffuse' value='rgba(15,15,15,0.5)'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width='70'>Floor Specular</td>
+                          <td>
+                            <input type='hidden' id='floorSpecular' value='#00ffff'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width='70'>Roof Color</td>
+                          <td>
+                            <input type='hidden' id='roofDiffuse' value='rgba(255,255,255,0.5)'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width='70'>Roof Specular</td>
+                          <td>
+                            <input type='hidden' id='roofSpecular' value='#ff0000'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Ground Color</td>
+                          <td>
+                            <input type='hidden' id='groundDiffuse' value='rgba(03,141,221,1.0)'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Ground Specular</td>
+                          <td>
+                            <input type='hidden' id='groundSpecular' value='#f2ff9c'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width='70'>Depth Write</td>
+                          <td>
+                            <input type='checkbox' id='depthWriteMode' onChange='setDepthWriteMode(this.checked)'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td width='70'>Sort Objects</td>
+                          <td>
+                            <input type='checkbox' id='sortObjectsMode' onChange='setSortObjectsMode(this.checked)'>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Sun Azimuth</td>
+                          <td>
+                            <input type='range' id='sunAzimuth' name='sunAzimuth' min='0' max='1.0' step='.01' value='0.33'
+                              oninput='setSunAzimuth(this.value)' onchange='setSunAzimuth(this.value)' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Sun Incline</td>
+                          <td>
+                            <input type='range' id='sunIncline' name='sunIncline' min='0' max='1.0' step='.01' value='0.0'
+                              oninput='setSunIncline(this.value)' onchange='setSunIncline(this.value)' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Ambient Intensity</td>
+                          <td>
+                            <input type='range' id='ambientLightBrightness' name='ambientLightBrightness' min='0.0'
+                              max='1.0' step='0.1' oninput='adjustAmbientLightBrightness(this.value)'
+                              onchange='adjustAmbientLightBrightness(this.value)' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Directional Intensity</td>
+                          <td>
+                            <input type='range' id='dirLightBrightness' name='dirLightBrightness' min='0.0' max='1.0'
+                              step='0.1' oninput='adjustDirLightBrightness(this.value)'
+                              onchange='adjustDirLightBrightness(this.value)' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Hemisphere Intensity</td>
+                          <td>
+                            <input type='range' id='hemiLightBrightness' name='hemiLightBrightness' min='0.0' max='1.0'
+                              step='0.1' oninput='adjustHemiLightBrightness(this.value)'
+                              onchange='adjustHemiLightBrightness(this.value)' />
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='wallPropertiesView' style='display:none'>
+                      <h3>Wall Properties</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>Id</td>
+                          <td>
+                            <input type='hidden' id='wallIdHidden'>
+                            <span id='wallIdProp'></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Height</td>
+                          <td><input type='text' id='wallHeightProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateWallHeight)' maxlength='8' /> cm
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Height Start</td>
+                          <td><input type='text' id='wallHeight0Prop'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateWallHeight0)' maxlength='8' /> cm
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Height End</td>
+                          <td><input type='text' id='wallHeight1Prop'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateWallHeight1)' maxlength='8' /> cm
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Thickness</td>
+                          <td><input type='text' id='wallThicknessProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateWallThickness)' maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Level</td>
+                          <td><span id='wallLevelProp'></span></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='roofPropertiesView' style='display:none'>
+                      <h3>Roof Properties</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>Id</td>
+                          <td>
+                            <input type='hidden' id='roofIdHidden'>
+                            <span id='roofIdProp'></span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Thickness</td>
+                          <td><input type='text' id='roofThicknessProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateRoofThickness)' maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Rise</td>
+                          <td><input type='text' id='roofRiseProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateRoofRise)' maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Base Offset</td>
+                          <td><input type='text' id='roofStartHeightProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateRoofStartHeight)'
+                              maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Run</td>
+                          <td><input type='text' id='roofWidthProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateRoofWidth)' maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Rafter Length</td>
+                          <td><span id='rafterLengthProp'></span> cm</td>
+                        </tr>
+                        <tr>
+                          <td>Roof Pitch</td>
+                          <td><span id='roofPitchProp'></span>°</td>
+                        </tr>
+                        <tr>
+                          <td>Level</td>
+                          <td><span id='roofLevelProp'></span></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='floorPropertiesView' style='display:none'>
+                      <h3>Floor Properties</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>Id</td>
+                          <td><span id='floorIdProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Area</td>
+                          <td><span id='floorAreaProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Thickness</td>
+                          <td><span id='floorThicknessProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Level</td>
+                          <td><span id='floorLevelProp'></span></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='dimensionPropertiesView' style='display:none'>
+                      <h3>Dimension Properties</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>Id</td>
+                          <td><span id='dimensionIdProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Length</td>
+                          <td><span id='dimensionLengthProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Adjacent</td>
+                          <td><span id='dimensionAdjacentProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Level</td>
+                          <td><span id='dimensionLevelProp'></span></td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='textPropertiesView' style='display:none'>
+                      <h3>Text Annotation Properties</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>Id</td>
+                          <td><span id='textIdProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Text</td>
+                          <td><input type='text' id='textValueProp'
+                              style='width:120px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onkeyup='validateText(event, this, updateTextValue)' maxlength='100' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>X</td>
+                          <td><input type='text' id='textXProp'
+                              style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateTextX)' maxlength='8' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Y</td>
+                          <td><input type='text' id='textYProp'
+                              style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateTextY)' maxlength='8' />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Level</td>
+                          <td><span id='textLevelProp'></span></td>
+                        </tr>
+                      </table>
+                      <!--<div>Type<span id='textDataTypeProp'></span></div>-->
+                      <!--<div><button id='deleteTextAnnotationBtn' onClick='deleteTextBtnClick()'>Delete</button></div>-->
+                    </div>
+                    <div id='levelPropertiesView' style='display:none'>
+                      <h3>Level Properties</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td width='70'>Id</td>
+                          <td><span id='levelIdProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Name</td>
+                          <td><span id='levelNameProp'></span></td>
+                        </tr>
+                        <tr>
+                          <td>Height</td>
+                          <td>
+                            <input type='text' id='levelHeightProp'
+                              style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusOrMinusNumber(this, updateLevelHeight)'
+                              maxlength='8' />
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div id='groundPropertiesView' style='display:none'>
+                      <h3>Ground Layer Properties</h3>
+                      <table className='propertiesTable' style='min-width:290px'>
+                        <tr>
+                          <td>Width</td>
+                          <td><input type='text' id='groundWidthProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateGroundWidth)' maxlength='8' />
+                            cm</td>
+                        </tr>
+                        <tr>
+                          <td>Legth</td>
+                          <td><input type='text' id='groundLengthProp'
+                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              className='editable' onChange='validatePlusNumber(this, updateGroundLength)' maxlength='8' />
+                            cm</td>
+                        </tr>
+                      </table>
                     </div>
                   </div> */}
-                </div>
-                <div className='modal-small-footer'>
-                  <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
-                </div>
-              </div>
-            </div>
-
-            {/* <div id='propertiesView' style='padding-left: 10px'>
-              <div id='threed3DModelPropertiesView' style='display: none'>
-                <h3>3d Model Properties</h3>
-                <table className='propertiesTable' style='min-width: 290px'>
-                  <tr>
-                    <td colspan='2' style='text-align: center'>
-                      <div onmousedown='beginDrag(event, modalModel3dThreedId)' className='disableSelection'><img
-                          id='model3dLargeThumb' className='disableSelection' style='pointer-events: none' /></div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width='70'>Name</td>
-                    <td><span id='model3dName'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Author</td>
-                    <td><span id='model3dAuthor'></span></td>
-                  </tr>
-                  <tr>
-                    <td>License</td>
-                    <td><span id='model3dLicense'></span></td>
-                  </tr>
-                  <tr>
-                    <td>3D Model</td>
-                    <td>
-                      <button className='moreInfoBtn' onClick='showModel3dView()'>View</button>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div id='threedPropertiesView' style='display: none'>
-                <h3>Threed Properties</h3>
-                <table className='propertiesTable' style='min-width: 290px'>
-                  <tr>
-                    <td width='70'>Id</td>
-                    <td><span id='objectId'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Name</td>
-                    <td><span id='objectName'></span></td>
-                  </tr>
-                  <tr>
-                    <td>X</td>
-                    <td><input type='text' id='threedXProp'
-                        style='width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosX)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Z</td>
-                    <td><input type='text' id='threedZProp'
-                        style='width: 80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosZ)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Y</td>
-                    <td><input type='text' id='threedYProp'
-                        style='width: 80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosY)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Width</td>
-                    <td>
-                      <input type='text' id='threedWidthProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateThreedWidth)' maxlength='8' />
-                      cm
-                      <input type='checkbox' id='flipX' onchange='flipX(this.checked)'>Flip X
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Depth</td>
-                    <td>
-                      <input type='text' id='threedDepthProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateThreedDepth)' maxlength='8' />
-                      cm
-                      <input type='checkbox' id='flipZ' onchange='flipZ(this.checked)'>Flip Z
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Height</td>
-                    <td><input type='text' id='threedHeightProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedHeight)'
-                        maxlength='8' /> cm</td>
-                  </tr>
-                  <tr>
-                    <td>Angle</td>
-                    <td><span id='threedAngleProp'></span>°</td>
-                  </tr>
-                  <tr>
-                    <td>Level</td>
-                    <td><span id='threedLevelProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>3D Model</td>
-                    <td><button className='moreInfoBtn' onClick='showModel3dView()'>View</button></td>
-                  </tr>
-                </table>
-              </div>
-              <div id='defaultsPropertiesView' style='display:none'>
-                <h3>Default Settings</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td>Compass Heading</td>
-                    <td><input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' value='0'
-                        oninput='rotateCompass(this.value)' onchange='rotateCompass(this.value)' />
-                      <span id='compassHdgLbl'>0°</span>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div id='wallDefaultsPropertiesView' style='display:none'>
-                <h3>Default Wall Settings</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>Wall Height</td>
-                    <td><input type='text' id='defaultWallHeightProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateDefaultWallHeight)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Wall Thickness</td>
-                    <td><input type='text' id='defaultWallThicknessProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateDefaultWallThickness)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                </table>
-              </div>
-              <div id='floorDefaultsPropertiesView' style='display:none'>
-                <h3>Default Floor Settings</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td>Floor Thickness</td>
-                    <td><input type='text' id='defaultFloorThicknessProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateDefaultFloorThickness)'
-                        maxlength='8' /> cm</td>
-                  </tr>
-                </table>
-              </div>
-              <div id='roofDefaultsPropertiesView' style='display:none'>
-                <h3>Default Roof Settings</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td>Roof Thickness</td>
-                    <td><input type='text' id='defaultRoofThicknessProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateDefaultRoofThickness)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Rise</td>
-                    <td><input type='text' id='defaultRoofRiseProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateDefaultRoofRise)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Base Offset</td>
-                    <td><input type='text' id='defaultRoofStartHeightProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Run</td>
-                    <td><input type='text' id='defaultRoofWidthProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateDefaultRoofWidth)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Rafter Length</td>
-                    <td><span id='defaultRafterLengthProp'></span> cm</td>
-                  </tr>
-                  <tr>
-                    <td>Roof Pitch</td>
-                    <td><span id='defaultRoofPitchProp'></span>°</td>
-                  </tr>
-                </table>
-              </div>
-              <div id='dimensionDefaultsPropertiesView' style='display:none'>
-                <h3>Default Dimension Settings</h3>
-              </div>
-              <div id='textDefaultsPropertiesView' style='display:none'>
-                <h3>Default Text Settings</h3>
-              </div>
-
-              <div id='planViewPropertiesView' style='display:none'>
-                <h3>Background Template</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>File</td>
-                    <td>
-                      <input type='file' id='backgroundImageFile' name='backgroundImageFile'
-                        onchange='loadBackgroundImage(event)' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Opacity</td>
-                    <td>
-                      <input type='range' id='bgTemplateOpacity' name='bgTemplateOpacity' min='0' max='1.0' step='.01'
-                        value='0.33' oninput='setBgTemplateOpacity(this.value)'
-                        onchange='setBgTemplateOpacity(this.value)' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Flip Horizontal</td>
-                    <td>
-                      <input type='checkbox' id='bgTplFlipX' onchange='flipBackgroundTemplateX(this.checked)'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Flip Vertical</td>
-                    <td>
-                      <input type='checkbox' id='bgTplFlipZ' onchange='flipBackgroundTemplateZ(this.checked)'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width='60'></td>
-                    <td><button id='resizeBackgroundImageBtn' onClick='enableResizeBackgroundTemplate()'
-                        className='moreInfoBtn'>Resize</button></td>
-                  </tr>
-                  <tr>
-                    <td width='60'></td>
-                    <td><button id='deleteBackgroundImageBtn' onClick='deleteBackgroundImage()'
-                        className='moreInfoBtn'>Delete</button></td>
-                  </tr>
-                </table>
-              </div>
-              <div id='3dViewPropertiesView' style='display:none'>
-                <h3>3d View Properties</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>Wall Color</td>
-                    <td>
-                      <input type='hidden' id='wallDiffuse' value='rgba(255,255,255,0.5)'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width='70'>Wall Specular</td>
-                    <td>
-                      <input type='hidden' id='wallSpecular' value='#00ff00'>
-                    </td>
-                  </tr>
-                  <!--<tr>
-                    <td width='70'>Wall Emissive</td>
-                    <td>
-                      <input type='hidden' id='wallEmissive' value='#ffffff'>
-                    </td>
-                  </tr>-->
-                  <tr>
-                    <td width='70'>Floor Color</td>
-                    <td>
-                      <input type='hidden' id='floorDiffuse' value='rgba(15,15,15,0.5)'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width='70'>Floor Specular</td>
-                    <td>
-                      <input type='hidden' id='floorSpecular' value='#00ffff'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width='70'>Roof Color</td>
-                    <td>
-                      <input type='hidden' id='roofDiffuse' value='rgba(255,255,255,0.5)'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width='70'>Roof Specular</td>
-                    <td>
-                      <input type='hidden' id='roofSpecular' value='#ff0000'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Ground Color</td>
-                    <td>
-                      <input type='hidden' id='groundDiffuse' value='rgba(03,141,221,1.0)'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Ground Specular</td>
-                    <td>
-                      <input type='hidden' id='groundSpecular' value='#f2ff9c'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width='70'>Depth Write</td>
-                    <td>
-                      <input type='checkbox' id='depthWriteMode' onChange='setDepthWriteMode(this.checked)'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td width='70'>Sort Objects</td>
-                    <td>
-                      <input type='checkbox' id='sortObjectsMode' onChange='setSortObjectsMode(this.checked)'>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Sun Azimuth</td>
-                    <td>
-                      <input type='range' id='sunAzimuth' name='sunAzimuth' min='0' max='1.0' step='.01' value='0.33'
-                        oninput='setSunAzimuth(this.value)' onchange='setSunAzimuth(this.value)' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Sun Incline</td>
-                    <td>
-                      <input type='range' id='sunIncline' name='sunIncline' min='0' max='1.0' step='.01' value='0.0'
-                        oninput='setSunIncline(this.value)' onchange='setSunIncline(this.value)' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Ambient Intensity</td>
-                    <td>
-                      <input type='range' id='ambientLightBrightness' name='ambientLightBrightness' min='0.0'
-                        max='1.0' step='0.1' oninput='adjustAmbientLightBrightness(this.value)'
-                        onchange='adjustAmbientLightBrightness(this.value)' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Directional Intensity</td>
-                    <td>
-                      <input type='range' id='dirLightBrightness' name='dirLightBrightness' min='0.0' max='1.0'
-                        step='0.1' oninput='adjustDirLightBrightness(this.value)'
-                        onchange='adjustDirLightBrightness(this.value)' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Hemisphere Intensity</td>
-                    <td>
-                      <input type='range' id='hemiLightBrightness' name='hemiLightBrightness' min='0.0' max='1.0'
-                        step='0.1' oninput='adjustHemiLightBrightness(this.value)'
-                        onchange='adjustHemiLightBrightness(this.value)' />
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div id='wallPropertiesView' style='display:none'>
-                <h3>Wall Properties</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>Id</td>
-                    <td>
-                      <input type='hidden' id='wallIdHidden'>
-                      <span id='wallIdProp'></span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Height</td>
-                    <td><input type='text' id='wallHeightProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateWallHeight)' maxlength='8' /> cm
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Height Start</td>
-                    <td><input type='text' id='wallHeight0Prop'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateWallHeight0)' maxlength='8' /> cm
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Height End</td>
-                    <td><input type='text' id='wallHeight1Prop'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateWallHeight1)' maxlength='8' /> cm
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Thickness</td>
-                    <td><input type='text' id='wallThicknessProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateWallThickness)' maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Level</td>
-                    <td><span id='wallLevelProp'></span></td>
-                  </tr>
-                </table>
-              </div>
-              <div id='roofPropertiesView' style='display:none'>
-                <h3>Roof Properties</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>Id</td>
-                    <td>
-                      <input type='hidden' id='roofIdHidden'>
-                      <span id='roofIdProp'></span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Thickness</td>
-                    <td><input type='text' id='roofThicknessProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateRoofThickness)' maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Rise</td>
-                    <td><input type='text' id='roofRiseProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateRoofRise)' maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Base Offset</td>
-                    <td><input type='text' id='roofStartHeightProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateRoofStartHeight)'
-                        maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Run</td>
-                    <td><input type='text' id='roofWidthProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateRoofWidth)' maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Rafter Length</td>
-                    <td><span id='rafterLengthProp'></span> cm</td>
-                  </tr>
-                  <tr>
-                    <td>Roof Pitch</td>
-                    <td><span id='roofPitchProp'></span>°</td>
-                  </tr>
-                  <tr>
-                    <td>Level</td>
-                    <td><span id='roofLevelProp'></span></td>
-                  </tr>
-                </table>
-              </div>
-              <div id='floorPropertiesView' style='display:none'>
-                <h3>Floor Properties</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>Id</td>
-                    <td><span id='floorIdProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Area</td>
-                    <td><span id='floorAreaProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Thickness</td>
-                    <td><span id='floorThicknessProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Level</td>
-                    <td><span id='floorLevelProp'></span></td>
-                  </tr>
-                </table>
-              </div>
-              <div id='dimensionPropertiesView' style='display:none'>
-                <h3>Dimension Properties</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>Id</td>
-                    <td><span id='dimensionIdProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Length</td>
-                    <td><span id='dimensionLengthProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Adjacent</td>
-                    <td><span id='dimensionAdjacentProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Level</td>
-                    <td><span id='dimensionLevelProp'></span></td>
-                  </tr>
-                </table>
-              </div>
-              <div id='textPropertiesView' style='display:none'>
-                <h3>Text Annotation Properties</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>Id</td>
-                    <td><span id='textIdProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Text</td>
-                    <td><input type='text' id='textValueProp'
-                        style='width:120px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onkeyup='validateText(event, this, updateTextValue)' maxlength='100' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>X</td>
-                    <td><input type='text' id='textXProp'
-                        style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateTextX)' maxlength='8' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Y</td>
-                    <td><input type='text' id='textYProp'
-                        style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateTextY)' maxlength='8' />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Level</td>
-                    <td><span id='textLevelProp'></span></td>
-                  </tr>
-                </table>
-                <!--<div>Type<span id='textDataTypeProp'></span></div>-->
-                <!--<div><button id='deleteTextAnnotationBtn' onClick='deleteTextBtnClick()'>Delete</button></div>-->
-              </div>
-              <div id='levelPropertiesView' style='display:none'>
-                <h3>Level Properties</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td width='70'>Id</td>
-                    <td><span id='levelIdProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Name</td>
-                    <td><span id='levelNameProp'></span></td>
-                  </tr>
-                  <tr>
-                    <td>Height</td>
-                    <td>
-                      <input type='text' id='levelHeightProp'
-                        style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusOrMinusNumber(this, updateLevelHeight)'
-                        maxlength='8' />
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div id='groundPropertiesView' style='display:none'>
-                <h3>Ground Layer Properties</h3>
-                <table className='propertiesTable' style='min-width:290px'>
-                  <tr>
-                    <td>Width</td>
-                    <td><input type='text' id='groundWidthProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateGroundWidth)' maxlength='8' />
-                      cm</td>
-                  </tr>
-                  <tr>
-                    <td>Legth</td>
-                    <td><input type='text' id='groundLengthProp'
-                        style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                        className='editable' onChange='validatePlusNumber(this, updateGroundLength)' maxlength='8' />
-                      cm</td>
-                  </tr>
-                </table>
-              </div>
-            </div> */}
-          </Flex>
-        </Grid>
-
-
-
+                </Flex>
+              </Grid>
+            </Panel>
+          </PanelGroup>
+          
+        </Flex>
+  
+  
+        <Flex
+          direction='row'
+          style={{
+            // height: '5vh',
+            // minHeight: '5vh',
+            // width: '100%',
+            // border: '4px solid darkblue',
+          }}
+        >
+          <Text>
+            Main Footer
+          </Text>
+          <Footer 
+            key='ThreeDAppFooter'
+          />
+        </Flex>
+        
       </Flex>
+    </Suspense>
     </>
   )
 }
-
-// HomeDesignPage.getLayout = (page: any) => {page}
-// HomeDesignPage.getLayout = (page: any) => <UserLayout>{page}</UserLayout>
-// HomeDesignPage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
-// HomeDesignPage.authGuard = true
-// HomeDesignPage.guestGuard = true
 
 export default HomeDesignPage

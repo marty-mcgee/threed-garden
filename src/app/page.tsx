@@ -4,7 +4,7 @@
 'use client'
 
 // ==============================================================
-// RESOURCES (to import)
+// RESOURCES
 
 import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
@@ -20,7 +20,6 @@ import SessionData from '#/layout/session-data'
 
 // ** React
 // import type { ReactNode } from 'react'
-// import React, { FC } from 'react'
 import { 
   useEffect,
   Suspense,
@@ -76,10 +75,8 @@ const AppPage = ({children}: {children: any}) => {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
-  // // ** Hooks
+  // ** Hooks
   // const auth = useAuth()
-  // const router = useRouter()
-  // const pathname = usePathname()
   const session = useSession()
   // const session = await auth()
   // const session = {
@@ -194,7 +191,7 @@ const AppPage = ({children}: {children: any}) => {
                     Sub Header
                   </Text> */}
                   <Heading as='h2'>
-                    🌱 ThreeD: Next.js 14+ : app (router): page .tsx
+                    🌱 ThreeD: Next.js: app (router): page .tsx
                   </Heading>
                 </Container>
               </Panel>
