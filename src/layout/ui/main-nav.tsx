@@ -168,14 +168,17 @@ export default function MainNav() {
                     listStyleType: 'none',
                   }}
                 >
-                  <ListItem href='/home' title='Home'>
-                    Go to the home page of this app.
+                  <ListItem href='/home' title='Home Page'>
+                    Go to /home page
                   </ListItem>
                   <ListItem href='/participate' title='Participate'>
-                    Use the ThreeD Garden user interface.
+                    Demo 1: ThreeD Garden
                   </ListItem>
                   <ListItem href='/page' title='About Page'>
-                    Read more about this project's pages.
+                    Read about this project
+                  </ListItem>
+                  <ListItem href='/home-design' title='Home Design'>
+                    Demo 2: Home Design
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
