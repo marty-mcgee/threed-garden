@@ -157,7 +157,7 @@ const AppPage = () => {
               Main Header
             </Text> */}
             <Heading as='h1'>
-              🥕 Welcome {session?.user?.name} to ThreeD Garden
+              🥕 Welcome to ThreeD Garden
             </Heading>
           </Panel>
           <PanelResizeHandle />
@@ -254,13 +254,13 @@ const AppPage = () => {
                         <Text>
                           Main Content (children)
                         </Text>
-                        <SessionData 
+                        {/* <SessionData 
                           session={session} 
                         />
                         {
                           false && 
                           children
-                        }
+                        } */}
                       </Grid>
                     </Panel>
                   </PanelGroup>
