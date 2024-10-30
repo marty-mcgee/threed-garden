@@ -882,18 +882,16 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
   return (
   
     <>
-    <Suspense fallback={<Spinner />}>
+    {/* <Suspense fallback={<Spinner />}> */}
       <Flex
         direction='row'
-  
         style={{
           // height: '99%',
           // width: '99%',
           // paddingLeft: '8px',
           // paddingRight: '8px',
         }}
-      > 
-      
+      >
         <Flex
           direction='row'
           style={{
@@ -906,10 +904,15 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
           <Header 
             key='ThreeDAppHeader'
           />
+          <div
+            style={{
+              padding: '5px',
+            }}
+          >
+            <DropdownMenuThreeD />
+          </div>
         </Flex>
-  
-  
-  
+        {/*  */}
         <Flex 
           direction='row'
           style={{
@@ -941,7 +944,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                 🥕 Welcome {session?.user?.name} to ThreeD Garden
               </Heading> */}
               {/* MAIN ACTIONS DROPDOWN MENU */}
-              <DropdownMenuThreeD />
+              {/* <DropdownMenuThreeD /> */}
               {/* BASIC ACTION BUTTONS */}
               {/* <Flex>
                 <Button onClick={() => handleShowModalAbout()}>
@@ -2338,7 +2341,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
           
         </Flex>
   
-  
+        {/* FOOTER */}
         <Flex
           direction='row'
           style={{
@@ -2357,7 +2360,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
         </Flex>
         
       </Flex>
-    </Suspense>
+    {/* </Suspense> */}
     </>
   )
 }
