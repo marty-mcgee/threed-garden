@@ -2,7 +2,7 @@
 // 'use server'
 // ^^ does this file require client or server pragma ???
 
-// ** UI Imports
+// ** RADIX-UI Imports
 import {
   Container,
   Grid,
@@ -11,8 +11,10 @@ import {
   Button,
 } from '@radix-ui/themes'
 
+// ** NEXT Imports
 import Image from 'next/image'
 
+// ** CUSTOM NAVIGATION
 import { cn } from '#//lib/utils/tailwind-utils'
 import CustomLink from './custom-link'
 import {
@@ -24,6 +26,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from './navigation-menu'
+// ** REACT Imports
 import React from 'react'
 // import { Button } from './button'
 
@@ -292,22 +295,15 @@ const ListItem = React.forwardRef<
       className='
         p-2
       '
-      style={{
-        // zIndex: '99998 !important',
-      }}
     >
       {/* <NavigationMenuLink> */}
         <div
           className='
-            p-2
+            p-1
             text-sm 
             font-medium 
             leading-none
           '
-          style={{
-            // color: '#DDDDDD',
-            // zIndex: '99999 !important',
-          }}
         >
           <a
             ref={ref}
