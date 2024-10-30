@@ -1,10 +1,12 @@
+'use server'
+
 import { signIn, signOut } from '#//lib/auth/auth'
 // import { Button } from './ui/button'
 import {
   Button,
 } from '@radix-ui/themes'
 
-export function SignIn({
+export async function SignIn({
   provider,
   ...props
 }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
@@ -31,7 +33,7 @@ export function SignIn({
   )
 }
 
-export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
+export async function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
   // console.debug('SignOut Button Clicked')
   return (
     <form

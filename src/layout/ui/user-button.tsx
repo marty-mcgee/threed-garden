@@ -1,14 +1,14 @@
 // 'use client'
-'use server'
+// 'use server'
 // ^^ this file requires server pragma
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/layout/ui/avatar'
 import { Button } from '#/layout/ui/button'
 
 // ** AUTH GUARD
-import { auth } from '#//lib/auth/auth'
+// import { auth } from '#//lib/auth/auth'
 // import { SessionProvider } from 'next-auth/react'
-// import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { SignIn, SignOut } from '#/layout/ui/auth-components'
 
 import {
@@ -19,9 +19,10 @@ import {
   DropdownMenuTrigger,
 } from '#/layout/ui/dropdown-menu'
 
-export default async function UserButton() {
-  const session = await auth()
-  // const { data: session, status } = useSession()
+// export default async function UserButton() {
+export default function UserButton() {
+  // const session = await auth()
+  const { data: session, status } = useSession()
   if (!session?.user) {
     return <SignIn />
   }

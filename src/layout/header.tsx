@@ -1,18 +1,24 @@
 'use client'
-// 'use server'
-// ^^ does this file require client or server pragma ???
+
+// ** REACT Imports
+// import { Suspense } from 'react'
+
+// ** NEXT Imports
+// import dynamic from 'next/dynamic'
 
 // ** COMPONENT Imports
 import MainNav from '#/layout/ui/main-nav'
-// import UserButton from '#/layout/ui/user-button'
+// // import UserButton from '#/layout/ui/user-button'
+// const UserButton = dynamic(() => import('#/layout/ui/user-button'), { ssr: false })
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 import { LayoutDashboard } from 'lucide-react'
 
-// ** UI Imports
+// ** RADIX-UI Imports
 import {
   Grid,
   Flex,
   Container,
+  Button,
 } from '@radix-ui/themes'
 
 // ** RETURN JSX
@@ -56,33 +62,34 @@ export default function Header() {
           {/* <UserButton /> */}
           <SignedOut>
             <SignInButton mode='modal'>
-              <button 
+              <Button 
                 className='
                   rounded 
                   border 
                   border-black 
                   bg-black 
-                  px-3 
-                  py-1.5 
-                  text-sm 
+                  px-2 
+                  py-0.5 
+                  text-xs 
                   text-white 
                   transition-colors 
-                  hover:bg-white 
-                  hover:text-black
+                  hover:bg-black 
+                  hover:text-gray
                 '
               >
                 Sign In
-              </button>
+              </Button>
             </SignInButton>
           </SignedOut>
           <SignedIn>
             <UserButton>
               <UserButton.MenuItems>
-                <UserButton.Link
+                {/* CUSTOM MENU ITEM */}
+                {/* <UserButton.Link
                   label='Dashboard'
-                  labelIcon={<LayoutDashboard className='h-4 w-4' />}
+                  labelIcon={<LayoutDashboard className='h-6 w-6' />}
                   href='/'
-                />
+                /> */}
               </UserButton.MenuItems>
             </UserButton>
           </SignedIn>
