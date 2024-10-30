@@ -1,5 +1,5 @@
 // 'use client' // do not use
-// 'use server' // use this default
+// 'use server' // uses this default
 // ^ this file should need NO pragma: default is 'use server'
 
 // ==============================================================

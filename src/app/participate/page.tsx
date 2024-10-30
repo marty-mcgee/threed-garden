@@ -32,8 +32,8 @@ import Header from '#/layout/header'
 import Footer from '#/layout/footer'
 
 // ** THREED Imports
-// import ThreeD from '~/src/lib/threed/threed'
-const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
+import ThreeD from '~/src/lib/threed/threed'
+// const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
 // import ThreeDControls from '~/src/lib/threed/Controls'
 // const ThreeDControls = dynamic(() => import('#/lib/threed/Controls'), { ssr: false })
 // import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'
@@ -77,12 +77,11 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
 
   return (
     <>
-    <Suspense fallback={<Spinner />}>
+    {/* <Suspense fallback={<Spinner />}> */}
     
-      <Grid
-        // container
-        // spacing={1}
-      >
+      {/* <Grid
+        // gap='1'
+      > */}
 
         <Header 
           key='ThreeDAppHeader'
@@ -94,70 +93,12 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
         {/* <ThreeDControls /> */}
         {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
 
-
-        {/* {ability?.can('read-write', 'analytics') && ( */}
-
-        {/* 
-        <Grid
-          item
-          md={6}
-          xs={12}
-          // sx={{ display: 'none' }}
-        >
-          <Card>
-            <CardHeader
-              title='Public Content'
-              sx={{paddingBottom: '0'}}
-              // avatar={session?.user?.image}
-            />
-            <CardContent>
-              <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>
-                This card is visible to both 'public' and 'authorized' users
-              </Typography>
-              { session?.user && (
-              <Typography sx={{ color: 'secondary.main' }}>
-                name: {session.user.name}<br/>
-                email: {session.user.email ? 'hidden' : ''}<br/>
-                <img src={session.user.image} width='8px' /><br/>
-              </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid
-          item
-          md={6}
-          xs={12}
-          // sx={{ display: 'none' }}
-        >
-          <Card>
-            <CardHeader title='Restricted/User Content'
-              sx={{paddingBottom: '0'}}
-              // avatar={session.user.image}
-            />
-            <CardContent>
-              <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>
-                This card is visible only to 'authorized' users
-              </Typography>
-              { session?.user && (
-              <Typography sx={{ color: 'secondary.main' }}>
-                name: {session.user.name}<br/>
-                email: {session.user.email}<br/>
-                <img src={session.user.image} width='8px' /><br/>
-              </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid> 
-        */}
-
         <Footer 
           key='ThreeDAppFooter'
         />
     
-      </Grid>
-    </Suspense>
+      {/* </Grid> */}
+    {/* </Suspense> */}
     </>
   )
 }
