@@ -171,6 +171,7 @@ h3
 
 
 .IconButton {
+  /* padding: 5px; */
   font-family: inherit;
   border-radius: 100%;
   height: 25px;

@@ -19,7 +19,7 @@ export default function Footer() {
         items-center
       '
       style={{
-        position: 'absolute', 
+        position: 'fixed', 
         bottom: '8px', 
         left: '6px', 
       }}
