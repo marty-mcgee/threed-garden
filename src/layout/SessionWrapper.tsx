@@ -34,6 +34,7 @@ export default function SessionWrapper({ children }: { children: any }) {
 
   // ** CLIENT : HOOKS
   const { isLoaded, userId, sessionId, getToken } = useAuth()
+  console.debug('threed clerk hooks :', isLoaded, userId, sessionId)
 
   // ** SERVER : get session from next-auth
   // const session = await auth()
