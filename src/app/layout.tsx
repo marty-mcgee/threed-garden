@@ -1,5 +1,5 @@
-// 'use client' // do not use
 // 'use server' // uses this default
+// 'use client' // do not use in next.js root layout
 // ^ this file should need NO pragma: default is 'use server'
 
 // ==============================================================
