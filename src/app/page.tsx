@@ -53,6 +53,7 @@ import Footer from '#/layout/footer'
 
 // ** COMPONENT Imports
 import Logo from '#/layout/ui/logo'
+import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
 // ** Helper Components
 import Spinner from '#/layout/ui/spinner'
@@ -262,6 +263,7 @@ const AppPage = () => {
                           false && 
                           children
                         } */}
+                        <FarmbotDemoSVG />
                       </Grid>
                     </Panel>
                   </PanelGroup>
