@@ -69,6 +69,7 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from 'react-resizable-panels'
+import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
 
 // ** STYLE Imports
 // import '#/layout/styles/styles-radix-ui-themes.css'
@@ -557,7 +558,7 @@ const draw1 = () => {
 
   paper.view.onMouseDown = (event: any) => {
     // @ts-expect-error
-    myPath.strokeColor = "white";
+    myPath.strokeColor = 'white';
     myPath.strokeWidth = 3;
   };
 
@@ -904,20 +905,15 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
           <Header 
             key='ThreeDAppHeader'
           />
-          <div
-            style={{
-              padding: '5px',
-            }}
-          >
-            <DropdownMenuThreeD />
-          </div>
         </Flex>
-        {/*  */}
+
+        {/* PANELS */}
         <Flex 
           direction='row'
           style={{
             height: '80vh',
-            minHeight: '50vh',
+            // height: '80vh',
+            // minHeight: '50vh',
             width: '100%',
             // border: '1px solid darkgray',
           }}
@@ -927,7 +923,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
             autoSaveId='ThreeDHomeDesignLayout'
             id='MAINHOMEDESIGNPANELGROUP'
           >
-            <Panel 
+            {/* <Panel 
               className={stylesPanels.Panel}
               defaultSize={4}
               // maxSize={64}
@@ -936,34 +932,15 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                 // width: '100%',
                 // border: '1px solid darkgreen',
               }}
-            >
+            > */}
               {/* <Text>
                 Main Header
               </Text> */}
               {/* <Heading as='h1'>
                 🥕 Welcome {session?.user?.name} to ThreeD Garden
               </Heading> */}
-              {/* MAIN ACTIONS DROPDOWN MENU */}
-              {/* <DropdownMenuThreeD /> */}
-              {/* BASIC ACTION BUTTONS */}
-              {/* <Flex>
-                <Button onClick={() => handleShowModalAbout()}>
-                  Show Modal: About
-                </Button>
-                <Button onClick={() => handleShowModal3dModel()}>
-                  Show Modal: 3D Model
-                </Button>
-                <Button onClick={() => handleShowModalShare()}>
-                  Show Modal: Share
-                </Button>
-                <Button onClick={() => handleShowModalLoading()}>
-                  Show Modal: Loading
-                </Button>
-              </Flex> */}
-              {/* TESTING COMPONENTS */}
-              {/* <DialogModals /> */}
-            </Panel>
-            <PanelResizeHandle />
+            {/* </Panel>
+            <PanelResizeHandle /> */}
             <Panel 
               className={stylesPanels.Panel}
               defaultSize={100}
@@ -1007,8 +984,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                   defaultSize={100}
                   // maxSize={64}
                   style={{
-                    // height: '80vh',
-                    // width: '100%',
                     // border: '1px solid darkgreen',
                   }}
                 >
@@ -1020,8 +995,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         defaultSize={24}
                         maxSize={32}
                         style={{
-                          // height: '80vh',
-                          // width: '30%',
                           // border: '1px solid darkred',
                         }}
                       >
@@ -1031,11 +1004,40 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         {/* CATALOG VIEW */}
                         <div id='catalogView'>
                           <div id='catalogFilters'>
-                            <input type='text' id='catalogTextFilter' placeholder='Filter' />
+                            <Container>
+                              <span style={{ marginLeft: '4px', marginRight: '4px' }}>
+                                {/* MAIN ACTIONS DROPDOWN MENU */}
+                                <DropdownMenuThreeD />
+                              </span>
+                              <span style={{ marginLeft: '0' }}>
+                                Object Catalog View
+                              </span>
+                            </Container>
+                            {/* <input type='text' id='catalogTextFilter' placeholder='Filter' width='40' /> */}
                           </div>
                           <div id='catalogItems'>
+                            {/* <Container>
+                              HEY HEY HEY
+                            </Container> */}
                           </div>
                         </div>
+                        {/* BASIC ACTION BUTTONS */}
+                        {/* <Flex>
+                          <Button onClick={() => handleShowModalAbout()}>
+                            Show Modal: About
+                          </Button>
+                          <Button onClick={() => handleShowModal3dModel()}>
+                            Show Modal: 3D Model
+                          </Button>
+                          <Button onClick={() => handleShowModalShare()}>
+                            Show Modal: Share
+                          </Button>
+                          <Button onClick={() => handleShowModalLoading()}>
+                            Show Modal: Loading
+                          </Button>
+                        </Flex> */}
+                        {/* TESTING COMPONENTS */}
+                        {/* <DialogModals /> */}
                       </Panel>
                       <PanelResizeHandle />
                       <Panel
@@ -1043,8 +1045,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         defaultSize={76}
                         // maxSize={100}
                         style={{
-                          // height: '80vh',
-                          // width: '70%',
                           // border: '1px solid darkblue',
                         }}
                       >
@@ -1059,8 +1059,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                             <Grid 
                               id='planView'
                               style={{
-                                // height: '100%',
-                                // width: '100%',
                                 border: '1px solid #222222',
                               }}
                             >
@@ -1108,9 +1106,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                             defaultSize={40}
                             maxSize={60}
                             style={{
-                              // height: '80vh',
-                              // height: '100%',
-                              // width: '70%',
                               // border: '1px solid darkblue',
                             }}
                           >
@@ -1136,8 +1131,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                                 style={{
                                   width: '100%',
                                   height: '100%',
-                                  // height: '200px',
-                                  // minHeight: '100px',
                                   // border: '1px solid #222222',
                                 }}
 
@@ -1287,8 +1280,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
               defaultSize={10}
               // maxSize={100}
               style={{
-                // height: '80vh',
-                width: '100%',
                 alignItems: 'center',
                 // border: '1px solid darkgreen',
               }}

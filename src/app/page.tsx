@@ -38,8 +38,9 @@ import {
 import { 
   Panel, 
   PanelGroup,
-  PanelResizeHandle,
+  // PanelResizeHandle,
 } from 'react-resizable-panels'
+import PanelResizeHandle from '#/layout/ui/resize-handle'
 
 // ** STYLE Imports
 // import '#/layout/styles/styles-radix-ui-themes.css'
