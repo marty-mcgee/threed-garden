@@ -47,11 +47,11 @@ export default function RootLayout({ children }: { children: any }) {
     <html lang='en' className='antialiased'>
       <body className={inter.className}>
         <ApolloClientWrapper>
-          <SessionWrapper>
-            <ClerkProvider>
+          <ClerkProvider dynamic>
+            <SessionWrapper>
               {children}
-            </ClerkProvider>
-          </SessionWrapper>
+            </SessionWrapper>
+          </ClerkProvider>
         </ApolloClientWrapper>
       </body>
       <GoogleAnalytics gaId={gaId} />
