@@ -221,7 +221,7 @@ const AppPage = () => {
                     direction='horizontal'
                   >
                     <Panel
-                      // className={stylesPanels.Panel}
+                      className={stylesPanels.Panel}
                       defaultSize={16}
                       maxSize={32}
                       style={{
@@ -254,7 +254,7 @@ const AppPage = () => {
                         }}
                       >
                         <Text>
-                          Main Content (children)
+                          Main Content
                         </Text>
                         {/* <SessionData 
                           session={session} 
