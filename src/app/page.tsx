@@ -113,10 +113,9 @@ const AppPage = () => {
         // paddingLeft: '8px',
         // paddingRight: '8px',
       }}
-    > 
-    
+    >
       <Flex
-        direction='row'
+        // direction='row'
         style={{
           // height: '10vh',
           // minHeight: '5vh',
@@ -129,173 +128,39 @@ const AppPage = () => {
         />
       </Flex>
 
-
+      <Flex
+        // direction='row'
+        className={stylesPanels.PanelContent}
+        style={{
+          // height: '10vh',
+          // minHeight: '5vh',
+          // width: '100%',
+          // border: '4px solid darkblue',
+        }}
+      >
+        <Heading as='h1'>
+          🌱 Welcome to ThreeD Garden
+        </Heading>
+      </Flex>
 
       <Flex 
-        direction='row'
+        // direction='column'
+        className={stylesPanels.PanelContent}
         style={{
-          height: '80vh',
-          minHeight: '50vh',
-          width: '100%',
+          // height: '80vh',
+          // minHeight: '50vh',
+          // width: '100%',
           // border: '1px solid darkgray',
         }}
       >
-        <PanelGroup 
-          direction='vertical'
-          autoSaveId='ThreeDAppLayout'
-          id='MAINMAINPANELGROUP'
-        >
-          <Panel 
-            className={stylesPanels.Panel}
-            defaultSize={10}
-            // maxSize={64}
-            style={{
-              // height: '80vh',
-              // width: '100%',
-              // border: '1px solid darkgreen',
-            }}
-          >
-            {/* <Text>
-              Main Header
-            </Text> */}
-            <Heading as='h1'>
-              🥕 Welcome to ThreeD Garden
-            </Heading>
-          </Panel>
-          <PanelResizeHandle />
-          <Panel 
-            className={stylesPanels.Panel}
-            defaultSize={100}
-            // maxSize={64}
-            style={{
-              // height: '80vh',
-              // width: '100%',
-              // border: '1px solid darkgreen',
-            }}
-          >
-            <PanelGroup 
-              direction='vertical'
-              id='MAINPANELGROUP'
-            >
-              <Panel
-                className={stylesPanels.Panel}
-                defaultSize={10}
-                // maxSize={640}
-                style={{
-                  // height: '80vh',
-                  // width: '100%',
-                  // border: '1px solid darkgreen',
-                }}
-              >
-                <Container
-                  className={stylesPanels.PanelContent}
-                >
-                  {/* <Text>
-                    Sub Header
-                  </Text> */}
-                  <Heading as='h2'>
-                    🌱 ThreeD: Next.js: app (router): page .tsx
-                  </Heading>
-                </Container>
-              </Panel>
-              
-              <PanelResizeHandle />
-              
-              <Panel
-                className={stylesPanels.Panel}
-                defaultSize={100}
-                // maxSize={64}
-                style={{
-                  // height: '80vh',
-                  // width: '100%',
-                  // border: '1px solid darkgreen',
-                }}
-              >
-                <Grid
-                  style={{
-                    height: '100%',
-                    // border: '1px solid purple',
-                  }}
-                >
-                  <PanelGroup 
-                    direction='horizontal'
-                  >
-                    <Panel
-                      className={stylesPanels.Panel}
-                      defaultSize={16}
-                      maxSize={32}
-                      style={{
-                        // height: '80vh',
-                        // width: '30%',
-                        // border: '1px solid darkred',
-                      }}
-                    >
-                      <Text>
-                        Sub Left
-                      </Text>
-                    </Panel>
-                    <PanelResizeHandle />
-                    <Panel
-                      // className={stylesPanels.Panel}
-                      defaultSize={84}
-                      // maxSize={640}
-                      style={{
-                        // height: '80vh',
-                        // width: '70%',
-                        // border: '1px solid darkblue',
-                      }}
-                    >
-                      <Grid 
-                        id='ThreeDAppMain'
-                        style={{
-                          // height: '100%',
-                          // width: '100%',
-                          // border: '1px solid darkgreen',
-                        }}
-                      >
-                        <Text>
-                          Main Content
-                        </Text>
-                        {/* <SessionData 
-                          session={session} 
-                        />
-                        {
-                          false && 
-                          children
-                        } */}
-                        <FarmbotDemoSVG />
-                      </Grid>
-                    </Panel>
-                  </PanelGroup>
-                </Grid>
-              </Panel>
-            </PanelGroup>
-
-          </Panel>
-          
-          <PanelResizeHandle />
-          
-          <Panel 
-            className={stylesPanels.Panel}
-            defaultSize={10}
-            // maxSize={64}
-            style={{
-              // height: '80vh',
-              width: '100%',
-              // border: '1px solid darkgreen',
-            }}
-          >
-            <Text>
-              Sub Footer
-            </Text>
-          </Panel>
-        </PanelGroup>
-        
+        {/* <Heading as='h2'>
+          🥕 ThreeD: Next.js: app (router): page .tsx
+        </Heading> */}
+        <FarmbotDemoSVG />
       </Flex>
 
-
       <Flex
-        direction='row'
+        // direction='row'
         style={{
           // height: '5vh',
           // minHeight: '5vh',
@@ -303,9 +168,6 @@ const AppPage = () => {
           // border: '4px solid darkblue',
         }}
       >
-        <Text>
-          Main Footer
-        </Text>
         <Footer 
           key='ThreeDAppFooter'
         />
