@@ -607,37 +607,30 @@ const CatalogItems = (props: any) => {
     let data = await res.json()
     console.debug('fetchObjects data', data)
     setObjects(data)
-    // let arr = Array.from(Object.entries(data))
-    // setObjects(arr)
-    // console.debug('fetchObjects data arr', arr)
   }
   fetchObjects()
 
   if (!objects) return <div>Loading...</div>
 
   return (
-    // var t = 0
     <div id='catalogItemObjects'>
       {/* 👇️ Iterate the object's KEYS */}
       {Object.keys(objects).map((object) => {
-          return (
-            <>
-              <div 
-                id={object} 
-                className='threedItem disableSelection' 
-                // onMouseDown={(event) => beginDrag(event, object)}
-              >
-                <img 
-                  src={objectsURL + "objects/" + object + ".png"}
-                  className='threedThumb' 
-                  alt={object}
-                  title={object}
-                />
-              </div>
-            </>
-          )
-        })
-      }
+        return (
+          <div 
+            id={object} 
+            className='threedItem disableSelection' 
+            // onMouseDown={(event) => beginDrag(event, object)}
+          >
+            <img 
+              src={objectsURL + "objects/" + object + ".png"}
+              className='threedThumb' 
+              alt={object}
+              title={object}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }
