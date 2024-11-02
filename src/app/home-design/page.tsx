@@ -371,8 +371,6 @@ const enableOrbit = true
 const enableGizmoCube = true
 
 
-// export default DropdownMenuThreeD
-
 // // import React from 'react'
 // import * as Dialog from '@radix-ui/react-dialog'
 // import { Cross2Icon } from '@radix-ui/react-icons'
@@ -550,25 +548,26 @@ const enableGizmoCube = true
 // export default DialogModals
 // ==============================================================
 
+/* */
 
 // ==============================================================
 // ** PAPER.JS
 const draw1 = () => {
-  let myPath = new paper.Path();
+  let myPath = new paper.Path()
 
   paper.view.onMouseDown = (event: any) => {
     // @ts-expect-error
-    myPath.strokeColor = 'white';
-    myPath.strokeWidth = 3;
-  };
+    myPath.strokeColor = 'white'
+    myPath.strokeWidth = 3
+  }
 
   paper.view.onMouseDrag = (event: any) => {
-    myPath.add(event.point);
-  };
+    myPath.add(event.point)
+  }
 
   // @ts-expect-error
-  paper.view.draw();
-};
+  paper.view.draw()
+}
 
 const PaperCanvas = (props: any) => {
   
@@ -580,6 +579,13 @@ const PaperCanvas = (props: any) => {
     paper.setup(planCanvas)
     paper.settings.hitTolerance = 3
     draw1()
+
+    // initPlanView()
+    // initThreeJS()
+    // resize3dView()
+    // resizePlanView()
+    // animate()
+
   }, [])
   
   return (
@@ -920,8 +926,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
         >
           <PanelGroup 
             direction='vertical'
-            autoSaveId='ThreeDHomeDesignLayout'
-            id='MAINHOMEDESIGNPANELGROUP'
+            autoSaveId='ThreeDHomeDesignLayoutMain'
           >
             {/* <Panel 
               className={stylesPanels.Panel}
@@ -946,22 +951,18 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
               defaultSize={100}
               // maxSize={64}
               style={{
-                // height: '80vh',
-                // width: '100%',
                 // border: '1px solid darkgreen',
               }}
             >
               <PanelGroup 
                 direction='vertical'
-                id='HOMEDESIGNPANELGROUP'
+                autoSaveId='ThreeDHomeDesignLayoutSub'
               >
                 {/* <Panel
                   className={stylesPanels.Panel}
                   defaultSize={10}
                   // maxSize={640}
                   style={{
-                    // height: '80vh',
-                    // width: '100%',
                     // border: '1px solid darkgreen',
                   }}
                 >
@@ -989,6 +990,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                 >
                     <PanelGroup 
                       direction='horizontal'
+                      autoSaveId='ThreeDHomeDesignLayoutSub2'
                     >
                       <Panel
                         // className={stylesPanels.Panel}
@@ -1076,7 +1078,9 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                                 <Preload all />
                                 <></>
                               </Canvas> */}
+
                               <PaperCanvas />
+                              
                               <div id='overlayLogoPlanView' className='overlayLogo'>
                                 <a href='https://threedgarden.com/demo/'
                                   // style='float:leftpadding:0px margin-top:0px'
@@ -1284,9 +1288,9 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                 // border: '1px solid darkgreen',
               }}
             >
-              <Text>
+              {/* <Text>
                 Sub Footer
-              </Text>
+              </Text> */}
               <Grid>
                 {/* MODALS: OPTIONS */}
                 <Flex 
@@ -2336,15 +2340,12 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
         <Flex
           direction='row'
           style={{
-            // height: '5vh',
-            // minHeight: '5vh',
-            // width: '100%',
             // border: '4px solid darkblue',
           }}
         >
-          <Text>
+          {/* <Text>
             Main Footer
-          </Text>
+          </Text> */}
           <Footer 
             key='ThreeDAppFooter'
           />

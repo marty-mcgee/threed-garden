@@ -117,9 +117,6 @@ const AppPage = () => {
       <Flex
         // direction='row'
         style={{
-          // height: '10vh',
-          // minHeight: '5vh',
-          // width: '100%',
           // border: '4px solid darkblue',
         }}
       >
@@ -132,9 +129,6 @@ const AppPage = () => {
         // direction='row'
         className={stylesPanels.PanelContent}
         style={{
-          // height: '10vh',
-          // minHeight: '5vh',
-          // width: '100%',
           // border: '4px solid darkblue',
         }}
       >
@@ -147,9 +141,6 @@ const AppPage = () => {
         // direction='column'
         className={stylesPanels.PanelContent}
         style={{
-          // height: '80vh',
-          // minHeight: '50vh',
-          // width: '100%',
           // border: '1px solid darkgray',
         }}
       >
@@ -162,9 +153,6 @@ const AppPage = () => {
       <Flex
         // direction='row'
         style={{
-          // height: '5vh',
-          // minHeight: '5vh',
-          // width: '100%',
           // border: '4px solid darkblue',
         }}
       >
