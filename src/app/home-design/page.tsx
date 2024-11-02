@@ -630,11 +630,8 @@ const CatalogItems = (props: any) => {
                 <img 
                   src={objectsURL + "objects/" + object + ".png"}
                   className='threedThumb' 
-                  // alt='" +
-                  // camelCaseToSentence(e) +
-                  // "' title='" +
-                  // camelCaseToSentence(e) +
-                  // "' 
+                  alt={object}
+                  title={object}
                 />
               </div>
             </>
