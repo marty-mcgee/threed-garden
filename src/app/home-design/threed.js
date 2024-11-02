@@ -8548,17 +8548,13 @@ $(document).ready(function () {
         (document.getElementById("view3d").style.display = "block"),
         (document.getElementById("catalogView").style.display = "none"),
         (document.getElementById("verticalSlider").style.display = "none"),
-        (document.getElementById("horizontalSliderLeft").style.display =
-          "none"),
-        (document.getElementById("horizontalSliderRight").style.display =
-          "none"),
-        (document.getElementById("fullscreenPlanViewBtn").style.display =
-          "none"),
+        (document.getElementById("horizontalSliderLeft").style.display = "none"),
+        (document.getElementById("horizontalSliderRight").style.display = "none"),
+        (document.getElementById("fullscreenPlanViewBtn").style.display = "none"),
         (document.getElementById("fullscreen3dViewBtn").style.right = "6px"),
         (document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"),
         (document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"),
-        (document.getElementById("fullscreen3dViewBtn").style.display =
-          "block"),
+        (document.getElementById("fullscreen3dViewBtn").style.display = "block"),
         (document.getElementById("propertiesView").style.display = "none"),
         (document.getElementById("rulerLeft").style.display = "none"),
         (document.getElementById("rulerBottom").style.display = "none"),
@@ -8577,17 +8573,12 @@ $(document).ready(function () {
         (document.getElementById("view3d").style.display = "none"),
         (document.getElementById("catalogView").style.display = "none"),
         (document.getElementById("verticalSlider").style.display = "none"),
-        (document.getElementById("horizontalSliderLeft").style.display =
-          "none"),
-        (document.getElementById("horizontalSliderRight").style.display =
-          "none"),
+        (document.getElementById("horizontalSliderLeft").style.display = "none"),
+        (document.getElementById("horizontalSliderRight").style.display = "none"),
         (document.getElementById("fullscreenPlanViewBtn").style.right = "6px"),
-        (document.getElementById("fullscreenPlanViewBtn").style.bottom =
-          "30px"),
-        (document.getElementById("fullscreenPlanViewBtn").style.opacity =
-          "0.33"),
-        (document.getElementById("fullscreenPlanViewBtn").style.display =
-          "block"),
+        (document.getElementById("fullscreenPlanViewBtn").style.bottom = "30px"),
+        (document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"),
+        (document.getElementById("fullscreenPlanViewBtn").style.display = "block"),
         (document.getElementById("fullscreen3dViewBtn").style.display = "none"),
         (document.getElementById("propertiesView").style.display = "none"),
         (document.getElementById("rulerLeft").style.top = "0px"),
@@ -8609,8 +8600,7 @@ $(document).ready(function () {
         (document.getElementById("mouseIndicatorY").style.right = "0px"),
         (document.getElementById("mouseIndicatorY").style.height = "1px"),
         (document.getElementById("mouseIndicatorY").style.display = "block"),
-        (document.getElementById("overlayLogoPlanView").style.display =
-          "block"),
+        (document.getElementById("overlayLogoPlanView").style.display = "block"),
         (document.getElementById("overlayMenuPlanView").style.display = "block")
       break
     default:
@@ -8639,27 +8629,21 @@ $(document).ready(function () {
         (document.getElementById("horizontalSliderLeft").style.left = "0px"),
         (document.getElementById("horizontalSliderLeft").style.width = "316px"),
         (document.getElementById("horizontalSliderLeft").style.height = "4px"),
-        (document.getElementById("horizontalSliderLeft").style.display =
-          "block"),
+        (document.getElementById("horizontalSliderLeft").style.display = "block"),
         (document.getElementById("horizontalSliderRight").style.top = "50%"),
         (document.getElementById("horizontalSliderRight").style.left = "318px"),
         (document.getElementById("horizontalSliderRight").style.width = "100%"),
         (document.getElementById("horizontalSliderRight").style.height = "4px"),
-        (document.getElementById("horizontalSliderRight").style.display =
-          "block"),
+        (document.getElementById("horizontalSliderRight").style.display = "block"),
         (document.getElementById("fullscreenPlanViewBtn").style.right = "6px"),
         (document.getElementById("fullscreenPlanViewBtn").style.top = "50%"),
-        (document.getElementById("fullscreenPlanViewBtn").style.opacity =
-          "0.33"),
-        (document.getElementById("fullscreenPlanViewBtn").style.marginTop =
-          "-58px"),
-        (document.getElementById("fullscreenPlanViewBtn").style.display =
-          "block"),
+        (document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"),
+        (document.getElementById("fullscreenPlanViewBtn").style.marginTop = "-58px"),
+        (document.getElementById("fullscreenPlanViewBtn").style.display = "block"),
         (document.getElementById("fullscreen3dViewBtn").style.right = "6px"),
         (document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"),
         (document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"),
-        (document.getElementById("fullscreen3dViewBtn").style.display =
-          "block"),
+        (document.getElementById("fullscreen3dViewBtn").style.display = "block"),
         (document.getElementById("propertiesView").style.top = "880px"),
         (document.getElementById("propertiesView").style.left = "0px"),
         (document.getElementById("propertiesView").style.width = "306px"),
@@ -8686,6 +8670,7 @@ $(document).ready(function () {
         (document.getElementById("mouseIndicatorY").style.height = "1px"),
         (document.getElementById("mouseIndicatorY").style.display = "block")
   }
+
   "default" === UILayout &&
     $("#catalogItems").scroll(function () {
       loadInViewThumbs()
@@ -8896,9 +8881,12 @@ $(document).ready(function () {
         }),
         loadInViewThumbs()
     }),
+
     (fullscreenPlanViewBtn = document.getElementById("fullscreenPlanViewBtn")),
     (fullscreen3dViewBtn = document.getElementById("fullscreen3dViewBtn"))
 }),
+
+
   (document.onmousemove = function (e) {
     if (verticalSliderDragging)
       return (
