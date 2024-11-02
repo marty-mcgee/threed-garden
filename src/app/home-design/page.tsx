@@ -599,18 +599,25 @@ const PaperCanvas = (props: any) => {
 // ==============================================================
 
 // ** CATALOG ITEMS
-const CatalogItems = (props: any) => {
+const CatalogItems = (props: any): JSX.Element => {
   const [objects, setObjects] = useState(null)
 
   async function fetchObjects() {
-    let res = await fetch('api/objects.json')
+    let res = await fetch('/api/objects.json')
     let data = await res.json()
     console.debug('fetchObjects data', data)
-    setObjects(data)
+    // if (!objects) {
+      setObjects(data)
+    // }
   }
-  fetchObjects()
+  
+  // if (!objects) {
+    fetchObjects()
+  // }
 
-  if (!objects) return <div>Loading...</div>
+  if (!objects) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div id='catalogItemObjects'>
@@ -833,6 +840,9 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                   t++
               })
           }
+        */  
+        
+        /*
           if (
             ($.ajax({
               url: "plans/threed-plan-example-001.threed",
@@ -981,33 +991,44 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
         ; (horizontalSliderRightDragging = !0),
           (horizontalSliderRight.style.top = e.y - 2 + "px")
       }),
-      paper.install(window),
-      paper.setup(planCanvas),
-      (paper.settings.hitTolerance = 3),
-
-      initPlanView(),
-      initThreeJS(),
-      resize3dView(),
-      resizePlanView(),
-      animate(),
-      
-      (threedDragDiv = document.getElementById("threedDragDiv")),
-      (document.getElementById("catalogTextFilter").oninput = function (e) {
-        var t = this.value.toLowerCase()
-        t.length > 0
-          ? Object.keys(threedItems).forEach(function (e) {
-            e.toLowerCase().indexOf(t) > -1
-              ? (document.getElementById(e).style.display = "block")
-              : (document.getElementById(e).style.display = "none")
-          })
-          : Object.keys(threedItems).forEach(function (e) {
-            document.getElementById(e).style.display = "block"
-          }),
-          loadInViewThumbs()
-      }),
       */
+
+      // ** ================================================
+
+      // paper.install(window),
+      // paper.setup(planCanvas),
+      // (paper.settings.hitTolerance = 3),
+
+      // ** ================================================
+
+      // initPlanView(),
+      // initThreeJS(),
+      // resize3dView(),
+      // resizePlanView(),
+      // animate(),
+      
+      // ** ================================================
+
+      // threedDragDiv = document.getElementById("threedDragDiv")
+      
+      // document.getElementById("catalogTextFilter").oninput = function (e) {
+      //   var t = this.value.toLowerCase()
+      //   t.length > 0
+      //     ? Object.keys(threedItems).forEach(function (e) {
+      //       e.toLowerCase().indexOf(t) > -1
+      //         ? (document.getElementById(e).style.display = "block")
+      //         : (document.getElementById(e).style.display = "none")
+      //     })
+      //     : Object.keys(threedItems).forEach(function (e) {
+      //       document.getElementById(e).style.display = "block"
+      //     }),
+      //     loadInViewThumbs()
+      // }
+      
+      /* end if ajax true */
+      // ** ================================================
     }
-  }, []) // end load data
+  }, []) // end load data useEffect (client)
 
   
   // ** MODALS
@@ -1430,7 +1451,9 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                             {/* <Container>
                               HEY HEY HEY
                             </Container> */}
-                            <CatalogItems />
+                            {/* */}
+                              <CatalogItems />
+                            {/* */}
                           </div>
                         </div>
                         {/* BASIC ACTION BUTTONS */}
