@@ -6440,9 +6440,8 @@ function deleteBackgroundImage() {
 }
 function setPropertiesView(e) {
   switch (
-  ("background" != e && "background" === toolMode && setToolMode("pointer"),
-    (document.getElementById("threed3DModelPropertiesView").style.display =
-      "none"),
+    ("background" != e && "background" === toolMode && setToolMode("pointer"),
+    (document.getElementById("threed3DModelPropertiesView").style.display = "none"),
     (document.getElementById("threedPropertiesView").style.display = "none"),
     (document.getElementById("planViewPropertiesView").style.display = "none"),
     (document.getElementById("3dViewPropertiesView").style.display = "none"),
@@ -6452,23 +6451,17 @@ function setPropertiesView(e) {
     (document.getElementById("dimensionPropertiesView").style.display = "none"),
     (document.getElementById("textPropertiesView").style.display = "none"),
     (document.getElementById("defaultsPropertiesView").style.display = "none"),
-    (document.getElementById("wallDefaultsPropertiesView").style.display =
-      "none"),
-    (document.getElementById("floorDefaultsPropertiesView").style.display =
-      "none"),
-    (document.getElementById("roofDefaultsPropertiesView").style.display =
-      "none"),
-    (document.getElementById("dimensionDefaultsPropertiesView").style.display =
-      "none"),
-    (document.getElementById("textDefaultsPropertiesView").style.display =
-      "none"),
+    (document.getElementById("wallDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("floorDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("roofDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("dimensionDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("textDefaultsPropertiesView").style.display = "none"),
     (document.getElementById("levelPropertiesView").style.display = "none"),
     (document.getElementById("groundPropertiesView").style.display = "none"),
     e)
   ) {
     case "model3dMeta":
-      document.getElementById("threed3DModelPropertiesView").style.display =
-        "block"
+      document.getElementById("threed3DModelPropertiesView").style.display = "block"
       break
     case "threed":
       document.getElementById("threedPropertiesView").style.display = "block"
@@ -6498,8 +6491,7 @@ function setPropertiesView(e) {
       document.getElementById("levelPropertiesView").style.display = "block"
       break
     case "ground":
-      ; (document.getElementById("groundPropertiesView").style.display =
-        "block"),
+      ; (document.getElementById("groundPropertiesView").style.display = "block"),
         (document.getElementById("groundWidthProp").value = groundWidth),
         (document.getElementById("groundLengthProp").value = groundLength)
       break
@@ -6507,48 +6499,27 @@ function setPropertiesView(e) {
       document.getElementById("defaultsPropertiesView").style.display = "block"
       break
     case "wallDefaults":
-      ; (document.getElementById("defaultWallHeightProp").style.backgroundColor =
-        "#4e4e4e"),
-        (document.getElementById("defaultWallHeightProp").value =
-          defaultWallHeight),
-        (document.getElementById(
-          "defaultWallThicknessProp"
-        ).style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultWallThicknessProp").value =
-          defaultWallThickness),
-        (document.getElementById("wallDefaultsPropertiesView").style.display =
-          "block")
+      ; (document.getElementById("defaultWallHeightProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultWallHeightProp").value = defaultWallHeight),
+        (document.getElementById("defaultWallThicknessProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultWallThicknessProp").value = defaultWallThickness),
+        (document.getElementById("wallDefaultsPropertiesView").style.display = "block")
       break
     case "floorDefaults":
-      ; (document.getElementById(
-        "defaultFloorThicknessProp"
-      ).style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultFloorThicknessProp").value =
-          defaultFloorThickness),
-        (document.getElementById("floorDefaultsPropertiesView").style.display =
-          "block")
+      ; (document.getElementById("defaultFloorThicknessProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultFloorThicknessProp").value = defaultFloorThickness),
+        (document.getElementById("floorDefaultsPropertiesView").style.display = "block")
       break
     case "roofDefaults":
-      ; (document.getElementById(
-        "defaultRoofThicknessProp"
-      ).style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultRoofThicknessProp").value =
-          defaultRoofThickness),
-        (document.getElementById("defaultRoofWidthProp").style.backgroundColor =
-          "#4e4e4e"),
-        (document.getElementById("defaultRoofWidthProp").value =
-          defaultRoofWidth),
-        (document.getElementById("defaultRoofRiseProp").style.backgroundColor =
-          "#4e4e4e"),
-        (document.getElementById("defaultRoofRiseProp").value =
-          defaultRoofRise),
-        (document.getElementById(
-          "defaultRoofStartHeightProp"
-        ).style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultRoofStartHeightProp").value =
-          defaultRoofStartHeight),
-        (document.getElementById("roofDefaultsPropertiesView").style.display =
-          "block"),
+      ; (document.getElementById("defaultRoofThicknessProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultRoofThicknessProp").value = defaultRoofThickness),
+        (document.getElementById("defaultRoofWidthProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultRoofWidthProp").value = defaultRoofWidth),
+        (document.getElementById("defaultRoofRiseProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultRoofRiseProp").value = defaultRoofRise),
+        (document.getElementById("defaultRoofStartHeightProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultRoofStartHeightProp").value = defaultRoofStartHeight),
+        (document.getElementById("roofDefaultsPropertiesView").style.display = "block"),
         updateExtraDefaultRoofInfo()
       break
     case "dimensionDefaults":
