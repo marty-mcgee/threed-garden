@@ -603,7 +603,7 @@ const CatalogItems = (props: any): JSX.Element => {
   const [objects, setObjects] = useState(null)
 
   async function fetchObjects() {
-    let res = await fetch('/api/objects.json')
+    let res = await fetch('api/objects.json')
     let data = await res.json()
     console.debug('fetchObjects data', data)
     // if (!objects) {
@@ -611,9 +611,9 @@ const CatalogItems = (props: any): JSX.Element => {
     // }
   }
   
-  // if (!objects) {
+  if (!objects) {
     fetchObjects()
-  // }
+  }
 
   if (!objects) {
     return <div>Loading...</div>
