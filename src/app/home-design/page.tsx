@@ -240,7 +240,15 @@ var mouseMode = 0,
   lastNewWallSegmentClick = Date.now(),
   lastNewRoofSegmentClick = Date.now(),
   lastNewFloorSegmentClick = Date.now(),
-  threedItems = {},
+  threedItems: Object = {
+    author: '',
+    license: '',
+    scale: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+  },
   canvas3d,
   camera,
   renderer,
@@ -271,11 +279,15 @@ var mouseMode = 0,
   horizontalSliderLeftDragging,
   horizontalSliderRight,
   horizontalSliderRightDragging,
-  threedDragDiv,
+  threedDragDiv: JSX.Element = <div></div>,
   draggingThreedIcon = !1,
   draggingThreedId = -1,
   draggingThreedAngle = 0,
-  draggingThreedRectangle,
+  draggingThreedRectangle: any,
+  // draggingThreedRectangle = new paper.Path.Rectangle(
+  //   new paper.Point(-1, -1),
+  //   new paper.Point(1, 1)
+  // ),
   wallCornersX = [],
   wallCornersY = [],
   roofCornersX = [],
@@ -297,7 +309,7 @@ var mouseMode = 0,
   Floors3d = {},
   Dimensions = {},
   Texts = {},
-  plan = {
+  plan: Object = {
     threed: {},
     walls: {},
     roofs: {},
@@ -368,8 +380,8 @@ var mouseMode = 0,
   groundWidth = 5e3,
   groundLength = 5e3
 
-const enableOrbit = true
-const enableGizmoCube = true
+const enableOrbit: boolean = true
+const enableGizmoCube: boolean = true
 
 
 // // import React from 'react'
@@ -598,6 +610,328 @@ const PaperCanvas = (props: any) => {
 // ** END: PAPER.JS
 // ==============================================================
 
+// ==============================================================
+
+function setToolMode(e: String) {
+  console.debug('setToolMode to', e)
+  // switch (
+  // ("walls" === toolMode
+  //   ? setEndDrawingWalls()
+  //   : "floor" === toolMode
+  //     ? setEndDrawingFloors()
+  //     : "roof" === toolMode
+  //       ? setEndDrawingRoofs()
+  //       : "dimension" === toolMode
+  //         ? setEndDrawingDimension()
+  //         : "text" === toolMode
+  //           ? setEndDrawingText()
+  //           : "ground" === toolMode && setEndDrawingGround(),
+  //   (toolMode = e),
+  //   e)
+  // ) {
+  //   case "pointer":
+  //     modalsActive || showMouseIndicators(),
+  //       (defaultCursor = "default"),
+  //       deselectAll(),
+  //       document.getElementById("pointerTool").classList.add("activeTool"),
+  //       document.getElementById("addWallTool").classList.remove("activeTool"),
+  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
+  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
+  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
+  //       document.getElementById("addTextTool").classList.remove("activeTool")
+  //     break
+  //   case "walls":
+  //     ; (defaultCursor = "crosshair"),
+  //       deselectAll(),
+  //       recalcAllUnjoinedWallSegments(-1),
+  //       recalcAllWallSegmentsOnOtherLevels(-1, project.activeLayer.data.id),
+  //       document.getElementById("pointerTool").classList.remove("activeTool"),
+  //       document.getElementById("addWallTool").classList.add("activeTool"),
+  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
+  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
+  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
+  //       document.getElementById("addTextTool").classList.remove("activeTool"),
+  //       setPropertiesView("wallDefaults")
+  //     break
+  //   case "floor":
+  //     ; (defaultCursor = "crosshair"),
+  //       deselectAll(),
+  //       document.getElementById("pointerTool").classList.remove("activeTool"),
+  //       document.getElementById("addWallTool").classList.remove("activeTool"),
+  //       document.getElementById("addFloorTool").classList.add("activeTool"),
+  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
+  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
+  //       document.getElementById("addTextTool").classList.remove("activeTool"),
+  //       recalcAllWallCorners(),
+  //       setPropertiesView("floorDefaults")
+  //     break
+  //   case "roof":
+  //     ; (defaultCursor = "crosshair"),
+  //       deselectAll(),
+  //       document.getElementById("pointerTool").classList.remove("activeTool"),
+  //       document.getElementById("addWallTool").classList.remove("activeTool"),
+  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
+  //       document.getElementById("addRoofTool").classList.add("activeTool"),
+  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
+  //       document.getElementById("addTextTool").classList.remove("activeTool"),
+  //       recalcAllRoofCorners(),
+  //       setPropertiesView("roofDefaults")
+  //     break
+  //   case "dimension":
+  //     ; (defaultCursor = "crosshair"),
+  //       deselectAll(),
+  //       document.getElementById("pointerTool").classList.remove("activeTool"),
+  //       document.getElementById("addWallTool").classList.remove("activeTool"),
+  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
+  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
+  //       document.getElementById("addRulerTool").classList.add("activeTool"),
+  //       document.getElementById("addTextTool").classList.remove("activeTool"),
+  //       recalcAllWallCorners(),
+  //       recalcAllRoofCorners(),
+  //       setPropertiesView("dimensionDefaults")
+  //     break
+  //   case "text":
+  //     ; (defaultCursor = "crosshair"),
+  //       deselectAll(),
+  //       document.getElementById("pointerTool").classList.remove("activeTool"),
+  //       document.getElementById("addWallTool").classList.remove("activeTool"),
+  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
+  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
+  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
+  //       document.getElementById("addTextTool").classList.add("activeTool"),
+  //       setPropertiesView("textnDefaults")
+  //     break
+  //   case "background":
+  //     ; (defaultCursor = "default"),
+  //       document.getElementById("pointerTool").classList.remove("activeTool"),
+  //       document.getElementById("addWallTool").classList.remove("activeTool"),
+  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
+  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
+  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
+  //       document.getElementById("addTextTool").classList.remove("activeTool")
+  //     break
+  //   case "ground":
+  //     setLevel("0"),
+  //       (toolMode = e),
+  //       (defaultCursor = "default"),
+  //       (wallsGroup[0].opacity = 0.25),
+  //       (floorsGroup[0].opacity = 0.25),
+  //       (threedGroup[0].opacity = 0.25),
+  //       document.getElementById("pointerTool").classList.remove("activeTool"),
+  //       document.getElementById("addWallTool").classList.remove("activeTool"),
+  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
+  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
+  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
+  //       document.getElementById("addTextTool").classList.remove("activeTool"),
+  //       setPropertiesView("ground")
+  //     break
+  //   case "defaults":
+  //     ; (defaultCursor = "default"),
+  //       deselectAll(),
+  //       document.getElementById("pointerTool").classList.remove("activeTool"),
+  //       document.getElementById("addWallTool").classList.remove("activeTool"),
+  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
+  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
+  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
+  //       document.getElementById("addTextTool").classList.remove("activeTool")
+  // }
+  // planView.style.cursor = defaultCursor
+}
+
+function setPropertiesView(e: String) {
+  switch (
+    ("background" != e && "background" === toolMode && setToolMode("pointer"),
+    (document.getElementById("threed3DModelPropertiesView").style.display = "none"),
+    (document.getElementById("threedPropertiesView").style.display = "none"),
+    (document.getElementById("planViewPropertiesView").style.display = "none"),
+    (document.getElementById("3dViewPropertiesView").style.display = "none"),
+    (document.getElementById("wallPropertiesView").style.display = "none"),
+    (document.getElementById("roofPropertiesView").style.display = "none"),
+    (document.getElementById("floorPropertiesView").style.display = "none"),
+    (document.getElementById("dimensionPropertiesView").style.display = "none"),
+    (document.getElementById("textPropertiesView").style.display = "none"),
+    (document.getElementById("defaultsPropertiesView").style.display = "none"),
+    (document.getElementById("wallDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("floorDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("roofDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("dimensionDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("textDefaultsPropertiesView").style.display = "none"),
+    (document.getElementById("levelPropertiesView").style.display = "none"),
+    (document.getElementById("groundPropertiesView").style.display = "none"),
+    e)
+  ) {
+    case "model3dMeta":
+      document.getElementById("threed3DModelPropertiesView").style.display = "block"
+      break
+    case "threed":
+      document.getElementById("threedPropertiesView").style.display = "block"
+      break
+    case "planView":
+      document.getElementById("planViewPropertiesView").style.display = "block"
+      break
+    case "3dView":
+      document.getElementById("3dViewPropertiesView").style.display = "block"
+      break
+    case "wallPath":
+      document.getElementById("wallPropertiesView").style.display = "block"
+      break
+    case "roofPath":
+      document.getElementById("roofPropertiesView").style.display = "block"
+      break
+    case "floor":
+      document.getElementById("floorPropertiesView").style.display = "block"
+      break
+    case "dimension":
+      document.getElementById("dimensionPropertiesView").style.display = "block"
+      break
+    case "text":
+      document.getElementById("textPropertiesView").style.display = "block"
+      break
+    case "level":
+      document.getElementById("levelPropertiesView").style.display = "block"
+      break
+    case "ground":
+      ; (document.getElementById("groundPropertiesView").style.display = "block"),
+        (document.getElementById("groundWidthProp").value = groundWidth),
+        (document.getElementById("groundLengthProp").value = groundLength)
+      break
+    case "defaults":
+      document.getElementById("defaultsPropertiesView").style.display = "block"
+      break
+    case "wallDefaults":
+      ; (document.getElementById("defaultWallHeightProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultWallHeightProp").value = defaultWallHeight),
+        (document.getElementById("defaultWallThicknessProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultWallThicknessProp").value = defaultWallThickness),
+        (document.getElementById("wallDefaultsPropertiesView").style.display = "block")
+      break
+    case "floorDefaults":
+      ; (document.getElementById("defaultFloorThicknessProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultFloorThicknessProp").value = defaultFloorThickness),
+        (document.getElementById("floorDefaultsPropertiesView").style.display = "block")
+      break
+    case "roofDefaults":
+      ; (document.getElementById("defaultRoofThicknessProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultRoofThicknessProp").value = defaultRoofThickness),
+        (document.getElementById("defaultRoofWidthProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultRoofWidthProp").value = defaultRoofWidth),
+        (document.getElementById("defaultRoofRiseProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultRoofRiseProp").value = defaultRoofRise),
+        (document.getElementById("defaultRoofStartHeightProp").style.backgroundColor = "#4e4e4e"),
+        (document.getElementById("defaultRoofStartHeightProp").value = defaultRoofStartHeight),
+        (document.getElementById("roofDefaultsPropertiesView").style.display = "block"),
+        updateExtraDefaultRoofInfo()
+      break
+    case "dimensionDefaults":
+      break
+    case "textDefaults":
+  }
+}
+
+
+// ** Helper Functions
+function camelCaseToSentence(e: String) {
+  e = e.replace(/([A-Z])/g, " $1")
+  e = e.replace(/_/g, " ")
+  e = e.replace(/\b\w/g, function (e) {
+    return e.toUpperCase()
+  })
+  e = e.charAt(0).toUpperCase() + e.slice(1)
+  return e
+}
+
+function showThreedLicenseSummary(e: any) {
+  try {
+    modalModel3dThreedId = e
+    var t = camelCaseToSentence(e)
+    // document.getElementById("model3dName").innerText = t
+    // var o = threedItems[e].author
+    // document.getElementById("model3dAuthor").innerText = o
+    // var a = ""
+
+    // switch (threedItems[e].license) {
+    //   case "Free Art License 1.3":
+    //     a =
+    //       "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
+    //       threedItems[e].license +
+    //       "</a>"
+    //     break
+    //   case "CC-0":
+    //     a =
+    //       "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
+    //       threedItems[e].license +
+    //       "</a>"
+    //     break
+    //   case "CC BY 3.0":
+    //     a =
+    //       "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
+    //       threedItems[e].license +
+    //       "</a>"
+    //     break
+    //   case "CC BY 4.0":
+    //     a =
+    //       "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+    //       threedItems[e].license +
+    //       "</a>"
+    //     break
+    //   default:
+    //     a = threedItems[e].license
+    // }
+    // document.getElementById("model3dLicense").innerHTML = a
+    // document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
+    setPropertiesView("model3dMeta")
+  } catch (err) {
+    console.debug(err)
+  }
+}
+
+// ** Drag Functions
+function beginDrag(e: any, t: Object) {
+  try {
+    showThreedLicenseSummary(t)
+    setToolMode("pointer")
+    // draggingThreedId = t
+    // draggingThreedIcon = !0
+    var o = paper.view.viewToProject(
+      new paper.Point(
+        e.pageX - document.getElementById("planView").offsetLeft,
+        e.pageY - document.getElementById("planView").offsetTop
+      )
+    )
+    draggingThreedRectangle = new paper.Path.Rectangle(
+      new paper.Point(-1, -1),
+      new paper.Point(1, 1)
+    )
+    draggingThreedRectangle.position = o
+    // if (threedItems[t]) {
+    //   threedItems[t].scale && threedItems[t].scale.x
+    //     ? draggingThreedRectangle.bounds.width = threedItems[t].size.x * threedItems[t].scale.x
+    //     : draggingThreedRectangle.bounds.width = threedItems[t].size.x
+    //   threedItems[t].scale && threedItems[t].scale.z
+    //     ? draggingThreedRectangle.bounds.height = threedItems[t].size.z * threedItems[t].scale.z
+    //     : draggingThreedRectangle.bounds.height = threedItems[t].size.z
+    // }
+    draggingThreedRectangle.visible = !1
+    // threedDragDiv.style.background = "url('" + objectsURL + "objects/" + t + "_top.png')"
+    // threedDragDiv.style.backgroundRepeat = "no-repeat"
+    var a, n
+    a = draggingThreedRectangle.bounds.width
+    n = draggingThreedRectangle.bounds.height
+    a *= paper.view.zoom
+    n *= paper.view.zoom
+    // threedDragDiv.style.left = e.clientX - a / 2 + "px"
+    // threedDragDiv.style.top = e.clientY - n / 2 + "px"
+    // threedDragDiv.style.width = a + "px"
+    // threedDragDiv.style.height = n + "px"
+    // threedDragDiv.style.backgroundSize = a + "px " + n + "px"
+    // threedDragDiv.style.display = "block"
+  } catch (err) {
+    console.debug(err)
+  }
+}
+
+
+
 // ** CATALOG ITEMS
 const CatalogItems = (props: any): JSX.Element => {
   const [objects, setObjects] = useState(null)
@@ -625,9 +959,10 @@ const CatalogItems = (props: any): JSX.Element => {
       {Object.keys(objects).map((object) => {
         return (
           <div 
+            key={object} 
             id={object} 
             className='threedItem disableSelection' 
-            // onMouseDown={(event) => beginDrag(event, object)}
+            onMouseDown={(event) => beginDrag(event, object)}
           >
             <img 
               src={objectsURL + "objects/" + object + ".png"}
@@ -1011,7 +1346,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
 
       // threedDragDiv = document.getElementById("threedDragDiv")
       
-      // document.getElementById("catalogTextFilter").oninput = function (e) {
+      // document.getElementById("catalogTextFilter").onInput = function (e) {
       //   var t = this.value.toLowerCase()
       //   t.length > 0
       //     ? Object.keys(threedItems).forEach(function (e) {
@@ -1076,20 +1411,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
   function closeAllModals() {
     console.debug('closeAllModals()')
   }
-
-  // ** Helper Functions
-  function camelCaseToSentence(e) {
-    try {
-      ; (e = e.replace(/([A-Z])/g, " $1")),
-        (e = e.replace(/_/g, " ")),
-        (e = e.replace(/\b\w/g, function (e) {
-          return e.toUpperCase()
-        })),
-        (e = e.charAt(0).toUpperCase() + e.slice(1))
-    } catch (e) { }
-    return e
-  }
-
 
   // ** RADIX-UI DropdownMenu
   const DropdownMenuThreeD = () => {
@@ -1531,8 +1852,8 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                               </div>
                               {/* 
                               <div id='overlayMenuPlanView'>
-                                <button id='overlayPlanViewRecenterBtn' onClick='recenterPlanView()' className='smallButton'>Recenter</button>
-                                <button id='overlayPlanViewGoto3dViewBtn' onClick='goto3dView()' className='smallButton'>3d View</button>
+                                <button id='overlayPlanViewRecenterBtn' onClick={() => recenterPlanView()} className='smallButton'>Recenter</button>
+                                <button id='overlayPlanViewGoto3dViewBtn' onClick={() => goto3dView()} className='smallButton'>3d View</button>
                               </div>
                               */}
                             </Grid>
@@ -1668,16 +1989,16 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                                 <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
                               </div>
                               <div id='overlayMenu3dView'>
-                                <button id='overlay3dviewRecenterBtn' onClick='recenter3dview()' className='smallButton'>Recenter</button>
-                                <button id='overlay3dviewGotoPlanViewBtn' onClick='gotoPlanView()' className='smallButton'>Plan View</button>
+                                <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
+                                <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
                               </div> */}
                             </Grid>
 
                             {/*
-                            <canvas id='rulerLeft' width='30' height='500' onmousedown='addVerticalGuide()'
-                              onmouseup='removeVerticalGuide()'></canvas>
-                            <canvas id='rulerBottom' width='1024' height='20' onmousedown='addHorizontalGuide()'
-                              onmouseup='removeHorizontalGuide()'></canvas>
+                            <canvas id='rulerLeft' width='30' height='500' onmousedown='addVerticalGuide()}
+                              onmouseup='removeVerticalGuide()}></canvas>
+                            <canvas id='rulerBottom' width='1024' height='20' onmousedown='addHorizontalGuide()}
+                              onmouseup='removeHorizontalGuide()}></canvas>
                             */}
 
                             <div id='mouseIndicatorY'></div>
@@ -1693,9 +2014,9 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
 
                             {/*
                             <img id='fullscreenPlanViewBtn' src='media/fullscreen.png' width='30' height='30'
-                              onClick='openFullscreen('planView')' />
+                              onClick={() => openFullscreen('planView')} />
                             <img id='fullscreen3dViewBtn' src='media/fullscreen.png' width='30' height='30'
-                              onClick='openFullscreen('view3d')' />
+                              onClick={() => openFullscreen('view3d')} />
                             */}
 
                             {/* 
@@ -1920,7 +2241,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                           <button 
                             id='getShareLinkBtn' 
                             className='mediumButton' 
-                            // onClick='generateShareLink()'
+                            // onClick={() => generateShareLink()}
                           >
                             Generate Share Link
                           </button>
@@ -1929,21 +2250,21 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                               <label for='shareLinkUrl'>Editable Copy</label><br />
                               <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
                                 style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                              <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink()'>Copy</button>
+                              <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink()}>Copy</button>
                             </div>
 
                             <div style='padding-top:6px'>
                               <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
                               <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
                                 style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                              <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink3d()'>Copy</button>
+                              <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink3d()}>Copy</button>
                             </div>
 
                             <div style='padding-top:6px'>
                               <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
                               <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
                                 style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                              <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLinkPlan()'>Copy</button>
+                              <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLinkPlan()}>Copy</button>
                             </div>
                           </div> */}
                         </div>
@@ -2004,82 +2325,82 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                     {/* <li className='dropdown'>
                       <a href='#javascript:void(0)' className='dropbtn'>File</a>
                       <div className='dropdown-content'>
-                        <a onClick='setNewPlan()'>New</a>
-                        <a onClick='loadExamplePlan()'>Load Demo</a>
-                        <a id='loadBtn' onClick='document.getElementById('file').click()'>Load</a>
-                        <input type='file' style='display:none' id='file' name='file' onchange='loadFileAsText(event)' />
-                        <a id='saveBtn' onClick='savePlan()'>Save</a>
-                        <a id='shareBtn' onClick='openShareDialog()'>Share</a>
-                        <a id='defaultsBtn' onClick='setPropertiesView('defaults')'>Defaults</a>
-                        <!--<a  id='groundPropertiesButton' onClick='setToolMode('ground')'>Ground Properties</a>-->
-                        <a id='fullscreenApp' onClick='openFullscreen('appBody')'>Fullscreen</a>
+                        <a onClick={() => setNewPlan()}>New</a>
+                        <a onClick={() => loadExamplePlan()}>Load Demo</a>
+                        <a id='loadBtn' onClick={() => document.getElementById('file').click()}>Load</a>
+                        <input type='file' style={{ display: 'none' }} id='file' name='file' onChange={() => loadFileAsText(event)} />
+                        <a id='saveBtn' onClick={() => savePlan()}>Save</a>
+                        <a id='shareBtn' onClick={() => openShareDialog()}>Share</a>
+                        <a id='defaultsBtn' onClick={() => setPropertiesView('defaults')}>Defaults</a>
+                        <!--<a  id='groundPropertiesButton' onClick={() => setToolMode('ground')}>Ground Properties</a>-->
+                        <a id='fullscreenApp' onClick={() => openFullscreen('appBody')}>Fullscreen</a>
                       </div>
                     </li> */}
                     {/* <li className='dropdown'>
                       <a href='#javascript:void(0)' className='dropbtn'>Edit</a>
                       <div className='dropdown-content'>
-                        <a id='undoBtn' onClick='doUndo()'>Undo</a>
-                        <a id='redoBtn' onClick='doRedo()'>Redo</a>
+                        <a id='undoBtn' onClick={() => doUndo()}>Undo</a>
+                        <a id='redoBtn' onClick={() => doRedo()}>Redo</a>
                       </div>
                     </li> */}
                     {/* <li className='dropdown'>
                       <a href='#javascript:void(0)' className='dropbtn'>Plan View</a>
                       <div className='dropdown-content'>
-                        <a onClick='setPropertiesView('planView')'>Background Template</a>
-                        <a onClick='newLevel()'>Add Level</a>
-                        <a onClick='openFullscreen('planView')'>Fullscreen</a>
+                        <a onClick={() => setPropertiesView('planView')}>Background Template</a>
+                        <a onClick={() => newLevel()}>Add Level</a>
+                        <a onClick={() => openFullscreen('planView')}>Fullscreen</a>
                       </div>
                     </li> */}
                     {/* <li className='dropdown'>
                       <a href='#javascript:void(0)' className='dropbtn'>3D View</a>
                       <div className='dropdown-content'>
-                        <a onClick='setPropertiesView('3dView')'>Properties</a>
-                        <a onClick='openFullscreen('view3d')'>Fullscreen</a>
-                        <a onClick='exportToObj()'>Export As OBJ</a>
-                        <!--<a  id='createThumb' onClick='createThumbForHistory()'>Create Thumb</a>-->
+                        <a onClick={() => setPropertiesView('3dView')}>Properties</a>
+                        <a onClick={() => openFullscreen('view3d')}>Fullscreen</a>
+                        <a onClick={() => exportToObj()}>Export As OBJ</a>
+                        <!--<a  id='createThumb' onClick={() => createThumbForHistory()}>Create Thumb</a>-->
                       </div>
                     </li> */}
                     {/* <!--<li>
-                      <a  onClick='doLog()'>Log</a>
+                      <a  onClick={() => doLog()}>Log</a>
                     </li>-->
                     <!-- <li>
-                      <a onClick='showModalAbout()'>About</a>
+                      <a onClick={() => showModalAbout()}>About</a>
                     </li> --> */}
                     {/* <li>
-                      <a id='pointerTool' onClick='setToolMode('pointer')' className='toolButton activeTool'
+                      <a id='pointerTool' onClick={() => setToolMode('pointer')} className='toolButton activeTool'
                         title='Pointer Select' alt='Pointer Select'>
                         <img src='media/pointericonWhite.png' height='42px'>
                       </a>
                     </li> */}
                     {/* <!-- <li>
-                      <a onClick='setToolMode('hand')'>
+                      <a onClick={() => setToolMode('hand')}>
                         <img src='media/handicon.png' width='50px'>
                       </a>
                     </li> --> */}
                     {/* <li>
-                      <a id='addWallTool' onClick='setToolMode('walls')' className='toolButton' title='Add Wall' alt='Add Wall'>
+                      <a id='addWallTool' onClick={() => setToolMode('walls')} className='toolButton' title='Add Wall' alt='Add Wall'>
                         <img src='media/newWallWhite2.png' height='42px'>
                       </a>
                     </li> */}
                     {/* <li>
-                      <a id='addFloorTool' onClick='setToolMode('floor')' className='toolButton' title='Add Floor'
+                      <a id='addFloorTool' onClick={() => setToolMode('floor')} className='toolButton' title='Add Floor'
                         alt='Add Floor'>
                         <img src='media/newFloorWhite2.png' height='42px'>
                       </a>
                     </li> */}
                     {/* <li>
-                      <a id='addRoofTool' onClick='setToolMode('roof')' className='toolButton' title='Add Roof' alt='Add Roof'>
+                      <a id='addRoofTool' onClick={() => setToolMode('roof')} className='toolButton' title='Add Roof' alt='Add Roof'>
                         <img src='media/newRoofWhite2.png' height='42px'>
                       </a>
                     </li> */}
                     {/* <li>
-                      <a id='addRulerTool' onClick='setToolMode('dimension')' className='toolButton' title='Add Dimension'
+                      <a id='addRulerTool' onClick={() => setToolMode('dimension')} className='toolButton' title='Add Dimension'
                         alt='Add Dimension'>
                         <img src='media/newRulerWhite2.png' height='42px'>
                       </a>
                     </li> */}
                     {/* <li>
-                      <a id='addTextTool' onClick='setToolMode('text')' className='toolButton' title='Add Text Annotation'
+                      <a id='addTextTool' onClick={() => setToolMode('text')} className='toolButton' title='Add Text Annotation'
                         alt='Add Text Annotation'>
                         <img src='media/newTextWhite.png' height='42px'>
                       </a>
@@ -2160,28 +2481,28 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                       </div>
                       <div className='modal-small-body'>
                         <h3>Share Plan</h3>
-                        {/* <button id='getShareLinkBtn' className='mediumButton' onClick='generateShareLink()'>Generate Share
+                        {/* <button id='getShareLinkBtn' className='mediumButton' onClick={() => generateShareLink()}>Generate Share
                           Link</button>
                         <div style='margin:10px 0px 10px 0px'>
                           <div style='padding-top:6px'>
                             <label for='shareLinkUrl'>Editable Copy</label><br />
                             <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
                               style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                            <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink()'>Copy</button>
+                            <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink()}>Copy</button>
                           </div>
 
                           <div style='padding-top:6px'>
                             <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
                             <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
                               style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                            <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLink3d()'>Copy</button>
+                            <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink3d()}>Copy</button>
                           </div>
 
                           <div style='padding-top:6px'>
                             <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
                             <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
                               style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                            <button id='copyShareLinkBtn' className='smallButton' onClick='copyShareLinkPlan()'>Copy</button>
+                            <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLinkPlan()}>Copy</button>
                           </div>
                         </div> */}
                       </div>
@@ -2191,18 +2512,28 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                     </div>
                   </div>
 
-                  {/* <div id='propertiesView' style='padding-left: 10px'>
-                    <div id='threed3DModelPropertiesView' style='display: none'>
+                  <div id='propertiesView' style={{ paddingLeft: '10px' }}>
+                    <div id='threed3DModelPropertiesView' style={{ display: 'none' }}>
                       <h3>3d Model Properties</h3>
-                      <table className='propertiesTable' style='min-width: 290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
-                          <td colspan='2' style='text-align: center'>
-                            <div onmousedown='beginDrag(event, modalModel3dThreedId)' className='disableSelection'><img
-                                id='model3dLargeThumb' className='disableSelection' style='pointer-events: none' /></div>
+                          <td>
+                            <div 
+                              onMouseDown={(event) => beginDrag(event, modalModel3dThreedId)} 
+                              className='disableSelection'
+                              style={{ textAlign: 'center' }}
+                            >
+                              <img
+                                id='model3dLargeThumb'
+                                className='disableSelection' 
+                                style={{ pointerEvents: 'none' }} 
+                              />
+                            </div>
                           </td>
                         </tr>
                         <tr>
-                          <td width='70'>Name</td>
+                          <td>Name</td>
                           <td><span id='model3dName'></span></td>
                         </tr>
                         <tr>
@@ -2216,16 +2547,22 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         <tr>
                           <td>3D Model</td>
                           <td>
-                            <button className='moreInfoBtn' onClick='showModel3dView()'>View</button>
+                            <button className='moreInfoBtn' 
+                              onClick={() => showModel3dView()}
+                            >
+                              View
+                            </button>
                           </td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='threedPropertiesView' style='display: none'>
+                    <div id='threedPropertiesView' style={{ display: 'none' }}>
                       <h3>Threed Properties</h3>
-                      <table className='propertiesTable' style='min-width: 290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
-                          <td width='70'>Id</td>
+                          <td>Id</td>
                           <td><span id='objectId'></span></td>
                         </tr>
                         <tr>
@@ -2234,54 +2571,90 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         </tr>
                         <tr>
                           <td>X</td>
-                          <td><input type='text' id='threedXProp'
-                              style='width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosX)'
-                              maxlength='8' />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Z</td>
-                          <td><input type='text' id='threedZProp'
-                              style='width: 80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosZ)'
-                              maxlength='8' />
-                            cm</td>
+                          <td>
+                            <input type='text' id='threedXProp'
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' 
+                              onChange={() => validatePlusOrMinusNumber(this, updateThreedPosX)}
+                              maxLength={8} />
+                            cm
+                          </td>
                         </tr>
                         <tr>
                           <td>Y</td>
-                          <td><input type='text' id='threedYProp'
-                              style='width: 80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedPosY)'
-                              maxlength='8' />
-                            cm</td>
+                          <td>
+                            <input type='text' id='threedYProp'
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' 
+                              onChange={() => validatePlusOrMinusNumber(this, updateThreedPosY)}
+                              maxLength={8} 
+                            />
+                            cm
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Z</td>
+                          <td>
+                            <input type='text' id='threedZProp'
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' 
+                              onChange={() => validatePlusOrMinusNumber(this, updateThreedPosZ)}
+                              maxLength={8} 
+                            />
+                            cm
+                          </td>
                         </tr>
                         <tr>
                           <td>Width</td>
                           <td>
                             <input type='text' id='threedWidthProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateThreedWidth)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' 
+                              onChange={() => validatePlusNumber(this, updateThreedWidth)} 
+                              maxLength={8} 
+                            />
                             cm
-                            <input type='checkbox' id='flipX' onchange='flipX(this.checked)'>Flip X
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Depth</td>
-                          <td>
-                            <input type='text' id='threedDepthProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateThreedDepth)' maxlength='8' />
-                            cm
-                            <input type='checkbox' id='flipZ' onchange='flipZ(this.checked)'>Flip Z
+                            <input type='checkbox' id='flipX' onChange={() => flipX(this.checked)} />
+                            Flip X
                           </td>
                         </tr>
                         <tr>
                           <td>Height</td>
                           <td><input type='text' id='threedHeightProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateThreedHeight)'
-                              maxlength='8' /> cm</td>
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' 
+                              onChange={() => validatePlusOrMinusNumber(this, updateThreedHeight)}
+                              maxLength={8} /> cm</td>
+                        </tr>
+                        <tr>
+                          <td>Depth</td>
+                          <td>
+                            <input type='text' 
+                              id='threedDepthProp'
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' 
+                              onChange={() => validatePlusNumber(this, updateThreedDepth)} 
+                              maxLength={8} 
+                            />
+                            cm
+                            <input type='checkbox' 
+                              id='flipZ' 
+                              onChange={() => flipZ(this.checked)} 
+                            />
+                            Flip Z
+                          </td>
                         </tr>
                         <tr>
                           <td>Angle</td>
@@ -2293,88 +2666,113 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         </tr>
                         <tr>
                           <td>3D Model</td>
-                          <td><button className='moreInfoBtn' onClick='showModel3dView()'>View</button></td>
+                          <td><button className='moreInfoBtn' onClick={() => showModel3dView()}>View</button></td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='defaultsPropertiesView' style='display:none'>
+                    <div id='defaultsPropertiesView' style={{ display: 'none' }}>
                       <h3>Default Settings</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td>Compass Heading</td>
-                          <td><input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' value='0'
-                              oninput='rotateCompass(this.value)' onchange='rotateCompass(this.value)' />
+                          <td>
+                            <input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' value='0'
+                              onInput={() => rotateCompass(this.value)} 
+                              onChange={() => rotateCompass(this.value)} 
+                            />
                             <span id='compassHdgLbl'>0°</span>
                           </td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='wallDefaultsPropertiesView' style='display:none'>
+                    <div id='wallDefaultsPropertiesView' style={{ display: 'none' }}>
                       <h3>Default Wall Settings</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>Wall Height</td>
                           <td><input type='text' id='defaultWallHeightProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateDefaultWallHeight)'
-                              maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultWallHeight)}
+                              maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Wall Thickness</td>
                           <td><input type='text' id='defaultWallThicknessProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateDefaultWallThickness)'
-                              maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultWallThickness)}
+                              maxLength={8} />
                             cm</td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='floorDefaultsPropertiesView' style='display:none'>
+                    <div id='floorDefaultsPropertiesView' style={{ display: 'none' }}>
                       <h3>Default Floor Settings</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td>Floor Thickness</td>
                           <td><input type='text' id='defaultFloorThicknessProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateDefaultFloorThickness)'
-                              maxlength='8' /> cm</td>
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultFloorThickness)}
+                              maxLength={8} /> cm</td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='roofDefaultsPropertiesView' style='display:none'>
+                    <div id='roofDefaultsPropertiesView' style={{ display: 'none' }}>
                       <h3>Default Roof Settings</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td>Roof Thickness</td>
                           <td><input type='text' id='defaultRoofThicknessProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateDefaultRoofThickness)'
-                              maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofThickness)}
+                              maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Rise</td>
                           <td><input type='text' id='defaultRoofRiseProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateDefaultRoofRise)'
-                              maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofRise)}
+                              maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Base Offset</td>
                           <td><input type='text' id='defaultRoofStartHeightProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight)'
-                              maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight)}
+                              maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Run</td>
                           <td><input type='text' id='defaultRoofWidthProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateDefaultRoofWidth)'
-                              maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofWidth)}
+                              maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
@@ -2385,247 +2783,271 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                           <td>Roof Pitch</td>
                           <td><span id='defaultRoofPitchProp'></span>°</td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='dimensionDefaultsPropertiesView' style='display:none'>
+                    <div id='dimensionDefaultsPropertiesView' style={{ display: 'none' }}>
                       <h3>Default Dimension Settings</h3>
                     </div>
-                    <div id='textDefaultsPropertiesView' style='display:none'>
+                    <div id='textDefaultsPropertiesView' style={{ display: 'none' }}>
                       <h3>Default Text Settings</h3>
                     </div>
 
-                    <div id='planViewPropertiesView' style='display:none'>
+                    <div id='planViewPropertiesView' style={{ display: 'none' }}>
                       <h3>Background Template</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>File</td>
                           <td>
                             <input type='file' id='backgroundImageFile' name='backgroundImageFile'
-                              onchange='loadBackgroundImage(event)' />
+                              onChange={() => loadBackgroundImage(event)} />
                           </td>
                         </tr>
                         <tr>
                           <td>Opacity</td>
                           <td>
                             <input type='range' id='bgTemplateOpacity' name='bgTemplateOpacity' min='0' max='1.0' step='.01'
-                              value='0.33' oninput='setBgTemplateOpacity(this.value)'
-                              onchange='setBgTemplateOpacity(this.value)' />
+                              value='0.33' onInput={() => setBgTemplateOpacity(this.value)}
+                              onChange={() => setBgTemplateOpacity(this.value)} />
                           </td>
                         </tr>
                         <tr>
                           <td>Flip Horizontal</td>
                           <td>
-                            <input type='checkbox' id='bgTplFlipX' onchange='flipBackgroundTemplateX(this.checked)'>
+                            <input type='checkbox' id='bgTplFlipX' onChange={() => flipBackgroundTemplateX(this.checked)} />
                           </td>
                         </tr>
                         <tr>
                           <td>Flip Vertical</td>
                           <td>
-                            <input type='checkbox' id='bgTplFlipZ' onchange='flipBackgroundTemplateZ(this.checked)'>
+                            <input type='checkbox' id='bgTplFlipZ' onChange={() => flipBackgroundTemplateZ(this.checked)} />
                           </td>
                         </tr>
                         <tr>
                           <td width='60'></td>
-                          <td><button id='resizeBackgroundImageBtn' onClick='enableResizeBackgroundTemplate()'
+                          <td><button id='resizeBackgroundImageBtn' onClick={() => enableResizeBackgroundTemplate()}
                               className='moreInfoBtn'>Resize</button></td>
                         </tr>
                         <tr>
                           <td width='60'></td>
-                          <td><button id='deleteBackgroundImageBtn' onClick='deleteBackgroundImage()'
+                          <td><button id='deleteBackgroundImageBtn' onClick={() => deleteBackgroundImage()}
                               className='moreInfoBtn'>Delete</button></td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='3dViewPropertiesView' style='display:none'>
+                    <div id='3dViewPropertiesView' style={{ display: 'none' }}>
                       <h3>3d View Properties</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>Wall Color</td>
                           <td>
-                            <input type='hidden' id='wallDiffuse' value='rgba(255,255,255,0.5)'>
+                            <input type='hidden' id='wallDiffuse' value='rgba(255,255,255,0.5)' />
                           </td>
                         </tr>
                         <tr>
                           <td width='70'>Wall Specular</td>
                           <td>
-                            <input type='hidden' id='wallSpecular' value='#00ff00'>
+                            <input type='hidden' id='wallSpecular' value='#00ff00' />
                           </td>
                         </tr>
-                        <!--<tr>
+                        {/* <tr>
                           <td width='70'>Wall Emissive</td>
                           <td>
-                            <input type='hidden' id='wallEmissive' value='#ffffff'>
+                            <input type='hidden' id='wallEmissive' value='#ffffff' />
                           </td>
-                        </tr>-->
+                        </tr> */}
                         <tr>
                           <td width='70'>Floor Color</td>
                           <td>
-                            <input type='hidden' id='floorDiffuse' value='rgba(15,15,15,0.5)'>
+                            <input type='hidden' id='floorDiffuse' value='rgba(15,15,15,0.5)' />
                           </td>
                         </tr>
                         <tr>
                           <td width='70'>Floor Specular</td>
                           <td>
-                            <input type='hidden' id='floorSpecular' value='#00ffff'>
+                            <input type='hidden' id='floorSpecular' value='#00ffff' />
                           </td>
                         </tr>
                         <tr>
                           <td width='70'>Roof Color</td>
                           <td>
-                            <input type='hidden' id='roofDiffuse' value='rgba(255,255,255,0.5)'>
+                            <input type='hidden' id='roofDiffuse' value='rgba(255,255,255,0.5)' />
                           </td>
                         </tr>
                         <tr>
                           <td width='70'>Roof Specular</td>
                           <td>
-                            <input type='hidden' id='roofSpecular' value='#ff0000'>
+                            <input type='hidden' id='roofSpecular' value='#ff0000' />
                           </td>
                         </tr>
                         <tr>
                           <td>Ground Color</td>
                           <td>
-                            <input type='hidden' id='groundDiffuse' value='rgba(03,141,221,1.0)'>
+                            <input type='hidden' id='groundDiffuse' value='rgba(03,141,221,1.0)' />
                           </td>
                         </tr>
                         <tr>
                           <td>Ground Specular</td>
                           <td>
-                            <input type='hidden' id='groundSpecular' value='#f2ff9c'>
+                            <input type='hidden' id='groundSpecular' value='#f2ff9c' />
                           </td>
                         </tr>
                         <tr>
                           <td width='70'>Depth Write</td>
                           <td>
-                            <input type='checkbox' id='depthWriteMode' onChange='setDepthWriteMode(this.checked)'>
+                            <input type='checkbox' id='depthWriteMode' onChange={() => setDepthWriteMode(this.checked)} />
                           </td>
                         </tr>
                         <tr>
                           <td width='70'>Sort Objects</td>
                           <td>
-                            <input type='checkbox' id='sortObjectsMode' onChange='setSortObjectsMode(this.checked)'>
+                            <input type='checkbox' id='sortObjectsMode' onChange={() => setSortObjectsMode(this.checked)} />
                           </td>
                         </tr>
                         <tr>
                           <td>Sun Azimuth</td>
                           <td>
                             <input type='range' id='sunAzimuth' name='sunAzimuth' min='0' max='1.0' step='.01' value='0.33'
-                              oninput='setSunAzimuth(this.value)' onchange='setSunAzimuth(this.value)' />
+                              onInput={() => setSunAzimuth(this.value)} onChange={() => setSunAzimuth(this.value)} />
                           </td>
                         </tr>
                         <tr>
                           <td>Sun Incline</td>
                           <td>
                             <input type='range' id='sunIncline' name='sunIncline' min='0' max='1.0' step='.01' value='0.0'
-                              oninput='setSunIncline(this.value)' onchange='setSunIncline(this.value)' />
+                              onInput={() => setSunIncline(this.value)} onChange={() => setSunIncline(this.value)} />
                           </td>
                         </tr>
                         <tr>
                           <td>Ambient Intensity</td>
                           <td>
                             <input type='range' id='ambientLightBrightness' name='ambientLightBrightness' min='0.0'
-                              max='1.0' step='0.1' oninput='adjustAmbientLightBrightness(this.value)'
-                              onchange='adjustAmbientLightBrightness(this.value)' />
+                              max='1.0' step='0.1' onInput={() => adjustAmbientLightBrightness(this.value)}
+                              onChange={() => adjustAmbientLightBrightness(this.value)} />
                           </td>
                         </tr>
                         <tr>
                           <td>Directional Intensity</td>
                           <td>
                             <input type='range' id='dirLightBrightness' name='dirLightBrightness' min='0.0' max='1.0'
-                              step='0.1' oninput='adjustDirLightBrightness(this.value)'
-                              onchange='adjustDirLightBrightness(this.value)' />
+                              step='0.1' onInput={() => adjustDirLightBrightness(this.value)}
+                              onChange={() => adjustDirLightBrightness(this.value)} />
                           </td>
                         </tr>
                         <tr>
                           <td>Hemisphere Intensity</td>
                           <td>
                             <input type='range' id='hemiLightBrightness' name='hemiLightBrightness' min='0.0' max='1.0'
-                              step='0.1' oninput='adjustHemiLightBrightness(this.value)'
-                              onchange='adjustHemiLightBrightness(this.value)' />
+                              step='0.1' onInput={() => adjustHemiLightBrightness(this.value)}
+                              onChange={() => adjustHemiLightBrightness(this.value)} />
                           </td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='wallPropertiesView' style='display:none'>
+                    <div id='wallPropertiesView' style={{ display: 'none' }}>
                       <h3>Wall Properties</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>Id</td>
                           <td>
-                            <input type='hidden' id='wallIdHidden'>
+                            <input type='hidden' id='wallIdHidden' />
                             <span id='wallIdProp'></span>
                           </td>
                         </tr>
                         <tr>
                           <td>Height</td>
                           <td><input type='text' id='wallHeightProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateWallHeight)' maxlength='8' /> cm
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateWallHeight)} maxLength={8} /> cm
                           </td>
                         </tr>
                         <tr>
                           <td>Height Start</td>
                           <td><input type='text' id='wallHeight0Prop'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateWallHeight0)' maxlength='8' /> cm
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateWallHeight0)} maxLength={8} /> cm
                           </td>
                         </tr>
                         <tr>
                           <td>Height End</td>
                           <td><input type='text' id='wallHeight1Prop'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateWallHeight1)' maxlength='8' /> cm
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateWallHeight1)} maxLength={8} /> cm
                           </td>
                         </tr>
                         <tr>
                           <td>Thickness</td>
                           <td><input type='text' id='wallThicknessProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateWallThickness)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateWallThickness)} maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Level</td>
                           <td><span id='wallLevelProp'></span></td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='roofPropertiesView' style='display:none'>
+                    <div id='roofPropertiesView' style={{ display: 'none' }}>
                       <h3>Roof Properties</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>Id</td>
                           <td>
-                            <input type='hidden' id='roofIdHidden'>
+                            <input type='hidden' id='roofIdHidden' />
                             <span id='roofIdProp'></span>
                           </td>
                         </tr>
                         <tr>
                           <td>Thickness</td>
                           <td><input type='text' id='roofThicknessProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateRoofThickness)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateRoofThickness)} maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Rise</td>
                           <td><input type='text' id='roofRiseProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateRoofRise)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateRoofRise)} maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Base Offset</td>
                           <td><input type='text' id='roofStartHeightProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateRoofStartHeight)'
-                              maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateRoofStartHeight)}
+                              maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Run</td>
                           <td><input type='text' id='roofWidthProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateRoofWidth)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateRoofWidth)} maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
@@ -2640,11 +3062,13 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                           <td>Level</td>
                           <td><span id='roofLevelProp'></span></td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='floorPropertiesView' style='display:none'>
+                    <div id='floorPropertiesView' style={{ display: 'none' }}>
                       <h3>Floor Properties</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>Id</td>
                           <td><span id='floorIdProp'></span></td>
@@ -2661,11 +3085,13 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                           <td>Level</td>
                           <td><span id='floorLevelProp'></span></td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='dimensionPropertiesView' style='display:none'>
+                    <div id='dimensionPropertiesView' style={{ display: 'none' }}>
                       <h3>Dimension Properties</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>Id</td>
                           <td><span id='dimensionIdProp'></span></td>
@@ -2682,11 +3108,13 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                           <td>Level</td>
                           <td><span id='dimensionLevelProp'></span></td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='textPropertiesView' style='display:none'>
+                    <div id='textPropertiesView' style={{ display: 'none' }}>
                       <h3>Text Annotation Properties</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>Id</td>
                           <td><span id='textIdProp'></span></td>
@@ -2694,35 +3122,43 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         <tr>
                           <td>Text</td>
                           <td><input type='text' id='textValueProp'
-                              style='width:120px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onkeyup='validateText(event, this, updateTextValue)' maxlength='100' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onKeyUp={() => validateText(event, this, updateTextValue)} maxLength={100} />
                           </td>
                         </tr>
                         <tr>
                           <td>X</td>
                           <td><input type='text' id='textXProp'
-                              style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateTextX)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextX)} maxLength={8} />
                           </td>
                         </tr>
                         <tr>
                           <td>Y</td>
                           <td><input type='text' id='textYProp'
-                              style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateTextY)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextY)} maxLength={8} />
                           </td>
                         </tr>
                         <tr>
                           <td>Level</td>
                           <td><span id='textLevelProp'></span></td>
                         </tr>
+                                    </tbody>
                       </table>
-                      <!--<div>Type<span id='textDataTypeProp'></span></div>-->
-                      <!--<div><button id='deleteTextAnnotationBtn' onClick='deleteTextBtnClick()'>Delete</button></div>-->
+                      {/* <div>Type<span id='textDataTypeProp'></span></div> */}
+                      {/* <div><button id='deleteTextAnnotationBtn' onClick={() => deleteTextBtnClick()}>Delete</button></div> */}
                     </div>
-                    <div id='levelPropertiesView' style='display:none'>
+                    <div id='levelPropertiesView' style={{ display: 'none' }}>
                       <h3>Level Properties</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td width='70'>Id</td>
                           <td><span id='levelIdProp'></span></td>
@@ -2735,33 +3171,42 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                           <td>Height</td>
                           <td>
                             <input type='text' id='levelHeightProp'
-                              style='width:100px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusOrMinusNumber(this, updateLevelHeight)'
-                              maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateLevelHeight)}
+                              maxLength={8} />
                           </td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                    <div id='groundPropertiesView' style='display:none'>
+                    <div id='groundPropertiesView' style={{ display: 'none' }}>
                       <h3>Ground Layer Properties</h3>
-                      <table className='propertiesTable' style='min-width:290px'>
+                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                                    <tbody>
                         <tr>
                           <td>Width</td>
                           <td><input type='text' id='groundWidthProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateGroundWidth)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateGroundWidth)} maxLength={8} />
                             cm</td>
                         </tr>
                         <tr>
                           <td>Legth</td>
                           <td><input type='text' id='groundLengthProp'
-                              style='width:80px border: 1px solid #2a2a2afont-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              className='editable' onChange='validatePlusNumber(this, updateGroundLength)' maxlength='8' />
+                              style={{
+                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                              }}
+                              className='editable' onChange={() => validatePlusNumber(this, updateGroundLength)} maxLength={8} />
                             cm</td>
                         </tr>
+                                    </tbody>
                       </table>
                     </div>
-                  </div> */}
+                  </div>
                 </Flex>
               </Grid>
             </Panel>
