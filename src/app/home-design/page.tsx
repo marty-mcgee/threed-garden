@@ -791,36 +791,36 @@ function setPropertiesView(e: String) {
       document.getElementById("levelPropertiesView").style.display = "block"
       break
     case "ground":
-      ; (document.getElementById("groundPropertiesView").style.display = "block"),
-        (document.getElementById("groundWidthProp").value = groundWidth),
-        (document.getElementById("groundLengthProp").value = groundLength)
+      document.getElementById("groundPropertiesView").style.display = "block"
+      // document.getElementById("groundWidthProp").value = groundWidth
+      // document.getElementById("groundLengthProp").value = groundLength
       break
     case "defaults":
       document.getElementById("defaultsPropertiesView").style.display = "block"
       break
     case "wallDefaults":
-      ; (document.getElementById("defaultWallHeightProp").style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultWallHeightProp").value = defaultWallHeight),
-        (document.getElementById("defaultWallThicknessProp").style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultWallThicknessProp").value = defaultWallThickness),
-        (document.getElementById("wallDefaultsPropertiesView").style.display = "block")
+      document.getElementById("defaultWallHeightProp").style.backgroundColor = "#4e4e4e"
+      // document.getElementById("defaultWallHeightProp").value = defaultWallHeight
+      document.getElementById("defaultWallThicknessProp").style.backgroundColor = "#4e4e4e"
+      // document.getElementById("defaultWallThicknessProp").value = defaultWallThickness
+      document.getElementById("wallDefaultsPropertiesView").style.display = "block"
       break
     case "floorDefaults":
-      ; (document.getElementById("defaultFloorThicknessProp").style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultFloorThicknessProp").value = defaultFloorThickness),
-        (document.getElementById("floorDefaultsPropertiesView").style.display = "block")
+      document.getElementById("defaultFloorThicknessProp").style.backgroundColor = "#4e4e4e"
+      // document.getElementById("defaultFloorThicknessProp").value = defaultFloorThickness
+      document.getElementById("floorDefaultsPropertiesView").style.display = "block"
       break
     case "roofDefaults":
-      ; (document.getElementById("defaultRoofThicknessProp").style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultRoofThicknessProp").value = defaultRoofThickness),
-        (document.getElementById("defaultRoofWidthProp").style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultRoofWidthProp").value = defaultRoofWidth),
-        (document.getElementById("defaultRoofRiseProp").style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultRoofRiseProp").value = defaultRoofRise),
-        (document.getElementById("defaultRoofStartHeightProp").style.backgroundColor = "#4e4e4e"),
-        (document.getElementById("defaultRoofStartHeightProp").value = defaultRoofStartHeight),
-        (document.getElementById("roofDefaultsPropertiesView").style.display = "block"),
-        updateExtraDefaultRoofInfo()
+      document.getElementById("defaultRoofThicknessProp").style.backgroundColor = "#4e4e4e"
+      // document.getElementById("defaultRoofThicknessProp").value = defaultRoofThickness
+      document.getElementById("defaultRoofWidthProp").style.backgroundColor = "#4e4e4e"
+      // document.getElementById("defaultRoofWidthProp").value = defaultRoofWidth
+      document.getElementById("defaultRoofRiseProp").style.backgroundColor = "#4e4e4e"
+      // document.getElementById("defaultRoofRiseProp").value = defaultRoofRise
+      document.getElementById("defaultRoofStartHeightProp").style.backgroundColor = "#4e4e4e"
+      // document.getElementById("defaultRoofStartHeightProp").value = defaultRoofStartHeight
+      document.getElementById("roofDefaultsPropertiesView").style.display = "block"
+      // updateExtraDefaultRoofInfo()
       break
     case "dimensionDefaults":
       break
