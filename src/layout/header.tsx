@@ -1,17 +1,17 @@
 'use client'
 
 // ** REACT Imports
-// import { Suspense } from 'react'
+import { Suspense } from 'react'
 
 // ** NEXT Imports
 // import dynamic from 'next/dynamic'
 
 // ** COMPONENT Imports
 import MainNav from '#/layout/ui/main-nav'
-// // import UserButton from '#/layout/ui/user-button'
+import UserButton from '#/layout/ui/user-button'
 // const UserButton = dynamic(() => import('#/layout/ui/user-button'), { ssr: false })
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
-import { LayoutDashboard } from 'lucide-react'
+// import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+// import { LayoutDashboard } from 'lucide-react'
 
 // ** RADIX-UI Imports
 import {
@@ -59,8 +59,10 @@ export default function Header() {
         >
           {/* YO YO YO */}
           {/* @ ts-expect-error Async Server Component */}
-          {/* <UserButton /> */}
-          <SignedOut>
+          <Suspense fallback={<div>Loading...</div>}>
+            <UserButton />
+          </Suspense>
+          {/* <SignedOut>
             <SignInButton mode='modal'>
               <Button 
                 className='
@@ -84,15 +86,14 @@ export default function Header() {
           <SignedIn>
             <UserButton>
               <UserButton.MenuItems>
-                {/* CUSTOM MENU ITEM */}
-                {/* <UserButton.Link
+                <UserButton.Link
                   label='Dashboard'
                   labelIcon={<LayoutDashboard className='h-6 w-6' />}
                   href='/'
-                /> */}
+                />
               </UserButton.MenuItems>
             </UserButton>
-          </SignedIn>
+          </SignedIn> */}
         </Flex>
       </Flex>
     </>

@@ -27,7 +27,7 @@ export async function SignIn({
         className='mt-1 mr-2 bg-background text-foreground'
         {...props}
       >
-        login
+        Sign In
       </Button>
     </form>
   )
@@ -52,7 +52,7 @@ export async function SignOut(props: React.ComponentPropsWithRef<typeof Button>)
         className='mt-1 mr-2 bg-background text-foreground'
         {...props}
       >
-        logout
+        Sign Out
       </Button>
     </form>
   )
