@@ -15,7 +15,7 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // ** NEXT AUTH -- Client Session Management
 import SessionWrapper from '#/layout/SessionWrapper'
 // ** CLERK AUTH -- External User Authentication
-import { ClerkProvider } from '@clerk/nextjs'
+// import { ClerkProvider } from '@clerk/nextjs'
 
 // ** HELPER Imports
 // ** Colorful Console Messages
@@ -47,11 +47,11 @@ export default function RootLayout({ children }: { children: any }) {
     <html lang='en' className='antialiased'>
       <body className={inter.className}>
         <ApolloClientWrapper>
-          <ClerkProvider dynamic>
+          {/* <ClerkProvider dynamic> */}
             <SessionWrapper>
               {children}
             </SessionWrapper>
-          </ClerkProvider>
+          {/* </ClerkProvider> */}
         </ApolloClientWrapper>
       </body>
       <GoogleAnalytics gaId={gaId} />

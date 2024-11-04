@@ -10,7 +10,7 @@ import { SessionProvider } from 'next-auth/react'
 // ** CLERK AUTH -- External User Authentication
 // import { ClerkProvider } from '@clerk/nextjs'
 // ** CLERK AUTH -- HOOKS
-import { useAuth } from '@clerk/nextjs'
+// import { useAuth } from '@clerk/nextjs'
 
 // export function ClerkHookExample() {
 //   const { isLoaded, userId, sessionId, getToken } = useAuth()
@@ -33,8 +33,8 @@ export default function SessionWrapper({ children }: { children: any }) {
   const id_random: string = 'ThreeDAppSession'
 
   // ** CLIENT : HOOKS
-  const { isLoaded, userId, sessionId, getToken } = useAuth()
-  console.debug('threed clerk hooks :', isLoaded, userId, sessionId)
+  // const { isLoaded, userId, sessionId, getToken } = useAuth()
+  // console.debug('threed clerk hooks :', isLoaded, userId, sessionId)
 
   // ** SERVER : get session from next-auth
   // const session = await auth()

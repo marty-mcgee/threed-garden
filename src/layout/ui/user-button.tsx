@@ -1,6 +1,6 @@
-// 'use client'
+'use client'
 // 'use server'
-// ^^ this file requires server pragma
+// ^^ this file requires pragma?
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/layout/ui/avatar'
 import { Button } from '#/layout/ui/button'
@@ -21,11 +21,15 @@ import {
 
 // export default async function UserButton() {
 export default function UserButton() {
+
   // const session = await auth()
   const { data: session, status } = useSession()
-  if (!session?.user) {
-    return <SignIn />
+  
+  if (!session || !session.user) {
+    return <></>
+    // <SignIn />
   }
+  
   return (
     <div 
       // className='
@@ -41,7 +45,7 @@ export default function UserButton() {
       {/* <span className='hidden text-sm sm:inline-flex'>
         {session.user.email}
       </span> */}
-      <DropdownMenu>
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
             // className='relative rounded-full'
@@ -89,7 +93,7 @@ export default function UserButton() {
             <SignOut />
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </div>
   )
 }
