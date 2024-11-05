@@ -616,6 +616,76 @@ const PaperCanvas = (props: any) => {
 
 // ==============================================================
 
+function showModel3dView() {
+  console.debug('showModel3dView', true)
+  // var e = modalModel3dThreedId
+  // e !== -1 &&
+  //   (model3dObjectRef && model3dScene.remove(model3dObjectRef),
+  //     new THREE.MTLLoader()
+  //       .setCrossOrigin('anonymous')
+  //       .setPath(objectsURL + "objects/")
+  //       .load(e + ".mtl", function (t) {
+  //         ; (t.baseUrl = objectsURL + "objects/"),
+  //           t.preload(),
+  //           new THREE.OBJLoader()
+  //             .setMaterials(t)
+  //             .setPath(objectsURL + "objects/")
+  //             .load(
+  //               e + ".obj",
+  //               function (t) {
+  //                 try {
+  //                   var o = new THREE.Box3().setFromObject(t)
+  //                     ; (t.userData.width = o.max.x - o.min.x),
+  //                       (t.userData.height = o.max.y - o.min.y),
+  //                       (t.userData.depth = o.max.z - o.min.z)
+  //                   for (var a = 0; a < t.children.length; a++) {
+  //                     var n = o.min.x + (o.max.x - o.min.x) / 2,
+  //                       l =
+  //                         o.min.y +
+  //                         (o.max.y - o.min.y) / 2 -
+  //                         (o.max.y - o.min.y) / 2,
+  //                       i = o.min.z + (o.max.z - o.min.z) / 2
+  //                     t.children[a].translateX(-n),
+  //                       t.children[a].translateY(-l),
+  //                       t.children[a].translateZ(-i)
+  //                   }
+  //                   ; (t.position.x = 80),
+  //                     (t.position.y = -(t.userData.height / 2)),
+  //                     (t.position.z = 0),
+  //                     model3dScene.add(t),
+  //                     (model3dObjectRef = t),
+  //                     renderModel3d()
+  //                   var r = "",
+  //                     s = new XMLHttpRequest()
+  //                     ; (s.onreadystatechange = function () {
+  //                       if (4 == this.readyState && 200 == this.status) {
+  //                         var e = this.responseText,
+  //                           t = e.split("\n")
+  //                         t.forEach(function (e) {
+  //                           e.startsWith("#") && (r += e + "\n")
+  //                         }),
+  //                           (document.getElementById(
+  //                             "modalModel3dObjHeader"
+  //                           ).value = r)
+  //                       }
+  //                     }),
+  //                       s.open("GET", objectsURL + "objects/" + e + ".obj", !0),
+  //                       s.send()
+  //                 } catch (e) {
+  //                   console.dir(e)
+  //                 }
+  //                 setModalModelDescription(e),
+  //                   $("#model3dModal").show(),
+  //                   hideMouseIndicators(),
+  //                   (model3dViewOpen = !0),
+  //                   (progressBar.style.display = "none")
+  //               },
+  //               onProgress,
+  //               onError
+  //             )
+  //       }))
+}
+
 function setToolMode(e: String) {
   console.debug('setToolMode to', e)
   // switch (
