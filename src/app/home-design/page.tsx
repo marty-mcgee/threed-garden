@@ -84,6 +84,9 @@ import Footer from '#/layout/footer'
 // ** COMPONENT Imports
 import Logo from '#/layout/ui/logo'
 
+// ** STATIC DATA Imports
+import objectsJSON from '#/app/api/home-design/objects.json'
+
 // ** Helper Components
 import Spinner from '#/layout/ui/spinner'
 // ** Colorful Console Messages: Utility
@@ -240,15 +243,16 @@ var mouseMode = 0,
   lastNewWallSegmentClick = Date.now(),
   lastNewRoofSegmentClick = Date.now(),
   lastNewFloorSegmentClick = Date.now(),
-  threedItems: Object = {
-    author: '',
-    license: '',
-    scale: {
-      x: 0,
-      y: 0,
-      z: 0,
-    },
-  },
+  // threedItems: Object = {
+  //   author: '',
+  //   license: '',
+  //   scale: {
+  //     x: 0,
+  //     y: 0,
+  //     z: 0,
+  //   },
+  // },
+  threedItems: Object = objectsJSON,
   canvas3d,
   camera,
   renderer,
@@ -739,30 +743,37 @@ function setToolMode(e: String) {
 }
 
 function setPropertiesView(e: String) {
+  console.debug('setPropertiesView', e)
   switch (
-    ("background" != e && "background" === toolMode && setToolMode("pointer"),
-    (document.getElementById("threed3DModelPropertiesView").style.display = "none"),
-    (document.getElementById("threedPropertiesView").style.display = "none"),
-    (document.getElementById("planViewPropertiesView").style.display = "none"),
-    (document.getElementById("3dViewPropertiesView").style.display = "none"),
-    (document.getElementById("wallPropertiesView").style.display = "none"),
-    (document.getElementById("roofPropertiesView").style.display = "none"),
-    (document.getElementById("floorPropertiesView").style.display = "none"),
-    (document.getElementById("dimensionPropertiesView").style.display = "none"),
-    (document.getElementById("textPropertiesView").style.display = "none"),
-    (document.getElementById("defaultsPropertiesView").style.display = "none"),
-    (document.getElementById("wallDefaultsPropertiesView").style.display = "none"),
-    (document.getElementById("floorDefaultsPropertiesView").style.display = "none"),
-    (document.getElementById("roofDefaultsPropertiesView").style.display = "none"),
-    (document.getElementById("dimensionDefaultsPropertiesView").style.display = "none"),
-    (document.getElementById("textDefaultsPropertiesView").style.display = "none"),
-    (document.getElementById("levelPropertiesView").style.display = "none"),
-    (document.getElementById("groundPropertiesView").style.display = "none"),
-    e)
+    // "background" != e && "background" === toolMode && setToolMode("pointer"),
+    // document.getElementById("threed3DModelPropertiesView").style.display = "none",
+    // document.getElementById("threedPropertiesView").style.display = "none",
+    // document.getElementById("planViewPropertiesView").style.display = "none",
+    // document.getElementById("3dViewPropertiesView").style.display = "none",
+    // document.getElementById("wallPropertiesView").style.display = "none",
+    // document.getElementById("roofPropertiesView").style.display = "none",
+    // document.getElementById("floorPropertiesView").style.display = "none",
+    // document.getElementById("dimensionPropertiesView").style.display = "none",
+    // document.getElementById("textPropertiesView").style.display = "none",
+    // document.getElementById("defaultsPropertiesView").style.display = "none",
+    // document.getElementById("wallDefaultsPropertiesView").style.display = "none",
+    // document.getElementById("floorDefaultsPropertiesView").style.display = "none",
+    // document.getElementById("roofDefaultsPropertiesView").style.display = "none",
+    // document.getElementById("dimensionDefaultsPropertiesView").style.display = "none",
+    // document.getElementById("textDefaultsPropertiesView").style.display = "none",
+    // document.getElementById("levelPropertiesView").style.display = "none",
+    // document.getElementById("groundPropertiesView").style.display = "none",
+    e
   ) {
     case "model3dMeta":
+
+
       document.getElementById("threed3DModelPropertiesView").style.display = "block"
+
+
       break
+    
+    
     case "threed":
       document.getElementById("threedPropertiesView").style.display = "block"
       break
@@ -841,13 +852,14 @@ function camelCaseToSentence(e: String) {
 }
 
 function showThreedLicenseSummary(e: any) {
+  console.debug('showThreedLicenseSummary', e)
   try {
     modalModel3dThreedId = e
     var t = camelCaseToSentence(e)
-    // document.getElementById("model3dName").innerText = t
-    // var o = threedItems[e].author
-    // document.getElementById("model3dAuthor").innerText = o
-    // var a = ""
+    document.getElementById("model3dName").innerText = t
+    var o = threedItems[e].author
+    document.getElementById("model3dAuthor").innerText = o
+    var a = "License: Default"
 
     // switch (threedItems[e].license) {
     //   case "Free Art License 1.3":
@@ -877,8 +889,8 @@ function showThreedLicenseSummary(e: any) {
     //   default:
     //     a = threedItems[e].license
     // }
-    // document.getElementById("model3dLicense").innerHTML = a
-    // document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
+    document.getElementById("model3dLicense").innerHTML = a
+    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
     setPropertiesView("model3dMeta")
   } catch (err) {
     console.debug(err)
@@ -887,6 +899,8 @@ function showThreedLicenseSummary(e: any) {
 
 // ** Drag Functions
 function beginDrag(e: any, t: Object) {
+  console.debug('beginDrag', e, t)
+  console.debug('threedItems[t]', threedItems[t])
   try {
     showThreedLicenseSummary(t)
     setToolMode("pointer")
@@ -903,28 +917,28 @@ function beginDrag(e: any, t: Object) {
       new paper.Point(1, 1)
     )
     draggingThreedRectangle.position = o
-    // if (threedItems[t]) {
-    //   threedItems[t].scale && threedItems[t].scale.x
-    //     ? draggingThreedRectangle.bounds.width = threedItems[t].size.x * threedItems[t].scale.x
-    //     : draggingThreedRectangle.bounds.width = threedItems[t].size.x
-    //   threedItems[t].scale && threedItems[t].scale.z
-    //     ? draggingThreedRectangle.bounds.height = threedItems[t].size.z * threedItems[t].scale.z
-    //     : draggingThreedRectangle.bounds.height = threedItems[t].size.z
-    // }
+    if (threedItems[t]) {
+      threedItems[t].scale && threedItems[t].scale.x
+        ? draggingThreedRectangle.bounds.width = threedItems[t].size.x * threedItems[t].scale.x
+        : draggingThreedRectangle.bounds.width = threedItems[t].size.x
+      threedItems[t].scale && threedItems[t].scale.z
+        ? draggingThreedRectangle.bounds.height = threedItems[t].size.z * threedItems[t].scale.z
+        : draggingThreedRectangle.bounds.height = threedItems[t].size.z
+    }
     draggingThreedRectangle.visible = !1
-    // threedDragDiv.style.background = "url('" + objectsURL + "objects/" + t + "_top.png')"
-    // threedDragDiv.style.backgroundRepeat = "no-repeat"
+    document.getElementById("threedDragDiv").style.background = "url('" + objectsURL + "objects/" + t + "_top.png')"
+    document.getElementById("threedDragDiv").style.backgroundRepeat = "no-repeat"
     var a, n
     a = draggingThreedRectangle.bounds.width
     n = draggingThreedRectangle.bounds.height
     a *= paper.view.zoom
     n *= paper.view.zoom
-    // threedDragDiv.style.left = e.clientX - a / 2 + "px"
-    // threedDragDiv.style.top = e.clientY - n / 2 + "px"
-    // threedDragDiv.style.width = a + "px"
-    // threedDragDiv.style.height = n + "px"
-    // threedDragDiv.style.backgroundSize = a + "px " + n + "px"
-    // threedDragDiv.style.display = "block"
+    document.getElementById("threedDragDiv").style.left = e.clientX - a / 2 + "px"
+    document.getElementById("threedDragDiv").style.top = e.clientY - n / 2 + "px"
+    document.getElementById("threedDragDiv").style.width = a + "px"
+    document.getElementById("threedDragDiv").style.height = n + "px"
+    document.getElementById("threedDragDiv").style.backgroundSize = a + "px " + n + "px"
+    document.getElementById("threedDragDiv").style.display = "block"
   } catch (err) {
     console.debug(err)
   }
@@ -936,17 +950,19 @@ function beginDrag(e: any, t: Object) {
 const CatalogItems = (props: any): JSX.Element => {
   const [objects, setObjects] = useState(null)
 
-  async function fetchObjects() {
-    let res = await fetch('api/objects.json')
-    let data = await res.json()
-    console.debug('fetchObjects data', data)
-    // if (!objects) {
-      setObjects(data)
-    // }
-  }
-  
+  // async function fetchObjects() {
+  //   let res = await fetch('/api/home-design') // objects.json
+  //   let data = await res.json()
+  //   console.debug('fetchObjects data', data)
+  //   // if (!objects) {
+  //     setObjects(data)
+  //   // }
+  // }
+  // if (!objects) {
+  //   fetchObjects()
+  // }
   if (!objects) {
-    fetchObjects()
+    setObjects(objectsJSON)
   }
 
   if (!objects) {
@@ -992,136 +1008,136 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
     // ** setup dom elements
     switch (UILayout) {
       case "3dView":
-        ; (readOnly = !0),
-          (document.getElementById("planView").style.display = "none"),
-          (document.getElementById("view3d").style.top = "0px"),
-          (document.getElementById("view3d").style.bottom = "0px"),
-          (document.getElementById("view3d").style.left = "0px"),
-          (document.getElementById("view3d").style.right = "0px"),
-          (document.getElementById("view3d").style.display = "block"),
-          (document.getElementById("catalogView").style.display = "none"),
-          (document.getElementById("verticalSlider").style.display = "none"),
-          (document.getElementById("horizontalSliderLeft").style.display = "none"),
-          (document.getElementById("horizontalSliderRight").style.display = "none"),
-          (document.getElementById("fullscreenPlanViewBtn").style.display = "none"),
-          (document.getElementById("fullscreen3dViewBtn").style.right = "6px"),
-          (document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"),
-          (document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"),
-          (document.getElementById("fullscreen3dViewBtn").style.display = "block"),
-          (document.getElementById("propertiesView").style.display = "none"),
-          (document.getElementById("rulerLeft").style.display = "none"),
-          (document.getElementById("rulerBottom").style.display = "none"),
-          (document.getElementById("mouseIndicatorX").style.display = "none"),
-          (document.getElementById("mouseIndicatorY").style.display = "none"),
-          (document.getElementById("overlayLogo3dView").style.display = "block"),
-          (document.getElementById("overlayMenu3dView").style.display = "block")
+        readOnly = !0
+        document.getElementById("planView").style.display = "none"
+        document.getElementById("view3d").style.top = "0px"
+        document.getElementById("view3d").style.bottom = "0px"
+        document.getElementById("view3d").style.left = "0px"
+        document.getElementById("view3d").style.right = "0px"
+        document.getElementById("view3d").style.display = "block"
+        document.getElementById("catalogView").style.display = "none"
+        document.getElementById("verticalSlider").style.display = "none"
+        document.getElementById("horizontalSliderLeft").style.display = "none"
+        document.getElementById("horizontalSliderRight").style.display = "none"
+        document.getElementById("fullscreenPlanViewBtn").style.display = "none"
+        document.getElementById("fullscreen3dViewBtn").style.right = "6px"
+        document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
+        document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
+        document.getElementById("fullscreen3dViewBtn").style.display = "block"
+        document.getElementById("propertiesView").style.display = "none"
+        document.getElementById("rulerLeft").style.display = "none"
+        document.getElementById("rulerBottom").style.display = "none"
+        document.getElementById("mouseIndicatorX").style.display = "none"
+        document.getElementById("mouseIndicatorY").style.display = "none"
+        document.getElementById("overlayLogo3dView").style.display = "block"
+        document.getElementById("overlayMenu3dView").style.display = "block"
         break
       case "planView":
-        ; (readOnly = !0),
-          (document.getElementById("planView").style.top = "0px"),
-          (document.getElementById("planView").style.bottom = "0px"),
-          (document.getElementById("planView").style.left = "0px"),
-          (document.getElementById("planView").style.right = "0px"),
-          (document.getElementById("planView").style.display = "block"),
-          (document.getElementById("view3d").style.display = "none"),
-          (document.getElementById("catalogView").style.display = "none"),
-          (document.getElementById("verticalSlider").style.display = "none"),
-          (document.getElementById("horizontalSliderLeft").style.display = "none"),
-          (document.getElementById("horizontalSliderRight").style.display = "none"),
-          (document.getElementById("fullscreenPlanViewBtn").style.right = "6px"),
-          (document.getElementById("fullscreenPlanViewBtn").style.bottom = "30px"),
-          (document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"),
-          (document.getElementById("fullscreenPlanViewBtn").style.display = "block"),
-          (document.getElementById("fullscreen3dViewBtn").style.display = "none"),
-          (document.getElementById("propertiesView").style.display = "none"),
-          (document.getElementById("rulerLeft").style.top = "0px"),
-          (document.getElementById("rulerLeft").style.bottom = "20px"),
-          (document.getElementById("rulerLeft").style.left = "0px"),
-          (document.getElementById("rulerLeft").style.display = "block"),
-          (document.getElementById("rulerBottom").style.marginTop = "-20px"),
-          (document.getElementById("rulerBottom").style.bottom = "0px"),
-          (document.getElementById("rulerBottom").style.left = "30px"),
-          (document.getElementById("rulerBottom").style.right = "0px"),
-          (document.getElementById("rulerBottom").style.display = "block"),
-          (document.getElementById("mouseIndicatorX").style.top = "0px"),
-          (document.getElementById("mouseIndicatorX").style.left = "0px"),
-          (document.getElementById("mouseIndicatorX").style.width = "1px"),
-          (document.getElementById("mouseIndicatorX").style.bottom = "0px"),
-          (document.getElementById("mouseIndicatorX").style.display = "block"),
-          (document.getElementById("mouseIndicatorY").style.top = "0px"),
-          (document.getElementById("mouseIndicatorY").style.left = "0px"),
-          (document.getElementById("mouseIndicatorY").style.right = "0px"),
-          (document.getElementById("mouseIndicatorY").style.height = "1px"),
-          (document.getElementById("mouseIndicatorY").style.display = "block"),
-          (document.getElementById("overlayLogoPlanView").style.display = "block"),
-          (document.getElementById("overlayMenuPlanView").style.display = "block")
+        readOnly = !0
+        document.getElementById("planView").style.top = "0px"
+        document.getElementById("planView").style.bottom = "0px"
+        document.getElementById("planView").style.left = "0px"
+        document.getElementById("planView").style.right = "0px"
+        document.getElementById("planView").style.display = "block"
+        document.getElementById("view3d").style.display = "none"
+        document.getElementById("catalogView").style.display = "none"
+        document.getElementById("verticalSlider").style.display = "none"
+        document.getElementById("horizontalSliderLeft").style.display = "none"
+        document.getElementById("horizontalSliderRight").style.display = "none"
+        document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
+        document.getElementById("fullscreenPlanViewBtn").style.bottom = "30px"
+        document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
+        document.getElementById("fullscreenPlanViewBtn").style.display = "block"
+        document.getElementById("fullscreen3dViewBtn").style.display = "none"
+        document.getElementById("propertiesView").style.display = "none"
+        document.getElementById("rulerLeft").style.top = "0px"
+        document.getElementById("rulerLeft").style.bottom = "20px"
+        document.getElementById("rulerLeft").style.left = "0px"
+        document.getElementById("rulerLeft").style.display = "block"
+        document.getElementById("rulerBottom").style.marginTop = "-20px"
+        document.getElementById("rulerBottom").style.bottom = "0px"
+        document.getElementById("rulerBottom").style.left = "30px"
+        document.getElementById("rulerBottom").style.right = "0px"
+        document.getElementById("rulerBottom").style.display = "block"
+        document.getElementById("mouseIndicatorX").style.top = "0px"
+        document.getElementById("mouseIndicatorX").style.left = "0px"
+        document.getElementById("mouseIndicatorX").style.width = "1px"
+        document.getElementById("mouseIndicatorX").style.bottom = "0px"
+        document.getElementById("mouseIndicatorX").style.display = "block"
+        document.getElementById("mouseIndicatorY").style.top = "0px"
+        document.getElementById("mouseIndicatorY").style.left = "0px"
+        document.getElementById("mouseIndicatorY").style.right = "0px"
+        document.getElementById("mouseIndicatorY").style.height = "1px"
+        document.getElementById("mouseIndicatorY").style.display = "block"
+        document.getElementById("overlayLogoPlanView").style.display = "block"
+        document.getElementById("overlayMenuPlanView").style.display = "block"
         break
       default:
-        ; (UILayout = "default"),
-          (document.getElementById("planView").style.top = "54px"),
-          (document.getElementById("planView").style.bottom = "50%"),
-          (document.getElementById("planView").style.left = "318px"),
-          (document.getElementById("planView").style.right = "0px"),
-          (document.getElementById("planView").style.display = "block"),
-          (document.getElementById("view3d").style.top = "50%"),
-          (document.getElementById("view3d").style.bottom = "0px"),
-          (document.getElementById("view3d").style.left = "318px"),
-          (document.getElementById("view3d").style.right = "0px"),
-          (document.getElementById("view3d").style.display = "block"),
-          (document.getElementById("catalogView").style.top = "54px"),
-          (document.getElementById("catalogView").style.left = "0px"),
-          (document.getElementById("catalogView").style.width = "316px"),
-          (document.getElementById("catalogView").style.height = "832px"),
-          (document.getElementById("catalogView").style.display = "block")
-          // (document.getElementById("verticalSlider").style.top = "54px"),
-          // (document.getElementById("verticalSlider").style.bottom = "0px"),
-          // (document.getElementById("verticalSlider").style.left = "316px"),
-          // (document.getElementById("verticalSlider").style.width = "4px"),
-          // (document.getElementById("verticalSlider").style.display = "block"),
-          // (document.getElementById("horizontalSliderLeft").style.top = "879px"),
-          // (document.getElementById("horizontalSliderLeft").style.left = "0px"),
-          // (document.getElementById("horizontalSliderLeft").style.width = "316px"),
-          // (document.getElementById("horizontalSliderLeft").style.height = "4px"),
-          // (document.getElementById("horizontalSliderLeft").style.display = "block"),
-          // (document.getElementById("horizontalSliderRight").style.top = "50%"),
-          // (document.getElementById("horizontalSliderRight").style.left = "318px"),
-          // (document.getElementById("horizontalSliderRight").style.width = "100%"),
-          // (document.getElementById("horizontalSliderRight").style.height = "4px"),
-          // (document.getElementById("horizontalSliderRight").style.display = "block"),
-          // (document.getElementById("fullscreenPlanViewBtn").style.right = "6px"),
-          // (document.getElementById("fullscreenPlanViewBtn").style.top = "50%"),
-          // (document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"),
-          // (document.getElementById("fullscreenPlanViewBtn").style.marginTop = "-58px"),
-          // (document.getElementById("fullscreenPlanViewBtn").style.display = "block"),
-          // (document.getElementById("fullscreen3dViewBtn").style.right = "6px"),
-          // (document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"),
-          // (document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"),
-          // (document.getElementById("fullscreen3dViewBtn").style.display = "block"),
-          // (document.getElementById("propertiesView").style.top = "880px"),
-          // (document.getElementById("propertiesView").style.left = "0px"),
-          // (document.getElementById("propertiesView").style.width = "306px"),
-          // (document.getElementById("propertiesView").style.bottom = "0px"),
-          // (document.getElementById("propertiesView").style.display = "block"),
-          // (document.getElementById("rulerLeft").style.top = "54px"),
-          // (document.getElementById("rulerLeft").style.bottom = "50px"),
-          // (document.getElementById("rulerLeft").style.left = "318px"),
-          // (document.getElementById("rulerLeft").style.display = "block"),
-          // (document.getElementById("rulerBottom").style.top = "50%"),
-          // (document.getElementById("rulerBottom").style.marginTop = "-20px"),
-          // (document.getElementById("rulerBottom").style.bottom = "0px"),
-          // (document.getElementById("rulerBottom").style.left = "318px"),
-          // (document.getElementById("rulerBottom").style.right = "0px"),
-          // (document.getElementById("rulerBottom").style.display = "block"),
-          // (document.getElementById("mouseIndicatorX").style.top = "54px"),
-          // (document.getElementById("mouseIndicatorX").style.left = "318px"),
-          // (document.getElementById("mouseIndicatorX").style.width = "1px"),
-          // (document.getElementById("mouseIndicatorX").style.bottom = "50%"),
-          // (document.getElementById("mouseIndicatorX").style.display = "block"),
-          // (document.getElementById("mouseIndicatorY").style.top = "57px"),
-          // (document.getElementById("mouseIndicatorY").style.left = "318px"),
-          // (document.getElementById("mouseIndicatorY").style.right = "0px"),
-          // (document.getElementById("mouseIndicatorY").style.height = "1px"),
-          // (document.getElementById("mouseIndicatorY").style.display = "block")
+        UILayout = "default"
+        document.getElementById("planView").style.top = "54px"
+        document.getElementById("planView").style.bottom = "50%"
+        document.getElementById("planView").style.left = "318px"
+        document.getElementById("planView").style.right = "0px"
+        document.getElementById("planView").style.display = "block"
+        document.getElementById("view3d").style.top = "50%"
+        document.getElementById("view3d").style.bottom = "0px"
+        document.getElementById("view3d").style.left = "318px"
+        document.getElementById("view3d").style.right = "0px"
+        document.getElementById("view3d").style.display = "block"
+        document.getElementById("catalogView").style.top = "54px"
+        document.getElementById("catalogView").style.left = "0px"
+        document.getElementById("catalogView").style.width = "316px"
+        document.getElementById("catalogView").style.height = "832px"
+        document.getElementById("catalogView").style.display = "block"
+        // document.getElementById("verticalSlider").style.top = "54px"
+        // document.getElementById("verticalSlider").style.bottom = "0px"
+        // document.getElementById("verticalSlider").style.left = "316px"
+        // document.getElementById("verticalSlider").style.width = "4px"
+        // document.getElementById("verticalSlider").style.display = "block"
+        // document.getElementById("horizontalSliderLeft").style.top = "879px"
+        // document.getElementById("horizontalSliderLeft").style.left = "0px"
+        // document.getElementById("horizontalSliderLeft").style.width = "316px"
+        // document.getElementById("horizontalSliderLeft").style.height = "4px"
+        // document.getElementById("horizontalSliderLeft").style.display = "block"
+        // document.getElementById("horizontalSliderRight").style.top = "50%"
+        // document.getElementById("horizontalSliderRight").style.left = "318px"
+        // document.getElementById("horizontalSliderRight").style.width = "100%"
+        // document.getElementById("horizontalSliderRight").style.height = "4px"
+        // document.getElementById("horizontalSliderRight").style.display = "block"
+        // document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
+        // document.getElementById("fullscreenPlanViewBtn").style.top = "50%"
+        // document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
+        // document.getElementById("fullscreenPlanViewBtn").style.marginTop = "-58px"
+        // document.getElementById("fullscreenPlanViewBtn").style.display = "block"
+        // document.getElementById("fullscreen3dViewBtn").style.right = "6px"
+        // document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
+        // document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
+        // document.getElementById("fullscreen3dViewBtn").style.display = "block"
+        // document.getElementById("propertiesView").style.top = "880px"
+        // document.getElementById("propertiesView").style.left = "0px"
+        // document.getElementById("propertiesView").style.width = "306px"
+        // document.getElementById("propertiesView").style.bottom = "0px"
+        document.getElementById("propertiesView").style.display = "block"
+        // document.getElementById("rulerLeft").style.top = "54px"
+        // document.getElementById("rulerLeft").style.bottom = "50px"
+        // document.getElementById("rulerLeft").style.left = "318px"
+        // document.getElementById("rulerLeft").style.display = "block"
+        // document.getElementById("rulerBottom").style.top = "50%"
+        // document.getElementById("rulerBottom").style.marginTop = "-20px"
+        // document.getElementById("rulerBottom").style.bottom = "0px"
+        // document.getElementById("rulerBottom").style.left = "318px"
+        // document.getElementById("rulerBottom").style.right = "0px"
+        // document.getElementById("rulerBottom").style.display = "block"
+        // document.getElementById("mouseIndicatorX").style.top = "54px"
+        // document.getElementById("mouseIndicatorX").style.left = "318px"
+        // document.getElementById("mouseIndicatorX").style.width = "1px"
+        // document.getElementById("mouseIndicatorX").style.bottom = "50%"
+        // document.getElementById("mouseIndicatorX").style.display = "block"
+        // document.getElementById("mouseIndicatorY").style.top = "57px"
+        // document.getElementById("mouseIndicatorY").style.left = "318px"
+        // document.getElementById("mouseIndicatorY").style.right = "0px"
+        // document.getElementById("mouseIndicatorY").style.height = "1px"
+        // document.getElementById("mouseIndicatorY").style.display = "block")
     }
 
     // "default" === UILayout &&
@@ -2513,10 +2529,16 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                   </div>
 
                   <div id='propertiesView' style={{ paddingLeft: '10px' }}>
-                    <div id='threed3DModelPropertiesView' style={{ display: 'none' }}>
+                    <div 
+                      id='threed3DModelPropertiesView' 
+                      // style={{ display: 'none' }}
+                    >
                       <h3>3d Model Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
+                      <table 
+                        className='propertiesTable' 
+                        style={{ minWidth: '290px', minHeight: '290px' }}
+                      >
+                        <tbody>
                         <tr>
                           <td>
                             <div 
@@ -2557,7 +2579,10 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                                     </tbody>
                       </table>
                     </div>
-                    <div id='threedPropertiesView' style={{ display: 'none' }}>
+                    <div 
+                      id='threedPropertiesView'
+                      style={{ display: 'none' }}
+                    >
                       <h3>Threed Properties</h3>
                       <table className='propertiesTable' style={{ minWidth: '290px' }}>
                                     <tbody>
@@ -2793,7 +2818,10 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                       <h3>Default Text Settings</h3>
                     </div>
 
-                    <div id='planViewPropertiesView' style={{ display: 'none' }}>
+                    <div 
+                      id='planViewPropertiesView' 
+                      style={{ display: 'none' }}
+                    >
                       <h3>Background Template</h3>
                       <table className='propertiesTable' style={{ minWidth: '290px' }}>
                                     <tbody>
@@ -3181,7 +3209,10 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                                     </tbody>
                       </table>
                     </div>
-                    <div id='groundPropertiesView' style={{ display: 'none' }}>
+                    <div 
+                      id='groundPropertiesView' 
+                      style={{ display: 'none' }}
+                    >
                       <h3>Ground Layer Properties</h3>
                       <table className='propertiesTable' style={{ minWidth: '290px' }}>
                                     <tbody>
@@ -3195,7 +3226,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                             cm</td>
                         </tr>
                         <tr>
-                          <td>Legth</td>
+                          <td>Length</td>
                           <td><input type='text' id='groundLengthProp'
                               style={{
                                 // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
