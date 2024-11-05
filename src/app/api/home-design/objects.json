@@ -1,11 +1,20 @@
 {
-  "lamp": {
+  "luckyBamboo": {
     "license": "CC BY 3.0",
-    "author": "bulgakov",
+    "author": "renderbob",
     "size": {
-      "x": 30.49,
-      "y": 40.94,
-      "z": 30.49
+      "x": 15.49,
+      "y": 34.03,
+      "z": 14.89
+    }
+  },
+  "siameseCat": {
+    "license": "CC BY 3.0",
+    "author": "Gwinna",
+    "size": {
+      "x": 13.26,
+      "y": 42.06,
+      "z": 81.27
     }
   },
   "laptop": {
@@ -26,31 +35,31 @@
       "z": 72.33
     }
   },
-  "leaf_chair": {
+  "simpleDesk": {
     "license": "CC BY 3.0",
-    "author": "voodoc",
+    "author": "SirOccor",
     "size": {
-      "x": 67.08,
-      "y": 82.65,
-      "z": 81.31
+      "x": 140.06,
+      "y": 72,
+      "z": 81.11
     }
   },
-  "lettoCloud": {
+  "lamp": {
     "license": "CC BY 3.0",
-    "author": "fabbyone",
+    "author": "bulgakov",
     "size": {
-      "x": 188.88,
-      "y": 78.8,
-      "z": 216.47
+      "x": 30.49,
+      "y": 40.94,
+      "z": 30.49
     }
   },
-  "luckyBamboo": {
+  "sofa2": {
     "license": "CC BY 3.0",
-    "author": "renderbob",
+    "author": "Derte21",
     "size": {
-      "x": 15.49,
-      "y": 34.03,
-      "z": 14.89
+      "x": 177.05,
+      "y": 77.99,
+      "z": 86.12
     }
   },
   "mediumIndoorPlant": {
@@ -123,33 +132,6 @@
       "x": 50.5,
       "y": 50.5,
       "z": 54.71
-    }
-  },
-  "siameseCat": {
-    "license": "CC BY 3.0",
-    "author": "Gwinna",
-    "size": {
-      "x": 13.26,
-      "y": 42.06,
-      "z": 81.27
-    }
-  },
-  "simpleDesk": {
-    "license": "CC BY 3.0",
-    "author": "SirOccor",
-    "size": {
-      "x": 140.06,
-      "y": 72,
-      "z": 81.11
-    }
-  },
-  "sofa2": {
-    "license": "CC BY 3.0",
-    "author": "Derte21",
-    "size": {
-      "x": 177.05,
-      "y": 77.99,
-      "z": 86.12
     }
   },
   "spatifilum": {
