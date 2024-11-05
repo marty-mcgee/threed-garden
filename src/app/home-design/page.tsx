@@ -616,8 +616,8 @@ const PaperCanvas = (props: any) => {
 
 // ==============================================================
 
-function showModel3dView() {
-  console.debug('showModel3dView', true)
+function showModel3dView(event) {
+  console.debug('showModel3dView', event)
   // var e = modalModel3dThreedId
   // e !== -1 &&
   //   (model3dObjectRef && model3dScene.remove(model3dObjectRef),
@@ -2640,7 +2640,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                           <td>3D Model</td>
                           <td>
                             <button className='moreInfoBtn' 
-                              onClick={() => showModel3dView()}
+                              onClick={(event) => showModel3dView(event)}
                             >
                               View
                             </button>
