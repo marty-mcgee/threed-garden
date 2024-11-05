@@ -854,41 +854,41 @@ function camelCaseToSentence(e: String) {
 function showThreedLicenseSummary(e: any) {
   console.debug('showThreedLicenseSummary', e)
   try {
-    modalModel3dThreedId = e
-    var t = camelCaseToSentence(e)
-    document.getElementById("model3dName").innerText = t
-    var o = threedItems[e].author
-    document.getElementById("model3dAuthor").innerText = o
+    // modalModel3dThreedId = e
+    // var t = camelCaseToSentence(e)
+    document.getElementById("model3dName").innerText = e
+    // var o = threedItems[e].author
+    document.getElementById("model3dAuthor").innerText = threedItems[e].author
     var a = "License: Default"
 
-    // switch (threedItems[e].license) {
-    //   case "Free Art License 1.3":
-    //     a =
-    //       "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
-    //       threedItems[e].license +
-    //       "</a>"
-    //     break
-    //   case "CC-0":
-    //     a =
-    //       "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
-    //       threedItems[e].license +
-    //       "</a>"
-    //     break
-    //   case "CC BY 3.0":
-    //     a =
-    //       "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
-    //       threedItems[e].license +
-    //       "</a>"
-    //     break
-    //   case "CC BY 4.0":
-    //     a =
-    //       "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-    //       threedItems[e].license +
-    //       "</a>"
-    //     break
-    //   default:
-    //     a = threedItems[e].license
-    // }
+    switch (threedItems[e].license) {
+      case "Free Art License 1.3":
+        a =
+          "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+        break
+      case "CC-0":
+        a =
+          "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+        break
+      case "CC BY 3.0":
+        a =
+          "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+        break
+      case "CC BY 4.0":
+        a =
+          "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+        break
+      default:
+        a = threedItems[e].license
+    }
     document.getElementById("model3dLicense").innerHTML = a
     document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
     setPropertiesView("model3dMeta")
