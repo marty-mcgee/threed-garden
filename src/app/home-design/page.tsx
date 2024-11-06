@@ -618,7 +618,7 @@ const PaperCanvas = (props: any) => {
 
 
 
-function validatePlusOrMinusNumber(e, t) {
+function validatePlusOrMinusNumber(e: any, t: any) {
   console.debug('validatePlusOrMinusNumber', e, t, '[MM] Testing')
 //   var o = /^[-]?[0-9]*\.?[0-9]+$/
 //   e.value && null !== e.value.match(o)
