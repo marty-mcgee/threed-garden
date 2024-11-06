@@ -42,30 +42,30 @@
 }
 
 #catalogFilters {
-    /* position: fixed; */
-    top: 54px;
+    position: fixed;
+    top: 48px;
     left: 0px;
     width: 100%;
-    height: 30px;
+    /* height: 32px; */
     background-color: #09090D
 }
 
 #catalogTextFilter {
-    font-size: 17px;
-    margin-top: 4px;
-    margin-left: 4px;
-    width: 284px;
+    font-size: 16px;
+    /* margin-top: 4px; */
+    /* margin-left: 4px; */
+    /* width: 284px; */
     color: white;
     border: 1px solid #2a2a2a;
     background-color: #131418;
 }
 
 #catalogItems {
-    /* position: absolute; */
-    top: 32px;
+    position: absolute;
+    top: 0px;
     bottom: 0px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     cursor: default;
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
@@ -74,13 +74,15 @@
 
 #catalogView {
     /* position: absolute; */
+    position: relative;
     background-color: #131418;
 }
 
 #propertiesView {
     /* position: absolute; */
+    position: relative;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     background-color: #09090D;
     color: white;
     font-size: 14px;
@@ -88,7 +90,7 @@
 }
 
 #propertiesView input {
-    font-size: 17px;
+    font-size: 16px;
     color: white;
     background-color: #131418;
     padding: 2px 4px 2px 4px;
@@ -310,11 +312,11 @@ li.dropdown {
 }
 
 .threedItem {
-    width: 88px;
-    height: 88px;
+    width: 64px;
+    height: 64px;
     border: 1px solid #2a2a2a;
     float: left;
-    margin: 4px;
+    margin: 2px;
     background-color: #131418;
     text-align: center;
 }
@@ -330,7 +332,7 @@ li.dropdown {
 }
 
 .threedThumb {
-    height: 70px;
+    height: 48px;
     pointer-events: none;
     margin-top: 8px;
 }
@@ -469,12 +471,12 @@ li.dropdown {
 }
 
 .center {
-    /* width: 300px;
+    width: 300px;
     height: 12px;
     position: absolute;
     left: 50%;
     top: 60px;
-    margin-left: -150px; */
+    margin-left: -150px;
 }
 
 .brand a {
@@ -523,8 +525,7 @@ a[target="_blank"]:after {
 }
 
 .moreInfoBtn {
-    /* font-family: 'Courier New', Courier, monospace; */
-    font-size: 17px;
+    font-size: 16px;
     cursor: pointer;
     padding: 4px 16px 4px 16px;
     border: 1px solid #2a2a2a;
@@ -549,7 +550,7 @@ a[target="_blank"]:after {
 
 .tab button {
     /* font-family: 'Courier New', Courier, monospace; */
-    font-size: 17px;
+    font-size: 16px;
     color: white;
     background-color: inherit;
     float: left;
@@ -624,7 +625,6 @@ a[target="_blank"]:after {
 
 #loadLocalStoragePlanBtn {
     margin-top: 10px;
-    /* font-family: 'Courier New', Courier, monospace; */
     font-size: 19px;
     cursor: pointer;
     border: 1px solid #2a2a2a;
@@ -658,7 +658,7 @@ a[target="_blank"]:after {
 
 .largeButton {
     margin-top: 10px;
-    font-size: 19px;
+    font-size: 18px;
     cursor: pointer;
     border: 1px solid #2a2a2a;
     color: white;
@@ -672,7 +672,7 @@ a[target="_blank"]:after {
 }
 
 .smallButton {
-    font-size: 14px;
+    font-size: 12px;
     cursor: pointer;
     border: 1px solid #2a2a2a;
     color: white;
@@ -686,7 +686,7 @@ a[target="_blank"]:after {
 }
 
 .mediumButton {
-    font-size: 17px;
+    font-size: 16px;
     cursor: pointer;
     border: 1px solid #2a2a2a;
     color: white;
@@ -699,7 +699,7 @@ a[target="_blank"]:after {
 }
 
 .levelBtn {
-    font-size: 14px;
+    font-size: 12px;
     position: absolute;
     left: 0px;
     cursor: pointer;
@@ -717,7 +717,7 @@ a[target="_blank"]:after {
  } */
 
 .propertiesViewBtn {
-    font-size: 17px;
+    font-size: 16px;
     cursor: pointer;
     border: 1px solid #2a2a2a;
     color: white;

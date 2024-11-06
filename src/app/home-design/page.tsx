@@ -1763,7 +1763,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
         >
           <PanelGroup 
             direction='vertical'
-            autoSaveId='ThreeDHomeDesignLayoutMain'
+            // autoSaveId='ThreeDHomeDesignLayoutMain'
           >
             {/* <Panel 
               className={stylesPanels.Panel}
@@ -1793,7 +1793,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
             >
               <PanelGroup 
                 direction='vertical'
-                autoSaveId='ThreeDHomeDesignLayoutSub'
+                // autoSaveId='ThreeDHomeDesignLayoutSub'
               >
                 {/* <Panel
                   className={stylesPanels.Panel}
@@ -1827,32 +1827,33 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                 >
                     <PanelGroup 
                       direction='horizontal'
-                      autoSaveId='ThreeDHomeDesignLayoutSub2'
+                      // autoSaveId='ThreeDHomeDesignLayoutSub2'
                     >
                       <Panel
                         // className={stylesPanels.Panel}
                         defaultSize={24}
-                        maxSize={32}
+                        maxSize={48}
                         style={{
                           // border: '1px solid darkred',
                         }}
+                        id='catalogView'
                       >
                         {/* <Text>
                           Sub Left
                         </Text> */}
                         {/* CATALOG VIEW */}
-                        <div id='catalogView'>
+                        {/* <div id='catalogView'> */}
                           <div id='catalogFilters'>
                             <Container>
                               <span style={{ marginLeft: '4px', marginRight: '4px' }}>
                                 {/* MAIN ACTIONS DROPDOWN MENU */}
                                 <DropdownMenuThreeD />
                               </span>
-                              <span style={{ marginLeft: '0' }}>
+                              {/* <span style={{ marginLeft: '0' }}>
                                 Object Catalog View
-                              </span>
+                              </span> */}
+                              <input type='text' id='catalogTextFilter' placeholder='...' width='40' />
                             </Container>
-                            {/* <input type='text' id='catalogTextFilter' placeholder='Filter' width='40' /> */}
                           </div>
                           <div id='catalogItems'>
                             {/* <Container>
@@ -1862,7 +1863,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                               <CatalogItems />
                             {/* */}
                           </div>
-                        </div>
+                        {/* </div> */}
                         {/* BASIC ACTION BUTTONS */}
                         {/* <Flex>
                           <Button onClick={() => handleShowModalAbout()}>
