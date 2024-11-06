@@ -618,12 +618,13 @@ const PaperCanvas = (props: any) => {
 
 
 
-// function validatePlusOrMinusNumber(e, t) {
+function validatePlusOrMinusNumber(e, t) {
+  console.debug('validatePlusOrMinusNumber', e, t, '[MM] Testing')
 //   var o = /^[-]?[0-9]*\.?[0-9]+$/
 //   e.value && null !== e.value.match(o)
 //     ? ((e.style.backgroundColor = "#4e4e4e"), t(e.value), e.blur())
 //     : ((e.style.backgroundColor = "#ff8888"), e.focus())
-// }
+}
 
 
 
@@ -2339,395 +2340,397 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
   const session = useSession()
 
   // const [objects, setObjects] = useState(null)
-  // ** load data
-  useEffect(() => {
-    // ** setup dom elements
-    switch (UILayout) {
-      case "3dView":
-        readOnly = !0
-        document.getElementById("planView").style.display = "none"
-        document.getElementById("view3d").style.top = "0px"
-        document.getElementById("view3d").style.bottom = "0px"
-        document.getElementById("view3d").style.left = "0px"
-        document.getElementById("view3d").style.right = "0px"
-        document.getElementById("view3d").style.display = "block"
-        document.getElementById("catalogView").style.display = "none"
-        document.getElementById("verticalSlider").style.display = "none"
-        document.getElementById("horizontalSliderLeft").style.display = "none"
-        document.getElementById("horizontalSliderRight").style.display = "none"
-        document.getElementById("fullscreenPlanViewBtn").style.display = "none"
-        document.getElementById("fullscreen3dViewBtn").style.right = "6px"
-        document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
-        document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
-        document.getElementById("fullscreen3dViewBtn").style.display = "block"
-        document.getElementById("propertiesView").style.display = "none"
-        document.getElementById("rulerLeft").style.display = "none"
-        document.getElementById("rulerBottom").style.display = "none"
-        document.getElementById("mouseIndicatorX").style.display = "none"
-        document.getElementById("mouseIndicatorY").style.display = "none"
-        document.getElementById("overlayLogo3dView").style.display = "block"
-        document.getElementById("overlayMenu3dView").style.display = "block"
-        break
-      case "planView":
-        readOnly = !0
-        document.getElementById("planView").style.top = "0px"
-        document.getElementById("planView").style.bottom = "0px"
-        document.getElementById("planView").style.left = "0px"
-        document.getElementById("planView").style.right = "0px"
-        document.getElementById("planView").style.display = "block"
-        document.getElementById("view3d").style.display = "none"
-        document.getElementById("catalogView").style.display = "none"
-        document.getElementById("verticalSlider").style.display = "none"
-        document.getElementById("horizontalSliderLeft").style.display = "none"
-        document.getElementById("horizontalSliderRight").style.display = "none"
-        document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
-        document.getElementById("fullscreenPlanViewBtn").style.bottom = "30px"
-        document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
-        document.getElementById("fullscreenPlanViewBtn").style.display = "block"
-        document.getElementById("fullscreen3dViewBtn").style.display = "none"
-        document.getElementById("propertiesView").style.display = "none"
-        document.getElementById("rulerLeft").style.top = "0px"
-        document.getElementById("rulerLeft").style.bottom = "20px"
-        document.getElementById("rulerLeft").style.left = "0px"
-        document.getElementById("rulerLeft").style.display = "block"
-        document.getElementById("rulerBottom").style.marginTop = "-20px"
-        document.getElementById("rulerBottom").style.bottom = "0px"
-        document.getElementById("rulerBottom").style.left = "30px"
-        document.getElementById("rulerBottom").style.right = "0px"
-        document.getElementById("rulerBottom").style.display = "block"
-        document.getElementById("mouseIndicatorX").style.top = "0px"
-        document.getElementById("mouseIndicatorX").style.left = "0px"
-        document.getElementById("mouseIndicatorX").style.width = "1px"
-        document.getElementById("mouseIndicatorX").style.bottom = "0px"
-        document.getElementById("mouseIndicatorX").style.display = "block"
-        document.getElementById("mouseIndicatorY").style.top = "0px"
-        document.getElementById("mouseIndicatorY").style.left = "0px"
-        document.getElementById("mouseIndicatorY").style.right = "0px"
-        document.getElementById("mouseIndicatorY").style.height = "1px"
-        document.getElementById("mouseIndicatorY").style.display = "block"
-        document.getElementById("overlayLogoPlanView").style.display = "block"
-        document.getElementById("overlayMenuPlanView").style.display = "block"
-        break
-      default:
-        UILayout = "default"
+  
+  
+  // ** load old data.. no
+  // useEffect(() => {
+  //   // ** setup dom elements
+  //   switch (UILayout) {
+  //     case "3dView":
+  //       readOnly = !0
+  //       document.getElementById("planView").style.display = "none"
+  //       document.getElementById("view3d").style.top = "0px"
+  //       document.getElementById("view3d").style.bottom = "0px"
+  //       document.getElementById("view3d").style.left = "0px"
+  //       document.getElementById("view3d").style.right = "0px"
+  //       document.getElementById("view3d").style.display = "block"
+  //       document.getElementById("catalogView").style.display = "none"
+  //       document.getElementById("verticalSlider").style.display = "none"
+  //       document.getElementById("horizontalSliderLeft").style.display = "none"
+  //       document.getElementById("horizontalSliderRight").style.display = "none"
+  //       document.getElementById("fullscreenPlanViewBtn").style.display = "none"
+  //       document.getElementById("fullscreen3dViewBtn").style.right = "6px"
+  //       document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
+  //       document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
+  //       document.getElementById("fullscreen3dViewBtn").style.display = "block"
+  //       document.getElementById("propertiesView").style.display = "none"
+  //       document.getElementById("rulerLeft").style.display = "none"
+  //       document.getElementById("rulerBottom").style.display = "none"
+  //       document.getElementById("mouseIndicatorX").style.display = "none"
+  //       document.getElementById("mouseIndicatorY").style.display = "none"
+  //       document.getElementById("overlayLogo3dView").style.display = "block"
+  //       document.getElementById("overlayMenu3dView").style.display = "block"
+  //       break
+  //     case "planView":
+  //       readOnly = !0
+  //       document.getElementById("planView").style.top = "0px"
+  //       document.getElementById("planView").style.bottom = "0px"
+  //       document.getElementById("planView").style.left = "0px"
+  //       document.getElementById("planView").style.right = "0px"
+  //       document.getElementById("planView").style.display = "block"
+  //       document.getElementById("view3d").style.display = "none"
+  //       document.getElementById("catalogView").style.display = "none"
+  //       document.getElementById("verticalSlider").style.display = "none"
+  //       document.getElementById("horizontalSliderLeft").style.display = "none"
+  //       document.getElementById("horizontalSliderRight").style.display = "none"
+  //       document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
+  //       document.getElementById("fullscreenPlanViewBtn").style.bottom = "30px"
+  //       document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
+  //       document.getElementById("fullscreenPlanViewBtn").style.display = "block"
+  //       document.getElementById("fullscreen3dViewBtn").style.display = "none"
+  //       document.getElementById("propertiesView").style.display = "none"
+  //       document.getElementById("rulerLeft").style.top = "0px"
+  //       document.getElementById("rulerLeft").style.bottom = "20px"
+  //       document.getElementById("rulerLeft").style.left = "0px"
+  //       document.getElementById("rulerLeft").style.display = "block"
+  //       document.getElementById("rulerBottom").style.marginTop = "-20px"
+  //       document.getElementById("rulerBottom").style.bottom = "0px"
+  //       document.getElementById("rulerBottom").style.left = "30px"
+  //       document.getElementById("rulerBottom").style.right = "0px"
+  //       document.getElementById("rulerBottom").style.display = "block"
+  //       document.getElementById("mouseIndicatorX").style.top = "0px"
+  //       document.getElementById("mouseIndicatorX").style.left = "0px"
+  //       document.getElementById("mouseIndicatorX").style.width = "1px"
+  //       document.getElementById("mouseIndicatorX").style.bottom = "0px"
+  //       document.getElementById("mouseIndicatorX").style.display = "block"
+  //       document.getElementById("mouseIndicatorY").style.top = "0px"
+  //       document.getElementById("mouseIndicatorY").style.left = "0px"
+  //       document.getElementById("mouseIndicatorY").style.right = "0px"
+  //       document.getElementById("mouseIndicatorY").style.height = "1px"
+  //       document.getElementById("mouseIndicatorY").style.display = "block"
+  //       document.getElementById("overlayLogoPlanView").style.display = "block"
+  //       document.getElementById("overlayMenuPlanView").style.display = "block"
+  //       break
+  //     default:
+  //       UILayout = "default"
 
-        document.getElementById("planView").style.top = "54px"
-        document.getElementById("planView").style.bottom = "50%"
-        document.getElementById("planView").style.left = "318px"
-        document.getElementById("planView").style.right = "0px"
-        document.getElementById("planView").style.display = "block"
+  //       document.getElementById("planView").style.top = "54px"
+  //       document.getElementById("planView").style.bottom = "50%"
+  //       document.getElementById("planView").style.left = "318px"
+  //       document.getElementById("planView").style.right = "0px"
+  //       document.getElementById("planView").style.display = "block"
         
-        document.getElementById("view3d").style.top = "50%"
-        document.getElementById("view3d").style.bottom = "0px"
-        document.getElementById("view3d").style.left = "318px"
-        document.getElementById("view3d").style.right = "0px"
-        document.getElementById("view3d").style.display = "block"
+  //       document.getElementById("view3d").style.top = "50%"
+  //       document.getElementById("view3d").style.bottom = "0px"
+  //       document.getElementById("view3d").style.left = "318px"
+  //       document.getElementById("view3d").style.right = "0px"
+  //       document.getElementById("view3d").style.display = "block"
 
-        document.getElementById("catalogView").style.top = "54px"
-        document.getElementById("catalogView").style.left = "0px"
-        document.getElementById("catalogView").style.width = "316px"
-        document.getElementById("catalogView").style.height = "832px"
-        document.getElementById("catalogView").style.display = "block"
+  //       document.getElementById("catalogView").style.top = "54px"
+  //       document.getElementById("catalogView").style.left = "0px"
+  //       document.getElementById("catalogView").style.width = "316px"
+  //       document.getElementById("catalogView").style.height = "832px"
+  //       document.getElementById("catalogView").style.display = "block"
         
 
-        // document.getElementById("verticalSlider").style.top = "54px"
-        // document.getElementById("verticalSlider").style.bottom = "0px"
-        // document.getElementById("verticalSlider").style.left = "316px"
-        // document.getElementById("verticalSlider").style.width = "4px"
-        // document.getElementById("verticalSlider").style.display = "block"
-        // document.getElementById("horizontalSliderLeft").style.top = "879px"
-        // document.getElementById("horizontalSliderLeft").style.left = "0px"
-        // document.getElementById("horizontalSliderLeft").style.width = "316px"
-        // document.getElementById("horizontalSliderLeft").style.height = "4px"
-        // document.getElementById("horizontalSliderLeft").style.display = "block"
-        // document.getElementById("horizontalSliderRight").style.top = "50%"
-        // document.getElementById("horizontalSliderRight").style.left = "318px"
-        // document.getElementById("horizontalSliderRight").style.width = "100%"
-        // document.getElementById("horizontalSliderRight").style.height = "4px"
-        // document.getElementById("horizontalSliderRight").style.display = "block"
-        // document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
-        // document.getElementById("fullscreenPlanViewBtn").style.top = "50%"
-        // document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
-        // document.getElementById("fullscreenPlanViewBtn").style.marginTop = "-58px"
-        // document.getElementById("fullscreenPlanViewBtn").style.display = "block"
-        // document.getElementById("fullscreen3dViewBtn").style.right = "6px"
-        // document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
-        // document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
-        // document.getElementById("fullscreen3dViewBtn").style.display = "block"
+  //       // document.getElementById("verticalSlider").style.top = "54px"
+  //       // document.getElementById("verticalSlider").style.bottom = "0px"
+  //       // document.getElementById("verticalSlider").style.left = "316px"
+  //       // document.getElementById("verticalSlider").style.width = "4px"
+  //       // document.getElementById("verticalSlider").style.display = "block"
+  //       // document.getElementById("horizontalSliderLeft").style.top = "879px"
+  //       // document.getElementById("horizontalSliderLeft").style.left = "0px"
+  //       // document.getElementById("horizontalSliderLeft").style.width = "316px"
+  //       // document.getElementById("horizontalSliderLeft").style.height = "4px"
+  //       // document.getElementById("horizontalSliderLeft").style.display = "block"
+  //       // document.getElementById("horizontalSliderRight").style.top = "50%"
+  //       // document.getElementById("horizontalSliderRight").style.left = "318px"
+  //       // document.getElementById("horizontalSliderRight").style.width = "100%"
+  //       // document.getElementById("horizontalSliderRight").style.height = "4px"
+  //       // document.getElementById("horizontalSliderRight").style.display = "block"
+  //       // document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
+  //       // document.getElementById("fullscreenPlanViewBtn").style.top = "50%"
+  //       // document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
+  //       // document.getElementById("fullscreenPlanViewBtn").style.marginTop = "-58px"
+  //       // document.getElementById("fullscreenPlanViewBtn").style.display = "block"
+  //       // document.getElementById("fullscreen3dViewBtn").style.right = "6px"
+  //       // document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
+  //       // document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
+  //       // document.getElementById("fullscreen3dViewBtn").style.display = "block"
         
         
         
-        // // document.getElementById("propertiesView").style.top = "880px"
-        // // document.getElementById("propertiesView").style.left = "0px"
-        // // document.getElementById("propertiesView").style.width = "306px"
-        // // document.getElementById("propertiesView").style.bottom = "0px"
+  //       // // document.getElementById("propertiesView").style.top = "880px"
+  //       // // document.getElementById("propertiesView").style.left = "0px"
+  //       // // document.getElementById("propertiesView").style.width = "306px"
+  //       // // document.getElementById("propertiesView").style.bottom = "0px"
         
-        // document.getElementById("propertiesView").style.display = "block"
+  //       // document.getElementById("propertiesView").style.display = "block"
 
 
 
-        // document.getElementById("rulerLeft").style.top = "54px"
-        // document.getElementById("rulerLeft").style.bottom = "50px"
-        // document.getElementById("rulerLeft").style.left = "318px"
-        // document.getElementById("rulerLeft").style.display = "block"
-        // document.getElementById("rulerBottom").style.top = "50%"
-        // document.getElementById("rulerBottom").style.marginTop = "-20px"
-        // document.getElementById("rulerBottom").style.bottom = "0px"
-        // document.getElementById("rulerBottom").style.left = "318px"
-        // document.getElementById("rulerBottom").style.right = "0px"
-        // document.getElementById("rulerBottom").style.display = "block"
-        // document.getElementById("mouseIndicatorX").style.top = "54px"
-        // document.getElementById("mouseIndicatorX").style.left = "318px"
-        // document.getElementById("mouseIndicatorX").style.width = "1px"
-        // document.getElementById("mouseIndicatorX").style.bottom = "50%"
-        // document.getElementById("mouseIndicatorX").style.display = "block"
-        // document.getElementById("mouseIndicatorY").style.top = "57px"
-        // document.getElementById("mouseIndicatorY").style.left = "318px"
-        // document.getElementById("mouseIndicatorY").style.right = "0px"
-        // document.getElementById("mouseIndicatorY").style.height = "1px"
-        // document.getElementById("mouseIndicatorY").style.display = "block")
-    }
+  //       // document.getElementById("rulerLeft").style.top = "54px"
+  //       // document.getElementById("rulerLeft").style.bottom = "50px"
+  //       // document.getElementById("rulerLeft").style.left = "318px"
+  //       // document.getElementById("rulerLeft").style.display = "block"
+  //       // document.getElementById("rulerBottom").style.top = "50%"
+  //       // document.getElementById("rulerBottom").style.marginTop = "-20px"
+  //       // document.getElementById("rulerBottom").style.bottom = "0px"
+  //       // document.getElementById("rulerBottom").style.left = "318px"
+  //       // document.getElementById("rulerBottom").style.right = "0px"
+  //       // document.getElementById("rulerBottom").style.display = "block"
+  //       // document.getElementById("mouseIndicatorX").style.top = "54px"
+  //       // document.getElementById("mouseIndicatorX").style.left = "318px"
+  //       // document.getElementById("mouseIndicatorX").style.width = "1px"
+  //       // document.getElementById("mouseIndicatorX").style.bottom = "50%"
+  //       // document.getElementById("mouseIndicatorX").style.display = "block"
+  //       // document.getElementById("mouseIndicatorY").style.top = "57px"
+  //       // document.getElementById("mouseIndicatorY").style.left = "318px"
+  //       // document.getElementById("mouseIndicatorY").style.right = "0px"
+  //       // document.getElementById("mouseIndicatorY").style.height = "1px"
+  //       // document.getElementById("mouseIndicatorY").style.display = "block")
+  //   }
 
-    // "default" === UILayout &&
-    if (UILayout === 'default') {
-      // $("#catalogItems").scroll(function () {
-      //   loadInViewThumbs()
-      // })
-      focusPoint = new paper.Point(0, 0)
-      raycaster = new THREE.Raycaster()
-      mouse = new THREE.Vector2()
+  //   // "default" === UILayout &&
+  //   if (UILayout === 'default') {
+  //     // $("#catalogItems").scroll(function () {
+  //     //   loadInViewThumbs()
+  //     // })
+  //     focusPoint = new paper.Point(0, 0)
+  //     raycaster = new THREE.Raycaster()
+  //     mouse = new THREE.Vector2()
       
-      // async function fetchObjects() {
-      //   let res = await fetch('api/objects.json')
-      //   let data = await res.json()
-      //   console.debug('fetchObjects data', data)
-      //   setObjects(data)
-      //   // let arr = Array.from(Object.entries(data))
-      //   // setObjects(arr)
-      //   // console.debug('fetchObjects data arr', arr)
-      // }
-      // fetchObjects()
-      /*
-      $.ajax({
-        url: "api/objects.json",
-        type: "GET",
-        contentType: "application/json",
-        success: function (e) {
-          if (((threedItems = e), "default" === UILayout)) {
-            var t = 0
-            Object.keys(threedItems)
-              // .sort()
-              .forEach(function (e) {
-                var o = camelCaseToSentence(e)
-                $("#catalogItems").append(
-                  "<div id='" +
-                  e +
-                  "' class='threedItem disableSelection' onmousedown='beginDrag(event, \"" +
-                  e +
-                  "\");'><img " +
-                  (t < 32
-                    ? "src='" + objectsURL + "objects/" + e + ".png'"
-                    : "src='media/thumbPlaceHolder.png'") +
-                  " realsrc='" + objectsURL + "objects/" +
-                  e +
-                  ".png' class='threedThumb' alt='" +
-                  o +
-                  "' title='" +
-                  o +
-                  "' /></div>"
-                ),
-                  t++
-              })
-          }
-        */  
+  //     // async function fetchObjects() {
+  //     //   let res = await fetch('api/objects.json')
+  //     //   let data = await res.json()
+  //     //   console.debug('fetchObjects data', data)
+  //     //   setObjects(data)
+  //     //   // let arr = Array.from(Object.entries(data))
+  //     //   // setObjects(arr)
+  //     //   // console.debug('fetchObjects data arr', arr)
+  //     // }
+  //     // fetchObjects()
+  //     /*
+  //     $.ajax({
+  //       url: "api/objects.json",
+  //       type: "GET",
+  //       contentType: "application/json",
+  //       success: function (e) {
+  //         if (((threedItems = e), "default" === UILayout)) {
+  //           var t = 0
+  //           Object.keys(threedItems)
+  //             // .sort()
+  //             .forEach(function (e) {
+  //               var o = camelCaseToSentence(e)
+  //               $("#catalogItems").append(
+  //                 "<div id='" +
+  //                 e +
+  //                 "' class='threedItem disableSelection' onmousedown='beginDrag(event, \"" +
+  //                 e +
+  //                 "\");'><img " +
+  //                 (t < 32
+  //                   ? "src='" + objectsURL + "objects/" + e + ".png'"
+  //                   : "src='media/thumbPlaceHolder.png'") +
+  //                 " realsrc='" + objectsURL + "objects/" +
+  //                 e +
+  //                 ".png' class='threedThumb' alt='" +
+  //                 o +
+  //                 "' title='" +
+  //                 o +
+  //                 "' /></div>"
+  //               ),
+  //                 t++
+  //             })
+  //         }
+  //       */  
         
-        /*
-          if (
-            ($.ajax({
-              url: "plans/threed-plan-example-001.threed",
-              type: "GET",
-              contentType: "application/json",
-              success: function (e) {
-                var t = JSON.parse(e)
-                featuredPlanImage.src = t.thumb
-              },
-              error: function (e) {
-                console.debug("document.ready : get thumb ajax : " + e)
-              },
-            }),
-              "default" === UILayout &&
-              ($("#wallDiffuse").minicolors({
-                opacity: !0,
-                change: function (e, t) {
-                  var o = parseInt(e.replace("#", "0x"))
-                    ; (wallMaterial.color = new THREE.Color(o)),
-                      (wallMaterial.opacity = parseFloat(t)),
-                      (plan.wallDiffuse = wallMaterial.color),
-                      (plan.wallOpacity = wallMaterial.opacity),
-                      render()
-                },
-              }),
-                $("#roofDiffuse").minicolors({
-                  opacity: !0,
-                  change: function (e, t) {
-                    var o = parseInt(e.replace("#", "0x"))
-                      ; (roofMaterial.color = new THREE.Color(o)),
-                        (roofMaterial.opacity = parseFloat(t)),
-                        (plan.roofDiffuse = roofMaterial.color),
-                        (plan.roofOpacity = roofMaterial.opacity),
-                        render()
-                  },
-                }),
-                $("#wallSpecular").minicolors({
-                  change: function (e) {
-                    var t = parseInt(e.replace("#", "0x"))
-                      ; (wallMaterial.specular = new THREE.Color(t)),
-                        (plan.wallSpecular = wallMaterial.specular),
-                        render()
-                  },
-                }),
-                $("#roofSpecular").minicolors({
-                  change: function (e) {
-                    var t = parseInt(e.replace("#", "0x"))
-                      ; (roofMaterial.specular = new THREE.Color(t)),
-                        (plan.roofSpecular = roofMaterial.specular),
-                        render()
-                  },
-                }),
-                $("#floorDiffuse").minicolors({
-                  opacity: !0,
-                  change: function (e, t) {
-                    var o = parseInt(e.replace("#", "0x"))
-                      ; (floorMaterial.color = new THREE.Color(o)),
-                        (floorMaterial.opacity = parseFloat(t)),
-                        (plan.floorDiffuse = floorMaterial.color),
-                        (plan.floorOpacity = floorMaterial.opacity),
-                        render()
-                  },
-                }),
-                $("#floorSpecular").minicolors({
-                  change: function (e) {
-                    var t = parseInt(e.replace("#", "0x"))
-                      ; (floorMaterial.specular = new THREE.Color(t)),
-                        (plan.floorSpecular = floorMaterial.specular),
-                        render()
-                  },
-                }),
-                $("#groundDiffuse").minicolors({
-                  opacity: !0,
-                  change: function (e, t) {
-                    var o = parseInt(e.replace("#", "0x"))
-                      ; (groundMat.color = new THREE.Color(o)),
-                        (groundMat.opacity = parseFloat(t)),
-                        (plan.groundDiffuse = groundMat.color.getHexString()),
-                        (plan.groundOpacity = groundMat.opacity),
-                        render()
-                  },
-                }),
-                $("#groundSpecular").minicolors({
-                  change: function (e) {
-                    var t = parseInt(e.replace("#", "0x"))
-                      ; (groundMat.specular = new THREE.Color(t)),
-                        (plan.groundSpecular = groundMat.specular.getHexString()),
-                        render()
-                  },
-                })),
-              fragment)
-          )
-            $.ajax({
-              url: "api/getsharelink/" + fragment,
-              type: "GET",
-              contentType: "application/json",
-              success: function (e) {
-                var t = JSON.parse(e)
-                e.error
-                  ? console.debug(e.error)
-                  : ((loadingProgressTxt = "Loading Shared Plan"),
-                    (document.getElementById("modalLoadingDataInfo").innerHTML =
-                      loadingProgressTxt),
-                    $("#loadingModal").show(),
-                    hideMouseIndicators(),
-                    drawPlan(t))
-              },
-              error: function (e) {
-                console.debug("document.ready : getsharelink : " + e)
-              },
-            })
-          else {
-            var o = localStorage.getItem("plan")
-            if (o) {
-              var o = JSON.parse(o)
-                ; (loadingProgressTxt = "Loading Cached Plan"),
-                  (document.getElementById("modalLoadingDataInfo").innerHTML =
-                    loadingProgressTxt),
-                  $("#loadingModal").show(),
-                  hideMouseIndicators(),
-                  drawPlan(o)
-            } else showAbout(), setNewPlan()
-          }
-        },
-        error: function (e) {
-          console.dir(e)
-        },
-      }),
-      (progressBar = document.getElementById("progressBar")),
-      (progressBar.style.display = "none"),
-      (verticalSlider = document.getElementById("verticalSlider")),
-      (verticalSliderDragging = !1),
-      (verticalSlider.onmousedown = function (e) {
-        ; (verticalSliderDragging = !0),
-          (verticalSlider.style.left = e.x - 2 + "px")
-      }),
-      (horizontalSliderLeft = document.getElementById("horizontalSliderLeft")),
-      (horizontalSliderLeftDragging = !1),
-      (horizontalSliderLeft.onmousedown = function (e) {
-        ; (horizontalSliderLeftDragging = !0),
-          (horizontalSliderLeft.style.top = e.y - 2 + "px")
-      }),
-      (horizontalSliderRight = document.getElementById("horizontalSliderRight")),
-      (horizontalSliderRightDragging = !1),
-      (horizontalSliderRight.onmousedown = function (e) {
-        ; (horizontalSliderRightDragging = !0),
-          (horizontalSliderRight.style.top = e.y - 2 + "px")
-      }),
-      */
+  //       /*
+  //         if (
+  //           ($.ajax({
+  //             url: "plans/threed-plan-example-001.threed",
+  //             type: "GET",
+  //             contentType: "application/json",
+  //             success: function (e) {
+  //               var t = JSON.parse(e)
+  //               featuredPlanImage.src = t.thumb
+  //             },
+  //             error: function (e) {
+  //               console.debug("document.ready : get thumb ajax : " + e)
+  //             },
+  //           }),
+  //             "default" === UILayout &&
+  //             ($("#wallDiffuse").minicolors({
+  //               opacity: !0,
+  //               change: function (e, t) {
+  //                 var o = parseInt(e.replace("#", "0x"))
+  //                   ; (wallMaterial.color = new THREE.Color(o)),
+  //                     (wallMaterial.opacity = parseFloat(t)),
+  //                     (plan.wallDiffuse = wallMaterial.color),
+  //                     (plan.wallOpacity = wallMaterial.opacity),
+  //                     render()
+  //               },
+  //             }),
+  //               $("#roofDiffuse").minicolors({
+  //                 opacity: !0,
+  //                 change: function (e, t) {
+  //                   var o = parseInt(e.replace("#", "0x"))
+  //                     ; (roofMaterial.color = new THREE.Color(o)),
+  //                       (roofMaterial.opacity = parseFloat(t)),
+  //                       (plan.roofDiffuse = roofMaterial.color),
+  //                       (plan.roofOpacity = roofMaterial.opacity),
+  //                       render()
+  //                 },
+  //               }),
+  //               $("#wallSpecular").minicolors({
+  //                 change: function (e) {
+  //                   var t = parseInt(e.replace("#", "0x"))
+  //                     ; (wallMaterial.specular = new THREE.Color(t)),
+  //                       (plan.wallSpecular = wallMaterial.specular),
+  //                       render()
+  //                 },
+  //               }),
+  //               $("#roofSpecular").minicolors({
+  //                 change: function (e) {
+  //                   var t = parseInt(e.replace("#", "0x"))
+  //                     ; (roofMaterial.specular = new THREE.Color(t)),
+  //                       (plan.roofSpecular = roofMaterial.specular),
+  //                       render()
+  //                 },
+  //               }),
+  //               $("#floorDiffuse").minicolors({
+  //                 opacity: !0,
+  //                 change: function (e, t) {
+  //                   var o = parseInt(e.replace("#", "0x"))
+  //                     ; (floorMaterial.color = new THREE.Color(o)),
+  //                       (floorMaterial.opacity = parseFloat(t)),
+  //                       (plan.floorDiffuse = floorMaterial.color),
+  //                       (plan.floorOpacity = floorMaterial.opacity),
+  //                       render()
+  //                 },
+  //               }),
+  //               $("#floorSpecular").minicolors({
+  //                 change: function (e) {
+  //                   var t = parseInt(e.replace("#", "0x"))
+  //                     ; (floorMaterial.specular = new THREE.Color(t)),
+  //                       (plan.floorSpecular = floorMaterial.specular),
+  //                       render()
+  //                 },
+  //               }),
+  //               $("#groundDiffuse").minicolors({
+  //                 opacity: !0,
+  //                 change: function (e, t) {
+  //                   var o = parseInt(e.replace("#", "0x"))
+  //                     ; (groundMat.color = new THREE.Color(o)),
+  //                       (groundMat.opacity = parseFloat(t)),
+  //                       (plan.groundDiffuse = groundMat.color.getHexString()),
+  //                       (plan.groundOpacity = groundMat.opacity),
+  //                       render()
+  //                 },
+  //               }),
+  //               $("#groundSpecular").minicolors({
+  //                 change: function (e) {
+  //                   var t = parseInt(e.replace("#", "0x"))
+  //                     ; (groundMat.specular = new THREE.Color(t)),
+  //                       (plan.groundSpecular = groundMat.specular.getHexString()),
+  //                       render()
+  //                 },
+  //               })),
+  //             fragment)
+  //         )
+  //           $.ajax({
+  //             url: "api/getsharelink/" + fragment,
+  //             type: "GET",
+  //             contentType: "application/json",
+  //             success: function (e) {
+  //               var t = JSON.parse(e)
+  //               e.error
+  //                 ? console.debug(e.error)
+  //                 : ((loadingProgressTxt = "Loading Shared Plan"),
+  //                   (document.getElementById("modalLoadingDataInfo").innerHTML =
+  //                     loadingProgressTxt),
+  //                   $("#loadingModal").show(),
+  //                   hideMouseIndicators(),
+  //                   drawPlan(t))
+  //             },
+  //             error: function (e) {
+  //               console.debug("document.ready : getsharelink : " + e)
+  //             },
+  //           })
+  //         else {
+  //           var o = localStorage.getItem("plan")
+  //           if (o) {
+  //             var o = JSON.parse(o)
+  //               ; (loadingProgressTxt = "Loading Cached Plan"),
+  //                 (document.getElementById("modalLoadingDataInfo").innerHTML =
+  //                   loadingProgressTxt),
+  //                 $("#loadingModal").show(),
+  //                 hideMouseIndicators(),
+  //                 drawPlan(o)
+  //           } else showAbout(), setNewPlan()
+  //         }
+  //       },
+  //       error: function (e) {
+  //         console.dir(e)
+  //       },
+  //     }),
+  //     (progressBar = document.getElementById("progressBar")),
+  //     (progressBar.style.display = "none"),
+  //     (verticalSlider = document.getElementById("verticalSlider")),
+  //     (verticalSliderDragging = !1),
+  //     (verticalSlider.onmousedown = function (e) {
+  //       ; (verticalSliderDragging = !0),
+  //         (verticalSlider.style.left = e.x - 2 + "px")
+  //     }),
+  //     (horizontalSliderLeft = document.getElementById("horizontalSliderLeft")),
+  //     (horizontalSliderLeftDragging = !1),
+  //     (horizontalSliderLeft.onmousedown = function (e) {
+  //       ; (horizontalSliderLeftDragging = !0),
+  //         (horizontalSliderLeft.style.top = e.y - 2 + "px")
+  //     }),
+  //     (horizontalSliderRight = document.getElementById("horizontalSliderRight")),
+  //     (horizontalSliderRightDragging = !1),
+  //     (horizontalSliderRight.onmousedown = function (e) {
+  //       ; (horizontalSliderRightDragging = !0),
+  //         (horizontalSliderRight.style.top = e.y - 2 + "px")
+  //     }),
+  //     */
 
-      // ** ================================================
+  //     // ** ================================================
 
-      // paper.install(window),
-      // paper.setup(planCanvas),
-      // (paper.settings.hitTolerance = 3),
+  //     // paper.install(window),
+  //     // paper.setup(planCanvas),
+  //     // (paper.settings.hitTolerance = 3),
 
-      // ** ================================================
+  //     // ** ================================================
 
-      // initPlanView(),
-      // initThreeJS(),
-      // resize3dView(),
-      // resizePlanView(),
-      // animate(),
+  //     // initPlanView(),
+  //     // initThreeJS(),
+  //     // resize3dView(),
+  //     // resizePlanView(),
+  //     // animate(),
       
-      // ** ================================================
+  //     // ** ================================================
 
-      // threedDragDiv = document.getElementById("threedDragDiv")
+  //     // threedDragDiv = document.getElementById("threedDragDiv")
       
-      // document.getElementById("catalogTextFilter").onInput = function (e) {
-      //   var t = this.value.toLowerCase()
-      //   t.length > 0
-      //     ? Object.keys(threedItems).forEach(function (e) {
-      //       e.toLowerCase().indexOf(t) > -1
-      //         ? (document.getElementById(e).style.display = "block")
-      //         : (document.getElementById(e).style.display = "none")
-      //     })
-      //     : Object.keys(threedItems).forEach(function (e) {
-      //       document.getElementById(e).style.display = "block"
-      //     }),
-      //     loadInViewThumbs()
-      // }
+  //     // document.getElementById("catalogTextFilter").onInput = function (e) {
+  //     //   var t = this.value.toLowerCase()
+  //     //   t.length > 0
+  //     //     ? Object.keys(threedItems).forEach(function (e) {
+  //     //       e.toLowerCase().indexOf(t) > -1
+  //     //         ? (document.getElementById(e).style.display = "block")
+  //     //         : (document.getElementById(e).style.display = "none")
+  //     //     })
+  //     //     : Object.keys(threedItems).forEach(function (e) {
+  //     //       document.getElementById(e).style.display = "block"
+  //     //     }),
+  //     //     loadInViewThumbs()
+  //     // }
       
-      /* end if ajax true */
-      // ** ================================================
-    }
-  }, []) // end load data useEffect (client)
+  //     /* end if ajax true */
+  //     // ** ================================================
+  //   }
+  // }, []) // end load data useEffect (client)
 
   
   // // ** MODALS
@@ -3000,7 +3003,8 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
 
 
   // ** RETURN JSX
-  // ** Return JSX
+  // ** Return Jsx
+  // ** retuRn JSX.Element
   return (
   
     <>
@@ -3423,6 +3427,9 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
               {/* <Text>
                 Sub Footer
               </Text> */}
+
+              {/* VIEWS: PROPERTIES */}
+              <ViewProperties />
 
               {/* VIEWS: MODALS */}
               <ViewModals />
