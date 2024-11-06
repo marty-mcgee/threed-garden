@@ -725,7 +725,7 @@ const ViewProperties = (props: any) => {
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
                 className='editable' 
-                onChange={() => validatePlusOrMinusNumber(this, updateThreedPosX)}
+                // onChange={() => validatePlusOrMinusNumber(this, updateThreedPosX)}
                 maxLength={8} />
               cm
             </td>
@@ -738,7 +738,7 @@ const ViewProperties = (props: any) => {
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
                 className='editable' 
-                onChange={() => validatePlusOrMinusNumber(this, updateThreedPosY)}
+                // onChange={() => validatePlusOrMinusNumber(this, updateThreedPosY)}
                 maxLength={8} 
               />
               cm
@@ -752,7 +752,7 @@ const ViewProperties = (props: any) => {
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
                 className='editable' 
-                onChange={() => validatePlusOrMinusNumber(this, updateThreedPosZ)}
+                // onChange={() => validatePlusOrMinusNumber(this, updateThreedPosZ)}
                 maxLength={8} 
               />
               cm
@@ -766,11 +766,13 @@ const ViewProperties = (props: any) => {
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
                 className='editable' 
-                onChange={() => validatePlusNumber(this, updateThreedWidth)} 
+                // onChange={() => validatePlusNumber(this, updateThreedWidth)} 
                 maxLength={8} 
               />
               cm
-              <input type='checkbox' id='flipX' onChange={() => flipX(this.checked)} />
+              <input type='checkbox' id='flipX' 
+                // onChange={() => flipX(this.checked)} 
+              />
               Flip X
             </td>
           </tr>
@@ -781,7 +783,7 @@ const ViewProperties = (props: any) => {
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
                 className='editable' 
-                onChange={() => validatePlusOrMinusNumber(this, updateThreedHeight)}
+                // onChange={() => validatePlusOrMinusNumber(this, updateThreedHeight)}
                 maxLength={8} /> cm</td>
           </tr>
           <tr>
@@ -793,13 +795,13 @@ const ViewProperties = (props: any) => {
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
                 className='editable' 
-                onChange={() => validatePlusNumber(this, updateThreedDepth)} 
+                // onChange={() => validatePlusNumber(this, updateThreedDepth)} 
                 maxLength={8} 
               />
               cm
               <input type='checkbox' 
                 id='flipZ' 
-                onChange={() => flipZ(this.checked)} 
+                // onChange={() => flipZ(this.checked)} 
               />
               Flip Z
             </td>
@@ -814,7 +816,14 @@ const ViewProperties = (props: any) => {
           </tr>
           <tr>
             <td>3D Model</td>
-            <td><button className='moreInfoBtn' onClick={() => showModel3dView()}>View</button></td>
+            <td>
+              <button 
+                className='moreInfoBtn' 
+                // onClick={() => showModel3dView()}
+              >
+                View
+              </button>
+            </td>
           </tr>
                       </tbody>
         </table>
@@ -827,8 +836,8 @@ const ViewProperties = (props: any) => {
             <td>Compass Heading</td>
             <td>
               <input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' value='0'
-                onInput={() => rotateCompass(this.value)} 
-                onChange={() => rotateCompass(this.value)} 
+                // onInput={() => rotateCompass(this.value)} 
+                // onChange={() => rotateCompass(this.value)} 
               />
               <span id='compassHdgLbl'>0°</span>
             </td>
@@ -846,7 +855,8 @@ const ViewProperties = (props: any) => {
                 style={{
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
-                className='editable' onChange={() => validatePlusNumber(this, updateDefaultWallHeight)}
+                className='editable' 
+                // onChange={() => validatePlusNumber(this, updateDefaultWallHeight)}
                 maxLength={8} />
               cm</td>
           </tr>
@@ -856,7 +866,8 @@ const ViewProperties = (props: any) => {
                 style={{
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
-                className='editable' onChange={() => validatePlusNumber(this, updateDefaultWallThickness)}
+                className='editable' 
+                // onChange={() => validatePlusNumber(this, updateDefaultWallThickness)}
                 maxLength={8} />
               cm</td>
           </tr>
@@ -873,7 +884,8 @@ const ViewProperties = (props: any) => {
                 style={{
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
-                className='editable' onChange={() => validatePlusNumber(this, updateDefaultFloorThickness)}
+                className='editable' 
+                // onChange={() => validatePlusNumber(this, updateDefaultFloorThickness)}
                 maxLength={8} /> cm</td>
           </tr>
                       </tbody>
@@ -889,7 +901,8 @@ const ViewProperties = (props: any) => {
                 style={{
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
-                className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofThickness)}
+                className='editable' 
+                // onChange={() => validatePlusNumber(this, updateDefaultRoofThickness)}
                 maxLength={8} />
               cm</td>
           </tr>
@@ -899,7 +912,8 @@ const ViewProperties = (props: any) => {
                 style={{
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
-                className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofRise)}
+                className='editable' 
+                // onChange={() => validatePlusNumber(this, updateDefaultRoofRise)}
                 maxLength={8} />
               cm</td>
           </tr>
@@ -909,7 +923,8 @@ const ViewProperties = (props: any) => {
                 style={{
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
-                className='editable' onChange={() => validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight)}
+                className='editable' 
+                // onChange={() => validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight)}
                 maxLength={8} />
               cm</td>
           </tr>
@@ -919,7 +934,8 @@ const ViewProperties = (props: any) => {
                 style={{
                   // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
                 }}
-                className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofWidth)}
+                className='editable' 
+                // onChange={() => validatePlusNumber(this, updateDefaultRoofWidth)}
                 maxLength={8} />
               cm</td>
           </tr>
@@ -951,39 +967,60 @@ const ViewProperties = (props: any) => {
           <tr>
             <td width='70'>File</td>
             <td>
-              <input type='file' id='backgroundImageFile' name='backgroundImageFile'
-                onChange={() => loadBackgroundImage(event)} />
+              <input type='file' 
+                id='backgroundImageFile' 
+                name='backgroundImageFile'
+                // onChange={() => loadBackgroundImage(event)} 
+              />
             </td>
           </tr>
           <tr>
             <td>Opacity</td>
             <td>
               <input type='range' id='bgTemplateOpacity' name='bgTemplateOpacity' min='0' max='1.0' step='.01'
-                value='0.33' onInput={() => setBgTemplateOpacity(this.value)}
-                onChange={() => setBgTemplateOpacity(this.value)} />
+                value='0.33' 
+                // onInput={() => setBgTemplateOpacity(this.value)}
+                // onChange={() => setBgTemplateOpacity(this.value)} 
+              />
             </td>
           </tr>
           <tr>
             <td>Flip Horizontal</td>
             <td>
-              <input type='checkbox' id='bgTplFlipX' onChange={() => flipBackgroundTemplateX(this.checked)} />
+              <input type='checkbox' id='bgTplFlipX' 
+                // onChange={() => flipBackgroundTemplateX(this.checked)} 
+              />
             </td>
           </tr>
           <tr>
             <td>Flip Vertical</td>
             <td>
-              <input type='checkbox' id='bgTplFlipZ' onChange={() => flipBackgroundTemplateZ(this.checked)} />
+              <input type='checkbox' id='bgTplFlipZ' 
+                // onChange={() => flipBackgroundTemplateZ(this.checked)} 
+              />
             </td>
           </tr>
           <tr>
             <td width='60'></td>
-            <td><button id='resizeBackgroundImageBtn' onClick={() => enableResizeBackgroundTemplate()}
-                className='moreInfoBtn'>Resize</button></td>
+            <td>
+              <button id='resizeBackgroundImageBtn' 
+                // onClick={() => enableResizeBackgroundTemplate()}
+                className='moreInfoBtn'
+              >
+                Resize
+              </button>
+            </td>
           </tr>
           <tr>
             <td width='60'></td>
-            <td><button id='deleteBackgroundImageBtn' onClick={() => deleteBackgroundImage()}
-                className='moreInfoBtn'>Delete</button></td>
+            <td>
+              <button id='deleteBackgroundImageBtn' 
+                // onClick={() => deleteBackgroundImage()}
+                className='moreInfoBtn'
+              >
+                Delete
+              </button>
+            </td>
           </tr>
                       </tbody>
         </table>
@@ -1046,7 +1083,8 @@ const ViewProperties = (props: any) => {
               <input type='hidden' id='groundSpecular' value='#f2ff9c' />
             </td>
           </tr>
-          <tr>
+
+          {/* <tr>
             <td width='70'>Depth Write</td>
             <td>
               <input type='checkbox' id='depthWriteMode' onChange={() => setDepthWriteMode(this.checked)} />
@@ -1095,7 +1133,10 @@ const ViewProperties = (props: any) => {
                 step='0.1' onInput={() => adjustHemiLightBrightness(this.value)}
                 onChange={() => adjustHemiLightBrightness(this.value)} />
             </td>
-          </tr>
+          </tr> */}
+
+
+
                       </tbody>
         </table>
       </div>
@@ -1110,7 +1151,7 @@ const ViewProperties = (props: any) => {
               <span id='wallIdProp'></span>
             </td>
           </tr>
-          <tr>
+          {/* <tr>
             <td>Height</td>
             <td><input type='text' id='wallHeightProp'
                 style={{
@@ -1145,7 +1186,7 @@ const ViewProperties = (props: any) => {
                 }}
                 className='editable' onChange={() => validatePlusNumber(this, updateWallThickness)} maxLength={8} />
               cm</td>
-          </tr>
+          </tr> */}
           <tr>
             <td>Level</td>
             <td><span id='wallLevelProp'></span></td>
@@ -1164,7 +1205,7 @@ const ViewProperties = (props: any) => {
               <span id='roofIdProp'></span>
             </td>
           </tr>
-          <tr>
+          {/* <tr>
             <td>Thickness</td>
             <td><input type='text' id='roofThicknessProp'
                 style={{
@@ -1200,7 +1241,7 @@ const ViewProperties = (props: any) => {
                 }}
                 className='editable' onChange={() => validatePlusNumber(this, updateRoofWidth)} maxLength={8} />
               cm</td>
-          </tr>
+          </tr> */}
           <tr>
             <td>Rafter Length</td>
             <td><span id='rafterLengthProp'></span> cm</td>
@@ -1270,7 +1311,7 @@ const ViewProperties = (props: any) => {
             <td width='70'>Id</td>
             <td><span id='textIdProp'></span></td>
           </tr>
-          <tr>
+          {/* <tr>
             <td>Text</td>
             <td><input type='text' id='textValueProp'
                 style={{
@@ -1296,7 +1337,7 @@ const ViewProperties = (props: any) => {
                 }}
                 className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextY)} maxLength={8} />
             </td>
-          </tr>
+          </tr> */}
           <tr>
             <td>Level</td>
             <td><span id='textLevelProp'></span></td>
@@ -1306,7 +1347,7 @@ const ViewProperties = (props: any) => {
         {/* <div>Type<span id='textDataTypeProp'></span></div> */}
         {/* <div><button id='deleteTextAnnotationBtn' onClick={() => deleteTextBtnClick()}>Delete</button></div> */}
       </div>
-      <div id='levelPropertiesView' style={{ display: 'none' }}>
+      {/* <div id='levelPropertiesView' style={{ display: 'none' }}>
         <h3>Level Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
@@ -1331,8 +1372,8 @@ const ViewProperties = (props: any) => {
           </tr>
                       </tbody>
         </table>
-      </div>
-      <div 
+      </div> */}
+      {/* <div 
         id='groundPropertiesView' 
         style={{ display: 'none' }}
       >
@@ -1359,7 +1400,7 @@ const ViewProperties = (props: any) => {
           </tr>
                       </tbody>
         </table>
-      </div>
+      </div> */}
     </div>
     </Flex>
   )
@@ -1433,7 +1474,7 @@ const ViewModals = (props: any) => {
               <div className='tab'>
                 <button 
                   className='tablinks active' 
-                  onClick={() => openTab('tab1')} 
+                  // onClick={() => openTab('tab1')} 
                   id='tab1'
                 >
                   Intro
@@ -1449,7 +1490,7 @@ const ViewModals = (props: any) => {
                     <input 
                       type='checkbox' 
                       id='saveEditsToLocalStorage' 
-                      onChange={() => handleSaveEditsLocalStorageOption()}
+                      // onChange={() => handleSaveEditsLocalStorageOption()}
                     />
                     <span className='tooltip'>
                       {/* <img src='media/info.png' className='tooltip' /> */}
@@ -1472,7 +1513,7 @@ const ViewModals = (props: any) => {
                               <br />
                               <button 
                                 id='loadLocalStoragePlanBtn'
-                                onClick={() => loadFromLocalStorage()}
+                                // onClick={() => loadFromLocalStorage()}
                               >
                                 Load Plan
                               </button>
@@ -1484,7 +1525,7 @@ const ViewModals = (props: any) => {
                               <div>
                                 <img 
                                   id='localStoragePlanImage' 
-                                  onClick={() => loadFromLocalStorage()}
+                                  // onClick={() => loadFromLocalStorage()}
                                 />
                               </div>
                             </td>
@@ -1501,17 +1542,26 @@ const ViewModals = (props: any) => {
                             <button 
                               id='loadFeaturedPlanBtn'
                               className='largeButton'
-                              onClick={() => loadExamplePlan()}
+                              // onClick={() => loadExamplePlan()}
                             >
                               Load Example Plan
                             </button>
                             <br /><br />
                             or
                             <br />
-                            <button onClick={() => closeAllModals()} className='largeButton'>Start New Plan</button>
+                            <button 
+                              // onClick={() => closeAllModals()} 
+                              className='largeButton'
+                            >
+                              Start New Plan
+                            </button>
                           </td>
                           <td>
-                            <div><img id='featuredPlanImage' onClick={() => loadExamplePlan()} /></div>
+                            <div>
+                              <img id='featuredPlanImage' 
+                                // onClick={() => loadExamplePlan()} 
+                              />
+                            </div>
                           </td>
                         </tr>
                       </tbody>
@@ -1883,7 +1933,7 @@ const ViewModals = (props: any) => {
 
 // ==============================================================
 
-function showModel3dView(event) {
+function showModel3dView(event: any) {
   console.debug('showModel3dView', event)
   // var e = modalModel3dThreedId
   // e !== -1 &&
@@ -2195,37 +2245,37 @@ function showThreedLicenseSummary(e: any) {
     // var t = camelCaseToSentence(e)
     document.getElementById("model3dName").innerText = e
     // var o = threedItems[e].author
-    document.getElementById("model3dAuthor").innerText = threedItems[e].author
+    // document.getElementById("model3dAuthor").innerText = threedItems[e].author
     var a = "License: Default"
 
-    switch (threedItems[e].license) {
-      case "Free Art License 1.3":
-        a =
-          "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
-          "</a>"
-        break
-      case "CC-0":
-        a =
-          "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
-          "</a>"
-        break
-      case "CC BY 3.0":
-        a =
-          "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
-          "</a>"
-        break
-      case "CC BY 4.0":
-        a =
-          "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
-          "</a>"
-        break
-      default:
-        a = threedItems[e].license
-    }
+    // switch (threedItems[e].license) {
+    //   case "Free Art License 1.3":
+    //     a =
+    //       "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
+    //       threedItems[e].license +
+    //       "</a>"
+    //     break
+    //   case "CC-0":
+    //     a =
+    //       "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
+    //       threedItems[e].license +
+    //       "</a>"
+    //     break
+    //   case "CC BY 3.0":
+    //     a =
+    //       "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
+    //       threedItems[e].license +
+    //       "</a>"
+    //     break
+    //   case "CC BY 4.0":
+    //     a =
+    //       "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+    //       threedItems[e].license +
+    //       "</a>"
+    //     break
+    //   default:
+    //     a = threedItems[e].license
+    // }
     document.getElementById("model3dLicense").innerHTML = a
     document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
     setPropertiesView("model3dMeta")
