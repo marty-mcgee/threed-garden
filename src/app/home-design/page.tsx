@@ -614,6 +614,1251 @@ const PaperCanvas = (props: any) => {
 // ** END: PAPER.JS
 // ==============================================================
 
+
+
+// ** VIEWS (COMPONENTS)
+
+// ** VIEW: PROPERTIES (of a threed object, or other dom element)
+const ViewProperties = (props: any) => {
+  console.debug('PropertiesView loading...')
+  return (
+    
+    <Flex>
+    <div 
+      id='propertiesView' 
+      style={{ 
+        // paddingLeft: '10px' 
+      }}
+    >
+      <div 
+        id='threed3DModelPropertiesView' 
+        // style={{ display: 'none' }}
+      >
+        <h3>3d Model Properties</h3>
+        <table 
+          className='propertiesTable' 
+          style={{ minWidth: '290px', minHeight: '290px' }}
+        >
+          <tbody>
+          <tr>
+            <td>
+              <div 
+                onMouseDown={(event) => beginDrag(event, modalModel3dThreedId)} 
+                className='disableSelection'
+                style={{ textAlign: 'center' }}
+              >
+                <img
+                  id='model3dLargeThumb'
+                  className='disableSelection' 
+                  style={{ pointerEvents: 'none' }} 
+                />
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>Name</td>
+            <td><span id='model3dName'></span></td>
+          </tr>
+          <tr>
+            <td>Author</td>
+            <td><span id='model3dAuthor'></span></td>
+          </tr>
+          <tr>
+            <td>License</td>
+            <td><span id='model3dLicense'></span></td>
+          </tr>
+          <tr>
+            <td>3D Model</td>
+            <td>
+              <button className='moreInfoBtn' 
+                onClick={(event) => showModel3dView(event)}
+              >
+                View
+              </button>
+            </td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div 
+        id='threedPropertiesView'
+        style={{ display: 'none' }}
+      >
+        <h3>Threed Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td>Id</td>
+            <td><span id='objectId'></span></td>
+          </tr>
+          <tr>
+            <td>Name</td>
+            <td><span id='objectName'></span></td>
+          </tr>
+          <tr>
+            <td>X</td>
+            <td>
+              <input type='text' id='threedXProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' 
+                onChange={() => validatePlusOrMinusNumber(this, updateThreedPosX)}
+                maxLength={8} />
+              cm
+            </td>
+          </tr>
+          <tr>
+            <td>Y</td>
+            <td>
+              <input type='text' id='threedYProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' 
+                onChange={() => validatePlusOrMinusNumber(this, updateThreedPosY)}
+                maxLength={8} 
+              />
+              cm
+            </td>
+          </tr>
+          <tr>
+            <td>Z</td>
+            <td>
+              <input type='text' id='threedZProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' 
+                onChange={() => validatePlusOrMinusNumber(this, updateThreedPosZ)}
+                maxLength={8} 
+              />
+              cm
+            </td>
+          </tr>
+          <tr>
+            <td>Width</td>
+            <td>
+              <input type='text' id='threedWidthProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' 
+                onChange={() => validatePlusNumber(this, updateThreedWidth)} 
+                maxLength={8} 
+              />
+              cm
+              <input type='checkbox' id='flipX' onChange={() => flipX(this.checked)} />
+              Flip X
+            </td>
+          </tr>
+          <tr>
+            <td>Height</td>
+            <td><input type='text' id='threedHeightProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' 
+                onChange={() => validatePlusOrMinusNumber(this, updateThreedHeight)}
+                maxLength={8} /> cm</td>
+          </tr>
+          <tr>
+            <td>Depth</td>
+            <td>
+              <input type='text' 
+                id='threedDepthProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' 
+                onChange={() => validatePlusNumber(this, updateThreedDepth)} 
+                maxLength={8} 
+              />
+              cm
+              <input type='checkbox' 
+                id='flipZ' 
+                onChange={() => flipZ(this.checked)} 
+              />
+              Flip Z
+            </td>
+          </tr>
+          <tr>
+            <td>Angle</td>
+            <td><span id='threedAngleProp'></span>°</td>
+          </tr>
+          <tr>
+            <td>Level</td>
+            <td><span id='threedLevelProp'></span></td>
+          </tr>
+          <tr>
+            <td>3D Model</td>
+            <td><button className='moreInfoBtn' onClick={() => showModel3dView()}>View</button></td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='defaultsPropertiesView' style={{ display: 'none' }}>
+        <h3>Default Settings</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td>Compass Heading</td>
+            <td>
+              <input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' value='0'
+                onInput={() => rotateCompass(this.value)} 
+                onChange={() => rotateCompass(this.value)} 
+              />
+              <span id='compassHdgLbl'>0°</span>
+            </td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='wallDefaultsPropertiesView' style={{ display: 'none' }}>
+        <h3>Default Wall Settings</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>Wall Height</td>
+            <td><input type='text' id='defaultWallHeightProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateDefaultWallHeight)}
+                maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Wall Thickness</td>
+            <td><input type='text' id='defaultWallThicknessProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateDefaultWallThickness)}
+                maxLength={8} />
+              cm</td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='floorDefaultsPropertiesView' style={{ display: 'none' }}>
+        <h3>Default Floor Settings</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td>Floor Thickness</td>
+            <td><input type='text' id='defaultFloorThicknessProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateDefaultFloorThickness)}
+                maxLength={8} /> cm</td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='roofDefaultsPropertiesView' style={{ display: 'none' }}>
+        <h3>Default Roof Settings</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td>Roof Thickness</td>
+            <td><input type='text' id='defaultRoofThicknessProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofThickness)}
+                maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Rise</td>
+            <td><input type='text' id='defaultRoofRiseProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofRise)}
+                maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Base Offset</td>
+            <td><input type='text' id='defaultRoofStartHeightProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight)}
+                maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Run</td>
+            <td><input type='text' id='defaultRoofWidthProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofWidth)}
+                maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Rafter Length</td>
+            <td><span id='defaultRafterLengthProp'></span> cm</td>
+          </tr>
+          <tr>
+            <td>Roof Pitch</td>
+            <td><span id='defaultRoofPitchProp'></span>°</td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='dimensionDefaultsPropertiesView' style={{ display: 'none' }}>
+        <h3>Default Dimension Settings</h3>
+      </div>
+      <div id='textDefaultsPropertiesView' style={{ display: 'none' }}>
+        <h3>Default Text Settings</h3>
+      </div>
+
+      <div 
+        id='planViewPropertiesView' 
+        style={{ display: 'none' }}
+      >
+        <h3>Background Template</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>File</td>
+            <td>
+              <input type='file' id='backgroundImageFile' name='backgroundImageFile'
+                onChange={() => loadBackgroundImage(event)} />
+            </td>
+          </tr>
+          <tr>
+            <td>Opacity</td>
+            <td>
+              <input type='range' id='bgTemplateOpacity' name='bgTemplateOpacity' min='0' max='1.0' step='.01'
+                value='0.33' onInput={() => setBgTemplateOpacity(this.value)}
+                onChange={() => setBgTemplateOpacity(this.value)} />
+            </td>
+          </tr>
+          <tr>
+            <td>Flip Horizontal</td>
+            <td>
+              <input type='checkbox' id='bgTplFlipX' onChange={() => flipBackgroundTemplateX(this.checked)} />
+            </td>
+          </tr>
+          <tr>
+            <td>Flip Vertical</td>
+            <td>
+              <input type='checkbox' id='bgTplFlipZ' onChange={() => flipBackgroundTemplateZ(this.checked)} />
+            </td>
+          </tr>
+          <tr>
+            <td width='60'></td>
+            <td><button id='resizeBackgroundImageBtn' onClick={() => enableResizeBackgroundTemplate()}
+                className='moreInfoBtn'>Resize</button></td>
+          </tr>
+          <tr>
+            <td width='60'></td>
+            <td><button id='deleteBackgroundImageBtn' onClick={() => deleteBackgroundImage()}
+                className='moreInfoBtn'>Delete</button></td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='3dViewPropertiesView' style={{ display: 'none' }}>
+        <h3>3d View Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>Wall Color</td>
+            <td>
+              <input type='hidden' id='wallDiffuse' value='rgba(255,255,255,0.5)' />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Wall Specular</td>
+            <td>
+              <input type='hidden' id='wallSpecular' value='#00ff00' />
+            </td>
+          </tr>
+          {/* <tr>
+            <td width='70'>Wall Emissive</td>
+            <td>
+              <input type='hidden' id='wallEmissive' value='#ffffff' />
+            </td>
+          </tr> */}
+          <tr>
+            <td width='70'>Floor Color</td>
+            <td>
+              <input type='hidden' id='floorDiffuse' value='rgba(15,15,15,0.5)' />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Floor Specular</td>
+            <td>
+              <input type='hidden' id='floorSpecular' value='#00ffff' />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Roof Color</td>
+            <td>
+              <input type='hidden' id='roofDiffuse' value='rgba(255,255,255,0.5)' />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Roof Specular</td>
+            <td>
+              <input type='hidden' id='roofSpecular' value='#ff0000' />
+            </td>
+          </tr>
+          <tr>
+            <td>Ground Color</td>
+            <td>
+              <input type='hidden' id='groundDiffuse' value='rgba(03,141,221,1.0)' />
+            </td>
+          </tr>
+          <tr>
+            <td>Ground Specular</td>
+            <td>
+              <input type='hidden' id='groundSpecular' value='#f2ff9c' />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Depth Write</td>
+            <td>
+              <input type='checkbox' id='depthWriteMode' onChange={() => setDepthWriteMode(this.checked)} />
+            </td>
+          </tr>
+          <tr>
+            <td width='70'>Sort Objects</td>
+            <td>
+              <input type='checkbox' id='sortObjectsMode' onChange={() => setSortObjectsMode(this.checked)} />
+            </td>
+          </tr>
+          <tr>
+            <td>Sun Azimuth</td>
+            <td>
+              <input type='range' id='sunAzimuth' name='sunAzimuth' min='0' max='1.0' step='.01' value='0.33'
+                onInput={() => setSunAzimuth(this.value)} onChange={() => setSunAzimuth(this.value)} />
+            </td>
+          </tr>
+          <tr>
+            <td>Sun Incline</td>
+            <td>
+              <input type='range' id='sunIncline' name='sunIncline' min='0' max='1.0' step='.01' value='0.0'
+                onInput={() => setSunIncline(this.value)} onChange={() => setSunIncline(this.value)} />
+            </td>
+          </tr>
+          <tr>
+            <td>Ambient Intensity</td>
+            <td>
+              <input type='range' id='ambientLightBrightness' name='ambientLightBrightness' min='0.0'
+                max='1.0' step='0.1' onInput={() => adjustAmbientLightBrightness(this.value)}
+                onChange={() => adjustAmbientLightBrightness(this.value)} />
+            </td>
+          </tr>
+          <tr>
+            <td>Directional Intensity</td>
+            <td>
+              <input type='range' id='dirLightBrightness' name='dirLightBrightness' min='0.0' max='1.0'
+                step='0.1' onInput={() => adjustDirLightBrightness(this.value)}
+                onChange={() => adjustDirLightBrightness(this.value)} />
+            </td>
+          </tr>
+          <tr>
+            <td>Hemisphere Intensity</td>
+            <td>
+              <input type='range' id='hemiLightBrightness' name='hemiLightBrightness' min='0.0' max='1.0'
+                step='0.1' onInput={() => adjustHemiLightBrightness(this.value)}
+                onChange={() => adjustHemiLightBrightness(this.value)} />
+            </td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='wallPropertiesView' style={{ display: 'none' }}>
+        <h3>Wall Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>Id</td>
+            <td>
+              <input type='hidden' id='wallIdHidden' />
+              <span id='wallIdProp'></span>
+            </td>
+          </tr>
+          <tr>
+            <td>Height</td>
+            <td><input type='text' id='wallHeightProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateWallHeight)} maxLength={8} /> cm
+            </td>
+          </tr>
+          <tr>
+            <td>Height Start</td>
+            <td><input type='text' id='wallHeight0Prop'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateWallHeight0)} maxLength={8} /> cm
+            </td>
+          </tr>
+          <tr>
+            <td>Height End</td>
+            <td><input type='text' id='wallHeight1Prop'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateWallHeight1)} maxLength={8} /> cm
+            </td>
+          </tr>
+          <tr>
+            <td>Thickness</td>
+            <td><input type='text' id='wallThicknessProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateWallThickness)} maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Level</td>
+            <td><span id='wallLevelProp'></span></td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='roofPropertiesView' style={{ display: 'none' }}>
+        <h3>Roof Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>Id</td>
+            <td>
+              <input type='hidden' id='roofIdHidden' />
+              <span id='roofIdProp'></span>
+            </td>
+          </tr>
+          <tr>
+            <td>Thickness</td>
+            <td><input type='text' id='roofThicknessProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateRoofThickness)} maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Rise</td>
+            <td><input type='text' id='roofRiseProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateRoofRise)} maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Base Offset</td>
+            <td><input type='text' id='roofStartHeightProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusOrMinusNumber(this, updateRoofStartHeight)}
+                maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Run</td>
+            <td><input type='text' id='roofWidthProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateRoofWidth)} maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Rafter Length</td>
+            <td><span id='rafterLengthProp'></span> cm</td>
+          </tr>
+          <tr>
+            <td>Roof Pitch</td>
+            <td><span id='roofPitchProp'></span>°</td>
+          </tr>
+          <tr>
+            <td>Level</td>
+            <td><span id='roofLevelProp'></span></td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='floorPropertiesView' style={{ display: 'none' }}>
+        <h3>Floor Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>Id</td>
+            <td><span id='floorIdProp'></span></td>
+          </tr>
+          <tr>
+            <td>Area</td>
+            <td><span id='floorAreaProp'></span></td>
+          </tr>
+          <tr>
+            <td>Thickness</td>
+            <td><span id='floorThicknessProp'></span></td>
+          </tr>
+          <tr>
+            <td>Level</td>
+            <td><span id='floorLevelProp'></span></td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='dimensionPropertiesView' style={{ display: 'none' }}>
+        <h3>Dimension Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>Id</td>
+            <td><span id='dimensionIdProp'></span></td>
+          </tr>
+          <tr>
+            <td>Length</td>
+            <td><span id='dimensionLengthProp'></span></td>
+          </tr>
+          <tr>
+            <td>Adjacent</td>
+            <td><span id='dimensionAdjacentProp'></span></td>
+          </tr>
+          <tr>
+            <td>Level</td>
+            <td><span id='dimensionLevelProp'></span></td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div id='textPropertiesView' style={{ display: 'none' }}>
+        <h3>Text Annotation Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>Id</td>
+            <td><span id='textIdProp'></span></td>
+          </tr>
+          <tr>
+            <td>Text</td>
+            <td><input type='text' id='textValueProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onKeyUp={() => validateText(event, this, updateTextValue)} maxLength={100} />
+            </td>
+          </tr>
+          <tr>
+            <td>X</td>
+            <td><input type='text' id='textXProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextX)} maxLength={8} />
+            </td>
+          </tr>
+          <tr>
+            <td>Y</td>
+            <td><input type='text' id='textYProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextY)} maxLength={8} />
+            </td>
+          </tr>
+          <tr>
+            <td>Level</td>
+            <td><span id='textLevelProp'></span></td>
+          </tr>
+                      </tbody>
+        </table>
+        {/* <div>Type<span id='textDataTypeProp'></span></div> */}
+        {/* <div><button id='deleteTextAnnotationBtn' onClick={() => deleteTextBtnClick()}>Delete</button></div> */}
+      </div>
+      <div id='levelPropertiesView' style={{ display: 'none' }}>
+        <h3>Level Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td width='70'>Id</td>
+            <td><span id='levelIdProp'></span></td>
+          </tr>
+          <tr>
+            <td>Name</td>
+            <td><span id='levelNameProp'></span></td>
+          </tr>
+          <tr>
+            <td>Height</td>
+            <td>
+              <input type='text' id='levelHeightProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusOrMinusNumber(this, updateLevelHeight)}
+                maxLength={8} />
+            </td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+      <div 
+        id='groundPropertiesView' 
+        style={{ display: 'none' }}
+      >
+        <h3>Ground Layer Properties</h3>
+        <table className='propertiesTable' style={{ minWidth: '290px' }}>
+                      <tbody>
+          <tr>
+            <td>Width</td>
+            <td><input type='text' id='groundWidthProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateGroundWidth)} maxLength={8} />
+              cm</td>
+          </tr>
+          <tr>
+            <td>Length</td>
+            <td><input type='text' id='groundLengthProp'
+                style={{
+                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                }}
+                className='editable' onChange={() => validatePlusNumber(this, updateGroundLength)} maxLength={8} />
+              cm</td>
+          </tr>
+                      </tbody>
+        </table>
+      </div>
+    </div>
+    </Flex>
+  )
+}
+
+
+const ViewModals = (props: any) => {
+  
+  // ** MODALS
+  const [showModalAbout, setShowModalAbout] = useState(false)
+  const [showModal3dModel, setShowModal3dModel] = useState(false)
+  const [showModalShare, setShowModalShare] = useState(false)
+  const [showModalLoading, setShowModalLoading] = useState(false)
+
+  function handleShowModalAbout() {
+    console.debug('handleShowModalAbout()')
+    setShowModalAbout(true)
+    console.debug('showModalAbout', showModalAbout)
+    // $('.supportEmail').text('support@companyjuice.com'),
+    //   $('#showModalAbout').show(),
+    //   hideMouseIndicators()
+  }
+  function handleShowModal3dModel() {
+    console.debug('handleShowModal3dModel()')
+    setShowModal3dModel(true)
+    console.debug('showModal3dModel', showModal3dModel)
+  }
+  function handleShowModalShare() {
+    console.debug('handleShowModalShare()')
+    setShowModalShare(true)
+    console.debug('showModalShare', showModalShare)
+  }
+  function handleShowModalLoading() {
+    console.debug('handleShowModalLoading()')
+    setShowModalLoading(true)
+    console.debug('showModalLoading', showModalLoading)
+  }
+  // ** END MODALS
+
+  return (
+    
+    <Grid>
+    {/* MODALS: OPTIONS */}
+    <Flex 
+      id='modals'
+      direction='row'
+      align='center'
+      justify='center'
+      // style={{
+      //   position: 'absolute',
+      //   bottom: '32px',
+      // }}
+    >
+      { showModalAbout && (
+        <div 
+          id='modalAbout' 
+          // className='modal'
+        >
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <span 
+                className='close'
+                onClick={() => setShowModalAbout(false)}
+              >
+                -X-
+              </span>
+              <h2>ThreeD Home Design</h2>
+            </div>
+            <div className='modal-body'>
+
+              <div className='tab'>
+                <button 
+                  className='tablinks active' 
+                  onClick={() => openTab('tab1')} 
+                  id='tab1'
+                >
+                  Intro
+                </button>
+              </div>
+
+              <div id='tab1Content' className='tabcontent' style={{display: 'block'}}>
+                <h3>ThreeD Home Design Introduction</h3>
+                <p>Plan + Share Ideas for your Home Design in 2D + 3D</p>
+                <div style={{padding: '12px'}}>
+                  <div>
+                    Save Plan Edits to local web storage? 
+                    <input 
+                      type='checkbox' 
+                      id='saveEditsToLocalStorage' 
+                      onChange={() => handleSaveEditsLocalStorageOption()}
+                    />
+                    <span className='tooltip'>
+                      {/* <img src='media/info.png' className='tooltip' /> */}
+                      <span className='tooltiptext'>
+                        <div>
+                          Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='http://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
+                          More info about 
+                          <a href='https://www.w3schools.com/HTML/html5_webstorage.asp' target='_blank' rel='noreferrer'>
+                            Local Web Storage
+                          </a>.
+                        </div>
+                      </span>
+                    </span>
+                    <div id='localStoragePlanDiv'>
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td style={{ textAlign: 'center'}}>
+                              Most Recent Edit saved in Local Web Storage.
+                              <br />
+                              <button 
+                                id='loadLocalStoragePlanBtn'
+                                onClick={() => loadFromLocalStorage()}
+                              >
+                                Load Plan
+                              </button>
+                              <br />
+                              <br />
+                              <span id='localStoragePlanLastSavedDate'></span>
+                            </td>
+                            <td>
+                              <div>
+                                <img 
+                                  id='localStoragePlanImage' 
+                                  onClick={() => loadFromLocalStorage()}
+                                />
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div id='featuredPlan'>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td style={{ textAlign: 'center', width: '300px'}}>
+                            <button 
+                              id='loadFeaturedPlanBtn'
+                              className='largeButton'
+                              onClick={() => loadExamplePlan()}
+                            >
+                              Load Example Plan
+                            </button>
+                            <br /><br />
+                            or
+                            <br />
+                            <button onClick={() => closeAllModals()} className='largeButton'>Start New Plan</button>
+                          </td>
+                          <td>
+                            <div><img id='featuredPlanImage' onClick={() => loadExamplePlan()} /></div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div className='modal-footer'>
+              <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+            </div>
+          </div>
+        </div>
+      )}
+      { showModal3dModel && (
+        <div 
+          id='modal3dModel' 
+          // className='modal'
+        >
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <span 
+                className='close'
+                onClick={() => setShowModal3dModel(false)}
+              >
+                -X-
+              </span>
+              <h2>ThreeD Home Design</h2>
+            </div>
+            <div className='modal-body'>
+              <div id='model3dView'>
+                <canvas id='model3dViewCanvas'></canvas>
+              </div>
+              <div id='modalModelDescription'>
+                <h3>3d Model Properties</h3>
+                <table className='propertiesTable'>
+                  <tbody>
+                    <tr>
+                      <td width='70'>Name</td>
+                      <td><span id='model3dNameModal'></span></td>
+                    </tr>
+                    <tr>
+                      <td>Author</td>
+                      <td><span id='model3dAuthorModal'></span></td>
+                    </tr>
+                    <tr>
+                      <td>License</td>
+                      <td><span id='model3dLicenseModal'></span></td>
+                    </tr>
+                    <tr>
+                      <td>OBJ&nbspFile&nbspComments</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <textarea id='modalModel3dObjHeader'></textarea>
+
+              </div>
+            </div>
+            <div className='modal-footer'>
+              <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+            </div>
+          </div>
+        </div>
+      )}
+      { showModalShare && (
+        <div 
+          id='modalShare' 
+          // className='modal-small'
+        >
+          <div className='modal-small-content'>
+            <div className='modal-small-header'>
+              <span 
+                className='close'
+                onClick={() => setShowModalShare(false)}
+              >
+                -X-
+              </span>
+              <h2>ThreeD Home Design</h2>
+            </div>
+            <div className='modal-small-body'>
+              <h3>Share Plan</h3>
+              <button 
+                id='getShareLinkBtn' 
+                className='mediumButton' 
+                // onClick={() => generateShareLink()}
+              >
+                Generate Share Link
+              </button>
+              {/* <div style='margin:10px 0px 10px 0px'>
+                <div style='padding-top:6px'>
+                  <label for='shareLinkUrl'>Editable Copy</label><br />
+                  <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
+                    style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                  <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink()}>Copy</button>
+                </div>
+
+                <div style='padding-top:6px'>
+                  <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
+                  <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
+                    style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                  <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink3d()}>Copy</button>
+                </div>
+
+                <div style='padding-top:6px'>
+                  <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
+                  <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
+                    style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                  <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLinkPlan()}>Copy</button>
+                </div>
+              </div> */}
+            </div>
+            <div className='modal-small-footer'>
+              <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+            </div>
+          </div>
+        </div>
+      )}
+      { showModalLoading && (
+        <div 
+          id='modalLoading' 
+          // className='modal-small'
+        >
+          <div className='modal-small-content'>
+            <div className='modal-small-header'>
+              <span 
+                className='close'
+                onClick={() => setShowModalLoading(false)}
+              >
+                -X-
+              </span>
+              <h2>ThreeD Home Design</h2>
+            </div>
+            <div className='modal-small-body'>
+              <h3>Loading Model Progress</h3>
+              <textarea id='modalLoadingDataInfo'></textarea>
+            </div>
+            <div className='modal-small-footer'>
+              <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+            </div>
+          </div>
+        </div>
+      )}
+
+      
+      {/* <ul> */}
+        {/* <li className='brandImg'>
+          <a onClick={() => showModalAbout()} 
+            style={{padding: '0px', margin: '0px'}}
+          >
+            <img
+              src='favicon/favicon.png' 
+              width='48px' 
+              height='48px' 
+              title='ThreeD Home Design' 
+              alt='ThreeD Home Design' 
+            />
+          </a>
+        </li> */}
+        {/* <li className='brand'>
+          <a onClick={() => showModalAbout()} 
+            style={{textAlign: 'center', paddingTop: '15px', paddingLeft: '18px', paddingRight: '24px', paddingBottom: '15px', textDecoration: 'none', fontSize: '21px',}}
+          >
+            ThreeD Home Design
+          </a>
+        </li> */}
+        
+        
+        {/* 
+        <li className='dropdown'>
+          <a 
+            href='#javascript:void(0)' 
+            className='dropbtn'
+          >
+            File
+          </a>
+          <div className='dropdown-content'>
+            <a onClick={() => setNewPlan()}>New</a>
+            <a onClick={() => loadExamplePlan()}>Load Demo</a>
+            <a id='loadBtn' onClick={() => document.getElementById('file').click()}>Load</a>
+            <input type='file' style={{ display: 'none' }} id='file' name='file' onChange={() => loadFileAsText(event)} />
+            <a id='saveBtn' onClick={() => savePlan()}>Save</a>
+            <a id='shareBtn' onClick={() => openShareDialog()}>Share</a>
+            <a id='defaultsBtn' onClick={() => setPropertiesView('defaults')}>Defaults</a>
+            <!--<a  id='groundPropertiesButton' onClick={() => setToolMode('ground')}>Ground Properties</a>-->
+            <a id='fullscreenApp' onClick={() => openFullscreen('appBody')}>Fullscreen</a>
+          </div>
+        </li> */}
+        {/* <li className='dropdown'>
+          <a href='#javascript:void(0)' className='dropbtn'>Edit</a>
+          <div className='dropdown-content'>
+            <a id='undoBtn' onClick={() => doUndo()}>Undo</a>
+            <a id='redoBtn' onClick={() => doRedo()}>Redo</a>
+          </div>
+        </li> */}
+        {/* <li className='dropdown'>
+          <a href='#javascript:void(0)' className='dropbtn'>Plan View</a>
+          <div className='dropdown-content'>
+            <a onClick={() => setPropertiesView('planView')}>Background Template</a>
+            <a onClick={() => newLevel()}>Add Level</a>
+            <a onClick={() => openFullscreen('planView')}>Fullscreen</a>
+          </div>
+        </li> */}
+        {/* <li className='dropdown'>
+          <a href='#javascript:void(0)' className='dropbtn'>3D View</a>
+          <div className='dropdown-content'>
+            <a onClick={() => setPropertiesView('3dView')}>Properties</a>
+            <a onClick={() => openFullscreen('view3d')}>Fullscreen</a>
+            <a onClick={() => exportToObj()}>Export As OBJ</a>
+            <!--<a  id='createThumb' onClick={() => createThumbForHistory()}>Create Thumb</a>-->
+          </div>
+        </li> */}
+        {/* <!--<li>
+          <a  onClick={() => doLog()}>Log</a>
+        </li>-->
+        <!-- <li>
+          <a onClick={() => showModalAbout()}>About</a>
+        </li> --> */}
+        {/* <li>
+          <a id='pointerTool' onClick={() => setToolMode('pointer')} className='toolButton activeTool'
+            title='Pointer Select' alt='Pointer Select'>
+            <img src='media/pointericonWhite.png' height='42px'>
+          </a>
+        </li> */}
+        {/* <!-- <li>
+          <a onClick={() => setToolMode('hand')}>
+            <img src='media/handicon.png' width='50px'>
+          </a>
+        </li> --> */}
+        {/* <li>
+          <a id='addWallTool' onClick={() => setToolMode('walls')} className='toolButton' title='Add Wall' alt='Add Wall'>
+            <img src='media/newWallWhite2.png' height='42px'>
+          </a>
+        </li> */}
+        {/* <li>
+          <a id='addFloorTool' onClick={() => setToolMode('floor')} className='toolButton' title='Add Floor'
+            alt='Add Floor'>
+            <img src='media/newFloorWhite2.png' height='42px'>
+          </a>
+        </li> */}
+        {/* <li>
+          <a id='addRoofTool' onClick={() => setToolMode('roof')} className='toolButton' title='Add Roof' alt='Add Roof'>
+            <img src='media/newRoofWhite2.png' height='42px'>
+          </a>
+        </li> */}
+        {/* <li>
+          <a id='addRulerTool' onClick={() => setToolMode('dimension')} className='toolButton' title='Add Dimension'
+            alt='Add Dimension'>
+            <img src='media/newRulerWhite2.png' height='42px'>
+          </a>
+        </li> */}
+        {/* <li>
+          <a id='addTextTool' onClick={() => setToolMode('text')} className='toolButton' title='Add Text Annotation'
+            alt='Add Text Annotation'>
+            <img src='media/newTextWhite.png' height='42px'>
+          </a>
+        </li> */}
+      {/* </ul> */}
+    </Flex>
+
+    {/* MODALS: CONTAINERS */}
+    <Flex>
+      <div id='modal3dModel' className='modal'>
+        <div className='modal-content'>
+          <div className='modal-header'>
+            <span className='close'>-X-</span>
+            <img src='favicon/favicon.png' height='48px' 
+              title='ThreeD Home Design' alt='ThreeD Home Design' />
+            <h2>ThreeD Home Design</h2>
+          </div>
+          <div className='modal-body'>
+            <div id='model3dView'>
+              <canvas id='model3dViewCanvas'></canvas>
+            </div>
+            <div id='modalModelDescription'>
+              <h3>3d Model Properties</h3>
+              <table className='propertiesTable' style={{ width: '400px'}}>
+                <tbody>
+                  <tr>
+                    <td width='70'>Name</td>
+                    <td><span id='model3dNameModal'></span></td>
+                  </tr>
+                  <tr>
+                    <td>Author</td>
+                    <td><span id='model3dAuthorModal'></span></td>
+                  </tr>
+                  <tr>
+                    <td>License</td>
+                    <td><span id='model3dLicenseModal'></span></td>
+                  </tr>
+                  <tr>
+                    <td>OBJ&nbspFile&nbspComments</td>
+                  </tr>
+                </tbody>
+              </table>
+              <textarea id='modalModel3dObjHeader'></textarea>
+
+            </div>
+          </div>
+          <div className='modal-footer'>
+            <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+          </div>
+        </div>
+      </div>
+
+      <div id='modalLoading' className='modal-small'>
+        <div className='modal-small-content'>
+          <div className='modal-small-header'>
+            <img src='favicon/favicon.png' height='48px' 
+              title='ThreeD Home Design' alt='ThreeD Home Design' />
+            <h2>ThreeD Home Design</h2>
+          </div>
+          <div className='modal-small-body'>
+            <h3>Loading Model Progress</h3>
+            <textarea id='modalLoadingDataInfo'></textarea>
+          </div>
+          <div className='modal-small-footer'>
+            <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+          </div>
+        </div>
+      </div>
+
+      <div id='modalShare' className='modal-small'>
+        <div className='modal-small-content'>
+          <div className='modal-small-header'>
+            <span className='close'>-X-</span>
+            <img src='favicon/favicon.png' height='48px' 
+              title='ThreeD Home Design' alt='ThreeD Home Design' />
+            <h2>ThreeD Home Design</h2>
+          </div>
+          <div className='modal-small-body'>
+            <h3>Share Plan</h3>
+            {/* <button id='getShareLinkBtn' className='mediumButton' onClick={() => generateShareLink()}>Generate Share
+              Link</button>
+            <div style='margin:10px 0px 10px 0px'>
+              <div style='padding-top:6px'>
+                <label for='shareLinkUrl'>Editable Copy</label><br />
+                <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
+                  style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink()}>Copy</button>
+              </div>
+
+              <div style='padding-top:6px'>
+                <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
+                <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
+                  style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink3d()}>Copy</button>
+              </div>
+
+              <div style='padding-top:6px'>
+                <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
+                <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
+                  style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
+                <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLinkPlan()}>Copy</button>
+              </div>
+            </div> */}
+          </div>
+          <div className='modal-small-footer'>
+            <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+          </div>
+        </div>
+      </div>
+    </Flex>
+  </Grid>
+  )
+}
+
+
+
 // ==============================================================
 
 function showModel3dView(event) {
@@ -1452,34 +2697,34 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
   }, []) // end load data useEffect (client)
 
   
-  // ** MODALS
-  const [showModalAbout, setShowModalAbout] = useState(false)
-  const [showModal3dModel, setShowModal3dModel] = useState(false)
-  const [showModalShare, setShowModalShare] = useState(false)
-  const [showModalLoading, setShowModalLoading] = useState(false)
-  function handleShowModalAbout() {
-    console.debug('handleShowModalAbout()')
-    setShowModalAbout(true)
-    console.debug('showModalAbout', showModalAbout)
-    // $('.supportEmail').text('support@companyjuice.com'),
-    //   $('#showModalAbout').show(),
-    //   hideMouseIndicators()
-  }
-  function handleShowModal3dModel() {
-    console.debug('handleShowModal3dModel()')
-    setShowModal3dModel(true)
-    console.debug('showModal3dModel', showModal3dModel)
-  }
-  function handleShowModalShare() {
-    console.debug('handleShowModalShare()')
-    setShowModalShare(true)
-    console.debug('showModalShare', showModalShare)
-  }
-  function handleShowModalLoading() {
-    console.debug('handleShowModalLoading()')
-    setShowModalLoading(true)
-    console.debug('showModalLoading', showModalLoading)
-  }
+  // // ** MODALS
+  // const [showModalAbout, setShowModalAbout] = useState(false)
+  // const [showModal3dModel, setShowModal3dModel] = useState(false)
+  // const [showModalShare, setShowModalShare] = useState(false)
+  // const [showModalLoading, setShowModalLoading] = useState(false)
+  // function handleShowModalAbout() {
+  //   console.debug('handleShowModalAbout()')
+  //   setShowModalAbout(true)
+  //   console.debug('showModalAbout', showModalAbout)
+  //   // $('.supportEmail').text('support@companyjuice.com'),
+  //   //   $('#showModalAbout').show(),
+  //   //   hideMouseIndicators()
+  // }
+  // function handleShowModal3dModel() {
+  //   console.debug('handleShowModal3dModel()')
+  //   setShowModal3dModel(true)
+  //   console.debug('showModal3dModel', showModal3dModel)
+  // }
+  // function handleShowModalShare() {
+  //   console.debug('handleShowModalShare()')
+  //   setShowModalShare(true)
+  //   console.debug('showModalShare', showModalShare)
+  // }
+  // function handleShowModalLoading() {
+  //   console.debug('handleShowModalLoading()')
+  //   setShowModalLoading(true)
+  //   console.debug('showModalLoading', showModalLoading)
+  // }
   // ** END MODALS
 
   function openTab(tab: string = 'tab1') {
@@ -1813,9 +3058,9 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                       🌱 ThreeD: Next.js: app (router): home-design: page .tsx
                     </Heading>
                   </Container>
-                </Panel>
+                </Panel> */}
                 
-                <PanelResizeHandle /> */}
+                {/* <PanelResizeHandle /> */}
                 
                 <Panel
                   className={stylesPanels.Panel}
@@ -1829,6 +3074,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                       direction='horizontal'
                       // autoSaveId='ThreeDHomeDesignLayoutSub2'
                     >
+                      {/* OBJECT CATALOG VIEW */}
                       <Panel
                         // className={stylesPanels.Panel}
                         defaultSize={24}
@@ -1841,29 +3087,35 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         {/* <Text>
                           Sub Left
                         </Text> */}
-                        {/* CATALOG VIEW */}
-                        {/* <div id='catalogView'> */}
-                          <div id='catalogFilters'>
-                            <Container>
-                              <span style={{ marginLeft: '4px', marginRight: '4px' }}>
-                                {/* MAIN ACTIONS DROPDOWN MENU */}
-                                <DropdownMenuThreeD />
-                              </span>
-                              {/* <span style={{ marginLeft: '0' }}>
-                                Object Catalog View
-                              </span> */}
-                              <input type='text' id='catalogTextFilter' placeholder='...' width='40' />
-                            </Container>
-                          </div>
-                          <div id='catalogItems'>
-                            {/* <Container>
-                              HEY HEY HEY
-                            </Container> */}
-                            {/* */}
-                              <CatalogItems />
-                            {/* */}
-                          </div>
-                        {/* </div> */}
+                        <div id='catalogFilters'>
+                          <Container>
+                            <span 
+                              style={{ 
+                                marginLeft: '4px', 
+                                marginRight: '4px' 
+                              }}
+                            >
+                              {/* MAIN ACTIONS DROPDOWN MENU */}
+                              <DropdownMenuThreeD />
+                            </span>
+                            {/* <span style={{ marginLeft: '0' }}>
+                              Object Catalog View
+                            </span> */}
+                            <input 
+                              type='text' 
+                              id='catalogTextFilter' 
+                              placeholder='...' 
+                              width='40' 
+                            />
+                          </Container>
+                        </div>
+                        <div id='catalogItems'>
+                          {/* <Container>
+                            HEY HEY HEY
+                          </Container> */}
+                          <CatalogItems />
+                        </div>
+
                         {/* BASIC ACTION BUTTONS */}
                         {/* <Flex>
                           <Button onClick={() => handleShowModalAbout()}>
@@ -1879,14 +3131,34 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                             Show Modal: Loading
                           </Button>
                         </Flex> */}
-                        {/* TESTING COMPONENTS */}
-                        {/* <DialogModals /> */}
+
                       </Panel>
+                      
                       <PanelResizeHandle />
+
+
+
+                      {/* VIEWS: PROPERTIES */}
+                      <Panel
+                        className={stylesPanels.Panel}
+                        defaultSize={8}
+                        maxSize={24}
+                        style={{
+                          border: '1px solid darkred',
+                        }}
+                        id='propertiesView'
+                      >
+                        <ViewProperties />
+                      </Panel>
+
+                      <PanelResizeHandle />
+
+
+                      {/* VIEWS: PLAN (2D PAPER) */}
                       <Panel
                         // className={stylesPanels.Panel}
-                        defaultSize={76}
-                        // maxSize={100}
+                        defaultSize={64}
+                        maxSize={96}
                         style={{
                           // border: '1px solid darkblue',
                         }}
@@ -2120,9 +3392,10 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
             
             <PanelResizeHandle />
             
+            {/* VIEWS: MODALS */}
             <Panel 
               className={stylesPanels.Panel}
-              defaultSize={10}
+              defaultSize={20}
               // maxSize={100}
               style={{
                 alignItems: 'center',
@@ -2132,1185 +3405,10 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
               {/* <Text>
                 Sub Footer
               </Text> */}
-              <Grid>
-                {/* MODALS: OPTIONS */}
-                <Flex 
-                  id='modals'
-                  direction='row'
-                  align='center'
-                  justify='center'
-                  // style={{
-                  //   position: 'absolute',
-                  //   bottom: '32px',
-                  // }}
-                >
-                  { showModalAbout && (
-                    <div 
-                      id='modalAbout' 
-                      // className='modal'
-                    >
-                      <div className='modal-content'>
-                        <div className='modal-header'>
-                          <span 
-                            className='close'
-                            onClick={() => setShowModalAbout(false)}
-                          >
-                            -X-
-                          </span>
-                          <h2>ThreeD Home Design</h2>
-                        </div>
-                        <div className='modal-body'>
 
-                          <div className='tab'>
-                            <button 
-                              className='tablinks active' 
-                              onClick={() => openTab('tab1')} 
-                              id='tab1'
-                            >
-                              Intro
-                            </button>
-                          </div>
+              {/* VIEWS: MODALS */}
+              <ViewModals />
 
-                          <div id='tab1Content' className='tabcontent' style={{display: 'block'}}>
-                            <h3>ThreeD Home Design Introduction</h3>
-                            <p>Plan + Share Ideas for your Home Design in 2D + 3D</p>
-                            <div style={{padding: '12px'}}>
-                              <div>
-                                Save Plan Edits to local web storage? 
-                                <input 
-                                  type='checkbox' 
-                                  id='saveEditsToLocalStorage' 
-                                  onChange={() => handleSaveEditsLocalStorageOption()}
-                                />
-                                <span className='tooltip'>
-                                  {/* <img src='media/info.png' className='tooltip' /> */}
-                                  <span className='tooltiptext'>
-                                    <div>
-                                      Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='http://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
-                                      More info about 
-                                      <a href='https://www.w3schools.com/HTML/html5_webstorage.asp' target='_blank' rel='noreferrer'>
-                                        Local Web Storage
-                                      </a>.
-                                    </div>
-                                  </span>
-                                </span>
-                                <div id='localStoragePlanDiv'>
-                                  <table>
-                                    <tbody>
-                                      <tr>
-                                        <td style={{ textAlign: 'center'}}>
-                                          Most Recent Edit saved in Local Web Storage.
-                                          <br />
-                                          <button 
-                                            id='loadLocalStoragePlanBtn'
-                                            onClick={() => loadFromLocalStorage()}
-                                          >
-                                            Load Plan
-                                          </button>
-                                          <br />
-                                          <br />
-                                          <span id='localStoragePlanLastSavedDate'></span>
-                                        </td>
-                                        <td>
-                                          <div>
-                                            <img 
-                                              id='localStoragePlanImage' 
-                                              onClick={() => loadFromLocalStorage()}
-                                            />
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                              <div id='featuredPlan'>
-                                <table>
-                                  <tbody>
-                                    <tr>
-                                      <td style={{ textAlign: 'center', width: '300px'}}>
-                                        <button 
-                                          id='loadFeaturedPlanBtn'
-                                          className='largeButton'
-                                          onClick={() => loadExamplePlan()}
-                                        >
-                                          Load Example Plan
-                                        </button>
-                                        <br /><br />
-                                        or
-                                        <br />
-                                        <button onClick={() => closeAllModals()} className='largeButton'>Start New Plan</button>
-                                      </td>
-                                      <td>
-                                        <div><img id='featuredPlanImage' onClick={() => loadExamplePlan()} /></div>
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-
-                        </div>
-                        <div className='modal-footer'>
-                          <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  { showModal3dModel && (
-                    <div 
-                      id='modal3dModel' 
-                      // className='modal'
-                    >
-                      <div className='modal-content'>
-                        <div className='modal-header'>
-                          <span 
-                            className='close'
-                            onClick={() => setShowModal3dModel(false)}
-                          >
-                            -X-
-                          </span>
-                          <h2>ThreeD Home Design</h2>
-                        </div>
-                        <div className='modal-body'>
-                          <div id='model3dView'>
-                            <canvas id='model3dViewCanvas'></canvas>
-                          </div>
-                          <div id='modalModelDescription'>
-                            <h3>3d Model Properties</h3>
-                            <table className='propertiesTable'>
-                              <tbody>
-                                <tr>
-                                  <td width='70'>Name</td>
-                                  <td><span id='model3dNameModal'></span></td>
-                                </tr>
-                                <tr>
-                                  <td>Author</td>
-                                  <td><span id='model3dAuthorModal'></span></td>
-                                </tr>
-                                <tr>
-                                  <td>License</td>
-                                  <td><span id='model3dLicenseModal'></span></td>
-                                </tr>
-                                <tr>
-                                  <td>OBJ&nbspFile&nbspComments</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            <textarea id='modalModel3dObjHeader'></textarea>
-
-                          </div>
-                        </div>
-                        <div className='modal-footer'>
-                          <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  { showModalShare && (
-                    <div 
-                      id='modalShare' 
-                      // className='modal-small'
-                    >
-                      <div className='modal-small-content'>
-                        <div className='modal-small-header'>
-                          <span 
-                            className='close'
-                            onClick={() => setShowModalShare(false)}
-                          >
-                            -X-
-                          </span>
-                          <h2>ThreeD Home Design</h2>
-                        </div>
-                        <div className='modal-small-body'>
-                          <h3>Share Plan</h3>
-                          <button 
-                            id='getShareLinkBtn' 
-                            className='mediumButton' 
-                            // onClick={() => generateShareLink()}
-                          >
-                            Generate Share Link
-                          </button>
-                          {/* <div style='margin:10px 0px 10px 0px'>
-                            <div style='padding-top:6px'>
-                              <label for='shareLinkUrl'>Editable Copy</label><br />
-                              <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
-                                style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                              <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink()}>Copy</button>
-                            </div>
-
-                            <div style='padding-top:6px'>
-                              <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
-                              <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
-                                style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                              <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink3d()}>Copy</button>
-                            </div>
-
-                            <div style='padding-top:6px'>
-                              <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
-                              <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
-                                style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                              <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLinkPlan()}>Copy</button>
-                            </div>
-                          </div> */}
-                        </div>
-                        <div className='modal-small-footer'>
-                          <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  { showModalLoading && (
-                    <div 
-                      id='modalLoading' 
-                      // className='modal-small'
-                    >
-                      <div className='modal-small-content'>
-                        <div className='modal-small-header'>
-                          <span 
-                            className='close'
-                            onClick={() => setShowModalLoading(false)}
-                          >
-                            -X-
-                          </span>
-                          <h2>ThreeD Home Design</h2>
-                        </div>
-                        <div className='modal-small-body'>
-                          <h3>Loading Model Progress</h3>
-                          <textarea id='modalLoadingDataInfo'></textarea>
-                        </div>
-                        <div className='modal-small-footer'>
-                          <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  
-                  {/* <ul> */}
-                    {/* <li className='brandImg'>
-                      <a onClick={() => showModalAbout()} 
-                        style={{padding: '0px', margin: '0px'}}
-                      >
-                        <img
-                          src='favicon/favicon.png' 
-                          width='48px' 
-                          height='48px' 
-                          title='ThreeD Home Design' 
-                          alt='ThreeD Home Design' 
-                        />
-                      </a>
-                    </li> */}
-                    {/* <li className='brand'>
-                      <a onClick={() => showModalAbout()} 
-                        style={{textAlign: 'center', paddingTop: '15px', paddingLeft: '18px', paddingRight: '24px', paddingBottom: '15px', textDecoration: 'none', fontSize: '21px',}}
-                      >
-                        ThreeD Home Design
-                      </a>
-                    </li> */}
-                    {/* <li className='dropdown'>
-                      <a href='#javascript:void(0)' className='dropbtn'>File</a>
-                      <div className='dropdown-content'>
-                        <a onClick={() => setNewPlan()}>New</a>
-                        <a onClick={() => loadExamplePlan()}>Load Demo</a>
-                        <a id='loadBtn' onClick={() => document.getElementById('file').click()}>Load</a>
-                        <input type='file' style={{ display: 'none' }} id='file' name='file' onChange={() => loadFileAsText(event)} />
-                        <a id='saveBtn' onClick={() => savePlan()}>Save</a>
-                        <a id='shareBtn' onClick={() => openShareDialog()}>Share</a>
-                        <a id='defaultsBtn' onClick={() => setPropertiesView('defaults')}>Defaults</a>
-                        <!--<a  id='groundPropertiesButton' onClick={() => setToolMode('ground')}>Ground Properties</a>-->
-                        <a id='fullscreenApp' onClick={() => openFullscreen('appBody')}>Fullscreen</a>
-                      </div>
-                    </li> */}
-                    {/* <li className='dropdown'>
-                      <a href='#javascript:void(0)' className='dropbtn'>Edit</a>
-                      <div className='dropdown-content'>
-                        <a id='undoBtn' onClick={() => doUndo()}>Undo</a>
-                        <a id='redoBtn' onClick={() => doRedo()}>Redo</a>
-                      </div>
-                    </li> */}
-                    {/* <li className='dropdown'>
-                      <a href='#javascript:void(0)' className='dropbtn'>Plan View</a>
-                      <div className='dropdown-content'>
-                        <a onClick={() => setPropertiesView('planView')}>Background Template</a>
-                        <a onClick={() => newLevel()}>Add Level</a>
-                        <a onClick={() => openFullscreen('planView')}>Fullscreen</a>
-                      </div>
-                    </li> */}
-                    {/* <li className='dropdown'>
-                      <a href='#javascript:void(0)' className='dropbtn'>3D View</a>
-                      <div className='dropdown-content'>
-                        <a onClick={() => setPropertiesView('3dView')}>Properties</a>
-                        <a onClick={() => openFullscreen('view3d')}>Fullscreen</a>
-                        <a onClick={() => exportToObj()}>Export As OBJ</a>
-                        <!--<a  id='createThumb' onClick={() => createThumbForHistory()}>Create Thumb</a>-->
-                      </div>
-                    </li> */}
-                    {/* <!--<li>
-                      <a  onClick={() => doLog()}>Log</a>
-                    </li>-->
-                    <!-- <li>
-                      <a onClick={() => showModalAbout()}>About</a>
-                    </li> --> */}
-                    {/* <li>
-                      <a id='pointerTool' onClick={() => setToolMode('pointer')} className='toolButton activeTool'
-                        title='Pointer Select' alt='Pointer Select'>
-                        <img src='media/pointericonWhite.png' height='42px'>
-                      </a>
-                    </li> */}
-                    {/* <!-- <li>
-                      <a onClick={() => setToolMode('hand')}>
-                        <img src='media/handicon.png' width='50px'>
-                      </a>
-                    </li> --> */}
-                    {/* <li>
-                      <a id='addWallTool' onClick={() => setToolMode('walls')} className='toolButton' title='Add Wall' alt='Add Wall'>
-                        <img src='media/newWallWhite2.png' height='42px'>
-                      </a>
-                    </li> */}
-                    {/* <li>
-                      <a id='addFloorTool' onClick={() => setToolMode('floor')} className='toolButton' title='Add Floor'
-                        alt='Add Floor'>
-                        <img src='media/newFloorWhite2.png' height='42px'>
-                      </a>
-                    </li> */}
-                    {/* <li>
-                      <a id='addRoofTool' onClick={() => setToolMode('roof')} className='toolButton' title='Add Roof' alt='Add Roof'>
-                        <img src='media/newRoofWhite2.png' height='42px'>
-                      </a>
-                    </li> */}
-                    {/* <li>
-                      <a id='addRulerTool' onClick={() => setToolMode('dimension')} className='toolButton' title='Add Dimension'
-                        alt='Add Dimension'>
-                        <img src='media/newRulerWhite2.png' height='42px'>
-                      </a>
-                    </li> */}
-                    {/* <li>
-                      <a id='addTextTool' onClick={() => setToolMode('text')} className='toolButton' title='Add Text Annotation'
-                        alt='Add Text Annotation'>
-                        <img src='media/newTextWhite.png' height='42px'>
-                      </a>
-                    </li> */}
-                  {/* </ul> */}
-                </Flex>
-
-                {/* MODALS: CONTAINERS */}
-                <Flex>
-
-                  <div id='modal3dModel' className='modal'>
-                    <div className='modal-content'>
-                      <div className='modal-header'>
-                        <span className='close'>-X-</span>
-                        <img src='favicon/favicon.png' height='48px' 
-                          title='ThreeD Home Design' alt='ThreeD Home Design' />
-                        <h2>ThreeD Home Design</h2>
-                      </div>
-                      <div className='modal-body'>
-                        <div id='model3dView'>
-                          <canvas id='model3dViewCanvas'></canvas>
-                        </div>
-                        <div id='modalModelDescription'>
-                          <h3>3d Model Properties</h3>
-                          <table className='propertiesTable' style={{ width: '400px'}}>
-                            <tbody>
-                              <tr>
-                                <td width='70'>Name</td>
-                                <td><span id='model3dNameModal'></span></td>
-                              </tr>
-                              <tr>
-                                <td>Author</td>
-                                <td><span id='model3dAuthorModal'></span></td>
-                              </tr>
-                              <tr>
-                                <td>License</td>
-                                <td><span id='model3dLicenseModal'></span></td>
-                              </tr>
-                              <tr>
-                                <td>OBJ&nbspFile&nbspComments</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          <textarea id='modalModel3dObjHeader'></textarea>
-
-                        </div>
-                      </div>
-                      <div className='modal-footer'>
-                        <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id='modalLoading' className='modal-small'>
-                    <div className='modal-small-content'>
-                      <div className='modal-small-header'>
-                        <img src='favicon/favicon.png' height='48px' 
-                          title='ThreeD Home Design' alt='ThreeD Home Design' />
-                        <h2>ThreeD Home Design</h2>
-                      </div>
-                      <div className='modal-small-body'>
-                        <h3>Loading Model Progress</h3>
-                        <textarea id='modalLoadingDataInfo'></textarea>
-                      </div>
-                      <div className='modal-small-footer'>
-                        <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id='modalShare' className='modal-small'>
-                    <div className='modal-small-content'>
-                      <div className='modal-small-header'>
-                        <span className='close'>-X-</span>
-                        <img src='favicon/favicon.png' height='48px' 
-                          title='ThreeD Home Design' alt='ThreeD Home Design' />
-                        <h2>ThreeD Home Design</h2>
-                      </div>
-                      <div className='modal-small-body'>
-                        <h3>Share Plan</h3>
-                        {/* <button id='getShareLinkBtn' className='mediumButton' onClick={() => generateShareLink()}>Generate Share
-                          Link</button>
-                        <div style='margin:10px 0px 10px 0px'>
-                          <div style='padding-top:6px'>
-                            <label for='shareLinkUrl'>Editable Copy</label><br />
-                            <input type='text' id='shareLinkUrl' placeholder='Press 'Generate Share Link' button'
-                              style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                            <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink()}>Copy</button>
-                          </div>
-
-                          <div style='padding-top:6px'>
-                            <label for='shareLinkUrl3d'>Read Only 3d View</label><br />
-                            <input type='text' id='shareLinkUrl3d' placeholder='Press 'Generate Share Link' button'
-                              style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                            <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLink3d()}>Copy</button>
-                          </div>
-
-                          <div style='padding-top:6px'>
-                            <label for='shareLinkUrlPlan'>Read Only Plan View</label><br />
-                            <input type='text' id='shareLinkUrlPlan' placeholder='Press 'Generate Share Link' button'
-                              style='width: 580px background-color: #4e4e4e border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace padding: 4px 24px 4px 24px pointer-events: none' />&nbsp
-                            <button id='copyShareLinkBtn' className='smallButton' onClick={() => copyShareLinkPlan()}>Copy</button>
-                          </div>
-                        </div> */}
-                      </div>
-                      <div className='modal-small-footer'>
-                        <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div id='propertiesView' style={{ paddingLeft: '10px' }}>
-                    <div 
-                      id='threed3DModelPropertiesView' 
-                      // style={{ display: 'none' }}
-                    >
-                      <h3>3d Model Properties</h3>
-                      <table 
-                        className='propertiesTable' 
-                        style={{ minWidth: '290px', minHeight: '290px' }}
-                      >
-                        <tbody>
-                        <tr>
-                          <td>
-                            <div 
-                              onMouseDown={(event) => beginDrag(event, modalModel3dThreedId)} 
-                              className='disableSelection'
-                              style={{ textAlign: 'center' }}
-                            >
-                              <img
-                                id='model3dLargeThumb'
-                                className='disableSelection' 
-                                style={{ pointerEvents: 'none' }} 
-                              />
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Name</td>
-                          <td><span id='model3dName'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Author</td>
-                          <td><span id='model3dAuthor'></span></td>
-                        </tr>
-                        <tr>
-                          <td>License</td>
-                          <td><span id='model3dLicense'></span></td>
-                        </tr>
-                        <tr>
-                          <td>3D Model</td>
-                          <td>
-                            <button className='moreInfoBtn' 
-                              onClick={(event) => showModel3dView(event)}
-                            >
-                              View
-                            </button>
-                          </td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div 
-                      id='threedPropertiesView'
-                      style={{ display: 'none' }}
-                    >
-                      <h3>Threed Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td>Id</td>
-                          <td><span id='objectId'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Name</td>
-                          <td><span id='objectName'></span></td>
-                        </tr>
-                        <tr>
-                          <td>X</td>
-                          <td>
-                            <input type='text' id='threedXProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' 
-                              onChange={() => validatePlusOrMinusNumber(this, updateThreedPosX)}
-                              maxLength={8} />
-                            cm
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Y</td>
-                          <td>
-                            <input type='text' id='threedYProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' 
-                              onChange={() => validatePlusOrMinusNumber(this, updateThreedPosY)}
-                              maxLength={8} 
-                            />
-                            cm
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Z</td>
-                          <td>
-                            <input type='text' id='threedZProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' 
-                              onChange={() => validatePlusOrMinusNumber(this, updateThreedPosZ)}
-                              maxLength={8} 
-                            />
-                            cm
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Width</td>
-                          <td>
-                            <input type='text' id='threedWidthProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' 
-                              onChange={() => validatePlusNumber(this, updateThreedWidth)} 
-                              maxLength={8} 
-                            />
-                            cm
-                            <input type='checkbox' id='flipX' onChange={() => flipX(this.checked)} />
-                            Flip X
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Height</td>
-                          <td><input type='text' id='threedHeightProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' 
-                              onChange={() => validatePlusOrMinusNumber(this, updateThreedHeight)}
-                              maxLength={8} /> cm</td>
-                        </tr>
-                        <tr>
-                          <td>Depth</td>
-                          <td>
-                            <input type='text' 
-                              id='threedDepthProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' 
-                              onChange={() => validatePlusNumber(this, updateThreedDepth)} 
-                              maxLength={8} 
-                            />
-                            cm
-                            <input type='checkbox' 
-                              id='flipZ' 
-                              onChange={() => flipZ(this.checked)} 
-                            />
-                            Flip Z
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Angle</td>
-                          <td><span id='threedAngleProp'></span>°</td>
-                        </tr>
-                        <tr>
-                          <td>Level</td>
-                          <td><span id='threedLevelProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>3D Model</td>
-                          <td><button className='moreInfoBtn' onClick={() => showModel3dView()}>View</button></td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='defaultsPropertiesView' style={{ display: 'none' }}>
-                      <h3>Default Settings</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td>Compass Heading</td>
-                          <td>
-                            <input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' value='0'
-                              onInput={() => rotateCompass(this.value)} 
-                              onChange={() => rotateCompass(this.value)} 
-                            />
-                            <span id='compassHdgLbl'>0°</span>
-                          </td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='wallDefaultsPropertiesView' style={{ display: 'none' }}>
-                      <h3>Default Wall Settings</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>Wall Height</td>
-                          <td><input type='text' id='defaultWallHeightProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultWallHeight)}
-                              maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Wall Thickness</td>
-                          <td><input type='text' id='defaultWallThicknessProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultWallThickness)}
-                              maxLength={8} />
-                            cm</td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='floorDefaultsPropertiesView' style={{ display: 'none' }}>
-                      <h3>Default Floor Settings</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td>Floor Thickness</td>
-                          <td><input type='text' id='defaultFloorThicknessProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultFloorThickness)}
-                              maxLength={8} /> cm</td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='roofDefaultsPropertiesView' style={{ display: 'none' }}>
-                      <h3>Default Roof Settings</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td>Roof Thickness</td>
-                          <td><input type='text' id='defaultRoofThicknessProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofThickness)}
-                              maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Rise</td>
-                          <td><input type='text' id='defaultRoofRiseProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofRise)}
-                              maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Base Offset</td>
-                          <td><input type='text' id='defaultRoofStartHeightProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateDefaultRoofStartHeight)}
-                              maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Run</td>
-                          <td><input type='text' id='defaultRoofWidthProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateDefaultRoofWidth)}
-                              maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Rafter Length</td>
-                          <td><span id='defaultRafterLengthProp'></span> cm</td>
-                        </tr>
-                        <tr>
-                          <td>Roof Pitch</td>
-                          <td><span id='defaultRoofPitchProp'></span>°</td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='dimensionDefaultsPropertiesView' style={{ display: 'none' }}>
-                      <h3>Default Dimension Settings</h3>
-                    </div>
-                    <div id='textDefaultsPropertiesView' style={{ display: 'none' }}>
-                      <h3>Default Text Settings</h3>
-                    </div>
-
-                    <div 
-                      id='planViewPropertiesView' 
-                      style={{ display: 'none' }}
-                    >
-                      <h3>Background Template</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>File</td>
-                          <td>
-                            <input type='file' id='backgroundImageFile' name='backgroundImageFile'
-                              onChange={() => loadBackgroundImage(event)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Opacity</td>
-                          <td>
-                            <input type='range' id='bgTemplateOpacity' name='bgTemplateOpacity' min='0' max='1.0' step='.01'
-                              value='0.33' onInput={() => setBgTemplateOpacity(this.value)}
-                              onChange={() => setBgTemplateOpacity(this.value)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Flip Horizontal</td>
-                          <td>
-                            <input type='checkbox' id='bgTplFlipX' onChange={() => flipBackgroundTemplateX(this.checked)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Flip Vertical</td>
-                          <td>
-                            <input type='checkbox' id='bgTplFlipZ' onChange={() => flipBackgroundTemplateZ(this.checked)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width='60'></td>
-                          <td><button id='resizeBackgroundImageBtn' onClick={() => enableResizeBackgroundTemplate()}
-                              className='moreInfoBtn'>Resize</button></td>
-                        </tr>
-                        <tr>
-                          <td width='60'></td>
-                          <td><button id='deleteBackgroundImageBtn' onClick={() => deleteBackgroundImage()}
-                              className='moreInfoBtn'>Delete</button></td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='3dViewPropertiesView' style={{ display: 'none' }}>
-                      <h3>3d View Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>Wall Color</td>
-                          <td>
-                            <input type='hidden' id='wallDiffuse' value='rgba(255,255,255,0.5)' />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width='70'>Wall Specular</td>
-                          <td>
-                            <input type='hidden' id='wallSpecular' value='#00ff00' />
-                          </td>
-                        </tr>
-                        {/* <tr>
-                          <td width='70'>Wall Emissive</td>
-                          <td>
-                            <input type='hidden' id='wallEmissive' value='#ffffff' />
-                          </td>
-                        </tr> */}
-                        <tr>
-                          <td width='70'>Floor Color</td>
-                          <td>
-                            <input type='hidden' id='floorDiffuse' value='rgba(15,15,15,0.5)' />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width='70'>Floor Specular</td>
-                          <td>
-                            <input type='hidden' id='floorSpecular' value='#00ffff' />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width='70'>Roof Color</td>
-                          <td>
-                            <input type='hidden' id='roofDiffuse' value='rgba(255,255,255,0.5)' />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width='70'>Roof Specular</td>
-                          <td>
-                            <input type='hidden' id='roofSpecular' value='#ff0000' />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Ground Color</td>
-                          <td>
-                            <input type='hidden' id='groundDiffuse' value='rgba(03,141,221,1.0)' />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Ground Specular</td>
-                          <td>
-                            <input type='hidden' id='groundSpecular' value='#f2ff9c' />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width='70'>Depth Write</td>
-                          <td>
-                            <input type='checkbox' id='depthWriteMode' onChange={() => setDepthWriteMode(this.checked)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td width='70'>Sort Objects</td>
-                          <td>
-                            <input type='checkbox' id='sortObjectsMode' onChange={() => setSortObjectsMode(this.checked)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Sun Azimuth</td>
-                          <td>
-                            <input type='range' id='sunAzimuth' name='sunAzimuth' min='0' max='1.0' step='.01' value='0.33'
-                              onInput={() => setSunAzimuth(this.value)} onChange={() => setSunAzimuth(this.value)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Sun Incline</td>
-                          <td>
-                            <input type='range' id='sunIncline' name='sunIncline' min='0' max='1.0' step='.01' value='0.0'
-                              onInput={() => setSunIncline(this.value)} onChange={() => setSunIncline(this.value)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Ambient Intensity</td>
-                          <td>
-                            <input type='range' id='ambientLightBrightness' name='ambientLightBrightness' min='0.0'
-                              max='1.0' step='0.1' onInput={() => adjustAmbientLightBrightness(this.value)}
-                              onChange={() => adjustAmbientLightBrightness(this.value)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Directional Intensity</td>
-                          <td>
-                            <input type='range' id='dirLightBrightness' name='dirLightBrightness' min='0.0' max='1.0'
-                              step='0.1' onInput={() => adjustDirLightBrightness(this.value)}
-                              onChange={() => adjustDirLightBrightness(this.value)} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Hemisphere Intensity</td>
-                          <td>
-                            <input type='range' id='hemiLightBrightness' name='hemiLightBrightness' min='0.0' max='1.0'
-                              step='0.1' onInput={() => adjustHemiLightBrightness(this.value)}
-                              onChange={() => adjustHemiLightBrightness(this.value)} />
-                          </td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='wallPropertiesView' style={{ display: 'none' }}>
-                      <h3>Wall Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>Id</td>
-                          <td>
-                            <input type='hidden' id='wallIdHidden' />
-                            <span id='wallIdProp'></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Height</td>
-                          <td><input type='text' id='wallHeightProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateWallHeight)} maxLength={8} /> cm
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Height Start</td>
-                          <td><input type='text' id='wallHeight0Prop'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateWallHeight0)} maxLength={8} /> cm
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Height End</td>
-                          <td><input type='text' id='wallHeight1Prop'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateWallHeight1)} maxLength={8} /> cm
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Thickness</td>
-                          <td><input type='text' id='wallThicknessProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateWallThickness)} maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Level</td>
-                          <td><span id='wallLevelProp'></span></td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='roofPropertiesView' style={{ display: 'none' }}>
-                      <h3>Roof Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>Id</td>
-                          <td>
-                            <input type='hidden' id='roofIdHidden' />
-                            <span id='roofIdProp'></span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Thickness</td>
-                          <td><input type='text' id='roofThicknessProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateRoofThickness)} maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Rise</td>
-                          <td><input type='text' id='roofRiseProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateRoofRise)} maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Base Offset</td>
-                          <td><input type='text' id='roofStartHeightProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateRoofStartHeight)}
-                              maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Run</td>
-                          <td><input type='text' id='roofWidthProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateRoofWidth)} maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Rafter Length</td>
-                          <td><span id='rafterLengthProp'></span> cm</td>
-                        </tr>
-                        <tr>
-                          <td>Roof Pitch</td>
-                          <td><span id='roofPitchProp'></span>°</td>
-                        </tr>
-                        <tr>
-                          <td>Level</td>
-                          <td><span id='roofLevelProp'></span></td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='floorPropertiesView' style={{ display: 'none' }}>
-                      <h3>Floor Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>Id</td>
-                          <td><span id='floorIdProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Area</td>
-                          <td><span id='floorAreaProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Thickness</td>
-                          <td><span id='floorThicknessProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Level</td>
-                          <td><span id='floorLevelProp'></span></td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='dimensionPropertiesView' style={{ display: 'none' }}>
-                      <h3>Dimension Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>Id</td>
-                          <td><span id='dimensionIdProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Length</td>
-                          <td><span id='dimensionLengthProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Adjacent</td>
-                          <td><span id='dimensionAdjacentProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Level</td>
-                          <td><span id='dimensionLevelProp'></span></td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div id='textPropertiesView' style={{ display: 'none' }}>
-                      <h3>Text Annotation Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>Id</td>
-                          <td><span id='textIdProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Text</td>
-                          <td><input type='text' id='textValueProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onKeyUp={() => validateText(event, this, updateTextValue)} maxLength={100} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>X</td>
-                          <td><input type='text' id='textXProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextX)} maxLength={8} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Y</td>
-                          <td><input type='text' id='textYProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextY)} maxLength={8} />
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Level</td>
-                          <td><span id='textLevelProp'></span></td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                      {/* <div>Type<span id='textDataTypeProp'></span></div> */}
-                      {/* <div><button id='deleteTextAnnotationBtn' onClick={() => deleteTextBtnClick()}>Delete</button></div> */}
-                    </div>
-                    <div id='levelPropertiesView' style={{ display: 'none' }}>
-                      <h3>Level Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td width='70'>Id</td>
-                          <td><span id='levelIdProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Name</td>
-                          <td><span id='levelNameProp'></span></td>
-                        </tr>
-                        <tr>
-                          <td>Height</td>
-                          <td>
-                            <input type='text' id='levelHeightProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusOrMinusNumber(this, updateLevelHeight)}
-                              maxLength={8} />
-                          </td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                    <div 
-                      id='groundPropertiesView' 
-                      style={{ display: 'none' }}
-                    >
-                      <h3>Ground Layer Properties</h3>
-                      <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                                    <tbody>
-                        <tr>
-                          <td>Width</td>
-                          <td><input type='text' id='groundWidthProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateGroundWidth)} maxLength={8} />
-                            cm</td>
-                        </tr>
-                        <tr>
-                          <td>Length</td>
-                          <td><input type='text' id='groundLengthProp'
-                              style={{
-                                // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                              }}
-                              className='editable' onChange={() => validatePlusNumber(this, updateGroundLength)} maxLength={8} />
-                            cm</td>
-                        </tr>
-                                    </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </Flex>
-              </Grid>
             </Panel>
           </PanelGroup>
           
