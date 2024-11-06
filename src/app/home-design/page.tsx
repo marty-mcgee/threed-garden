@@ -616,6 +616,27 @@ const PaperCanvas = (props: any) => {
 
 
 
+
+
+// function validatePlusOrMinusNumber(e, t) {
+//   var o = /^[-]?[0-9]*\.?[0-9]+$/
+//   e.value && null !== e.value.match(o)
+//     ? ((e.style.backgroundColor = "#4e4e4e"), t(e.value), e.blur())
+//     : ((e.style.backgroundColor = "#ff8888"), e.focus())
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ** VIEWS (COMPONENTS)
 
 // ** VIEW: PROPERTIES (of a threed object, or other dom element)
@@ -2389,21 +2410,26 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
         break
       default:
         UILayout = "default"
+
         document.getElementById("planView").style.top = "54px"
         document.getElementById("planView").style.bottom = "50%"
         document.getElementById("planView").style.left = "318px"
         document.getElementById("planView").style.right = "0px"
         document.getElementById("planView").style.display = "block"
+        
         document.getElementById("view3d").style.top = "50%"
         document.getElementById("view3d").style.bottom = "0px"
         document.getElementById("view3d").style.left = "318px"
         document.getElementById("view3d").style.right = "0px"
         document.getElementById("view3d").style.display = "block"
+
         document.getElementById("catalogView").style.top = "54px"
         document.getElementById("catalogView").style.left = "0px"
         document.getElementById("catalogView").style.width = "316px"
         document.getElementById("catalogView").style.height = "832px"
         document.getElementById("catalogView").style.display = "block"
+        
+
         // document.getElementById("verticalSlider").style.top = "54px"
         // document.getElementById("verticalSlider").style.bottom = "0px"
         // document.getElementById("verticalSlider").style.left = "316px"
@@ -2428,11 +2454,18 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
         // document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
         // document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
         // document.getElementById("fullscreen3dViewBtn").style.display = "block"
-        // document.getElementById("propertiesView").style.top = "880px"
-        // document.getElementById("propertiesView").style.left = "0px"
-        // document.getElementById("propertiesView").style.width = "306px"
-        // document.getElementById("propertiesView").style.bottom = "0px"
-        document.getElementById("propertiesView").style.display = "block"
+        
+        
+        
+        // // document.getElementById("propertiesView").style.top = "880px"
+        // // document.getElementById("propertiesView").style.left = "0px"
+        // // document.getElementById("propertiesView").style.width = "306px"
+        // // document.getElementById("propertiesView").style.bottom = "0px"
+        
+        // document.getElementById("propertiesView").style.display = "block"
+
+
+
         // document.getElementById("rulerLeft").style.top = "54px"
         // document.getElementById("rulerLeft").style.bottom = "50px"
         // document.getElementById("rulerLeft").style.left = "318px"
