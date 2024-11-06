@@ -3134,22 +3134,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
 
                       </Panel>
                       
-                      <PanelResizeHandle />
-
-
-
-                      {/* VIEWS: PROPERTIES */}
-                      <Panel
-                        className={stylesPanels.Panel}
-                        defaultSize={8}
-                        maxSize={24}
-                        style={{
-                          border: '1px solid darkred',
-                        }}
-                        id='propertiesView'
-                      >
-                        <ViewProperties />
-                      </Panel>
+                      <PanelResizeHandle /> 
 
                       <PanelResizeHandle />
 
