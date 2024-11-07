@@ -62,7 +62,7 @@
 
 #catalogItems {
     position: absolute;
-    top: 0px;
+    top: 40px;
     bottom: 0px;
     overflow-y: auto;
     overflow-x: auto;
