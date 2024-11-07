@@ -644,12 +644,12 @@ function validatePlusOrMinusNumber(e: any, t: any) {
 const ViewProperties = (props: any) => {
   console.debug('PropertiesView loading...')
   return (
-    
-    <Flex>
+    <>
     <div 
       id='propertiesView' 
       style={{ 
-        // paddingLeft: '10px' 
+        // paddingLeft: '10px',
+        border: '1px solid orange',
       }}
     >
       <div 
@@ -1403,7 +1403,7 @@ const ViewProperties = (props: any) => {
         </table>
       </div> */}
     </div>
-    </Flex>
+    </>
   )
 }
 
@@ -3463,8 +3463,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
           </PanelGroup>
           
         </Flex>
-
-        
             
         {/* <PanelResizeHandle /> */}
             
