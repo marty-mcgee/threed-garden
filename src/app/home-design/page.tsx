@@ -673,6 +673,7 @@ const ViewProperties = (props: any) => {
                   id='model3dLargeThumb'
                   className='disableSelection' 
                   style={{ pointerEvents: 'none' }} 
+                  src={null}
                 />
               </div>
             </td>
@@ -835,7 +836,7 @@ const ViewProperties = (props: any) => {
           <tr>
             <td>Compass Heading</td>
             <td>
-              <input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' value='0'
+              <input type='range' id='compassHdg' name='compassHdg' min='0' max='360' step='1' defaultValue='0'
                 // onInput={() => rotateCompass(this.value)} 
                 // onChange={() => rotateCompass(this.value)} 
               />
@@ -978,7 +979,7 @@ const ViewProperties = (props: any) => {
             <td>Opacity</td>
             <td>
               <input type='range' id='bgTemplateOpacity' name='bgTemplateOpacity' min='0' max='1.0' step='.01'
-                value='0.33' 
+                defaultValue='0.33' 
                 // onInput={() => setBgTemplateOpacity(this.value)}
                 // onChange={() => setBgTemplateOpacity(this.value)} 
               />
