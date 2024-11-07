@@ -8,10 +8,10 @@ import { Suspense } from 'react'
 
 // ** COMPONENT Imports
 import MainNav from '#/layout/ui/main-nav'
-import UserButton from '#/layout/ui/user-button'
+import UserButtonNextAuth from '#/layout/ui/user-button'
 // const UserButton = dynamic(() => import('#/layout/ui/user-button'), { ssr: false })
-// import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
-// import { LayoutDashboard } from 'lucide-react'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import { LayoutDashboard } from 'lucide-react'
 
 // ** RADIX-UI Imports
 import {
@@ -60,40 +60,43 @@ export default function Header() {
           {/* YO YO YO */}
           {/* @ ts-expect-error Async Server Component */}
           <Suspense fallback={<div>Loading...</div>}>
-            <UserButton />
+            
+            {/* <UserButtonNextAuth /> */}
+
+            <SignedOut>
+              <SignInButton mode='modal'>
+                <Button 
+                  className='
+                    rounded 
+                    border 
+                    border-black 
+                    bg-black 
+                    px-2 
+                    py-0.5 
+                    text-xs 
+                    text-white 
+                    transition-colors 
+                    hover:bg-black 
+                    hover:text-gray
+                  '
+                >
+                  Sign In
+                </Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton>
+                <UserButton.MenuItems>
+                  <UserButton.Link
+                    label='Dashboard'
+                    labelIcon={<LayoutDashboard className='h-6 w-6' />}
+                    href='/'
+                  />
+                </UserButton.MenuItems>
+              </UserButton>
+            </SignedIn>
+
           </Suspense>
-          {/* <SignedOut>
-            <SignInButton mode='modal'>
-              <Button 
-                className='
-                  rounded 
-                  border 
-                  border-black 
-                  bg-black 
-                  px-2 
-                  py-0.5 
-                  text-xs 
-                  text-white 
-                  transition-colors 
-                  hover:bg-black 
-                  hover:text-gray
-                '
-              >
-                Sign In
-              </Button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton>
-              <UserButton.MenuItems>
-                <UserButton.Link
-                  label='Dashboard'
-                  labelIcon={<LayoutDashboard className='h-6 w-6' />}
-                  href='/'
-                />
-              </UserButton.MenuItems>
-            </UserButton>
-          </SignedIn> */}
         </Flex>
       </Flex>
     </>
