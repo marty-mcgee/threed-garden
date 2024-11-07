@@ -80,6 +80,7 @@
 }
 
 #propertiesView {
+    /* display: none; */
     /* position: absolute; */
     position: relative;
     overflow-y: auto;
@@ -87,7 +88,6 @@
     background-color: #09090D;
     color: white;
     font-size: 14px;
-    display: none;
 }
 
 #propertiesView input {
@@ -181,12 +181,12 @@
 }
 
 #threedDragDiv {
+    /* display: none; */
     position: absolute;
     top: 0px;
     left: 0px;
     width: 100px;
     height: 100px;
-    display: none;
     opacity: 0.33;
 }
 
@@ -201,24 +201,25 @@
 }
 
 #mouseIndicatorX {
+    /* display: none; */
     position: absolute;
     background-color: rgba(128, 128, 128, .5);
     text-align: center;
-    display: none;
     pointer-events: none;
     z-index: 98;
 }
 
 #mouseIndicatorY {
+    /* display: none; */
     position: absolute;
     background-color: rgba(128, 128, 128, 0.5);
     text-align: center;
-    display: none;
     pointer-events: none;
     z-index: 98;
 }
 
 #compass {
+    /* display: none; */
     position: absolute;
     right: 70px;
     top: 140px;
@@ -313,6 +314,7 @@ li.dropdown {
 }
 
 .threedItem {
+    /* display: none; */
     width: 64px;
     height: 64px;
     border: 1px solid #2a2a2a;
@@ -333,6 +335,7 @@ li.dropdown {
 }
 
 .threedThumb {
+    /* display: none; */
     height: 48px;
     pointer-events: none;
     margin-top: 8px;
@@ -340,18 +343,18 @@ li.dropdown {
 
 .modal {
     display: none;
-    /* position: fixed;
+    position: fixed;
     z-index: 1;
-    left: 0px;
-    top: 0px; */
-    /* width: 100%; */
-    /* height: 100%; */
+    left: 64px;
+    top: 64px;
+    width: 100%;
+    height: 100%;
     overflow: auto;
     background-color: rgb(0, 0, 0);
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-.close {
+.modal-close {
     color: white;
     float: right;
     font-size: 28px;
@@ -359,7 +362,8 @@ li.dropdown {
     letter-spacing: 1em;
 }
 
-.close:hover, .close:focus {
+.modal-close:hover, 
+.modal-close:focus {
     color: gray;
     text-decoration: none;
     cursor: pointer;
@@ -394,7 +398,7 @@ li.dropdown {
 }
 
 .modal-content {
-    /* position: relative; */
+    position: relative;
     background-color: #09090D;
     margin: auto;
     padding: 0;
@@ -471,16 +475,16 @@ li.dropdown {
     }
 }
 
-.center {
+/* .center {
     width: 300px;
     height: 12px;
     position: absolute;
     left: 50%;
     top: 60px;
     margin-left: -150px;
-}
+} */
 
-.brand a {
+/* .brand a {
     font-weight: 100;
     font-size: 21px;
     padding: 0px;
@@ -498,9 +502,9 @@ li .brandImg img {
     padding-top: 0px;
     padding-left: 0px;
     padding-right: 0px;
-}
+} */
 
-.propertiesTable table {
+/* .propertiesTable table {
     border-collapse: collapse;
     width: 100%;
 }
@@ -509,9 +513,9 @@ li .brandImg img {
     padding: 4px 0px 4px 0px;
     text-align: left;
     border-bottom: 1px solid #2a2a2a;
-}
+} */
 
-#fullscreenPlanViewBtn {
+/* #fullscreenPlanViewBtn {
     position: absolute;
     cursor: pointer;
 }
@@ -519,11 +523,13 @@ li .brandImg img {
 #fullscreen3dViewBtn {
     position: absolute;
     cursor: pointer;
-}
+} */
 
+/* 
 a[target="_blank"]:after {
-    /* content: url("/media/externallink.png"); */
-}
+  content: url("/media/externallink.png");
+} 
+*/
 
 .moreInfoBtn {
     font-size: 16px;
@@ -540,17 +546,15 @@ a[target="_blank"]:after {
     pointer-events: none;
 }
 
-.tab {
+
+/* Style the buttons that are used to open the tab content */
+/* .tab {
     overflow: hidden;
     border: 1px solid #2a2a2a;
     background-color: #131418;
     margin-top: 10px;
-}
-
-/* Style the buttons that are used to open the tab content */
-
-.tab button {
-    /* font-family: 'Courier New', Courier, monospace; */
+} */
+/* .tab button {
     font-size: 16px;
     color: white;
     background-color: inherit;
@@ -563,31 +567,24 @@ a[target="_blank"]:after {
     padding-right: 24px;
     padding-bottom: 16px;
     transition: 0.15s;
-}
-
-/* Change background color of buttons on hover */
-
-.tab button:hover {
+} */
+/* .tab button:hover {
     background-color: #787878;
 }
-
-/* Create an active/current tablink class */
-
 .tab button.active {
     background-color: #787878;
-}
-
-/* Style the tab content */
-
-.tabcontent {
+} */
+/* .tabcontent {
     display: none;
     padding: 6px 12px;
     border: 1px solid #2a2a2a;
     border-top: none;
     height: 400px;
     overflow-y: auto;
-}
+} */
 
+
+/*
 .tooltip {
     position: relative;
     display: inline-block;
@@ -608,6 +605,10 @@ a[target="_blank"]:after {
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+*/
+
+
+
 
 #localStoragePlanDiv {
     display: none;
@@ -657,6 +658,11 @@ a[target="_blank"]:after {
     color: #bebebe;
 }
 
+
+
+
+
+
 .largeButton {
     margin-top: 10px;
     font-size: 18px;
@@ -700,16 +706,16 @@ a[target="_blank"]:after {
 }
 
 .levelBtn {
-    font-size: 12px;
+    display: none;
     position: absolute;
     left: 0px;
-    cursor: pointer;
     width: 100px;
     height: 20px;
     border: 1px solid #2a2a2a;
-    display: none;
     color: white;
     background-color: #131418;
+    cursor: pointer;
+    font-size: 12px;
 }
 
 /* input[type='checkbox'] {
