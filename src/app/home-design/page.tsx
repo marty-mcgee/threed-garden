@@ -3165,7 +3165,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                       {/* OBJECT CATALOG VIEW */}
                       <Panel
                         // className={stylesPanels.Panel}
-                        defaultSize={24}
+                        defaultSize={20}
                         maxSize={48}
                         style={{
                           // border: '1px solid darkred',
@@ -3179,8 +3179,8 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                           <Container>
                             <span 
                               style={{ 
-                                marginLeft: '4px', 
-                                marginRight: '4px' 
+                                marginLeft: '6px', 
+                                marginRight: '6px' 
                               }}
                             >
                               {/* MAIN ACTIONS DROPDOWN MENU */}
@@ -3193,7 +3193,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                               type='text' 
                               id='catalogTextFilter' 
                               placeholder='...' 
-                              width='40' 
+                              // width='32' 
                             />
                           </Container>
                         </div>
@@ -3221,8 +3221,6 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                         </Flex> */}
 
                       </Panel>
-                      
-                      <PanelResizeHandle /> 
 
                       <PanelResizeHandle />
 
@@ -3462,33 +3460,38 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
               </PanelGroup>
   
             </Panel>
-            
-            <PanelResizeHandle />
-            
-            {/* VIEWS: MODALS */}
-            <Panel 
-              className={stylesPanels.Panel}
-              defaultSize={20}
-              // maxSize={100}
-              style={{
-                alignItems: 'center',
-                // border: '1px solid darkgreen',
-              }}
-            >
-              {/* <Text>
-                Sub Footer
-              </Text> */}
-
-              {/* VIEWS: PROPERTIES */}
-              <ViewProperties />
-
-              {/* VIEWS: MODALS */}
-              <ViewModals />
-
-            </Panel>
           </PanelGroup>
           
         </Flex>
+
+        
+            
+        {/* <PanelResizeHandle /> */}
+            
+        {/* VIEWS: MODALS */}
+        <Flex 
+          direction='row'
+          // className={stylesPanels.Panel}
+          // defaultSize={10}
+          // maxSize={100}
+          style={{
+            // alignItems: 'center',
+            height: '100px',
+            border: '1px solid darkgreen',
+          }}
+        >
+          {/* <Text>
+            Sub Footer
+          </Text> */}
+
+          {/* VIEWS: PROPERTIES */}
+          <ViewProperties />
+
+          {/* VIEWS: MODALS */}
+          <ViewModals />
+
+        </Flex>
+
   
         {/* FOOTER */}
         <Flex

@@ -54,7 +54,8 @@
     font-size: 16px;
     /* margin-top: 4px; */
     /* margin-left: 4px; */
-    /* width: 284px; */
+    width: 150px;
+    padding: 0 4px;
     color: white;
     border: 1px solid #2a2a2a;
     background-color: #131418;
@@ -62,7 +63,7 @@
 
 #catalogItems {
     position: absolute;
-    top: 40px;
+    top: 30px;
     bottom: 0px;
     overflow-y: auto;
     overflow-x: auto;
