@@ -614,6 +614,16 @@ const PaperCanvas = (props: any) => {
 // ** 🟣 FUNCTIONS: THREED HOME DESIGN
 // ==============================================================
 
+function camelCaseToSentence(e: String) {
+  e = e.replace(/([A-Z])/g, " $1")
+  e = e.replace(/_/g, " ")
+  e = e.replace(/\b\w/g, function (e) {
+    return e.toUpperCase()
+  })
+  e = e.charAt(0).toUpperCase() + e.slice(1)
+  return e
+}
+
 function validatePlusOrMinusNumber(e: any, t: any) {
   console.debug('validatePlusOrMinusNumber', e, t, '[MM] Testing')
 //   var o = /^[-]?[0-9]*\.?[0-9]+$/
@@ -2214,18 +2224,6 @@ function setPropertiesView(e: String) {
   }
 }
 
-
-// ** Helper Functions
-function camelCaseToSentence(e: String) {
-  e = e.replace(/([A-Z])/g, " $1")
-  e = e.replace(/_/g, " ")
-  e = e.replace(/\b\w/g, function (e) {
-    return e.toUpperCase()
-  })
-  e = e.charAt(0).toUpperCase() + e.slice(1)
-  return e
-}
-
 function showThreedLicenseSummary(e: any) {
   console.debug('showThreedLicenseSummary', e)
   try {
@@ -2265,7 +2263,7 @@ function showThreedLicenseSummary(e: any) {
     //     a = threedItems[e].license
     // }
     document.getElementById("model3dLicense").innerHTML = a
-    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
+    // document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
     setPropertiesView("model3dMeta")
   } catch (err) {
     console.debug(err)
