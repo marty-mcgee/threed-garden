@@ -1,6 +1,8 @@
 {
   "luckyBamboo": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "renderbob",
     "size": {
       "x": 15.49,
@@ -10,6 +12,8 @@
   },
   "siameseCat": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Gwinna",
     "size": {
       "x": 13.26,
@@ -19,6 +23,8 @@
   },
   "laptop": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Mayollo",
     "size": {
       "x": 33.89,
@@ -28,6 +34,8 @@
   },
   "largeStove": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 103.91,
@@ -37,6 +45,8 @@
   },
   "simpleDesk": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "SirOccor",
     "size": {
       "x": 140.06,
@@ -46,6 +56,8 @@
   },
   "lamp": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "bulgakov",
     "size": {
       "x": 30.49,
@@ -55,6 +67,8 @@
   },
   "sofa2": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Derte21",
     "size": {
       "x": 177.05,
@@ -64,6 +78,8 @@
   },
   "mediumIndoorPlant": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "betomo16",
     "size": {
       "x": 72.57,
@@ -73,6 +89,8 @@
   },
   "microwave": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 40.16,
@@ -82,6 +100,8 @@
   },
   "officeTable": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Nmn9",
     "size": {
       "x": 189.23,
@@ -91,6 +111,8 @@
   },
   "piano": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "LVlittering",
     "size": {
       "x": 141.41,
@@ -100,6 +122,8 @@
   },
   "poolLounge": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "LarryStephenRobb",
     "size": {
       "x": 87.96,
@@ -109,6 +133,8 @@
   },
   "radio": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 30.65,
@@ -118,6 +144,8 @@
   },
   "rubix2": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "farcgs",
     "size": {
       "x": 5.59,
@@ -127,6 +155,8 @@
   },
   "sef-kasa": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "bocko",
     "size": {
       "x": 50.5,
@@ -136,6 +166,8 @@
   },
   "spatifilum": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "heraSK",
     "size": {
       "x": 79.76,
@@ -145,6 +177,8 @@
   },
   "spider_plant": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Nmn9",
     "size": {
       "x": 66.62,
@@ -154,6 +188,8 @@
   },
   "succulentPlant": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Nmn9",
     "size": {
       "x": 13.69,
@@ -163,6 +199,8 @@
   },
   "suit": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "rosenth",
     "size": {
       "x": 44,
@@ -172,6 +210,8 @@
   },
   "table": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 144.34,
@@ -181,6 +221,8 @@
   },
   "table_tennis": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "bheema",
     "size": {
       "x": 274,
@@ -190,6 +232,8 @@
   },
   "thermometer": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "DennisH2010",
     "size": {
       "x": 7.66,
@@ -199,6 +243,8 @@
   },
   "toilets_unit_jay_hardy": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 41.25,
@@ -208,6 +254,8 @@
   },
   "towel": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 14.53,
@@ -217,6 +265,8 @@
   },
   "toyTrain": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "RegusTtef",
     "size": {
       "x": 30.14,
@@ -226,6 +276,8 @@
   },
   "treadmill": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "muhtesemozcinar",
     "size": {
       "x": 88.46,
@@ -235,6 +287,8 @@
   },
   "tulip": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Nmn9",
     "size": {
       "x": 38.05,
@@ -244,6 +298,8 @@
   },
   "tvStand": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Leximumxii",
     "size": {
       "x": 135.14,
@@ -283,6 +339,8 @@
   },
   "wallDoubleSocket": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 15.49,
@@ -292,6 +350,8 @@
   },
   "wallSocket": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 7.71,
@@ -301,6 +361,8 @@
   },
   "wardrobe": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "SirOccor",
     "size": {
       "x": 92.14,
@@ -310,6 +372,8 @@
   },
   "washbasin_jay_hardy": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 59.73,
@@ -319,6 +383,8 @@
   },
   "washing_machine": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Cattail",
     "size": {
       "x": 60.02,
@@ -328,6 +394,8 @@
   },
   "white_lily": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Nmn9",
     "size": {
       "x": 31.64,
@@ -337,6 +405,8 @@
   },
   "xylophone": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "SonnySee",
     "size": {
       "x": 48.25,
@@ -346,6 +416,8 @@
   },
   "yuccaPlant": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "betomo16",
     "size": {
       "x": 108.41,
@@ -2897,6 +2969,8 @@
   },
   "abdominalBench": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "muhtesemozcinar",
     "size": {
       "x": 67.19,
@@ -2906,6 +2980,8 @@
   },
   "armchair1": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "aymanslman",
     "size": {
       "x": 100.49,
@@ -2915,6 +2991,8 @@
   },
   "ballonFoot": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "DooL",
     "size": {
       "x": 21.99,
@@ -2924,6 +3002,8 @@
   },
   "bathroomRadiator": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "nikitron",
     "size": {
       "x": 48.39,
@@ -2933,6 +3013,8 @@
   },
   "bath_jay_hardy": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 180.06,
@@ -2942,6 +3024,8 @@
   },
   "bedsideTable": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "SirOccor",
     "size": {
       "x": 50.01,
@@ -2951,6 +3035,8 @@
   },
   "bike": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "rodrigoalves123",
     "size": {
       "x": 40.72,
@@ -2960,6 +3046,8 @@
   },
   "biurko3": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "hilux",
     "size": {
       "x": 120.16,
@@ -2969,6 +3057,8 @@
   },
   "boiler": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 17.89,
@@ -2978,6 +3068,8 @@
   },
   "bonecoDeNeve": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "zema",
     "size": {
       "x": 94.03,
@@ -2987,6 +3079,8 @@
   },
   "book": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 28.15,
@@ -2996,6 +3090,8 @@
   },
   "breadBox": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "oldtimer",
     "size": {
       "x": 56.15,
@@ -3005,6 +3101,8 @@
   },
   "bulldog": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Priide",
     "size": {
       "x": 38.75,
@@ -3014,6 +3112,8 @@
   },
   "bunkBed": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "NabHlEsCK",
     "size": {
       "x": 113.09,
@@ -3023,6 +3123,8 @@
   },
   "cafe_set_mota_chair": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "voodoc",
     "size": {
       "x": 60.87,
@@ -3032,6 +3134,8 @@
   },
   "cafe_set_mota_table": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "voodoc",
     "size": {
       "x": 62.21,
@@ -3041,6 +3145,8 @@
   },
   "cafe_set_tonon_chair": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "voodoc",
     "size": {
       "x": 48.02,
@@ -3050,6 +3156,8 @@
   },
   "cafe_set_tonon_table": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "voodoc",
     "size": {
       "x": 66,
@@ -3059,6 +3167,8 @@
   },
   "chairWithCushion": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 42.3,
@@ -3068,6 +3178,8 @@
   },
   "chairDeck": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "north.star",
     "size": {
       "x": 67.35,
@@ -3077,6 +3189,8 @@
   },
   "chessboard": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "swapnilrocks98",
     "size": {
       "x": 30,
@@ -3086,6 +3200,8 @@
   },
   "chest": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "elhzar",
     "size": {
       "x": 143.48,
@@ -3095,6 +3211,8 @@
   },
   "childChair": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Radio_hate",
     "size": {
       "x": 38.18,
@@ -3104,6 +3222,8 @@
   },
   "choppingBoard": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 37.58,
@@ -3113,6 +3233,8 @@
   },
   "cocktailGlass": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "xablend1122",
     "size": {
       "x": 8.33,
@@ -3122,6 +3244,8 @@
   },
   "coffeePress": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "cephei",
     "size": {
       "x": 16.27,
@@ -3131,6 +3255,8 @@
   },
   "coffeeTable": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "nikitron",
     "size": {
       "x": 120.04,
@@ -3140,6 +3266,8 @@
   },
   "cornerSofa": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "nikitron",
     "size": {
       "x": 345.76,
@@ -3149,6 +3277,8 @@
   },
   "decorativePlant": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Nmn9",
     "size": {
       "x": 31.77,
@@ -3158,6 +3288,8 @@
   },
   "ella_chair_f": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "sizzler",
     "size": {
       "x": 4.57,
@@ -3167,6 +3299,8 @@
   },
   "espressokettle": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "krabz",
     "size": {
       "x": 17.87,
@@ -3176,6 +3310,8 @@
   },
   "fordFocus": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Ruff",
     "size": {
       "x": 204.47,
@@ -3185,6 +3321,8 @@
   },
   "fotel": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "tripleJ",
     "size": {
       "x": 73.48,
@@ -3194,6 +3332,8 @@
   },
   "gift": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "tadine",
     "size": {
       "x": 23.19,
@@ -3203,6 +3343,8 @@
   },
   "glass": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 7.51,
@@ -3212,6 +3354,8 @@
   },
   "green_stool": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "dalenryder",
     "size": {
       "x": 42.91,
@@ -3221,6 +3365,8 @@
   },
   "hangingLight": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 43.88,
@@ -3230,6 +3376,8 @@
   },
   "hood": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 101.55,
@@ -3239,6 +3387,8 @@
   },
   "horse": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "b2przemo",
     "size": {
       "x": 58.74,
@@ -3248,6 +3398,8 @@
   },
   "juniorBed": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "SirOccor",
     "size": {
       "x": 105.69,
@@ -3257,6 +3409,8 @@
   },
   "kitchenblender": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "PrinterKiller",
     "size": {
       "x": 15.61,
@@ -3266,6 +3420,8 @@
   },
   "kitchenDrawersCabinet": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 44.22,
@@ -3275,6 +3431,8 @@
   },
   "kitchenGlassDoorCabinet": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 33.6,
@@ -3284,6 +3442,8 @@
   },
   "kitchenIsland": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 93.88,
@@ -3293,6 +3453,8 @@
   },
   "kitchenLowerCabinet": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 97.58,
@@ -3302,6 +3464,8 @@
   },
   "kitchenScale": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "oldtimer",
     "size": {
       "x": 23,
@@ -3311,6 +3475,8 @@
   },
   "kitchenSink": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 97.58,
@@ -3320,6 +3486,8 @@
   },
   "kitchenSmallLowerCabinet": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 48.68,
@@ -3329,6 +3497,8 @@
   },
   "kitchenSmallUpperCabinet": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 34.76,
@@ -3338,6 +3508,8 @@
   },
   "kitchenTools": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 44,
@@ -3347,6 +3519,8 @@
   },
   "kitchenUpperCabinet": {
     "license": "CC BY 3.0",
+    "threed": "CC BY 4.0",
+    "threedLink": "#mm-link",
     "author": "Jay-Artist",
     "size": {
       "x": 109.43,
