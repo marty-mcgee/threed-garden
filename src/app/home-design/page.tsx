@@ -76,6 +76,10 @@ import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
 // import '#/layout/styles/styles-radix-ui-custom.css'
 import '#/lib/home-design/src/styles/radix-ui.css'
 import stylesPanels from '#/layout/styles/styles-panels.module.css'
+// ** THREED CSS Imports
+import '#/lib/home-design/src/styles/threed-home-design.css'
+// import '#/lib/home-design/src/styles/annotations.css'
+// import '#/lib/home-design/src/styles/fa-550.css'
 
 // ** LAYOUT Components (Head, Body, Foot)
 import Header from '#/layout/header'
@@ -102,40 +106,26 @@ import {
 } from '@radix-ui/react-icons'
 
 // ==============================================================
-// ** THREED CSS Imports
-// import '#/lib/home-design/src/styles/radix-ui.css'
-// import '#/lib/home-design/src/styles/globals.css'
-// import '#/lib/home-design/src/styles/index.css'
-// import '#/lib/home-design/src/styles/annotations.css'
-// import '#/lib/home-design/src/styles/fa-550.css'
-import '#/lib/home-design/src/styles/threed.css'
 
 // ==============================================================
 // ** DEMO Imports
-// <script type='text/javascript' src='scripts/jquery-1.11.3.min.js'></script>
-
-// <script type='text/javascript' src='scripts/paper-full.js?a=1'></script>
-
-// <script type='text/javascript' src='scripts/three.min.js'></script>
+// ☑️<script type='text/javascript' src='scripts/jquery-1.11.3.min.js'></script>
+// ☑️<script type='text/javascript' src='scripts/paper-full.js?a=1'></script>
+// ☑️<script type='text/javascript' src='scripts/three.min.js'></script>
 import * as THREE from 'three'
-  // console.debug('THREE', THREE)
-
-// <script type='text/javascript' src='scripts/trackballcontrols.js'></script>
-
-// <script type='text/javascript' src='scripts/tween.js'></script>
-
-// <script type='text/javascript' src='scripts/MTLLoader.js'></script>
-
-// <script type='text/javascript' src='scripts/OBJLoader.js'></script>
-
-// <script type='text/javascript' src='scripts/OBJExporter.js'></script>
-
-// <script type='text/javascript' src='scripts/sky.js'></script>
-
-// <script type='text/javascript' src='scripts/ThreeCSG.js'></script>
-
-// <script type='text/javascript' src='scripts/jquery.minicolors.min.js'></script>
-
+// console.debug('THREE', THREE)
+// 🟢<script type='text/javascript' src='scripts/threed.js'></script>
+// 🟢ex: import threed from './scripts/threed'
+// 🔘<script type='text/javascript' src='scripts/trackballcontrols.js'></script>
+// 🔘<script type='text/javascript' src='scripts/tween.js'></script>
+// 🔘<script type='text/javascript' src='scripts/MTLLoader.js'></script>
+// 🔘<script type='text/javascript' src='scripts/OBJLoader.js'></script>
+// 🔘<script type='text/javascript' src='scripts/OBJExporter.js'></script>
+// 🔘<script type='text/javascript' src='scripts/sky.js'></script>
+// 🔘<script type='text/javascript' src='scripts/ThreeCSG.js'></script>
+// 🔘<script type='text/javascript' src='scripts/jquery.minicolors.min.js'></script>
+// ==============================================================
+// ☑️ others
 // <!-- <script type='text/javascript' src='scripts/jsonc.min.js'></script> -->
 // <!-- SHADERS + PROCESSORS -->
 // <!-- <script type='text/javascript' src='scripts/shaders/CopyShader.js'></script> -->
@@ -144,6 +134,10 @@ import * as THREE from 'three'
 // <!-- <script type='text/javascript' src='scripts/postprocessing/EffectComposer.js'></script> -->
 // <!-- <script type='text/javascript' src='scripts/postprocessing/RenderPass.js'></script> -->
 // <!-- <script type='text/javascript' src='scripts/postprocessing/ShaderPass.js'></script> -->
+// ==============================================================
+
+// ==============================================================
+// ** 🟣 TYPED VARIABLES
 
 // <script type='text/javascript' data-cfasync='false'>
 var fragment = null
@@ -151,9 +145,6 @@ var readOnly = false
 var UILayout = 'default' // 3dView | planView | default
 var objectsURL = 'https://threedpublic.s3.amazonaws.com/demo/'
 // </script>
-
-// <script type='text/javascript' src='scripts/threed.js'></script>
-// import threed from './scripts/threed'
 
 var mouseMode = 0,
   toolMode = 'pointer',
@@ -387,6 +378,9 @@ var mouseMode = 0,
 const enableOrbit: boolean = true
 const enableGizmoCube: boolean = true
 
+// ==============================================================
+
+/* */
 
 // // import React from 'react'
 // import * as Dialog from '@radix-ui/react-dialog'
@@ -614,9 +608,11 @@ const PaperCanvas = (props: any) => {
 // ** END: PAPER.JS
 // ==============================================================
 
+/* */
 
-
-
+// ==============================================================
+// ** 🟣 FUNCTIONS: THREED HOME DESIGN
+// ==============================================================
 
 function validatePlusOrMinusNumber(e: any, t: any) {
   console.debug('validatePlusOrMinusNumber', e, t, '[MM] Testing')
@@ -627,17 +623,7 @@ function validatePlusOrMinusNumber(e: any, t: any) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
+// ==============================================================
 // ** VIEWS (COMPONENTS)
 
 // ** VIEW: PROPERTIES (of a threed object, or other dom element)
@@ -659,7 +645,7 @@ const ViewProperties = (props: any) => {
         <h3>3d Model Properties</h3>
         <table 
           className='propertiesTable' 
-          style={{ minWidth: '290px', minHeight: '290px' }}
+          // style={{ minWidth: '290px', minHeight: '290px' }}
         >
           <tbody>
           <tr>
@@ -1407,7 +1393,7 @@ const ViewProperties = (props: any) => {
   )
 }
 
-
+// ** VIEW: MODALS (window dialogs, show|hide)
 const ViewModals = (props: any) => {
   
   // ** MODALS
@@ -1929,8 +1915,9 @@ const ViewModals = (props: any) => {
   </Grid>
   )
 }
+// ==============================================================
 
-
+/* */
 
 // ==============================================================
 
@@ -2334,7 +2321,7 @@ function beginDrag(e: any, t: Object) {
 
 
 
-// ** CATALOG ITEMS
+// ** 🟣 CATALOG ITEMS
 const CatalogItems = (props: any): JSX.Element => {
   const [objects, setObjects] = useState(null)
 
@@ -3098,27 +3085,46 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
             direction='vertical'
             // autoSaveId='ThreeDHomeDesignLayoutMain'
           >
-            {/* <Panel 
-              className={stylesPanels.Panel}
-              defaultSize={4}
-              // maxSize={64}
-              style={{
-                // height: '80vh',
-                // width: '100%',
-                // border: '1px solid darkgreen',
-              }}
-            > */}
-              {/* <Text>
-                Main Header
-              </Text> */}
-              {/* <Heading as='h1'>
-                🥕 Welcome {session?.user?.name} to ThreeD Garden
-              </Heading> */}
-            {/* </Panel>
-            <PanelResizeHandle /> */}
+
             <Panel 
               className={stylesPanels.Panel}
-              defaultSize={100}
+              defaultSize={4}
+              maxSize={32}
+              style={{
+                // height: '80vh',
+                width: '100%',
+                // border: '1px solid darkgreen',
+              }}
+            >
+              {/* <Text>
+                Panel Header
+              </Text> */}
+              {/* <Flex
+                direction='column'
+                display='inline-flex'
+              > */}
+                <Container 
+                  style={{ 
+                    marginLeft: '4px', 
+                    marginRight: '6px' 
+                  }}
+                >
+                  {/* MAIN ACTIONS DROPDOWN MENU */}
+                  <DropdownMenuThreeD />
+                </Container>
+                {/* <Container>
+                  <Heading as='h4'>
+                    🥕 Welcome {session?.user?.name} to ThreeD Garden
+                  </Heading>
+                </Container> */}
+              {/* </Flex> */}
+            </Panel>
+            
+            <PanelResizeHandle />
+
+            <Panel 
+              className={stylesPanels.Panel}
+              defaultSize={92}
               // maxSize={64}
               style={{
                 // border: '1px solid darkgreen',
@@ -3130,7 +3136,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
               >
                 {/* <Panel
                   className={stylesPanels.Panel}
-                  defaultSize={10}
+                  defaultSize={30}
                   // maxSize={640}
                   style={{
                     // border: '1px solid darkgreen',
@@ -3164,66 +3170,84 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                     >
                       {/* OBJECT CATALOG VIEW */}
                       <Panel
+                        id='panelLeft'
                         // className={stylesPanels.Panel}
                         defaultSize={20}
                         maxSize={48}
                         style={{
                           // border: '1px solid darkred',
                         }}
-                        id='catalogView'
                       >
                         {/* <Text>
                           Sub Left
                         </Text> */}
-                        <div id='catalogFilters'>
-                          <Container>
-                            <span 
-                              style={{ 
-                                marginLeft: '6px', 
-                                marginRight: '6px' 
-                              }}
-                            >
-                              {/* MAIN ACTIONS DROPDOWN MENU */}
-                              <DropdownMenuThreeD />
-                            </span>
-                            {/* <span style={{ marginLeft: '0' }}>
-                              Object Catalog View
-                            </span> */}
-                            <input 
-                              type='text' 
-                              id='catalogTextFilter' 
-                              placeholder='...' 
-                              // width='32' 
-                            />
-                          </Container>
-                        </div>
-                        <div id='catalogItems'>
-                          {/* <Container>
-                            HEY HEY HEY
-                          </Container> */}
-                          <CatalogItems />
-                        </div>
+                        <PanelGroup
+                          direction='vertical'
+                          // autoSaveId='ThreeDHomeDesignLayoutSub3'
+                        >
+                          <Panel 
+                            id='catalogView'
+                            className={stylesPanels.Panel}
+                            defaultSize={64}
+                            // maxSize={64}
+                            style={{
+                              // border: '1px solid darkgreen',
+                            }}
+                          >
+                            <div id='catalogFilters'>
+                              <Container>
+                                
+                                {/* <span style={{ marginLeft: '0' }}>
+                                  Object Catalog View
+                                </span> */}
+                                <input 
+                                  type='text' 
+                                  id='catalogTextFilter' 
+                                  placeholder='...' 
+                                  // width='32' 
+                                />
+                              </Container>
+                            </div>
+                            <div id='catalogItems'>
+                              <CatalogItems />
+                            </div>
+                          </Panel>
 
-                        {/* BASIC ACTION BUTTONS */}
-                        {/* <Flex>
-                          <Button onClick={() => handleShowModalAbout()}>
-                            Show Modal: About
-                          </Button>
-                          <Button onClick={() => handleShowModal3dModel()}>
-                            Show Modal: 3D Model
-                          </Button>
-                          <Button onClick={() => handleShowModalShare()}>
-                            Show Modal: Share
-                          </Button>
-                          <Button onClick={() => handleShowModalLoading()}>
-                            Show Modal: Loading
-                          </Button>
-                        </Flex> */}
+                          <PanelResizeHandle />
+                          
+                          <Panel 
+                            id='viewProperties'
+                            className={stylesPanels.Panel}
+                            defaultSize={36}
+                            // maxSize={64}
+                            style={{
+                              // border: '1px solid darkgreen',
+                            }}
+                          >
+                            <ViewProperties />
+                          
+                            {/* BASIC ACTION BUTTONS */}
+                            {/* <Flex>
+                              <Button onClick={() => handleShowModalAbout()}>
+                                Show Modal: About
+                              </Button>
+                              <Button onClick={() => handleShowModal3dModel()}>
+                                Show Modal: 3D Model
+                              </Button>
+                              <Button onClick={() => handleShowModalShare()}>
+                                Show Modal: Share
+                              </Button>
+                              <Button onClick={() => handleShowModalLoading()}>
+                                Show Modal: Loading
+                              </Button>
+                            </Flex> */}
 
+                          </Panel>
+
+                        </PanelGroup>
                       </Panel>
 
                       <PanelResizeHandle />
-
 
                       {/* VIEWS: PLAN (2D PAPER) */}
                       <Panel
@@ -3288,10 +3312,12 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                               */}
                             </Grid>
                           </Panel>
+                          
                           <PanelResizeHandle />
+                          
                           <Panel
                             className={stylesPanels.Panel}
-                            defaultSize={40}
+                            defaultSize={32}
                             maxSize={60}
                             style={{
                               // border: '1px solid darkblue',
@@ -3423,6 +3449,31 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                                 <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
                               </div> */}
                             </Grid>
+                          </Panel>
+                        </PanelGroup>
+                      </Panel>
+                    </PanelGroup>
+                </Panel>
+
+              </PanelGroup>
+  
+            </Panel>
+
+            <PanelResizeHandle />
+
+            <Panel 
+              className={stylesPanels.Panel}
+              defaultSize={4}
+              // maxSize={64}
+              style={{
+                // height: '80vh',
+                // width: '100%',
+                // border: '1px solid darkgreen',
+              }}
+            >
+              <Text>
+                Panel Footer
+              </Text>
 
                             {/*
                             <canvas id='rulerLeft' width='30' height='500' onmousedown='addVerticalGuide()}
@@ -3452,20 +3503,29 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                             {/* 
                             <progress value='50' max='100' className='center' id='progressBar'></progress> 
                             */}
-                          </Panel>
-                        </PanelGroup>
-                      </Panel>
-                    </PanelGroup>
-                </Panel>
-              </PanelGroup>
-  
             </Panel>
+
           </PanelGroup>
           
         </Flex>
-            
-        {/* <PanelResizeHandle /> */}
-            
+
+
+        {/* VIEWS: PROPERTIES */}
+        <Flex 
+          direction='row'
+          // className={stylesPanels.Panel}
+          // defaultSize={10}
+          // maxSize={100}
+          style={{
+            // alignItems: 'center',
+            // height: '100px',
+            border: '1px solid darkred',
+          }}
+        >
+          {/* <ViewProperties /> */}
+        </Flex>
+        
+
         {/* VIEWS: MODALS */}
         <Flex 
           direction='row'
@@ -3474,20 +3534,11 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
           // maxSize={100}
           style={{
             // alignItems: 'center',
-            height: '100px',
+            // height: '100px',
             border: '1px solid darkgreen',
           }}
         >
-          {/* <Text>
-            Sub Footer
-          </Text> */}
-
-          {/* VIEWS: PROPERTIES */}
-          <ViewProperties />
-
-          {/* VIEWS: MODALS */}
           <ViewModals />
-
         </Flex>
 
   

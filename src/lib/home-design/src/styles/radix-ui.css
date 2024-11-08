@@ -120,21 +120,22 @@ input {
 .IconButton {
 	font-family: inherit;
 	border-radius: 100%;
+	border-width: 0;
 	height: 25px;
 	width: 25px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	color: var(--violet-11);
-	/* position: absolute; */
-	/* top: 10px; */
-	/* right: 10px; */
+	background-color: #131418;
+	box-shadow: 0 2px 10px var(--black-a7);
 }
 .IconButton:hover {
-	background-color: var(--violet-4);
+	/* background-color: var(--violet-4); */
+	background-color: #131418;
 }
 .IconButton:focus {
-	box-shadow: 0 0 0 2px var(--violet-7);
+	/* box-shadow: 0 0 0 2px var(--violet-7); */
 }
 /* .IconButton {
 	font-family: inherit;
