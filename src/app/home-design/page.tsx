@@ -2371,11 +2371,16 @@ const CatalogItems = (props: any): JSX.Element => {
 // const HomeDesignPage: TNextPageWithProps = (): JSX.Element => {
 const HomeDesignPage: NextPage = (): JSX.Element => {
   
-  // ** Hooks
+  // ** HOOKS
   // const auth = useAuth()
   const session = useSession()
 
+  // ** SESSION VARS
+  // ** DATA
   // const [objects, setObjects] = useState(null)
+  // ** PANELS
+  const [showPanelFirst, setShowPanelFirst] = useState(true);
+  const [showPanelLast, setShowPanelLast] = useState(true);
   
   
   // ** load old data.. no
@@ -3086,7 +3091,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
 
             <Panel 
               className={stylesPanels.Panel}
-              defaultSize={4}
+              defaultSize={16}
               maxSize={32}
               style={{
                 // height: '80vh',
@@ -3110,6 +3115,21 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                   {/* MAIN ACTIONS DROPDOWN MENU */}
                   <DropdownMenuThreeD />
                 </Container>
+                <p>
+                  <button
+                    // className={styles.Button}
+                    onClick={() => setShowPanelFirst(!showPanelFirst)}
+                  >
+                    {showPanelFirst ? "hide" : "show"} left panel
+                  </button>
+                  &nbsp;
+                  <button
+                    // className={styles.Button}
+                    onClick={() => setShowPanelLast(!showPanelLast)}
+                  >
+                    {showPanelLast ? "hide" : "show"} right panel
+                  </button>
+                </p>
                 {/* <Container>
                   <Heading as='h4'>
                     🥕 Welcome {session?.user?.name} to ThreeD Garden
@@ -3162,295 +3182,304 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                     // border: '1px solid darkgreen',
                   }}
                 >
-                    <PanelGroup 
-                      direction='horizontal'
-                      // autoSaveId='ThreeDHomeDesignLayoutSub2'
-                    >
-                      {/* OBJECT CATALOG VIEW */}
-                      <Panel
-                        id='panelLeft'
-                        // className={stylesPanels.Panel}
-                        defaultSize={20}
-                        maxSize={48}
-                        style={{
-                          // border: '1px solid darkred',
-                        }}
-                      >
-                        {/* <Text>
-                          Sub Left
-                        </Text> */}
-                        <PanelGroup
-                          direction='vertical'
-                          // autoSaveId='ThreeDHomeDesignLayoutSub3'
+                  <PanelGroup 
+                    direction='horizontal'
+                    // autoSaveId='ThreeDHomeDesignLayoutSub2'
+                  >
+                    {/* OBJECT CATALOG VIEW */}
+                    {showPanelFirst && (
+                      <>
+                        <Panel
+                          id='panelLeft'
+                          // className={stylesPanels.Panel}
+                          defaultSize={20}
+                          maxSize={48}
+                          style={{
+                            // border: '1px solid darkred',
+                          }}
                         >
-                          <Panel 
-                            id='catalogView'
-                            className={stylesPanels.Panel}
-                            defaultSize={64}
-                            // maxSize={64}
-                            style={{
-                              // border: '1px solid darkgreen',
-                            }}
+                          {/* <Text>
+                            Sub Left
+                          </Text> */}
+                          <PanelGroup
+                            direction='vertical'
+                            // autoSaveId='ThreeDHomeDesignLayoutSub3'
                           >
-                            <div id='catalogFilters'>
-                              <Container>
-                                
-                                {/* <span style={{ marginLeft: '0' }}>
-                                  Object Catalog View
-                                </span> */}
-                                <input 
-                                  type='text' 
-                                  id='catalogTextFilter' 
-                                  placeholder='...' 
-                                  // width='32' 
-                                />
-                              </Container>
-                            </div>
-                            <div id='catalogItems'>
-                              <CatalogItems />
-                            </div>
-                          </Panel>
-
-                          <PanelResizeHandle />
-                          
-                          <Panel 
-                            id='viewProperties'
-                            className={stylesPanels.Panel}
-                            defaultSize={36}
-                            // maxSize={64}
-                            style={{
-                              // border: '1px solid darkgreen',
-                            }}
-                          >
-                            <ViewProperties />
-                          
-                            {/* BASIC ACTION BUTTONS */}
-                            {/* <Flex>
-                              <Button onClick={() => handleShowModalAbout()}>
-                                Show Modal: About
-                              </Button>
-                              <Button onClick={() => handleShowModal3dModel()}>
-                                Show Modal: 3D Model
-                              </Button>
-                              <Button onClick={() => handleShowModalShare()}>
-                                Show Modal: Share
-                              </Button>
-                              <Button onClick={() => handleShowModalLoading()}>
-                                Show Modal: Loading
-                              </Button>
-                            </Flex> */}
-
-                          </Panel>
-
-                        </PanelGroup>
-                      </Panel>
-
-                      <PanelResizeHandle />
-
-                      {/* VIEWS: PLAN (2D PAPER) */}
-                      <Panel
-                        // className={stylesPanels.Panel}
-                        defaultSize={64}
-                        maxSize={96}
-                        style={{
-                          // border: '1px solid darkblue',
-                        }}
-                      >
-                        <PanelGroup 
-                          direction='vertical'
-                        >
-                          <Panel
-                            className={stylesPanels.Panel}
-                            defaultSize={40}
-                            maxSize={60}
-                          >
-                            <Grid 
-                              id='planView'
+                            <Panel 
+                              id='catalogView'
+                              className={stylesPanels.Panel}
+                              defaultSize={64}
+                              // maxSize={64}
                               style={{
-                                border: '1px solid #222222',
+                                // border: '1px solid darkgreen',
                               }}
                             >
-                              {/* <Text>
-                                Main Content (children)
-                              </Text> */}
-                              {/* <SessionData 
-                                session={session} 
-                              /> */}
-                              {/* THREED HOME DESIGN: 2D PAPER PLAN VIEW */}
-                              {/* <Canvas 
-                                id='planCanvas'
-                                key={'planCanvas'}
-                              >
-                                <Preload all />
-                                <></>
-                              </Canvas> */}
-
-                              <PaperCanvas />
-                              
-                              <div id='overlayLogoPlanView' className='overlayLogo'>
-                                <a href='https://threedgarden.com/demo/'
-                                  // style='float:leftpadding:0px margin-top:0px'
-                                >
-                                  <img
-                                    src='/favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' 
+                              <div id='catalogFilters'>
+                                <Container>
+                                  
+                                  {/* <span style={{ marginLeft: '0' }}>
+                                    Object Catalog View
+                                  </span> */}
+                                  <input 
+                                    type='text' 
+                                    id='catalogTextFilter' 
+                                    placeholder='🔍' 
+                                    // width='32' 
                                   />
-                                </a>
-                                &nbsp
-                                <a href='https://threedgarden.com/demo/'
-                                  // style='padding-left: 10px text-decoration: none font-size: 32px'
-                                >
-                                  ThreeD Home Design
-                                </a>
+                                </Container>
                               </div>
-                              {/* 
-                              <div id='overlayMenuPlanView'>
-                                <button id='overlayPlanViewRecenterBtn' onClick={() => recenterPlanView()} className='smallButton'>Recenter</button>
-                                <button id='overlayPlanViewGoto3dViewBtn' onClick={() => goto3dView()} className='smallButton'>3d View</button>
+                              <div id='catalogItems'>
+                                <CatalogItems />
                               </div>
-                              */}
-                            </Grid>
-                          </Panel>
-                          
-                          <PanelResizeHandle />
-                          
-                          <Panel
-                            className={stylesPanels.Panel}
-                            defaultSize={32}
-                            maxSize={60}
-                            style={{
-                              // border: '1px solid darkblue',
-                            }}
-                          >
-                            <Grid 
-                              id='view3d'
+                            </Panel>
+
+                            <PanelResizeHandle />
+                            
+                            <Panel 
+                              id='viewProperties'
+                              className={stylesPanels.Panel}
+                              defaultSize={36}
+                              // maxSize={64}
                               style={{
-                                height: '100%',
-                                // width: '100%',
-                                border: '1px solid #222222',
+                                // border: '1px solid darkgreen',
                               }}
                             >
-                              {/* <Text>
-                                Main Content (2nd Level)
-                              </Text> */}
-                              {/* <SessionData 
-                                session={session} 
-                              /> */}
-                              {/* THREED HOME DESIGN: 3D CANVAS */}
-                              <Canvas
-                                id={'threeCanvas'}
-                                key={'threeCanvas'}
+                              <ViewProperties />
+                            
+                              {/* BASIC ACTION BUTTONS */}
+                              {/* <Flex>
+                                <Button onClick={() => handleShowModalAbout()}>
+                                  Show Modal: About
+                                </Button>
+                                <Button onClick={() => handleShowModal3dModel()}>
+                                  Show Modal: 3D Model
+                                </Button>
+                                <Button onClick={() => handleShowModalShare()}>
+                                  Show Modal: Share
+                                </Button>
+                                <Button onClick={() => handleShowModalLoading()}>
+                                  Show Modal: Loading
+                                </Button>
+                              </Flex> */}
 
+                            </Panel>
+
+                          </PanelGroup>
+                        </Panel>
+
+                        <PanelResizeHandle />
+                      </>
+                    )}
+
+                    {/* VIEWS: PLAN (2D PAPER) */}
+                    {showPanelLast && (
+                      <>
+                        <Panel
+                          // className={stylesPanels.Panel}
+                          defaultSize={64}
+                          maxSize={96}
+                          style={{
+                            // border: '1px solid darkblue',
+                          }}
+                        >
+                          <PanelGroup 
+                            direction='vertical'
+                          >
+                            <Panel
+                              className={stylesPanels.Panel}
+                              defaultSize={40}
+                              maxSize={60}
+                            >
+                              <Grid 
+                                id='planView'
                                 style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  // border: '1px solid #222222',
+                                  border: '1px solid #222222',
                                 }}
-
-                                shadows={true}
-                                dpr={[1, 2]} // dpr = target pixel ratio (need ???)
-                                
-                                // ** CAMERA (not using declarative inside canvas)
-                                // camera={threedCamera}
-
-                                // ** SCENE (needs to be declarative inside canvas)
-                                scene={{
-                                  // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-                                  background: new THREE.Color(0x171717),
-                                }}
-                                // onCreated={
-                                //   (state) => {
-                                //     // console.debug('%c Canvas onCreated state', ccm.darkred, state)
-                                //     // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
-                                //     console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
-                                //     // state.gl.toneMapping = THREE.AgXToneMapping
-                                //     // state.camera.fov = 32 // 8
-                                //     // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
-                                //     // threedCamera.position = new THREE.Vector3(2, -4, 8)
-                                //     // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
-                                //   }
-                                // }
-                                
-                                // ** JOYSTICK as mouse (optional)
-                                // onPointerDown={(e) => {
-                                //   if (e.pointerType === 'mouse') {
-                                //     // testing
-                                //     (e.target as HTMLCanvasElement).requestPointerLock()
-                                //   }
-                                // }}
-                                
                               >
-                                <Preload all />
-                              
-                                {/* ORBIT CONTROLS (CAMERA CONTROLS) */}
-                                {/* makeDefault makes the controls known to r3f,
-                                    now transform-controls can auto-disable them when active */}
-                                {enableOrbit && (
-                                  <>
-                                    <OrbitControls
-                                      makeDefault
-                                      minDistance={0.25}
-                                      maxDistance={480}
-                                      // // minZoom={10}
-                                      // // maxZoom={20}
-                                      // // minAzimuthAngle={-Math.PI / 4}
-                                      // // maxAzimuthAngle={Math.PI / 4}
-                                      minPolarAngle={-Math.PI / 1.8}
-                                      maxPolarAngle={Math.PI / 1.8}
-                                      enableZoom={true}
-                                      zoomToCursor={false} // default is false
-                                      zoomSpeed={1.0} // default is 1.0
-                                      enableRotate={true}
-                                      // autoRotate={prefs.doAutoRotate} // default is false
-                                      autoRotate={false}
-                                      autoRotateSpeed={1.0} // default is 2.0
-                                      rotateSpeed={1.0} // default is 1.0
-                                      enableDamping={false} // slows down rotation after mouse release
-                                      dampingFactor={0.2} // default is 0.05
-                                      enablePan={true}
-                                      screenSpacePanning={true}
+                                {/* <Text>
+                                  Main Content (children)
+                                </Text> */}
+                                {/* <SessionData 
+                                  session={session} 
+                                /> */}
+                                {/* THREED HOME DESIGN: 2D PAPER PLAN VIEW */}
+                                {/* <Canvas 
+                                  id='planCanvas'
+                                  key={'planCanvas'}
+                                >
+                                  <Preload all />
+                                  <></>
+                                </Canvas> */}
 
-                                      // target={camera.target}
+                                <PaperCanvas />
+                                
+                                <div id='overlayLogoPlanView' className='overlayLogo'>
+                                  <a href='https://threedgarden.com/demo/'
+                                    // style='float:leftpadding:0px margin-top:0px'
+                                  >
+                                    <img
+                                      src='/favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' 
                                     />
+                                  </a>
+                                  &nbsp
+                                  <a href='https://threedgarden.com/demo/'
+                                    // style='padding-left: 10px text-decoration: none font-size: 32px'
+                                  >
+                                    ThreeD Home Design
+                                  </a>
+                                </div>
+                                {/* 
+                                <div id='overlayMenuPlanView'>
+                                  <button id='overlayPlanViewRecenterBtn' onClick={() => recenterPlanView()} className='smallButton'>Recenter</button>
+                                  <button id='overlayPlanViewGoto3dViewBtn' onClick={() => goto3dView()} className='smallButton'>3d View</button>
+                                </div>
+                                */}
+                              </Grid>
+                            </Panel>
+                            
+                            <PanelResizeHandle />
+                            
+                            <Panel
+                              className={stylesPanels.Panel}
+                              defaultSize={32}
+                              maxSize={60}
+                              style={{
+                                // border: '1px solid darkblue',
+                              }}
+                            >
+                              <Grid 
+                                id='view3d'
+                                style={{
+                                  height: '100%',
+                                  // width: '100%',
+                                  border: '1px solid #222222',
+                                }}
+                              >
+                                {/* <Text>
+                                  Main Content (2nd Level)
+                                </Text> */}
+                                {/* <SessionData 
+                                  session={session} 
+                                /> */}
+                                {/* THREED HOME DESIGN: 3D CANVAS */}
+                                <Canvas
+                                  id={'threeCanvas'}
+                                  key={'threeCanvas'}
 
-                                    {/* ORBIT CONTROLS GIZMO HELPER */}
-                                    {enableGizmoCube && (
-                                      <GizmoHelper
-                                        alignment='top-right'
-                                        margin={[64, 48]}
-                                      >
-                                        <group scale={0.7}>
-                                          <GizmoViewcube />
-                                        </group>
-                                        <group
-                                          scale={1.4}
-                                          position={[-24, -24, -24]}
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    // border: '1px solid #222222',
+                                  }}
+
+                                  shadows={true}
+                                  dpr={[1, 2]} // dpr = target pixel ratio (need ???)
+                                  
+                                  // ** CAMERA (not using declarative inside canvas)
+                                  // camera={threedCamera}
+
+                                  // ** SCENE (needs to be declarative inside canvas)
+                                  scene={{
+                                    // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+                                    background: new THREE.Color(0x171717),
+                                  }}
+                                  // onCreated={
+                                  //   (state) => {
+                                  //     // console.debug('%c Canvas onCreated state', ccm.darkred, state)
+                                  //     // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
+                                  //     console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
+                                  //     // state.gl.toneMapping = THREE.AgXToneMapping
+                                  //     // state.camera.fov = 32 // 8
+                                  //     // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
+                                  //     // threedCamera.position = new THREE.Vector3(2, -4, 8)
+                                  //     // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
+                                  //   }
+                                  // }
+                                  
+                                  // ** JOYSTICK as mouse (optional)
+                                  // onPointerDown={(e) => {
+                                  //   if (e.pointerType === 'mouse') {
+                                  //     // testing
+                                  //     (e.target as HTMLCanvasElement).requestPointerLock()
+                                  //   }
+                                  // }}
+                                  
+                                >
+                                  <Preload all />
+                                
+                                  {/* ORBIT CONTROLS (CAMERA CONTROLS) */}
+                                  {/* makeDefault makes the controls known to r3f,
+                                      now transform-controls can auto-disable them when active */}
+                                  {enableOrbit && (
+                                    <>
+                                      <OrbitControls
+                                        makeDefault
+                                        minDistance={0.25}
+                                        maxDistance={480}
+                                        // // minZoom={10}
+                                        // // maxZoom={20}
+                                        // // minAzimuthAngle={-Math.PI / 4}
+                                        // // maxAzimuthAngle={Math.PI / 4}
+                                        minPolarAngle={-Math.PI / 1.8}
+                                        maxPolarAngle={Math.PI / 1.8}
+                                        enableZoom={true}
+                                        zoomToCursor={false} // default is false
+                                        zoomSpeed={1.0} // default is 1.0
+                                        enableRotate={true}
+                                        // autoRotate={prefs.doAutoRotate} // default is false
+                                        autoRotate={false}
+                                        autoRotateSpeed={1.0} // default is 2.0
+                                        rotateSpeed={1.0} // default is 1.0
+                                        enableDamping={false} // slows down rotation after mouse release
+                                        dampingFactor={0.2} // default is 0.05
+                                        enablePan={true}
+                                        screenSpacePanning={true}
+
+                                        // target={camera.target}
+                                      />
+
+                                      {/* ORBIT CONTROLS GIZMO HELPER */}
+                                      {enableGizmoCube && (
+                                        <GizmoHelper
+                                          alignment='top-right'
+                                          margin={[64, 48]}
                                         >
-                                          <GizmoViewport
-                                            labelColor='white'
-                                            axisHeadScale={0.5}
-                                            hideNegativeAxes
-                                          />
-                                        </group>
-                                      </GizmoHelper>
-                                    )}
-                                  </>
-                                )}
+                                          <group scale={0.7}>
+                                            <GizmoViewcube />
+                                          </group>
+                                          <group
+                                            scale={1.4}
+                                            position={[-24, -24, -24]}
+                                          >
+                                            <GizmoViewport
+                                              labelColor='white'
+                                              axisHeadScale={0.5}
+                                              hideNegativeAxes
+                                            />
+                                          </group>
+                                        </GizmoHelper>
+                                      )}
+                                    </>
+                                  )}
 
-                              </Canvas>
-                              {/* <div id='overlayLogo3dView' className='overlayLogo'>
-                                <a href='https://threedgarden.com/home-design/'><img
-                                    src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
-                                <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
-                              </div>
-                              <div id='overlayMenu3dView'>
-                                <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
-                                <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
-                              </div> */}
-                            </Grid>
-                          </Panel>
-                        </PanelGroup>
-                      </Panel>
-                    </PanelGroup>
+                                </Canvas>
+                                {/* <div id='overlayLogo3dView' className='overlayLogo'>
+                                  <a href='https://threedgarden.com/home-design/'><img
+                                      src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
+                                  <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
+                                </div>
+                                <div id='overlayMenu3dView'>
+                                  <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
+                                  <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
+                                </div> */}
+                              </Grid>
+                            </Panel>
+                          </PanelGroup>
+                        </Panel>
+                      </>
+                    )}
+                  </PanelGroup>
+                  
                 </Panel>
 
               </PanelGroup>
