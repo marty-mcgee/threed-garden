@@ -632,6 +632,7 @@ function validatePlusOrMinusNumber(e: any, t: any) {
 //     : ((e.style.backgroundColor = "#ff8888"), e.focus())
 }
 
+/* */
 
 // ==============================================================
 // ** VIEWS (COMPONENTS)
@@ -2272,8 +2273,18 @@ function showThreedLicenseSummary(e: any) {
 
 // ** Drag Functions
 function beginDrag(e: any, t: Object) {
-  console.debug('drag: beginDrag', e, t)
-  console.debug('drag: threedItems[t]', threedItems[t])
+
+  console.debug(
+    'drag: beginDrag', 
+    e, 
+    t,
+  )
+  console.debug(
+    'drag: threedItems[t]', 
+    Object.keys(threedItems), 
+    Object.keys(threedItems[t]),
+  ) // Object.keys(x)
+
   try {
     showThreedLicenseSummary(t)
     setToolMode("pointer")
@@ -3091,7 +3102,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
 
             <Panel 
               className={stylesPanels.Panel}
-              defaultSize={16}
+              defaultSize={4}
               maxSize={32}
               style={{
                 // height: '80vh',
@@ -3114,27 +3125,27 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                 >
                   {/* MAIN ACTIONS DROPDOWN MENU */}
                   <DropdownMenuThreeD />
+                  <span>
+                    <Button
+                      // className={styles.Button}
+                      onClick={() => setShowPanelFirst(!showPanelFirst)}
+                    >
+                      {showPanelFirst ? "hide" : "show"} panel left
+                    </Button>
+                    &nbsp;
+                    <Button
+                      // className={styles.Button}
+                      onClick={() => setShowPanelLast(!showPanelLast)}
+                    >
+                      {showPanelLast ? "hide" : "show"} panel right
+                    </Button>
+                  </span>
+                  <span>
+                    {/* <Heading as='h4'> */}
+                      🥕 Welcome {session?.user?.name} to ThreeD Garden
+                    {/* </Heading> */}
+                  </span>
                 </Container>
-                <p>
-                  <button
-                    // className={styles.Button}
-                    onClick={() => setShowPanelFirst(!showPanelFirst)}
-                  >
-                    {showPanelFirst ? "hide" : "show"} left panel
-                  </button>
-                  &nbsp;
-                  <button
-                    // className={styles.Button}
-                    onClick={() => setShowPanelLast(!showPanelLast)}
-                  >
-                    {showPanelLast ? "hide" : "show"} right panel
-                  </button>
-                </p>
-                {/* <Container>
-                  <Heading as='h4'>
-                    🥕 Welcome {session?.user?.name} to ThreeD Garden
-                  </Heading>
-                </Container> */}
               {/* </Flex> */}
             </Panel>
             
