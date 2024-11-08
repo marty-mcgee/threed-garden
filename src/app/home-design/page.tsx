@@ -645,7 +645,7 @@ const ViewProperties = (props: any) => {
       id='propertiesView' 
       style={{ 
         // paddingLeft: '10px',
-        border: '1px solid orange',
+        // border: '1px solid orange',
       }}
     >
       <div 
