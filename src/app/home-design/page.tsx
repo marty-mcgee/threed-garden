@@ -632,6 +632,22 @@ function validatePlusOrMinusNumber(e: any, t: any) {
 //     : ((e.style.backgroundColor = "#ff8888"), e.focus())
 }
 
+function openTab(tab: string = 'tab1') {
+  console.debug('openTab(tab)')
+}
+function handleSaveEditsLocalStorageOption() {
+  console.debug('handleSaveEditsLocalStorageOption()')
+}
+function loadFromLocalStorage() {
+  console.debug('loadFromLocalStorage()')
+}
+function loadExamplePlan() {
+  console.debug('loadExamplePlan()')
+}
+function closeAllModals() {
+  console.debug('closeAllModals()')
+}
+
 /* */
 
 // ==============================================================
@@ -2229,42 +2245,46 @@ function showThreedLicenseSummary(e: any) {
   console.debug('showThreedLicenseSummary', e)
   try {
     // modalModel3dThreedId = e
-    // var t = camelCaseToSentence(e)
+    var t = camelCaseToSentence(e)
     document.getElementById("model3dName").innerText = e
-    // var o = threedItems[e].author
-    // document.getElementById("model3dAuthor").innerText = threedItems[e].author
+    var o = threedItems[e].author
+    document.getElementById("model3dAuthor").innerText = threedItems[e].author
     var a = "License: Default"
 
-    // switch (threedItems[e].license) {
-    //   case "Free Art License 1.3":
-    //     a =
-    //       "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
-    //       threedItems[e].license +
-    //       "</a>"
-    //     break
-    //   case "CC-0":
-    //     a =
-    //       "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
-    //       threedItems[e].license +
-    //       "</a>"
-    //     break
-    //   case "CC BY 3.0":
-    //     a =
-    //       "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
-    //       threedItems[e].license +
-    //       "</a>"
-    //     break
-    //   case "CC BY 4.0":
-    //     a =
-    //       "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-    //       threedItems[e].license +
-    //       "</a>"
-    //     break
-    //   default:
-    //     a = threedItems[e].license
-    // }
+    switch (threedItems[e].license) {
+      case "Free Art License 1.3":
+        a =
+          "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+        break
+      case "CC-0":
+        a =
+          "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+        break
+      case "CC BY 3.0":
+        a =
+          "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+        break
+      case "CC BY 4.0":
+        a =
+          "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+        break
+      default:
+        // a = threedItems[e].license
+        a =
+          "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+          threedItems[e].license +
+          "</a>"
+    }
     document.getElementById("model3dLicense").innerHTML = a
-    // document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
+    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
     setPropertiesView("model3dMeta")
   } catch (err) {
     console.debug(err)
@@ -2815,21 +2835,8 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
   // }
   // ** END MODALS
 
-  function openTab(tab: string = 'tab1') {
-    console.debug('openTab(tab)')
-  }
-  function handleSaveEditsLocalStorageOption() {
-    console.debug('handleSaveEditsLocalStorageOption()')
-  }
-  function loadFromLocalStorage() {
-    console.debug('loadFromLocalStorage()')
-  }
-  function loadExamplePlan() {
-    console.debug('loadExamplePlan()')
-  }
-  function closeAllModals() {
-    console.debug('closeAllModals()')
-  }
+
+
 
   // ** RADIX-UI DropdownMenu
   const DropdownMenuThreeD = () => {
