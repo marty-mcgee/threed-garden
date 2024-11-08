@@ -656,6 +656,7 @@ function closeAllModals() {
 // ** VIEW: PROPERTIES (of a threed object, or other dom element)
 const ViewProperties = (props: any) => {
   console.debug('PropertiesView loading...')
+
   return (
     <>
     <div 
@@ -2277,11 +2278,11 @@ function showThreedLicenseSummary(e: any) {
           "</a>"
         break
       default:
-        // a = threedItems[e].license
-        a =
-          "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
-          "</a>"
+        a = threedItems[e].license
+        // a =
+        //   "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+        //   threedItems[e].license +
+        //   "</a>"
     }
     document.getElementById("model3dLicense").innerHTML = a
     document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
@@ -2413,6 +2414,9 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
   const [showPanelFirst, setShowPanelFirst] = useState(true);
   const [showPanelLast, setShowPanelLast] = useState(true);
   
+  useEffect(() => {
+    showThreedLicenseSummary('threed: marty mcgee')
+  }, [])
   
   // ** load old data.. no
   // useEffect(() => {
