@@ -2244,6 +2244,10 @@ function setPropertiesView(e: String) {
 
 function showThreedLicenseSummary(e: any) {
   console.debug('showThreedLicenseSummary', e)
+  e = {
+    author: 'marty mcgee',
+    
+  }
   try {
     // modalModel3dThreedId = e
     var t = camelCaseToSentence(e)
