@@ -60,7 +60,7 @@
 #catalogItems {
   position: absolute;
   top: 30px;
-  bottom: 100px;
+  bottom: 0px;
   overflow-y: auto;
   overflow-x: auto;
   cursor: default;

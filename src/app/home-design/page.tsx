@@ -2272,8 +2272,8 @@ function showThreedLicenseSummary(e: any) {
 
 // ** Drag Functions
 function beginDrag(e: any, t: Object) {
-  console.debug('beginDrag', e, t)
-  console.debug('threedItems[t]', threedItems[t])
+  console.debug('drag: beginDrag', e, t)
+  console.debug('drag: threedItems[t]', threedItems[t])
   try {
     showThreedLicenseSummary(t)
     setToolMode("pointer")
