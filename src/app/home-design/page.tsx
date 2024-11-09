@@ -615,12 +615,12 @@ const PaperCanvas = (props: any) => {
 // ==============================================================
 
 function camelCaseToSentence(e: String) {
-  e = e.replace(/([A-Z])/g, " $1")
-  e = e.replace(/_/g, " ")
-  e = e.replace(/\b\w/g, function (e) {
-    return e.toUpperCase()
-  })
-  e = e.charAt(0).toUpperCase() + e.slice(1)
+  // e = e.replace(/([A-Z])/g, " $1")
+  // e = e.replace(/_/g, " ")
+  // e = e.replace(/\b\w/g, function (e) {
+  //   return e.toUpperCase()
+  // })
+  // e = e.charAt(0).toUpperCase() + e.slice(1)
   return e
 }
 
@@ -2242,53 +2242,56 @@ function setPropertiesView(e: String) {
   }
 }
 
-function showThreedLicenseSummary(e: any) {
+function showThreedLicenseSummary(e: Object) {
   console.debug('showThreedLicenseSummary', e)
   e = {
     author: 'marty mcgee',
-    
+    license: 'Default License',
   }
+  // @ts-expect-error
+  const thisThreedItem = threedItems[e]
   try {
     // modalModel3dThreedId = e
-    var t = camelCaseToSentence(e)
-    document.getElementById("model3dName").innerText = e
-    var o = threedItems[e].author
-    document.getElementById("model3dAuthor").innerText = threedItems[e].author
+    var t = camelCaseToSentence(e.toString())
+    document.getElementById("model3dName").innerText = e.toString()
+    var o = thisThreedItem.author
+    document.getElementById("model3dAuthor").innerText = thisThreedItem.author
     var a = "License: Default"
 
-    switch (threedItems[e].license) {
+    switch (thisThreedItem.license) {
       case "Free Art License 1.3":
         a =
           "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
+          thisThreedItem.license +
           "</a>"
         break
       case "CC-0":
         a =
           "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
+          thisThreedItem.license +
           "</a>"
         break
       case "CC BY 3.0":
         a =
           "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
+          thisThreedItem.license +
           "</a>"
         break
       case "CC BY 4.0":
         a =
           "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-          threedItems[e].license +
+          thisThreedItem.license +
           "</a>"
         break
       default:
-        a = threedItems[e].license
+        a = thisThreedItem.license
         // a =
         //   "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-        //   threedItems[e].license +
+        //   thisThreedItem.license +
         //   "</a>"
     }
     document.getElementById("model3dLicense").innerHTML = a
+    // @ts-expect-error
     document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
     setPropertiesView("model3dMeta")
   } catch (err) {
@@ -2299,15 +2302,17 @@ function showThreedLicenseSummary(e: any) {
 // ** Drag Functions
 function beginDrag(e: any, t: Object) {
 
+  // @ts-expect-error
+  const thisThreedItem = threedItems[t]
   console.debug(
     'drag: beginDrag', 
     e, 
     t,
   )
   console.debug(
-    'drag: threedItems[t]', 
-    Object.keys(threedItems), 
-    Object.keys(threedItems[t]),
+    'drag: thisThreedItem', 
+    Object.keys(threedItems),
+    Object.keys(thisThreedItem),
   ) // Object.keys(x)
 
   try {
@@ -2326,13 +2331,13 @@ function beginDrag(e: any, t: Object) {
       new paper.Point(1, 1)
     )
     draggingThreedRectangle.position = o
-    if (threedItems[t]) {
-      threedItems[t].scale && threedItems[t].scale.x
-        ? draggingThreedRectangle.bounds.width = threedItems[t].size.x * threedItems[t].scale.x
-        : draggingThreedRectangle.bounds.width = threedItems[t].size.x
-      threedItems[t].scale && threedItems[t].scale.z
-        ? draggingThreedRectangle.bounds.height = threedItems[t].size.z * threedItems[t].scale.z
-        : draggingThreedRectangle.bounds.height = threedItems[t].size.z
+    if (thisThreedItem) {
+      thisThreedItem.scale && thisThreedItem.scale.x
+        ? draggingThreedRectangle.bounds.width = thisThreedItem.size.x * thisThreedItem.scale.x
+        : draggingThreedRectangle.bounds.width = thisThreedItem.size.x
+      thisThreedItem.scale && thisThreedItem.scale.z
+        ? draggingThreedRectangle.bounds.height = thisThreedItem.size.z * thisThreedItem.scale.z
+        : draggingThreedRectangle.bounds.height = thisThreedItem.size.z
     }
     draggingThreedRectangle.visible = !1
     document.getElementById("threedDragDiv").style.background = "url('" + objectsURL + "objects/" + t + "_top.png')"
@@ -2867,25 +2872,25 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
           >
             <DropdownMenu.Item 
               className='DropdownMenuItem'
-              onClick={() => handleShowModalAbout()}
+              // onClick={() => handleShowModalAbout()}
             >
               About <div className='RightSlot'>⌘+A</div>
             </DropdownMenu.Item>
             <DropdownMenu.Item 
               className='DropdownMenuItem'
-              onClick={() => handleShowModal3dModel()}
+              // onClick={() => handleShowModal3dModel()}
             >
               3D Model <div className='RightSlot'>⌘+N</div>
             </DropdownMenu.Item>
             <DropdownMenu.Item 
               className='DropdownMenuItem'
-              onClick={() => handleShowModalShare()}
+              // onClick={() => handleShowModalShare()}
             >
               Share <div className='RightSlot'>⌘+N</div>
             </DropdownMenu.Item>
             <DropdownMenu.Item 
               className='DropdownMenuItem'
-              onClick={() => handleShowModalLoading()}
+              // onClick={() => handleShowModalLoading()}
             >
               Loading <div className='RightSlot'>⌘+N</div>
             </DropdownMenu.Item>
@@ -3157,7 +3162,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                   </span>
                   <span>
                     {/* <Heading as='h4'> */}
-                      🥕 Welcome {session?.user?.name} to ThreeD Garden
+                      🥕 Welcome to ThreeD Garden
                     {/* </Heading> */}
                   </span>
                 </Container>
