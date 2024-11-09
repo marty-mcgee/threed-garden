@@ -2245,8 +2245,19 @@ function setPropertiesView(e: String) {
 function showThreedLicenseSummary(e: Object) {
   console.debug('showThreedLicenseSummary', e)
   e = {
-    author: 'marty mcgee',
-    license: 'Default License',
+    // author: 'marty mcgee',
+    // license: 'Default License',
+    "siameseCat": {
+      "license": "CC BY 3.0",
+      "threed": "CC BY 4.0",
+      "threedLink": "#mm-link",
+      "author": "Gwinna",
+      "size": {
+        "x": 13.26,
+        "y": 42.06,
+        "z": 81.27
+      }
+    },
   }
   // @ts-expect-error
   const thisThreedItem = threedItems[e]
@@ -2316,7 +2327,7 @@ function beginDrag(e: any, t: Object) {
   ) // Object.keys(x)
 
   try {
-    showThreedLicenseSummary(t)
+    showThreedLicenseSummary(thisThreedItem)
     setToolMode("pointer")
     // draggingThreedId = t
     // draggingThreedIcon = !0
@@ -2424,7 +2435,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
   const [showPanelLast, setShowPanelLast] = useState(true);
   
   useEffect(() => {
-    showThreedLicenseSummary('threed: marty mcgee')
+    // showThreedLicenseSummary(null) ???
   }, [])
   
   // ** load old data.. no
