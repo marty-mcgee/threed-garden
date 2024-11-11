@@ -5,6 +5,9 @@
 // ==============================================================
 // ** DEFAULT APP ROOT LAYOUT
 
+// ** NEXT Imports
+import dynamic from 'next/dynamic'
+
 // ** STYLE Imports
 import { Inter } from 'next/font/google'
 import '#/layout/styles/styles-tailwind-globals.css'
@@ -26,8 +29,10 @@ import SessionWrapper from '#/layout/SessionWrapper'
 import { ClerkProvider } from '@clerk/nextjs'
 
 // ** LAYOUT Components (Head, Body, Foot)
-import Header from '#/layout/header'
-import Footer from '#/layout/footer'
+// import Header from '#/layout/header'
+const Header = dynamic(() => import('#/layout/header'), { ssr: false })
+// import Footer from '#/layout/footer'
+const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
 // ** HELPER Imports
 // ** Colorful Console Messages
@@ -60,7 +65,7 @@ export default function RootLayout({ children }: { children: any }) {
       <body className={inter.className}>
         <ApolloClientWrapper>
           <SessionWrapper>
-            <ClerkProvider dynamic>
+            <ClerkProvider>{/* dynamic? */}
               <Header 
                 key='ThreeDAppHeader'
               />
