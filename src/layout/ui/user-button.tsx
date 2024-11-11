@@ -9,9 +9,9 @@ import { Button } from '#/layout/ui/button'
 // } from '@radix-ui/themes'
 
 // ** AUTH GUARD
-import { auth } from '#//lib/auth/auth'
 // import { SessionProvider } from 'next-auth/react'
 // import { useSession } from 'next-auth/react'
+import { auth } from '#//lib/auth/auth'
 import { SignIn, SignOut } from '#/layout/ui/auth-components'
 
 import {
@@ -52,19 +52,24 @@ export default async function UserButton() {
         <DropdownMenuTrigger asChild>
           <Button 
             // className='relative rounded-full'
-            className='bg-background text-foreground text-xs p-2'
+            // className='
+            //   bg-background 
+            //   text-foreground 
+            //   text-xs 
+            //   p-2
+            // '
             style={{
               // border: 0,
               // marginRight: 4,
             }}
           >
             <div 
-              className='mr-2'
+              className='mr-3 ml-0'
             >
               {session.user.name}
             </div>
             <Avatar 
-              // className='w-8 h-8'
+              className='w-2 h-7'
             >
               {session.user.image && (
                 <AvatarImage
