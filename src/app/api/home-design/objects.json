@@ -1,315 +1,317 @@
-{
-  "luckyBamboo": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+[
+  {
+    "title": "luckyBamboo",
+    "license": "CC BY 4.0",
     "author": "renderbob",
+    "threedLink": "#threed-link",
     "size": {
       "x": 15.49,
       "y": 34.03,
       "z": 14.89
     }
   },
-  "siameseCat": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "siameseCat",
+    "license": "CC BY 4.0",
     "author": "Gwinna",
+    "threedLink": "#threed-link",
     "size": {
       "x": 13.26,
       "y": 42.06,
       "z": 81.27
     }
   },
-  "laptop": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "laptop",
+    "license": "CC BY 4.0",
     "author": "Mayollo",
+    "threedLink": "#threed-link",
     "size": {
       "x": 33.89,
       "y": 26.6,
       "z": 25.32
     }
   },
-  "largeStove": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "largeStove",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 103.91,
       "y": 85.2,
       "z": 72.33
     }
   },
-  "simpleDesk": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "simpleDesk",
+    "license": "CC BY 4.0",
     "author": "SirOccor",
+    "threedLink": "#threed-link",
     "size": {
       "x": 140.06,
       "y": 72,
       "z": 81.11
     }
   },
-  "lamp": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "lamp",
+    "license": "CC BY 4.0",
     "author": "bulgakov",
+    "threedLink": "#threed-link",
     "size": {
       "x": 30.49,
       "y": 40.94,
       "z": 30.49
     }
   },
-  "sofa2": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "sofa2",
+    "license": "CC BY 4.0",
     "author": "Derte21",
+    "threedLink": "#threed-link",
     "size": {
       "x": 177.05,
       "y": 77.99,
       "z": 86.12
     }
   },
-  "mediumIndoorPlant": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "mediumIndoorPlant",
+    "license": "CC BY 4.0",
     "author": "betomo16",
+    "threedLink": "#threed-link",
     "size": {
       "x": 72.57,
       "y": 67.28,
       "z": 76.45
     }
   },
-  "microwave": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "microwave",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 40.16,
       "y": 24.75,
       "z": 35.77
     }
   },
-  "officeTable": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "officeTable",
+    "license": "CC BY 4.0",
     "author": "Nmn9",
+    "threedLink": "#threed-link",
     "size": {
       "x": 189.23,
       "y": 75.12,
       "z": 83.44
     }
   },
-  "piano": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "piano",
+    "license": "CC BY 4.0",
     "author": "LVlittering",
+    "threedLink": "#threed-link",
     "size": {
       "x": 141.41,
       "y": 120.91,
       "z": 54.26
     }
   },
-  "poolLounge": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "poolLounge",
+    "license": "CC BY 4.0",
     "author": "LarryStephenRobb",
+    "threedLink": "#threed-link",
     "size": {
       "x": 87.96,
       "y": 88.48,
       "z": 200
     }
   },
-  "radio": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "radio",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 30.65,
       "y": 26.31,
       "z": 8.44
     }
   },
-  "rubix2": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "rubix2",
+    "license": "CC BY 4.0",
     "author": "farcgs",
+    "threedLink": "#threed-link",
     "size": {
       "x": 5.59,
       "y": 5.59,
       "z": 5.59
     }
   },
-  "sef-kasa": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "sef-kasa",
+    "license": "CC BY 4.0",
     "author": "bocko",
+    "threedLink": "#threed-link",
     "size": {
       "x": 50.5,
       "y": 50.5,
       "z": 54.71
     }
   },
-  "spatifilum": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "spatifilum",
+    "license": "CC BY 4.0",
     "author": "heraSK",
+    "threedLink": "#threed-link",
     "size": {
       "x": 79.76,
       "y": 87.46,
       "z": 74.9
     }
   },
-  "spider_plant": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "spider_plant",
+    "license": "CC BY 4.0",
     "author": "Nmn9",
+    "threedLink": "#threed-link",
     "size": {
       "x": 66.62,
       "y": 34.24,
       "z": 63.62
     }
   },
-  "succulentPlant": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "succulentPlant",
+    "license": "CC BY 4.0",
     "author": "Nmn9",
+    "threedLink": "#threed-link",
     "size": {
       "x": 13.69,
       "y": 11.36,
       "z": 12.89
     }
   },
-  "suit": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "suit",
+    "license": "CC BY 4.0",
     "author": "rosenth",
+    "threedLink": "#threed-link",
     "size": {
       "x": 44,
       "y": 60,
       "z": 11.76
     }
   },
-  "table": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "table",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 144.34,
       "y": 72.42,
       "z": 93.41
     }
   },
-  "table_tennis": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "table_tennis",
+    "license": "CC BY 4.0",
     "author": "bheema",
+    "threedLink": "#threed-link",
     "size": {
       "x": 274,
       "y": 72.46,
       "z": 191.22
     }
   },
-  "thermometer": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "thermometer",
+    "license": "CC BY 4.0",
     "author": "DennisH2010",
+    "threedLink": "#threed-link",
     "size": {
       "x": 7.66,
       "y": 17.08,
       "z": 5.92
     }
   },
-  "toilets_unit_jay_hardy": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "toilets_unit_jay_hardy",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 41.25,
       "y": 76.57,
       "z": 54.38
     }
   },
-  "towel": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "towel",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 14.53,
       "y": 45.4,
       "z": 13.42
     }
   },
-  "toyTrain": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "toyTrain",
+    "license": "CC BY 4.0",
     "author": "RegusTtef",
+    "threedLink": "#threed-link",
     "size": {
       "x": 30.14,
       "y": 9.62,
       "z": 12.35
     }
   },
-  "treadmill": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "treadmill",
+    "license": "CC BY 4.0",
     "author": "muhtesemozcinar",
+    "threedLink": "#threed-link",
     "size": {
       "x": 88.46,
       "y": 152.58,
       "z": 195.81
     }
   },
-  "tulip": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "tulip",
+    "license": "CC BY 4.0",
     "author": "Nmn9",
+    "threedLink": "#threed-link",
     "size": {
       "x": 38.05,
       "y": 39.85,
       "z": 43.79
     }
   },
-  "tvStand": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "tvStand",
+    "license": "CC BY 4.0",
     "author": "Leximumxii",
+    "threedLink": "#threed-link",
     "size": {
       "x": 135.14,
       "y": 52.55,
       "z": 46.51
     }
   },
-  "birchTreeWithLeaves": {
+  {
+    "title": "birchTreeWithLeaves",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 196.13,
       "y": 186.96,
@@ -317,9 +319,11 @@
     },
     "useMask": false
   },
-  "tree1WithLeaves": {
+  {
+    "title": "tree1WithLeaves",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 186.1,
       "y": 226.93,
@@ -327,9 +331,11 @@
     },
     "useMask": false
   },
-  "willowTreeNoLeaves": {
+  {
+    "title": "willowTreeNoLeaves",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 594.45,
       "y": 950.09,
@@ -337,97 +343,99 @@
     },
     "useMask": false
   },
-  "wallDoubleSocket": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "wallDoubleSocket",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 15.49,
       "y": 7.92,
       "z": 1
     }
   },
-  "wallSocket": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "wallSocket",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 7.71,
       "y": 7.92,
       "z": 0.82
     }
   },
-  "wardrobe": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "wardrobe",
+    "license": "CC BY 4.0",
     "author": "SirOccor",
+    "threedLink": "#threed-link",
     "size": {
       "x": 92.14,
       "y": 200,
       "z": 68
     }
   },
-  "washbasin_jay_hardy": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "washbasin_jay_hardy",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 59.73,
       "y": 86.74,
       "z": 43.1
     }
   },
-  "washing_machine": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "washing_machine",
+    "license": "CC BY 4.0",
     "author": "Cattail",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60.02,
       "y": 73.5,
       "z": 62.4
     }
   },
-  "white_lily": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "white_lily",
+    "license": "CC BY 4.0",
     "author": "Nmn9",
+    "threedLink": "#threed-link",
     "size": {
       "x": 31.64,
       "y": 51.11,
       "z": 26.58
     }
   },
-  "xylophone": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "xylophone",
+    "license": "CC BY 4.0",
     "author": "SonnySee",
+    "threedLink": "#threed-link",
     "size": {
       "x": 48.25,
       "y": 6,
       "z": 28.93
     }
   },
-  "yuccaPlant": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "yuccaPlant",
+    "license": "CC BY 4.0",
     "author": "betomo16",
+    "threedLink": "#threed-link",
     "size": {
       "x": 108.41,
       "y": 180.86,
       "z": 102.85
     }
   },
-  "accordionFoldDoors": {
+  {
+    "title": "accordionFoldDoors",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 287.41,
       "y": 221.73,
@@ -439,189 +447,231 @@
     },
     "useMask": true
   },
-  "armchair": {
+  {
+    "title": "armchair",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 138.42,
       "y": 91.62,
       "z": 102.69
     }
   },
-  "armchair2": {
+  {
+    "title": "armchair2",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 119.43,
       "y": 88.51,
       "z": 90.95
     }
   },
-  "armchair3": {
+  {
+    "title": "armchair3",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 61,
       "y": 105,
       "z": 57.99
     }
   },
-  "armchair4": {
+  {
+    "title": "armchair4",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 65,
       "y": 135,
       "z": 69.99
     }
   },
-  "armchair5": {
+  {
+    "title": "armchair5",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 52,
       "y": 87,
       "z": 51
     }
   },
-  "awning": {
+  {
+    "title": "awning",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 309.99,
       "y": 61.62,
       "z": 169.4
     }
   },
-  "balustradeColumn": {
+  {
+    "title": "balustradeColumn",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 30,
       "y": 92.5,
       "z": 24.4
     }
   },
-  "balustradeCorner": {
+  {
+    "title": "balustradeCorner",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 54.39,
       "y": 92.5,
       "z": 54.4
     }
   },
-  "barTable": {
+  {
+    "title": "barTable",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 121.09,
       "y": 108.37,
       "z": 45
     }
   },
-  "barbecue": {
+  {
+    "title": "barbecue",
     "license": "Free Art License 1.3",
     "author": "Sophie",
+    "threedLink": "#threed-link",
     "size": {
       "x": 39.23,
       "y": 50.85,
       "z": 48.4
     }
   },
-  "bathLShape": {
+  {
+    "title": "bathLShape",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 170,
       "y": 186,
       "z": 85
     }
   },
-  "bathtubJetSystem": {
+  {
+    "title": "bathtubJetSystem",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 160,
       "y": 58,
       "z": 70
     }
   },
-  "bed": {
+  {
+    "title": "bed",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 167.19,
       "y": 78.48,
       "z": 220.08
     }
   },
-  "bench": {
+  {
+    "title": "bench",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 167.71,
       "y": 80,
       "z": 65.68
     }
   },
-  "blackDeckChair": {
+  {
+    "title": "blackDeckChair",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 42.16,
       "y": 90,
       "z": 54
     }
   },
-  "blackDeckTable": {
+  {
+    "title": "blackDeckTable",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 150.79,
       "y": 70,
       "z": 152.25
     }
   },
-  "bookcase": {
+  {
+    "title": "bookcase",
     "license": "Free Art License 1.3",
     "author": "Geantick",
+    "threedLink": "#threed-link",
     "size": {
       "x": 182.5,
       "y": 150,
       "z": 31.25
     }
   },
-  "bookcase2": {
+  {
+    "title": "bookcase2",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 223.4,
       "y": 210.59,
       "z": 64.5
     }
   },
-  "bookcase3": {
+  {
+    "title": "bookcase3",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 51.87,
       "y": 163.19,
       "z": 42.64
     }
   },
-  "books": {
+  {
+    "title": "books",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 23.98,
       "y": 26.94,
       "z": 16.88
     }
   },
-  "bottomWinderStaircase": {
+  {
+    "title": "bottomWinderStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 352.16,
@@ -629,225 +679,275 @@
     },
     "useMask": false
   },
-  "cabinet": {
+  {
+    "title": "cabinet",
     "license": "Free Art License 1.3",
     "author": "Maui",
+    "threedLink": "#threed-link",
     "size": {
       "x": 118.99,
       "y": 131.14,
       "z": 50.85
     }
   },
-  "captainsBed": {
+  {
+    "title": "captainsBed",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 231.85,
       "y": 133.03,
       "z": 146.91
     }
   },
-  "carpet": {
+  {
+    "title": "carpet",
     "license": "Free Art License 1.3",
     "author": "Emmanuel Puybaret",
+    "threedLink": "#threed-link",
     "size": {
       "x": 160,
       "y": 1,
       "z": 225
     }
   },
-  "cart": {
+  {
+    "title": "cart",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 46.7,
       "y": 85.84,
       "z": 37.21
     }
   },
-  "cdRack": {
+  {
+    "title": "cdRack",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 65.69,
       "y": 122.4,
       "z": 20.29
     }
   },
-  "cdRack2": {
+  {
+    "title": "cdRack2",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 19.87,
       "y": 179.59,
       "z": 17
     }
   },
-  "ceilingFan": {
+  {
+    "title": "ceilingFan",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 107.8,
       "y": 38.99,
       "z": 102.84
     }
   },
-  "ceilingLamp": {
+  {
+    "title": "ceilingLamp",
     "license": "Free Art License 1.3",
     "author": "MineaCristian",
+    "threedLink": "#threed-link",
     "size": {
       "x": 46,
       "y": 11,
       "z": 46
     }
   },
-  "ceramicHob": {
+  {
+    "title": "ceramicHob",
     "license": "Free Art License 1.3",
     "author": "Emmanuel Puybaret",
+    "threedLink": "#threed-link",
     "size": {
       "x": 59.99,
       "y": 0.92,
       "z": 51.99
     }
   },
-  "chair": {
+  {
+    "title": "chair",
     "license": "Free Art License 1.3",
     "author": "Sleipnir1",
+    "threedLink": "#threed-link",
     "size": {
       "x": 57.87,
       "y": 90.21,
       "z": 60.87
     }
   },
-  "chair2": {
+  {
+    "title": "chair2",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 48,
       "y": 87,
       "z": 49.5
     }
   },
-  "choppingBoard2": {
+  {
+    "title": "choppingBoard2",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 35,
       "y": 1.7,
       "z": 23.8
     }
   },
-  "clothesLine": {
+  {
+    "title": "clothesLine",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 500.04,
       "y": 139.99,
       "z": 14.99
     }
   },
-  "coffeeMachine": {
+  {
+    "title": "coffeeMachine",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 20.5,
       "y": 27.86,
       "z": 30.44
     }
   },
-  "coffeeTable3": {
+  {
+    "title": "coffeeTable3",
     "license": "Free Art License 1.3",
     "author": "Theo Blonk",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 30,
       "z": 100
     }
   },
-  "coffeeTable2": {
+  {
+    "title": "coffeeTable2",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 112.53,
       "y": 39.14,
       "z": 59.82
     }
   },
-  "computerDesk": {
+  {
+    "title": "computerDesk",
     "license": "Free Art License 1.3",
     "author": "Jarda Benkovsky",
+    "threedLink": "#threed-link",
     "size": {
       "x": 5.36,
       "y": 5.68,
       "z": 3.66
     }
   },
-  "cooker": {
+  {
+    "title": "cooker",
     "license": "Free Art License 1.3",
     "author": "Ben Omari",
+    "threedLink": "#threed-link",
     "size": {
       "x": 0.59,
       "y": 0.84,
       "z": 0.61
     }
   },
-  "cookingPlate": {
+  {
+    "title": "cookingPlate",
     "license": "Free Art License 1.3",
     "author": "Peter Glas",
+    "threedLink": "#threed-link",
     "size": {
       "x": 40,
       "y": 3,
       "z": 20.54
     }
   },
-  "cornerWashbasin": {
+  {
+    "title": "cornerWashbasin",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 49.99,
       "y": 81,
       "z": 49.99
     }
   },
-  "counter": {
+  {
+    "title": "counter",
     "license": "Free Art License 1.3",
     "author": "Wrosun",
+    "threedLink": "#threed-link",
     "size": {
       "x": 191.23,
       "y": 93.34,
       "z": 288.35
     }
   },
-  "craftsmanDoor": {
+  {
+    "title": "craftsmanDoor",
     "license": "Free Art License 1.3",
     "author": "Mchnz",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100.86,
       "y": 209.57,
       "z": 18.67
     }
   },
-  "cupboardMirror": {
+  {
+    "title": "cupboardMirror",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60,
       "y": 78,
       "z": 15
     }
   },
-  "trundleBed": {
+  {
+    "title": "trundleBed",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 185.53,
       "y": 100.71,
       "z": 81.69
     }
   },
-  "deepWindow": {
+  {
+    "title": "deepWindow",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 105,
       "y": 149.99,
@@ -855,99 +955,121 @@
     },
     "useMask": true
   },
-  "deskLamp4": {
+  {
+    "title": "deskLamp4",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 40.59,
       "y": 61.23,
       "z": 40.6
     }
   },
-  "deskLamp2": {
+  {
+    "title": "deskLamp2",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 73.76,
       "y": 56.22,
       "z": 23.2
     }
   },
-  "deskLamp3": {
+  {
+    "title": "deskLamp3",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 16,
       "y": 46.99,
       "z": 50
     }
   },
-  "desk2": {
+  {
+    "title": "desk2",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 180,
       "y": 72,
       "z": 163
     }
   },
-  "desk3": {
+  {
+    "title": "desk3",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 77.87,
       "y": 76.45,
       "z": 54.6
     }
   },
-  "desk4": {
+  {
+    "title": "desk4",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 77.87,
       "y": 76.45,
       "z": 85.86
     }
   },
-  "desk5": {
+  {
+    "title": "desk5",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 120,
       "y": 72.48,
       "z": 59
     }
   },
-  "desk6": {
+  {
+    "title": "desk6",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 160,
       "y": 72,
       "z": 80
     }
   },
-  "dishWasher": {
+  {
+    "title": "dishWasher",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 5.04,
       "y": 6.18,
       "z": 6.15
     }
   },
-  "displayCabinet": {
+  {
+    "title": "displayCabinet",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 84.06,
       "y": 179.84,
       "z": 84.06
     }
   },
-  "door": {
+  {
+    "title": "door",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 91.44,
       "y": 213.69,
@@ -955,9 +1077,11 @@
     },
     "useMask": true
   },
-  "doorGlass": {
+  {
+    "title": "doorGlass",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 77.09,
       "y": 205.7,
@@ -965,9 +1089,11 @@
     },
     "useMask": true
   },
-  "doorWindow": {
+  {
+    "title": "doorWindow",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 80,
       "y": 209.99,
@@ -975,9 +1101,11 @@
     },
     "useMask": true
   },
-  "doubleDoorWindow": {
+  {
+    "title": "doubleDoorWindow",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 160,
       "y": 209.99,
@@ -985,9 +1113,11 @@
     },
     "useMask": true
   },
-  "doubleDoorWindowSmallPanes": {
+  {
+    "title": "doubleDoorWindowSmallPanes",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 160,
       "y": 209.99,
@@ -995,9 +1125,11 @@
     },
     "useMask": true
   },
-  "doubleSmallWindow2x3PanesWithSill": {
+  {
+    "title": "doubleSmallWindow2x3PanesWithSill",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 123,
       "y": 110,
@@ -1005,9 +1137,11 @@
     },
     "useMask": true
   },
-  "doubleSmallWindow3x3Panes": {
+  {
+    "title": "doubleSmallWindow3x3Panes",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 135,
       "y": 90,
@@ -1015,9 +1149,11 @@
     },
     "useMask": true
   },
-  "doubleSmallWindowWithSill": {
+  {
+    "title": "doubleSmallWindowWithSill",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 123,
       "y": 110,
@@ -1025,9 +1161,11 @@
     },
     "useMask": true
   },
-  "doubleWinderStaircase": {
+  {
+    "title": "doubleWinderStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 353.13,
@@ -1035,27 +1173,33 @@
     },
     "useMask": false
   },
-  "dresser": {
+  {
+    "title": "dresser",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 117.41,
       "y": 87.62,
       "z": 62.9
     }
   },
-  "drums": {
+  {
+    "title": "drums",
     "license": "Free Art License 1.3",
     "author": "Sophie",
+    "threedLink": "#threed-link",
     "size": {
       "x": 140.86,
       "y": 115.6,
       "z": 92.83
     }
   },
-  "emergencyGlassDoubleDoor": {
+  {
+    "title": "emergencyGlassDoubleDoor",
     "license": "Free Art License 1.3",
     "author": "Siath",
+    "threedLink": "#threed-link",
     "size": {
       "x": 219.64,
       "y": 209.97,
@@ -1063,18 +1207,22 @@
     },
     "useMask": true
   },
-  "fan": {
+  {
+    "title": "fan",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 20,
       "y": 20,
       "z": 33
     }
   },
-  "fancyFrontDoor": {
+  {
+    "title": "fancyFrontDoor",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 4.07,
       "y": 8.15,
@@ -1082,9 +1230,11 @@
     },
     "useMask": true
   },
-  "fancyWindow": {
+  {
+    "title": "fancyWindow",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 3.67,
       "y": 7.7,
@@ -1092,81 +1242,99 @@
     },
     "useMask": true
   },
-  "fence": {
+  {
+    "title": "fence",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 0.73,
       "y": 1.04,
       "z": 0.07
     }
   },
-  "fenceGrid": {
+  {
+    "title": "fenceGrid",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 200,
       "y": 104.99,
       "z": 5
     }
   },
-  "fenceGridGate": {
+  {
+    "title": "fenceGridGate",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 85,
       "y": 109.99,
       "z": 5
     }
   },
-  "fencePicket": {
+  {
+    "title": "fencePicket",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 85,
       "y": 125,
       "z": 6
     }
   },
-  "fencePost": {
+  {
+    "title": "fencePost",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 0.75,
       "y": 6.35,
       "z": 0.76
     }
   },
-  "fencePost2": {
+  {
+    "title": "fencePost2",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 0.96,
       "y": 5.58,
       "z": 0.95
     }
   },
-  "fence2": {
+  {
+    "title": "fence2",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 0.73,
       "y": 1,
       "z": 0.07
     }
   },
-  "firePlace": {
+  {
+    "title": "firePlace",
     "license": "Free Art License 1.3",
     "author": "Don Ravey",
+    "threedLink": "#threed-link",
     "size": {
       "x": 112,
       "y": 83.79,
       "z": 38
     }
   },
-  "flatRoofSkylightBubble": {
+  {
+    "title": "flatRoofSkylightBubble",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 45,
@@ -1174,90 +1342,110 @@
     },
     "useMask": true
   },
-  "flowers": {
+  {
+    "title": "flowers",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 39.26,
       "y": 93.84,
       "z": 29.91
     }
   },
-  "fountain": {
+  {
+    "title": "fountain",
     "license": "Free Art License 1.3",
     "author": "Sparkywalk",
+    "threedLink": "#threed-link",
     "size": {
       "x": 51.37,
       "y": 46.54,
       "z": 51.37
     }
   },
-  "fridge": {
+  {
+    "title": "fridge",
     "license": "Free Art License 1.3",
     "author": "Ben Omari",
+    "threedLink": "#threed-link",
     "size": {
       "x": 2,
       "y": 7.28,
       "z": 2.42
     }
   },
-  "fridge2": {
+  {
+    "title": "fridge2",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 57,
       "y": 113.21,
       "z": 60.03
     }
   },
-  "gardenSofa": {
+  {
+    "title": "gardenSofa",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 2.22,
       "y": 1.81,
       "z": 0.75
     }
   },
-  "gardenUmbrella": {
+  {
+    "title": "gardenUmbrella",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 21.91,
       "y": 21.33,
       "z": 18.94
     }
   },
-  "gate": {
+  {
+    "title": "gate",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 191,
       "y": 86,
       "z": 11.5
     }
   },
-  "gate2": {
+  {
+    "title": "gate2",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 98.05,
       "y": 234.62,
       "z": 1
     }
   },
-  "gasBottle": {
+  {
+    "title": "gasBottle",
     "license": "Free Art License 1.3",
     "author": "Sophie",
+    "threedLink": "#threed-link",
     "size": {
       "x": 31,
       "y": 63.14,
       "z": 31
     }
   },
-  "glassDoorCabinet": {
+  {
+    "title": "glassDoorCabinet",
     "license": "Free Art License 1.3",
     "author": "Ben Omari",
+    "threedLink": "#threed-link",
     "size": {
       "x": 3.8,
       "y": 3.2,
@@ -1265,27 +1453,33 @@
     },
     "useMask": true
   },
-  "greekCarpet": {
+  {
+    "title": "greekCarpet",
     "license": "Free Art License 1.3",
     "author": "Theo Blonk",
+    "threedLink": "#threed-link",
     "size": {
       "x": 170,
       "y": 0.69,
       "z": 120
     }
   },
-  "greenHouse": {
+  {
+    "title": "greenHouse",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 310,
       "y": 290,
       "z": 310
     }
   },
-  "halfLandingStaircase": {
+  {
+    "title": "halfLandingStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 200,
       "y": 353,
@@ -1293,126 +1487,154 @@
     },
     "useMask": false
   },
-  "handrail": {
+  {
+    "title": "handrail",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 94,
       "y": 87.78,
       "z": 3
     }
   },
-  "hangedToilet": {
+  {
+    "title": "hangedToilet",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 38,
       "y": 82,
       "z": 56.49
     }
   },
-  "hangingLight2": {
+  {
+    "title": "hangingLight2",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 32.32,
       "y": 37.17,
       "z": 32.32
     }
   },
-  "hangingSuits": {
+  {
+    "title": "hangingSuits",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60.02,
       "y": 94,
       "z": 80
     }
   },
-  "hatAndCoatStand": {
+  {
+    "title": "hatAndCoatStand",
     "license": "Free Art License 1.3",
     "author": "Baffab",
+    "threedLink": "#threed-link",
     "size": {
       "x": 46,
       "y": 161.82,
       "z": 46
     }
   },
-  "horizontalFrame": {
+  {
+    "title": "horizontalFrame",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff & Annick",
+    "threedLink": "#threed-link",
     "size": {
       "x": 155,
       "y": 130,
       "z": 9.99
     }
   },
-  "ladder": {
+  {
+    "title": "ladder",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 56,
       "y": 289.99,
       "z": 12
     }
   },
-  "ladder2": {
+  {
+    "title": "ladder2",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 44,
       "y": 225,
       "z": 84.99
     }
   },
-  "largeCouch": {
+  {
+    "title": "largeCouch",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 279.29,
       "y": 88.5,
       "z": 90.45
     }
   },
-  "latticeChair": {
+  {
+    "title": "latticeChair",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 1.99,
       "y": 4.05,
       "z": 1.96
     }
   },
-  "marbleTable": {
+  {
+    "title": "marbleTable",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 120,
       "y": 70,
       "z": 120
     }
   },
-  "mirror": {
+  {
+    "title": "mirror",
     "license": "Free Art License 1.3",
     "author": "Emmanuel Puybaret",
+    "threedLink": "#threed-link",
     "size": {
       "x": 40,
       "y": 40,
       "z": 0.49
     }
   },
-  "monitorLCD": {
+  {
+    "title": "monitorLCD",
     "license": "Free Art License 1.3",
     "author": "Carvalho",
+    "threedLink": "#threed-link",
     "size": {
       "x": 0.66,
       "y": 0.56,
       "z": 0.3
     }
   },
-  "neoclassicWindow": {
+  {
+    "title": "neoclassicWindow",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 200,
       "y": 219.99,
@@ -1420,36 +1642,44 @@
     },
     "useMask": true
   },
-  "officeChair": {
+  {
+    "title": "officeChair",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 62.62,
       "y": 87.33,
       "z": 59.66
     }
   },
-  "officeChair2": {
+  {
+    "title": "officeChair2",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 62.88,
       "y": 101.47,
       "z": 68.8
     }
   },
-  "officeChair3": {
+  {
+    "title": "officeChair3",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 55.88,
       "y": 107.02,
       "z": 56.35
     }
   },
-  "openedPatioDoor": {
+  {
+    "title": "openedPatioDoor",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 12.32,
       "y": 14.87,
@@ -1457,9 +1687,11 @@
     },
     "useMask": true
   },
-  "openedPatioGlassDoor": {
+  {
+    "title": "openedPatioGlassDoor",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 12.32,
       "y": 14.87,
@@ -1467,9 +1699,11 @@
     },
     "useMask": true
   },
-  "openedQuadrupleGlassDoors": {
+  {
+    "title": "openedQuadrupleGlassDoors",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 24.62,
       "y": 14.87,
@@ -1477,9 +1711,11 @@
     },
     "useMask": true
   },
-  "outdoorStaircase": {
+  {
+    "title": "outdoorStaircase",
     "license": "Free Art License 1.3",
     "author": "DaniFeri",
+    "threedLink": "#threed-link",
     "size": {
       "x": 128,
       "y": 205.5,
@@ -1487,36 +1723,44 @@
     },
     "useMask": false
   },
-  "ovalMirror": {
+  {
+    "title": "ovalMirror",
     "license": "Free Art License 1.3",
     "author": "Emmanuel Puybaret",
+    "threedLink": "#threed-link",
     "size": {
       "x": 54.9,
       "y": 104.88,
       "z": 0.99
     }
   },
-  "pan": {
+  {
+    "title": "pan",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 17.42,
       "y": 8.46,
       "z": 30.33
     }
   },
-  "pan2": {
+  {
+    "title": "pan2",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 25.72,
       "y": 5.4,
       "z": 43.17
     }
   },
-  "patioDoor": {
+  {
+    "title": "patioDoor",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 7.39,
       "y": 14.87,
@@ -1524,9 +1768,11 @@
     },
     "useMask": true
   },
-  "patioSideDoor": {
+  {
+    "title": "patioSideDoor",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 4.51,
       "y": 14.87,
@@ -1534,126 +1780,154 @@
     },
     "useMask": true
   },
-  "pergola": {
+  {
+    "title": "pergola",
     "license": "Free Art License 1.3",
     "author": "Sophie",
+    "threedLink": "#threed-link",
     "size": {
       "x": 240.02,
       "y": 262.99,
       "z": 255.6
     }
   },
-  "photocopierPrinter": {
+  {
+    "title": "photocopierPrinter",
     "license": "Free Art License 1.3",
     "author": "Christophe Tellerain",
+    "threedLink": "#threed-link",
     "size": {
       "x": 141.46,
       "y": 147,
       "z": 92.89
     }
   },
-  "picnicTable": {
+  {
+    "title": "picnicTable",
     "license": "Free Art License 1.3",
     "author": "Hawkdawg",
+    "threedLink": "#threed-link",
     "size": {
       "x": 180.16,
       "y": 75,
       "z": 145.27
     }
   },
-  "picture": {
+  {
+    "title": "picture",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 133.96,
       "y": 81.46,
       "z": 9.48
     }
   },
-  "pillow": {
+  {
+    "title": "pillow",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 1.06,
       "y": 1.03,
       "z": 0.44
     }
   },
-  "pinewoodRackFullHeight": {
+  {
+    "title": "pinewoodRackFullHeight",
     "license": "Free Art License 1.3",
     "author": "Dingenskirchen",
+    "threedLink": "#threed-link",
     "size": {
       "x": 89.79,
       "y": 227,
       "z": 30.17
     }
   },
-  "pinewoodRackFullHeightHalfWidth": {
+  {
+    "title": "pinewoodRackFullHeightHalfWidth",
     "license": "Free Art License 1.3",
     "author": "Dingenskirchen",
+    "threedLink": "#threed-link",
     "size": {
       "x": 48.79,
       "y": 227,
       "z": 30.17
     }
   },
-  "pinewoodRackLowHeight": {
+  {
+    "title": "pinewoodRackLowHeight",
     "license": "Free Art License 1.3",
     "author": "Dingenskirchen",
+    "threedLink": "#threed-link",
     "size": {
       "x": 89.79,
       "y": 56.5,
       "z": 30.17
     }
   },
-  "pinewoodRackMediumHeight": {
+  {
+    "title": "pinewoodRackMediumHeight",
     "license": "Free Art License 1.3",
     "author": "Dingenskirchen",
+    "threedLink": "#threed-link",
     "size": {
       "x": 89.8,
       "y": 143,
       "z": 30.17
     }
   },
-  "plant": {
+  {
+    "title": "plant",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 96.68,
       "y": 85.35,
       "z": 96.18
     }
   },
-  "plantersDesk": {
+  {
+    "title": "plantersDesk",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 4.38,
       "y": 9.24,
       "z": 3.79
     }
   },
-  "poolLadder": {
+  {
+    "title": "poolLadder",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 50,
       "y": 190,
       "z": 50
     }
   },
-  "pumpkin": {
+  {
+    "title": "pumpkin",
     "license": "Free Art License 1.3",
     "author": "Sophie",
+    "threedLink": "#threed-link",
     "size": {
       "x": 29.37,
       "y": 24.71,
       "z": 29.38
     }
   },
-  "quarterLandingStaircase": {
+  {
+    "title": "quarterLandingStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 166.03,
       "y": 362,
@@ -1661,9 +1935,11 @@
     },
     "useMask": false
   },
-  "quarterLandingStaircase2": {
+  {
+    "title": "quarterLandingStaircase2",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 224.99,
       "y": 351.65,
@@ -1671,162 +1947,198 @@
     },
     "useMask": false
   },
-  "rail": {
+  {
+    "title": "rail",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 329.8,
       "y": 234.48,
       "z": 5.99
     }
   },
-  "railingGlass": {
+  {
+    "title": "railingGlass",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 155.03,
       "y": 130,
       "z": 5
     }
   },
-  "rainGutterPart1": {
+  {
+    "title": "rainGutterPart1",
     "license": "Free Art License 1.3",
     "author": "Dingenskirchen",
+    "threedLink": "#threed-link",
     "size": {
       "x": 200,
       "y": 6.5,
       "z": 12
     }
   },
-  "rainGutterPart2": {
+  {
+    "title": "rainGutterPart2",
     "license": "Free Art License 1.3",
     "author": "Dingenskirchen",
+    "threedLink": "#threed-link",
     "size": {
       "x": 10,
       "y": 260,
       "z": 91.59
     }
   },
-  "rectangularMirror": {
+  {
+    "title": "rectangularMirror",
     "license": "Free Art License 1.3",
     "author": "Emmanuel Puybaret",
+    "threedLink": "#threed-link",
     "size": {
       "x": 50.08,
       "y": 70.05,
       "z": 0.97
     }
   },
-  "redCabinet": {
+  {
+    "title": "redCabinet",
     "license": "Free Art License 1.3",
     "author": "Ben Omari",
+    "threedLink": "#threed-link",
     "size": {
       "x": 52.4,
       "y": 60.2,
       "z": 55.6
     }
   },
-  "redCabinetWithBasin": {
+  {
+    "title": "redCabinetWithBasin",
     "license": "Free Art License 1.3",
     "author": "Ben Omari",
+    "threedLink": "#threed-link",
     "size": {
       "x": 111,
       "y": 93,
       "z": 69.5
     }
   },
-  "redDrawers": {
+  {
+    "title": "redDrawers",
     "license": "Free Art License 1.3",
     "author": "Ben Omari",
+    "threedLink": "#threed-link",
     "size": {
       "x": 1.93,
       "y": 3.01,
       "z": 2.78
     }
   },
-  "redIsland": {
+  {
+    "title": "redIsland",
     "license": "Free Art License 1.3",
     "author": "Ben Omari",
+    "threedLink": "#threed-link",
     "size": {
       "x": 6.02,
       "y": 4.01,
       "z": 4.21
     }
   },
-  "refridgerator": {
+  {
+    "title": "refridgerator",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 0.67,
       "y": 1.47,
       "z": 0.57
     }
   },
-  "riceCooker": {
+  {
+    "title": "riceCooker",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 25.76,
       "y": 22.81,
       "z": 22.5
     }
   },
-  "rockingChair": {
+  {
+    "title": "rockingChair",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 65,
       "y": 109,
       "z": 80
     }
   },
-  "roundTable": {
+  {
+    "title": "roundTable",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 53.81,
       "y": 68.8,
       "z": 53.81
     }
   },
-  "roundVent": {
+  {
+    "title": "roundVent",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 22,
       "y": 23.99,
       "z": 30
     }
   },
-  "sauna": {
+  {
+    "title": "sauna",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 120,
       "y": 198,
       "z": 131.63
     }
   },
-  "schoolDesk": {
+  {
+    "title": "schoolDesk",
     "license": "Free Art License 1.3",
     "author": "Fabrice Delobe",
+    "threedLink": "#threed-link",
     "size": {
       "x": 4.99,
       "y": 8.02,
       "z": 7.89
     }
   },
-  "secretarysDesk": {
+  {
+    "title": "secretarysDesk",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 88.65,
       "y": 124.58,
       "z": 66.26
     }
   },
-  "semicircularStaircase": {
+  {
+    "title": "semicircularStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 600,
       "y": 355.25,
@@ -1834,36 +2146,44 @@
     },
     "useMask": false
   },
-  "shelfUnit": {
+  {
+    "title": "shelfUnit",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 155.89,
       "y": 183,
       "z": 41.38
     }
   },
-  "shelving": {
+  {
+    "title": "shelving",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 119,
       "y": 45.62,
       "z": 30.91
     }
   },
-  "shoeCabinet": {
+  {
+    "title": "shoeCabinet",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 71.7,
       "y": 102.34,
       "z": 39.57
     }
   },
-  "shopWindow": {
+  {
+    "title": "shopWindow",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 300,
       "y": 200,
@@ -1871,18 +2191,22 @@
     },
     "useMask": true
   },
-  "showerCabin": {
+  {
+    "title": "showerCabin",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 89.99,
       "y": 199,
       "z": 90
     }
   },
-  "sliderPocketDoor": {
+  {
+    "title": "sliderPocketDoor",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 94.84,
       "y": 212.5,
@@ -1890,54 +2214,66 @@
     },
     "useMask": true
   },
-  "smallBookShelves": {
+  {
+    "title": "smallBookShelves",
     "license": "Free Art License 1.3",
     "author": "Don Ravey",
+    "threedLink": "#threed-link",
     "size": {
       "x": 68.01,
       "y": 82.35,
       "z": 26.06
     }
   },
-  "sofaBed": {
+  {
+    "title": "sofaBed",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 182,
       "y": 93.09,
       "z": 93.35
     }
   },
-  "sofa3": {
+  {
+    "title": "sofa3",
     "license": "Free Art License 1.3",
     "author": "Peter Smolik",
+    "threedLink": "#threed-link",
     "size": {
       "x": 185,
       "y": 83.53,
       "z": 74.04
     }
   },
-  "solarPanel": {
+  {
+    "title": "solarPanel",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 66.79,
       "y": 3.5,
       "z": 148.5
     }
   },
-  "speaker": {
+  {
+    "title": "speaker",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 22,
       "y": 91,
       "z": 29.62
     }
   },
-  "spiralStaircase": {
+  {
+    "title": "spiralStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 230,
       "y": 353.28,
@@ -1945,9 +2281,11 @@
     },
     "useMask": false
   },
-  "spiralStaircase2": {
+  {
+    "title": "spiralStaircase2",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 200,
       "y": 358.13,
@@ -1955,18 +2293,22 @@
     },
     "useMask": false
   },
-  "squareFrame": {
+  {
+    "title": "squareFrame",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff & Annick",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 100.03,
       "z": 10
     }
   },
-  "squareSpiralStaircase": {
+  {
+    "title": "squareSpiralStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 200,
       "y": 355.56,
@@ -1974,18 +2316,22 @@
     },
     "useMask": false
   },
-  "stainlessSteelShelf": {
+  {
+    "title": "stainlessSteelShelf",
     "license": "Free Art License 1.3",
     "author": "N Mi",
+    "threedLink": "#threed-link",
     "size": {
       "x": 48,
       "y": 10,
       "z": 18
     }
   },
-  "staircaseCurvedAtTop": {
+  {
+    "title": "staircaseCurvedAtTop",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 200.01,
       "y": 358.45,
@@ -1993,9 +2339,11 @@
     },
     "useMask": false
   },
-  "staircaseLadder": {
+  {
+    "title": "staircaseLadder",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 58,
       "y": 265,
@@ -2003,9 +2351,11 @@
     },
     "useMask": false
   },
-  "staircaseSamba": {
+  {
+    "title": "staircaseSamba",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 85,
       "y": 265,
@@ -2013,9 +2363,11 @@
     },
     "useMask": false
   },
-  "staircaseWithOpenStringer": {
+  {
+    "title": "staircaseWithOpenStringer",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 79.99,
       "y": 350.22,
@@ -2023,18 +2375,22 @@
     },
     "useMask": false
   },
-  "steelShelves": {
+  {
+    "title": "steelShelves",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 80,
       "y": 179.99,
       "z": 30
     }
   },
-  "steepStaircase": {
+  {
+    "title": "steepStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 94.44,
       "y": 360.76,
@@ -2042,45 +2398,55 @@
     },
     "useMask": false
   },
-  "stool2": {
+  {
+    "title": "stool2",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 51.13,
       "y": 101.71,
       "z": 44.19
     }
   },
-  "stove": {
+  {
+    "title": "stove",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 59.99,
       "y": 74.93,
       "z": 67.42
     }
   },
-  "stove2": {
+  {
+    "title": "stove2",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60.18,
       "y": 117.18,
       "z": 56.14
     }
   },
-  "stove3": {
+  {
+    "title": "stove3",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60.18,
       "y": 203.05,
       "z": 52.77
     }
   },
-  "straightStaircase": {
+  {
+    "title": "straightStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 90,
       "y": 353.9,
@@ -2088,9 +2454,11 @@
     },
     "useMask": false
   },
-  "straightStaircase2": {
+  {
+    "title": "straightStaircase2",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 90,
       "y": 355.93,
@@ -2098,54 +2466,66 @@
     },
     "useMask": false
   },
-  "swimmingPool": {
+  {
+    "title": "swimmingPool",
     "license": "Free Art License 1.3",
     "author": "Emmanuel Puybaret",
+    "threedLink": "#threed-link",
     "size": {
       "x": 831.99,
       "y": 212.74,
       "z": 339.07
     }
   },
-  "table2": {
+  {
+    "title": "table2",
     "license": "Free Art License 1.3",
     "author": "Icybones",
+    "threedLink": "#threed-link",
     "size": {
       "x": 203.29,
       "y": 87.54,
       "z": 106.33
     }
   },
-  "toast": {
+  {
+    "title": "toast",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 10.07,
       "y": 0.79,
       "z": 9.87
     }
   },
-  "toaster": {
+  {
+    "title": "toaster",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 34.22,
       "y": 17.98,
       "z": 11.89
     }
   },
-  "toothBrushesAndPaste": {
+  {
+    "title": "toothBrushesAndPaste",
     "license": "Free Art License 1.3",
     "author": "Toomy",
+    "threedLink": "#threed-link",
     "size": {
       "x": 7.19,
       "y": 18.22,
       "z": 8.67
     }
   },
-  "topWinderStaircase": {
+  {
+    "title": "topWinderStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 99.99,
       "y": 347.36,
@@ -2153,18 +2533,22 @@
     },
     "useMask": false
   },
-  "towelAndMedicineCabinet": {
+  {
+    "title": "towelAndMedicineCabinet",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 55.95,
       "y": 130.32,
       "z": 55.26
     }
   },
-  "tripleWinderStaircase": {
+  {
+    "title": "tripleWinderStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 225,
       "y": 345,
@@ -2172,72 +2556,88 @@
     },
     "useMask": false
   },
-  "trunk": {
+  {
+    "title": "trunk",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 118,
       "y": 58,
       "z": 45
     }
   },
-  "tvCenter": {
+  {
+    "title": "tvCenter",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 77.21,
       "y": 129.9,
       "z": 53.82
     }
   },
-  "tvShelfUnit": {
+  {
+    "title": "tvShelfUnit",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
     "size": {
       "x": 103.8,
       "y": 33.29,
       "z": 44.44
     }
   },
-  "upperCabinet": {
+  {
+    "title": "upperCabinet",
     "license": "Free Art License 1.3",
     "author": "Ben Omari",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60,
       "y": 28.48,
       "z": 45.59
     }
   },
-  "washbasinWithCabinet": {
+  {
+    "title": "washbasinWithCabinet",
     "license": "Free Art License 1.3",
     "author": "Snduc",
+    "threedLink": "#threed-link",
     "size": {
       "x": 121.99,
       "y": 78,
       "z": 55
     }
   },
-  "washerDryer": {
+  {
+    "title": "washerDryer",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 59.5,
       "y": 85,
       "z": 54.99
     }
   },
-  "wheelieBin": {
+  {
+    "title": "wheelieBin",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60,
       "y": 101.47,
       "z": 62.5
     }
   },
-  "winderStaircase": {
+  {
+    "title": "winderStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 179,
       "y": 362.8,
@@ -2245,9 +2645,11 @@
     },
     "useMask": false
   },
-  "window": {
+  {
+    "title": "window",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 58.14,
       "y": 90.57,
@@ -2255,9 +2657,11 @@
     },
     "useMask": true
   },
-  "window2x3": {
+  {
+    "title": "window2x3",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 56,
       "y": 110,
@@ -2265,9 +2669,11 @@
     },
     "useMask": true
   },
-  "windowFrostedGlass": {
+  {
+    "title": "windowFrostedGlass",
     "license": "Free Art License 1.3",
     "author": "Pencilart",
+    "threedLink": "#threed-link",
     "size": {
       "x": 58.86,
       "y": 90.57,
@@ -2275,18 +2681,22 @@
     },
     "useMask": true
   },
-  "windowShutter": {
+  {
+    "title": "windowShutter",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 43.88,
       "y": 129,
       "z": 2.92
     }
   },
-  "windowStainGlass": {
+  {
+    "title": "windowStainGlass",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 80,
       "y": 119.99,
@@ -2294,36 +2704,44 @@
     },
     "useMask": true
   },
-  "wineRack": {
+  {
+    "title": "wineRack",
     "license": "Free Art License 1.3",
     "author": "Sophie",
+    "threedLink": "#threed-link",
     "size": {
       "x": 51.92,
       "y": 52,
       "z": 25.04
     }
   },
-  "woodShelves": {
+  {
+    "title": "woodShelves",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 77.99,
       "y": 170.99,
       "z": 31.51
     }
   },
-  "woodShelves2": {
+  {
+    "title": "woodShelves2",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 77,
       "y": 169.99,
       "z": 37
     }
   },
-  "saplingTree": {
+  {
+    "title": "saplingTree",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 199.08,
       "y": 428.26,
@@ -2331,9 +2749,11 @@
     },
     "useMask": false
   },
-  "cube": {
+  {
+    "title": "cube",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 100,
@@ -2341,9 +2761,11 @@
     },
     "useMask": false
   },
-  "cylinder": {
+  {
+    "title": "cylinder",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 100,
@@ -2351,9 +2773,11 @@
     },
     "useMask": false
   },
-  "prism": {
+  {
+    "title": "prism",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 100,
@@ -2361,9 +2785,11 @@
     },
     "useMask": false
   },
-  "bifoldDoor": {
+  {
+    "title": "bifoldDoor",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 400,
       "y": 220,
@@ -2371,9 +2797,11 @@
     },
     "useMask": true
   },
-  "frontDoor": {
+  {
+    "title": "frontDoor",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 150,
       "y": 240,
@@ -2381,9 +2809,11 @@
     },
     "useMask": true
   },
-  "rug": {
+  {
+    "title": "rug",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 149.99,
       "y": 0.5,
@@ -2391,9 +2821,11 @@
     },
     "useMask": false
   },
-  "fencePanel": {
+  {
+    "title": "fencePanel",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 299.99,
       "y": 180,
@@ -2401,9 +2833,11 @@
     },
     "useMask": false
   },
-  "dirt": {
+  {
+    "title": "dirt",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 99.99,
       "y": 1,
@@ -2411,9 +2845,11 @@
     },
     "useMask": false
   },
-  "skyLight": {
+  {
+    "title": "skyLight",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100,
       "y": 50,
@@ -2421,9 +2857,11 @@
     },
     "useMask": true
   },
-  "internalDoorOpen": {
+  {
+    "title": "internalDoorOpen",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 90.4,
       "y": 205.3,
@@ -2435,9 +2873,11 @@
     },
     "useMask": true
   },
-  "fixedSmallWindow": {
+  {
+    "title": "fixedSmallWindow",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60,
       "y": 60,
@@ -2445,1087 +2885,1203 @@
     },
     "useMask": true
   },
-  "gabledRoof": {
+  {
+    "title": "gabledRoof",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 1000,
       "y": 250,
       "z": 1000
     }
   },
-  "pyramidalRoof": {
+  {
+    "title": "pyramidalRoof",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 707.1,
       "y": 250,
       "z": 707.1
     }
   },
-  "halfPyramidalRoof": {
+  {
+    "title": "halfPyramidalRoof",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 945.01,
       "y": 250,
       "z": 475.83
     }
   },
-  "railwaySleeper": {
+  {
+    "title": "railwaySleeper",
     "license": "CC BY 4.0",
     "author": "Sean Bradley",
+    "threedLink": "#threed-link",
     "size": {
       "x": 239.99,
       "y": 10,
       "z": 20
     }
   },
-  "couch": {
+  {
+    "title": "couch",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 207.43,
       "y": 85.58,
       "z": 87.63
     }
   },
-  "crate": {
+  {
+    "title": "crate",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60,
       "y": 59.38,
       "z": 58.9
     }
   },
-  "cupboard": {
+  {
+    "title": "cupboard",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100.55,
       "y": 149.99,
       "z": 39.01
     }
   },
-  "deckChair": {
+  {
+    "title": "deckChair",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 71.68,
       "y": 83.98,
       "z": 125.29
     }
   },
-  "desk": {
+  {
+    "title": "desk",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 139.34,
       "y": 105.44,
       "z": 54.28
     }
   },
-  "desklamp": {
+  {
+    "title": "desklamp",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 24.39,
       "y": 39.99,
       "z": 24.39
     }
   },
-  "doubleOven": {
+  {
+    "title": "doubleOven",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 59.99,
       "y": 108.9,
       "z": 51.53
     }
   },
-  "electricGuitar": {
+  {
+    "title": "electricGuitar",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 34.48,
       "y": 110.02,
       "z": 32.14
     }
   },
-  "fireExtinguisher": {
+  {
+    "title": "fireExtinguisher",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 31.07,
       "y": 62.31,
       "z": 18.01
     }
   },
-  "flowerBox": {
+  {
+    "title": "flowerBox",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 54.99,
       "y": 18.79,
       "z": 16.19
     }
   },
-  "horse2": {
+  {
+    "title": "horse2",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 58.27,
       "y": 199.87,
       "z": 261.61
     }
   },
-  "kalender": {
+  {
+    "title": "kalender",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 12.01,
       "y": 10.81,
       "z": 7.93
     }
   },
-  "kitchenaid": {
+  {
+    "title": "kitchenaid",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 21.37,
       "y": 35.29,
       "z": 35.99
     }
   },
-  "led_tv": {
+  {
+    "title": "led_tv",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 77.51,
       "y": 50.78,
       "z": 14.17
     }
   },
-  "littlePlant": {
+  {
+    "title": "littlePlant",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 26.6,
       "y": 23.19,
       "z": 26.59
     }
   },
-  "lockedLocker": {
+  {
+    "title": "lockedLocker",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 20,
       "y": 40,
       "z": 21.98
     }
   },
-  "L_shaped_sofa": {
+  {
+    "title": "L_shaped_sofa",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 233.68,
       "y": 79.98,
       "z": 143.64
     }
   },
-  "mano_cooktop": {
+  {
+    "title": "mano_cooktop",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 58,
       "y": 3.81,
       "z": 49.99
     }
   },
-  "modernArmchair": {
+  {
+    "title": "modernArmchair",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 77.31,
       "y": 86.45,
       "z": 84.92
     }
   },
-  "mofx_mailbox": {
+  {
+    "title": "mofx_mailbox",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 15.89,
       "y": 81.55,
       "z": 46.49
     }
   },
-  "numberLock": {
+  {
+    "title": "numberLock",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 9.98,
       "y": 10.24,
       "z": 0.43
     }
   },
-  "oakChair": {
+  {
+    "title": "oakChair",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 49.09,
       "y": 117.81,
       "z": 61.21
     }
   },
-  "oakTable": {
+  {
+    "title": "oakTable",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 124,
       "y": 74.13,
       "z": 123.99
     }
   },
-  "oven": {
+  {
+    "title": "oven",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 59.99,
       "y": 57.76,
       "z": 51.53
     }
   },
-  "pianoAQueue": {
+  {
+    "title": "pianoAQueue",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 131.58,
       "y": 103.1,
       "z": 147.85
     }
   },
-  "plasticChair": {
+  {
+    "title": "plasticChair",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 44.42,
       "y": 82,
       "z": 58.39
     }
   },
-  "poolTable": {
+  {
+    "title": "poolTable",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 255.95,
       "y": 82.35,
       "z": 139.25
     }
   },
-  "radiator": {
+  {
+    "title": "radiator",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 140.34,
       "y": 73.07,
       "z": 24.69
     }
   },
-  "radiator1": {
+  {
+    "title": "radiator1",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 216.32,
       "y": 83.36,
       "z": 14.3
     }
   },
-  "radiator2": {
+  {
+    "title": "radiator2",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 132.64,
       "y": 45.65,
       "z": 41.41
     }
   },
-  "relaxChair": {
+  {
+    "title": "relaxChair",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 66.05,
       "y": 84.71,
       "z": 190.03
     }
   },
-  "shelves": {
+  {
+    "title": "shelves",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 82.98,
       "y": 81.9,
       "z": 39.37
     }
   },
-  "shower": {
+  {
+    "title": "shower",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 20.84,
       "y": 114.28,
       "z": 53.78
     }
   },
-  "showerDoor": {
+  {
+    "title": "showerDoor",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 90.14,
       "y": 229.91,
       "z": 22.5
     }
   },
-  "silla2": {
+  {
+    "title": "silla2",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 32.63,
       "y": 78.83,
       "z": 31.14
     }
   },
-  "sillaBlanca": {
+  {
+    "title": "sillaBlanca",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 50.45,
       "y": 85,
       "z": 58.38
     }
   },
-  "sofa": {
+  {
+    "title": "sofa",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 248.76,
       "y": 78,
       "z": 189.56
     }
   },
-  "speaker2": {
+  {
+    "title": "speaker2",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 22.09,
       "y": 35.37,
       "z": 25.44
     }
   },
-  "speaker3": {
+  {
+    "title": "speaker3",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 22.09,
       "y": 55.13,
       "z": 25.44
     }
   },
-  "stool": {
+  {
+    "title": "stool",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 53.02,
       "y": 97.96,
       "z": 52.1
     }
   },
-  "tableWithTablecloth": {
+  {
+    "title": "tableWithTablecloth",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 129.23,
       "y": 120.58,
       "z": 130.53
     }
   },
-  "table_football": {
+  {
+    "title": "table_football",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 150.27,
       "y": 100.9,
       "z": 124.61
     }
   },
-  "technicalTable1": {
+  {
+    "title": "technicalTable1",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 214.66,
       "y": 95.08,
       "z": 118.84
     }
   },
-  "technicalTable2": {
+  {
+    "title": "technicalTable2",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 136.64,
       "y": 101.34,
       "z": 171.37
     }
   },
-  "televisionCabinet": {
+  {
+    "title": "televisionCabinet",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 135.36,
       "y": 160.02,
       "z": 69.27
     }
   },
-  "toiletPaperDispenser": {
+  {
+    "title": "toiletPaperDispenser",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 15.56,
       "y": 18.45,
       "z": 10.41
     }
   },
-  "toiletsUnit": {
+  {
+    "title": "toiletsUnit",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 35.33,
       "y": 77.23,
       "z": 69.2
     }
   },
-  "towel2": {
+  {
+    "title": "towel2",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 21.79,
       "y": 66.85,
       "z": 13.69
     }
   },
-  "towel3": {
+  {
+    "title": "towel3",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 59.6,
       "y": 47.84,
       "z": 8.12
     }
   },
-  "umbrella": {
+  {
+    "title": "umbrella",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 223.11,
       "y": 199.8,
       "z": 222.67
     }
   },
-  "verticalShelves": {
+  {
+    "title": "verticalShelves",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 44.48,
       "y": 196.12,
       "z": 39
     }
   },
-  "wardrobeWithSlidingDoors": {
+  {
+    "title": "wardrobeWithSlidingDoors",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 151.9,
       "y": 236.38,
       "z": 64.1
     }
   },
-  "washbasin": {
+  {
+    "title": "washbasin",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 56.35,
       "y": 93.07,
       "z": 45.71
     }
   },
-  "whiteBoard": {
+  {
+    "title": "whiteBoard",
     "license": "CC-0",
     "author": "",
+    "threedLink": "#threed-link",
     "size": {
       "x": 124.65,
       "y": 129,
       "z": 55.1
     }
   },
-  "abdominalBench": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "abdominalBench",
+    "license": "CC BY 4.0",
     "author": "muhtesemozcinar",
+    "threedLink": "#threed-link",
     "size": {
       "x": 67.19,
       "y": 86.94,
       "z": 192.87
     }
   },
-  "armchair1": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "armchair1",
+    "license": "CC BY 4.0",
     "author": "aymanslman",
+    "threedLink": "#threed-link",
     "size": {
       "x": 100.49,
       "y": 79.98,
       "z": 88.17
     }
   },
-  "ballonFoot": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "ballonFoot",
+    "license": "CC BY 4.0",
     "author": "DooL",
+    "threedLink": "#threed-link",
     "size": {
       "x": 21.99,
       "y": 21.97,
       "z": 21.99
     }
   },
-  "bathroomRadiator": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "bathroomRadiator",
+    "license": "CC BY 4.0",
     "author": "nikitron",
+    "threedLink": "#threed-link",
     "size": {
       "x": 48.39,
       "y": 110.75,
       "z": 19.93
     }
   },
-  "bath_jay_hardy": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "bath_jay_hardy",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 180.06,
       "y": 65.06,
       "z": 70.08
     }
   },
-  "bedsideTable": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "bedsideTable",
+    "license": "CC BY 4.0",
     "author": "SirOccor",
+    "threedLink": "#threed-link",
     "size": {
       "x": 50.01,
       "y": 48,
       "z": 41.44
     }
   },
-  "bike": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "bike",
+    "license": "CC BY 4.0",
     "author": "rodrigoalves123",
+    "threedLink": "#threed-link",
     "size": {
       "x": 40.72,
       "y": 76.48,
       "z": 116.31
     }
   },
-  "biurko3": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "biurko3",
+    "license": "CC BY 4.0",
     "author": "hilux",
+    "threedLink": "#threed-link",
     "size": {
       "x": 120.16,
       "y": 72.04,
       "z": 60.22
     }
   },
-  "boiler": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "boiler",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 17.89,
       "y": 20.01,
       "z": 16.22
     }
   },
-  "bonecoDeNeve": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "bonecoDeNeve",
+    "license": "CC BY 4.0",
     "author": "zema",
+    "threedLink": "#threed-link",
     "size": {
       "x": 94.03,
       "y": 98.81,
       "z": 71.06
     }
   },
-  "book": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "book",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 28.15,
       "y": 2.44,
       "z": 18.41
     }
   },
-  "breadBox": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "breadBox",
+    "license": "CC BY 4.0",
     "author": "oldtimer",
+    "threedLink": "#threed-link",
     "size": {
       "x": 56.15,
       "y": 27.52,
       "z": 27.52
     }
   },
-  "bulldog": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "bulldog",
+    "license": "CC BY 4.0",
     "author": "Priide",
+    "threedLink": "#threed-link",
     "size": {
       "x": 38.75,
       "y": 47.39,
       "z": 64.52
     }
   },
-  "bunkBed": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "bunkBed",
+    "license": "CC BY 4.0",
     "author": "NabHlEsCK",
+    "threedLink": "#threed-link",
     "size": {
       "x": 113.09,
       "y": 159.95,
       "z": 204.99
     }
   },
-  "cafe_set_mota_chair": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "cafe_set_mota_chair",
+    "license": "CC BY 4.0",
     "author": "voodoc",
+    "threedLink": "#threed-link",
     "size": {
       "x": 60.87,
       "y": 78.3,
       "z": 55.82
     }
   },
-  "cafe_set_mota_table": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "cafe_set_mota_table",
+    "license": "CC BY 4.0",
     "author": "voodoc",
+    "threedLink": "#threed-link",
     "size": {
       "x": 62.21,
       "y": 73.96,
       "z": 62.21
     }
   },
-  "cafe_set_tonon_chair": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "cafe_set_tonon_chair",
+    "license": "CC BY 4.0",
     "author": "voodoc",
+    "threedLink": "#threed-link",
     "size": {
       "x": 48.02,
       "y": 82.2,
       "z": 53.31
     }
   },
-  "cafe_set_tonon_table": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "cafe_set_tonon_table",
+    "license": "CC BY 4.0",
     "author": "voodoc",
+    "threedLink": "#threed-link",
     "size": {
       "x": 66,
       "y": 64.43,
       "z": 52.79
     }
   },
-  "chairWithCushion": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "chairWithCushion",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 42.3,
       "y": 91.08,
       "z": 44.58
     }
   },
-  "chairDeck": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "chairDeck",
+    "license": "CC BY 4.0",
     "author": "north.star",
+    "threedLink": "#threed-link",
     "size": {
       "x": 67.35,
       "y": 55.27,
       "z": 208.5
     }
   },
-  "chessboard": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "chessboard",
+    "license": "CC BY 4.0",
     "author": "swapnilrocks98",
+    "threedLink": "#threed-link",
     "size": {
       "x": 30,
       "y": 8.01,
       "z": 30
     }
   },
-  "chest": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "chest",
+    "license": "CC BY 4.0",
     "author": "elhzar",
+    "threedLink": "#threed-link",
     "size": {
       "x": 143.48,
       "y": 82.05,
       "z": 53.57
     }
   },
-  "childChair": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "childChair",
+    "license": "CC BY 4.0",
     "author": "Radio_hate",
+    "threedLink": "#threed-link",
     "size": {
       "x": 38.18,
       "y": 67.01,
       "z": 39.5
     }
   },
-  "choppingBoard": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "choppingBoard",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 37.58,
       "y": 4.51,
       "z": 26.02
     }
   },
-  "cocktailGlass": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "cocktailGlass",
+    "license": "CC BY 4.0",
     "author": "xablend1122",
+    "threedLink": "#threed-link",
     "size": {
       "x": 8.33,
       "y": 13.08,
       "z": 8.33
     }
   },
-  "coffeePress": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "coffeePress",
+    "license": "CC BY 4.0",
     "author": "cephei",
+    "threedLink": "#threed-link",
     "size": {
       "x": 16.27,
       "y": 26.5,
       "z": 10.65
     }
   },
-  "coffeeTable": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "coffeeTable",
+    "license": "CC BY 4.0",
     "author": "nikitron",
+    "threedLink": "#threed-link",
     "size": {
       "x": 120.04,
       "y": 44.99,
       "z": 70.08
     }
   },
-  "cornerSofa": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "cornerSofa",
+    "license": "CC BY 4.0",
     "author": "nikitron",
+    "threedLink": "#threed-link",
     "size": {
       "x": 345.76,
       "y": 85.53,
       "z": 155
     }
   },
-  "decorativePlant": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "decorativePlant",
+    "license": "CC BY 4.0",
     "author": "Nmn9",
+    "threedLink": "#threed-link",
     "size": {
       "x": 31.77,
       "y": 60.58,
       "z": 32.21
     }
   },
-  "ella_chair_f": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "ella_chair_f",
+    "license": "CC BY 4.0",
     "author": "sizzler",
+    "threedLink": "#threed-link",
     "size": {
       "x": 4.57,
       "y": 9.16,
       "z": 5.64
     }
   },
-  "espressokettle": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "espressokettle",
+    "license": "CC BY 4.0",
     "author": "krabz",
+    "threedLink": "#threed-link",
     "size": {
       "x": 17.87,
       "y": 15.22,
       "z": 9.39
     }
   },
-  "fordFocus": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "fordFocus",
+    "license": "CC BY 4.0",
     "author": "Ruff",
+    "threedLink": "#threed-link",
     "size": {
       "x": 204.47,
       "y": 155.07,
       "z": 435.81
     }
   },
-  "fotel": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "fotel",
+    "license": "CC BY 4.0",
     "author": "tripleJ",
+    "threedLink": "#threed-link",
     "size": {
       "x": 73.48,
       "y": 69.7,
       "z": 61.07
     }
   },
-  "gift": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "gift",
+    "license": "CC BY 4.0",
     "author": "tadine",
+    "threedLink": "#threed-link",
     "size": {
       "x": 23.19,
       "y": 25.08,
       "z": 18.08
     }
   },
-  "glass": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "glass",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 7.51,
       "y": 19.53,
       "z": 7.41
     }
   },
-  "green_stool": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "green_stool",
+    "license": "CC BY 4.0",
     "author": "dalenryder",
+    "threedLink": "#threed-link",
     "size": {
       "x": 42.91,
       "y": 45.97,
       "z": 42.91
     }
   },
-  "hangingLight": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "hangingLight",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 43.88,
       "y": 86.04,
       "z": 43.88
     }
   },
-  "hood": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "hood",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 101.55,
       "y": 48.59,
       "z": 39.18
     }
   },
-  "horse": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "horse",
+    "license": "CC BY 4.0",
     "author": "b2przemo",
+    "threedLink": "#threed-link",
     "size": {
       "x": 58.74,
       "y": 192.96,
       "z": 229.22
     }
   },
-  "juniorBed": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "juniorBed",
+    "license": "CC BY 4.0",
     "author": "SirOccor",
+    "threedLink": "#threed-link",
     "size": {
       "x": 105.69,
       "y": 65.61,
       "z": 197.79
     }
   },
-  "kitchenblender": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenblender",
+    "license": "CC BY 4.0",
     "author": "PrinterKiller",
+    "threedLink": "#threed-link",
     "size": {
       "x": 15.61,
       "y": 42.73,
       "z": 22.34
     }
   },
-  "kitchenDrawersCabinet": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenDrawersCabinet",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 44.22,
       "y": 87.8,
       "z": 71.22
     }
   },
-  "kitchenGlassDoorCabinet": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenGlassDoorCabinet",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 33.6,
       "y": 77.13,
       "z": 36.91
     }
   },
-  "kitchenIsland": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenIsland",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 93.88,
       "y": 83.08,
       "z": 69.94
     }
   },
-  "kitchenLowerCabinet": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenLowerCabinet",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 97.58,
       "y": 87.8,
       "z": 71.68
     }
   },
-  "kitchenScale": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenScale",
+    "license": "CC BY 4.0",
     "author": "oldtimer",
+    "threedLink": "#threed-link",
     "size": {
       "x": 23,
       "y": 27.5,
       "z": 23
     }
   },
-  "kitchenSink": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenSink",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 97.58,
       "y": 97.63,
       "z": 71.68
     }
   },
-  "kitchenSmallLowerCabinet": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenSmallLowerCabinet",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 48.68,
       "y": 87.8,
       "z": 71.7
     }
   },
-  "kitchenSmallUpperCabinet": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenSmallUpperCabinet",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 34.76,
       "y": 77.13,
       "z": 36.91
     }
   },
-  "kitchenTools": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenTools",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 44,
       "y": 31.59,
       "z": 9.78
     }
   },
-  "kitchenUpperCabinet": {
-    "license": "CC BY 3.0",
-    "threed": "CC BY 4.0",
-    "threedLink": "#mm-link",
+  {
+    "title": "kitchenUpperCabinet",
+    "license": "CC BY 4.0",
     "author": "Jay-Artist",
+    "threedLink": "#threed-link",
     "size": {
       "x": 109.43,
       "y": 77.13,
       "z": 36.91
     }
   }
-}
+]

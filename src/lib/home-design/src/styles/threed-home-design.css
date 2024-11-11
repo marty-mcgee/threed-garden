@@ -39,7 +39,7 @@
 
 #catalogFilters {
   /* position: absolute; */
-  top: 0px;
+	top: 0px;
   left: 0px;
   width: 100%;
   /* height: 32px; */
@@ -59,13 +59,14 @@
 
 #catalogItems {
   position: absolute;
-  top: 30px;
+  /* top: 30px; */
+	top: 0px;
   bottom: 0px;
   overflow-y: auto;
   overflow-x: auto;
   cursor: default;
-  border-top: 1px solid gray;
-  border-bottom: 1px solid gray;
+  /* border-top: 1px solid gray; */
+  /* border-bottom: 1px solid gray; */
   background-color: #09090D;
 }
 
@@ -532,7 +533,7 @@ a[target="_blank"]:after {
 */
 
 .moreInfoBtn {
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     padding: 4px 16px 4px 16px;
     border: 1px solid #2a2a2a;
@@ -541,8 +542,8 @@ a[target="_blank"]:after {
 }
 
 #model3dLargeThumb {
-    width: 144px;
-    height: 144px;
+    width: 128px;
+    height: 128px;
     pointer-events: none;
 }
 
