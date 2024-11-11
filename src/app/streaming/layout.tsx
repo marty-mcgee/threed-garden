@@ -1,5 +1,5 @@
 import { NextLogo } from '#/layout/ui/playground/NextLogo';
-import { SearchIcon, ShoppingCartIcon } from '@heroicons/react/solid';
+import { SearchIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
 import { cookies } from 'next/headers';
 import Image from 'next/image';
 import React from 'react';
