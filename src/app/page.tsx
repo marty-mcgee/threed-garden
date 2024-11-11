@@ -45,11 +45,11 @@ import PanelResizeHandle from '#/layout/ui/resize-handle'
 // ** STYLE Imports
 // import '#/layout/styles/styles-radix-ui-themes.css'
 // import '#/layout/styles/styles-radix-ui-custom.css'
-import stylesPanels from '#/layout/styles/styles-panels.module.css'
+// import stylesPanels from '#/layout/styles/styles-panels.module.css'
 
-// ** LAYOUT Components (Head, Body, Foot)
-import Header from '#/layout/header'
-import Footer from '#/layout/footer'
+// // ** LAYOUT Components (Head, Body, Foot)
+// import Header from '#/layout/header'
+// import Footer from '#/layout/footer'
 
 // ** COMPONENT Imports
 import Logo from '#/layout/ui/logo'
@@ -106,7 +106,6 @@ const AppPage = () => {
   <Suspense fallback={<Spinner />}>
     <Flex
       direction='row'
-
       style={{
         // height: '99%',
         // width: '99%',
@@ -114,7 +113,7 @@ const AppPage = () => {
         // paddingRight: '8px',
       }}
     >
-      <Flex
+      {/* <Flex
         // direction='row'
         style={{
           // border: '4px solid darkblue',
@@ -123,13 +122,14 @@ const AppPage = () => {
         <Header 
           key='ThreeDAppHeader'
         />
-      </Flex>
+      </Flex> */}
 
       <Flex
         // direction='row'
-        className={stylesPanels.PanelContent}
+        className='PanelContent'
         style={{
           // border: '4px solid darkblue',
+          textAlign: 'center',
         }}
       >
         <Heading as='h1'>
@@ -139,7 +139,7 @@ const AppPage = () => {
 
       <Flex 
         // direction='column'
-        className={stylesPanels.PanelContent}
+        className='PanelContent'
         style={{
           // border: '1px solid darkgray',
         }}
@@ -150,7 +150,7 @@ const AppPage = () => {
         <FarmbotDemoSVG />
       </Flex>
 
-      <Flex
+      {/* <Flex
         // direction='row'
         style={{
           // border: '4px solid darkblue',
@@ -159,7 +159,7 @@ const AppPage = () => {
         <Footer 
           key='ThreeDAppFooter'
         />
-      </Flex>
+      </Flex> */}
     </Flex>
   </Suspense>
   </>
