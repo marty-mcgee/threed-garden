@@ -1,5 +1,5 @@
 import CustomLink from '~/src/layout/ui/custom-link'
-import SessionData from '#/layout/session-data'
+import SessionData from '~/src/layout/ui/session-data'
 import { auth } from '#//lib/auth/auth'
 
 export default async function Page() {
