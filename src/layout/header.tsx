@@ -26,7 +26,7 @@ import {
 // ** RETURN JSX
 export default async function Header() {
   return (
-    <Suspense fallback={null}>
+    // <Suspense fallback={null}>
       <Flex
         id='ThreeDAppHeader'
         className='flex'
@@ -61,7 +61,7 @@ export default async function Header() {
         >
           {/* YO YO YO */}
             
-            {/* <UserButtonNextAuth /> */}
+            <UserButtonNextAuth />
 
             {/* <SignedOut>
               <SignInButton mode='modal'>
@@ -98,6 +98,6 @@ export default async function Header() {
 
         </Flex>
       </Flex>
-    </Suspense>
+    // </Suspense>
   )
 }
