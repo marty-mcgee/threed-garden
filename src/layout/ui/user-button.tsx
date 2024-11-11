@@ -3,7 +3,10 @@
 // ^^ this file requires pragma?
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/layout/ui/avatar'
-import { Button } from '#/layout/ui/button'
+// import { Button } from '#/layout/ui/button'
+import { 
+  Button,
+} from '@radix-ui/themes'
 
 // ** AUTH GUARD
 import { auth } from '#//lib/auth/auth'
