@@ -41,8 +41,8 @@ export default async function UserButton() {
       //   p-2
       // '
       style={{
-        marginTop: 4, // wth? !!!
-        marginRight: 2, // wth? !!!
+        // marginTop: 4, // wth? !!!
+        // marginRight: 2, // wth? !!!
       }}
     >
       {/* <span className='hidden text-sm sm:inline-flex'>
@@ -55,7 +55,7 @@ export default async function UserButton() {
             className='bg-background text-foreground text-xs p-2'
             style={{
               // border: 0,
-              marginRight: 4,
+              // marginRight: 4,
             }}
           >
             <div 
