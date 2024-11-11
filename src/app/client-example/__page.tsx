@@ -1,5 +1,5 @@
 import { auth } from '#//lib/auth/auth'
-import ClientExample from '#/layout/client-example'
+import ClientExample from '#/layout/ui/client-example'
 import { SessionProvider } from 'next-auth/react'
 
 export default async function ClientPage() {
