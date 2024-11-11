@@ -20,15 +20,6 @@ import {
   Text,
 } from '@radix-ui/themes'
 
-// ** STYLE Imports
-// import '#/layout/styles/styles-radix-ui-themes.css'
-// import '#/layout/styles/styles-radix-ui-custom.css'
-// import stylesPanels from '#/layout/styles/styles-panels.module.css'
-
-// ** LAYOUT Components (Head, Body, Foot)
-import Header from '#/layout/header'
-import Footer from '#/layout/footer'
-
 // ==============================================================
 
 // Home Page (Landing Page)
@@ -45,9 +36,6 @@ const HomePage: TNextPageWithProps = (): JSX.Element => {
         // flexDirection: 'row-reverse',
       }}
     >
-      <Header 
-        key='ThreeDAppHeader'
-      />
       {/* <div
         id='ThreeDAppHeader'
         // direction='row'
@@ -97,9 +85,6 @@ const HomePage: TNextPageWithProps = (): JSX.Element => {
           <br/>
         </Text>
       </Container>
-      <Footer 
-        key='ThreeDAppFooter'
-      />
     </Container>
   )
 }
