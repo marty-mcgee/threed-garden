@@ -27,9 +27,9 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Typography from '@mui/material/Typography'
 // import CardContent from '@mui/material/CardContent'
 
-// ** LAYOUT Components (Head, Body, Foot)
-import Header from '#/layout/header'
-import Footer from '#/layout/footer'
+// // ** LAYOUT Components (Head, Body, Foot)
+// import Header from '#/layout/header'
+// import Footer from '#/layout/footer'
 
 // ** THREED Imports
 // import ThreeD from '~/src/lib/threed/threed'
@@ -83,9 +83,9 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
         // gap='1'
       > */}
 
-        <Header 
+        {/* <Header 
           key='ThreeDAppHeader'
-        />
+        /> */}
 
         {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
         <ThreeD />
@@ -93,9 +93,9 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
         {/* <ThreeDControls /> */}
         {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
 
-        <Footer 
+        {/* <Footer 
           key='ThreeDAppFooter'
-        />
+        /> */}
     
       {/* </Grid> */}
     {/* </Suspense> */}

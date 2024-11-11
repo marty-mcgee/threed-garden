@@ -897,11 +897,13 @@ const FarmbotSVG = `
         animation-delay: 2.4s;
       }
     </style>
-    <link
-      href="/styles/what-you-can-grow.scss.css"
-      rel="stylesheet"
-      type="text/css"
-      media="all"
-    />
 `
 export default FarmbotSVG
+
+
+    // <link
+    // href="/styles/what-you-can-grow.scss.css"
+    // rel="stylesheet"
+    // type="text/css"
+    // media="all"
+    // />
