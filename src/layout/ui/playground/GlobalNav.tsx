@@ -5,7 +5,7 @@ import '#/layout/ui/styles/globals.css'; // moved to _app.tsx ???
 import { NextLogo } from '#/layout/ui/playground/NextLogo';
 import Link from 'next/link';
 import { useSelectedLayoutSegment } from 'next/navigation';
-import { MenuAlt2Icon, XIcon } from '@heroicons/react/solid';
+import { MenuAlt2Icon, XIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 import { useState } from 'react';
 

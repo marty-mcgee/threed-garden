@@ -1,6 +1,6 @@
 'use client';
 
-import { MenuAlt2Icon, XIcon } from '@heroicons/react/solid';
+import { MenuAlt2Icon, XIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 import React from 'react';
 
