@@ -1,5 +1,5 @@
-import CustomLink from './ui/custom-link'
-// import MainNav from './main-nav'
+import CustomLink from '#/layout/ui/custom-link'
+// import MainNav from '#/layout/ui/main-nav'
 
 export default function Footer() {
   // const appVersion: string = 'v0.16.1'
