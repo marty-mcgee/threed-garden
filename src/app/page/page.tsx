@@ -1,8 +1,8 @@
 'use client'
 
-// ** LAYOUT Components (Head, Body, Foot)
-import Header from '#/layout/header'
-import Footer from '#/layout/footer'
+// // ** LAYOUT Components (Head, Body, Foot)
+// import Header from '#/layout/header'
+// import Footer from '#/layout/footer'
 
 // import type { NextPage } from 'next'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
@@ -40,7 +40,7 @@ const Page: TNextPageWithProps = (pages: any): JSX.Element => {
   // const userAgent = middleware
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <main style={{ padding: '1em' }}>
         <h1>[ThreeD] Next.js Boilerplate Page</h1>
         <h2>About</h2>
@@ -59,7 +59,7 @@ const Page: TNextPageWithProps = (pages: any): JSX.Element => {
           )
         )} */}
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }
