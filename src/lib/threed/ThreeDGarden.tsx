@@ -4,7 +4,7 @@
 // ** RESOURCES
 
 // ** NEXT Imports
-// import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** NEXT AUTH Imports
@@ -371,13 +371,13 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ==========================================================
 
-  if (DEBUG || debug) 
-    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert)
+  // if (DEBUG || debug) 
+  //   console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert)
 
     
   let project_title = 'NOT EVEN CLOSE'
-  if (DEBUG || debug) 
-    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreen, project_title)
+  // if (DEBUG || debug) 
+  //   console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreen, project_title)
 
 
   
