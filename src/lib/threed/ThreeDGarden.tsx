@@ -26,27 +26,25 @@ import {
 
 // ** APOLLO Imports
 // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
-// import { ApolloProvider } from '@apollo/client'
-// import { ApolloConsumer } from '@apollo/client'
+// // import { ApolloProvider } from '@apollo/client'
+// // import { ApolloConsumer } from '@apollo/client'
 import { useApolloClient } from '@apollo/client'
 import { useReactiveVar } from '@apollo/client'
-// import { getApolloClient, getApolloContext } from '@apollo/client'
-// import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
-// import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+// // import { getApolloClient, getApolloContext } from '@apollo/client'
+// // import {
+// //   // ApolloLink,
+// //   // HttpLink,
+// //   getApolloContext
+// // } from '@apollo/client'
 // import {
-//   // ApolloLink,
-//   // HttpLink,
-//   getApolloContext
-// } from '@apollo/client'
-import {
-  useQuery,
-  useSuspenseQuery,
-  useBackgroundQuery,
-  useReadQuery,
-  useFragment
-} from '@apollo/experimental-nextjs-app-support/ssr'
-// import stores from '#/lib/stores/apollo'
-// import { stores, queries, mutations } from '#/lib/stores/apollo'
+//   useQuery,
+//   useSuspenseQuery,
+//   useBackgroundQuery,
+//   useReadQuery,
+//   useFragment
+// } from '@apollo/experimental-nextjs-app-support/ssr'
+// // import stores from '#/lib/stores/apollo'
+// // import { stores, queries, mutations } from '#/lib/stores/apollo'
 import {
   // stores,
   preferencesStore,
@@ -259,8 +257,8 @@ const {
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
 // const ThreeDGarden = ({...props}): JSX.Element => {
 // const ThreeDGarden = ({threedData}): JSX.Element => {
-// const ThreeDGarden = (): JSX.Element => {
-const ThreeDGarden = (): React.ReactNode => {
+const ThreeDGarden = (): JSX.Element => {
+// const ThreeDGarden = (): React.ReactNode => {
   // **
   // ==========================================================
   // ** TESTING: JSX
@@ -274,8 +272,8 @@ const ThreeDGarden = (): React.ReactNode => {
   // ** HOOKS
 
   // ** USE SESSION
-  // const { data, status } = useSession()
-  const { data: sessionData, status: sessionStatus } = useSession()
+  // // const { data, status } = useSession()
+  // const { data: sessionData, status: sessionStatus } = useSession()
   // console.debug('useSession().data', sessionData)
   // console.debug('useSession().status', sessionStatus)
 
@@ -286,10 +284,10 @@ const ThreeDGarden = (): React.ReactNode => {
   // ** USE PREFERENCES
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
-  // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert) // , prefs
+  console.debug('%c⚙️ ThreeD Garden prefs', ccm.orangeAlert, prefs)
 
   // ** INIT PREFERENCES
-  const [isThreeDGardenLoaded, setIsThreeDGardenLoaded] = useState(false)
+  const [isPageLoaded, setIsPageLoaded] = useState(false)
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
   // ==========================================================
@@ -297,7 +295,7 @@ const ThreeDGarden = (): React.ReactNode => {
   // **
   useEffect(() => {
 
-    if (!isThreeDGardenLoaded && !isPrefsLoaded) {
+    if (!isPageLoaded && !isPrefsLoaded) {
     
       // ** GET PREFERENCES
       const fetchData = async () => {
@@ -336,7 +334,7 @@ const ThreeDGarden = (): React.ReactNode => {
           }
 
           // ** READY TO GO ???
-          setIsThreeDGardenLoaded(true)
+          setIsPageLoaded(true)
 
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -358,8 +356,8 @@ const ThreeDGarden = (): React.ReactNode => {
         // return <Box>true</Box> // true
       }
       
-    } else if (isThreeDGardenLoaded) {
-      console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isThreeDGardenLoaded)
+    } else if (isPageLoaded) {
+      console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isPageLoaded)
     } else {
       // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
@@ -423,7 +421,7 @@ const ThreeDGarden = (): React.ReactNode => {
       {/* <Text>{project_title}</Text> */}
       {/* [MM] HEY HEY HEY */}
 
-      { !isThreeDGardenLoaded && !isPrefsLoaded && (
+      { !isPageLoaded && !isPrefsLoaded && (
         <>
           LOADING...
           <Spinner />  
@@ -431,7 +429,7 @@ const ThreeDGarden = (): React.ReactNode => {
         
       )}
 
-      { isThreeDGardenLoaded && isPrefsLoaded && (
+      { isPageLoaded && isPrefsLoaded && (
         
         <Flex
           // container

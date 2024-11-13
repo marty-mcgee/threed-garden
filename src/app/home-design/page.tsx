@@ -6,15 +6,48 @@
 // ==============================================================
 // RESOURCES
 
+// ** NEXT Imports
+// import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
+
+// ** APOLLO Imports
+// ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
+// // import { ApolloProvider } from '@apollo/client'
+// // import { ApolloConsumer } from '@apollo/client'
+import { useApolloClient } from '@apollo/client'
+import { useReactiveVar } from '@apollo/client'
+// // import { getApolloClient, getApolloContext } from '@apollo/client'
+// // import {
+// //   // ApolloLink,
+// //   // HttpLink,
+// //   getApolloContext
+// // } from '@apollo/client'
+// import {
+//   useQuery,
+//   useSuspenseQuery,
+//   useBackgroundQuery,
+//   useReadQuery,
+//   useFragment
+// } from '@apollo/experimental-nextjs-app-support/ssr'
+// // import stores from '#/lib/stores/apollo'
+// // import { stores, queries, mutations } from '#/lib/stores/apollo'
+import {
+  // stores,
+  preferencesStore,
+  // projectStore,
+  homeDesignStore,
+  // queries,
+  // mutations,
+  // reactive vars:
+  isPreferencesSetVar,
+  preferencesDataVar,
+} from '#/lib/stores/apollo'
+
 import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
-import SessionData from '~/src/layout/ui/session-data'
+// import SessionData from '~/src/layout/ui/session-data'
 // import CustomLink from '~/src/layout/ui/custom-link'
-
-// ** NEXT Imports
-import type { NextPage } from 'next'
-// import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** REACT Imports
 import { 
@@ -97,9 +130,11 @@ import Logo from '#/layout/ui/logo'
 
 // ** STATIC DATA Imports
 import objectsJSON from '#/app/api/home-design/objects.json'
+// import planJSON from 'plans/threed-plan-example-001.threed'
+import planJSON from '#/app/api/home-design/threed-plan-demo-1.json'
 
 // ** Helper Components
-import Spinner from '#/layout/ui/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
@@ -144,19 +179,39 @@ import * as THREE from 'three'
 // ==============================================================
 
 // ==============================================================
+// IMPORTS COMPLETE
+// ==============================================================
+
+// DEBUG PREFERENCES FOR THIS MODULE
+const debug: boolean = true
+const DEBUG: boolean = true
+
+// const appVersion: string = 'v0.16.1'
+const appVersion: string = require('package.json').version
+
+if (debug || DEBUG) {
+  console.debug('%c🥕 ThreeDHomeDesign<FC,R3F>: {.tsx}', ccm.green)
+  console.debug('%c🌱 appVersion', ccm.darkgreen, appVersion)
+  console.debug(`%c====================================`, ccm.darkgreen)
+}
+
+// ==============================================================
 // ** 🟣 TYPED VARIABLES
 
+const enableOrbit: boolean = true
+const enableGizmoCube: boolean = true
+
 // <script type='text/javascript' data-cfasync='false'>
-var fragment = null
-var readOnly = false
-var UILayout = 'default' // 3dView | planView | default
-var objectsURL = 'https://threedpublic.s3.amazonaws.com/demo/'
+let fragment: any = null
+let readOnly: boolean = false
+let UILayout: String = 'default' // 3dView | planView | default
+let objectsURL: String = 'https://threedpublic.s3.amazonaws.com/demo/'
 // </script>
 
-var mouseMode = 0,
-  toolMode = 'pointer',
-  selectedItem,
-  defaultCursor = 'default',
+let mouseMode: Number = 0,
+  toolMode: String = 'pointer',
+  selectedItem: any,
+  defaultCursor: String = 'default',
   deselectAll,
   toolsGroup,
   gridGroup,
@@ -241,15 +296,6 @@ var mouseMode = 0,
   lastNewWallSegmentClick = Date.now(),
   lastNewRoofSegmentClick = Date.now(),
   lastNewFloorSegmentClick = Date.now(),
-  // threedItems: Object = {
-  //   author: '',
-  //   license: '',
-  //   scale: {
-  //     x: 0,
-  //     y: 0,
-  //     z: 0,
-  //   },
-  // },
   threedItems: Object[] = objectsJSON,
   canvas3d,
   camera,
@@ -381,9 +427,6 @@ var mouseMode = 0,
   snapTolerance = 1,
   groundWidth = 5e3,
   groundLength = 5e3
-
-const enableOrbit: boolean = true
-const enableGizmoCube: boolean = true
 
 // ==============================================================
 
@@ -622,12 +665,12 @@ const PaperCanvas = (props: any) => {
 // ==============================================================
 
 function camelCaseToSentence(e: String) {
-  // e = e.replace(/([A-Z])/g, " $1")
-  // e = e.replace(/_/g, " ")
-  // e = e.replace(/\b\w/g, function (e) {
-  //   return e.toUpperCase()
-  // })
-  // e = e.charAt(0).toUpperCase() + e.slice(1)
+  e = e.replace(/([A-Z])/g, " $1")
+  e = e.replace(/_/g, " ")
+  e = e.replace(/\b\w/g, function (e) {
+    return e.toUpperCase()
+  })
+  e = e.charAt(0).toUpperCase() + e.slice(1)
   return e
 }
 
@@ -2460,413 +2503,549 @@ const CatalogItems = (props: any): JSX.Element => {
 
 // const HomeDesignPage = (props) => {
 // const HomeDesignPage: NextPage<TPageProps> = (props) => {
+// const HomeDesignPage: NextPage = (): JSX.Element => {
 // const HomeDesignPage: TNextPageWithProps = (): JSX.Element => {
-const HomeDesignPage: NextPage = (): JSX.Element => {
+export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element { 
   
+  // ==========================================================
   // ** HOOKS
   // const auth = useAuth()
-  const session = useSession()
+  // ** USE SESSION
+  // // const { data, status } = useSession()
+  // const { data: sessionData, status: sessionStatus } = useSession()
+  // console.debug('useSession().data', sessionData)
+  // console.debug('useSession().status', sessionStatus)
 
-  // ** SESSION VARS
-  // ** DATA
-  // const [objects, setObjects] = useState(null)
-  // ** PANELS
-  const [showPanelFirst, setShowPanelFirst] = useState(true);
-  const [showPanelLast, setShowPanelLast] = useState(true);
+  // ** USE CLIENT
+  const client = useApolloClient()
+  // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
+
+  // ** USE PREFERENCES
+  // const prefs = preferencesDataVar() // NO
+  const prefs = useReactiveVar(preferencesDataVar) // YES !!
+  console.debug('%c⚙️ ThreeD Home Design prefs', ccm.orangeAlert, prefs)
+
+  // ** INIT PREFERENCES
+  const [isPageLoaded, setIsPageLoaded] = useState(false)
+  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
+
+  // ** PANELS (React State)
+  // const [showPanelFirst, setShowPanelFirst] = useState(prefs.showPanelFirst)
+  // const [showPanelLast, setShowPanelLast] = useState(prefs.showPanelLast)
   
+  // ==========================================================
+  // Component onMount hook
+  // **
   useEffect(() => {
-    // showThreedLicenseSummary(null) ???
-  }, [])
-  
-  // ** load old data.. no
+
+    if (!isPageLoaded && !isPrefsLoaded) {
+    
+      // ** GET PREFERENCES
+      const fetchData = async () => {
+        // try {
+          // ** GET PREFERENCES
+          if (!isPrefsLoaded) {
+            // **
+            // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
+            const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
+            if (DEBUG) 
+              console.debug('%c preferences loading...', ccm.greenAlert)
+            if (preferencesFromDataSource) {
+              if (DEBUG) 
+                console.debug('%c preferencesFromDataSource', ccm.greenAlert)
+            }
+          }
+
+          const loadPreferencesOne = await preferencesStore.store.get('one')
+          // const loadPreferencesOne = await preferencesStore.store.useStore('one')
+          // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
+          preferencesDataVar(loadPreferencesOne.data)
+          // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+          isPreferencesSetVar(true)
+          setIsPrefsLoaded(isPreferencesSetVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
+          if (preferencesDataVar().doAutoLoadData) {
+            // // const homeDesignsFromDataSource = await homeDesignStore.actions.loadFromDataSource(client)
+            // const homeDesignsFromDataSource = await homeDesignStore.actions.loadFromDB(client)
+            if (DEBUG) 
+              console.debug('%c homeDesigns loading...', ccm.orangeAlert)
+            // if (homeDesignsFromDataSource) {
+            //   console.debug('%c🥕 homeDesignsFromDataSource', ccm.redAlert)
+            //   // ** TODO
+            //   // ** do more tasks here ??
+            // }
+          }
+
+          // ** READY TO GO ???
+          setIsPageLoaded(true)
+
+        // } catch (error) {
+        //   console.error('Error fetching data:', error);
+        // }
+      }      
+      fetchData()
+      if (DEBUG) 
+        console.debug('%c fetching data ...', ccm.blue)
+
+
+      // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
+      const loadNounData = (_type: string = 'project', threeds: any = []) => {
+        // load these threeds into r3f canvas
+        if (DEBUG || debug) 
+          console.debug('%c🌱 ThreeD Home Design loadNounData()', ccm.yellowAlert, _type, threeds)
+        if (_type === 'project') {
+          homeDesignStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
+        }
+        // return <Box>true</Box> // true
+      }
+      
+    } else if (isPageLoaded) {
+      console.debug('%c🦆 ThreeD Home Design => LOADED !!', ccm.greenAlert, isPageLoaded)
+    } else {
+      // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+    }
+
+  }, []) // useEffect
+
+  // ==========================================================
+  // ** prefs.showPanelFirst
+  // **
   // useEffect(() => {
-  //   // ** setup dom elements
-  //   switch (UILayout) {
-  //     case "3dView":
-  //       readOnly = !0
-  //       document.getElementById("planView").style.display = "none"
-  //       document.getElementById("view3d").style.top = "0px"
-  //       document.getElementById("view3d").style.bottom = "0px"
-  //       document.getElementById("view3d").style.left = "0px"
-  //       document.getElementById("view3d").style.right = "0px"
-  //       document.getElementById("view3d").style.display = "block"
-  //       document.getElementById("catalogView").style.display = "none"
-  //       document.getElementById("verticalSlider").style.display = "none"
-  //       document.getElementById("horizontalSliderLeft").style.display = "none"
-  //       document.getElementById("horizontalSliderRight").style.display = "none"
-  //       document.getElementById("fullscreenPlanViewBtn").style.display = "none"
-  //       document.getElementById("fullscreen3dViewBtn").style.right = "6px"
-  //       document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
-  //       document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
-  //       document.getElementById("fullscreen3dViewBtn").style.display = "block"
-  //       document.getElementById("propertiesView").style.display = "none"
-  //       document.getElementById("rulerLeft").style.display = "none"
-  //       document.getElementById("rulerBottom").style.display = "none"
-  //       document.getElementById("mouseIndicatorX").style.display = "none"
-  //       document.getElementById("mouseIndicatorY").style.display = "none"
-  //       document.getElementById("overlayLogo3dView").style.display = "block"
-  //       document.getElementById("overlayMenu3dView").style.display = "block"
-  //       break
-  //     case "planView":
-  //       readOnly = !0
-  //       document.getElementById("planView").style.top = "0px"
-  //       document.getElementById("planView").style.bottom = "0px"
-  //       document.getElementById("planView").style.left = "0px"
-  //       document.getElementById("planView").style.right = "0px"
-  //       document.getElementById("planView").style.display = "block"
-  //       document.getElementById("view3d").style.display = "none"
-  //       document.getElementById("catalogView").style.display = "none"
-  //       document.getElementById("verticalSlider").style.display = "none"
-  //       document.getElementById("horizontalSliderLeft").style.display = "none"
-  //       document.getElementById("horizontalSliderRight").style.display = "none"
-  //       document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
-  //       document.getElementById("fullscreenPlanViewBtn").style.bottom = "30px"
-  //       document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
-  //       document.getElementById("fullscreenPlanViewBtn").style.display = "block"
-  //       document.getElementById("fullscreen3dViewBtn").style.display = "none"
-  //       document.getElementById("propertiesView").style.display = "none"
-  //       document.getElementById("rulerLeft").style.top = "0px"
-  //       document.getElementById("rulerLeft").style.bottom = "20px"
-  //       document.getElementById("rulerLeft").style.left = "0px"
-  //       document.getElementById("rulerLeft").style.display = "block"
-  //       document.getElementById("rulerBottom").style.marginTop = "-20px"
-  //       document.getElementById("rulerBottom").style.bottom = "0px"
-  //       document.getElementById("rulerBottom").style.left = "30px"
-  //       document.getElementById("rulerBottom").style.right = "0px"
-  //       document.getElementById("rulerBottom").style.display = "block"
-  //       document.getElementById("mouseIndicatorX").style.top = "0px"
-  //       document.getElementById("mouseIndicatorX").style.left = "0px"
-  //       document.getElementById("mouseIndicatorX").style.width = "1px"
-  //       document.getElementById("mouseIndicatorX").style.bottom = "0px"
-  //       document.getElementById("mouseIndicatorX").style.display = "block"
-  //       document.getElementById("mouseIndicatorY").style.top = "0px"
-  //       document.getElementById("mouseIndicatorY").style.left = "0px"
-  //       document.getElementById("mouseIndicatorY").style.right = "0px"
-  //       document.getElementById("mouseIndicatorY").style.height = "1px"
-  //       document.getElementById("mouseIndicatorY").style.display = "block"
-  //       document.getElementById("overlayLogoPlanView").style.display = "block"
-  //       document.getElementById("overlayMenuPlanView").style.display = "block"
-  //       break
-  //     default:
-  //       UILayout = "default"
+  //   let newData = {...preferencesDataVar()} // latest prefs
+  //   // console.debug('%c⚙️ showPanelFirstLeva newData', ccm.green, newData)
+  //   newData.showPanelFirst = showPanelFirstLeva
+  //   // console.debug('%c⚙️ showPanelFirstLeva newData UPDATED', ccm.green, newData)
+  //   preferencesDataVar(newData)
+  //   // console.debug('%c⚙️ showPanelFirstLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  // }, [showPanelFirstLeva])
+  // // **
+  // useEffect(() => {
+  //   // if (prefs.showPanelFirstLeva != undefined) {
+  //     setHomeDesignPreferencesLeva({ showPanelFirstLeva: prefs.showPanelFirst })
+  //   // }
+  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.showPanelFirst', ccm.greenAlert, prefs.showPanelFirst)
+  // }, [prefs.showPanelFirst])
+  function setShowPanelFirst () {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ showPanelFirstLeva newData', ccm.green, newData)
+    newData.showPanelFirst = !prefs.showPanelFirst // showPanelFirstLeva
+    // console.debug('%c⚙️ showPanelFirstLeva newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ showPanelFirstLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  }
 
-  //       document.getElementById("planView").style.top = "54px"
-  //       document.getElementById("planView").style.bottom = "50%"
-  //       document.getElementById("planView").style.left = "318px"
-  //       document.getElementById("planView").style.right = "0px"
-  //       document.getElementById("planView").style.display = "block"
+  // ==========================================================
+
+  // ==========================================================
+  // ** USE CONTEXT
+  // const abilities = useContext(AbilityContext)
+  // const abilities = ['read', 'write', 'delete']
+
+  // ==========================================================
+
+  // if (DEBUG || debug) 
+  //   console.debug('%c🌱 ThreeD Home Design mounting ...', ccm.darkgreenAlert)
+
+    
+  let project_title = 'NOT EVEN CLOSE'
+  // if (DEBUG || debug) 
+  //   console.debug('%c🌱 ThreeD Home Design mounting ...', ccm.darkgreen, project_title)
+
+
+  // ** load old data.. no
+  useEffect(() => {
+    // ** setup dom elements
+    switch (UILayout) {
+      case "3dView":
+        readOnly = !0
+        document.getElementById("planView").style.display = "none"
+        document.getElementById("view3d").style.top = "0px"
+        document.getElementById("view3d").style.bottom = "0px"
+        document.getElementById("view3d").style.left = "0px"
+        document.getElementById("view3d").style.right = "0px"
+        document.getElementById("view3d").style.display = "block"
+        document.getElementById("catalogView").style.display = "none"
+        document.getElementById("verticalSlider").style.display = "none"
+        document.getElementById("horizontalSliderLeft").style.display = "none"
+        document.getElementById("horizontalSliderRight").style.display = "none"
+        document.getElementById("fullscreenPlanViewBtn").style.display = "none"
+        document.getElementById("fullscreen3dViewBtn").style.right = "6px"
+        document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
+        document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
+        document.getElementById("fullscreen3dViewBtn").style.display = "block"
+        document.getElementById("propertiesView").style.display = "none"
+        document.getElementById("rulerLeft").style.display = "none"
+        document.getElementById("rulerBottom").style.display = "none"
+        document.getElementById("mouseIndicatorX").style.display = "none"
+        document.getElementById("mouseIndicatorY").style.display = "none"
+        document.getElementById("overlayLogo3dView").style.display = "block"
+        document.getElementById("overlayMenu3dView").style.display = "block"
+        break
+      case "planView":
+        readOnly = !0
+        document.getElementById("planView").style.top = "0px"
+        document.getElementById("planView").style.bottom = "0px"
+        document.getElementById("planView").style.left = "0px"
+        document.getElementById("planView").style.right = "0px"
+        document.getElementById("planView").style.display = "block"
+        document.getElementById("view3d").style.display = "none"
+        document.getElementById("catalogView").style.display = "none"
+        document.getElementById("verticalSlider").style.display = "none"
+        document.getElementById("horizontalSliderLeft").style.display = "none"
+        document.getElementById("horizontalSliderRight").style.display = "none"
+        document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
+        document.getElementById("fullscreenPlanViewBtn").style.bottom = "30px"
+        document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
+        document.getElementById("fullscreenPlanViewBtn").style.display = "block"
+        document.getElementById("fullscreen3dViewBtn").style.display = "none"
+        document.getElementById("propertiesView").style.display = "none"
+        document.getElementById("rulerLeft").style.top = "0px"
+        document.getElementById("rulerLeft").style.bottom = "20px"
+        document.getElementById("rulerLeft").style.left = "0px"
+        document.getElementById("rulerLeft").style.display = "block"
+        document.getElementById("rulerBottom").style.marginTop = "-20px"
+        document.getElementById("rulerBottom").style.bottom = "0px"
+        document.getElementById("rulerBottom").style.left = "30px"
+        document.getElementById("rulerBottom").style.right = "0px"
+        document.getElementById("rulerBottom").style.display = "block"
+        document.getElementById("mouseIndicatorX").style.top = "0px"
+        document.getElementById("mouseIndicatorX").style.left = "0px"
+        document.getElementById("mouseIndicatorX").style.width = "1px"
+        document.getElementById("mouseIndicatorX").style.bottom = "0px"
+        document.getElementById("mouseIndicatorX").style.display = "block"
+        document.getElementById("mouseIndicatorY").style.top = "0px"
+        document.getElementById("mouseIndicatorY").style.left = "0px"
+        document.getElementById("mouseIndicatorY").style.right = "0px"
+        document.getElementById("mouseIndicatorY").style.height = "1px"
+        document.getElementById("mouseIndicatorY").style.display = "block"
+        document.getElementById("overlayLogoPlanView").style.display = "block"
+        document.getElementById("overlayMenuPlanView").style.display = "block"
+        break
+      default:
+        UILayout = "default"
+
+        document.getElementById("planView").style.top = "54px"
+        document.getElementById("planView").style.bottom = "50%"
+        document.getElementById("planView").style.left = "318px"
+        document.getElementById("planView").style.right = "0px"
+        document.getElementById("planView").style.display = "block"
         
-  //       document.getElementById("view3d").style.top = "50%"
-  //       document.getElementById("view3d").style.bottom = "0px"
-  //       document.getElementById("view3d").style.left = "318px"
-  //       document.getElementById("view3d").style.right = "0px"
-  //       document.getElementById("view3d").style.display = "block"
+        document.getElementById("view3d").style.top = "50%"
+        document.getElementById("view3d").style.bottom = "0px"
+        document.getElementById("view3d").style.left = "318px"
+        document.getElementById("view3d").style.right = "0px"
+        document.getElementById("view3d").style.display = "block"
 
-  //       document.getElementById("catalogView").style.top = "54px"
-  //       document.getElementById("catalogView").style.left = "0px"
-  //       document.getElementById("catalogView").style.width = "316px"
-  //       document.getElementById("catalogView").style.height = "832px"
-  //       document.getElementById("catalogView").style.display = "block"
+        document.getElementById("catalogView").style.top = "54px"
+        document.getElementById("catalogView").style.left = "0px"
+        document.getElementById("catalogView").style.width = "316px"
+        document.getElementById("catalogView").style.height = "832px"
+        document.getElementById("catalogView").style.display = "block"
         
 
-  //       // document.getElementById("verticalSlider").style.top = "54px"
-  //       // document.getElementById("verticalSlider").style.bottom = "0px"
-  //       // document.getElementById("verticalSlider").style.left = "316px"
-  //       // document.getElementById("verticalSlider").style.width = "4px"
-  //       // document.getElementById("verticalSlider").style.display = "block"
-  //       // document.getElementById("horizontalSliderLeft").style.top = "879px"
-  //       // document.getElementById("horizontalSliderLeft").style.left = "0px"
-  //       // document.getElementById("horizontalSliderLeft").style.width = "316px"
-  //       // document.getElementById("horizontalSliderLeft").style.height = "4px"
-  //       // document.getElementById("horizontalSliderLeft").style.display = "block"
-  //       // document.getElementById("horizontalSliderRight").style.top = "50%"
-  //       // document.getElementById("horizontalSliderRight").style.left = "318px"
-  //       // document.getElementById("horizontalSliderRight").style.width = "100%"
-  //       // document.getElementById("horizontalSliderRight").style.height = "4px"
-  //       // document.getElementById("horizontalSliderRight").style.display = "block"
-  //       // document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
-  //       // document.getElementById("fullscreenPlanViewBtn").style.top = "50%"
-  //       // document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
-  //       // document.getElementById("fullscreenPlanViewBtn").style.marginTop = "-58px"
-  //       // document.getElementById("fullscreenPlanViewBtn").style.display = "block"
-  //       // document.getElementById("fullscreen3dViewBtn").style.right = "6px"
-  //       // document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
-  //       // document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
-  //       // document.getElementById("fullscreen3dViewBtn").style.display = "block"
+        // document.getElementById("verticalSlider").style.top = "54px"
+        // document.getElementById("verticalSlider").style.bottom = "0px"
+        // document.getElementById("verticalSlider").style.left = "316px"
+        // document.getElementById("verticalSlider").style.width = "4px"
+        // document.getElementById("verticalSlider").style.display = "block"
+        // document.getElementById("horizontalSliderLeft").style.top = "879px"
+        // document.getElementById("horizontalSliderLeft").style.left = "0px"
+        // document.getElementById("horizontalSliderLeft").style.width = "316px"
+        // document.getElementById("horizontalSliderLeft").style.height = "4px"
+        // document.getElementById("horizontalSliderLeft").style.display = "block"
+        // document.getElementById("horizontalSliderRight").style.top = "50%"
+        // document.getElementById("horizontalSliderRight").style.left = "318px"
+        // document.getElementById("horizontalSliderRight").style.width = "100%"
+        // document.getElementById("horizontalSliderRight").style.height = "4px"
+        // document.getElementById("horizontalSliderRight").style.display = "block"
+        // document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
+        // document.getElementById("fullscreenPlanViewBtn").style.top = "50%"
+        // document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
+        // document.getElementById("fullscreenPlanViewBtn").style.marginTop = "-58px"
+        // document.getElementById("fullscreenPlanViewBtn").style.display = "block"
+        // document.getElementById("fullscreen3dViewBtn").style.right = "6px"
+        // document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
+        // document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
+        // document.getElementById("fullscreen3dViewBtn").style.display = "block"
         
         
+        // // document.getElementById("propertiesView").style.top = "880px"
+        // // document.getElementById("propertiesView").style.left = "0px"
+        // // document.getElementById("propertiesView").style.width = "306px"
+        // // document.getElementById("propertiesView").style.bottom = "0px"
         
-  //       // // document.getElementById("propertiesView").style.top = "880px"
-  //       // // document.getElementById("propertiesView").style.left = "0px"
-  //       // // document.getElementById("propertiesView").style.width = "306px"
-  //       // // document.getElementById("propertiesView").style.bottom = "0px"
-        
-  //       // document.getElementById("propertiesView").style.display = "block"
+        // document.getElementById("propertiesView").style.display = "block"
 
 
+        // document.getElementById("rulerLeft").style.top = "54px"
+        // document.getElementById("rulerLeft").style.bottom = "50px"
+        // document.getElementById("rulerLeft").style.left = "318px"
+        // document.getElementById("rulerLeft").style.display = "block"
+        // document.getElementById("rulerBottom").style.top = "50%"
+        // document.getElementById("rulerBottom").style.marginTop = "-20px"
+        // document.getElementById("rulerBottom").style.bottom = "0px"
+        // document.getElementById("rulerBottom").style.left = "318px"
+        // document.getElementById("rulerBottom").style.right = "0px"
+        // document.getElementById("rulerBottom").style.display = "block"
+        // document.getElementById("mouseIndicatorX").style.top = "54px"
+        // document.getElementById("mouseIndicatorX").style.left = "318px"
+        // document.getElementById("mouseIndicatorX").style.width = "1px"
+        // document.getElementById("mouseIndicatorX").style.bottom = "50%"
+        // document.getElementById("mouseIndicatorX").style.display = "block"
+        // document.getElementById("mouseIndicatorY").style.top = "57px"
+        // document.getElementById("mouseIndicatorY").style.left = "318px"
+        // document.getElementById("mouseIndicatorY").style.right = "0px"
+        // document.getElementById("mouseIndicatorY").style.height = "1px"
+        // document.getElementById("mouseIndicatorY").style.display = "block")
+    }
 
-  //       // document.getElementById("rulerLeft").style.top = "54px"
-  //       // document.getElementById("rulerLeft").style.bottom = "50px"
-  //       // document.getElementById("rulerLeft").style.left = "318px"
-  //       // document.getElementById("rulerLeft").style.display = "block"
-  //       // document.getElementById("rulerBottom").style.top = "50%"
-  //       // document.getElementById("rulerBottom").style.marginTop = "-20px"
-  //       // document.getElementById("rulerBottom").style.bottom = "0px"
-  //       // document.getElementById("rulerBottom").style.left = "318px"
-  //       // document.getElementById("rulerBottom").style.right = "0px"
-  //       // document.getElementById("rulerBottom").style.display = "block"
-  //       // document.getElementById("mouseIndicatorX").style.top = "54px"
-  //       // document.getElementById("mouseIndicatorX").style.left = "318px"
-  //       // document.getElementById("mouseIndicatorX").style.width = "1px"
-  //       // document.getElementById("mouseIndicatorX").style.bottom = "50%"
-  //       // document.getElementById("mouseIndicatorX").style.display = "block"
-  //       // document.getElementById("mouseIndicatorY").style.top = "57px"
-  //       // document.getElementById("mouseIndicatorY").style.left = "318px"
-  //       // document.getElementById("mouseIndicatorY").style.right = "0px"
-  //       // document.getElementById("mouseIndicatorY").style.height = "1px"
-  //       // document.getElementById("mouseIndicatorY").style.display = "block")
-  //   }
+  /* */
 
-  //   // "default" === UILayout &&
-  //   if (UILayout === 'default') {
-  //     // $("#catalogItems").scroll(function () {
-  //     //   loadInViewThumbs()
-  //     // })
-  //     focusPoint = new paper.Point(0, 0)
-  //     raycaster = new THREE.Raycaster()
-  //     mouse = new THREE.Vector2()
+    // "default" === UILayout &&
+    if (UILayout === 'default') {
+      // $("#catalogItems").scroll(function () {
+      //   loadInViewThumbs()
+      // })
+      focusPoint = new paper.Point(0, 0)
+      raycaster = new THREE.Raycaster()
+      mouse = new THREE.Vector2()
       
-  //     // async function fetchObjects() {
-  //     //   let res = await fetch('api/objects.json')
-  //     //   let data = await res.json()
-  //     //   console.debug('fetchObjects data', data)
-  //     //   setObjects(data)
-  //     //   // let arr = Array.from(Object.entries(data))
-  //     //   // setObjects(arr)
-  //     //   // console.debug('fetchObjects data arr', arr)
-  //     // }
-  //     // fetchObjects()
-  //     /*
-  //     $.ajax({
-  //       url: "api/objects.json",
-  //       type: "GET",
-  //       contentType: "application/json",
-  //       success: function (e) {
-  //         if (((threedItems = e), "default" === UILayout)) {
-  //           var t = 0
-  //           Object.keys(threedItems)
-  //             // .sort()
-  //             .forEach(function (e) {
-  //               var o = camelCaseToSentence(e)
-  //               $("#catalogItems").append(
-  //                 "<div id='" +
-  //                 e +
-  //                 "' class='threedItem disableSelection' onmousedown='beginDrag(event, \"" +
-  //                 e +
-  //                 "\");'><img " +
-  //                 (t < 32
-  //                   ? "src='" + objectsURL + "objects/" + e + ".png'"
-  //                   : "src='media/thumbPlaceHolder.png'") +
-  //                 " realsrc='" + objectsURL + "objects/" +
-  //                 e +
-  //                 ".png' class='threedThumb' alt='" +
-  //                 o +
-  //                 "' title='" +
-  //                 o +
-  //                 "' /></div>"
-  //               ),
-  //                 t++
-  //             })
-  //         }
-  //       */  
+      // DONE
+      // async function fetchObjects() {
+      //   let res = await fetch('api/objects.json')
+      //   let data = await res.json()
+      //   console.debug('fetchObjects data', data)
+      //   setObjects(data)
+      //   // let arr = Array.from(Object.entries(data))
+      //   // setObjects(arr)
+      //   // console.debug('fetchObjects data arr', arr)
+      // }
+      // fetchObjects()
+
+      // DONE
+      /*
+      $.ajax({
+        url: "api/objects.json",
+        type: "GET",
+        contentType: "application/json",
+        success: function (e) {
+          if (((threedItems = e), "default" === UILayout)) {
+            var t = 0
+            Object.keys(threedItems)
+              // .sort()
+              .forEach(function (e) {
+                var o = camelCaseToSentence(e)
+                $("#catalogItems").append(
+                  "<div id='" +
+                  e +
+                  "' class='threedItem disableSelection' onmousedown='beginDrag(event, \"" +
+                  e +
+                  "\");'><img " +
+                  (t < 32
+                    ? "src='" + objectsURL + "objects/" + e + ".png'"
+                    : "src='media/thumbPlaceHolder.png'") +
+                  " realsrc='" + objectsURL + "objects/" +
+                  e +
+                  ".png' class='threedThumb' alt='" +
+                  o +
+                  "' title='" +
+                  o +
+                  "' /></div>"
+                ),
+                  t++
+              })
+          }
+        */  
+
+        // WORKING ON...
         
-  //       /*
-  //         if (
-  //           ($.ajax({
-  //             url: "plans/threed-plan-example-001.threed",
-  //             type: "GET",
-  //             contentType: "application/json",
-  //             success: function (e) {
-  //               var t = JSON.parse(e)
-  //               featuredPlanImage.src = t.thumb
-  //             },
-  //             error: function (e) {
-  //               console.debug("document.ready : get thumb ajax : " + e)
-  //             },
-  //           }),
-  //             "default" === UILayout &&
-  //             ($("#wallDiffuse").minicolors({
-  //               opacity: !0,
-  //               change: function (e, t) {
-  //                 var o = parseInt(e.replace("#", "0x"))
-  //                   ; (wallMaterial.color = new THREE.Color(o)),
-  //                     (wallMaterial.opacity = parseFloat(t)),
-  //                     (plan.wallDiffuse = wallMaterial.color),
-  //                     (plan.wallOpacity = wallMaterial.opacity),
-  //                     render()
-  //               },
-  //             }),
-  //               $("#roofDiffuse").minicolors({
-  //                 opacity: !0,
-  //                 change: function (e, t) {
-  //                   var o = parseInt(e.replace("#", "0x"))
-  //                     ; (roofMaterial.color = new THREE.Color(o)),
-  //                       (roofMaterial.opacity = parseFloat(t)),
-  //                       (plan.roofDiffuse = roofMaterial.color),
-  //                       (plan.roofOpacity = roofMaterial.opacity),
-  //                       render()
-  //                 },
-  //               }),
-  //               $("#wallSpecular").minicolors({
-  //                 change: function (e) {
-  //                   var t = parseInt(e.replace("#", "0x"))
-  //                     ; (wallMaterial.specular = new THREE.Color(t)),
-  //                       (plan.wallSpecular = wallMaterial.specular),
-  //                       render()
-  //                 },
-  //               }),
-  //               $("#roofSpecular").minicolors({
-  //                 change: function (e) {
-  //                   var t = parseInt(e.replace("#", "0x"))
-  //                     ; (roofMaterial.specular = new THREE.Color(t)),
-  //                       (plan.roofSpecular = roofMaterial.specular),
-  //                       render()
-  //                 },
-  //               }),
-  //               $("#floorDiffuse").minicolors({
-  //                 opacity: !0,
-  //                 change: function (e, t) {
-  //                   var o = parseInt(e.replace("#", "0x"))
-  //                     ; (floorMaterial.color = new THREE.Color(o)),
-  //                       (floorMaterial.opacity = parseFloat(t)),
-  //                       (plan.floorDiffuse = floorMaterial.color),
-  //                       (plan.floorOpacity = floorMaterial.opacity),
-  //                       render()
-  //                 },
-  //               }),
-  //               $("#floorSpecular").minicolors({
-  //                 change: function (e) {
-  //                   var t = parseInt(e.replace("#", "0x"))
-  //                     ; (floorMaterial.specular = new THREE.Color(t)),
-  //                       (plan.floorSpecular = floorMaterial.specular),
-  //                       render()
-  //                 },
-  //               }),
-  //               $("#groundDiffuse").minicolors({
-  //                 opacity: !0,
-  //                 change: function (e, t) {
-  //                   var o = parseInt(e.replace("#", "0x"))
-  //                     ; (groundMat.color = new THREE.Color(o)),
-  //                       (groundMat.opacity = parseFloat(t)),
-  //                       (plan.groundDiffuse = groundMat.color.getHexString()),
-  //                       (plan.groundOpacity = groundMat.opacity),
-  //                       render()
-  //                 },
-  //               }),
-  //               $("#groundSpecular").minicolors({
-  //                 change: function (e) {
-  //                   var t = parseInt(e.replace("#", "0x"))
-  //                     ; (groundMat.specular = new THREE.Color(t)),
-  //                       (plan.groundSpecular = groundMat.specular.getHexString()),
-  //                       render()
-  //                 },
-  //               })),
-  //             fragment)
-  //         )
-  //           $.ajax({
-  //             url: "api/getsharelink/" + fragment,
-  //             type: "GET",
-  //             contentType: "application/json",
-  //             success: function (e) {
-  //               var t = JSON.parse(e)
-  //               e.error
-  //                 ? console.debug(e.error)
-  //                 : ((loadingProgressTxt = "Loading Shared Plan"),
-  //                   (document.getElementById("modalLoadingDataInfo").innerHTML =
-  //                     loadingProgressTxt),
-  //                   $("#loadingModal").show(),
-  //                   hideMouseIndicators(),
-  //                   drawPlan(t))
-  //             },
-  //             error: function (e) {
-  //               console.debug("document.ready : getsharelink : " + e)
-  //             },
-  //           })
-  //         else {
-  //           var o = localStorage.getItem("plan")
-  //           if (o) {
-  //             var o = JSON.parse(o)
-  //               ; (loadingProgressTxt = "Loading Cached Plan"),
-  //                 (document.getElementById("modalLoadingDataInfo").innerHTML =
-  //                   loadingProgressTxt),
-  //                 $("#loadingModal").show(),
-  //                 hideMouseIndicators(),
-  //                 drawPlan(o)
-  //           } else showAbout(), setNewPlan()
-  //         }
-  //       },
-  //       error: function (e) {
-  //         console.dir(e)
-  //       },
-  //     }),
-  //     (progressBar = document.getElementById("progressBar")),
-  //     (progressBar.style.display = "none"),
-  //     (verticalSlider = document.getElementById("verticalSlider")),
-  //     (verticalSliderDragging = !1),
-  //     (verticalSlider.onmousedown = function (e) {
-  //       ; (verticalSliderDragging = !0),
-  //         (verticalSlider.style.left = e.x - 2 + "px")
-  //     }),
-  //     (horizontalSliderLeft = document.getElementById("horizontalSliderLeft")),
-  //     (horizontalSliderLeftDragging = !1),
-  //     (horizontalSliderLeft.onmousedown = function (e) {
-  //       ; (horizontalSliderLeftDragging = !0),
-  //         (horizontalSliderLeft.style.top = e.y - 2 + "px")
-  //     }),
-  //     (horizontalSliderRight = document.getElementById("horizontalSliderRight")),
-  //     (horizontalSliderRightDragging = !1),
-  //     (horizontalSliderRight.onmousedown = function (e) {
-  //       ; (horizontalSliderRightDragging = !0),
-  //         (horizontalSliderRight.style.top = e.y - 2 + "px")
-  //     }),
-  //     */
+        /*
+          if (
+            ($.ajax({
+              url: "plans/threed-plan-example-001.threed",
+              type: "GET",
+              contentType: "application/json",
+              success: function (e) {
+                var t = JSON.parse(e)
+                featuredPlanImage.src = t.thumb
+              },
+              error: function (e) {
+                console.debug("document.ready : get thumb ajax : " + e)
+              },
+            }),
+              "default" === UILayout &&
+              ($("#wallDiffuse").minicolors({
+                opacity: !0,
+                change: function (e, t) {
+                  var o = parseInt(e.replace("#", "0x"))
+                    ; (wallMaterial.color = new THREE.Color(o)),
+                      (wallMaterial.opacity = parseFloat(t)),
+                      (plan.wallDiffuse = wallMaterial.color),
+                      (plan.wallOpacity = wallMaterial.opacity),
+                      render()
+                },
+              }),
+                $("#roofDiffuse").minicolors({
+                  opacity: !0,
+                  change: function (e, t) {
+                    var o = parseInt(e.replace("#", "0x"))
+                      ; (roofMaterial.color = new THREE.Color(o)),
+                        (roofMaterial.opacity = parseFloat(t)),
+                        (plan.roofDiffuse = roofMaterial.color),
+                        (plan.roofOpacity = roofMaterial.opacity),
+                        render()
+                  },
+                }),
+                $("#wallSpecular").minicolors({
+                  change: function (e) {
+                    var t = parseInt(e.replace("#", "0x"))
+                      ; (wallMaterial.specular = new THREE.Color(t)),
+                        (plan.wallSpecular = wallMaterial.specular),
+                        render()
+                  },
+                }),
+                $("#roofSpecular").minicolors({
+                  change: function (e) {
+                    var t = parseInt(e.replace("#", "0x"))
+                      ; (roofMaterial.specular = new THREE.Color(t)),
+                        (plan.roofSpecular = roofMaterial.specular),
+                        render()
+                  },
+                }),
+                $("#floorDiffuse").minicolors({
+                  opacity: !0,
+                  change: function (e, t) {
+                    var o = parseInt(e.replace("#", "0x"))
+                      ; (floorMaterial.color = new THREE.Color(o)),
+                        (floorMaterial.opacity = parseFloat(t)),
+                        (plan.floorDiffuse = floorMaterial.color),
+                        (plan.floorOpacity = floorMaterial.opacity),
+                        render()
+                  },
+                }),
+                $("#floorSpecular").minicolors({
+                  change: function (e) {
+                    var t = parseInt(e.replace("#", "0x"))
+                      ; (floorMaterial.specular = new THREE.Color(t)),
+                        (plan.floorSpecular = floorMaterial.specular),
+                        render()
+                  },
+                }),
+                $("#groundDiffuse").minicolors({
+                  opacity: !0,
+                  change: function (e, t) {
+                    var o = parseInt(e.replace("#", "0x"))
+                      ; (groundMat.color = new THREE.Color(o)),
+                        (groundMat.opacity = parseFloat(t)),
+                        (plan.groundDiffuse = groundMat.color.getHexString()),
+                        (plan.groundOpacity = groundMat.opacity),
+                        render()
+                  },
+                }),
+                $("#groundSpecular").minicolors({
+                  change: function (e) {
+                    var t = parseInt(e.replace("#", "0x"))
+                      ; (groundMat.specular = new THREE.Color(t)),
+                        (plan.groundSpecular = groundMat.specular.getHexString()),
+                        render()
+                  },
+                })),
+              fragment)
+          )
+            $.ajax({
+              url: "api/getsharelink/" + fragment,
+              type: "GET",
+              contentType: "application/json",
+              success: function (e) {
+                var t = JSON.parse(e)
+                e.error
+                  ? console.debug(e.error)
+                  : ((loadingProgressTxt = "Loading Shared Plan"),
+                    (document.getElementById("modalLoadingDataInfo").innerHTML =
+                      loadingProgressTxt),
+                    $("#loadingModal").show(),
+                    hideMouseIndicators(),
+                    drawPlan(t))
+              },
+              error: function (e) {
+                console.debug("document.ready : getsharelink : " + e)
+              },
+            })
+          else {
+            var o = localStorage.getItem("plan")
+            if (o) {
+              var o = JSON.parse(o)
+                ; (loadingProgressTxt = "Loading Cached Plan"),
+                  (document.getElementById("modalLoadingDataInfo").innerHTML =
+                    loadingProgressTxt),
+                  $("#loadingModal").show(),
+                  hideMouseIndicators(),
+                  drawPlan(o)
+            } else showAbout(), setNewPlan()
+          }
+        },
+        error: function (e) {
+          console.dir(e)
+        },
+      }),
+      (progressBar = document.getElementById("progressBar")),
+      (progressBar.style.display = "none"),
+      (verticalSlider = document.getElementById("verticalSlider")),
+      (verticalSliderDragging = !1),
+      (verticalSlider.onmousedown = function (e) {
+        ; (verticalSliderDragging = !0),
+          (verticalSlider.style.left = e.x - 2 + "px")
+      }),
+      (horizontalSliderLeft = document.getElementById("horizontalSliderLeft")),
+      (horizontalSliderLeftDragging = !1),
+      (horizontalSliderLeft.onmousedown = function (e) {
+        ; (horizontalSliderLeftDragging = !0),
+          (horizontalSliderLeft.style.top = e.y - 2 + "px")
+      }),
+      (horizontalSliderRight = document.getElementById("horizontalSliderRight")),
+      (horizontalSliderRightDragging = !1),
+      (horizontalSliderRight.onmousedown = function (e) {
+        ; (horizontalSliderRightDragging = !0),
+          (horizontalSliderRight.style.top = e.y - 2 + "px")
+      }),
+      */
 
-  //     // ** ================================================
+      // ** ================================================
 
-  //     // paper.install(window),
-  //     // paper.setup(planCanvas),
-  //     // (paper.settings.hitTolerance = 3),
+      // paper.install(window),
+      // paper.setup(planCanvas),
+      // (paper.settings.hitTolerance = 3),
 
-  //     // ** ================================================
+      // ** ================================================
 
-  //     // initPlanView(),
-  //     // initThreeJS(),
-  //     // resize3dView(),
-  //     // resizePlanView(),
-  //     // animate(),
+      // initPlanView(),
+      // initThreeJS(),
+      // resize3dView(),
+      // resizePlanView(),
+      // animate(),
       
-  //     // ** ================================================
+      // ** ================================================
 
-  //     // threedDragDiv = document.getElementById("threedDragDiv")
+      // threedDragDiv = document.getElementById("threedDragDiv")
       
-  //     // document.getElementById("catalogTextFilter").onInput = function (e) {
-  //     //   var t = this.value.toLowerCase()
-  //     //   t.length > 0
-  //     //     ? Object.keys(threedItems).forEach(function (e) {
-  //     //       e.toLowerCase().indexOf(t) > -1
-  //     //         ? (document.getElementById(e).style.display = "block")
-  //     //         : (document.getElementById(e).style.display = "none")
-  //     //     })
-  //     //     : Object.keys(threedItems).forEach(function (e) {
-  //     //       document.getElementById(e).style.display = "block"
-  //     //     }),
-  //     //     loadInViewThumbs()
-  //     // }
+      // document.getElementById("catalogTextFilter").onInput = function (e) {
+      //   var t = this.value.toLowerCase()
+      //   t.length > 0
+      //     ? Object.keys(threedItems).forEach(function (e) {
+      //       e.toLowerCase().indexOf(t) > -1
+      //         ? (document.getElementById(e).style.display = "block")
+      //         : (document.getElementById(e).style.display = "none")
+      //     })
+      //     : Object.keys(threedItems).forEach(function (e) {
+      //       document.getElementById(e).style.display = "block"
+      //     }),
+      //     loadInViewThumbs()
+      // }
       
-  //     /* end if ajax true */
-  //     // ** ================================================
-  //   }
-  // }, []) // end load data useEffect (client)
+      /* end if ajax true */
+      // ** ================================================
+    }
+  }, []) // end load data useEffect (client)
 
   
   // // ** MODALS
@@ -3185,6 +3364,27 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
           {/* <Text>
             Panel Header
           </Text> */}
+
+          {/* PANELS: HEADER */}
+          <Panel 
+            className='Panel'
+            defaultSize={4}
+            maxSize={4}
+            style={{
+              // height: '4vh',
+              // border: '1px solid darkgreen',
+            }}
+          >
+            <progress 
+              id='progressBar'
+              value='20' 
+              max='100' 
+              className='center' 
+            ></progress> 
+          </Panel>
+
+          <PanelResizeHandle />
+
           <Panel 
             className='Panel'
             defaultSize={4}
@@ -3218,17 +3418,17 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                       padding: '0px',
                       marginLeft: '4px', 
                     }}
-                    onClick={() => setShowPanelFirst(!showPanelFirst)}
+                    // onClick={() => setShowPanelFirst(!prefs.showPanelFirst)}
                   >
                     {/* {showPanelFirst ? "hide" : "show"} panel left */}
-                    { showPanelFirst && (
+                    { prefs.showPanelFirst && (
                       <ArrowLeftEndOnRectangleIcon
                         style={{
                           color: '#504191', // '#3B3269',
                         }}
                       />
                     )}
-                    { !showPanelFirst && (
+                    { !prefs.showPanelFirst && (
                       <ArrowRightEndOnRectangleIcon
                         style={{
                           color: '#504191', // '#3B3269',
@@ -3247,17 +3447,17 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                       padding: '0px',
                       marginLeft: '0px', 
                     }}
-                    onClick={() => setShowPanelLast(!showPanelLast)}
+                    // onClick={() => setShowPanelLast(!prefs.showPanelLast)}
                   >
                     {/* {showPanelLast ? "hide" : "show"} panel right */}
-                    { showPanelLast && (
+                    { prefs.showPanelLast && (
                       <ArrowRightEndOnRectangleIcon
                         style={{
                           color: '#504191', // '#3B3269',
                         }}
                       />
                     )}
-                    { !showPanelLast && (
+                    { !prefs.showPanelLast && (
                       <ArrowLeftEndOnRectangleIcon
                         style={{
                           color: '#504191', // '#3B3269',
@@ -3323,7 +3523,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                   // autoSaveId='ThreeDHomeDesignLayoutSub2'
                 >
                   {/* VIEWS: OBJECT CATALOG */}
-                  {showPanelFirst && (
+                  {prefs.showPanelFirst && (
                     <>
                       {/* LEFT PANEL */}
                       <Panel
@@ -3391,7 +3591,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                   )}
 
                   {/* VIEWS: CANVASES */}
-                  {showPanelLast && (
+                  {prefs.showPanelLast && (
                     <>
                       {/* RIGHT PANEL */}
                       <Panel
@@ -3549,7 +3749,7 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
                                       zoomToCursor={false} // default is false
                                       zoomSpeed={1.0} // default is 1.0
                                       enableRotate={true}
-                                      // autoRotate={prefs.doAutoRotate} // default is false
+                                      // autoRotate={prefs.showPanelFirst} // default is false
                                       autoRotate={false}
                                       autoRotateSpeed={1.0} // default is 2.0
                                       rotateSpeed={1.0} // default is 1.0
@@ -3655,47 +3855,12 @@ const HomeDesignPage: NextPage = (): JSX.Element => {
         
       </Flex>
 
-
       {/* VIEWS: PROPERTIES */}
-      {/* <Flex 
-        // direction='row'
-        style={{
-          // alignItems: 'center',
-          // height: '100px',
-          border: '1px solid darkred',
-        }}
-      >
-        <ViewProperties />
-      </Flex> */}
-      
+      {/* <ViewProperties /> */}
 
       {/* VIEWS: MODALS */}
-      <Flex 
-        // direction='row'
-        style={{
-          // alignItems: 'center',
-          // height: '100px',
-          // border: '1px solid darkgreen',
-        }}
-      >
-        <ViewModals />
-      </Flex>
-
-
-      {/* MAIN FOOTER */}
-      <Flex
-        // direction='row'
-        style={{
-          // border: '4px solid darkblue',
-        }}
-      >
-        {/* <Footer 
-          key='ThreeDAppFooter'
-        /> */}
-      </Flex>
+      <ViewModals />
       
     </Flex>
   )
 }
-
-export default HomeDesignPage

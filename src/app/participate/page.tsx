@@ -1,4 +1,8 @@
+// ==============================================================
+// ThreeD Garden Page (main landing page for 3D Character Demo)
+
 'use client'
+
 // ==========================================================
 // RESOURCES
 
@@ -32,8 +36,8 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Footer from '#/layout/footer'
 
 // ** THREED Imports
-// import ThreeD from '~/src/lib/threed/threed'
-const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
+// import ThreeDComponents from '~/src/lib/threed/threed'
+const ThreeDComponents = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
 // import ThreeDControls from '~/src/lib/threed/Controls'
 // const ThreeDControls = dynamic(() => import('#/lib/threed/Controls'), { ssr: false })
 // import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'
@@ -42,7 +46,7 @@ const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
 // const ThreeDControls = dynamic(() => import('#/lib/threed/components/controls/Controls'), { ssr: false })
 
 // ** HELPER Imports
-import Spinner from '#/layout/ui/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 // import ccm from '#/lib/utils/console-colors'
 
@@ -76,30 +80,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
   // }
 
   return (
-    <>
-    {/* <Suspense fallback={<Spinner />}> */}
-    
-      {/* <Grid
-        // gap='1'
-      > */}
-
-        {/* <Header 
-          key='ThreeDAppHeader'
-        /> */}
-
-        {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
-        <ThreeD />
-        {/* <ThreeDGarden /> */}
-        {/* <ThreeDControls /> */}
-        {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
-
-        {/* <Footer 
-          key='ThreeDAppFooter'
-        /> */}
-    
-      {/* </Grid> */}
-    {/* </Suspense> */}
-    </>
+    <ThreeDComponents />
   )
 }
 
