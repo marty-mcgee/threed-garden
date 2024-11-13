@@ -23,15 +23,14 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 import ThreeDToolbar from '#/lib/threed/components/controls/Toolbar'
 
 // ** ThreeD : JSX Export
-// export default
-const ThreeDControls = () => {
+export default function ThreeDComponents(): JSX.Element {
 
   // ** THREED CONTROL(S)
   // console.debug('THREED CONTROL[S]: ALL')
   return (
     <>
       {/* <ThreeDToolbar /> */}
-      <Suspense fallback={null}>
+      {/* <Suspense fallback={null}> */}
         <ThreeDGarden />
         <ThreeDLevaControls />
         <ThreeDLevaComponent 
@@ -42,9 +41,7 @@ const ThreeDControls = () => {
         />
         <ThreeDControlPanels />
         {/* <h1>ThreeD Control[s]: All</h1> */}
-      </Suspense>
+      {/* </Suspense> */}
     </>
   )
 }
-
-export default ThreeDControls

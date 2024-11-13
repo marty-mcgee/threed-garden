@@ -38,6 +38,24 @@
     "react-dom": "^18.3.1",
     "use-count-up": "^3.0.1",
 
+    "next": "^14.2.17",
+    "@next/bundle-analyzer": "^14.2.16",
+    "@next/third-parties": "^14.2.16",
+    "next-auth": "^5.0.0-beta.25",
+    "next-themes": "^0.3.0",
+
+    "@auth0/auth0-react": "^2.2.4",
+    "@clerk/nextjs": "^6.0.2",
+    
+    "@apollo/client": "^3.11.10",
+    "@apollo/experimental-nextjs-app-support": "^0.11.5",
+    "@apollo/react-hooks": "^4.0.0",
+    "graphql": "^16.9.0",
+    "graphql-tag": "^2.12.6",
+    "zustand": "^4.5.2",
+    "zustand-x": "^3.0.4",
+    "scheduler": "^0.23.2",
+
     "three": "0.169.0",
     "three-mesh-ui": "^6.5.4",
     "three-stdlib": "^2.32.2",
@@ -48,27 +66,10 @@
     "r3f-perf": "^7.2.1",
 
     "leva": "^0.9.35",
-
-    "next": "^14.2.17",
-    "@next/bundle-analyzer": "^14.2.16",
-    "@next/third-parties": "^14.2.16",
-    "next-auth": "^5.0.0-beta.25",
-    "next-themes": "^0.3.0",
-
-    "@auth0/auth0-react": "^2.2.4",
-    "@clerk/nextjs": "^6.0.2",
-    
-    "@apollo/client": "^3.11.8",
-    "@apollo/experimental-nextjs-app-support": "^0.11.3",
-    "@apollo/react-hooks": "^4.0.0",
-    "graphql": "^16.8.1",
-    "graphql-tag": "^2.12.6",
-    "zustand": "^4.5.2",
-    "zustand-x": "^3.0.3",
-    "scheduler": "^0.23.2",
-    "valtio": "^1.13.2",
     
     "react-resizable-panels": "^2.1.5", 
+
+    "@heroicons/react": "^2.1.5",
     
     "@radix-ui/themes": "3.0.5",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -117,11 +118,11 @@
 
     "@casl/ability": "5.4.3",
     "@casl/react": "3.1.0",
+
     
     "farmbot": "^15.8.8",
     "lodash": "^4.17.21",
     "chroma-js": "3.1.2",
-    "@heroicons/react": "^2.1.5",
 
 
     "ai": "^3.4.18",
@@ -145,6 +146,7 @@
 
     "attr-accept": "^2.2.4",
     "react-dropzone": "^14.2.9",
+    
 
     "paper": "^0.12.18"
     

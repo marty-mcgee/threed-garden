@@ -19,6 +19,7 @@ import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
 import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
+import GetHomeDesigns from '#/lib/api/graphql/scripts/getHomeDesigns.gql'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
@@ -36,7 +37,6 @@ import ccm from '#/lib/utils/console-colors'
 // ** TESTING
 const debug: boolean = false // false | true
 const DEBUG: boolean = false // 1 == 0 | 1 == 1
-const debug_deep: boolean = false // false | true
 
 // ==============================================================
 // ==============================================================
@@ -415,6 +415,9 @@ function nounStore(this: IStore, _type = 'noun') {
           // case 'bear':
           //   QUERY = GetBears
           //   break
+          case 'homeDesign':
+            QUERY = GetHomeDesigns
+            break
         }
 
         const parameters = {
@@ -851,12 +854,17 @@ export const preferencesDataVar = makeVar(
     doWorldPhysics: false, // boolean: false | true
     doWorldControl: false, // boolean: false | true
     doWorldUnfollowCam: false, // boolean: false | true
+    // home design prefs
+    showPanelFirst: true, // boolean: true | false
+    showPanelLast: true, // boolean: true | false
+    // set functions
     setPreferencesDataVar: () => {}, // function: set properties of "this"
     setUserPreferencesDataVar: () => {}, // function: set properties of "this"
     setWorldPreferencesDataVar: () => {}, // function: set properties of "this"
     setScenePreferencesDataVar: () => {}, // function: set properties of "this"
     setProjectPreferencesDataVar: () => {}, // function: set properties of "this"
     setCharacterPreferencesDataVar: () => {}, // function: set properties of "this"
+    setHomeDesignPreferencesDataVar: () => {}, // function: set properties of "this"
   }
 )
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
@@ -888,6 +896,7 @@ export const allotmentStore = new (nounStore as any)('allotment')
 export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
 export const plantingPlanStore = new (nounStore as any)('plantingPlan')
+export const homeDesignStore = new (nounStore as any)('homeDesign')
 export { modalStore }
 // export const modalStore = new (modalStore as any)()
 export const modalAboutStore = new (modalStore as any)('modalAbout')
@@ -909,6 +918,7 @@ export const stores = {
   bedStore,
   plantStore,
   plantingPlanStore,
+  homeDesignStore,
   modalStore,
   modalAboutStore,
   modalModel3dStore,
@@ -931,12 +941,15 @@ export const queries = {
   GetBeds,
   GetPlants,
   GetPlantingPlans,
+  GetHomeDesigns,
 }
 export const mutations = {
+  // :) [MM] THREED MILESTONE
   UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
   UpdateProjects: 'HEY HEY HEY UpdateProjects',
   UpdatePlans: 'HEY HEY HEY UpdatePlans',
-  UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs', // :) [MM] THREED MILESTONE
+  UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs',
+  UpdateHomeDesigns: 'HEY HEY HEY UpdateHomeDesigns',
 }
 
 // export { stores, queries, mutations }
