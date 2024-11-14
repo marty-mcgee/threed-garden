@@ -4,12 +4,12 @@
 // ** RESOURCES
 
 // ** NEXT Imports
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** NEXT AUTH Imports
 // hint: const { data, data: session, status } = useSession()
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
 
 // ** REACT Imports
 import {

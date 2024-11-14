@@ -65,13 +65,13 @@ export default function RootLayout({ children }: { children: any }) {
       <body className={inter.className}>
         <ApolloClientWrapper>
           <SessionWrapper>
-            <ClerkProvider>{/* dynamic? */}
+            <ClerkProvider dynamic>
               <Header 
                 key='ThreeDAppHeader'
               />
-              
-              {children}
-
+              <>
+                {children}
+              </>
               <Footer 
                 key='ThreeDAppFooter'
               />
