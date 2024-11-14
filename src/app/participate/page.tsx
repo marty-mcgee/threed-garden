@@ -9,7 +9,7 @@
 // ** AUTH GUARD
 // import { auth } from 'auth'
 // import { SessionProvider } from 'next-auth/react'
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
 
 // ** NEXT Imports
 import dynamic from 'next/dynamic'
@@ -55,7 +55,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
 // const ParticipatePage: TNextPageWithProps = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
   // **
   // const session = await auth()
-  const { data: session, status } = useSession()
+  // const { data: session, status } = useSession()
   // filter out sensitive data before passing to client.
   // if (session) {
     // console.debug('%c Participate page: session', ccm.greenAlert, session)
