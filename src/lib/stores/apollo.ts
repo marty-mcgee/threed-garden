@@ -887,7 +887,7 @@ export const preferencesStore = new (nounStore as any)('preferences')
 // export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
 // regular nouns
 export const projectStore = new (nounStore as any)('project')
-// export const homeDesignStore = new (nounStore as any)('homeDesign')
+export const homeDesignStore = new (nounStore as any)('homeDesign')
 export const sceneStore = new (nounStore as any)('scene')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
