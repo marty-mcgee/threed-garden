@@ -385,6 +385,9 @@ function nounStore(this: IStore, _type = 'noun') {
           case 'project':
             QUERY = GetProjects
             break
+          case 'homeDesign':
+            QUERY = GetHomeDesigns // GetProjects // GetHomeDesigns
+            break
           case 'participants':
             QUERY = GetParticipants
             break
@@ -415,9 +418,6 @@ function nounStore(this: IStore, _type = 'noun') {
           // case 'bear':
           //   QUERY = GetBears
           //   break
-          case 'homeDesign':
-            QUERY = GetHomeDesigns
-            break
         }
 
         const parameters = {
@@ -887,8 +887,8 @@ export const preferencesStore = new (nounStore as any)('preferences')
 // export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
 // regular nouns
 export const projectStore = new (nounStore as any)('project')
+// export const homeDesignStore = new (nounStore as any)('homeDesign')
 export const sceneStore = new (nounStore as any)('scene')
-export const participantStore = new (nounStore as any)('participant')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
 export const fileStore = new (nounStore as any)('file')
@@ -896,7 +896,7 @@ export const allotmentStore = new (nounStore as any)('allotment')
 export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
 export const plantingPlanStore = new (nounStore as any)('plantingPlan')
-export const homeDesignStore = new (nounStore as any)('homeDesign')
+export const participantStore = new (nounStore as any)('participant')
 export { modalStore }
 // export const modalStore = new (modalStore as any)()
 export const modalAboutStore = new (modalStore as any)('modalAbout')
@@ -909,6 +909,7 @@ export const stores = {
   nounStore,
   preferencesStore,
   projectStore,
+  homeDesignStore,
   sceneStore,
   participantStore,
   planStore,
@@ -918,7 +919,6 @@ export const stores = {
   bedStore,
   plantStore,
   plantingPlanStore,
-  homeDesignStore,
   modalStore,
   modalAboutStore,
   modalModel3dStore,
@@ -932,6 +932,7 @@ export const queries = {
   GetNouns,
   GetPreferences,
   GetProjects,
+  GetHomeDesigns,
   GetScenes,
   GetParticipants,
   GetPlans,
@@ -941,15 +942,14 @@ export const queries = {
   GetBeds,
   GetPlants,
   GetPlantingPlans,
-  GetHomeDesigns,
 }
 export const mutations = {
   // :) [MM] THREED MILESTONE
   UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
   UpdateProjects: 'HEY HEY HEY UpdateProjects',
+  // UpdateHomeDesigns: 'HEY HEY HEY UpdateHomeDesigns',
   UpdatePlans: 'HEY HEY HEY UpdatePlans',
   UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs',
-  UpdateHomeDesigns: 'HEY HEY HEY UpdateHomeDesigns',
 }
 
 // export { stores, queries, mutations }
