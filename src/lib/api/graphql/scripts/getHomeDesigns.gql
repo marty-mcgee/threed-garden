@@ -32,6 +32,7 @@ query GetHomeDesigns ($first: Int, $last: Int, $after: String, $before: String) 
           doWorldPhysics
           doWorldControl
           doWorldUnfollowCam
+          
           showPanelFirst
           showPanelLast
         }
