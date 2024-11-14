@@ -1,16 +1,5 @@
 [
   {
-    "title": "luckyBamboo",
-    "license": "CC BY 4.0",
-    "author": "renderbob",
-    "threedLink": "#threed-link",
-    "size": {
-      "x": 15.49,
-      "y": 34.03,
-      "z": 14.89
-    }
-  },
-  {
     "title": "siameseCat",
     "license": "CC BY 4.0",
     "author": "Gwinna",
@@ -19,6 +8,17 @@
       "x": 13.26,
       "y": 42.06,
       "z": 81.27
+    }
+  },
+  {
+    "title": "luckyBamboo",
+    "license": "CC BY 4.0",
+    "author": "renderbob",
+    "threedLink": "#threed-link",
+    "size": {
+      "x": 15.49,
+      "y": 34.03,
+      "z": 14.89
     }
   },
   {
