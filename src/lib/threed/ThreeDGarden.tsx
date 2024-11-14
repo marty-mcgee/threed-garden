@@ -279,7 +279,7 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ** USE CLIENT
   const client = useApolloClient()
-  // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
+  console.debug('%c🦆 useApolloClient()', ccm.redAlert, client)
 
   // ** USE PREFERENCES
   // const prefs = preferencesDataVar() // NO
@@ -299,7 +299,7 @@ const ThreeDGarden = (): JSX.Element => {
     
       // ** GET PREFERENCES
       const fetchData = async () => {
-        try {
+        // try {
           // ** GET PREFERENCES
           if (!isPrefsLoaded) {
             // **
@@ -336,9 +336,9 @@ const ThreeDGarden = (): JSX.Element => {
           // ** READY TO GO ???
           setIsPageLoaded(true)
 
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
+        // } catch (error) {
+        //   console.error('Error fetching data:', error);
+        // }
       }      
       fetchData()
       if (DEBUG) 
