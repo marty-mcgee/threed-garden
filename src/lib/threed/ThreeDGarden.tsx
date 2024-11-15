@@ -26,16 +26,12 @@ import {
 
 // ** APOLLO Imports
 // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
-// // import { ApolloProvider } from '@apollo/client'
-// // import { ApolloConsumer } from '@apollo/client'
-import { useApolloClient } from '@apollo/client'
-import { useReactiveVar } from '@apollo/client'
-// // import { getApolloClient, getApolloContext } from '@apollo/client'
-// // import {
-// //   // ApolloLink,
-// //   // HttpLink,
-// //   getApolloContext
-// // } from '@apollo/client'
+import { 
+  useApolloClient,
+  useReactiveVar,
+  // getApolloClient, 
+  // getApolloContext,
+} from '@apollo/client'
 // import {
 //   useQuery,
 //   useSuspenseQuery,
@@ -43,8 +39,6 @@ import { useReactiveVar } from '@apollo/client'
 //   useReadQuery,
 //   useFragment
 // } from '@apollo/experimental-nextjs-app-support/ssr'
-// // import stores from '#/lib/stores/apollo'
-// // import { stores, queries, mutations } from '#/lib/stores/apollo'
 import {
   // stores,
   preferencesStore,
@@ -57,13 +51,13 @@ import {
 } from '#/lib/stores/apollo'
 
 // ** RADIX-UI Imports
-import { 
-  Box,
-  Button,
-  Grid,
-  Flex,
-  Text,
-} from '@radix-ui/themes'
+// import { 
+//   Box,
+//   Button,
+//   Grid,
+//   Flex,
+//   Text,
+// } from '@radix-ui/themes'
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
 // mui: ui
@@ -295,16 +289,16 @@ const ThreeDGarden = (): JSX.Element => {
   // **
   useEffect(() => {
 
-    if (!isPageLoaded && !isPrefsLoaded) {
+    if (!isPageLoaded || !isPrefsLoaded) {
     
       // ** GET PREFERENCES
       const fetchData = async () => {
-        // try {
+        try {
           // ** GET PREFERENCES
           if (!isPrefsLoaded) {
             // **
-            // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
-            const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
+            const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
+            // const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
             if (DEBUG) 
               console.debug('%c preferences loading...', ccm.greenAlert)
             if (preferencesFromDataSource) {
@@ -321,24 +315,24 @@ const ThreeDGarden = (): JSX.Element => {
           isPreferencesSetVar(true)
           setIsPrefsLoaded(isPreferencesSetVar())
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
-          if (preferencesDataVar().doAutoLoadData) {
-            // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-            const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
-            if (DEBUG) 
-              console.debug('%c projects loading...', ccm.orangeAlert)
-            if (projectsFromDataSource) {
-              // console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
-              // ** TODO
-              // ** do more tasks here ??
-            }
-          }
+          // if (preferencesDataVar().doAutoLoadData) {
+          //   // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+          //   const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
+          //   if (DEBUG) 
+          //     console.debug('%c projects loading...', ccm.orangeAlert)
+          //   if (projectsFromDataSource) {
+          //     // console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
+          //     // ** TODO
+          //     // ** do more tasks here ??
+          //   }
+          // }
 
           // ** READY TO GO ???
           setIsPageLoaded(true)
 
-        // } catch (error) {
-        //   console.error('Error fetching data:', error);
-        // }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
       }      
       fetchData()
       if (DEBUG) 
@@ -359,7 +353,7 @@ const ThreeDGarden = (): JSX.Element => {
     } else if (isPageLoaded) {
       console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isPageLoaded)
     } else {
-      // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
 
   }, []) // useEffect
@@ -384,15 +378,17 @@ const ThreeDGarden = (): JSX.Element => {
 
 
   const EcctrlJoystickControls = () => {
+    // const [isTouchScreen, setIsTouchScreen] = useState(false)
+    // useEffect(() => {
+    //   // Check if using a touch control device, show/hide joystick
+    //   if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
+    //     setIsTouchScreen(true)
+    //   } else {
+    //     setIsTouchScreen(false)
+    //   }
+    // }, [])
+    // ** always|never a touch screen
     const [isTouchScreen, setIsTouchScreen] = useState(false)
-    useEffect(() => {
-      // Check if using a touch control device, show/hide joystick
-      if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
-        setIsTouchScreen(true)
-      } else {
-        setIsTouchScreen(false)
-      }
-    }, [])
     return (
       <>
       { isTouchScreen && 
@@ -407,7 +403,8 @@ const ThreeDGarden = (): JSX.Element => {
   // ==========================================================
   // ** RETURN JSX
   return (
-    <Box
+    <>
+    {/* <Box
       id='threed_garden'
       // direction='column'
       // columns={{ initial: '1', md: '1' }} 
@@ -415,44 +412,33 @@ const ThreeDGarden = (): JSX.Element => {
       // px='2'
       // py='1'
       // pr='2'
-    >
+    > */}
 
       {/* [MM] HEY HEY HEY */}
       {/* <Text>{project_title}</Text> */}
       {/* [MM] HEY HEY HEY */}
 
-      { !isPageLoaded && !isPrefsLoaded && (
+      { (!isPageLoaded || !isPrefsLoaded) && (
         <>
-          LOADING...
+          {/* LOADING... */}
           <Spinner />  
         </>
         
       )}
 
-      { isPageLoaded && isPrefsLoaded && (
+      { (isPageLoaded && isPrefsLoaded) && (
         
-        <Flex
-          // container
-          id='threed_container'
-          direction='column'
-          // ml='2'
-          mr='2'
-          // mt='1'
-          // mb='1'
-          style={{
-            border: '1px solid darkgreen',
-          }}
-        >
+        <>
 
           {/* THREED CONTROLS: ALL */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_controls'
             direction='column'
             // style={{
             //   // borderTop: '1px solid darkgreen',
             // }}
-          >
+          > */}
             {/* <ThreeDControls /> */}
 
             {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
@@ -482,11 +468,11 @@ const ThreeDGarden = (): JSX.Element => {
             </Flex> */}
             {/* END THREED CLICK LOADERS */}
 
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED CONTROLS: ALL */}
 
           {/* THREED TOOLBAR */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_toolbar'
             // md={12}
@@ -497,22 +483,22 @@ const ThreeDGarden = (): JSX.Element => {
             //   // paddingLeft: '5px',
             // }}
             // direction='column'
-          >
+          > */}
             {/* <ThreeDToolbar /> */}
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED TOOLBAR */}
           
           {/* THREED CANVAS VIEWER */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_canvas_viewer'
             // style={{ 
             //   // borderTop: '1px solid darkgreen',
             // }}
             direction='column'
-          >
+          > */}
             <ThreeDCanvasViewer />
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED CANVAS VIEWER */}
 
           {/* THREED CONTROL PANELS */}
@@ -577,7 +563,7 @@ const ThreeDGarden = (): JSX.Element => {
           {/* END: THREED FARMBOT */}
           
           {/* THREED JOYSTICK */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_joystick'
             // width='50%'
@@ -587,19 +573,20 @@ const ThreeDGarden = (): JSX.Element => {
             //   // borderTop: '1px solid darkgreen',
             //   width: '50%',
             // }}
-          >
+          > */}
             {/* CHARACTER CONTROL JOYSTICK */}
             {/* <EcctrlJoystick buttonNumber={0} /> */}
             {/* <EcctrlJoystick buttonNumber={5} /> */}
-            <EcctrlJoystickControls />
+            {/* <EcctrlJoystickControls /> */}
 
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED JOYSTICK */}
           
-        </Flex>
+        </>
         
       )}
-    </Box>
+    {/* </Box> */}
+    </>
   )
 }
 

@@ -2587,7 +2587,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         // } catch (error) {
         //   console.error('Error fetching data:', error);
         // }
-      }      
+      }
+      // ** DO THE DATA FETCH
       fetchData()
       if (DEBUG) 
         console.debug('%c fetching data ...', ccm.blue)

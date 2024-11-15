@@ -81,7 +81,7 @@ const ThreeDCanvasCamera = (
           }}
         >
           {/* ⚙️ &#x2699; */}
-          { true && 
+          { false && 
             // !config.config && 
             // <img className={"gear"} src={'/favicon/favicon-16x16.png'} // {ASSETS.other.gear}
             <Image alt='gear' className={'gearrrrr'} src={'/images/icons/gear.svg'} width={16} height={16}
@@ -92,12 +92,20 @@ const ThreeDCanvasCamera = (
 
           <Accordion.Trigger 
             className='AccordionTrigger'
+            style={{
+              // margin: '0',
+              // padding: '0',
+              backgroundColor: 'black',
+              color: 'violet',
+            }}
           >
             {/* <ChevronDownIcon 
               className='AccordionChevron' 
               aria-hidden 
             /> */}
-            <span style={{ position: 'relative' }}>
+            <span 
+              // style={{ position: 'relative' }}
+            >
               Camera {index}
             </span>
           </Accordion.Trigger>
@@ -106,17 +114,7 @@ const ThreeDCanvasCamera = (
       </Accordion.Header>
 
       <Accordion.Content 
-        // className='AccordionContent'
-        style={{ 
-          // borderTop: '1px solid darkgreen',
-          // height: '100%',
-          height: '60vh',
-          // minHeight: '40%',
-          // maxHeight: '40vh',
-          // width: '100%',
-          // minWidth: '100%',
-          // maxWidth: '90vw',
-        }}
+        className='AccordionContent'
       >
 
         <ThreeDCanvas

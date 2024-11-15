@@ -47,7 +47,7 @@ function makeClient() {
 
   // **
   return new ApolloClient({
-    // use the `InMemoryCache`, not the normal `InMemoryCache`
+    // using the nextjs-support `InMemoryCache`, not the normal apollo `InMemoryCache`
     cache: new InMemoryCache(),
     connectToDevTools: true,
     link:

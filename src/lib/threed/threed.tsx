@@ -1,8 +1,3 @@
-// @ :) ts-no-check
-
-// **
-// THREED: this
-
 // THREED: COMPONENTS
 // ** ThreeD: Garden
 import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'

@@ -8,7 +8,7 @@
 // ** NEXT Imports
 import dynamic from 'next/dynamic'
 
-// ** STYLE Imports
+// ** CSS + FONT Imports
 import { Inter } from 'next/font/google'
 import '#/layout/styles/styles-tailwind-globals.css'
 // import '#/layout/styles/styles-radix-ui-themes.css'
@@ -34,12 +34,14 @@ const Header = dynamic(() => import('#/layout/header'), { ssr: false })
 // import Footer from '#/layout/footer'
 const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
-// ** HELPER Imports
-// ** Colorful Console Messages
-// import ccm from '#/lib/utils/console-colors'
 // ** Google Analytics
 import { GoogleAnalytics } from '@next/third-parties/google'
 
+// ** HELPER Imports
+// ** Colorful Console Messages
+import ccm from '#/lib/utils/console-colors'
+
+// ** FONT SETTINGS
 const inter = Inter({ subsets: ['latin'] })
 
 // ==============================================================
@@ -55,7 +57,7 @@ export const metadata = {
 // basic React Provider context node with props.children
 export default function RootLayout({ children }: { children: any }) {
 
-  // console.debug('%c 🥕 RootLayout', ccm.darkgreenAlert, true)
+  console.debug('%c 🥕 RootLayout', ccm.darkgreenAlert, true)
 
   const gaId = 'G-B6H82RQ83V' // 'G-XXXXXXXXXX'
   
@@ -69,9 +71,11 @@ export default function RootLayout({ children }: { children: any }) {
               <Header 
                 key='ThreeDAppHeader'
               />
-              <>
+              <div
+                id='ThreeDAppMain'
+              >
                 {children}
-              </>
+              </div>
               <Footer 
                 key='ThreeDAppFooter'
               />
