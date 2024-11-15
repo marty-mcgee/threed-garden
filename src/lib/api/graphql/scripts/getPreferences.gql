@@ -1,8 +1,8 @@
 # import { gql, useQuery } from '@apollo/client'
 
 # const GetPreferences = gql`
-query GetPreferences {
-  preferencess {
+query GetPreferences ($first: Int, $last: Int, $after: String, $before: String) {
+  preferencess (first: $first, last: $last, after: $after, before: $before) {
     nodes {
       preferencesId
       title
@@ -11,6 +11,8 @@ query GetPreferences {
       link
       modified
       # custom fields
+      version
+      # owner
       doAutoLoadData
       doAutoRotate
       projectName
@@ -22,8 +24,8 @@ query GetPreferences {
       doWorldPhysics
       doWorldControl
       doWorldUnfollowCam
-      version
-      # owner
+      showPanelFirst
+      showPanelLast
     }
   }
 }

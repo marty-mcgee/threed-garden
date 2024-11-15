@@ -1,4 +1,8 @@
+// ==============================================================
+// ThreeD Garden Page (main landing page for 3D Character Demo)
+
 'use client'
+
 // ==========================================================
 // RESOURCES
 
@@ -14,12 +18,12 @@ import dynamic from 'next/dynamic'
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** REACT Imports
-import { Suspense } from 'react'
+// import { Suspense } from 'react'
 
 // ** RADIX-UI Imports
-import {
-  Grid,
-} from '@radix-ui/themes'
+// import {
+//   Grid,
+// } from '@radix-ui/themes'
 // // ** MUI Imports
 // import Grid from '@mui/material/Grid'
 // import Card from '@mui/material/Card'
@@ -27,9 +31,13 @@ import {
 // import Typography from '@mui/material/Typography'
 // import CardContent from '@mui/material/CardContent'
 
+// // ** LAYOUT Components (Head, Body, Foot)
+// import Header from '#/layout/header'
+// import Footer from '#/layout/footer'
+
 // ** THREED Imports
-// import ThreeD from '~/src/lib/threed/threed'
-const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
+// import ThreeDComponents from '~/src/lib/threed/threed'
+const ThreeDComponents = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
 // import ThreeDControls from '~/src/lib/threed/Controls'
 // const ThreeDControls = dynamic(() => import('#/lib/threed/Controls'), { ssr: false })
 // import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'
@@ -38,7 +46,7 @@ const ThreeD = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
 // const ThreeDControls = dynamic(() => import('#/lib/threed/components/controls/Controls'), { ssr: false })
 
 // ** HELPER Imports
-import Spinner from '#/layout/ui/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 // import ccm from '#/lib/utils/console-colors'
 
@@ -72,82 +80,7 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
   // }
 
   return (
-    <>
-    <Suspense fallback={<Spinner />}>
-    
-      <Grid
-        // container
-        // spacing={1}
-      >
-
-        {/* [MM] HEY HEY HEY -- ThreeDGarden Component */}
-        <ThreeD />
-        {/* <ThreeDGarden /> */}
-        {/* <ThreeDControls /> */}
-        {/* [MM] HEY HEY HEY -- End ThreeDGarden Component */}
-
-
-        {/* {ability?.can('read-write', 'analytics') && ( */}
-
-        {/* 
-        <Grid
-          item
-          md={6}
-          xs={12}
-          // sx={{ display: 'none' }}
-        >
-          <Card>
-            <CardHeader
-              title='Public Content'
-              sx={{paddingBottom: '0'}}
-              // avatar={session?.user?.image}
-            />
-            <CardContent>
-              <Typography sx={{ color: 'primary.main', paddingBottom: '8px' }}>
-                This card is visible to both 'public' and 'authorized' users
-              </Typography>
-              { session?.user && (
-              <Typography sx={{ color: 'secondary.main' }}>
-                name: {session.user.name}<br/>
-                email: {session.user.email ? 'hidden' : ''}<br/>
-                <img src={session.user.image} width='8px' /><br/>
-              </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid
-          item
-          md={6}
-          xs={12}
-          // sx={{ display: 'none' }}
-        >
-          <Card>
-            <CardHeader title='Restricted/User Content'
-              sx={{paddingBottom: '0'}}
-              // avatar={session.user.image}
-            />
-            <CardContent>
-              <Typography sx={{ color: 'warning.main', paddingBottom: '8px' }}>
-                This card is visible only to 'authorized' users
-              </Typography>
-              { session?.user && (
-              <Typography sx={{ color: 'secondary.main' }}>
-                name: {session.user.name}<br/>
-                email: {session.user.email}<br/>
-                <img src={session.user.image} width='8px' /><br/>
-              </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid> 
-        */}
-        
-    
-      </Grid>
-    </Suspense>
-    </>
+    <ThreeDComponents />
   )
 }
 

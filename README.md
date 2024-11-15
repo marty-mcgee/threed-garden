@@ -14,9 +14,9 @@
 
 🤖 ["name": "threed-garden"](https://www.npmjs.com/package/threed-garden)
 
-🤖 ["version": "0.16.1-x"](https://www.npmjs.com/package/threed-garden?activeTab=versions)
+🤖 ["version": "0.17.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=versions)
 
-🤖 ["code": "0.16.1-x"](https://www.npmjs.com/package/threed-garden?activeTab=code)
+🤖 ["code": "0.17.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=code)
 
 ### Install + Run
 

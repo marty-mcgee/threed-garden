@@ -1,14 +1,17 @@
 // 'use client'
 'use server'
-// ^^ this file requires server pragma
+// ^^ this file requires pragma?
 
 import { Avatar, AvatarFallback, AvatarImage } from '#/layout/ui/avatar'
 import { Button } from '#/layout/ui/button'
+// import { 
+//   Button,
+// } from '@radix-ui/themes'
 
 // ** AUTH GUARD
-import { auth } from '#//lib/auth/auth'
 // import { SessionProvider } from 'next-auth/react'
 // import { useSession } from 'next-auth/react'
+import { auth } from '#//lib/auth/auth'
 import { SignIn, SignOut } from '#/layout/ui/auth-components'
 
 import {
@@ -20,11 +23,16 @@ import {
 } from '#/layout/ui/dropdown-menu'
 
 export default async function UserButton() {
+// export default function UserButton() {
+
   const session = await auth()
   // const { data: session, status } = useSession()
-  if (!session?.user) {
+  
+  if (!session || !session.user) {
+    // return <></>
     return <SignIn />
   }
+  
   return (
     <div 
       // className='
@@ -33,8 +41,8 @@ export default async function UserButton() {
       //   p-2
       // '
       style={{
-        marginTop: 4, // wth? !!!
-        marginRight: 2, // wth? !!!
+        // marginTop: 4, // wth? !!!
+        // marginRight: 2, // wth? !!!
       }}
     >
       {/* <span className='hidden text-sm sm:inline-flex'>
@@ -44,19 +52,24 @@ export default async function UserButton() {
         <DropdownMenuTrigger asChild>
           <Button 
             // className='relative rounded-full'
-            className='bg-background text-foreground text-xs p-2'
+            // className='
+            //   bg-background 
+            //   text-foreground 
+            //   text-xs 
+            //   p-2
+            // '
             style={{
               // border: 0,
-              marginRight: 4,
+              // marginRight: 4,
             }}
           >
             <div 
-              className='mr-2'
+              className='mr-3 ml-0'
             >
               {session.user.name}
             </div>
             <Avatar 
-              // className='w-8 h-8'
+              className='w-2 h-7'
             >
               {session.user.image && (
                 <AvatarImage
@@ -74,7 +87,7 @@ export default async function UserButton() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-56' align='end' forceMount>
-          <DropdownMenuLabel className='font-normal'>
+          {/* <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col space-y-1'>
               <p className='text-sm font-medium leading-none'>
                 {session.user.name}
@@ -83,7 +96,7 @@ export default async function UserButton() {
                 {session.user.email}
               </p>
             </div>
-          </DropdownMenuLabel>
+          </DropdownMenuLabel> */}
           <DropdownMenuItem>
             <SignOut />
           </DropdownMenuItem>

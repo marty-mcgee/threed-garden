@@ -1,18 +1,20 @@
 // 'use client'
-'use server'
+// 'use server'
 // ^^ does this file require client or server pragma ???
 
-// ** UI Imports
+// ** RADIX-UI Imports
 import {
-  Box,
+  Container,
   Grid,
   Flex,
   Text,
   Button,
 } from '@radix-ui/themes'
 
+// ** NEXT Imports
 import Image from 'next/image'
 
+// ** CUSTOM NAVIGATION
 import { cn } from '#//lib/utils/tailwind-utils'
 import CustomLink from './custom-link'
 import {
@@ -24,56 +26,68 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from './navigation-menu'
+// ** REACT Imports
 import React from 'react'
 // import { Button } from './button'
 
-export default async function MainNav() {
+export default function MainNav() {
   return (
-    <Flex 
-      // display={'inline-flex'}
-      // justify={'between'}
-      // gap={'2'}
-      align={'center'}
+    <>
+    <Flex
+      // direction='row'
+      // justify='between'
+      // gap='2'
+      // align='center'
       // className='
       //   m-0
       // '
       style={{
-        marginTop: -4, // wth !!!
-        marginLeft: 4,
+        display: 'inline-flex',
+        marginLeft: '2px',
+        marginTop: '-4px',
       }}
     >
       <Flex
-        // justify={'between'}
-        // gap={'2'}
-        align={'center'}
+        style={{
+          display: 'inline-flex',
+          // flexGrow: '0',
+          alignItems: 'center'
+        }}
       >
-        <CustomLink href='/#home'>
-          <Button variant='ghost'>  
-            <Image src='/favicon/favicon.png' priority={true} alt='Home' width='32' height='32' />
-          </Button>
-        </CustomLink>
-        <Text
-          as={'label'}
-          weight={'medium'}
-          className='pl-2'
+        {/* <CustomLink href='/#home'> */}
+          <Image 
+            src='/favicon/favicon.png' 
+            // priority={true} 
+            alt='ThreeD App Home'
+            width='30'
+            height='30'
+          />
+        {/* </CustomLink> */}
+        <CustomLink href='/#threedgarden' 
+          style={{
+            color: '#DDDDDD',
+            textDecoration: 'none',
+            marginLeft: '4px',
+            marginBottom: '2px',
+          }}
         >
-          <CustomLink href='/#threedgarden' 
-            style={{
-              color: '#DDDDDD',
-              textDecoration: 'none',
-            }}
-          >
-            THREED GARDEN
-          </CustomLink>
-        </Text>
+          ThreeD Garden
+        </CustomLink>
       </Flex>
       
       <Flex
         // justify={'between'}
         // gap={'2'}
-        align={'center'}
+        // align={'center'}
+        style={{
+          flexGrow: '1'
+        }}
       >
-        <NavigationMenu>
+        <NavigationMenu
+          style={{
+            zIndex: '99998 !important',
+          }}
+        >
           <NavigationMenuList>
         
             <NavigationMenuItem>
@@ -82,12 +96,12 @@ export default async function MainNav() {
                 className={navigationMenuTriggerStyle()}
                 style={{
                   // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // textDecoration: 'underline',
+                  color: '#DDDDDD',
+                  textDecoration: 'none',
                   // borderWidth: 0,
                   // margin: 0,
                   // padding: 0,
-                  fontSize: 12,
+                  // fontSize: 12,
                 }}
               >
                 Demo: 1
@@ -100,23 +114,23 @@ export default async function MainNav() {
                 className={navigationMenuTriggerStyle()}
                 style={{
                   // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // textDecoration: 'underline',
+                  color: '#DDDDDD',
+                  textDecoration: 'none',
                   // borderWidth: 0,
                   // margin: 0,
                   // padding: 0,
-                  fontSize: 12,
+                  // fontSize: 12,
                 }}
               >
                 Demo: 2
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/*
+            
             <NavigationMenuItem>
               <NavigationMenuTrigger 
                 style={{
-                  // backgroundColor: '#222222', 
+                  backgroundColor: '#222222',
                   color: '#DDDDDD', 
                   borderWidth: 0,
                   textDecoration: 'none',
@@ -124,6 +138,7 @@ export default async function MainNav() {
               >
                 <CustomLink href='/participate' 
                   style={{
+                    // backgroundColor: '#222222',
                     color: '#DDDDDD', 
                     textDecoration: 'none',
                   }}
@@ -133,39 +148,44 @@ export default async function MainNav() {
               </NavigationMenuTrigger>
               <NavigationMenuContent 
                 style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD', 
-                  // listStyleType: 'none'
+                  backgroundColor: '#222222',
+                  color: '#DDDDDD',
                   textDecoration: 'none',
+                  // listStyleType: 'none',
                 }}
               >
                 <ul 
                   className='
                     grid 
                     gap-0 
-                    p-1
+                    p-2
                     md:w-[400px] 
                     lg:w-[500px] 
                     lg:grid-cols-[.75fr_1fr]
                   '
                   style={{
-                    listStyleType: 'none',
+                    // backgroundColor: '#111111',
                     textDecoration: 'none',
+                    listStyleType: 'none',
                   }}
                 >
-                  <ListItem href='/home' title='Home'>
-                    Go to the home page of this app.
+                  <ListItem href='/home' title='Home Page'>
+                    Go to /home page
                   </ListItem>
                   <ListItem href='/participate' title='Participate'>
-                    Use the ThreeD Garden user interface.
+                    Demo 1: ThreeD Garden
                   </ListItem>
                   <ListItem href='/page' title='About Page'>
-                    Read more about this project's pages.
+                    Read about this project
+                  </ListItem>
+                  <ListItem href='/home-design' title='Home Design'>
+                    Demo 2: Home Design
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
-
+            
+            {/*
             <NavigationMenuItem>
               <NavigationMenuTrigger 
                 style={{
@@ -266,6 +286,7 @@ export default async function MainNav() {
       </Flex>
 
     </Flex>
+    </>
   )
 }
 
@@ -280,9 +301,9 @@ const ListItem = React.forwardRef<
       '
     >
       {/* <NavigationMenuLink> */}
-        <div 
+        <div
           className='
-            p-2
+            p-1
             text-sm 
             font-medium 
             leading-none
@@ -290,6 +311,9 @@ const ListItem = React.forwardRef<
         >
           <a
             ref={ref}
+            style={{
+              color: '#DDDDDD',
+            }}
             className={cn(
               // 'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
               className

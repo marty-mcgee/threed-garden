@@ -9,7 +9,7 @@
 
 // ** NEXT AUTH Imports
 // hint: const { data, data: session, status } = useSession()
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
 
 // ** REACT Imports
 import {
@@ -26,27 +26,19 @@ import {
 
 // ** APOLLO Imports
 // ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
-// import { ApolloProvider } from '@apollo/client'
-// import { ApolloConsumer } from '@apollo/client'
-import { useApolloClient } from '@apollo/client'
-import { useReactiveVar } from '@apollo/client'
-// import { getApolloClient, getApolloContext } from '@apollo/client'
-// import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
-// import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
+import { 
+  useApolloClient,
+  useReactiveVar,
+  // getApolloClient, 
+  // getApolloContext,
+} from '@apollo/client'
 // import {
-//   // ApolloLink,
-//   // HttpLink,
-//   getApolloContext
-// } from '@apollo/client'
-import {
-  useQuery,
-  useSuspenseQuery,
-  useBackgroundQuery,
-  useReadQuery,
-  useFragment
-} from '@apollo/experimental-nextjs-app-support/ssr'
-// import stores from '#/lib/stores/apollo'
-// import { stores, queries, mutations } from '#/lib/stores/apollo'
+//   useQuery,
+//   useSuspenseQuery,
+//   useBackgroundQuery,
+//   useReadQuery,
+//   useFragment
+// } from '@apollo/experimental-nextjs-app-support/ssr'
 import {
   // stores,
   preferencesStore,
@@ -59,13 +51,13 @@ import {
 } from '#/lib/stores/apollo'
 
 // ** RADIX-UI Imports
-import { 
-  Box,
-  Button,
-  Grid,
-  Flex,
-  Text,
-} from '@radix-ui/themes'
+// import { 
+//   Box,
+//   Button,
+//   Grid,
+//   Flex,
+//   Text,
+// } from '@radix-ui/themes'
 // ** MUI Imports
 // import { styled } from '@mui/material/styles'
 // mui: ui
@@ -259,8 +251,8 @@ const {
 // const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
 // const ThreeDGarden = ({...props}): JSX.Element => {
 // const ThreeDGarden = ({threedData}): JSX.Element => {
-// const ThreeDGarden = (): JSX.Element => {
-const ThreeDGarden = (): React.ReactNode => {
+const ThreeDGarden = (): JSX.Element => {
+// const ThreeDGarden = (): React.ReactNode => {
   // **
   // ==========================================================
   // ** TESTING: JSX
@@ -274,22 +266,22 @@ const ThreeDGarden = (): React.ReactNode => {
   // ** HOOKS
 
   // ** USE SESSION
-  // const { data, status } = useSession()
-  const { data: sessionData, status: sessionStatus } = useSession()
+  // // const { data, status } = useSession()
+  // const { data: sessionData, status: sessionStatus } = useSession()
   // console.debug('useSession().data', sessionData)
   // console.debug('useSession().status', sessionStatus)
 
   // ** USE CLIENT
   const client = useApolloClient()
-  // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
+  console.debug('%c🦆 useApolloClient()', ccm.redAlert, client)
 
   // ** USE PREFERENCES
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
-  // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert) // , prefs
+  console.debug('%c⚙️ ThreeD Garden prefs', ccm.orangeAlert, prefs)
 
   // ** INIT PREFERENCES
-  const [isThreeDGardenLoaded, setIsThreeDGardenLoaded] = useState(false)
+  const [isPageLoaded, setIsPageLoaded] = useState(false)
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
   // ==========================================================
@@ -297,7 +289,7 @@ const ThreeDGarden = (): React.ReactNode => {
   // **
   useEffect(() => {
 
-    if (!isThreeDGardenLoaded && !isPrefsLoaded) {
+    if (!isPageLoaded || !isPrefsLoaded) {
     
       // ** GET PREFERENCES
       const fetchData = async () => {
@@ -305,8 +297,8 @@ const ThreeDGarden = (): React.ReactNode => {
           // ** GET PREFERENCES
           if (!isPrefsLoaded) {
             // **
-            // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
-            const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
+            const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
+            // const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
             if (DEBUG) 
               console.debug('%c preferences loading...', ccm.greenAlert)
             if (preferencesFromDataSource) {
@@ -323,20 +315,20 @@ const ThreeDGarden = (): React.ReactNode => {
           isPreferencesSetVar(true)
           setIsPrefsLoaded(isPreferencesSetVar())
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
-          if (preferencesDataVar().doAutoLoadData) {
-            // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-            const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
-            if (DEBUG) 
-              console.debug('%c projects loading...', ccm.orangeAlert)
-            if (projectsFromDataSource) {
-              // console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
-              // ** TODO
-              // ** do more tasks here ??
-            }
-          }
+          // if (preferencesDataVar().doAutoLoadData) {
+          //   // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+          //   const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
+          //   if (DEBUG) 
+          //     console.debug('%c projects loading...', ccm.orangeAlert)
+          //   if (projectsFromDataSource) {
+          //     // console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
+          //     // ** TODO
+          //     // ** do more tasks here ??
+          //   }
+          // }
 
           // ** READY TO GO ???
-          setIsThreeDGardenLoaded(true)
+          setIsPageLoaded(true)
 
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -358,10 +350,10 @@ const ThreeDGarden = (): React.ReactNode => {
         // return <Box>true</Box> // true
       }
       
-    } else if (isThreeDGardenLoaded) {
-      console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isThreeDGardenLoaded)
+    } else if (isPageLoaded) {
+      console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isPageLoaded)
     } else {
-      // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
 
   }, []) // useEffect
@@ -373,28 +365,30 @@ const ThreeDGarden = (): React.ReactNode => {
 
   // ==========================================================
 
-  if (DEBUG || debug) 
-    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert)
+  // if (DEBUG || debug) 
+  //   console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert)
 
     
   let project_title = 'NOT EVEN CLOSE'
-  if (DEBUG || debug) 
-    console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreen, project_title)
+  // if (DEBUG || debug) 
+  //   console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreen, project_title)
 
 
   
 
 
   const EcctrlJoystickControls = () => {
+    // const [isTouchScreen, setIsTouchScreen] = useState(false)
+    // useEffect(() => {
+    //   // Check if using a touch control device, show/hide joystick
+    //   if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
+    //     setIsTouchScreen(true)
+    //   } else {
+    //     setIsTouchScreen(false)
+    //   }
+    // }, [])
+    // ** always|never a touch screen
     const [isTouchScreen, setIsTouchScreen] = useState(false)
-    useEffect(() => {
-      // Check if using a touch control device, show/hide joystick
-      if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
-        setIsTouchScreen(true)
-      } else {
-        setIsTouchScreen(false)
-      }
-    }, [])
     return (
       <>
       { isTouchScreen && 
@@ -409,7 +403,8 @@ const ThreeDGarden = (): React.ReactNode => {
   // ==========================================================
   // ** RETURN JSX
   return (
-    <Box
+    <>
+    {/* <Box
       id='threed_garden'
       // direction='column'
       // columns={{ initial: '1', md: '1' }} 
@@ -417,44 +412,33 @@ const ThreeDGarden = (): React.ReactNode => {
       // px='2'
       // py='1'
       // pr='2'
-    >
+    > */}
 
       {/* [MM] HEY HEY HEY */}
       {/* <Text>{project_title}</Text> */}
       {/* [MM] HEY HEY HEY */}
 
-      { !isThreeDGardenLoaded && !isPrefsLoaded && (
+      { (!isPageLoaded || !isPrefsLoaded) && (
         <>
-          LOADING...
+          {/* LOADING... */}
           <Spinner />  
         </>
         
       )}
 
-      { isThreeDGardenLoaded && isPrefsLoaded && (
+      { (isPageLoaded && isPrefsLoaded) && (
         
-        <Flex
-          // container
-          id='threed_container'
-          direction='column'
-          // ml='2'
-          mr='2'
-          // mt='1'
-          // mb='1'
-          style={{
-            border: '1px solid darkgreen',
-          }}
-        >
+        <>
 
           {/* THREED CONTROLS: ALL */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_controls'
             direction='column'
             // style={{
             //   // borderTop: '1px solid darkgreen',
             // }}
-          >
+          > */}
             {/* <ThreeDControls /> */}
 
             {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
@@ -484,11 +468,11 @@ const ThreeDGarden = (): React.ReactNode => {
             </Flex> */}
             {/* END THREED CLICK LOADERS */}
 
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED CONTROLS: ALL */}
 
           {/* THREED TOOLBAR */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_toolbar'
             // md={12}
@@ -499,22 +483,22 @@ const ThreeDGarden = (): React.ReactNode => {
             //   // paddingLeft: '5px',
             // }}
             // direction='column'
-          >
+          > */}
             {/* <ThreeDToolbar /> */}
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED TOOLBAR */}
           
           {/* THREED CANVAS VIEWER */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_canvas_viewer'
             // style={{ 
             //   // borderTop: '1px solid darkgreen',
             // }}
             direction='column'
-          >
+          > */}
             <ThreeDCanvasViewer />
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED CANVAS VIEWER */}
 
           {/* THREED CONTROL PANELS */}
@@ -579,7 +563,7 @@ const ThreeDGarden = (): React.ReactNode => {
           {/* END: THREED FARMBOT */}
           
           {/* THREED JOYSTICK */}
-          <Flex
+          {/* <Flex
             // item
             id='threed_joystick'
             // width='50%'
@@ -589,19 +573,20 @@ const ThreeDGarden = (): React.ReactNode => {
             //   // borderTop: '1px solid darkgreen',
             //   width: '50%',
             // }}
-          >
+          > */}
             {/* CHARACTER CONTROL JOYSTICK */}
             {/* <EcctrlJoystick buttonNumber={0} /> */}
             {/* <EcctrlJoystick buttonNumber={5} /> */}
-            <EcctrlJoystickControls />
+            {/* <EcctrlJoystickControls /> */}
 
-          </Flex>
+          {/* </Flex> */}
           {/* END: THREED JOYSTICK */}
           
-        </Flex>
+        </>
         
       )}
-    </Box>
+    {/* </Box> */}
+    </>
   )
 }
 

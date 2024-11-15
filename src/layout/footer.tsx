@@ -1,5 +1,5 @@
-import CustomLink from './ui/custom-link'
-// import MainNav from './main-nav'
+import CustomLink from '#/layout/ui/custom-link'
+// import MainNav from '#/layout/ui/main-nav'
 
 export default function Footer() {
   // const appVersion: string = 'v0.16.1'
@@ -7,11 +7,22 @@ export default function Footer() {
   const linkColor: string = '#333333' // gray | darkgray | # 222222 | # EEEEEE
 
   return (
-    <footer 
+    <div 
       id='ThreeDAppFooter'
       // [MM] removed: className: w-full
-      className='flex flex-row space-x-2 text-xs mr-2 items-center'
-      style={{position: 'absolute', bottom: '8px', left: '6px', }}
+      className='
+        flex 
+        flex-row 
+        space-x-2 
+        text-xs 
+        mr-2 
+        items-center
+      '
+      style={{
+        position: 'fixed', 
+        bottom: '8px', 
+        left: '6px', 
+      }}
     >
       <CustomLink href='https://github.com/marty-mcgee/threed-garden/tree/threed-app-ts' style={{color: linkColor}}>
         v{appVersion}
@@ -41,6 +52,6 @@ export default function Footer() {
 
       {/* <MainNav /> */}
     
-    </footer>
+    </div>
   )
 }
