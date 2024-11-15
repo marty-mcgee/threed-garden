@@ -1,0 +1,101 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    // "checkJs": false,
+    "skipLibCheck": true,
+    "strict": false, // true | false
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "bundler", // "moduleResolution": "node",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "jsx": "preserve", // "preserve", // "react-jsx",
+    // "jsxImportSource": "@emotion/react",
+    "incremental": true,
+    // ** RULES
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": false,
+    "downlevelIteration": true,
+    "allowUnreachableCode": true,
+    // ** PATHS + DIRECTORIES
+    // "rootDirs": [".", "../common/src"],
+    "baseUrl": ".",
+    "paths": {
+      // next-auth
+      "auth": [
+        "src/lib/auth/auth"
+      ],
+      // global root
+      "~/*": [
+        "*"
+      ],
+      // threed (next-14)
+      "#/*": [
+        "src/*"
+      ],
+      // threed (next-14)
+      // "@/*": [
+      //   "src/app/*"
+      // ],
+      // threed (ai next-15)
+      "@/*": [
+        "src/*"
+      ],
+      // ** ai
+      "@/auth": [
+        "src/lib/auth/auth"
+      ],
+      "@/app/*": [
+        "src/app/ai/*"
+      ],
+      "@/components/*": [
+        "src/layout/ai/*"
+      ],
+      "@/lib/*": [
+        "src/lib/threed/threed.ai/*"
+      ]
+    },
+    // ** TYPES
+    "typeRoots": [
+      "node_modules/@types",
+      "src/lib/types"
+    ],
+    // ** PLUGINS
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts", 
+  ],
+  "exclude": [
+    "node_modules",
+    ".husky",
+    "**/*.css",
+    "tailwind.config.js",
+    "**/.yalc/**/*",
+    ".yalc/**/*",
+    "src/lib/farmbot/farmbot-3d-demo-react",
+    // "src/lib/farmbot/threed-farmbot",
+    // "src/app/ai",
+    // "src/layout/ai",
+    // "src/lib/ai",
+  ]
+}

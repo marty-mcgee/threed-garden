@@ -287,7 +287,7 @@ export function ThreeDLevaControls() {
 
   // **
   useEffect(() => {
-    let newData = {...prefs}
+    let newData = {...preferencesDataVar()} // latest prefs
     // console.debug('%c⚙️ doAutoLoadDataLeva newData', ccm.green, newData)
     newData.doAutoLoadData = doAutoLoadDataLeva
     // console.debug('%c⚙️ doAutoLoadDataLeva newData UPDATED', ccm.green, newData)
@@ -309,7 +309,7 @@ export function ThreeDLevaControls() {
 
   // **
   useEffect(() => {
-    let newData = {...preferencesDataVar()}
+    let newData = {...preferencesDataVar()} // latest prefs
     // console.debug('%c⚙️ doAutoRotateLeva newData', ccm.green, newData)
     newData.doAutoRotate = doAutoRotateLeva
     // console.debug('%c⚙️ doAutoRotateLeva newData UPDATED', ccm.green, newData)
@@ -341,7 +341,7 @@ export function ThreeDLevaControls() {
   useEffect(() => {
     try {
 
-      let newData = {...preferencesDataVar()}
+      let newData = {...preferencesDataVar()} // latest prefs
       newData.projectName = projectNameLeva
       // console.debug('%c⚙️ projectNameLeva newData', ccm.redAlert, projectNameLeva)
       preferencesDataVar(newData)

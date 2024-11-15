@@ -10,8 +10,15 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // ** React Imports
 // import { useEffect } from 'react'
 
-// // ** MUI Components
-// import Typography from '@mui/material/Typography'
+// ** RADIX-UI Imports
+import {
+  Flex,
+  Grid,
+  Container,
+  Button, 
+  Heading,
+  Text,
+} from '@radix-ui/themes'
 
 // ==============================================================
 
@@ -22,26 +29,64 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 const HomePage: TNextPageWithProps = (): JSX.Element => {
   //
   return (
-    <>
-      {/* <Typography component='h1' variant='h5' gutterBottom> */}
-        🥕 ThreeD Garden for FarmBot + Three.js on React + Next.js 13
-      {/* </Typography> */}
-      {/* <Typography component='h2' variant='h6'> */}
-        🌱 part of the threed.ai family
-      {/* </Typography> */}
-      {/* <Typography component='p' gutterBottom> */}
-        🦆 Home Page (/app/home/page.tsx)
-      {/* </Typography> */}
-      {/* <Typography component='p' gutterBottom> */}
-        🦉 This is the "Home" Landing Page.
-      {/* </Typography> */}
-    </>
+    <Container
+      // className='flex'
+      style={{
+        // display: 'inline-flex',
+        // flexDirection: 'row-reverse',
+      }}
+    >
+      {/* <div
+        id='ThreeDAppHeader'
+        // direction='row'
+        // display='flex'
+        className=''
+        // className='flex'
+        style={{
+          display: 'inline-flex',
+          flexDirection: 'row',
+        }}
+      >
+
+        <div
+          className='flex'
+        >
+          HEY HEY HEY
+        </div>
+
+        <div
+          className='flex'
+        >
+          YO YO YO
+        </div>
+
+      </div> */}
+      <Container
+        className='p-2'
+      >
+        <Heading as='h1'>
+          🥕 ThreeD Garden for FarmBot + Three.js on React + Next.js
+        </Heading>
+        <Heading as='h2'>
+          🌱 part of the threed.ai family
+        </Heading>
+        <Text
+          className='p-2'
+        >
+          🦆 Home Page (/app/home/page.tsx)
+          <br/>
+          <br/>
+        </Text>
+        <Text
+          className='p-2'
+        >
+          🦉 This is the "/home" Landing Page.
+          <br/>
+          <br/>
+        </Text>
+      </Container>
+    </Container>
   )
 }
-// HomePage.getLayout = (page: any) => {page}
-// HomePage.getLayout = (page: any) => <UserLayout>{page}</UserLayout>
-// HomePage.getLayout = (page: any) => <BlankLayout>{page}</BlankLayout>
-// HomePage.authGuard = true
-// HomePage.guestGuard = true
 
 export default HomePage

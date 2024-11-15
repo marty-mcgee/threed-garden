@@ -1,222 +1,169 @@
 // ==============================================================
 // TITLE: Index Page (Forwarding Page)
 
-// 'use client'
+'use client'
 
 // ==============================================================
-// RESOURCES (to import)
+// RESOURCES
 
-import CustomLink from "~/src/layout/ui/custom-link"
-import SessionData from "#/layout/session-data"
-import { auth } from "#//lib/auth/auth"
+import { useSession } from 'next-auth/react'
+// import { auth } from '#/lib/auth/auth'
+// import { useAuth } from '#/lib/auth/hooks/useAuth'
+import SessionData from '~/src/layout/ui/session-data'
+// import CustomLink from '~/src/layout/ui/custom-link'
 
 // ** Next
-import type { NextPage, NextPageContext } from 'next'
-import type { TNextPageWithProps } from '#/lib/types/TAppProps'
+// import type { NextPage, NextPageContext } from 'next'
+// import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Link from 'next/link'
-import { useRouter, usePathname } from 'next/navigation'
+// import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
 // import type { ReactNode } from 'react'
-// import React, { FC } from 'react'
-// import { useEffect } from 'react'
+import { 
+  useEffect,
+  Suspense,
+} from 'react'
 
-// ** Hooks
-// import { useAuth } from '#/lib/auth/hooks/useAuth'
+// ** RADIX-UI Imports
+import {
+  Flex,
+  Grid,
+  Container,
+  Button, 
+  Heading,
+  Text,
+} from '@radix-ui/themes'
+// ** PANELS Imports
+import { 
+  Panel, 
+  PanelGroup,
+  // PanelResizeHandle,
+} from 'react-resizable-panels'
+import PanelResizeHandle from '#/layout/ui/resize-handle'
+
+// ** STYLE Imports
+// import '#/layout/styles/styles-radix-ui-themes.css'
+// import '#/layout/styles/styles-radix-ui-custom.css'
+// import stylesPanels from '#/layout/styles/styles-panels.module.css'
+
+// // ** LAYOUT Components (Head, Body, Foot)
+// import Header from '#/layout/header'
+// import Footer from '#/layout/footer'
+
+// ** COMPONENT Imports
+import Logo from '#/layout/ui/logo'
+import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
 // ** Helper Components
 import Spinner from '#/layout/ui/spinner'
-
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
 // IMPORTS COMPLETE
 // console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden<FC,R3F>: {page.tsx}', ccm.green)
+console.debug('%c🥕 ThreeDGarden<ThreeD>: {page.tsx}', ccm.greenAlert)
 // console.debug('%c=======================================', ccm.black)
-
-// ==============================================================
-
-// // Set Home Forwarding (to First Page) URL, based on User Role
-// const getHomeRoute = (role: any) => {
-//   if (role === 'client') {
-//     // return '/home' // another page
-//     return '/participate' // another page
-//     // return '/acl' // authorized credentials list? (boundary)
-//   }
-//   else if (role === 'admin') {
-//     // return '/' // this page (for testing. not ideal for production.)
-//     return '/home' // another page
-//     // return '/participate' // another page
-//   }
-//   else {
-//     // return '/' // this page (for testing. not ideal for production.)
-//     return '/auth/login'
-//   }
-// }
 
 // ==============================================================
 
 // export default function Page<NextPage>() {
 // const AppPage: NextPage<TPageProps> = (): JSX.Element => {
 // const AppPage: NextPage = (): JSX.Element => {
-const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => {
+// const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => {
 // const AppPage: NextPage = (props) => {
+// const AppPage = ({children}: {children: any}) => {
+const AppPage = () => {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
-  const session = await auth()
-
-  if (session) {
-    if (session.user) {
-      // console.debug('NEXT-AUTH session.user', session.user)
-    }
-    // console.debug('NEXT-AUTH session', session)
-  }
-
-  // // ** Hooks
+  // ** Hooks
   // const auth = useAuth()
-  //const router = useRouter()
-  // const pathname = usePathname()
+  const session = useSession()
+  // const session = await auth()
+  // const session = {
+  //   user: {
+  //     name: 'hey hey hey',
+  //   },
+  //   expires: 'someday'
+  // }
 
-  // ** OnMount (+ optional return OnUnmount)
-  //useEffect(() => {
-    //router.push('/participate')
-  //   // user AUTHORIZED?
-  //   if (auth.user && auth.user.role) {
-  //     // get Home URL
-  //     const homeRoute = getHomeRoute(auth.user.role)
-  //     console.debug('✅ user AUTHORIZED', auth.user, 'go to:', homeRoute)
-  //     // redirect authorized user to Home URL
-  //     // router.replace(homeRoute)
-  //     router.push(homeRoute)
-  //   }
-  //   // user NOT AUTHORIZED!
-  //   else {
-  //     const homeRoute = getHomeRoute('unauthorized')
-  //     console.debug('❌ user NOT AUTHORIZED', auth.user, 'go to:', homeRoute)
-  //     // redirect un-authorized guest to Home URL
-  //     // router.replace(homeRoute)
-  //     router.push(homeRoute)
-  //   }
-  //   // return <><Spinner /></>
-  //}, [])
-
-// ==============================================================
+  useEffect(() => {
+    if (session) {
+      if ('user' in session) {
+        console.debug('NEXT-AUTH session.user', session)
+      }
+      // console.debug('NEXT-AUTH session', session)
+    }
+    return // nothing
+  }, [session]) // [session] ??
 
   // ** Return JSX
-  // return <h1>HEY HEY HEY: page:app</h1>
-  // return <Spinner />
   return (
-    <>
-      <h1>🥕 Welcome {session?.user?.name} to ThreeD Garden</h1>
-      <h2>🌱 threed : next14 : app : page</h2>
-      {/* <p>
-        This page is server-rendered as a{" "}
-        <CustomLink href="https://nextjs.org/docs/app/building-your-application/rendering/server-components">
-          React Server Component
-        </CustomLink>
-        . It gets the session data on the server using{" "}
-        <CustomLink href="https://nextjs.authjs.dev#auth">
-          <code>auth()</code>
-        </CustomLink>{" "}
-        method.
-      </p> */}
-      <SessionData session={session} />
+  
+  <>
+  <Suspense fallback={<Spinner />}>
+    <Flex
+      direction='row'
+      style={{
+        // height: '99%',
+        // width: '99%',
+        // paddingLeft: '8px',
+        // paddingRight: '8px',
+      }}
+    >
+      {/* <Flex
+        // direction='row'
+        style={{
+          // border: '4px solid darkblue',
+        }}
+      >
+        <Header 
+          key='ThreeDAppHeader'
+        />
+      </Flex> */}
 
-      
-    </>
+      <Flex
+        // direction='row'
+        className='PanelContent'
+        style={{
+          // border: '4px solid darkblue',
+          textAlign: 'center',
+        }}
+      >
+        <Heading as='h1'>
+          🌱 Welcome to ThreeD Garden
+        </Heading>
+      </Flex>
+
+      <Flex 
+        // direction='column'
+        className='PanelContent'
+        style={{
+          // border: '1px solid darkgray',
+        }}
+      >
+        {/* <Heading as='h2'>
+          🥕 ThreeD: Next.js: app (router): page .tsx
+        </Heading> */}
+        <FarmbotDemoSVG />
+      </Flex>
+
+      {/* <Flex
+        // direction='row'
+        style={{
+          // border: '4px solid darkblue',
+        }}
+      >
+        <Footer 
+          key='ThreeDAppFooter'
+        />
+      </Flex> */}
+    </Flex>
+  </Suspense>
+  </>
   )
 }
-// AppPage.getLayout = (page: any) => {page} // <BlankLayout>{page}</BlankLayout>
-// AppPage.setConfig = () => true
-// AppPage.authGuard = false
-// AppPage.guestGuard = false
-// AppPage.acl = {}
 
-/**/
-// export const getServerSideProps = async (ctx: NextPageContext) => {
-//   const res = await fetch('https://api.github.com/repos/vercel/next.js')
-//   const json = await res.json()
-//   return { stars: json.stargazers_count }
-// }
-// export async function getStaticProps() {
-async function getServerSideProps() {
-// export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
-// export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
-  // const allPosts = await getAllPostsForHome(preview)
-  // console.debug('getServerSideProps on AppLayout')
-  // console.debug('getInitialProps on AppPage', ctx)
-  return {
-    props: {
-      // Component: {
-        getLayout: 'YO YO YO',
-        setConfig: 'true',
-        authGuard: false,
-        // guestGuard: true,
-        acl: {}, // aclObjectDefault, // acl, {},
-        auth: {},
-      // },
-    },
-    // revalidate: 10,
-    // testTestTest: true,
-    // context: ctx,
-  }
-}
-/**/
-// export async function getServerSideProps() {
-// // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
-// // export const getStaticProps: GetStaticProps = async ({ preview = false }) => {
-//   // const allPosts = await getAllPostsForHome(preview)
-//   console.debug('getServerSideProps on AppPage')
-//   return {
-//     props: {
-//       Component: {
-//         getLayout: 'HEY HEY HEY',
-//         setConfig: 'true',
-//         authGuard: false,
-//         guestGuard: true,
-//         acl: {}, // aclObjectDefault, // acl,
-//       }
-//     },
-//     revalidate: 10,
-//   }
-// }
-
-/*
-// export async function getStaticProps() {
-export async function getServerSideProps() {
-  // let req = httpMocks.createRequest()
-  // let res = httpMocks.createResponse()
-  // async function callMids(req, res, index, ...mids) {
-  //   index = index || 0
-  //   if (index <= mids.length - 1)
-  //     await mids[index](req, res, () => callMids(req, res, ++index, ...mids))
-  // }
-  // await callMids(
-  //   req,
-  //   res,
-  //   null,
-  //   dbConnectMid,
-  //   logger,
-  //   newsController.sendAllNews
-  // )
-  return {
-    // props: { news: res._getJSONData() },
-    props: {
-    //   // Component: {
-    //     // getLayout: 'HEY HEY HEY',
-    //     // setConfig: 'true',
-    //     // authGuard: false,
-    //     // guestGuard: true,
-    //     // acl: {}, // aclObjectDefault, // acl,
-    //   // }
-    }
-  }
-}
-*/
-// export {
-//   getServerSideProps
-// }
 export default AppPage

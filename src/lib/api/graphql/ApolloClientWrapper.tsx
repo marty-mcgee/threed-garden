@@ -47,7 +47,7 @@ function makeClient() {
 
   // **
   return new ApolloClient({
-    // use the `InMemoryCache`, not the normal `InMemoryCache`
+    // using the nextjs-support `InMemoryCache`, not the normal apollo `InMemoryCache`
     cache: new InMemoryCache(),
     connectToDevTools: true,
     link:
@@ -66,7 +66,8 @@ function makeClient() {
 }
 
 // you need to create a component to wrap your app in
-export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
+// export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
+export function ApolloClientWrapper({ children }: { children: any }) {
   // ** makeClient()
   // const madeClient = makeClient()
   // console.debug('%c🦆 ApolloClientWrapper makeClient() => madeClient', ccm.greenAlert, madeClient) // ApolloClient

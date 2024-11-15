@@ -1,11 +1,13 @@
-import { signIn, signOut } from '#//lib/auth/auth'
-// import { Button } from './ui/button'
-import {
+'use server'
+
+import { signIn, signOut } from '#/lib/auth/auth'
+// import { Button } from '#/layout/ui/button'
+import { 
   Button,
 } from '@radix-ui/themes'
 
-export function SignIn({
-  provider,
+export async function SignIn({
+  provider = null,
   ...props
 }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
   // console.debug('SignIn Button Clicked')
@@ -25,13 +27,13 @@ export function SignIn({
         className='mt-1 mr-2 bg-background text-foreground'
         {...props}
       >
-        login
+        Sign In
       </Button>
     </form>
   )
 }
 
-export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
+export async function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
   // console.debug('SignOut Button Clicked')
   return (
     <form
@@ -50,7 +52,7 @@ export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
         className='mt-1 mr-2 bg-background text-foreground'
         {...props}
       >
-        logout
+        Sign Out
       </Button>
     </form>
   )

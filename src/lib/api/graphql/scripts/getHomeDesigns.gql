@@ -1,10 +1,10 @@
 # import { gql, useQuery } from '@apollo/client'
 
-# const GetProjects = gql`
-query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
-  projects (first: $first, last: $last, after: $after, before: $before) {
+# const GetHomeDesigns = gql`
+query GetHomeDesigns ($first: Int, $last: Int, $after: String, $before: String) {
+  homeDesigns (first: $first, last: $last, after: $after, before: $before) {
     nodes {
-      projectId
+      homeDesignId
       title
       content
       link
@@ -32,6 +32,7 @@ query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
           doWorldPhysics
           doWorldControl
           doWorldUnfollowCam
+          
           showPanelFirst
           showPanelLast
         }

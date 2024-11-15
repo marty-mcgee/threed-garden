@@ -1,49 +1,64 @@
-// 'use client'
-'use server'
-// ^^ this file requires server pragma
+'use client'
+// 'use server'
+// ^^ this file uses client pragma
 
-// ** React
-import type { ReactNode } from 'react'
 
-// SESSSSSSION PROVIDERRRRRR
+// ** NEXT AUTH -- SESSION PROVIDER + MIDDLEWARE CONFIG
 import { SessionProvider } from 'next-auth/react'
-import { auth } from '#/lib/auth/auth' // this goes in page?
+// import { auth } from '#/lib/auth/auth'
 
-// import { useRef } from 'react'
-// import dynamic from 'next/dynamic'
-// const ExperienceViewer = dynamic(() => import('#/lib/threed/components/canvas/ExperienceViewer'), { ssr: false })
+// ** CLERK AUTH -- External User Authentication
+import { ClerkProvider } from '@clerk/nextjs'
+// ** CLERK AUTH -- HOOKS
+// import { useAuth } from '@clerk/nextjs'
 
-const SessionWrapper = async ({ children }: { children: ReactNode}): Promise<JSX.Element> => {
+// export function ClerkHookExample() {
+//   const { isLoaded, userId, sessionId, getToken } = useAuth()
+
+//   // In case the user signs out while on the page.
+//   if (!isLoaded || !userId) {
+//     return null
+//   }
+
+//   return (
+//     <div>
+//       Hello, {userId} your current active session is {sessionId}
+//     </div>
+//   )
+// }
+
+// ** EXPORT function -- async?
+export default function SessionWrapper({ children }: { children: any }) {
   // **
-  const id: string = 'ThreeDAppSession'
-  // const ref: any = useRef<any>()
+  const id_random: string = 'ThreeDAppSession'
 
-  // get session from next-auth
-  const session = await auth()
+  // ** CLIENT : HOOKS
+  // const { isLoaded, userId, sessionId, getToken } = useAuth()
+  // console.debug('threed clerk hooks :', isLoaded, userId, sessionId)
+
+  // ** SERVER : get session from next-auth
+  // const session = await auth()
   // console.debug('auth() session', session)
-  // // const session = async () => await auth()
-  // // console.debug('auth() session', session())
-  // set session to static data
-  // const session = {
-  //   user: {
-  //     name: 'string',
-  //     email: 'string',
-  //     image: 'string',
-  //   },
-  //   expires: Date.now().toLocaleString() // 'datetime as type date or string?'
-  // }
+
+  // ** CLIENT : THREED : set session to static data
+  let sessionThreeD = {
+    user: {
+      name: 'string',
+      email: 'string',
+      image: 'string',
+    },
+    expires: Date.now().toLocaleString() // 'datetime as type date or string?'
+  }
   
   return (
-    <SessionProvider session={session}>
-      <div
-        id='ThreeDAppSession'
-        key={id}
-        // ref={ref}
+    <>
+    <ClerkProvider>
+      <SessionProvider 
+        session={sessionThreeD}
       >
         {children}
-      </div>
-    </SessionProvider>
+      </SessionProvider>
+    </ClerkProvider>
+    </>
   )
 }
-
-export default SessionWrapper

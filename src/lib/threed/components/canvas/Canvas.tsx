@@ -308,7 +308,8 @@ function FooGetCamera() {
 
 // ** RETURN ThreeDCanvas
 export const ThreeDCanvas = (
-  { _id = 'heyheyhey_' + newUUID(), threeds = [] }: { _id: string, threeds: any[]}
+  { _id = 'heyheyhey_' + newUUID(), threeds = [] }: 
+  { _id: string, threeds: any[]}
 ) => {
   
   // **
@@ -431,10 +432,11 @@ export const ThreeDCanvas = (
       <Canvas
         key={_id}
 
-        style={{
-          width: '100%',
-          // height: '100%',
-        }}
+        // style={{
+        //   width: '100%',
+        //   // height: '100%',
+        //   minHeight: '300px',
+        // }}
 
         shadows={true}
         dpr={[1, 2]} // dpr = target pixel ratio (need ???)
@@ -472,7 +474,7 @@ export const ThreeDCanvas = (
         {/* NOW INSIDE CANVAS (canvas.props.children)... */}
 
         {/* PRELOAD objects ??? -- does it seem necessary? */}
-        <Preload all />
+        {/* <Preload all /> */}
 
         
         {/* USE DECLARATIVE THREED CAMERA (NOT WORKING YET) */}
@@ -508,7 +510,7 @@ export const ThreeDCanvas = (
               // barStyles={...bar} // Loading-bar styles
               // dataStyles={...data} // Text styles
               dataInterpolation={(p) => `THREED UI ${p.toFixed(0)}%`} // Text
-              initialState={(active = false) => active} // Initial black out state
+              // initialState={(active = false) => active} // Initial black out state
             />
           </Html>
         }>
@@ -536,6 +538,10 @@ export const ThreeDCanvas = (
             activeFocus={activeFocus}
             // setActiveFocus(focus: string): void,
             setActiveFocus={setActiveFocus}
+
+            // style={{
+            //   minHeight: '300px',
+            // }}
           />
 
         </Suspense>
