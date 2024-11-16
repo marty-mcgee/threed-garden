@@ -2311,68 +2311,66 @@ function setPropertiesView(e: String) {
   }
 }
 
-function showThreedLicenseSummary(e: Object) {
-  console.debug('showThreedLicenseSummary', e)
-  e = {
-    // author: 'marty mcgee',
-    // license: 'Default License',
-    "siameseCat": {
-      "license": "CC BY 3.0",
-      "threed": "CC BY 4.0",
-      "threedLink": "#mm-link",
-      "author": "Gwinna",
-      "size": {
-        "x": 13.26,
-        "y": 42.06,
-        "z": 81.27
-      }
-    },
-  }
-  // @ts-expect-error
-  const thisThreedItem = threedItems[e]
+function showThreedLicenseSummary(t: Object) {
+  console.debug('showThreedLicenseSummary', t)
+  // t = {
+  //   "title": "siameseCat",
+  //   "license": "CC BY 4.0",
+  //   "author": "Gwinna",
+  //   "threedLink": "#threed-link",
+  //   "size": {
+  //     "x": 13.26,
+  //     "y": 42.06,
+  //     "z": 81.27,
+  //   },
+  //   "scale": {
+  //     "x": 1.000,
+  //     "y": 1.000,
+  //     "z": 1.000,
+  //   }
+  // }
+  // @ ts-expect-error
+  const thisThreedItem = t // threedItems[t]
   try {
-    // modalModel3dThreedId = e
-    var t = camelCaseToSentence(e.toString())
-    document.getElementById("model3dName").innerText = e.toString()
-    var o = thisThreedItem.author
+    document.getElementById("model3dName").innerText = thisThreedItem.title
+    let o = thisThreedItem.author
     document.getElementById("model3dAuthor").innerText = thisThreedItem.author
-    var a = "License: Default"
+    let licenseLink = "License: Default"
 
     switch (thisThreedItem.license) {
       case "Free Art License 1.3":
-        a =
+        licenseLink =
           "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
           thisThreedItem.license +
           "</a>"
         break
       case "CC-0":
-        a =
+        licenseLink =
           "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
           thisThreedItem.license +
           "</a>"
         break
       case "CC BY 3.0":
-        a =
+        licenseLink =
           "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
           thisThreedItem.license +
           "</a>"
         break
       case "CC BY 4.0":
-        a =
+        licenseLink =
           "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
           thisThreedItem.license +
           "</a>"
         break
       default:
-        a = thisThreedItem.license
-        // a =
-        //   "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+        licenseLink = thisThreedItem.license
+        // "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
         //   thisThreedItem.license +
-        //   "</a>"
+        // "</a>"
     }
-    document.getElementById("model3dLicense").innerHTML = a
+    document.getElementById("model3dLicense").innerHTML = licenseLink
     // @ts-expect-error
-    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + e + ".png"
+    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + t.title + ".png"
     setPropertiesView("model3dMeta")
   } catch (err) {
     console.debug(err)
@@ -2382,16 +2380,17 @@ function showThreedLicenseSummary(e: Object) {
 // ** Drag Functions
 function beginDrag(e: any, t: Object) {
 
-  // @ts-expect-error
-  const thisThreedItem = threedItems[t]
-  console.debug(
-    'drag: beginDrag', 
-    e, 
-    t,
-  )
+  // @ ts-expect-error
+  const thisThreedItem = t // threedItems[t]
+  // console.debug(
+  //   'drag: beginDrag', 
+  //   e, 
+  //   t,
+  //   thisThreedItem,
+  // )
   console.debug(
     'drag: thisThreedItem', 
-    Object.keys(threedItems),
+    // Object.keys(threedItems),
     Object.keys(thisThreedItem),
   ) // Object.keys(x)
 
@@ -2420,7 +2419,7 @@ function beginDrag(e: any, t: Object) {
         : draggingThreedRectangle.bounds.height = thisThreedItem.size.z
     }
     draggingThreedRectangle.visible = !1
-    document.getElementById("threedDragDiv").style.background = "url('" + objectsURL + "objects/" + t + "_top.png')"
+    document.getElementById("threedDragDiv").style.background = "url('" + objectsURL + "objects/" + thisThreedItem.title + "_top.png')"
     document.getElementById("threedDragDiv").style.backgroundRepeat = "no-repeat"
     var a, n
     a = draggingThreedRectangle.bounds.width
@@ -2528,7 +2527,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // ** USE PREFERENCES
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
-  console.debug('%c⚙️ ThreeD Home Design prefs', ccm.orangeAlert, prefs)
+  // console.debug('%c⚙️ ThreeD Home Design prefs', ccm.orangeAlert, prefs)
 
   // ** INIT PREFERENCES
   const [isPageLoaded, setIsPageLoaded] = useState(false)
