@@ -273,12 +273,12 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ** USE CLIENT
   const client = useApolloClient()
-  console.debug('%c🦆 useApolloClient()', ccm.redAlert, client)
+  // console.debug('%c🦆 useApolloClient()', ccm.redAlert, client)
 
   // ** USE PREFERENCES
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
-  console.debug('%c⚙️ ThreeD Garden prefs', ccm.orangeAlert, prefs)
+  // console.debug('%c⚙️ ThreeD Garden prefs', ccm.orangeAlert, prefs)
 
   // ** INIT PREFERENCES
   const [isPageLoaded, setIsPageLoaded] = useState(false)
