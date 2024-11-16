@@ -736,7 +736,7 @@ const ViewProperties = (props: any) => {
             <tr>
               <td>
                 <div 
-                  onMouseDown={(event) => beginDrag(event, modalModel3dThreedId)} 
+                  // onMouseDown={(event) => beginDrag(event, props.t.title)} 
                   className='disableSelection'
                   style={{ textAlign: 'center' }}
                 >
@@ -2313,7 +2313,7 @@ function setPropertiesView(e: String) {
 
 function showThreedLicenseSummary(t: Object) {
   console.debug('showThreedLicenseSummary', t)
-  // t = {
+  // t = { // example type
   //   "title": "siameseCat",
   //   "license": "CC BY 4.0",
   //   "author": "Gwinna",
@@ -2329,7 +2329,6 @@ function showThreedLicenseSummary(t: Object) {
   //     "z": 1.000,
   //   }
   // }
-  // @ ts-expect-error
   const thisThreedItem = t // threedItems[t]
   try {
     document.getElementById("model3dName").innerText = thisThreedItem.title
@@ -2370,7 +2369,7 @@ function showThreedLicenseSummary(t: Object) {
     }
     document.getElementById("model3dLicense").innerHTML = licenseLink
     // @ts-expect-error
-    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + t.title + ".png"
+    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + thisThreedItem.title + ".png"
     setPropertiesView("model3dMeta")
   } catch (err) {
     console.debug(err)
@@ -2380,26 +2379,16 @@ function showThreedLicenseSummary(t: Object) {
 // ** Drag Functions
 function beginDrag(e: any, t: Object) {
 
-  // @ ts-expect-error
+  const thisEvent = e // the triggering event sent to this function
   const thisThreedItem = t // threedItems[t]
-  // console.debug(
-  //   'drag: beginDrag', 
-  //   e, 
-  //   t,
-  //   thisThreedItem,
-  // )
-  console.debug(
-    'drag: thisThreedItem', 
-    // Object.keys(threedItems),
-    Object.keys(thisThreedItem),
-  ) // Object.keys(x)
+  // console.debug('drag: beginDrag', e, t, thisThreedItem)
+  console.debug('%c drag: beginDrag thisThreedItem', ccm.yellowAlert, thisThreedItem)
 
   try {
     showThreedLicenseSummary(thisThreedItem)
     setToolMode("pointer")
-    // draggingThreedId = t
-    // draggingThreedIcon = !0
-    var o = paper.view.viewToProject(
+
+    let o = paper.view.viewToProject(
       new paper.Point(
         e.pageX - document.getElementById("planView").offsetLeft,
         e.pageY - document.getElementById("planView").offsetTop
@@ -2410,6 +2399,7 @@ function beginDrag(e: any, t: Object) {
       new paper.Point(1, 1)
     )
     draggingThreedRectangle.position = o
+
     if (thisThreedItem) {
       thisThreedItem.scale && thisThreedItem.scale.x
         ? draggingThreedRectangle.bounds.width = thisThreedItem.size.x * thisThreedItem.scale.x
@@ -2421,6 +2411,7 @@ function beginDrag(e: any, t: Object) {
     draggingThreedRectangle.visible = !1
     document.getElementById("threedDragDiv").style.background = "url('" + objectsURL + "objects/" + thisThreedItem.title + "_top.png')"
     document.getElementById("threedDragDiv").style.backgroundRepeat = "no-repeat"
+    
     var a, n
     a = draggingThreedRectangle.bounds.width
     n = draggingThreedRectangle.bounds.height
@@ -2432,6 +2423,7 @@ function beginDrag(e: any, t: Object) {
     document.getElementById("threedDragDiv").style.height = n + "px"
     document.getElementById("threedDragDiv").style.backgroundSize = a + "px " + n + "px"
     document.getElementById("threedDragDiv").style.display = "block"
+
   } catch (err) {
     console.debug(err)
   }
