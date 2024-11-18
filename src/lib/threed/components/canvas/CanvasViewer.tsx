@@ -24,7 +24,7 @@ import {
 
 // ** RADIX-UI Imports
 import * as Collapsible from '@radix-ui/react-collapsible'
-import * as Accordion from '@radix-ui/react-accordion'
+// import * as Accordion from '@radix-ui/react-accordion'
 import {
   ChevronDownIcon,
   RowSpacingIcon, 
@@ -37,6 +37,14 @@ import {
   Flex,
   Text,
 } from '@radix-ui/themes'
+
+// ** PANELS Imports
+import { 
+  Panel, 
+  PanelGroup,
+  PanelResizeHandle,
+} from 'react-resizable-panels'
+import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
 
 // ** THREED r3f Canvas Imports
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
@@ -62,7 +70,8 @@ const ThreeDCanvasCamera = (
   { index: number, canvasKey: string, threeds: Object[] }
 ) => {
   return (
-    <Accordion.Item 
+    <>
+    {/* <Accordion.Item 
       value={'Canvas 1 Camera ' + index}
       className='AccordionItem'
       style={{ 
@@ -80,7 +89,6 @@ const ThreeDCanvasCamera = (
             width: '100%',
           }}
         >
-          {/* ⚙️ &#x2699; */}
           { false && 
             // !config.config && 
             // <img className={"gear"} src={'/favicon/favicon-16x16.png'} // {ASSETS.other.gear}
@@ -99,10 +107,10 @@ const ThreeDCanvasCamera = (
               color: 'violet',
             }}
           >
-            {/* <ChevronDownIcon 
+            <ChevronDownIcon 
               className='AccordionChevron' 
               aria-hidden 
-            /> */}
+            />
             <span 
               // style={{ position: 'relative' }}
             >
@@ -115,15 +123,32 @@ const ThreeDCanvasCamera = (
 
       <Accordion.Content 
         className='AccordionContent'
+      > */}
+    
+    <PanelGroup
+      direction='vertical'
+      style={{
+        minHeight: '200px',
+        // border: '1px solid green',
+      }}
+    >
+      <Panel
+        defaultSize={100}
+        style={{
+          // height: '100px',
+          // border: '1px solid green',
+        }}
       >
-
         <ThreeDCanvas
           _id={'_r3fCanvas' + index}
           threeds={threeds}
         />
-        
-      </Accordion.Content>
-    </Accordion.Item>
+      </Panel>
+    </PanelGroup>
+
+      {/* </Accordion.Content>
+    </Accordion.Item> */}
+    </>
   )
 }
 
@@ -204,7 +229,7 @@ export const ThreeDCanvasViewer = () => {
       {/* CANVAS[ES] as accordion */}
 
       {/* THREED CANVAS VIEWER 1 */}
-      <Accordion.Root 
+      {/* <Accordion.Root 
         key={'Canvas1'} 
         // type='multiple' // single | multiple
         type='single'
@@ -232,7 +257,7 @@ export const ThreeDCanvasViewer = () => {
           // maxWidth: '90vw',
           // width: '100%',
         }}
-      >
+      > */}
         {/* THREED CANVAS 1 : CAMERA 1 */}
         <ThreeDCanvasCamera 
           index={1} 
@@ -252,7 +277,7 @@ export const ThreeDCanvasViewer = () => {
           threeds={threeds}
         /> */}
         {/**/}
-      </Accordion.Root>
+      {/* </Accordion.Root> */}
 
       {/* THREED CANVAS VIEWER 2 */}
       {/* <Accordion.Root 
