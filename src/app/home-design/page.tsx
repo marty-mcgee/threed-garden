@@ -670,6 +670,14 @@ const PaperCanvas = (props: any) => {
 // ** 🟣 TYPES
 // ==============================================================
 
+type TThreedItem = { 
+  title: string, 
+  license: string, 
+  author: string,
+  threedLink: string,
+  size?: TThreedItemSize,
+  scale?: TThreedItemScale,
+}
 type TThreedItemSize = {
   x: number,
   y: number,
@@ -680,30 +688,6 @@ type TThreedItemScale = {
   y: number,
   z: number,
 }
-type TThreedItem = { 
-  title: string, 
-  license: string, 
-  author: string,
-  threedLink: string,
-  size?: TThreedItemSize,
-  scale?: TThreedItemScale,
-} // = {
-//   title: "siameseCat",
-//   license: "CC BY 4.0",
-//   author: "Gwinna",
-//   threedLink: "#threed-link",
-//   // size: {
-//   //   x: 13.26,
-//   //   y: 42.06,
-//   //   z: 81.27,
-//   // },
-//   // scale: {
-//   //   x: 1.000,
-//   //   y: 1.000,
-//   //   z: 1.000,
-//   // }
-// }
-
 // ==============================================================
 
 /* */
