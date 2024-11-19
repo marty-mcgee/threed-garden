@@ -210,14 +210,14 @@ const enableGizmoCube: boolean = true
 // <script type='text/javascript' data-cfasync='false'>
 let fragment: any = null
 let readOnly: boolean = false
-let UILayout: String = 'default' // 3dView | planView | default
-let objectsURL: String = 'https://threedpublic.s3.amazonaws.com/demo/'
+let UILayout: string = 'default' // 3dView | planView | default
+let objectsURL: string = 'https://threedpublic.s3.amazonaws.com/demo/'
 // </script>
 
 let mouseMode: Number = 0,
-  toolMode: String = 'pointer',
+  toolMode: string = 'pointer',
   selectedItem: any,
-  defaultCursor: String = 'default',
+  defaultCursor: string = 'default',
   deselectAll,
   toolsGroup,
   gridGroup,
@@ -667,10 +667,42 @@ const PaperCanvas = (props: any) => {
 /* */
 
 // ==============================================================
+// ** 🟣 TYPES
+// ==============================================================
+
+type TThreedItem = { 
+  title: string, 
+  license: string, 
+  author: string,
+  threedLink: string,
+  size?: Object,
+  scale?: Object,
+} // = {
+//   title: "siameseCat",
+//   license: "CC BY 4.0",
+//   author: "Gwinna",
+//   threedLink: "#threed-link",
+//   // size: {
+//   //   x: 13.26,
+//   //   y: 42.06,
+//   //   z: 81.27,
+//   // },
+//   // scale: {
+//   //   x: 1.000,
+//   //   y: 1.000,
+//   //   z: 1.000,
+//   // }
+// }
+
+// ==============================================================
+
+/* */
+
+// ==============================================================
 // ** 🟣 FUNCTIONS: THREED HOME DESIGN
 // ==============================================================
 
-function camelCaseToSentence(e: String) {
+function camelCaseToSentence(e: string) {
   e = e.replace(/([A-Z])/g, " $1")
   e = e.replace(/_/g, " ")
   e = e.replace(/\b\w/g, function (e) {
@@ -2089,7 +2121,7 @@ function showModel3dView(event: any) {
   //       }))
 }
 
-function setToolMode(e: String) {
+function setToolMode(e: string) {
   console.debug('setToolMode to', e)
   // switch (
   // ("walls" === toolMode
@@ -2215,7 +2247,7 @@ function setToolMode(e: String) {
   // planView.style.cursor = defaultCursor
 }
 
-function setPropertiesView(e: String) {
+function setPropertiesView(e: string) {
   console.debug('setPropertiesView', e)
   switch (
     // "background" != e && "background" === toolMode && setToolMode("pointer"),
@@ -2312,22 +2344,25 @@ function setPropertiesView(e: String) {
   }
 }
 
-function showThreedLicenseSummary(t: Object) {
+
+function showThreedLicenseSummary(t: TThreedItem) {
   console.debug('showThreedLicenseSummary', t)
-  // t = { // example type
-  //   "title": "siameseCat",
-  //   "license": "CC BY 4.0",
-  //   "author": "Gwinna",
-  //   "threedLink": "#threed-link",
-  //   "size": {
-  //     "x": 13.26,
-  //     "y": 42.06,
-  //     "z": 81.27,
-  //   },
-  //   "scale": {
-  //     "x": 1.000,
-  //     "y": 1.000,
-  //     "z": 1.000,
+  // if (!("title" in t)) {
+  //   t = { // example type
+  //     title: "siameseCat",
+  //     license: "CC BY 4.0",
+  //     author: "Gwinna",
+  //     threedLink: "#threed-link",
+  //     // "size": {
+  //     //   "x": 13.26,
+  //     //   "y": 42.06,
+  //     //   "z": 81.27,
+  //     // },
+  //     // "scale": {
+  //     //   "x": 1.000,
+  //     //   "y": 1.000,
+  //     //   "z": 1.000,
+  //     // }
   //   }
   // }
   const thisThreedItem = t // threedItems[t]
@@ -2371,6 +2406,10 @@ function showThreedLicenseSummary(t: Object) {
     document.getElementById("model3dLicense").innerHTML = licenseLink
     // @ts-expect-error
     document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + thisThreedItem.title + ".png"
+    document.getElementById("model3dLink").innerHTML = 
+      "<a href='" + thisThreedItem.threedLink + "' target='_blank' rel='noreferrer'>" +
+      "click here" +
+      "</a>"
     setPropertiesView("model3dMeta")
   } catch (err) {
     console.debug(err)
@@ -2378,7 +2417,7 @@ function showThreedLicenseSummary(t: Object) {
 }
 
 // ** Drag Functions
-function beginDrag(e: any, t: Object) {
+function beginDrag(e: any, t: TThreedItem) {
 
   const thisEvent = e // the triggering event sent to this function
   const thisThreedItem = t // threedItems[t]
