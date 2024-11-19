@@ -670,13 +670,23 @@ const PaperCanvas = (props: any) => {
 // ** 🟣 TYPES
 // ==============================================================
 
+type TThreedItemSize = {
+  x: number,
+  y: number,
+  z: number,
+}
+type TThreedItemScale = {
+  x: number,
+  y: number,
+  z: number,
+}
 type TThreedItem = { 
   title: string, 
   license: string, 
   author: string,
   threedLink: string,
-  size?: Object,
-  scale?: Object,
+  size?: TThreedItemSize,
+  scale?: TThreedItemScale,
 } // = {
 //   title: "siameseCat",
 //   license: "CC BY 4.0",
