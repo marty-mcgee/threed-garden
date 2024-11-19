@@ -127,7 +127,7 @@ export default function MainNav() {
             </NavigationMenuItem>
 
             
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuTrigger 
                 style={{
                   backgroundColor: '#222222',
@@ -183,7 +183,7 @@ export default function MainNav() {
                   </ListItem>
                 </ul>
               </NavigationMenuContent>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
             
             {/*
             <NavigationMenuItem>
