@@ -13,8 +13,9 @@
 
 // ** REACT Imports
 import {
-  useEffect,
   // useRef,
+  // forwardRef,
+  useEffect,
   useState,
   // useCallback,
   // ReactNode,
@@ -284,6 +285,11 @@ const ThreeDGarden = (): JSX.Element => {
   const [isPageLoaded, setIsPageLoaded] = useState(false)
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
+  // ** refs moved to ThreeDCanvasViewer
+  // const refThreeDCanvas1 = useRef<any>(null)
+  // const refThreeDCanvas2 = useRef<any>(null)
+  // const refThreeDCanvas3 = useRef<any>(null)
+
   // ==========================================================
   // Component onMount hook
   // **
@@ -497,7 +503,9 @@ const ThreeDGarden = (): JSX.Element => {
             // }}
             direction='column'
           > */}
-            <ThreeDCanvasViewer />
+            <ThreeDCanvasViewer
+              // ref={refThreeDCanvas1}
+            />
           {/* </Flex> */}
           {/* END: THREED CANVAS VIEWER */}
 

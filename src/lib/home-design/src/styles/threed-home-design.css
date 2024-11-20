@@ -181,13 +181,13 @@
 }
 
 #threedDragDiv {
-    /* display: none; */
-    /* position: absolute; */
+    display: none;
+    position: absolute;
     /* top: 0px; */
     /* left: 0px; */
     width: 100px;
     height: 100px;
-    opacity: 0.50;
+    opacity: 0.80;
     border: 1px solid darkgreen;
 }
 

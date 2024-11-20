@@ -443,7 +443,7 @@ const ThreeDExperience = forwardRef((
             {/* END: CHARACTER MODEL */}
             
             {/* CHARACTER MODEL */}
-            { true && (
+            { false && (
             <group key='character1' position={[0, 0.396, 0]}>
               <CharacterControls
                 debug={prefs.doWorldDebug}
