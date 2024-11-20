@@ -1,5 +1,9 @@
 
 
+// ** REACT Imports
+// import {
+//   useRef,
+// } from 'react'
 
 // ** PANELS Imports
 import { 
@@ -11,7 +15,8 @@ import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
 
 // THREED: COMPONENTS
 // ** ThreeD: Garden
-import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'
+// import ThreeDGarden from '#/lib/threed/ThreeDGarden'
+import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 
 // ** ThreeD using Leva GUI
 import { 
@@ -28,17 +33,44 @@ import ThreeDToolbar from '#/lib/threed/components/controls/Toolbar'
 
 // ** return : JSX
 export default function ThreeDComponents(): JSX.Element {
-  // ** THREED CONTROL(S)
-  // console.debug('THREED CONTROL[S]: ALL')
+  // ** THREED COMPONENTS
+  // console.debug('THREED COMPONENT[S]: ALL')
+
+  // const refThreeDCanvas1 = useRef<any>(null)
+  // const refThreeDCanvas2 = useRef<any>(null)
+  // const refThreeDCanvas3 = useRef<any>(null)
+
   return (
     <>
     <PanelGroup
       direction='vertical'
       style={{
-        minHeight: '100px',
+        // minHeight: '300px',
+        minHeight: '50vh',
+        // minHeight: '50%',
         // border: '1px solid green',
       }}
     >
+      {/* THREED GARDEN (CANVAS + EXPERIENCE) */}
+      <Panel
+        defaultSize={60}
+        maxSize={100}
+        style={{
+          // height: '100px',
+          // border: '1px solid green',
+        }}
+      >
+        <ThreeDCanvasViewer />
+        {/* <ThreeDGarden /> */}
+          {/* <ThreeDCanvas
+            _id={'_r3fCanvas' + index}
+            threeds={threeds}
+            ref={refThreeDCanvas1}
+          /> */}
+      </Panel>
+      <PanelResizeHandle />
+
+      {/* THREED TOOLBAR */}
       <Panel
         defaultSize={10}
         maxSize={10}
@@ -50,23 +82,10 @@ export default function ThreeDComponents(): JSX.Element {
         <ThreeDToolbar />
       </Panel>
       <PanelResizeHandle />
+
+      {/* THREED CONTROLS */}
       <Panel
-        defaultSize={40}
-        maxSize={100}
-        style={{
-          // height: '100px',
-          // border: '1px solid green',
-        }}
-      >
-        <ThreeDGarden />
-          {/* <ThreeDCanvas
-            _id={'_r3fCanvas' + index}
-            threeds={threeds}
-          /> */}
-      </Panel>
-      <PanelResizeHandle />
-      <Panel
-        defaultSize={40}
+        defaultSize={20}
         maxSize={100}
         style={{
           // height: '100px',
@@ -83,6 +102,8 @@ export default function ThreeDComponents(): JSX.Element {
         <ThreeDControlPanels />
       </Panel>
       <PanelResizeHandle />
+
+      {/* TESTING PANEL */}
       <Panel
         defaultSize={10}
         maxSize={10}
@@ -91,7 +112,7 @@ export default function ThreeDComponents(): JSX.Element {
           // border: '1px solid green',
         }}
       >
-        <h6>ThreeD Control[s]: All</h6>
+        <h6>ThreeD Component[s]: All</h6>
       </Panel>
     </PanelGroup>
     </>

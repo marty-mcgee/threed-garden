@@ -95,7 +95,7 @@ import ccm from '#/lib/utils/console-colors'
 // ==============================================================
 // ** INTERFACES + TYPES
 
-interface ViewerProps {
+interface IViewerProps {
   // children: ReactNode, 
   enableOrbit: boolean, 
   enableGizmoCube: boolean,
@@ -257,7 +257,7 @@ const ThreeDExperienceViewer = forwardRef((
     setConfig,
     activeFocus,
     setActiveFocus,
-  }: ViewerProps, 
+  }: IViewerProps, 
   refCanvas // the forwarded ref
 ) => {
 
@@ -320,6 +320,7 @@ const ThreeDExperienceViewer = forwardRef((
           {/* <ThreeDEnvironment /> */}
 
           {/* THREED EXPERIENCE */}
+          {false && (<></>)}
           <ThreeDExperience 
             threeds={threeds} 
             ref={refCanvas} 

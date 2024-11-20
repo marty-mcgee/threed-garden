@@ -21,7 +21,9 @@ import {
   useState,
   useEffect,
   useRef,
-  useTransition
+  useTransition,
+  forwardRef,
+  useImperativeHandle,
 } from 'react'
 
 // ** THREE JS Imports
@@ -101,6 +103,15 @@ import { v4 as newUUID } from 'uuid'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
+
+// ==============================================================
+// ** INTERFACES + TYPES
+
+interface IViewerProps {
+  // children: ReactNode, 
+  _id: string, // = 'heyheyhey_' + newUUID(), 
+  threeds: any[], // = [],
+}
 
 // ==============================================================
 // ** VARIABLES
@@ -306,12 +317,27 @@ function FooGetCamera() {
 }
 // ==========================================================
 
+
+
+// ** GET THREED CAMERA + SCENE from inside <Canvas />
+const ThreeForwardRef = forwardRef((props, refCanvas) => {
+  const { scene, camera } = useThree()
+  useImperativeHandle(refCanvas, () => ({
+    scene,
+    camera,
+  }), [scene, camera])
+}
+)
+
 // ** RETURN ThreeDCanvas
-export const ThreeDCanvas = (
-  { _id = 'heyheyhey_' + newUUID(), threeds = [] }: 
-  { _id: string, threeds: any[]}
+export const ThreeDCanvas = forwardRef((
+  { 
+    _id, 
+    threeds,
+  }: IViewerProps,
+  refCanvas // the forwarded ref
 ) => {
-  
+
   // **
   // if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
   // if (debug) console.debug(`%c=======================================================`, ccm.darkred)
@@ -321,7 +347,8 @@ export const ThreeDCanvas = (
   // console.debug('%c prefs', ccm.red, prefs)
 
   // ** REF-erences using REACT
-  const refCanvas: any = useRef<any>()
+  // const refCanvas: any = useRef<any>(null)
+  // const refCanvas: any = ref
 
   
   {/* ⚙️ &#x2699 */}
@@ -341,16 +368,14 @@ export const ThreeDCanvas = (
     activeFocus, setActiveFocus,
   }
 
-
-
   // ** CREATE THREED CAMERA
-  let threedCamera = { 
-    // position: new THREE.Vector3(x, y, z),
-    position: new THREE.Vector3(-16, 4, -32), // custom starting camera position
-    fov: 24, // 100
-    // near: 0.1,
-    // far: 1000,
-  }
+  // let threedCamera = { 
+  //   // position: new THREE.Vector3(x, y, z),
+  //   position: new THREE.Vector3(-16, 4, -32), // custom starting camera position
+  //   fov: 24, // 100
+  //   // near: 0.1,
+  //   // far: 1000,
+  // }
   // LINK 1: https://discourse.threejs.org/t/accessing-the-camera-in-react-three-fiber-out-of-the-canvas/39137/2
   // LINK 2: https://discourse.threejs.org/t/accessing-the-camera-in-react-three-fiber-out-of-the-canvas/39137/4
   // response: "not sure what you mean by outside, the camera only exists within the canvas..
@@ -473,6 +498,8 @@ export const ThreeDCanvas = (
       >
         {/* NOW INSIDE CANVAS (canvas.props.children)... */}
 
+        <ThreeForwardRef ref={refCanvas} />
+
         {/* PRELOAD objects ??? -- does it seem necessary? */}
         {/* <Preload all /> */}
 
@@ -549,5 +576,6 @@ export const ThreeDCanvas = (
     </>
   )
 }
+) // forwardRef end
 
 export default ThreeDCanvas
