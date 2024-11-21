@@ -2131,8 +2131,8 @@ function showModel3dView(event: any) {
   //       }))
 }
 
-function setToolMode(e: string) {
-  console.debug('setToolMode to', e)
+function setToolMode(toolModeName: string) {
+  console.debug('setToolMode to', toolModeName)
   // switch (
   // ("walls" === toolMode
   //   ? setEndDrawingWalls()
@@ -2145,8 +2145,8 @@ function setToolMode(e: string) {
   //         : "text" === toolMode
   //           ? setEndDrawingText()
   //           : "ground" === toolMode && setEndDrawingGround(),
-  //   (toolMode = e),
-  //   e)
+  //   (toolMode = toolModeName),
+  //   toolModeName)
   // ) {
   //   case "pointer":
   //     modalsActive || showMouseIndicators(),
@@ -2231,7 +2231,7 @@ function setToolMode(e: string) {
   //     break
   //   case "ground":
   //     setLevel("0"),
-  //       (toolMode = e),
+  //       (toolMode = toolModeName),
   //       (defaultCursor = "default"),
   //       (wallsGroup[0].opacity = 0.25),
   //       (floorsGroup[0].opacity = 0.25),
@@ -2351,9 +2351,9 @@ function setPropertiesView(element: string) {
 }
 
 
-function showThreedLicenseSummary(t: TThreedItem) {
-  console.debug('showThreedLicenseSummary', t)
-  const thisThreedItem = t // threedItems[t]
+function showThreedLicenseSummary(threedItem: TThreedItem) {
+  console.debug('showThreedLicenseSummary', threedItem)
+  const thisThreedItem = threedItem // threedItems[threedItem]
   try {
     document.getElementById("model3dName").innerText = thisThreedItem.title
     let o = thisThreedItem.author
@@ -2405,11 +2405,11 @@ function showThreedLicenseSummary(t: TThreedItem) {
 }
 
 // ** Drag Functions
-function beginDrag(event: any, t: TThreedItem) {
+function beginDrag(event: any, threedItem: TThreedItem) {
 
   const thisEvent = event // the triggering event sent to this function
-  const thisThreedItem = t // threedItems[t]
-  // console.debug('drag: beginDrag', event, t, thisThreedItem)
+  const thisThreedItem = threedItem // threedItems[threedItem]
+  // console.debug('drag: beginDrag', event, threedItem, thisThreedItem)
   console.debug('%c drag: beginDrag thisThreedItem', ccm.yellowAlert, thisThreedItem)
 
   try {
@@ -2526,7 +2526,7 @@ function initThreed(event: any, scene: any) {
                 defaultFloorThickness
               a.position.x = event.x
               a.position.z = event.y
-              scene.add(a)
+// scene.add(a)
               clickableObjectsCounter++
               var u = clickableObjectsCounter
               a.name = u
@@ -2611,7 +2611,7 @@ function initThreed(event: any, scene: any) {
                     (rasterImageN.data.name = t),
                     (rasterImageN.data.boxHelper = c),
                     (rasterImageN.data.level = paper.project.activeLayer.data.id),
-                    threedItems[t].useMask)
+                    thisThreedItem.useMask)
                 ) {
                   rasterImageN.useMask = true
                   var meshN = new THREE.Mesh(
