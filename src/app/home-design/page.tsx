@@ -35,6 +35,7 @@ import { useReactiveVar } from '@apollo/client'
 import {
   // stores,
   preferencesStore,
+  canvasStateStore,
   // projectStore,
   homeDesignStore,
   // queries,
@@ -42,6 +43,8 @@ import {
   // reactive vars:
   isPreferencesSetVar,
   preferencesDataVar,
+  isCanvasStateSetVar,
+  canvasStateVar,
 } from '#/lib/stores/apollo'
 
 import { useSession } from 'next-auth/react'
@@ -63,7 +66,7 @@ import paper from 'paper'
 
 // ** THREED Imports
 // import ThreeDComponents from '~/src/lib/threed/threed'
-const ThreeDComponents = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
+const ThreeDComponents = dynamic(() => import('~/src/lib/threed/ThreeDComponents'), { ssr: false })
 
 // ** R3F Imports
 import {
@@ -216,100 +219,106 @@ let UILayout: string = 'default' // 3dView | planView | default
 let objectsURL: string = 'https://threedpublic.s3.amazonaws.com/demo/'
 // </script>
 
-let mouseMode: Number = 0,
-  toolMode: string = 'pointer',
+let threedHomeDesign: string = 'HEY HEY HEY _________________________',
+  mouseMode: number = 0,
+  toolMode: string = 'pointer', // pointer | walls | floor | roof | dimension | text | background | ground | defaults
   selectedItem: any,
   defaultCursor: string = 'default',
-  deselectAll,
-  toolsGroup,
-  gridGroup,
+  deselectAll: Function,
+  toolsGroup: any = {},
+  gridGroup = {},
   threedGroup = {},
   wallsGroup = {},
   roofsGroup = {},
   floorsGroup = {},
   dimensionsGroup = {},
   textsGroup = {},
-  guidesGroup,
-  defaultWallHeight = 265,
-  defaultWallThickness = 20,
-  defaultRoofThickness = 25,
-  defaultRoofWidth = 350,
-  defaultRoofRise = 300,
-  defaultRoofStartHeight = 0,
-  defaultFloorThickness = 25,
-  rotateIcon,
-  resizeIcon,
-  elevateIcon,
-  heightIcon,
+  guidesGroup = {},
+  defaultWallHeight: number = 265,
+  defaultWallThickness: number = 20,
+  defaultRoofThickness: number = 25,
+  defaultRoofWidth: number = 350,
+  defaultRoofRise: number = 300,
+  defaultRoofStartHeight: number = 0,
+  defaultFloorThickness: number = 25,
+  rotateIcon: any,
+  resizeIcon: any,
+  elevateIcon: any,
+  heightIcon: any,
   planView: HTMLElement,
   rulerLeft,
   rulerLeftCtx,
   rulerBottom,
   rulerBottomCtx,
-  mouseIndicatorX,
-  mouseIndicatorY,
+  mouseIndicatorX: number = 0,
+  mouseIndicatorY: number = 0,
   fullscreenPlanViewBtn,
   fullscreen3dViewBtn,
   modalCloseBtnAbout,
   modalCloseBtnModel3d,
   movePointIcons = [],
-  movePointIconSelectedId = 0,
+  movePointIconSelectedId: number = 0,
   selectedMovePointIcon,
   wallPath,
-  wallIdCounter = 0,
+  wallIdCounter: number = 0,
   wallsRectangles = {},
   wallsRectangles3d = {},
   wallHelperPath,
   wallHelperRectangle,
-  startedDrawingWalls = false,
+  startedDrawingWalls: boolean = false,
   floorPath,
-  floorIdCounter = 0,
+  floorIdCounter: number = 0,
   floorHelperPath,
-  startedDrawingFloor = false,
+  startedDrawingFloor: boolean = false,
   roofPath,
-  roofIdCounter = 0,
+  roofIdCounter: number = 0,
   roofHelperPath,
   roofsRectangles = {},
   roofsRectangles3d = {},
   roofHelperRectangle,
-  startedDrawingRoofs = false,
+  startedDrawingRoofs: boolean = false,
   dimensionPath,
-  dimensionIdCounter = 0,
+  dimensionIdCounter: number = 0,
   dimensionHelperPath,
-  startedDrawingDimension = false,
+  startedDrawingDimension: boolean = false,
   stretchYPath,
-  stretchYStartHeight = 0,
+  stretchYStartHeight: number = 0,
   elevatePath,
-  elevating = false,
-  elevateStartHeight = 0,
-  dragging = false,
-  scalingXY = false,
-  scalingY = false,
-  rotating = false,
+  elevating: boolean = false,
+  elevateStartHeight: number = 0,
+  dragging: boolean = false,
+  scalingXY: boolean = false,
+  scalingY: boolean = false,
+  rotating: boolean = false,
   wallHelper3dCube,
   roofHelper3dCube,
-  redrawGrid,
+  redrawGrid: Function,
   xLines = [],
   yLines = [],
-  threedToLoadCount = 0,
-  loadedThreedCount = 0,
+  threedToLoadCount: number = 0,
+  loadedThreedCount: number = 0,
   tools,
-  offsetMousePoint,
-  ctrlKeyPressed = false,
-  scaleFactor = 1.1,
-  cumulclick = 0,
+  offsetMousePoint: number = 0,
+  ctrlKeyPressed: boolean = false,
+  scaleFactor: number = 1.1,
+  cumulclick: number = 0,
   screenScale: number = 1,
-  ratioX = 0,
-  ratioY = 0,
-  lastNewWallSegmentClick = Date.now(),
-  lastNewRoofSegmentClick = Date.now(),
-  lastNewFloorSegmentClick = Date.now(),
+  ratioX: number = 0,
+  ratioY: number = 0,
+  lastNewWallSegmentClick: number = 0,
+  lastNewRoofSegmentClick: number = 0,
+  lastNewFloorSegmentClick: number = 0,
+  // **
   threedItems: Object[] = objectsJSON,
+  // **
   canvas3d,
   camera,
   renderer,
   container,
-  scene,
+  scene: Object = {
+    // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+    background: new THREE.Color(0x171717),
+  },
   mesh,
   ground,
   groundMat,
@@ -317,7 +326,7 @@ let mouseMode: Number = 0,
   dirLight,
   ambientLight,
   pointLight,
-  controls,
+  controls: any,
   wallMaterial,
   floorMaterial,
   roofMaterial,
@@ -325,25 +334,28 @@ let mouseMode: Number = 0,
   raycaster,
   mouse,
   clickableObjects = {},
-  clickableObjectsCounter = -1,
+  clickableObjectsCounter: number = 0,
   maskObjects = {},
   maskObjectsApplied = {},
   maskObjectsAppliedRoof = {},
+  // **
   verticalSlider,
   verticalSliderDragging: boolean,
   horizontalSliderLeft: HTMLElement,
   horizontalSliderLeftDragging: boolean,
   horizontalSliderRight: HTMLElement,
   horizontalSliderRightDragging: boolean,
+  // **
   threedDragDiv: HTMLElement, // JSX.Element = <div></div>,
   draggingThreedIcon:boolean = false,
   draggingThreedItem: any, // number = 0, // -1
-  draggingThreedAngle = 0,
+  draggingThreedAngle: number = 0,
   draggingThreedRectangle: any,
   // draggingThreedRectangle = new paper.Path.Rectangle(
   //   new paper.Point(-1, -1),
   //   new paper.Point(1, 1)
   // ),
+  // **
   wallCornersX = [],
   wallCornersY = [],
   roofCornersX = [],
@@ -355,8 +367,8 @@ let mouseMode: Number = 0,
   allRoofSegments = [],
   snapPointOverride = {},
   textPath,
-  textIdCounter = 0,
-  startedDrawingText = false,
+  textIdCounter: number = 0,
+  startedDrawingText: boolean = false,
   editingTextId = -1,
   Threed = {},
   Walls = {},
@@ -378,20 +390,20 @@ let mouseMode: Number = 0,
     verticalGuides: {},
     horizontalGuides: {}
   },
-  
+  // **
   planHistory = [
-    // planHistory.push(JSON.stringify(plan)),
     JSON.stringify(plan)
+    // planHistory.push(JSON.stringify(plan))
   ],
-  planHistoryPosition = 0,
-
+  planHistoryPosition: number = 0,
+  // **
   backgroundRaster,
-  backgroundRasterRatioX = 1,
-  backgroundRasterRatioY = 1,
-  idToCopyPaste = -1,
-  lastPasteX = 0,
-  lastPasteY = 0,
-  progressBar,
+  backgroundRasterRatioX: number = 1,
+  backgroundRasterRatioY: number = 1,
+  idToCopyPaste: number = -1,
+  lastPasteX: number = 0,
+  lastPasteY: number = 0,
+  progressBar: HTMLElement,
   focusPoint,
   selectedItem3DAxes,
   activeLevel,
@@ -403,17 +415,17 @@ let mouseMode: Number = 0,
     depth: defaultFloorThickness,
     bevelEnabled: false,
   },
-  modalModel3dThreedId = -1,
+  modalModel3dThreedId: number = -1,
   model3dObjectRef,
-  model3dViewOpen = false,
+  model3dViewOpen: boolean = false,
   model3dScene,
   model3dSceneRenderer,
   model3dViewContainer,
   model3dSceneCamera,
   model3dViewCanvas,
-  loadingProgressTxt = '',
+  loadingProgressTxt: string = '',
   lastMousePoint,
-  dltext,
+  dltext: string = '',
   zoomRectangle,
   sky,
   sunSphere,
@@ -423,18 +435,18 @@ let mouseMode: Number = 0,
   fLineX,
   fLineY,
   fLineZ,
-  modalsActive = false,
-  shareLinkUrl = '',
-  shareLinkUrl3d = '',
-  shareLinkUrlPlan = '',
+  modalsActive: boolean = false,
+  shareLinkUrl: string = '',
+  shareLinkUrl3d: string = '',
+  shareLinkUrlPlan: string = '',
   verticalGuides = {},
   horizontalGuides = {},
   selectedGuideId = -1,
-  guideCounter = 0,
-  draggingNewGuide = false,
-  snapTolerance = 1,
-  groundWidth = 5e3,
-  groundLength = 5e3
+  guideCounter: number = 0,
+  draggingNewGuide: boolean = false,
+  snapTolerance: number = 1,
+  groundWidth: number = 5e3,
+  groundLength: number = 5e3
 
 // ==============================================================
 
@@ -2072,13 +2084,13 @@ function showModel3dView(event: any) {
   //                       (t.userData.height = o.max.y - o.min.y),
   //                       (t.userData.depth = o.max.z - o.min.z)
   //                   for (var a = 0; a < t.children.length; a++) {
-  //                     var n = o.min.x + (o.max.x - o.min.x) / 2,
+  //                     var numberN = o.min.x + (o.max.x - o.min.x) / 2,
   //                       l =
   //                         o.min.y +
   //                         (o.max.y - o.min.y) / 2 -
   //                         (o.max.y - o.min.y) / 2,
   //                       i = o.min.z + (o.max.z - o.min.z) / 2
-  //                     t.children[a].translateX(-n),
+  //                     t.children[a].translateX(-numberN),
   //                       t.children[a].translateY(-l),
   //                       t.children[a].translateZ(-i)
   //                   }
@@ -2436,16 +2448,16 @@ function beginDrag(e: any, t: TThreedItem) {
     threedDragDiv.style.background = "url('" + objectsURL + "objects/" + thisThreedItem.title + "_top.png')"
     threedDragDiv.style.backgroundRepeat = "no-repeat"
     
-    var a, n
-    a = 100 // draggingThreedRectangle.bounds.width
-    n = 100 // draggingThreedRectangle.bounds.height
-    a *= paper.view.zoom
-    n *= paper.view.zoom
-    threedDragDiv.style.left = e.clientX - a / 2 + "px"
-    threedDragDiv.style.top = e.clientY - n / 2 + "px"
-    threedDragDiv.style.width = a + "px"
-    threedDragDiv.style.height = n + "px"
-    threedDragDiv.style.backgroundSize = a + "px " + n + "px"
+    var widthA, heightN
+    widthA = 100 // draggingThreedRectangle.bounds.width
+    heightN = 100 // draggingThreedRectangle.bounds.height
+    widthA *= paper.view.zoom
+    heightN *= paper.view.zoom
+    threedDragDiv.style.left = e.clientX - widthA / 2 + "px"
+    threedDragDiv.style.top = e.clientY - heightN / 2 + "px"
+    threedDragDiv.style.width = widthA + "px"
+    threedDragDiv.style.height = heightN + "px"
+    threedDragDiv.style.backgroundSize = widthA + "px " + heightN + "px"
     threedDragDiv.style.display = "block"
 
   } catch (err) {
@@ -2490,12 +2502,12 @@ function initThreed(e: any, scene: any) {
       .setPath(objectsURL + "objects/")
       .load(
         t + ".obj",
-        function (a) {
+        function (a: any) {
           try {
-            var n = new Image()
-            n.crossOrigin = 'anonymous'
-            n.src = objectsURL + "objects/" + t + "_top.png"
-            n.onload = function () {
+            var imageN = new Image()
+            imageN.crossOrigin = 'anonymous'
+            imageN.src = objectsURL + "objects/" + t + "_top.png"
+            imageN.onload = function () {
               var l = new THREE.Box3().setFromObject(a)
               a.userData.width = l.max.x - l.min.x
               a.userData.height = l.max.y - l.min.y
@@ -2530,21 +2542,21 @@ function initThreed(e: any, scene: any) {
                 a.userData.depth
               )
 
-              var m = new paper.Raster(n)
-              m.visible = false
-              m.onLoad = function () {
+              var rasterImageN = new paper.Raster(imageN)
+              rasterImageN.visible = false
+              rasterImageN.onLoad = function () {
                 if (
-                  ((m.data.type = "threed"),
-                    (m.opacity = 0.5),
-                    (m.bounds.width = l.max.x - l.min.x),
-                    (m.bounds.height = l.max.z - l.min.z),
-                    (m.position = e),
-                    (m.data.flipX = 1),
-                    (m.data.flipZ = 1),
-                    (m.fillColor = new paper.Color(1, 1, 1, 1)),
-                    (m.selectedColor = new paper.Color(0, 0, 0, 0)),
+                  ((rasterImageN.data.type = "threed"),
+                    (rasterImageN.opacity = 0.5),
+                    (rasterImageN.bounds.width = l.max.x - l.min.x),
+                    (rasterImageN.bounds.height = l.max.z - l.min.z),
+                    (rasterImageN.position = e),
+                    (rasterImageN.data.flipX = 1),
+                    (rasterImageN.data.flipZ = 1),
+                    (rasterImageN.fillColor = new paper.Color(1, 1, 1, 1)),
+                    (rasterImageN.selectedColor = new paper.Color(0, 0, 0, 0)),
                     readOnly ||
-                    (m.onMouseDown = function (e) {
+                    (rasterImageN.onMouseDown = function (e) {
                       if ("pointer" === toolMode) {
                         deselectAll(),
                           (selectedItem = this),
@@ -2599,42 +2611,45 @@ function initThreed(e: any, scene: any) {
                             updateObjectPropertiesWindow()
                       }
                     }),
-                    (m.data.id = u),
-                    (m.data.name = t),
-                    (m.data.boxHelper = c),
-                    (m.data.level = paper.project.activeLayer.data.id),
+                    (rasterImageN.data.id = u),
+                    (rasterImageN.data.name = t),
+                    (rasterImageN.data.boxHelper = c),
+                    (rasterImageN.data.level = paper.project.activeLayer.data.id),
                     threedItems[t].useMask)
                 ) {
-                  m.useMask = !0
-                  var n = new THREE.Mesh(
+                  rasterImageN.useMask = !0
+                  var meshN = new THREE.Mesh(
                     p,
                     new THREE.MeshStandardMaterial({})
                   )
-                    ; (n.position.x = a.position.x),
-                      (n.position.y = a.position.y),
-                      (n.position.z = a.position.z),
-                      n.geometry.translate(0, a.userData.height / 2, 0),
-                      (n.visible = false),
-                      scene.add(n),
-                      (maskObjects[u] = n),
-                      (n.name = "mask" + u)
+                    ; (imageN.position.x = a.position.x),
+                      (imageN.position.y = a.position.y),
+                      (imageN.position.z = a.position.z),
+                      imageN.geometry.translate(0, a.userData.height / 2, 0),
+                      (imageN.visible = false),
+                      scene.add(meshN),
+                      (maskObjects[u] = meshN),
+                      (imageN.name = "mask" + u)
                 }
+
+
+                // **
                 if (o) {
                   var i = (o + 360) % 360
-                  m.rotate(i),
-                    (m.data.angle = i),
+                  rasterImageN.rotate(i),
+                    (rasterImageN.data.angle = i),
                     clickableObjects[u].rotateY((-i / 180) * Math.PI),
                     maskObjects[u] &&
                     (maskObjects[u].rotateY((-i / 180) * Math.PI),
                       (maskObjects[u].scale.x = 1),
                       (maskObjects[u].scale.y = 1),
                       (maskObjects[u].scale.z = 1))
-                } else m.data.angle = 0
+                } else rasterImageN.data.angle = 0
                   ; (tween = new TWEEN.Tween(controls.target)
                     .to(a.position, 500)
                     .onUpdate(render)
                     .start()),
-                    (m.visible = !0),
+                    (rasterImageN.visible = !0),
                     (Threed[u] = m),
                     threedGroup[paper.project.activeLayer.data.id].addChild(
                       Threed[u]
@@ -2645,17 +2660,17 @@ function initThreed(e: any, scene: any) {
                       position: clickableObjects[u].position,
                       scale: clickableObjects[u].scale,
                       rotation: clickableObjects[u].rotation,
-                      width: m.bounds.width,
-                      depth: m.bounds.height,
-                      angle: m.data.angle,
-                      level: m.data.level,
-                      flipX: m.data.flipX,
-                      flipZ: m.data.flipZ,
+                      width: rasterImageN.bounds.width,
+                      depth: rasterImageN.bounds.height,
+                      angle: rasterImageN.data.angle,
+                      level: rasterImageN.data.level,
+                      flipX: rasterImageN.data.flipX,
+                      flipZ: rasterImageN.data.flipZ,
                     }),
                     (progressBar.style.display = "none")
                 for (
-                  var r = m.canvas.getContext("2d"),
-                  s = r.getImageData(0, 0, m.width, m.height),
+                  var r = rasterImageN.canvas.getContext("2d"),
+                  s = r.getImageData(0, 0, rasterImageN.width, rasterImageN.height),
                   d = s.data,
                   g = 0;
                   g < d.length;
@@ -2686,8 +2701,10 @@ function initThreed(e: any, scene: any) {
                     null,
                     null
                   )
-              }
-            }
+              } // end rasterImageN.onload function
+            } // end imageN.onload function
+
+
           } catch (e) {
             console.dir(e)
           }
@@ -2800,6 +2817,18 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // ** PANELS (React State)
   // const [showPanelFirst, setShowPanelFirst] = useState(prefs.showPanelFirst)
   // const [showPanelLast, setShowPanelLast] = useState(prefs.showPanelLast)
+
+  // ** USE CANVAS STATE
+  const canvasState = useReactiveVar(canvasStateVar) // YES !!
+  console.debug('%c⚙️ ThreeD Home Design canvasState', ccm.orangeAlert, canvasState)
+  // ** INIT CANVAS STATE
+  const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
+  const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(useReactiveVar(isCanvasStateSetVar))
+  // // ** get scene + camera from child component ThreeDCanvasViewer refCanvas
+  // // const scene = useRef()
+  // const getThreeState = useThree((state) => state.get)
+  // // getThreeState() // Get fresh state from anywhere you want
+  // console.debug('getThreeState()', getThreeState())
   
   // ==========================================================
   // Component onMount hook
@@ -3378,7 +3407,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
           )
         )
         // console.debug('a', a)
-        let n = null
+        let thingN = null
         if (draggingThreedItem.useMask) {
           var l = 51,
             i = 0
@@ -3392,23 +3421,23 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                 var o = t.getNearestPoint(a),
                   r = a.getDistance(o)
                 if (r < 50 && r < l) {
-                  ; (l = r), (n = o)
+                  ; (l = r), (thingN = o)
                   var s = t.segments[0].point.subtract(t.segments[1].point)
                   i = s.angle
                 }
               }
             }),
-              n)
+              thingN)
           ) {
             new paper.Path.Circle({
-              center: n,
+              center: thingN,
               radius: screenScale / 2,
               fillColor: new paper.Color(0.3, 1, 0.5, 0.75),
               strokeWidth: 1,
             })
             .removeOnMove()
             .removeOnDrag()
-            a = n
+            a = thingN
             var r = "rotate(" + i + "deg)"
               threedDragDiv.style.transform = r
               draggingThreedAngle = i
@@ -3418,7 +3447,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               draggingThreedAngle = 0
           }
         }
-        if (null === n) {
+        if (null === thingN) {
           var s: any
           Object.keys(verticalGuides).forEach(function (e) {
             console.debug('e', e)
@@ -3469,10 +3498,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       //   )
       //   9 === mouseMode
       //     ? (verticalGuides[selectedGuideId].position.x =
-      //       parseInt(m.x / snapTolerance) * snapTolerance)
+      //       parseInt(rasterImageN.x / snapTolerance) * snapTolerance)
       //     : 10 === mouseMode &&
       //     (horizontalGuides[selectedGuideId].position.y =
-      //       parseInt(m.y / snapTolerance) * snapTolerance)
+      //       parseInt(rasterImageN.y / snapTolerance) * snapTolerance)
       // }
     }
     // ** 
@@ -4099,9 +4128,15 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               session={session} 
                             /> */}
                             {/* THREED HOME DESIGN: 3D CANVAS */}
+
+                            {/* DO RUN THIS */}
                             { true && (
-                            <ThreeDComponents />
+                            <ThreeDComponents 
+                            
+                            />
                             )}
+                            
+                            {/* DO NOT RUN THIS */}
                             { false && (
                             <Canvas
                               id={'threeCanvas'}
@@ -4121,22 +4156,23 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               // camera={threedCamera}
 
                               // ** SCENE (needs to be declarative inside canvas)
-                              scene={{
-                                // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-                                background: new THREE.Color(0x171717),
-                              }}
-                              // onCreated={
-                              //   (state) => {
-                              //     // console.debug('%c Canvas onCreated state', ccm.darkred, state)
-                              //     // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
-                              //     console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
-                              //     // state.gl.toneMapping = THREE.AgXToneMapping
-                              //     // state.camera.fov = 32 // 8
-                              //     // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
-                              //     // threedCamera.position = new THREE.Vector3(2, -4, 8)
-                              //     // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
-                              //   }
-                              // }
+                              // scene={{
+                              //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+                              //   background: new THREE.Color(0x171717),
+                              // }}
+                              scene={scene}
+                              onCreated={
+                                (state) => {
+                                  console.debug('%c Canvas onCreated state', ccm.darkred, state)
+                                  // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
+                                  console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
+                                  state.gl.toneMapping = THREE.AgXToneMapping
+                                  // state.camera.fov = 32 // 8
+                                  // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
+                                  // threedCamera.position = new THREE.Vector3(2, -4, 8)
+                                  // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
+                                }
+                              }
                               
                               // ** JOYSTICK as mouse (optional)
                               // onPointerDown={(e) => {

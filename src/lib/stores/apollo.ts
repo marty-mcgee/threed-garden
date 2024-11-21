@@ -9,6 +9,7 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
+import GetCanvasStates from '#/lib/api/graphql/scripts/getCanvasStates.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
 import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
@@ -105,6 +106,8 @@ function noun(this: INoun, _type: string = 'noun') {
     doWorldTesting: false, // boolean: false | true
     doWorldPhysics: false, // boolean: false | true
     doWorldUnfollowCam: false, // boolean: false | true
+    showPanelFirst: true, // boolean: true | false
+    showPanelLast: true, // boolean: true | false
   }
   // layers/levels
   this.layers = [
@@ -378,6 +381,9 @@ function nounStore(this: IStore, _type = 'noun') {
         switch (this._type) {
           case 'preferences':
             QUERY = GetPreferences
+            break
+          case 'canvasState':
+            QUERY = GetCanvasStates
             break
           case 'noun':
             QUERY = GetNouns
@@ -871,6 +877,23 @@ export const preferencesDataVar = makeVar(
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoLoadData', preferencesDataVar().doAutoLoadData)
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoRotate', preferencesDataVar().doAutoRotate)
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar().projectName', preferencesDataVar().projectName)
+export const isCanvasStateSetVar = makeVar(false) // boolean: false | true
+export const canvasStateVar = makeVar(
+  {
+    // user prefs
+    ownerId: 1,
+    version: '0.0.1',
+    scene: null,
+    camera: null,
+    gl: null,
+    // set functions
+    setCanvasStateVar: () => {}, // function: set properties of "this"
+  }
+)
+// console.debug('Apollo Stores ReactiveVar canvasStateVar()', canvasStateVar())
+// console.debug('Apollo Stores ReactiveVar canvasStateVar().scene', canvasStateVar().scene)
+// console.debug('Apollo Stores ReactiveVar canvasStateVar().camera', canvasStateVar().camera)
+// console.debug('Apollo Stores ReactiveVar canvasStateVar().gl', canvasStateVar().gl)
 
 // ==============================================================
 
@@ -885,6 +908,7 @@ export { nounStore }
 export const preferencesStore = new (nounStore as any)('preferences')
 // EXTEND nounStore to become preferencesStoreCustom
 // export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
+export const canvasStateStore = new (nounStore as any)('canvasState')
 // regular nouns
 export const projectStore = new (nounStore as any)('project')
 export const homeDesignStore = new (nounStore as any)('homeDesign')
@@ -908,6 +932,7 @@ export const modalStoreNoun = new (nounStore as any)('modal')
 export const stores = {
   nounStore,
   preferencesStore,
+  canvasStateStore,
   projectStore,
   homeDesignStore,
   sceneStore,
@@ -931,6 +956,7 @@ export const stores = {
 export const queries = {
   GetNouns,
   GetPreferences,
+  GetCanvasStates,
   GetProjects,
   GetHomeDesigns,
   GetScenes,
@@ -946,6 +972,7 @@ export const queries = {
 export const mutations = {
   // :) [MM] THREED MILESTONE
   UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
+  UpdateCanvasStates: 'HEY HEY HEY UpdateCanvasStates',
   UpdateProjects: 'HEY HEY HEY UpdateProjects',
   // UpdateHomeDesigns: 'HEY HEY HEY UpdateHomeDesigns',
   UpdatePlans: 'HEY HEY HEY UpdatePlans',
