@@ -722,12 +722,12 @@ function camelCaseToSentence(e: string) {
   return e
 }
 
-function validatePlusOrMinusNumber(e: any, t: any) {
-  console.debug('validatePlusOrMinusNumber', e, t, '[MM] Testing')
-//   var o = /^[-]?[0-9]*\.?[0-9]+$/
-//   e.value && null !== e.value.match(o)
-//     ? ((e.style.backgroundColor = "#4e4e4e"), t(e.value), e.blur())
-//     : ((e.style.backgroundColor = "#ff8888"), e.focus())
+function validatePlusOrMinusNumber(element: any, numberT: any) {
+  console.debug('validatePlusOrMinusNumber', element, numberT, '[MM] Testing')
+  var regexOh = /^[-]?[0-9]*\.?[0-9]+$/
+  element.value && null !== element.value.match(regexOh)
+    ? ((element.style.backgroundColor = "#4e4e4e"), numberT(element.value), element.blur())
+    : ((element.style.backgroundColor = "#ff8888"), element.focus())
 }
 
 function openTab(tab: string = 'tab1') {
@@ -2114,7 +2114,7 @@ function showModel3dView(event: any) {
   //                           ).value = r)
   //                       }
   //                     }),
-  //                       s.open("GET", objectsURL + "objects/" + e + ".obj", !0),
+  //                       s.open("GET", objectsURL + "objects/" + e + ".obj", true),
   //                       s.send()
   //                 } catch (e) {
   //                   console.dir(e)
@@ -2122,7 +2122,7 @@ function showModel3dView(event: any) {
   //                 setModalModelDescription(e),
   //                   $("#model3dModal").show(),
   //                   hideMouseIndicators(),
-  //                   (model3dViewOpen = !0),
+  //                   (model3dViewOpen = true),
   //                   (progressBar.style.display = "none")
   //               },
   //               onProgress,
@@ -2257,10 +2257,11 @@ function setToolMode(e: string) {
   // planView.style.cursor = defaultCursor
 }
 
-function setPropertiesView(e: string) {
-  console.debug('setPropertiesView', e)
+function setPropertiesView(element: string) {
+  console.debug('setPropertiesView', element)
   switch (
-    // "background" != e && "background" === toolMode && setToolMode("pointer"),
+    /*
+    // "background" != element && "background" === toolMode && setToolMode("pointer"),
     // document.getElementById("threed3DModelPropertiesView").style.display = "none",
     // document.getElementById("threedPropertiesView").style.display = "none",
     // document.getElementById("planViewPropertiesView").style.display = "none",
@@ -2278,17 +2279,12 @@ function setPropertiesView(e: string) {
     // document.getElementById("textDefaultsPropertiesView").style.display = "none",
     // document.getElementById("levelPropertiesView").style.display = "none",
     // document.getElementById("groundPropertiesView").style.display = "none",
-    e
+    */
+    element
   ) {
     case "model3dMeta":
-
-
       document.getElementById("threed3DModelPropertiesView").style.display = "block"
-
-
       break
-    
-    
     case "threed":
       document.getElementById("threedPropertiesView").style.display = "block"
       break
@@ -2409,23 +2405,23 @@ function showThreedLicenseSummary(t: TThreedItem) {
 }
 
 // ** Drag Functions
-function beginDrag(e: any, t: TThreedItem) {
+function beginDrag(event: any, t: TThreedItem) {
 
-  const thisEvent = e // the triggering event sent to this function
+  const thisEvent = event // the triggering event sent to this function
   const thisThreedItem = t // threedItems[t]
-  // console.debug('drag: beginDrag', e, t, thisThreedItem)
+  // console.debug('drag: beginDrag', event, t, thisThreedItem)
   console.debug('%c drag: beginDrag thisThreedItem', ccm.yellowAlert, thisThreedItem)
 
   try {
     showThreedLicenseSummary(thisThreedItem)
     setToolMode("pointer")
     draggingThreedItem = thisThreedItem
-    draggingThreedIcon = !0
+    draggingThreedIcon = true
 
     let o = paper.view.viewToProject(
       new paper.Point(
-        e.pageX - planView.offsetLeft,
-        e.pageY - planView.offsetTop
+        event.pageX - planView.offsetLeft,
+        event.pageY - planView.offsetTop
       )
     )
     draggingThreedRectangle = new paper.Path.Rectangle(
@@ -2453,8 +2449,8 @@ function beginDrag(e: any, t: TThreedItem) {
     heightN = 100 // draggingThreedRectangle.bounds.height
     widthA *= paper.view.zoom
     heightN *= paper.view.zoom
-    threedDragDiv.style.left = e.clientX - widthA / 2 + "px"
-    threedDragDiv.style.top = e.clientY - heightN / 2 + "px"
+    threedDragDiv.style.left = event.clientX - widthA / 2 + "px"
+    threedDragDiv.style.top = event.clientY - heightN / 2 + "px"
     threedDragDiv.style.width = widthA + "px"
     threedDragDiv.style.height = heightN + "px"
     threedDragDiv.style.backgroundSize = widthA + "px " + heightN + "px"
@@ -2465,8 +2461,8 @@ function beginDrag(e: any, t: TThreedItem) {
   }
 }
 
-function addThreed(e: any, scene: any) {
-  console.debug('addThreed e', e)
+function addThreed(event: any, scene: any) {
+  console.debug('addThreed event', event)
   var t = draggingThreedRectangle.position
   t.x > paper.view.bounds.left
     ? t.y > paper.view.bounds.top && t.y < paper.view.bounds.bottom
@@ -2480,15 +2476,15 @@ function addThreed(e: any, scene: any) {
     draggingThreedIcon = false
     threedDragDiv.style.background = "url('media/tmp.png')"
     draggingThreedRectangle.visible = false
-    e.preventDefault()
+    event.preventDefault()
 }
 
-function initThreed(e: any, scene: any) {
-  console.debug('initThreed e', e)
+function initThreed(event: any, scene: any) {
+  console.debug('initThreed event', event)
   console.debug('initThreed scene', scene)
 
-  e.x = parseInt(e.x)
-  e.y = parseInt(e.y)
+  event.x = parseInt(event.x)
+  event.y = parseInt(event.y)
   var t = draggingThreedItem.title
   var o = draggingThreedAngle
   new MTLLoader()
@@ -2528,8 +2524,8 @@ function initThreed(e: any, scene: any) {
                 0.1 +
                 paper.project.activeLayer.data.height +
                 defaultFloorThickness
-              a.position.x = e.x
-              a.position.z = e.y
+              a.position.x = event.x
+              a.position.z = event.y
               scene.add(a)
               clickableObjectsCounter++
               var u = clickableObjectsCounter
@@ -2550,7 +2546,7 @@ function initThreed(e: any, scene: any) {
                     (rasterImageN.opacity = 0.5),
                     (rasterImageN.bounds.width = l.max.x - l.min.x),
                     (rasterImageN.bounds.height = l.max.z - l.min.z),
-                    (rasterImageN.position = e),
+                    (rasterImageN.position = event),
                     (rasterImageN.data.flipX = 1),
                     (rasterImageN.data.flipZ = 1),
                     (rasterImageN.fillColor = new paper.Color(1, 1, 1, 1)),
@@ -2573,25 +2569,25 @@ function initThreed(e: any, scene: any) {
                           this.data.toolsRectangleInner &&
                           this.data.toolsRectangleInner.remove(),
                           (this.rotation = 0)
-                        var o = new paper.Path.Rectangle(this.bounds)
+                        var rectangleOh = new paper.Path.Rectangle(this.bounds)
                           ; (this.rotation = this.data.angle),
-                            (o.data.type = "toolsRectangle"),
-                            (o.strokeColor = "#b19064"),
-                            (o.strokeWidth = 1),
-                            (o.strokeScaling = false),
-                            (o.locked = !0),
-                            o.rotate(this.data.angle),
-                            (this.data.toolsRectangleInner = o),
-                            (o.visible = !0),
-                            (this.data.boxHelper.visible = !0),
+                            (rectangleOh.data.type = "toolsRectangle"),
+                            (rectangleOh.strokeColor = "#b19064"),
+                            (rectangleOh.strokeWidth = 1),
+                            (rectangleOh.strokeScaling = false),
+                            (rectangleOh.locked = true),
+                            rectangleOh.rotate(this.data.angle),
+                            (this.data.toolsRectangleInner = rectangleOh),
+                            (rectangleOh.visible = true),
+                            (this.data.boxHelper.visible = true),
                             redrawGrid(),
-                            (rotateIcon.visible = !0),
-                            (resizeIcon.visible = !0),
-                            (elevateIcon.visible = !0),
-                            (heightIcon.visible = !0),
+                            (rotateIcon.visible = true),
+                            (resizeIcon.visible = true),
+                            (elevateIcon.visible = true),
+                            (heightIcon.visible = true),
                             (toolsGroup.position =
                               selectedItem.bounds.center),
-                            (toolsGroup.visible = !0),
+                            (toolsGroup.visible = true),
                             toolsGroup.bringToFront(),
                             rotateIcon.bringToFront(),
                             resizeIcon.bringToFront(),
@@ -2617,7 +2613,7 @@ function initThreed(e: any, scene: any) {
                     (rasterImageN.data.level = paper.project.activeLayer.data.id),
                     threedItems[t].useMask)
                 ) {
-                  rasterImageN.useMask = !0
+                  rasterImageN.useMask = true
                   var meshN = new THREE.Mesh(
                     p,
                     new THREE.MeshStandardMaterial({})
@@ -2634,8 +2630,8 @@ function initThreed(e: any, scene: any) {
 
 
                 // **
-                if (o) {
-                  var i = (o + 360) % 360
+                if (rectangleOh) {
+                  var i = (rectangleOh + 360) % 360
                   rasterImageN.rotate(i),
                     (rasterImageN.data.angle = i),
                     clickableObjects[u].rotateY((-i / 180) * Math.PI),
@@ -2649,7 +2645,7 @@ function initThreed(e: any, scene: any) {
                     .to(a.position, 500)
                     .onUpdate(render)
                     .start()),
-                    (rasterImageN.visible = !0),
+                    (rasterImageN.visible = true),
                     (Threed[u] = m),
                     threedGroup[paper.project.activeLayer.data.id].addChild(
                       Threed[u]
@@ -2955,7 +2951,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     // // ** setup dom elements
     // switch (UILayout) {
     //   case "3dView":
-    //     readOnly = !0
+    //     readOnly = true
     //     document.getElementById('planView').style.display = "none"
     //     document.getElementById("view3d").style.top = "0px"
     //     document.getElementById("view3d").style.bottom = "0px"
@@ -2980,7 +2976,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     //     document.getElementById("overlayMenu3dView").style.display = "block"
     //     break
     //   case 'planView':
-    //     readOnly = !0
+    //     readOnly = true
     //     document.getElementById('planView').style.top = "0px"
     //     document.getElementById('planView').style.bottom = "0px"
     //     document.getElementById('planView').style.left = "0px"
@@ -3173,7 +3169,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             }),
               "default" === UILayout &&
               ($("#wallDiffuse").minicolors({
-                opacity: !0,
+                opacity: true,
                 change: function (e, t) {
                   var o = parseInt(e.replace("#", "0x"))
                     ; (wallMaterial.color = new THREE.Color(o)),
@@ -3184,7 +3180,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                 },
               }),
                 $("#roofDiffuse").minicolors({
-                  opacity: !0,
+                  opacity: true,
                   change: function (e, t) {
                     var o = parseInt(e.replace("#", "0x"))
                       ; (roofMaterial.color = new THREE.Color(o)),
@@ -3211,7 +3207,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   },
                 }),
                 $("#floorDiffuse").minicolors({
-                  opacity: !0,
+                  opacity: true,
                   change: function (e, t) {
                     var o = parseInt(e.replace("#", "0x"))
                       ; (floorMaterial.color = new THREE.Color(o)),
@@ -3230,7 +3226,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   },
                 }),
                 $("#groundDiffuse").minicolors({
-                  opacity: !0,
+                  opacity: true,
                   change: function (e, t) {
                     var o = parseInt(e.replace("#", "0x"))
                       ; (groundMat.color = new THREE.Color(o)),
@@ -3291,19 +3287,19 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       (verticalSlider = document.getElementById("verticalSlider")),
       (verticalSliderDragging = false),
       (verticalSlider.onmousedown = function (e) {
-        ; (verticalSliderDragging = !0),
+        ; (verticalSliderDragging = true),
           (verticalSlider.style.left = e.x - 2 + "px")
       }),
       (horizontalSliderLeft = document.getElementById("horizontalSliderLeft")),
       (horizontalSliderLeftDragging = false),
       (horizontalSliderLeft.onmousedown = function (e) {
-        ; (horizontalSliderLeftDragging = !0),
+        ; (horizontalSliderLeftDragging = true),
           (horizontalSliderLeft.style.top = e.y - 2 + "px")
       }),
       (horizontalSliderRight = document.getElementById("horizontalSliderRight")),
       (horizontalSliderRightDragging = false),
       (horizontalSliderRight.onmousedown = function (e) {
-        ; (horizontalSliderRightDragging = !0),
+        ; (horizontalSliderRightDragging = true),
           (horizontalSliderRight.style.top = e.y - 2 + "px")
       }),
       */
@@ -3395,11 +3391,11 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       // }
       if (draggingThreedIcon) {
         // console.debug('draggingThreedIcon', draggingThreedIcon)
-        var t, o
-            t = draggingThreedRectangle.bounds.width
-            o = draggingThreedRectangle.bounds.height
-            t *= paper.view.zoom
-            o *= paper.view.zoom
+        var widthT, heightOh
+            widthT = draggingThreedRectangle.bounds.width
+            heightOh = draggingThreedRectangle.bounds.height
+            widthT *= paper.view.zoom
+            heightOh *= paper.view.zoom
         var a = paper.view.viewToProject(
           new paper.Point(
             e.pageX - planView.offsetLeft,
@@ -3484,8 +3480,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         }
         draggingThreedRectangle.position = a
         var p = paper.view.projectToView(a)
-        threedDragDiv.style.left = p.x + planView.offsetLeft - t / 2 + "px"
-        threedDragDiv.style.top = p.y + planView.offsetTop - o / 2 + "px"
+        threedDragDiv.style.left = p.x + planView.offsetLeft - widthT / 2 + "px"
+        threedDragDiv.style.top = p.y + planView.offsetTop - heightOh / 2 + "px"
         // [MM]
         // threedDragDiv.style.display = "block"
       }
@@ -3507,14 +3503,14 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     // ** 
     document.onmouseup = function (e) {
       draggingThreedIcon = false
-      return verticalSliderDragging
-        ? ((verticalSliderDragging = false), false)
-        : horizontalSliderLeftDragging
-          ? ((horizontalSliderLeftDragging = false), false)
-          : horizontalSliderRightDragging
-            ? ((horizontalSliderRightDragging = false), false)
-            : (draggingThreedItem !== -1 && addThreed(e, scene),
-              void (draggingNewGuide && (draggingNewGuide = false)))
+      return  verticalSliderDragging
+              ? ((verticalSliderDragging = false), false)
+              : horizontalSliderLeftDragging
+              ? ((horizontalSliderLeftDragging = false), false)
+              : horizontalSliderRightDragging
+              ? ((horizontalSliderRightDragging = false), false)
+              : (draggingThreedItem !== -1 && addThreed(e, scene),
+                void (draggingNewGuide && (draggingNewGuide = false)))
     }
     
 
