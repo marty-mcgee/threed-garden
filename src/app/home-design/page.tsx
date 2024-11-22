@@ -2542,7 +2542,8 @@ function initThreed(event: any, scene: any) {
               rasterImageN.visible = false
               rasterImageN.onLoad = function () {
                 if (
-                  ((rasterImageN.data.type = "threed"),
+                  (
+                    (rasterImageN.data.type = "threed"),
                     (rasterImageN.opacity = 0.5),
                     (rasterImageN.bounds.width = l.max.x - l.min.x),
                     (rasterImageN.bounds.height = l.max.z - l.min.z),
@@ -2551,6 +2552,7 @@ function initThreed(event: any, scene: any) {
                     (rasterImageN.data.flipZ = 1),
                     (rasterImageN.fillColor = new paper.Color(1, 1, 1, 1)),
                     (rasterImageN.selectedColor = new paper.Color(0, 0, 0, 0)),
+
                     readOnly ||
                     (rasterImageN.onMouseDown = function (e) {
                       if ("pointer" === toolMode) {
@@ -2607,12 +2609,16 @@ function initThreed(event: any, scene: any) {
                             updateObjectPropertiesWindow()
                       }
                     }),
+
                     (rasterImageN.data.id = u),
                     (rasterImageN.data.name = t),
                     (rasterImageN.data.boxHelper = c),
                     (rasterImageN.data.level = paper.project.activeLayer.data.id),
-                    threedItem.useMask)
-                ) {
+
+                    threedItem.useMask
+                  )
+                ) 
+                {
                   rasterImageN.useMask = true
                   var meshN = new THREE.Mesh(
                     p,
