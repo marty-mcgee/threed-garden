@@ -2353,49 +2353,49 @@ function setPropertiesView(element: string) {
 
 function showThreedLicenseSummary(threedItem: TThreedItem) {
   console.debug('showThreedLicenseSummary', threedItem)
-  const thisThreedItem = threedItem // threedItems[threedItem]
+  // const threedItem = threedItem // threedItems[threedItem]
   try {
-    document.getElementById("model3dName").innerText = thisThreedItem.title
-    let o = thisThreedItem.author
-    document.getElementById("model3dAuthor").innerText = thisThreedItem.author
+    document.getElementById("model3dName").innerText = threedItem.title
+    let o = threedItem.author
+    document.getElementById("model3dAuthor").innerText = threedItem.author
     let licenseLink = "License: Default"
 
-    switch (thisThreedItem.license) {
+    switch (threedItem.license) {
       case "Free Art License 1.3":
         licenseLink =
           "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
-          thisThreedItem.license +
+          threedItem.license +
           "</a>"
         break
       case "CC-0":
         licenseLink =
           "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
-          thisThreedItem.license +
+          threedItem.license +
           "</a>"
         break
       case "CC BY 3.0":
         licenseLink =
           "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
-          thisThreedItem.license +
+          threedItem.license +
           "</a>"
         break
       case "CC BY 4.0":
         licenseLink =
           "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-          thisThreedItem.license +
+          threedItem.license +
           "</a>"
         break
       default:
-        licenseLink = thisThreedItem.license
+        licenseLink = threedItem.license
         // "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
-        //   thisThreedItem.license +
+        //   threedItem.license +
         // "</a>"
     }
     document.getElementById("model3dLicense").innerHTML = licenseLink
     // @ts-expect-error
-    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + thisThreedItem.title + ".png"
+    document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + threedItem.title + ".png"
     document.getElementById("model3dLink").innerHTML = 
-      "<a href='" + thisThreedItem.threedLink + "' target='_blank' rel='noreferrer'>" +
+      "<a href='" + threedItem.threedLink + "' target='_blank' rel='noreferrer'>" +
       "click here" +
       "</a>"
     setPropertiesView("model3dMeta")
@@ -2408,14 +2408,14 @@ function showThreedLicenseSummary(threedItem: TThreedItem) {
 function beginDrag(event: any, threedItem: TThreedItem) {
 
   const thisEvent = event // the triggering event sent to this function
-  const thisThreedItem = threedItem // threedItems[threedItem]
-  // console.debug('drag: beginDrag', event, threedItem, thisThreedItem)
-  console.debug('%c drag: beginDrag thisThreedItem', ccm.yellowAlert, thisThreedItem)
+  // const threedItem = threedItem // threedItems[threedItem]
+  // console.debug('drag: beginDrag', event, threedItem, threedItem)
+  console.debug('%c drag: beginDrag threedItem', ccm.yellowAlert, threedItem)
 
   try {
-    showThreedLicenseSummary(thisThreedItem)
+    showThreedLicenseSummary(threedItem)
     setToolMode("pointer")
-    draggingThreedItem = thisThreedItem
+    draggingThreedItem = threedItem
     draggingThreedIcon = true
 
     let o = paper.view.viewToProject(
@@ -2430,18 +2430,18 @@ function beginDrag(event: any, threedItem: TThreedItem) {
     )
     draggingThreedRectangle.position = o
 
-    if (thisThreedItem) {
-      thisThreedItem.scale && thisThreedItem.scale.x
-        ? draggingThreedRectangle.bounds.width = thisThreedItem.size.x * thisThreedItem.scale.x
-        : draggingThreedRectangle.bounds.width = thisThreedItem.size.x
-      thisThreedItem.scale && thisThreedItem.scale.z
-        ? draggingThreedRectangle.bounds.height = thisThreedItem.size.z * thisThreedItem.scale.z
-        : draggingThreedRectangle.bounds.height = thisThreedItem.size.z
+    if (threedItem) {
+      threedItem.scale && threedItem.scale.x
+        ? draggingThreedRectangle.bounds.width = threedItem.size.x * threedItem.scale.x
+        : draggingThreedRectangle.bounds.width = threedItem.size.x
+      threedItem.scale && threedItem.scale.z
+        ? draggingThreedRectangle.bounds.height = threedItem.size.z * threedItem.scale.z
+        : draggingThreedRectangle.bounds.height = threedItem.size.z
     }
     draggingThreedRectangle.visible = false
     // threedDragDiv = document.getElementById("threedDragDiv")
     
-    threedDragDiv.style.background = "url('" + objectsURL + "objects/" + thisThreedItem.title + "_top.png')"
+    threedDragDiv.style.background = "url('" + objectsURL + "objects/" + threedItem.title + "_top.png')"
     threedDragDiv.style.backgroundRepeat = "no-repeat"
     
     var widthA, heightN
@@ -2611,7 +2611,7 @@ function initThreed(event: any, scene: any) {
                     (rasterImageN.data.name = t),
                     (rasterImageN.data.boxHelper = c),
                     (rasterImageN.data.level = paper.project.activeLayer.data.id),
-                    thisThreedItem.useMask)
+                    threedItem.useMask)
                 ) {
                   rasterImageN.useMask = true
                   var meshN = new THREE.Mesh(
