@@ -3404,17 +3404,21 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
           var l = 51,
             i = 0
           if (
-            (Object.keys(Walls).forEach(function (e) {
-              // @ts-expect-error
-              var t = Walls[e]
+            (Object.keys(Walls).forEach(function (e: string) {
+              // @ ts-expect-error
+              // var t = Walls[e]
+              var t = Walls[e as keyof typeof Walls] // type T = keyof Walls
               if (
                 "object" == typeof t &&
+                // @ts-expect-error
                 t.data.level === paper.project.activeLayer.data.id
               ) {
+                // @ts-expect-error
                 var o = t.getNearestPoint(a),
                   r = a.getDistance(o)
                 if (r < 50 && r < l) {
                   ; (l = r), (thingN = o)
+                  // @ts-expect-error
                   var s = t.segments[0].point.subtract(t.segments[1].point)
                   i = s.angle
                 }
@@ -3429,7 +3433,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               strokeWidth: 1,
             })
             .removeOnMove()
-            .removeOnDrag()
+            // .removeOnDrag()
             a = thingN
             var r = "rotate(" + i + "deg)"
               threedDragDiv.style.transform = r
@@ -3442,18 +3446,18 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         }
         if (null === thingN) {
           var s: any
-          Object.keys(verticalGuides).forEach(function (e) {
+          Object.keys(verticalGuides).forEach(function (e: string) {
             console.debug('e', e)
-            a.x >= verticalGuides[e].position.x - 10 &&
-              a.x <= verticalGuides[e].position.x + 10 &&
-              (s = new paper.Point(verticalGuides[e].position.x, a.y))
+            // a.x >= verticalGuides[e].position.x - 10 &&
+            //   a.x <= verticalGuides[e].position.x + 10 &&
+            //   (s = new paper.Point(verticalGuides[e].position.x, a.y))
           })
-          Object.keys(horizontalGuides).forEach(function (e) {
-            a.y >= horizontalGuides[e].position.y - 10 &&
-              a.y <= horizontalGuides[e].position.y + 10 &&
-              (s
-                ? (s.y = horizontalGuides[e].position.y)
-                : (s = new paper.Point(a.x, horizontalGuides[e].position.y)))
+          Object.keys(horizontalGuides).forEach(function (e: string) {
+            // a.y >= horizontalGuides[e].position.y - 10 &&
+            //   a.y <= horizontalGuides[e].position.y + 10 &&
+            //   (s
+            //     ? (s.y = horizontalGuides[e].position.y)
+            //     : (s = new paper.Point(a.x, horizontalGuides[e].position.y)))
           })
           if (s) {
             a = s
@@ -3464,11 +3468,12 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               strokeWidth: 1,
             })
             .removeOnMove()
-            .removeOnDrag()
+            // .removeOnDrag()
           }
         }
         if (draggingThreedItem.pivot) {
           var d = a.add(
+            // @ts-expect-error
             new paper.Point(draggingThreedItem.pivot).rotate(draggingThreedAngle)
           ),
           c = a,
