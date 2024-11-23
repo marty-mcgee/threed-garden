@@ -319,15 +319,15 @@ function FooGetCamera() {
 
 
 
-// ** GET THREED CAMERA + SCENE from inside <Canvas />
-const ThreeForwardRef = forwardRef((props, refCanvas) => {
-  const { scene, camera } = useThree()
-  useImperativeHandle(refCanvas, () => ({
-    scene,
-    camera,
-  }), [scene, camera])
-}
-)
+// // ** GET THREED CAMERA + SCENE from inside <Canvas />
+// const ThreeForwardRef = forwardRef((props, refCanvas) => {
+//   const { scene, camera } = useThree()
+//   useImperativeHandle(refCanvas, () => ({
+//     scene,
+//     camera,
+//   }), [scene, camera])
+// }
+// )
 
 // ** RETURN ThreeDCanvas
 export const ThreeDCanvas = forwardRef((
@@ -498,7 +498,7 @@ export const ThreeDCanvas = forwardRef((
       >
         {/* NOW INSIDE CANVAS (canvas.props.children)... */}
 
-        <ThreeForwardRef ref={refCanvas} />
+        {/* <ThreeForwardRef ref={refCanvas} /> */}
 
         {/* PRELOAD objects ??? -- does it seem necessary? */}
         {/* <Preload all /> */}
