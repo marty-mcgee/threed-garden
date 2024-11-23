@@ -3405,6 +3405,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             i = 0
           if (
             (Object.keys(Walls).forEach(function (e) {
+              // @ts-expect-error
               var t = Walls[e]
               if (
                 "object" == typeof t &&
