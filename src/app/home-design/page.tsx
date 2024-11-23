@@ -2554,7 +2554,7 @@ function initThreed(event: any, scene: any) {
                     (rasterImageN.selectedColor = new paper.Color(0, 0, 0, 0)),
 
                     readOnly ||
-                    (rasterImageN.onMouseDown = function (e) {
+                    (rasterImageN.onMouseDown = function (e: any) {
                       if ("pointer" === toolMode) {
                         deselectAll(),
                           (selectedItem = this),
