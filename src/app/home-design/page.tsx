@@ -298,7 +298,7 @@ let threedHomeDesign: string = 'HEY HEY HEY _________________________',
   threedToLoadCount: number = 0,
   loadedThreedCount: number = 0,
   tools,
-  offsetMousePoint: Object = {x: 0, y: 0}, // number = 0,
+  offsetMousePoint: any, // Object = {x: 0, y: 0}, // number = 0,
   ctrlKeyPressed: boolean = false,
   scaleFactor: number = 1.1,
   cumulclick: number = 0,
@@ -2556,21 +2556,15 @@ function initThreed(event: any, scene: any) {
                     readOnly ||
                     (rasterImageN.onMouseDown = function (e: any) {
                       if ("pointer" === toolMode) {
-                        deselectAll(),
-                          (selectedItem = this),
-                          (mouseMode = 0),
-                          (offsetMousePoint =
-                            selectedItem.position.subtract(e.point)),
-                          (offsetMousePoint.x = parseInt(
-                            offsetMousePoint.x
-                          )),
-                          (offsetMousePoint.y = parseInt(
-                            offsetMousePoint.y
-                          )),
-                          selectedItem.bringToFront(),
-                          this.data.toolsRectangleInner &&
-                          this.data.toolsRectangleInner.remove(),
-                          (this.rotation = 0)
+                        deselectAll()
+                        selectedItem = this
+                        mouseMode = 0
+                        offsetMousePoint = selectedItem.position.subtract(e.point)
+                        offsetMousePoint.x = parseInt(offsetMousePoint.x)
+                        offsetMousePoint.y = parseInt(offsetMousePoint.y)
+                        selectedItem.bringToFront()
+                        this.data.toolsRectangleInner && this.data.toolsRectangleInner.remove()
+                        this.rotation = 0
                         var rectangleOh = new paper.Path.Rectangle(this.bounds)
                           ; (this.rotation = this.data.angle),
                             (rectangleOh.data.type = "toolsRectangle"),
