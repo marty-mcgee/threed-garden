@@ -2568,7 +2568,7 @@ function initThreed(event: any, scene: any) {
                       var rectangleOh = new paper.Path.Rectangle(this.bounds)
                       this.rotation = this.data.angle
                       rectangleOh.data.type = "toolsRectangle"
-                      // rectangleOh.strokeColor = "#b19064"
+                      rectangleOh.strokeColor = new paper.Color(1, 1, 1, 1) // "#b19064"
                       rectangleOh.strokeWidth = 1
                       rectangleOh.strokeScaling = false
                       rectangleOh.locked = true
@@ -2607,16 +2607,16 @@ function initThreed(event: any, scene: any) {
                   
                 // )
                 // {
-                  rasterImageN.useMask = true
+                  // rasterImageN.useMask = true
                   var meshN = new THREE.Mesh(
                     p,
                     new THREE.MeshStandardMaterial({})
                   )
-                  imageN.position.x = a.position.x
-                  imageN.position.y = a.position.y
-                  imageN.position.z = a.position.z
-                  imageN.geometry.translate(0, a.userData.height / 2, 0)
-                  imageN.visible = false
+                  // imageN.position.x = a.position.x
+                  // imageN.position.y = a.position.y
+                  // imageN.position.z = a.position.z
+                  // imageN.geometry.translate(0, a.userData.height / 2, 0)
+                  // imageN.visible = false
 // scene.add(meshN)
                   maskObjects[u] = meshN
                   imageN.name = "mask" + u
