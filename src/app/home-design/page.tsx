@@ -2568,7 +2568,7 @@ function initThreed(event: any, scene: any) {
                         var rectangleOh = new paper.Path.Rectangle(this.bounds)
                           ; (this.rotation = this.data.angle),
                             (rectangleOh.data.type = "toolsRectangle"),
-                            (rectangleOh.strokeColor = "#b19064"),
+                            // (rectangleOh.strokeColor = "#b19064"),
                             (rectangleOh.strokeWidth = 1),
                             (rectangleOh.strokeScaling = false),
                             (rectangleOh.locked = true),
@@ -2600,7 +2600,7 @@ function initThreed(event: any, scene: any) {
                             (toolsGroup.data.level =
                               paper.project.activeLayer.data.id),
                             (modalModel3dThreedId = t),
-                            updateObjectPropertiesWindow()
+                            // updateObjectPropertiesWindow()
                       }
                     }),
 
@@ -2609,7 +2609,7 @@ function initThreed(event: any, scene: any) {
                     (rasterImageN.data.boxHelper = c),
                     (rasterImageN.data.level = paper.project.activeLayer.data.id),
 
-                    threedItem.useMask
+                    // threedItem.useMask
                   )
                 ) 
                 {
