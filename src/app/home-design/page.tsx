@@ -2541,89 +2541,90 @@ function initThreed(event: any, scene: any) {
               var rasterImageN = new paper.Raster(imageN)
               rasterImageN.visible = false
               rasterImageN.onLoad = function () {
-                if (
-                  (
-                    (rasterImageN.data.type = "threed"),
-                    (rasterImageN.opacity = 0.5),
-                    (rasterImageN.bounds.width = l.max.x - l.min.x),
-                    (rasterImageN.bounds.height = l.max.z - l.min.z),
-                    (rasterImageN.position = event),
-                    (rasterImageN.data.flipX = 1),
-                    (rasterImageN.data.flipZ = 1),
-                    (rasterImageN.fillColor = new paper.Color(1, 1, 1, 1)),
-                    (rasterImageN.selectedColor = new paper.Color(0, 0, 0, 0)),
+                // if (
+                  
+                  rasterImageN.data.type = "threed"
+                  rasterImageN.opacity = 0.5
+                  rasterImageN.bounds.width = l.max.x - l.min.x
+                  rasterImageN.bounds.height = l.max.z - l.min.z
+                  rasterImageN.position = event
+                  rasterImageN.data.flipX = 1
+                  rasterImageN.data.flipZ = 1
+                  rasterImageN.fillColor = new paper.Color(1, 1, 1, 1)
+                  rasterImageN.selectedColor = new paper.Color(0, 0, 0, 0)
 
-                    readOnly ||
-                    (rasterImageN.onMouseDown = function (e: any) {
-                      if ("pointer" === toolMode) {
-                        deselectAll()
-                        selectedItem = this
-                        mouseMode = 0
-                        offsetMousePoint = selectedItem.position.subtract(e.point)
-                        offsetMousePoint.x = parseInt(offsetMousePoint.x)
-                        offsetMousePoint.y = parseInt(offsetMousePoint.y)
-                        selectedItem.bringToFront()
-                        this.data.toolsRectangleInner && this.data.toolsRectangleInner.remove()
-                        this.rotation = 0
-                        var rectangleOh = new paper.Path.Rectangle(this.bounds)
-                        this.rotation = this.data.angle
-                        rectangleOh.data.type = "toolsRectangle"
-                        // rectangleOh.strokeColor = "#b19064"
-                        rectangleOh.strokeWidth = 1
-                        rectangleOh.strokeScaling = false
-                        rectangleOh.locked = true
-                        rectangleOh.rotate(this.data.angle)
-                        this.data.toolsRectangleInner = rectangleOh
-                        rectangleOh.visible = true
-                        this.data.boxHelper.visible = true
-                        redrawGrid()
-                        rotateIcon.visible = true
-                        resizeIcon.visible = true
-                        elevateIcon.visible = true
-                        heightIcon.visible = true
-                        toolsGroup.position = selectedItem.bounds.center
-                        toolsGroup.visible = true
-                        toolsGroup.bringToFront()
-                        rotateIcon.bringToFront()
-                        resizeIcon.bringToFront()
-                        elevateIcon.bringToFront()
-                        heightIcon.bringToFront()
-                        rotateIcon.data.level = paper.project.activeLayer.data.id
-                        resizeIcon.data.level = paper.project.activeLayer.data.id
-                        elevateIcon.data.level = paper.project.activeLayer.data.id
-                        heightIcon.data.level = paper.project.activeLayer.data.id
-                        toolsGroup.data.level = paper.project.activeLayer.data.id
-                        modalModel3dThreedId = t
-                        // updateObjectPropertiesWindow()
-                      }
-                    }),
+                  // readOnly ||
+                  rasterImageN.onMouseDown = function (e: any) {
+                    if ("pointer" === toolMode) {
+                      deselectAll()
+                      selectedItem = this
+                      mouseMode = 0
+                      offsetMousePoint = selectedItem.position.subtract(e.point)
+                      offsetMousePoint.x = parseInt(offsetMousePoint.x)
+                      offsetMousePoint.y = parseInt(offsetMousePoint.y)
+                      selectedItem.bringToFront()
+                      this.data.toolsRectangleInner && this.data.toolsRectangleInner.remove()
+                      this.rotation = 0
+                      var rectangleOh = new paper.Path.Rectangle(this.bounds)
+                      this.rotation = this.data.angle
+                      rectangleOh.data.type = "toolsRectangle"
+                      // rectangleOh.strokeColor = "#b19064"
+                      rectangleOh.strokeWidth = 1
+                      rectangleOh.strokeScaling = false
+                      rectangleOh.locked = true
+                      rectangleOh.rotate(this.data.angle)
+                      this.data.toolsRectangleInner = rectangleOh
+                      rectangleOh.visible = true
+                      this.data.boxHelper.visible = true
+                      redrawGrid()
+                      rotateIcon.visible = true
+                      resizeIcon.visible = true
+                      elevateIcon.visible = true
+                      heightIcon.visible = true
+                      toolsGroup.position = selectedItem.bounds.center
+                      toolsGroup.visible = true
+                      toolsGroup.bringToFront()
+                      rotateIcon.bringToFront()
+                      resizeIcon.bringToFront()
+                      elevateIcon.bringToFront()
+                      heightIcon.bringToFront()
+                      rotateIcon.data.level = paper.project.activeLayer.data.id
+                      resizeIcon.data.level = paper.project.activeLayer.data.id
+                      elevateIcon.data.level = paper.project.activeLayer.data.id
+                      heightIcon.data.level = paper.project.activeLayer.data.id
+                      toolsGroup.data.level = paper.project.activeLayer.data.id
+                      modalModel3dThreedId = t
+                      // updateObjectPropertiesWindow()
+                    }
+                  }
 
-                    (rasterImageN.data.id = u),
-                    (rasterImageN.data.name = t),
-                    (rasterImageN.data.boxHelper = c),
-                    (rasterImageN.data.level = paper.project.activeLayer.data.id),
+                  rasterImageN.data.id = u
+                  rasterImageN.data.name = t
+                  rasterImageN.data.boxHelper = c
+                  rasterImageN.data.level = paper.project.activeLayer.data.id
 
-                    // threedItem.useMask
-                  )
-                ) 
-                {
+                  // threedItem.useMask
+                  
+                // )
+                // {
                   rasterImageN.useMask = true
                   var meshN = new THREE.Mesh(
                     p,
                     new THREE.MeshStandardMaterial({})
                   )
-                    ; (imageN.position.x = a.position.x),
-                      (imageN.position.y = a.position.y),
-                      (imageN.position.z = a.position.z),
-                      imageN.geometry.translate(0, a.userData.height / 2, 0),
-                      (imageN.visible = false),
-                      scene.add(meshN),
-                      (maskObjects[u] = meshN),
-                      (imageN.name = "mask" + u)
-                }
+                  imageN.position.x = a.position.x
+                  imageN.position.y = a.position.y
+                  imageN.position.z = a.position.z
+                  imageN.geometry.translate(0, a.userData.height / 2, 0)
+                  imageN.visible = false
+// scene.add(meshN)
+                  maskObjects[u] = meshN
+                  imageN.name = "mask" + u
+                // }
 
 
                 // **
+                /*
                 if (rectangleOh) {
                   var i = (rectangleOh + 360) % 360
                   rasterImageN.rotate(i),
@@ -2691,6 +2692,7 @@ function initThreed(event: any, scene: any) {
                     null,
                     null
                   )
+              */
               } // end rasterImageN.onload function
             } // end imageN.onload function
 
