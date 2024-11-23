@@ -2566,41 +2566,35 @@ function initThreed(event: any, scene: any) {
                         this.data.toolsRectangleInner && this.data.toolsRectangleInner.remove()
                         this.rotation = 0
                         var rectangleOh = new paper.Path.Rectangle(this.bounds)
-                          ; (this.rotation = this.data.angle),
-                            (rectangleOh.data.type = "toolsRectangle"),
-                            // (rectangleOh.strokeColor = "#b19064"),
-                            (rectangleOh.strokeWidth = 1),
-                            (rectangleOh.strokeScaling = false),
-                            (rectangleOh.locked = true),
-                            rectangleOh.rotate(this.data.angle),
-                            (this.data.toolsRectangleInner = rectangleOh),
-                            (rectangleOh.visible = true),
-                            (this.data.boxHelper.visible = true),
-                            redrawGrid(),
-                            (rotateIcon.visible = true),
-                            (resizeIcon.visible = true),
-                            (elevateIcon.visible = true),
-                            (heightIcon.visible = true),
-                            (toolsGroup.position =
-                              selectedItem.bounds.center),
-                            (toolsGroup.visible = true),
-                            toolsGroup.bringToFront(),
-                            rotateIcon.bringToFront(),
-                            resizeIcon.bringToFront(),
-                            elevateIcon.bringToFront(),
-                            heightIcon.bringToFront(),
-                            (rotateIcon.data.level =
-                              paper.project.activeLayer.data.id),
-                            (resizeIcon.data.level =
-                              paper.project.activeLayer.data.id),
-                            (elevateIcon.data.level =
-                              paper.project.activeLayer.data.id),
-                            (heightIcon.data.level =
-                              paper.project.activeLayer.data.id),
-                            (toolsGroup.data.level =
-                              paper.project.activeLayer.data.id),
-                            (modalModel3dThreedId = t),
-                            // updateObjectPropertiesWindow()
+                        this.rotation = this.data.angle
+                        rectangleOh.data.type = "toolsRectangle"
+                        // rectangleOh.strokeColor = "#b19064"
+                        rectangleOh.strokeWidth = 1
+                        rectangleOh.strokeScaling = false
+                        rectangleOh.locked = true
+                        rectangleOh.rotate(this.data.angle)
+                        this.data.toolsRectangleInner = rectangleOh
+                        rectangleOh.visible = true
+                        this.data.boxHelper.visible = true
+                        redrawGrid()
+                        rotateIcon.visible = true
+                        resizeIcon.visible = true
+                        elevateIcon.visible = true
+                        heightIcon.visible = true
+                        toolsGroup.position = selectedItem.bounds.center
+                        toolsGroup.visible = true
+                        toolsGroup.bringToFront()
+                        rotateIcon.bringToFront()
+                        resizeIcon.bringToFront()
+                        elevateIcon.bringToFront()
+                        heightIcon.bringToFront()
+                        rotateIcon.data.level = paper.project.activeLayer.data.id
+                        resizeIcon.data.level = paper.project.activeLayer.data.id
+                        elevateIcon.data.level = paper.project.activeLayer.data.id
+                        heightIcon.data.level = paper.project.activeLayer.data.id
+                        toolsGroup.data.level = paper.project.activeLayer.data.id
+                        modalModel3dThreedId = t
+                        // updateObjectPropertiesWindow()
                       }
                     }),
 
