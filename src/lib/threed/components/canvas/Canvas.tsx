@@ -478,7 +478,7 @@ export const ThreeDCanvas = forwardRef((
 
         // ** CANVAS STATE
         onCreated={
-          (state) => {
+          (state: any) => {
             console.debug('%c⚙️ Canvas onCreated state', ccm.darkredAlert, state)
             // console.debug('%c Canvas onCreated state.camera', ccm.darkredAlert, state.camera)
             // console.debug('%c Canvas onCreated state.camera.position', ccm.darkredAlert, state.camera.position)
@@ -493,12 +493,12 @@ export const ThreeDCanvas = forwardRef((
         }
         
         // ** JOYSTICK as mouse (optional)
-        // onPointerDown={(e) => {
-        //   if (e.pointerType === 'mouse') {
-        //     // testing
-        //     (e.target as HTMLCanvasElement).requestPointerLock()
-        //   }
-        // }}
+        onPointerDown={(e: any) => {
+          if (e.pointerType === 'mouse') {
+            // testing
+            // (e.target as HTMLCanvasElement).requestPointerLock()
+          }
+        }}
         
       >
         {/* NOW INSIDE CANVAS 
@@ -519,7 +519,7 @@ export const ThreeDCanvas = forwardRef((
               // innerStyles={...inner} // Inner container styles
               // barStyles={...bar} // Loading-bar styles
               // dataStyles={...data} // Text styles
-              dataInterpolation={(p) => `THREED UI ${p.toFixed(0)}%`} // Text
+              dataInterpolation={(p: number) => `THREED UI ${p.toFixed(0)}%`} // Text
               // initialState={(active = false) => active} // Initial black out state
             />
           </Html>
