@@ -2528,8 +2528,11 @@ function initThreed(event: any, scene: any) {
                 defaultFloorThickness
               a.position.x = event.x
               a.position.z = event.y
-// scene.add(a)
-canvasStateVar().scene.add(a)
+
+              // scene.add(a)
+              // canvasStateVar().scene.add(a)
+              canvasStateVar().state.scene.add(a)
+
               clickableObjectsCounter++
               var u = clickableObjectsCounter
               a.name = u
@@ -2620,8 +2623,11 @@ canvasStateVar().scene.add(a)
                   // imageN.position.z = a.position.z
                   // imageN.geometry.translate(0, a.userData.height / 2, 0)
                   // imageN.visible = false
-// scene.add(meshN)
-canvasStateVar().scene.add(meshN)
+                  
+                  // scene.add(meshN)
+                  // canvasStateVar().scene.add(meshN)
+                  canvasStateVar().state.scene.add(meshN)
+                  
                   maskObjects[u] = meshN
                   imageN.name = "mask" + u
                 // }
