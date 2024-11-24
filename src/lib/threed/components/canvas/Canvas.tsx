@@ -380,7 +380,7 @@ export const ThreeDCanvas = forwardRef((
     newData.gl = state.gl
     // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.green, newData)
     canvasStateVar(newData)
-    // console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.darkgreen, canvasStateVar())
+    console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.darkgreenAlert, canvasStateVar())
   }
 
   // ** DECLARATIVE THREED SCENE
@@ -396,28 +396,12 @@ export const ThreeDCanvas = forwardRef((
   //   // near: 0.1,
   //   // far: 1000,
   // }
+
   // LINK 1: https://discourse.threejs.org/t/accessing-the-camera-in-react-three-fiber-out-of-the-canvas/39137/2
   // LINK 2: https://discourse.threejs.org/t/accessing-the-camera-in-react-three-fiber-out-of-the-canvas/39137/4
-  // response: "not sure what you mean by outside, the camera only exists within the canvas..
-  // you can access it after the canvas has been created
-  // <Canvas onCreated=(state => ({ state.camera.fov = 45, state.camera.position = [0, 0, 0] }))
-  // within every component
-  // <Canvas>
-  //   <Foo />
-  // function Foo() {
-  //   const camera = useThree(state => state.camera)
-  // you could also use a declarative camera
-  // import { PerspectiveCamera } '@react-three/drei'
-  // const config = { fov: 35, position: [0, 0, 10] }
-  // <Canvas>
-  //   <PerspectiveCamera {...config} />
 
   // ** interact with camera using a HOOK
   // const setCameraPosition = storeCameraZ(state => state.setPosition)
-
-  // moved inside experience
-  // const camera = useThree(state => state.camera)
-  // console.debug('get camera', camera)
 
   // const [x, y, z] = storeCameraZ(state => state.position)
   // ** GET CAMERA
@@ -476,14 +460,15 @@ export const ThreeDCanvas = forwardRef((
       <Canvas
         key={_id}
 
-        shadows={true}
-        dpr={[1, 2]} // dpr = target pixel ratio (need ???)
-
         // style={{
         //   width: '100%',
         //   // height: '100%',
         //   minHeight: '300px',
         // }}
+
+        shadows={true} // boolean || string 'basic' | 'percentage' | 'soft' | 'variance'
+        dpr={[1, 2]} // dpr = target pixel ratio (need ???)
+        frameloop={'demand'} // render mode: 'always' | 'demand' | 'never'
         
         // ** CAMERA (using declarative inside canvas ExperienceViewer)
         // camera={threedCamera}
@@ -494,7 +479,7 @@ export const ThreeDCanvas = forwardRef((
         // ** CANVAS STATE
         onCreated={
           (state) => {
-            console.debug('%c Canvas onCreated state', ccm.darkredAlert, state)
+            console.debug('%c⚙️ Canvas onCreated state', ccm.darkredAlert, state)
             // console.debug('%c Canvas onCreated state.camera', ccm.darkredAlert, state.camera)
             // console.debug('%c Canvas onCreated state.camera.position', ccm.darkredAlert, state.camera.position)
             // state.gl.toneMapping = THREE.AgXToneMapping
