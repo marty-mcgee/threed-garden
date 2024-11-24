@@ -2814,7 +2814,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
   // ** USE CANVAS STATE
   const canvasState = useReactiveVar(canvasStateVar) // YES !!
-  console.debug('%c⚙️ ThreeD Home Design canvasState', ccm.orangeAlert, canvasState)
+  // console.debug('%c⚙️ ThreeD Home Design canvasState', ccm.orangeAlert, canvasState)
   // ** INIT CANVAS STATE
   const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
   const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(useReactiveVar(isCanvasStateSetVar))
