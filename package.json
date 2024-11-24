@@ -65,6 +65,8 @@
     "@react-three/fiber": "8.16.8",
     "@react-three/rapier": "1.4.0",
     "r3f-perf": "7.2.1",
+    
+    "paper": "0.12.18",
 
     "leva": "0.9.35",
     
@@ -145,10 +147,7 @@
     "remark-math": "5.1.1",
 
     "attr-accept": "2.2.4",
-    "react-dropzone": "14.2.9",
-    
-
-    "paper": "0.12.18"
+    "react-dropzone": "14.2.9"
     
   },
 

@@ -510,7 +510,7 @@ const ThreeDGarden = (): JSX.Element => {
           {/* END: THREED CANVAS VIEWER */}
 
           {/* THREED CONTROL PANELS */}
-          {/* -- STORE ACCESS (apollo, zustand, valtio, leva) */}
+          {/* -- STORE ACCESS (apollo + leva) */}
           {/* <Flex
             // item
             id='threed_control_panels'
