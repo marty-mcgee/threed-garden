@@ -206,14 +206,14 @@ export function ThreeDLoaderMesh() {
 // CAMERA DATA INTERFACE (USING ZUSTAND SESSION STATE STORE)
 // ==========================================================
 // import { create } from 'zustand'
-// const storeCamera = create(set => ({
+// const storeCameraZ = create(set => ({
 //   position: [0, 0, 0],
 //   setPosition: (position: number[]) => set({ position }),
 //   // cameraPosition: [-16, 4, -16],
 //   // setCameraPosition: (cameraPosition: number[]) => set({ cameraPosition })
 // }))
 // ** ZUSTAND-X : CAMERA STORE
-const storeCamera = createStore('threedCamera')(({
+const storeCameraZ = createStore('threedCamera')(({
   position: [-1, 1, -1],
   // setPosition: (position: number[]) => set({ position }),
   // cameraPosition: [-16, 4, -16],
@@ -221,21 +221,21 @@ const storeCamera = createStore('threedCamera')(({
 }))
 // // Note that the zustand(x) store is accessible through:
 // // hook store
-// storeCamera.useStore
+// storeCameraZ.useStore
 // // vanilla store
-// storeCamera.store
+// storeCameraZ.store
 // // reactive (tracked) hooks
-// storeCamera.useTracked.owner()
+// storeCameraZ.useTracked.owner()
 // // Getters
 // // Don't overuse hooks. If you don't need to subscribe to the state, use instead the get method:
-// storeCamera.get.name()
-// storeCamera.get.stars()
+// storeCameraZ.get.name()
+// storeCameraZ.get.stars()
 // // You can also get the whole state object:
-// storeCamera.get.state()
+// storeCameraZ.get.state()
 // **
-// console.debug('%c storeCamera.get.state()', ccm.redAlert, storeCamera.get.state())
-console.debug('%c STORE storeCamera.get.state().position()', ccm.redAlert, storeCamera.get.position())
-// console.debug('%c storeCamera.useTracked.position()', ccm.redAlert, storeCamera.useTracked.position())
+// console.debug('%c storeCameraZ.get.state()', ccm.redAlert, storeCameraZ.get.state())
+// console.debug('%c STORE storeCameraZ.get.state().position()', ccm.redAlert, storeCameraZ.get.position())
+// console.debug('%c storeCameraZ.useTracked.position()', ccm.redAlert, storeCameraZ.useTracked.position())
 
 
 
@@ -243,9 +243,9 @@ console.debug('%c STORE storeCamera.get.state().position()', ccm.redAlert, store
 const MyCameraReactsToStateChanges = () => {
   // ** GET + SET camera
   // @ts-expect-error
-  const [x, y, z] = storeCamera(state => state.position)
+  const [x, y, z] = storeCameraZ(state => state.position)
   // @ ts-expect-error
-  // const [x, y, z] = storeCamera(state => state.cameraPosition)
+  // const [x, y, z] = storeCameraZ(state => state.cameraPosition)
   // useFrame(state => {
   //   // @ ts-expect-error
   //   // state.camera.lerp({ x, y, z }, 0.1)
@@ -265,7 +265,7 @@ const setTheCameraPosition = () => {
     return state.camera.position
   })
   // ** SET camera position -- TODO
-  // const setCameraPosition = storeCamera(state => {
+  // const setCameraPosition = storeCameraZ(state => {
   //   console.debug('%c MyCameraReactsToStateChanges: SET state.camera.position', ccm.redAlert)
   //   // @ts-expect-error
   //   return state.setPosition([12,2,12])
@@ -298,7 +298,7 @@ const setTheCameraPosition = () => {
 //   <PerspectiveCamera {...config} />
 
 // ** interact with camera using a HOOK
-// const setCameraPosition = storeCamera(state => state.setPosition)
+// const setCameraPosition = storeCameraZ(state => state.setPosition)
 
 // moved inside experience
 // const camera = useThree(state => state.camera)
@@ -417,14 +417,14 @@ export const ThreeDCanvas = forwardRef((
   //   <PerspectiveCamera {...config} />
 
   // ** interact with camera using a HOOK
-  // const setCameraPosition = storeCamera(state => state.setPosition)
+  // const setCameraPosition = storeCameraZ(state => state.setPosition)
 
   // moved inside experience
   // const camera = useThree(state => state.camera)
   // console.debug('get camera', camera)
 
   // @ ts-expect-error
-  // const [x, y, z] = storeCamera(state => state.position)
+  // const [x, y, z] = storeCameraZ(state => state.position)
   // ** GET CAMERA
   // function FooGetCamera() {
     // const fooGetCamera = () => useThree(state => {
@@ -441,7 +441,7 @@ export const ThreeDCanvas = forwardRef((
   // }
 
   // // @ ts-expect-error
-  // const setTheCameraPosition = storeCamera(state => {
+  // const setTheCameraPosition = storeCameraZ(state => {
   //   // @ts-expect-error
   //   state.setPosition
   //   console.debug('HEY HEY HEY')
