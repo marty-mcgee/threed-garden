@@ -356,6 +356,9 @@ export const ThreeDCanvas = forwardRef((
     let newData = {...canvasStateVar()} // latest canvas state
     // console.debug('%c⚙️ setCanvasStateVar newData', ccm.green, newData)
     newData.state = state
+    newData.scene = state.scene
+    newData.camera = state.camera
+    newData.gl = state.gl
     // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.green, newData)
     canvasStateVar(newData)
     // console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.darkgreen, canvasStateVar())
