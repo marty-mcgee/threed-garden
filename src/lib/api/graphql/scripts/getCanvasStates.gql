@@ -13,6 +13,7 @@ query GetCanvasStates ($first: Int, $last: Int, $after: String, $before: String)
       # custom fields
       version
       # owner
+      state
       scene
       camera
       gl

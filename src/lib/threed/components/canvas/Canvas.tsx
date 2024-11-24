@@ -3,13 +3,17 @@
 // RESOURCES
 
 // ** APOLLO CLIENT STORE+STATE Imports
-import { useApolloClient, useReactiveVar } from '@apollo/client'
+import { 
+  useApolloClient, 
+  useReactiveVar,
+} from '@apollo/client'
 import {
   isPreferencesSetVar,
   preferencesDataVar,
   preferencesStore,
-  projectStore,
-  // ...stores
+  canvasStateStore,
+  isCanvasStateSetVar,
+  canvasStateVar,
 } from '#/lib/stores/apollo'
 // ** ZUSTAND (X?) // for cameras, lights, canvas props
 // import { create } from 'zustand'
@@ -342,9 +346,21 @@ export const ThreeDCanvas = forwardRef((
   // if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
   // if (debug) console.debug(`%c=======================================================`, ccm.darkred)
 
-  // // ** HOOKS
+  // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug('%c prefs', ccm.red, prefs)
+  const canvasState = useReactiveVar(canvasStateVar)
+  console.debug('%c canvasState', ccm.red, canvasState)
+
+  function setCanvasStateVar (state: any) {
+    let newData = {...canvasStateVar()} // latest canvas state
+    // console.debug('%c⚙️ setCanvasStateVar newData', ccm.green, newData)
+    newData.state = state
+    // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.green, newData)
+    canvasStateVar(newData)
+    // console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.darkgreen, canvasStateVar())
+  }
+  
 
   // ** REF-erences using REACT
   // const refCanvas: any = useRef<any>(null)
@@ -368,7 +384,12 @@ export const ThreeDCanvas = forwardRef((
     activeFocus, setActiveFocus,
   }
 
-  // ** CREATE THREED CAMERA
+  // ** DECLARATIVE THREED SCENE
+  let threedScene = {
+    // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+    background: new THREE.Color(0x171717),
+  }
+  // ** DECLARATIVE THREED CAMERA
   // let threedCamera = { 
   //   // position: new THREE.Vector3(x, y, z),
   //   position: new THREE.Vector3(-16, 4, -32), // custom starting camera position
@@ -466,26 +487,25 @@ export const ThreeDCanvas = forwardRef((
         shadows={true}
         dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         
-        // ** CAMERA (not using declarative inside canvas)
+        // ** CAMERA (using declarative inside canvas ExperienceViewer)
         // camera={threedCamera}
 
         // ** SCENE (needs to be declarative inside canvas)
-        scene={{
-          // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-          background: new THREE.Color(0x171717),
-        }}
-        // onCreated={
-        //   (state) => {
-        //     // console.debug('%c Canvas onCreated state', ccm.darkred, state)
-        //     // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
-        //     console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
-        //     // state.gl.toneMapping = THREE.AgXToneMapping
-        //     // state.camera.fov = 32 // 8
-        //     // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
-        //     // threedCamera.position = new THREE.Vector3(2, -4, 8)
-        //     // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
-        //   }
-        // }
+        scene={threedScene}
+        onCreated={
+          (state) => {
+            console.debug('%c Canvas onCreated state', ccm.darkredAlert, state)
+            // console.debug('%c Canvas onCreated state.camera', ccm.darkredAlert, state.camera)
+            // console.debug('%c Canvas onCreated state.camera.position', ccm.darkredAlert, state.camera.position)
+            // state.gl.toneMapping = THREE.AgXToneMapping
+            // state.camera.fov = 32 // 8
+            // state.camera.lookAt(200, -4, 8) // position [0, 0, 0]
+            // state.camera.position = new THREE.Vector3(2, -4, 8)
+            // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
+            // ** SET CANVAS STATE
+            setCanvasStateVar(state)
+          }
+        }
         
         // ** JOYSTICK as mouse (optional)
         // onPointerDown={(e) => {

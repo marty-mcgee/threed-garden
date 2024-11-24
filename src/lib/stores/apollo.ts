@@ -883,6 +883,7 @@ export const canvasStateVar = makeVar(
     // user prefs
     ownerId: 1,
     version: '0.0.1',
+    state: null,
     scene: null,
     camera: null,
     gl: null,
