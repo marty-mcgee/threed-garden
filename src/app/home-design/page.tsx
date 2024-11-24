@@ -2529,9 +2529,9 @@ function initThreed(event: any, scene: any) {
               a.position.x = event.x
               a.position.z = event.y
 
-              // scene.add(a)
-              // canvasStateVar().scene.add(a)
-              canvasStateVar().state.scene.add(a)
+// scene.add(a)
+// canvasStateVar().scene.add(a)
+canvasStateVar().state.scene.add(a)
 
               clickableObjectsCounter++
               var u = clickableObjectsCounter
@@ -2622,12 +2622,12 @@ function initThreed(event: any, scene: any) {
                   // imageN.position.y = a.position.y
                   // imageN.position.z = a.position.z
                   // imageN.geometry.translate(0, a.userData.height / 2, 0)
-                  // imageN.visible = false
+                  imageN.visible = false
                   
-                  // scene.add(meshN)
-                  // canvasStateVar().scene.add(meshN)
-                  canvasStateVar().state.scene.add(meshN)
-                  
+// scene.add(meshN)
+// canvasStateVar().scene.add(meshN)
+canvasStateVar().state.scene.add(meshN)
+
                   maskObjects[u] = meshN
                   imageN.name = "mask" + u
                 // }
