@@ -350,7 +350,7 @@ export const ThreeDCanvas = forwardRef((
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug('%c prefs', ccm.red, prefs)
   const canvasState = useReactiveVar(canvasStateVar)
-  console.debug('%c canvasState', ccm.red, canvasState)
+  // console.debug('%c canvasState', ccm.red, canvasState)
 
   function setCanvasStateVar (state: any) {
     let newData = {...canvasStateVar()} // latest canvas state
