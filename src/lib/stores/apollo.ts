@@ -865,12 +865,6 @@ export const preferencesDataVar = makeVar(
     showPanelLast: true, // boolean: true | false
     // set functions
     setPreferencesDataVar: () => {}, // function: set properties of "this"
-    setUserPreferencesDataVar: () => {}, // function: set properties of "this"
-    setWorldPreferencesDataVar: () => {}, // function: set properties of "this"
-    setScenePreferencesDataVar: () => {}, // function: set properties of "this"
-    setProjectPreferencesDataVar: () => {}, // function: set properties of "this"
-    setCharacterPreferencesDataVar: () => {}, // function: set properties of "this"
-    setHomeDesignPreferencesDataVar: () => {}, // function: set properties of "this"
   }
 )
 // console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
@@ -882,7 +876,7 @@ export const canvasStateVar = makeVar(
   {
     // user prefs
     ownerId: 1,
-    version: '0.0.1',
+    version: '0.0.0',
     state: null,
     scene: null,
     camera: null,
