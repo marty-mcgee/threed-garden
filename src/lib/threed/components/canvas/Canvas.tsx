@@ -185,22 +185,6 @@ export function ThreeDLoaderMesh() {
   )
 }
 
-// const controls = new OrbitControls(camera, renderer.domElement)
-// camera.lookAt(0.5, 0.5, 0.5)
-// controls.target.set(.5, .5, .5)
-// controls.update()
-// controls.addEventListener('change', () => console.debug('Controls Change'))
-// controls.addEventListener('start', () => console.debug('Controls Start Event'))
-// controls.addEventListener('end', () => console.debug('Controls End Event'))
-
-// EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
-// function ActionRig() {
-//   return useFrame((state) => {
-//     // state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.01)
-//     // state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.01)
-//   })
-// }
-
 
 // ==========================================================
 // CAMERA DATA INTERFACE (USING ZUSTAND SESSION STATE STORE)
@@ -237,40 +221,23 @@ const storeCameraZ = createStore('threedCamera')(({
 // console.debug('%c STORE storeCameraZ.get.state().position()', ccm.redAlert, storeCameraZ.get.position())
 // console.debug('%c storeCameraZ.useTracked.position()', ccm.redAlert, storeCameraZ.useTracked.position())
 
+// ==========================================================
 
+// const controls = new OrbitControls(camera, renderer.domElement)
+// camera.lookAt(0.5, 0.5, 0.5)
+// controls.target.set(.5, .5, .5)
+// controls.update()
+// controls.addEventListener('change', () => console.debug('Controls Change'))
+// controls.addEventListener('start', () => console.debug('Controls Start Event'))
+// controls.addEventListener('end', () => console.debug('Controls End Event'))
 
-
-const MyCameraReactsToStateChanges = () => {
-  // ** GET + SET camera
-  // @ts-expect-error
-  const [x, y, z] = storeCameraZ(state => state.position)
-  // @ ts-expect-error
-  // const [x, y, z] = storeCameraZ(state => state.cameraPosition)
-  // useFrame(state => {
-  //   // @ ts-expect-error
-  //   // state.camera.lerp({ x, y, z }, 0.1)
-  //   // state.camera.lookAt(0, 0, 0)
-    console.debug('%c MyCameraReactsToStateChanges: state.position', ccm.redAlert, x, y, z)
-  // })
-  // ** RETURN JSX (???)
-  return <></>
-}
-
-const setTheCameraPosition = () => {
-  // ** GET camera
-  const getCameraPosition = useThree(state => {
-    // console.debug('%c MyCameraReactsToStateChanges: state.camera', ccm.redAlert, state.camera)
-    // get [state.camera.position.x, state.camera.position.y, state.camera.position.z]
-    console.debug('%c MyCameraReactsToStateChanges: GET state.camera.position', ccm.redAlert, state.camera.position)
-    return state.camera.position
-  })
-  // ** SET camera position -- TODO
-  // const setCameraPosition = storeCameraZ(state => {
-  //   console.debug('%c MyCameraReactsToStateChanges: SET state.camera.position', ccm.redAlert)
-  //   // @ts-expect-error
-  //   return state.setPosition([12,2,12])
-  // })
-}
+// EXAMPLE ANIMATION using hook 'useFrame' (with 'useRef' references)
+// function ActionRig() {
+//   return useFrame((state) => {
+//     // state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, 1 + state.mouse.x / 4, 0.01)
+//     // state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, 1.5 + state.mouse.y / 4, 0.01)
+//   })
+// }
 
 // ==========================================================
 // ** NOTES on CAMERAS
@@ -305,6 +272,39 @@ const setTheCameraPosition = () => {
 // console.debug('get camera', camera)
 
 // ==========================================================
+
+const MyCameraReactsToStateChanges = () => {
+  // ** GET + SET camera
+  // @ts-expect-error
+  const [x, y, z] = storeCameraZ(state => state.position)
+  // @ ts-expect-error
+  // const [x, y, z] = storeCameraZ(state => state.cameraPosition)
+  // useFrame(state => {
+  //   // @ ts-expect-error
+  //   // state.camera.lerp({ x, y, z }, 0.1)
+  //   // state.camera.lookAt(0, 0, 0)
+    console.debug('%c MyCameraReactsToStateChanges: state.position', ccm.redAlert, x, y, z)
+  // })
+  // ** RETURN JSX (???)
+  return <></>
+}
+
+const setTheCameraPosition = () => {
+  // ** GET camera
+  const getCameraPosition = useThree(state => {
+    // console.debug('%c MyCameraReactsToStateChanges: state.camera', ccm.redAlert, state.camera)
+    // get [state.camera.position.x, state.camera.position.y, state.camera.position.z]
+    console.debug('%c MyCameraReactsToStateChanges: GET state.camera.position', ccm.redAlert, state.camera.position)
+    return state.camera.position
+  })
+  // ** SET camera position -- TODO
+  // const setCameraPosition = storeCameraZ(state => {
+  //   console.debug('%c MyCameraReactsToStateChanges: SET state.camera.position', ccm.redAlert)
+  //   // @ts-expect-error
+  //   return state.setPosition([12,2,12])
+  // })
+}
+
 // ** FOO -- GET CAMERA
 function FooGetCamera() {
   const fooGetCamera = () => useThree(state => {
@@ -319,9 +319,8 @@ function FooGetCamera() {
     </Html>
   )
 }
+
 // ==========================================================
-
-
 
 // // ** GET THREED CAMERA + SCENE from inside <Canvas />
 // const ThreeForwardRef = forwardRef((props, refCanvas) => {
@@ -333,6 +332,8 @@ function FooGetCamera() {
 // }
 // )
 
+// ==========================================================
+
 // ** RETURN ThreeDCanvas
 export const ThreeDCanvas = forwardRef((
   { 
@@ -342,33 +343,15 @@ export const ThreeDCanvas = forwardRef((
   refCanvas // the forwarded ref
 ) => {
 
-  // **
-  // if (debug) console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
-  // if (debug) console.debug(`%c=======================================================`, ccm.darkred)
+  // ** DEBUGGING
+  // if (debug) 
+  //   console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
 
   // ** HOOKS
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug('%c prefs', ccm.red, prefs)
   const canvasState = useReactiveVar(canvasStateVar)
   // console.debug('%c canvasState', ccm.red, canvasState)
-
-  function setCanvasStateVar (state: any) {
-    let newData = {...canvasStateVar()} // latest canvas state
-    // console.debug('%c⚙️ setCanvasStateVar newData', ccm.green, newData)
-    newData.state = state
-    newData.scene = state.scene
-    newData.camera = state.camera
-    newData.gl = state.gl
-    // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.green, newData)
-    canvasStateVar(newData)
-    // console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.darkgreen, canvasStateVar())
-  }
-  
-
-  // ** REF-erences using REACT
-  // const refCanvas: any = useRef<any>(null)
-  // const refCanvas: any = ref
-
   
   {/* ⚙️ &#x2699 */}
   const [config, setConfig] = useState<Config>(INITIAL)
@@ -385,6 +368,19 @@ export const ThreeDCanvas = forwardRef((
     config, setConfig,
     toolTip, setToolTip,
     activeFocus, setActiveFocus,
+  }
+
+  // ** SET CANVAS STATE VAR (APOLLO CLIENT)
+  function setCanvasStateVar (state: any) {
+    let newData = {...canvasStateVar()} // latest canvas state
+    // console.debug('%c⚙️ setCanvasStateVar newData', ccm.green, newData)
+    newData.state = state
+    newData.scene = state.scene
+    newData.camera = state.camera
+    newData.gl = state.gl
+    // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.green, newData)
+    canvasStateVar(newData)
+    // console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.darkgreen, canvasStateVar())
   }
 
   // ** DECLARATIVE THREED SCENE
@@ -423,7 +419,6 @@ export const ThreeDCanvas = forwardRef((
   // const camera = useThree(state => state.camera)
   // console.debug('get camera', camera)
 
-  // @ ts-expect-error
   // const [x, y, z] = storeCameraZ(state => state.position)
   // ** GET CAMERA
   // function FooGetCamera() {
@@ -481,20 +476,22 @@ export const ThreeDCanvas = forwardRef((
       <Canvas
         key={_id}
 
+        shadows={true}
+        dpr={[1, 2]} // dpr = target pixel ratio (need ???)
+
         // style={{
         //   width: '100%',
         //   // height: '100%',
         //   minHeight: '300px',
         // }}
-
-        shadows={true}
-        dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         
         // ** CAMERA (using declarative inside canvas ExperienceViewer)
         // camera={threedCamera}
 
         // ** SCENE (needs to be declarative inside canvas)
         scene={threedScene}
+
+        // ** CANVAS STATE
         onCreated={
           (state) => {
             console.debug('%c Canvas onCreated state', ccm.darkredAlert, state)
@@ -519,31 +516,9 @@ export const ThreeDCanvas = forwardRef((
         // }}
         
       >
-        {/* NOW INSIDE CANVAS (canvas.props.children)... */}
-
-        {/* <ThreeForwardRef ref={refCanvas} /> */}
-
-        {/* PRELOAD objects ??? -- does it seem necessary? */}
-        {/* <Preload all /> */}
-
-        
-        {/* USE DECLARATIVE THREED CAMERA (NOT WORKING YET) */}
-        {/* <PerspectiveCamera 
-          {...threedCamera} 
-        /> */}
-        {/* <MyCameraReactsToStateChanges /> */}
-        {/* <FooGetCamera /> */}
-
-
-        {/* TUNNELING R3F with tunnelrat IO
-        <threedIO.In>
-          <span key='foo_span'>Very cool!</span>
-        </threedIO.In>
+        {/* NOW INSIDE CANVAS 
+            (canvas.props.children)... 
         */}
-        {/* TUNNELING R3F with tunnelrat OI
-        <threedOI.Out />
-        */}
-
 
         {/* SUSPENSEFUL... */}
         {/* <Suspense fallback={null}> */}
@@ -565,21 +540,42 @@ export const ThreeDCanvas = forwardRef((
           </Html>
         }>
 
-          {/* PLANTS from THREED FARMBOT */}
-          {/* <Model {...common} /> */}
+
+          {/* FORWARD REF ??? */}
+          {/* <ThreeForwardRef ref={refCanvas} /> */}
+
+
+          {/* PRELOAD objects ??? -- does it seem necessary? */}
+          {/* <Preload all /> */}
+
+          
+          {/* USE DECLARATIVE THREED CAMERA (NOT WORKING YET) */}
+          {/* <PerspectiveCamera 
+            {...threedCamera} 
+          /> */}
+          {/* <MyCameraReactsToStateChanges /> */}
+          {/* <FooGetCamera /> */}
+
+
+          {/* TUNNELING R3F with tunnelrat IO */}
+          {/* <threedIO.In>
+            <span key='foo_span'>Very cool!</span>
+          </threedIO.In> */}
+          {/* TUNNELING R3F with tunnelrat OI */}
+          {/* <threedOI.Out /> */}
+
           
           {/* THREED EXPERIENCE : VIEWER */}
           <ThreeDExperienceViewer
-            // children={null}
+            ref={refCanvas} // when using function as a forwardRef // THREED IO
+
+            threeds={threeds}
+
             enableOrbit={true}
             enableGizmoCube={true}
             enableAxesHelper={true}
             enableGridHelper={true}
             enablePerf={true}
-
-            threeds={threeds} 
-            
-            ref={refCanvas} // when using function as a forwardRef // THREED IO
 
             // config: Object, // Config
             config={config}
@@ -588,10 +584,6 @@ export const ThreeDCanvas = forwardRef((
             activeFocus={activeFocus}
             // setActiveFocus(focus: string): void,
             setActiveFocus={setActiveFocus}
-
-            // style={{
-            //   minHeight: '300px',
-            // }}
           />
 
         </Suspense>
