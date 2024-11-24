@@ -21,14 +21,8 @@ import {
   useEffect,
   useTransition,
 } from 'react'
-// ** REACT TYPES
-import type { ReactNode } from 'react'
 
 // ** R3F Imports
-import {
-  useThree,
-  useFrame,
-} from '@react-three/fiber'
 import {
   Environment, Stage,
   // KeyboardControls,
@@ -93,7 +87,6 @@ import ccm from '#/lib/utils/console-colors'
 // ** INTERFACES + TYPES
 
 interface IViewerProps {
-  // children: ReactNode, 
   enableOrbit: boolean, 
   enableGizmoCube: boolean,
   enableAxesHelper: boolean,
@@ -317,7 +310,6 @@ const ThreeDExperienceViewer = forwardRef((
           {/* <ThreeDEnvironment /> */}
 
           {/* THREED EXPERIENCE */}
-          {false && (<></>)}
           <ThreeDExperience 
             threeds={threeds} 
             ref={refCanvas} 
