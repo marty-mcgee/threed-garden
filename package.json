@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.17.0-alpha.11",
+  "version": "0.17.0-alpha.12",
   "description": "ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, APIs: WordPress, Apollo GraphQL, Leva Control GUI, Radix-UI, Tailwind CSS, 3D FarmBot React (Beta), Open AI",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
