@@ -2529,6 +2529,7 @@ function initThreed(event: any, scene: any) {
               a.position.x = event.x
               a.position.z = event.y
 // scene.add(a)
+canvasStateVar().scene.add(a)
               clickableObjectsCounter++
               var u = clickableObjectsCounter
               a.name = u
@@ -2620,6 +2621,7 @@ function initThreed(event: any, scene: any) {
                   // imageN.geometry.translate(0, a.userData.height / 2, 0)
                   // imageN.visible = false
 // scene.add(meshN)
+canvasStateVar().scene.add(meshN)
                   maskObjects[u] = meshN
                   imageN.name = "mask" + u
                 // }
