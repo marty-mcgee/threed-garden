@@ -468,7 +468,7 @@ export const ThreeDCanvas = forwardRef((
 
         shadows={true} // boolean || string 'basic' | 'percentage' | 'soft' | 'variance'
         dpr={[1, 2]} // dpr = target pixel ratio (need ???)
-        frameloop={'demand'} // render mode: 'always' | 'demand' | 'never'
+        // frameloop={'demand'} // render mode: 'always' | 'demand' | 'never'
         
         // ** CAMERA (using declarative inside canvas ExperienceViewer)
         // camera={threedCamera}
