@@ -11,9 +11,6 @@ import {
   // projectStore,
 } from '#/lib/stores/apollo'
 
-// ** VALTIO ??
-// import { proxy, useSnapshot } from 'valtio'
-
 // REACT Imports
 import { 
   forwardRef, 
