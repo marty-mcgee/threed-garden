@@ -2463,9 +2463,10 @@ function beginDrag(event: any, threedItem: TThreedItem) {
 
 function addThreed(event: any, scene: any) {
   console.debug('addThreed event', event)
-  var t = draggingThreedRectangle.position
-  t.x > paper.view.bounds.left
-    ? t.y > paper.view.bounds.top && t.y < paper.view.bounds.bottom
+  if (draggingThreedRectangle) {
+    var t = draggingThreedRectangle.position
+    t.x > paper.view.bounds.left
+      ? t.y > paper.view.bounds.top && t.y < paper.view.bounds.bottom
       ? initThreed(t, scene)
       : t.y > paper.view.bounds.bottom
         ? console.debug("dropped inside 3dview drop. todo implement")
@@ -2474,9 +2475,10 @@ function addThreed(event: any, scene: any) {
     threedDragDiv.style.display = "none"
     draggingThreedItem = draggingThreedItem
     draggingThreedIcon = false
-    threedDragDiv.style.background = "url('media/tmp.png')"
+    threedDragDiv.style.background = "url('images/thumb3dview.png')"
     draggingThreedRectangle.visible = false
     event.preventDefault()
+  }
 }
 
 function initThreed(event: any, scene: any) {
@@ -3133,7 +3135,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   "\");'><img " +
                   (t < 32
                     ? "src='" + objectsURL + "objects/" + e + ".png'"
-                    : "src='media/thumbPlaceHolder.png'") +
+                    : "src='media/thumb3dview.png'") +
                   " realsrc='" + objectsURL + "objects/" +
                   e +
                   ".png' class='threedThumb' alt='" +
