@@ -3,7 +3,7 @@
     "title": "siameseCat",
     "license": "CC BY 4.0",
     "author": "Gwinna",
-    "threedLink": "https://www.amazon.com/music/player/mini/playback/albums/B0DLBC2FMS?ref=sr_lwys_desktopV2_streaming_for_digital&do=play&qid=1732234284&sr=8-3",
+    "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
       "y": 1.000,
@@ -16,10 +16,58 @@
     }
   },
   {
+    "title": "bulldog",
+    "license": "CC BY 4.0",
+    "author": "Priide",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 38.75,
+      "y": 47.39,
+      "z": 64.52
+    }
+  },
+  {
+    "title": "horse",
+    "license": "CC BY 4.0",
+    "author": "b2przemo",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 58.74,
+      "y": 192.96,
+      "z": 229.22
+    }
+  },
+  {
+    "title": "horse2",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 58.27,
+      "y": 199.87,
+      "z": 261.61
+    }
+  },
+  {
     "title": "luckyBamboo",
     "license": "CC BY 4.0",
     "author": "renderbob",
-    "threedLink": "https://www.amazon.com/music/player/mini/playback/albums/B0DLBC2FMS?ref=sr_lwys_desktopV2_streaming_for_digital&do=play&qid=1732234284&sr=8-3",
+    "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
       "y": 1.000,
@@ -32,26 +80,218 @@
     }
   },
   {
-    "title": "laptop",
-    "license": "CC BY 4.0",
-    "author": "Mayollo",
-    "threedLink": "https://www.amazon.com/music/player/mini/playback/albums/B0DLBC2FMS?ref=sr_lwys_desktopV2_streaming_for_digital&do=play&qid=1732234284&sr=8-3",
+    "title": "littlePlant",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
       "y": 1.000,
       "z": 1.000
     },
     "size": {
-      "x": 33.89,
-      "y": 26.6,
-      "z": 25.32
+      "x": 26.6,
+      "y": 23.19,
+      "z": 26.59
+    }
+  },
+  {
+    "title": "flowerBox",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 54.99,
+      "y": 18.79,
+      "z": 16.19
+    }
+  },
+  {
+    "title": "fordFocus",
+    "license": "CC BY 4.0",
+    "author": "Ruff",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 204.47,
+      "y": 155.07,
+      "z": 435.81
+    }
+  },
+  {
+    "title": "ballonFoot",
+    "license": "CC BY 4.0",
+    "author": "DooL",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 21.99,
+      "y": 21.97,
+      "z": 21.99
+    }
+  },
+  {
+    "title": "drums",
+    "license": "Free Art License 1.3",
+    "author": "Sophie",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 140.86,
+      "y": 115.6,
+      "z": 92.83
+    }
+  },
+  {
+    "title": "electricGuitar",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 34.48,
+      "y": 110.02,
+      "z": 32.14
+    }
+  },
+  {
+    "title": "piano",
+    "license": "CC BY 4.0",
+    "author": "LVlittering",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 141.41,
+      "y": 120.91,
+      "z": 54.26
+    }
+  },
+  {
+    "title": "pianoAQueue",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 131.58,
+      "y": 103.1,
+      "z": 147.85
+    }
+  },
+  {
+    "title": "speaker",
+    "license": "Free Art License 1.3",
+    "author": "Gaël Bettinelli",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 22,
+      "y": 91,
+      "z": 29.62
+    }
+  },
+  {
+    "title": "speaker2",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 22.09,
+      "y": 35.37,
+      "z": 25.44
+    }
+  },
+  {
+    "title": "speaker3",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 22.09,
+      "y": 55.13,
+      "z": 25.44
+    }
+  },
+  {
+    "title": "fotel",
+    "license": "CC BY 4.0",
+    "author": "tripleJ",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 73.48,
+      "y": 69.7,
+      "z": 61.07
+    }
+  },
+  {
+    "title": "table_football",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 150.27,
+      "y": 100.9,
+      "z": 124.61
     }
   },
   {
     "title": "largeStove",
     "license": "CC BY 4.0",
     "author": "Jay-Artist",
-    "threedLink": "https://www.amazon.com/music/player/mini/playback/albums/B0DLBC2FMS?ref=sr_lwys_desktopV2_streaming_for_digital&do=play&qid=1732234284&sr=8-3",
+    "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
       "y": 1.000,
@@ -160,22 +400,6 @@
     }
   },
   {
-    "title": "piano",
-    "license": "CC BY 4.0",
-    "author": "LVlittering",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 141.41,
-      "y": 120.91,
-      "z": 54.26
-    }
-  },
-  {
     "title": "poolLounge",
     "license": "CC BY 4.0",
     "author": "LarryStephenRobb",
@@ -221,22 +445,6 @@
       "x": 5.59,
       "y": 5.59,
       "z": 5.59
-    }
-  },
-  {
-    "title": "sef-kasa",
-    "license": "CC BY 4.0",
-    "author": "bocko",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 50.5,
-      "y": 50.5,
-      "z": 54.71
     }
   },
   {
@@ -288,9 +496,9 @@
     }
   },
   {
-    "title": "suit",
+    "title": "birchTreeWithLeaves",
     "license": "CC BY 4.0",
-    "author": "rosenth",
+    "author": "Sean Bradley",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -298,10 +506,45 @@
       "z": 1.000
     },
     "size": {
-      "x": 44,
-      "y": 60,
-      "z": 11.76
-    }
+      "x": 196.13,
+      "y": 186.96,
+      "z": 200.27
+    },
+    "useMask": false
+  },
+  {
+    "title": "tree1WithLeaves",
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 186.1,
+      "y": 226.93,
+      "z": 242.08
+    },
+    "useMask": false
+  },
+  {
+    "title": "willowTreeNoLeaves",
+    "license": "CC BY 4.0",
+    "author": "Sean Bradley",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 594.45,
+      "y": 950.09,
+      "z": 635.88
+    },
+    "useMask": false
   },
   {
     "title": "table",
@@ -349,6 +592,38 @@
       "x": 7.66,
       "y": 17.08,
       "z": 5.92
+    }
+  },
+  {
+    "title": "laptop",
+    "license": "CC BY 4.0",
+    "author": "Mayollo",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 33.89,
+      "y": 26.6,
+      "z": 25.32
+    }
+  },
+  {
+    "title": "sef-kasa",
+    "license": "CC BY 4.0",
+    "author": "bocko",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 50.5,
+      "y": 50.5,
+      "z": 54.71
     }
   },
   {
@@ -448,57 +723,6 @@
     }
   },
   {
-    "title": "birchTreeWithLeaves",
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 196.13,
-      "y": 186.96,
-      "z": 200.27
-    },
-    "useMask": false
-  },
-  {
-    "title": "tree1WithLeaves",
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 186.1,
-      "y": 226.93,
-      "z": 242.08
-    },
-    "useMask": false
-  },
-  {
-    "title": "willowTreeNoLeaves",
-    "license": "CC BY 4.0",
-    "author": "Sean Bradley",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 594.45,
-      "y": 950.09,
-      "z": 635.88
-    },
-    "useMask": false
-  },
-  {
     "title": "wallDoubleSocket",
     "license": "CC BY 4.0",
     "author": "Jay-Artist",
@@ -528,6 +752,22 @@
       "x": 7.71,
       "y": 7.92,
       "z": 0.82
+    }
+  },
+  {
+    "title": "suit",
+    "license": "CC BY 4.0",
+    "author": "rosenth",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 44,
+      "y": 60,
+      "z": 11.76
     }
   },
   {
@@ -1712,22 +1952,6 @@
       "x": 117.41,
       "y": 87.62,
       "z": 62.9
-    }
-  },
-  {
-    "title": "drums",
-    "license": "Free Art License 1.3",
-    "author": "Sophie",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 140.86,
-      "y": 115.6,
-      "z": 92.83
     }
   },
   {
@@ -3269,22 +3493,6 @@
     }
   },
   {
-    "title": "speaker",
-    "license": "Free Art License 1.3",
-    "author": "Gaël Bettinelli",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 22,
-      "y": 91,
-      "z": 29.62
-    }
-  },
-  {
     "title": "spiralStaircase",
     "license": "Free Art License 1.3",
     "author": "Ola-Kristian Hoff",
@@ -3469,6 +3677,22 @@
     "useMask": false
   },
   {
+    "title": "stool",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 53.02,
+      "y": 97.96,
+      "z": 52.1
+    }
+  },
+  {
     "title": "stool2",
     "license": "Free Art License 1.3",
     "author": "Gaël Bettinelli",
@@ -3596,22 +3820,6 @@
       "x": 203.29,
       "y": 87.54,
       "z": 106.33
-    }
-  },
-  {
-    "title": "toast",
-    "license": "Free Art License 1.3",
-    "author": "Toomy",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 10.07,
-      "y": 0.79,
-      "z": 9.87
     }
   },
   {
@@ -4231,8 +4439,8 @@
   },
   {
     "title": "couch",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4247,8 +4455,8 @@
   },
   {
     "title": "crate",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4263,8 +4471,8 @@
   },
   {
     "title": "cupboard",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4279,8 +4487,8 @@
   },
   {
     "title": "deckChair",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4295,8 +4503,8 @@
   },
   {
     "title": "desk",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4311,8 +4519,8 @@
   },
   {
     "title": "desklamp",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4327,8 +4535,8 @@
   },
   {
     "title": "doubleOven",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4342,25 +4550,9 @@
     }
   },
   {
-    "title": "electricGuitar",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 34.48,
-      "y": 110.02,
-      "z": 32.14
-    }
-  },
-  {
     "title": "fireExtinguisher",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4374,41 +4566,9 @@
     }
   },
   {
-    "title": "flowerBox",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 54.99,
-      "y": 18.79,
-      "z": 16.19
-    }
-  },
-  {
-    "title": "horse2",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 58.27,
-      "y": 199.87,
-      "z": 261.61
-    }
-  },
-  {
     "title": "kalender",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4423,8 +4583,8 @@
   },
   {
     "title": "kitchenaid",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4439,8 +4599,8 @@
   },
   {
     "title": "led_tv",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4454,25 +4614,9 @@
     }
   },
   {
-    "title": "littlePlant",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 26.6,
-      "y": 23.19,
-      "z": 26.59
-    }
-  },
-  {
     "title": "lockedLocker",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4487,8 +4631,8 @@
   },
   {
     "title": "L_shaped_sofa",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4503,8 +4647,8 @@
   },
   {
     "title": "mano_cooktop",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4519,8 +4663,8 @@
   },
   {
     "title": "modernArmchair",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4535,8 +4679,8 @@
   },
   {
     "title": "mofx_mailbox",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4551,8 +4695,8 @@
   },
   {
     "title": "numberLock",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4567,8 +4711,8 @@
   },
   {
     "title": "oakChair",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4583,8 +4727,8 @@
   },
   {
     "title": "oakTable",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4599,8 +4743,8 @@
   },
   {
     "title": "oven",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4614,25 +4758,9 @@
     }
   },
   {
-    "title": "pianoAQueue",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 131.58,
-      "y": 103.1,
-      "z": 147.85
-    }
-  },
-  {
     "title": "plasticChair",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4647,8 +4775,8 @@
   },
   {
     "title": "poolTable",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4663,8 +4791,8 @@
   },
   {
     "title": "radiator",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4679,8 +4807,8 @@
   },
   {
     "title": "radiator1",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4695,8 +4823,8 @@
   },
   {
     "title": "radiator2",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4711,8 +4839,8 @@
   },
   {
     "title": "relaxChair",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4727,8 +4855,8 @@
   },
   {
     "title": "shelves",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4743,8 +4871,8 @@
   },
   {
     "title": "shower",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4759,8 +4887,8 @@
   },
   {
     "title": "showerDoor",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4775,8 +4903,8 @@
   },
   {
     "title": "silla2",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4791,8 +4919,8 @@
   },
   {
     "title": "sillaBlanca",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4807,8 +4935,8 @@
   },
   {
     "title": "sofa",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4822,57 +4950,9 @@
     }
   },
   {
-    "title": "speaker2",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 22.09,
-      "y": 35.37,
-      "z": 25.44
-    }
-  },
-  {
-    "title": "speaker3",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 22.09,
-      "y": 55.13,
-      "z": 25.44
-    }
-  },
-  {
-    "title": "stool",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 53.02,
-      "y": 97.96,
-      "z": 52.1
-    }
-  },
-  {
     "title": "tableWithTablecloth",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4886,25 +4966,9 @@
     }
   },
   {
-    "title": "table_football",
-    "license": "CC-0",
-    "author": "",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 150.27,
-      "y": 100.9,
-      "z": 124.61
-    }
-  },
-  {
     "title": "technicalTable1",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4919,8 +4983,8 @@
   },
   {
     "title": "technicalTable2",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4935,8 +4999,8 @@
   },
   {
     "title": "televisionCabinet",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4951,8 +5015,8 @@
   },
   {
     "title": "toiletPaperDispenser",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4967,8 +5031,8 @@
   },
   {
     "title": "toiletsUnit",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4983,8 +5047,8 @@
   },
   {
     "title": "towel2",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -4999,8 +5063,8 @@
   },
   {
     "title": "towel3",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -5015,8 +5079,8 @@
   },
   {
     "title": "umbrella",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -5031,8 +5095,8 @@
   },
   {
     "title": "verticalShelves",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -5047,8 +5111,8 @@
   },
   {
     "title": "wardrobeWithSlidingDoors",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -5063,8 +5127,8 @@
   },
   {
     "title": "washbasin",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -5079,8 +5143,8 @@
   },
   {
     "title": "whiteBoard",
-    "license": "CC-0",
-    "author": "",
+    "license": "CC0",
+    "author": "ThreeD Garden",
     "threedLink": "#threed-link",
     "scale": {
       "x": 1.000,
@@ -5123,22 +5187,6 @@
       "x": 100.49,
       "y": 79.98,
       "z": 88.17
-    }
-  },
-  {
-    "title": "ballonFoot",
-    "license": "CC BY 4.0",
-    "author": "DooL",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 21.99,
-      "y": 21.97,
-      "z": 21.99
     }
   },
   {
@@ -5283,22 +5331,6 @@
       "x": 56.15,
       "y": 27.52,
       "z": 27.52
-    }
-  },
-  {
-    "title": "bulldog",
-    "license": "CC BY 4.0",
-    "author": "Priide",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 38.75,
-      "y": 47.39,
-      "z": 64.52
     }
   },
   {
@@ -5590,38 +5622,6 @@
     }
   },
   {
-    "title": "fordFocus",
-    "license": "CC BY 4.0",
-    "author": "Ruff",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 204.47,
-      "y": 155.07,
-      "z": 435.81
-    }
-  },
-  {
-    "title": "fotel",
-    "license": "CC BY 4.0",
-    "author": "tripleJ",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 73.48,
-      "y": 69.7,
-      "z": 61.07
-    }
-  },
-  {
     "title": "gift",
     "license": "CC BY 4.0",
     "author": "tadine",
@@ -5699,22 +5699,6 @@
       "x": 101.55,
       "y": 48.59,
       "z": 39.18
-    }
-  },
-  {
-    "title": "horse",
-    "license": "CC BY 4.0",
-    "author": "b2przemo",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 58.74,
-      "y": 192.96,
-      "z": 229.22
     }
   },
   {

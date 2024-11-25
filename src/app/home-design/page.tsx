@@ -2367,7 +2367,7 @@ function showThreedLicenseSummary(threedItem: TThreedItem) {
           threedItem.license +
           "</a>"
         break
-      case "CC-0":
+      case "CC0":
         licenseLink =
           "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
           threedItem.license +
@@ -2396,7 +2396,7 @@ function showThreedLicenseSummary(threedItem: TThreedItem) {
     document.getElementById("model3dLargeThumb").src = objectsURL + "objects/" + threedItem.title + ".png"
     document.getElementById("model3dLink").innerHTML = 
       "<a href='" + threedItem.threedLink + "' target='_blank' rel='noreferrer'>" +
-      "click here" +
+      "external" +
       "</a>"
     setPropertiesView("model3dMeta")
   } catch (err) {
@@ -2529,9 +2529,9 @@ function initThreed(event: any, scene: any) {
               a.position.x = event.x
               a.position.z = event.y
 
-// scene.add(a)
-// canvasStateVar().scene.add(a)
-canvasStateVar().state.scene.add(a)
+              // scene.add(a)
+              // canvasStateVar().scene.add(a)
+              canvasStateVar().state.scene.add(a)
 
               clickableObjectsCounter++
               var u = clickableObjectsCounter
@@ -2624,9 +2624,9 @@ canvasStateVar().state.scene.add(a)
                   // imageN.geometry.translate(0, a.userData.height / 2, 0)
                   imageN.visible = false
                   
-// scene.add(meshN)
-// canvasStateVar().scene.add(meshN)
-canvasStateVar().state.scene.add(meshN)
+                  // scene.add(meshN)
+                  // canvasStateVar().scene.add(meshN)
+                  canvasStateVar().state.scene.add(meshN)
 
                   maskObjects[u] = meshN
                   imageN.name = "mask" + u
