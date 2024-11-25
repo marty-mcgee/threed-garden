@@ -4137,119 +4137,13 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                             /> */}
                             {/* THREED HOME DESIGN: 3D CANVAS */}
 
-{/* DO RUN THIS */}
-{ true && (
-<ThreeDComponents 
-
-/>
-)}
-                            
-                            {/* DO NOT RUN THIS */}
-                            { false && (
-                            <Canvas
-                              id={'threeCanvas'}
-                              key={'threeCanvas'}
-
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                // border: '1px solid #222222',
-                                // display: 'none !important',
-                              }}
-
-                              shadows={true}
-                              dpr={[1, 2]} // dpr = target pixel ratio (need ???)
-                              
-                              // ** CAMERA (not using declarative inside canvas)
-                              // camera={threedCamera}
-
-                              // ** SCENE (needs to be declarative inside canvas)
-                              // scene={{
-                              //   // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-                              //   background: new THREE.Color(0x171717),
-                              // }}
-                              scene={scene}
-                              onCreated={
-                                (state) => {
-                                  console.debug('%c Canvas onCreated state', ccm.darkred, state)
-                                  // console.debug('%c Canvas onCreated state.camera', ccm.darkred, state.camera)
-                                  console.debug('%c Canvas onCreated state.camera.position', ccm.darkred, state.camera.position)
-                                  state.gl.toneMapping = THREE.AgXToneMapping
-                                  // state.camera.fov = 32 // 8
-                                  // state.camera.lookAt(2, -4, 8) // position [0, 0, 0]
-                                  // threedCamera.position = new THREE.Vector3(2, -4, 8)
-                                  // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
-                                }
-                              }
-                              
-                              // ** JOYSTICK as mouse (optional)
-                              // onPointerDown={(e) => {
-                              //   if (e.pointerType === 'mouse') {
-                              //     // testing
-                              //     (e.target as HTMLCanvasElement).requestPointerLock()
-                              //   }
-                              // }}
-                              
-                            >
-                              <Preload all />
-                            
-                              {/* ORBIT CONTROLS (CAMERA CONTROLS) */}
-                              {/* makeDefault makes the controls known to r3f,
-                                  now transform-controls can auto-disable them when active */}
-                              {enableOrbit && (
-                                <>
-                                  <OrbitControls
-                                    makeDefault
-                                    minDistance={0.25}
-                                    maxDistance={480}
-                                    // // minZoom={10}
-                                    // // maxZoom={20}
-                                    // // minAzimuthAngle={-Math.PI / 4}
-                                    // // maxAzimuthAngle={Math.PI / 4}
-                                    minPolarAngle={-Math.PI / 1.8}
-                                    maxPolarAngle={Math.PI / 1.8}
-                                    enableZoom={true}
-                                    zoomToCursor={false} // default is false
-                                    zoomSpeed={1.0} // default is 1.0
-                                    enableRotate={true}
-                                    // autoRotate={prefs.showPanelFirst} // default is false
-                                    autoRotate={false}
-                                    autoRotateSpeed={1.0} // default is 2.0
-                                    rotateSpeed={1.0} // default is 1.0
-                                    enableDamping={false} // slows down rotation after mouse release
-                                    dampingFactor={0.2} // default is 0.05
-                                    enablePan={true}
-                                    screenSpacePanning={true}
-
-                                    // target={camera.target}
-                                  />
-
-                                  {/* ORBIT CONTROLS GIZMO HELPER */}
-                                  {enableGizmoCube && (
-                                    <GizmoHelper
-                                      alignment='top-right'
-                                      margin={[64, 48]}
-                                    >
-                                      <group scale={0.7}>
-                                        <GizmoViewcube />
-                                      </group>
-                                      <group
-                                        scale={1.4}
-                                        position={[-24, -24, -24]}
-                                      >
-                                        <GizmoViewport
-                                          labelColor='white'
-                                          axisHeadScale={0.5}
-                                          hideNegativeAxes
-                                        />
-                                      </group>
-                                    </GizmoHelper>
-                                  )}
-                                </>
-                              )}
-
-                            </Canvas>
+                            {/* DO RUN THIS */}
+                            { true && (
+                              <ThreeDComponents
+                                // **
+                              />
                             )}
+                            
                             {/* <div id='overlayLogo3dView' className='overlayLogo'>
                               <a href='https://threedgarden.com/home-design/'><img
                                   src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
