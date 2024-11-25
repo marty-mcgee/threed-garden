@@ -2534,9 +2534,9 @@ function initThreed(event: any, scene: any) {
               canvasStateVar().state.scene.add(a)
 
               clickableObjectsCounter++
-              var u = clickableObjectsCounter
-              a.name = u
-              clickableObjects[u] = a
+              var draggingThreedItemU = clickableObjectsCounter
+              a.name = draggingThreedItemU
+              clickableObjects[draggingThreedItemU] = a
 
               var p = new THREE.BoxGeometry(
                 a.userData.width,
@@ -2604,7 +2604,7 @@ function initThreed(event: any, scene: any) {
                     }
                   }
 
-                  rasterImageN.data.id = u
+                  rasterImageN.data.id = draggingThreedItemU
                   rasterImageN.data.name = draggingThreedItem.title
                   rasterImageN.data.boxHelper = c
                   rasterImageN.data.level = paper.project.activeLayer.data.id
@@ -2628,8 +2628,8 @@ function initThreed(event: any, scene: any) {
                   // canvasStateVar().scene.add(meshN)
                   canvasStateVar().state.scene.add(meshN)
 
-                  maskObjects[u] = meshN
-                  imageN.name = "mask" + u
+                  maskObjects[draggingThreedItemU] = meshN
+                  imageN.name = "mask" + draggingThreedItemU
                 // }
 
 
@@ -2639,28 +2639,28 @@ function initThreed(event: any, scene: any) {
                   var i = (rectangleOh + 360) % 360
                   rasterImageN.rotate(i),
                     (rasterImageN.data.angle = i),
-                    clickableObjects[u].rotateY((-i / 180) * Math.PI),
-                    maskObjects[u] &&
-                    (maskObjects[u].rotateY((-i / 180) * Math.PI),
-                      (maskObjects[u].scale.x = 1),
-                      (maskObjects[u].scale.y = 1),
-                      (maskObjects[u].scale.z = 1))
+                    clickableObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
+                    maskObjects[draggingThreedItemU] &&
+                    (maskObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
+                      (maskObjects[draggingThreedItemU].scale.x = 1),
+                      (maskObjects[draggingThreedItemU].scale.y = 1),
+                      (maskObjects[draggingThreedItemU].scale.z = 1))
                 } else rasterImageN.data.angle = 0
                   ; (tween = new TWEEN.Tween(controls.target)
                     .to(a.position, 500)
                     .onUpdate(render)
                     .start()),
                     (rasterImageN.visible = true),
-                    (Threed[u] = m),
+                    (Threed[draggingThreedItemU] = m),
                     threedGroup[paper.project.activeLayer.data.id].addChild(
-                      Threed[u]
+                      Threed[draggingThreedItemU]
                     ),
-                    (plan.threed[u] = {
-                      id: u,
+                    (plan.threed[draggingThreedItemU] = {
+                      id: draggingThreedItemU,
                       name: t,
-                      position: clickableObjects[u].position,
-                      scale: clickableObjects[u].scale,
-                      rotation: clickableObjects[u].rotation,
+                      position: clickableObjects[draggingThreedItemU].position,
+                      scale: clickableObjects[draggingThreedItemU].scale,
+                      rotation: clickableObjects[draggingThreedItemU].rotation,
                       width: rasterImageN.bounds.width,
                       depth: rasterImageN.bounds.height,
                       angle: rasterImageN.data.angle,
@@ -2683,7 +2683,7 @@ function initThreed(event: any, scene: any) {
                 r.putImageData(s, 0, 0),
                   updatePlanHistory(
                     plan,
-                    u,
+                    draggingThreedItemU,
                     null,
                     null,
                     null,
@@ -3487,8 +3487,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             new paper.Point(draggingThreedItem.pivot).rotate(draggingThreedAngle)
           ),
           c = a,
-          u = c.subtract(d)
-          a = a.add(u)
+          draggingThreedItemU = c.subtract(d)
+          a = a.add(draggingThreedItemU)
         }
         draggingThreedRectangle.position = a
         var p = paper.view.projectToView(a)
