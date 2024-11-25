@@ -2487,24 +2487,24 @@ function initThreed(event: any, scene: any) {
 
   event.x = parseInt(event.x)
   event.y = parseInt(event.y)
-  var t = draggingThreedItem.title
+  // var t = draggingThreedItem.title
   var o = draggingThreedAngle
   new MTLLoader()
     .setCrossOrigin('anonymous')
     .setPath(objectsURL + "objects/")
-    .load(t + ".mtl", function (a) {
+    .load(draggingThreedItem.title + ".mtl", function (a: any) {
       a.baseUrl = objectsURL + "objects/"
       a.preload()
       new OBJLoader()
       .setMaterials(a)
       .setPath(objectsURL + "objects/")
       .load(
-        t + ".obj",
+        draggingThreedItem.title + ".obj",
         function (a: any) {
           try {
             var imageN = new Image()
             imageN.crossOrigin = 'anonymous'
-            imageN.src = objectsURL + "objects/" + t + "_top.png"
+            imageN.src = objectsURL + "objects/" + draggingThreedItem.title + "_top.png"
             imageN.onload = function () {
               var l = new THREE.Box3().setFromObject(a)
               a.userData.width = l.max.x - l.min.x
@@ -2599,13 +2599,13 @@ function initThreed(event: any, scene: any) {
                       elevateIcon.data.level = paper.project.activeLayer.data.id
                       heightIcon.data.level = paper.project.activeLayer.data.id
                       toolsGroup.data.level = paper.project.activeLayer.data.id
-                      modalModel3dThreedId = t
+                      modalModel3dThreedId = draggingThreedItem.title
                       // updateObjectPropertiesWindow()
                     }
                   }
 
                   rasterImageN.data.id = u
-                  rasterImageN.data.name = t
+                  rasterImageN.data.name = draggingThreedItem.title
                   rasterImageN.data.boxHelper = c
                   rasterImageN.data.level = paper.project.activeLayer.data.id
 
@@ -2622,7 +2622,7 @@ function initThreed(event: any, scene: any) {
                   // imageN.position.y = a.position.y
                   // imageN.position.z = a.position.z
                   // imageN.geometry.translate(0, a.userData.height / 2, 0)
-                  imageN.visible = false
+                  // imageN.visible = false
                   
                   // scene.add(meshN)
                   // canvasStateVar().scene.add(meshN)
