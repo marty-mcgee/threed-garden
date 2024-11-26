@@ -2472,19 +2472,20 @@ function beginDrag(event: any, threedItem: TThreedItem) {
 }
 
 function addThreed(event: any, threedItem: any, scene: any) {
+  console.debug('addThreed: ================================')
   console.debug('addThreed: event', event)
   console.debug('addThreed: scene', scene)
   console.debug('addThreed: threedItem', threedItem)
   try {
     if (!draggingThreedRectangle?.position) {
-      let draggingThreedRectangle = new paper.Path.Rectangle(
+      draggingThreedRectangle = new paper.Path.Rectangle(
         new paper.Point(-1, -1),
         new paper.Point(1, 1)
       )
     }
       console.debug('addThreed: draggingThreedRectangle', draggingThreedRectangle)
       console.debug('addThreed: paper', paper)
-      console.debug('addThreed: paper.view.bounds', paper.view.bounds)
+      // console.debug('addThreed: paper.view.bounds', paper.view.bounds)
 
       if (draggingThreedRectangle.position.x > paper.view.bounds.left + 100) { // [MM] plus 100 pixel movement
         if ( draggingThreedRectangle.position.y > paper.view.bounds.top 
@@ -2496,18 +2497,20 @@ function addThreed(event: any, threedItem: any, scene: any) {
         } else if (draggingThreedRectangle.position.y > paper.view.bounds.bottom) {
             console.debug("addThreed: dropped inside 3dView -- todo: implement")
         } else {
-          console.debug("addThreed: dropped not inside views")
+          console.debug("addThreed: not dropped inside views 2")
         }
       } else {
-        console.debug("addThreed: dropped not inside views")
+        console.debug("addThreed: dropped not inside views 1")
       }
 
-      threedDragDiv.style.display = "none"
-      // threedItem = draggingThreedItem
-      // console.debug('addThreed: threedItem', threedItem)
       draggingThreedIcon = false
+      threedDragDiv.style.display = "none"
       threedDragDiv.style.background = "url('images/thumb3dview.png')"
       draggingThreedRectangle.visible = false
+      draggingThreedRectangle.position.x = 0
+      draggingThreedRectangle.position.y = 0
+      // threedItem = draggingThreedItem
+      // console.debug('addThreed: threedItem', threedItem)
       event.preventDefault()
     // }
   } catch (err) {
