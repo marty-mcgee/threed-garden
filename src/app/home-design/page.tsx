@@ -3444,53 +3444,55 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         )
         // console.debug('PAPERa', PAPERa)
         let thingN = null
-        if (draggingThreedItem.useMask) {
-          console.debug('draggingThreedItem.useMask', draggingThreedItem)
-          var l = 51,
-            i = 0
-          if (
-            (Object.keys(Walls).forEach(function (e: string) {
-              // @ ts-expect-error
-              // var t = Walls[e]
-              var t = Walls[e as keyof typeof Walls] // type T = keyof Walls
-              if (
-                "object" == typeof t &&
-                // @ts-expect-error
-                t.data.level === paper.project.activeLayer.data.id
-              ) {
-                // @ts-expect-error
-                var o = t.getNearestPoint(PAPERa),
-                    r = PAPERa.getDistance(o)
-                if (r < 50 && r < l) {
-                  ; (l = r), (thingN = o)
-                  // @ts-expect-error
-                  var s = t.segments[0].point.subtract(t.segments[1].point)
-                  i = s.angle
-                }
-              }
-            }),
-              thingN)
-          ) {
-            new paper.Path.Circle({
-              center: thingN,
-              radius: screenScale / 2,
-              fillColor: new paper.Color(0.3, 1, 0.5, 0.75),
-              strokeWidth: 1,
-            })
-            .removeOnMove()
-            // .removeOnDrag()
-            var r = "rotate(" + i + "deg)"
-              threedDragDiv.style.transform = r
-              draggingThreedAngle = i
-          } else {
-            var r = "rotate(0deg)"
-              threedDragDiv.style.transform = r
-              draggingThreedAngle = 0
-          }
-        }
+        // ** USEMASK?
+        // if (draggingThreedItem.useMask) {
+        //   console.debug('draggingThreedItem.useMask', draggingThreedItem)
+        //   var l = 51,
+        //     i = 0
+        //   if (
+        //     (Object.keys(Walls).forEach(function (e: string) {
+        //       // @ ts-expect-error
+        //       // var t = Walls[e]
+        //       var t = Walls[e as keyof typeof Walls] // type T = keyof Walls
+        //       if (
+        //         "object" == typeof t &&
+        //         // @ts-expect-error
+        //         t.data.level === paper.project.activeLayer.data.id
+        //       ) {
+        //         // @ts-expect-error
+        //         var o = t.getNearestPoint(PAPERa),
+        //             r = PAPERa.getDistance(o)
+        //         if (r < 50 && r < l) {
+        //           ; (l = r), (thingN = o)
+        //           // @ts-expect-error
+        //           var s = t.segments[0].point.subtract(t.segments[1].point)
+        //           i = s.angle
+        //         }
+        //       }
+        //     }),
+        //       thingN)
+        //   ) {
+        //     new paper.Path.Circle({
+        //       center: thingN,
+        //       radius: screenScale / 2,
+        //       fillColor: new paper.Color(0.3, 1, 0.5, 0.75),
+        //       strokeWidth: 1,
+        //     })
+        //     .removeOnMove()
+        //     // .removeOnDrag()
+        //     var r = "rotate(" + i + "deg)"
+        //       threedDragDiv.style.transform = r
+        //       draggingThreedAngle = i
+        //   } else {
+        //     var r = "rotate(0deg)"
+        //       threedDragDiv.style.transform = r
+        //       draggingThreedAngle = 0
+        //   }
+        // }
         if (null === thingN) {
           // console.debug('thingN === null', thingN)
           var s: any
+          
           Object.keys(verticalGuides).forEach(function (verticalGuide: string) {
             console.debug('verticalGuide', verticalGuide)
             // thingN.x >= verticalGuides[verticalGuide].position.x - 10 &&
@@ -3518,16 +3520,17 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             // .removeOnDrag()
           }
         }
-        if (draggingThreedItem.pivot) {
-          console.debug('draggingThreedItem.pivot', draggingThreedItem)
-          var d = PAPERa.add(
-            // @ts-expect-error
-            new paper.Point(draggingThreedItem.pivot).rotate(draggingThreedAngle)
-          ),
-          c = PAPERa,
-          draggingThreedItemU = c.subtract(d)
-          PAPERa = PAPERa.add(draggingThreedItemU)
-        }
+        // ** PIVOT?
+        // if (draggingThreedItem.pivot) {
+        //   console.debug('draggingThreedItem.pivot', draggingThreedItem)
+        //   var d = PAPERa.add(
+        //     // @ts-expect-error
+        //     new paper.Point(draggingThreedItem.pivot).rotate(draggingThreedAngle)
+        //   ),
+        //   c = PAPERa,
+        //   draggingThreedItemU = c.subtract(d)
+        //   PAPERa = PAPERa.add(draggingThreedItemU)
+        // }
         draggingThreedRectangle.position = PAPERa
         var p = paper.view.projectToView(PAPERa)
         threedDragDiv.style.left = p.x + planView.offsetLeft - widthT / 2 + "px"
