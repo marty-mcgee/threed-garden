@@ -2476,7 +2476,7 @@ function addThreed(event: any, threedItem: any, scene: any) {
   console.debug('addThreed: scene', scene)
   console.debug('addThreed: threedItem', threedItem)
   try {
-    if (!draggingThreedRectangle) {
+    if (!draggingThreedRectangle?.position) {
       let draggingThreedRectangle = new paper.Path.Rectangle(
         new paper.Point(-1, -1),
         new paper.Point(1, 1)
@@ -3492,7 +3492,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         if (null === thingN) {
           // console.debug('thingN === null', thingN)
           var s: any
-          
+
           Object.keys(verticalGuides).forEach(function (verticalGuide: string) {
             console.debug('verticalGuide', verticalGuide)
             // thingN.x >= verticalGuides[verticalGuide].position.x - 10 &&
@@ -3531,10 +3531,13 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         //   draggingThreedItemU = c.subtract(d)
         //   PAPERa = PAPERa.add(draggingThreedItemU)
         // }
+        
         draggingThreedRectangle.position = PAPERa
-        var p = paper.view.projectToView(PAPERa)
-        threedDragDiv.style.left = p.x + planView.offsetLeft - widthT / 2 + "px"
-        threedDragDiv.style.top = p.y + planView.offsetTop - heightOh / 2 + "px"
+
+        var PAPERprojectToView = paper.view.projectToView(PAPERa)
+        console.debug('PAPERprojectToView', PAPERprojectToView)
+        threedDragDiv.style.left = PAPERprojectToView.x + planView.offsetLeft - widthT / 2 + "px"
+        threedDragDiv.style.top = PAPERprojectToView.y + planView.offsetTop - heightOh / 2 + "px"
         // [MM]
         // threedDragDiv.style.display = "block"
       }
