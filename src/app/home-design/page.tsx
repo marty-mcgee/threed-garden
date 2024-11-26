@@ -2519,23 +2519,44 @@ function addThreed(event: any, threedItem: any, scene: any) {
 }
 
 function initThreed(threedItem: any, scene: any) {
-  console.debug('initThreed threedItem', threedItem)
-  console.debug('initThreed scene', scene)
+  console.debug('initThreed: threedItem', threedItem)
+  console.debug('initThreed: scene', scene)
 
   try {
     new MTLLoader()
       .setCrossOrigin('anonymous')
       .setPath(objectsURL + "objects/")
-      .load(threedItem.title + ".mtl", function (a: any) {
-        a.baseUrl = objectsURL + "objects/"
-        a.preload()
+      .load(threedItem.title + ".mtl", function (MTLa: any) {
+        MTLa.baseUrl = objectsURL + "objects/"
+        MTLa.preload()
         new OBJLoader()
-        .setMaterials(a)
+        .setMaterials(MTLa)
         .setPath(objectsURL + "objects/")
         .load(
           threedItem.title + ".obj",
           function (OBJa: any) {
+            console.debug('initThreed: OBJa', OBJa)
             try {
+              const mmScalePercentage = 0.02 // 1 | 0.1
+              OBJa.scale.x = mmScalePercentage
+              OBJa.scale.y = mmScalePercentage
+              OBJa.scale.z = mmScalePercentage
+              OBJa.position.x = draggingThreedRectangle.position.x
+              OBJa.position.z = draggingThreedRectangle.position.y
+              OBJa.position.y =
+                threedItem.size.z * mmScalePercentage / 2 / 2 // half the total diameter of the object
+                // OBJa.userData.height / 2 +
+                // 0.5 + 0
+                // paper.project.activeLayer.data.height +
+                // defaultFloorThickness
+              // scene.add(OBJa)
+              // canvasStateVar().scene.add(OBJa)
+              canvasStateVar().state.scene.add(OBJa)
+              console.debug('initThreed: added OBJa')
+              
+              return true
+
+
               var imageN = new Image()
               imageN.crossOrigin = 'anonymous'
               imageN.src = objectsURL + "objects/" + threedItem.title + "_top.png"
@@ -2552,10 +2573,10 @@ function initThreed(threedItem: any, scene: any) {
                   OBJa.children[i].translateY(-s)
                   OBJa.children[i].translateZ(-d)
                 }
-                var c = new THREE.BoxHelper(OBJa, 16711680)
-                c.material.linewidth = 5
-                c.visible = false
-                OBJa.add(c)
+                var OBJaBoxHelper = new THREE.BoxHelper(OBJa, 16711680)
+                OBJaBoxHelper.material.linewidth = 5
+                OBJaBoxHelper.visible = false
+                OBJa.add(OBJaBoxHelper)
                 OBJa.position.y =
                   0.1 +
                   paper.project.activeLayer.data.height +
@@ -2563,9 +2584,9 @@ function initThreed(threedItem: any, scene: any) {
                 OBJa.position.x = draggingThreedRectangle.position.x
                 OBJa.position.z = draggingThreedRectangle.position.y
 
-                // scene.add(OBJa)
-                // canvasStateVar().scene.add(OBJa)
-                canvasStateVar().state.scene.add(OBJa)
+                // // scene.add(OBJa)
+                // // canvasStateVar().scene.add(OBJa)
+                // canvasStateVar().state.scene.add(OBJa)
 
                 clickableObjectsCounter++
                 var draggingThreedItemU = clickableObjectsCounter
@@ -2640,7 +2661,7 @@ function initThreed(threedItem: any, scene: any) {
 
                     rasterImageN.data.id = draggingThreedItemU
                     rasterImageN.data.name = threedItem.title
-                    rasterImageN.data.boxHelper = c
+                    rasterImageN.data.boxHelper = OBJaBoxHelper
                     rasterImageN.data.level = paper.project.activeLayer.data.id
 
                     // threedItem.useMask
