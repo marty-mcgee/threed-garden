@@ -12,17 +12,12 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 import dynamic from 'next/dynamic'
 
 // ** APOLLO Imports
-// ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
-// // import { ApolloProvider } from '@apollo/client'
-// // import { ApolloConsumer } from '@apollo/client'
-import { useApolloClient } from '@apollo/client'
-import { useReactiveVar } from '@apollo/client'
-// // import { getApolloClient, getApolloContext } from '@apollo/client'
-// // import {
-// //   // ApolloLink,
-// //   // HttpLink,
-// //   getApolloContext
-// // } from '@apollo/client'
+import { 
+  useApolloClient,
+  useReactiveVar,
+  // getApolloClient,
+  // getApolloContext,
+} from '@apollo/client'
 // import {
 //   useQuery,
 //   useSuspenseQuery,
@@ -30,8 +25,6 @@ import { useReactiveVar } from '@apollo/client'
 //   useReadQuery,
 //   useFragment
 // } from '@apollo/experimental-nextjs-app-support/ssr'
-// // import stores from '#/lib/stores/apollo'
-// // import { stores, queries, mutations } from '#/lib/stores/apollo'
 import {
   // stores,
   preferencesStore,
@@ -331,15 +324,15 @@ let threedHomeDesign: string = 'HEY HEY HEY _________________________',
   floorMaterial,
   roofMaterial,
   tween,
-  raycaster,
-  mouse,
+  raycaster: any = new THREE.Raycaster(),
+  mouse: any = new THREE.Vector2(),
   clickableObjects: Object[] = [],
   clickableObjectsCounter: number = 0,
   maskObjects: Object[] = [],
   maskObjectsApplied: Object[] = [],
   maskObjectsAppliedRoof: Object[] = [],
   // **
-  verticalSlider,
+  verticalSlider: HTMLElement,
   verticalSliderDragging: boolean,
   horizontalSliderLeft: HTMLElement,
   horizontalSliderLeftDragging: boolean,
@@ -347,10 +340,11 @@ let threedHomeDesign: string = 'HEY HEY HEY _________________________',
   horizontalSliderRightDragging: boolean,
   // **
   threedDragDiv: HTMLElement, // JSX.Element = <div></div>,
-  draggingThreedIcon:boolean = false,
-  draggingThreedItem: any, // number = 0, // -1
+  draggingThreedIcon: boolean = false,
+  draggingThreedItem: Object = {},
   draggingThreedAngle: number = 0,
-  draggingThreedRectangle: any,
+  draggingThreedRectangle: any, 
+  // project is null
   // draggingThreedRectangle = new paper.Path.Rectangle(
   //   new paper.Point(-1, -1),
   //   new paper.Point(1, 1)
@@ -404,7 +398,7 @@ let threedHomeDesign: string = 'HEY HEY HEY _________________________',
   lastPasteX: number = 0,
   lastPasteY: number = 0,
   progressBar: HTMLElement,
-  focusPoint,
+  focusPoint: any, // = new paper.Point(0, 0),
   selectedItem3DAxes,
   activeLevel,
   levelButtons,
@@ -637,17 +631,31 @@ const draw1 = () => {
   let myPath = new paper.Path()
 
   paper.view.onMouseDown = (event: any) => {
+    // myPath.remove()
     // @ts-expect-error
-    myPath.strokeColor = 'white'
+    myPath.strokeColor = 'darkgreen'
     myPath.strokeWidth = 3
   }
 
   paper.view.onMouseDrag = (event: any) => {
     myPath.add(event.point)
+    // myPath.remove()
+  }
+
+  paper.view.onMouseUp = (event: any) => {
+    // @ts-expect-error
+    myPath.strokeColor = 'orange'
+    myPath.strokeWidth = 3
   }
 
   // @ts-expect-error
   paper.view.draw()
+}
+
+const initThreeDPaper = () => {
+  // **
+  console.debug('%c initThreeDPaper THREED PAPER JS', ccm.blackAlert)
+
 }
 
 const PaperCanvas = (props: any) => {
@@ -660,6 +668,7 @@ const PaperCanvas = (props: any) => {
     paper.setup(planCanvas)
     paper.settings.hitTolerance = 3
     draw1()
+    initThreeDPaper()
   }, [])
   
   return (
@@ -2407,18 +2416,19 @@ function showThreedLicenseSummary(threedItem: TThreedItem) {
 // ** Drag Functions
 function beginDrag(event: any, threedItem: TThreedItem) {
 
-  const thisEvent = event // the triggering event sent to this function
+  // const thisEvent = event // the triggering event sent to this function
   // const threedItem = threedItem // threedItems[threedItem]
-  // console.debug('drag: beginDrag', event, threedItem, threedItem)
-  console.debug('%c drag: beginDrag threedItem', ccm.yellowAlert, threedItem)
+  console.debug('%c beginDrag: event', ccm.yellowAlert, event)
+  console.debug('%c beginDrag: threedItem', ccm.yellowAlert, threedItem)
 
   try {
     showThreedLicenseSummary(threedItem)
     setToolMode("pointer")
     draggingThreedItem = threedItem
     draggingThreedIcon = true
+    planView = document.getElementById("planView")
 
-    let o = paper.view.viewToProject(
+    let PAPERviewToProject = paper.view.viewToProject(
       new paper.Point(
         event.pageX - planView.offsetLeft,
         event.pageY - planView.offsetTop
@@ -2428,7 +2438,7 @@ function beginDrag(event: any, threedItem: TThreedItem) {
       new paper.Point(-1, -1),
       new paper.Point(1, 1)
     )
-    draggingThreedRectangle.position = o
+    draggingThreedRectangle.position = PAPERviewToProject
 
     if (threedItem) {
       threedItem.scale && threedItem.scale.x
@@ -2439,16 +2449,16 @@ function beginDrag(event: any, threedItem: TThreedItem) {
         : draggingThreedRectangle.bounds.height = threedItem.size.z
     }
     draggingThreedRectangle.visible = false
-    // threedDragDiv = document.getElementById("threedDragDiv")
-    
+
+    threedDragDiv = document.getElementById("threedDragDiv")
     threedDragDiv.style.background = "url('" + objectsURL + "objects/" + threedItem.title + "_top.png')"
     threedDragDiv.style.backgroundRepeat = "no-repeat"
     
-    var widthA, heightN
-    widthA = 100 // draggingThreedRectangle.bounds.width
-    heightN = 100 // draggingThreedRectangle.bounds.height
+    let widthA = 100 // draggingThreedRectangle.bounds.width
+    let heightN = 100 // draggingThreedRectangle.bounds.height
     widthA *= paper.view.zoom
     heightN *= paper.view.zoom
+    
     threedDragDiv.style.left = event.clientX - widthA / 2 + "px"
     threedDragDiv.style.top = event.clientY - heightN / 2 + "px"
     threedDragDiv.style.width = widthA + "px"
@@ -2461,260 +2471,284 @@ function beginDrag(event: any, threedItem: TThreedItem) {
   }
 }
 
-function addThreed(event: any, scene: any) {
-  console.debug('addThreed event', event)
-  if (draggingThreedRectangle) {
-    var t = draggingThreedRectangle.position
-    t.x > paper.view.bounds.left
-      ? t.y > paper.view.bounds.top && t.y < paper.view.bounds.bottom
-      ? initThreed(t, scene)
-      : t.y > paper.view.bounds.bottom
-        ? console.debug("dropped inside 3dview drop. todo implement")
-        : console.debug("dropped not inside views")
-    : console.debug("dropped not inside views")
-    threedDragDiv.style.display = "none"
-    draggingThreedItem = draggingThreedItem
-    draggingThreedIcon = false
-    threedDragDiv.style.background = "url('images/thumb3dview.png')"
-    draggingThreedRectangle.visible = false
-    event.preventDefault()
+function addThreed(event: any, threedItem: any, scene: any) {
+  console.debug('addThreed: event', event)
+  console.debug('addThreed: scene', scene)
+  console.debug('addThreed: threedItem', threedItem)
+  try {
+    if (!draggingThreedRectangle) {
+      let draggingThreedRectangle = new paper.Path.Rectangle(
+        new paper.Point(-1, -1),
+        new paper.Point(1, 1)
+      )
+    }
+      console.debug('addThreed: draggingThreedRectangle', draggingThreedRectangle)
+      console.debug('addThreed: paper', paper)
+      console.debug('addThreed: paper.view.bounds', paper.view.bounds)
+
+      if (draggingThreedRectangle.position.x > paper.view.bounds.left + 100) { // [MM] plus 100 pixel movement
+        if ( draggingThreedRectangle.position.y > paper.view.bounds.top 
+          && draggingThreedRectangle.position.y < paper.view.bounds.bottom ) {
+          console.debug("addThreed: dropped inside planView successfully")
+          // **
+          initThreed(draggingThreedItem, scene)
+          // **
+        } else if (draggingThreedRectangle.position.y > paper.view.bounds.bottom) {
+            console.debug("addThreed: dropped inside 3dView -- todo: implement")
+        } else {
+          console.debug("addThreed: dropped not inside views")
+        }
+      } else {
+        console.debug("addThreed: dropped not inside views")
+      }
+
+      threedDragDiv.style.display = "none"
+      // threedItem = draggingThreedItem
+      // console.debug('addThreed: threedItem', threedItem)
+      draggingThreedIcon = false
+      threedDragDiv.style.background = "url('images/thumb3dview.png')"
+      draggingThreedRectangle.visible = false
+      event.preventDefault()
+    // }
+  } catch (err) {
+    console.debug("addThreed: err", err)
   }
 }
 
-function initThreed(event: any, scene: any) {
-  console.debug('initThreed event', event)
+function initThreed(threedItem: any, scene: any) {
+  console.debug('initThreed threedItem', threedItem)
   console.debug('initThreed scene', scene)
 
-  event.x = parseInt(event.x)
-  event.y = parseInt(event.y)
-  // var t = draggingThreedItem.title
-  var o = draggingThreedAngle
-  new MTLLoader()
-    .setCrossOrigin('anonymous')
-    .setPath(objectsURL + "objects/")
-    .load(draggingThreedItem.title + ".mtl", function (a: any) {
-      a.baseUrl = objectsURL + "objects/"
-      a.preload()
-      new OBJLoader()
-      .setMaterials(a)
+  try {
+    new MTLLoader()
+      .setCrossOrigin('anonymous')
       .setPath(objectsURL + "objects/")
-      .load(
-        draggingThreedItem.title + ".obj",
-        function (OBJa: any) {
-          try {
-            var imageN = new Image()
-            imageN.crossOrigin = 'anonymous'
-            imageN.src = objectsURL + "objects/" + draggingThreedItem.title + "_top.png"
-            imageN.onload = function () {
-              var l = new THREE.Box3().setFromObject(OBJa)
-              OBJa.userData.width = l.max.x - l.min.x
-              OBJa.userData.height = l.max.y - l.min.y
-              OBJa.userData.depth = l.max.z - l.min.z
-              for (var i = 0; i < OBJa.children.length; i++) {
-                var r = l.min.x + (l.max.x - l.min.x) / 2
-                var s = l.min.y + (l.max.y - l.min.y) / 2 - (l.max.y - l.min.y) / 2
-                var d = l.min.z + (l.max.z - l.min.z) / 2
-                OBJa.children[i].translateX(-r)
-                OBJa.children[i].translateY(-s)
-                OBJa.children[i].translateZ(-d)
-              }
-              var c = new THREE.BoxHelper(OBJa, 16711680)
-              c.material.linewidth = 5
-              c.visible = false
-              OBJa.add(c)
-              OBJa.position.y =
-                0.1 +
-                paper.project.activeLayer.data.height +
-                defaultFloorThickness
-              OBJa.position.x = event.x
-              OBJa.position.z = event.y
+      .load(threedItem.title + ".mtl", function (a: any) {
+        a.baseUrl = objectsURL + "objects/"
+        a.preload()
+        new OBJLoader()
+        .setMaterials(a)
+        .setPath(objectsURL + "objects/")
+        .load(
+          threedItem.title + ".obj",
+          function (OBJa: any) {
+            try {
+              var imageN = new Image()
+              imageN.crossOrigin = 'anonymous'
+              imageN.src = objectsURL + "objects/" + threedItem.title + "_top.png"
+              imageN.onload = function () {
+                var l = new THREE.Box3().setFromObject(OBJa)
+                OBJa.userData.width  = l.max.x - l.min.x
+                OBJa.userData.height = l.max.y - l.min.y
+                OBJa.userData.depth  = l.max.z - l.min.z
+                for (var i = 0; i < OBJa.children.length; i++) {
+                  var r = l.min.x + (l.max.x - l.min.x) / 2
+                  var s = l.min.y + (l.max.y - l.min.y) / 2 - (l.max.y - l.min.y) / 2
+                  var d = l.min.z + (l.max.z - l.min.z) / 2
+                  OBJa.children[i].translateX(-r)
+                  OBJa.children[i].translateY(-s)
+                  OBJa.children[i].translateZ(-d)
+                }
+                var c = new THREE.BoxHelper(OBJa, 16711680)
+                c.material.linewidth = 5
+                c.visible = false
+                OBJa.add(c)
+                OBJa.position.y =
+                  0.1 +
+                  paper.project.activeLayer.data.height +
+                  defaultFloorThickness
+                OBJa.position.x = draggingThreedRectangle.position.x
+                OBJa.position.z = draggingThreedRectangle.position.y
 
-              // scene.add(OBJa)
-              // canvasStateVar().scene.add(OBJa)
-              canvasStateVar().state.scene.add(OBJa)
+                // scene.add(OBJa)
+                // canvasStateVar().scene.add(OBJa)
+                canvasStateVar().state.scene.add(OBJa)
 
-              clickableObjectsCounter++
-              var draggingThreedItemU = clickableObjectsCounter
-              OBJa.name = draggingThreedItemU
-              clickableObjects[draggingThreedItemU] = OBJa
+                clickableObjectsCounter++
+                var draggingThreedItemU = clickableObjectsCounter
+                OBJa.name = draggingThreedItemU
+                clickableObjects[draggingThreedItemU] = OBJa
 
-              var p = new THREE.BoxGeometry(
-                OBJa.userData.width,
-                OBJa.userData.height,
-                OBJa.userData.depth
-              )
-
-              var rasterImageN = new paper.Raster(imageN)
-              rasterImageN.visible = false
-              rasterImageN.onLoad = function () {
-                // if (
-                  
-                  rasterImageN.data.type = "threed"
-                  rasterImageN.opacity = 0.5
-                  rasterImageN.bounds.width = l.max.x - l.min.x
-                  rasterImageN.bounds.height = l.max.z - l.min.z
-                  rasterImageN.position = event
-                  rasterImageN.data.flipX = 1
-                  rasterImageN.data.flipZ = 1
-                  rasterImageN.fillColor = new paper.Color(1, 1, 1, 1)
-                  rasterImageN.selectedColor = new paper.Color(0, 0, 0, 0)
-
-                  // readOnly ||
-                  rasterImageN.onMouseDown = function (e: any) {
-                    if ("pointer" === toolMode) {
-                      deselectAll()
-                      selectedItem = this
-                      mouseMode = 0
-                      offsetMousePoint = selectedItem.position.subtract(e.point)
-                      offsetMousePoint.x = parseInt(offsetMousePoint.x)
-                      offsetMousePoint.y = parseInt(offsetMousePoint.y)
-                      selectedItem.bringToFront()
-                      this.data.toolsRectangleInner && this.data.toolsRectangleInner.remove()
-                      this.rotation = 0
-                      var rectangleOh = new paper.Path.Rectangle(this.bounds)
-                      this.rotation = this.data.angle
-                      rectangleOh.data.type = "toolsRectangle"
-                      rectangleOh.strokeColor = new paper.Color(1, 1, 1, 1) // "#b19064"
-                      rectangleOh.strokeWidth = 1
-                      rectangleOh.strokeScaling = false
-                      rectangleOh.locked = true
-                      rectangleOh.rotate(this.data.angle)
-                      this.data.toolsRectangleInner = rectangleOh
-                      rectangleOh.visible = true
-                      this.data.boxHelper.visible = true
-                      redrawGrid()
-                      rotateIcon.visible = true
-                      resizeIcon.visible = true
-                      elevateIcon.visible = true
-                      heightIcon.visible = true
-                      toolsGroup.position = selectedItem.bounds.center
-                      toolsGroup.visible = true
-                      toolsGroup.bringToFront()
-                      rotateIcon.bringToFront()
-                      resizeIcon.bringToFront()
-                      elevateIcon.bringToFront()
-                      heightIcon.bringToFront()
-                      rotateIcon.data.level = paper.project.activeLayer.data.id
-                      resizeIcon.data.level = paper.project.activeLayer.data.id
-                      elevateIcon.data.level = paper.project.activeLayer.data.id
-                      heightIcon.data.level = paper.project.activeLayer.data.id
-                      toolsGroup.data.level = paper.project.activeLayer.data.id
-                      modalModel3dThreedId = draggingThreedItem.title
-                      // updateObjectPropertiesWindow()
-                    }
-                  }
-
-                  rasterImageN.data.id = draggingThreedItemU
-                  rasterImageN.data.name = draggingThreedItem.title
-                  rasterImageN.data.boxHelper = c
-                  rasterImageN.data.level = paper.project.activeLayer.data.id
-
-                  // threedItem.useMask
-                  
-                // )
-                // {
-                  // rasterImageN.useMask = true
-                  var meshN = new THREE.Mesh(
-                    p,
-                    new THREE.MeshStandardMaterial({})
-                  )
-                  // imageN.position.x = OBJa.position.x
-                  // imageN.position.y = OBJa.position.y
-                  // imageN.position.z = OBJa.position.z
-                  // imageN.geometry.translate(0, OBJa.userData.height / 2, 0)
-                  // imageN.visible = false
-                  
-                  // scene.add(meshN)
-                  // canvasStateVar().scene.add(meshN)
-                  canvasStateVar().state.scene.add(meshN)
-
-                  // maskObjects[draggingThreedItemU] = meshN
-                  // imageN.name = "mask" + draggingThreedItemU
-                // }
-
-
-                // **
-                /*
-                if (rectangleOh) {
-                  var i = (rectangleOh + 360) % 360
-                  rasterImageN.rotate(i),
-                    (rasterImageN.data.angle = i),
-                    clickableObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
-                    maskObjects[draggingThreedItemU] &&
-                    (maskObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
-                      (maskObjects[draggingThreedItemU].scale.x = 1),
-                      (maskObjects[draggingThreedItemU].scale.y = 1),
-                      (maskObjects[draggingThreedItemU].scale.z = 1))
-                } else rasterImageN.data.angle = 0
-                  ; (tween = new TWEEN.Tween(controls.target)
-                    .to(OBJa.position, 500)
-                    .onUpdate(render)
-                    .start()),
-                    (rasterImageN.visible = true),
-                    (Threed[draggingThreedItemU] = m),
-                    threedGroup[paper.project.activeLayer.data.id].addChild(
-                      Threed[draggingThreedItemU]
-                    ),
-                    (plan.threed[draggingThreedItemU] = {
-                      id: draggingThreedItemU,
-                      name: t,
-                      position: clickableObjects[draggingThreedItemU].position,
-                      scale: clickableObjects[draggingThreedItemU].scale,
-                      rotation: clickableObjects[draggingThreedItemU].rotation,
-                      width: rasterImageN.bounds.width,
-                      depth: rasterImageN.bounds.height,
-                      angle: rasterImageN.data.angle,
-                      level: rasterImageN.data.level,
-                      flipX: rasterImageN.data.flipX,
-                      flipZ: rasterImageN.data.flipZ,
-                    }),
-                    (progressBar.style.display = "none")
-                for (
-                  var r = rasterImageN.canvas.getContext("2d"),
-                  s = r.getImageData(0, 0, rasterImageN.width, rasterImageN.height),
-                  d = s.data,
-                  g = 0;
-                  g < d.length;
-                  g += 4
+                var p = new THREE.BoxGeometry(
+                  OBJa.userData.width,
+                  OBJa.userData.height,
+                  OBJa.userData.depth
                 )
-                  (d[g] = 255 - d[g]),
-                    (d[g + 1] = 255 - d[g + 1]),
-                    (d[g + 2] = 255 - d[g + 2])
-                r.putImageData(s, 0, 0),
-                  updatePlanHistory(
-                    plan,
-                    draggingThreedItemU,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+
+                var rasterImageN = new paper.Raster(imageN)
+                rasterImageN.visible = false
+                rasterImageN.onLoad = function () {
+                  // if (
+                    
+                    rasterImageN.data.type = "threed"
+                    rasterImageN.opacity = 0.5
+                    rasterImageN.bounds.width = l.max.x - l.min.x
+                    rasterImageN.bounds.height = l.max.z - l.min.z
+                    rasterImageN.position = draggingThreedRectangle.position
+                    rasterImageN.data.flipX = 1
+                    rasterImageN.data.flipZ = 1
+                    rasterImageN.fillColor = new paper.Color(1, 1, 1, 1)
+                    rasterImageN.selectedColor = new paper.Color(0, 0, 0, 0)
+
+                    // readOnly ||
+                    rasterImageN.onMouseDown = function (e: any) {
+                      if ("pointer" === toolMode) {
+                        deselectAll()
+                        selectedItem = this
+                        mouseMode = 0
+                        offsetMousePoint = selectedItem.position.subtract(e.point)
+                        offsetMousePoint.x = parseInt(offsetMousePoint.x)
+                        offsetMousePoint.y = parseInt(offsetMousePoint.y)
+                        selectedItem.bringToFront()
+                        this.data.toolsRectangleInner && this.data.toolsRectangleInner.remove()
+                        this.rotation = 0
+                        var rectangleOh = new paper.Path.Rectangle(this.bounds)
+                        this.rotation = this.data.angle
+                        rectangleOh.data.type = "toolsRectangle"
+                        rectangleOh.strokeColor = new paper.Color(1, 1, 1, 1) // "#b19064"
+                        rectangleOh.strokeWidth = 1
+                        rectangleOh.strokeScaling = false
+                        rectangleOh.locked = true
+                        rectangleOh.rotate(this.data.angle)
+                        this.data.toolsRectangleInner = rectangleOh
+                        rectangleOh.visible = true
+                        this.data.boxHelper.visible = true
+                        redrawGrid()
+                        rotateIcon.visible = true
+                        resizeIcon.visible = true
+                        elevateIcon.visible = true
+                        heightIcon.visible = true
+                        toolsGroup.position = selectedItem.bounds.center
+                        toolsGroup.visible = true
+                        toolsGroup.bringToFront()
+                        rotateIcon.bringToFront()
+                        resizeIcon.bringToFront()
+                        elevateIcon.bringToFront()
+                        heightIcon.bringToFront()
+                        rotateIcon.data.level = paper.project.activeLayer.data.id
+                        resizeIcon.data.level = paper.project.activeLayer.data.id
+                        elevateIcon.data.level = paper.project.activeLayer.data.id
+                        heightIcon.data.level = paper.project.activeLayer.data.id
+                        toolsGroup.data.level = paper.project.activeLayer.data.id
+                        modalModel3dThreedId = threedItem.title
+                        // updateObjectPropertiesWindow()
+                      }
+                    }
+
+                    rasterImageN.data.id = draggingThreedItemU
+                    rasterImageN.data.name = threedItem.title
+                    rasterImageN.data.boxHelper = c
+                    rasterImageN.data.level = paper.project.activeLayer.data.id
+
+                    // threedItem.useMask
+                    
+                  // )
+                  // {
+                    // rasterImageN.useMask = true
+                    var meshN = new THREE.Mesh(
+                      p,
+                      new THREE.MeshStandardMaterial({})
+                    )
+                    // imageN.position.x = OBJa.position.x
+                    // imageN.position.y = OBJa.position.y
+                    // imageN.position.z = OBJa.position.z
+                    // imageN.geometry.translate(0, OBJa.userData.height / 2, 0)
+                    // imageN.visible = false
+                    
+                    // scene.add(meshN)
+                    // canvasStateVar().scene.add(meshN)
+                    canvasStateVar().state.scene.add(meshN)
+
+                    // maskObjects[draggingThreedItemU] = meshN
+                    // imageN.name = "mask" + draggingThreedItemU
+                  // }
+
+
+                  // **
+                  /*
+                  if (rectangleOh) {
+                    var i = (rectangleOh + 360) % 360
+                    rasterImageN.rotate(i),
+                      (rasterImageN.data.angle = i),
+                      clickableObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
+                      maskObjects[draggingThreedItemU] &&
+                      (maskObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
+                        (maskObjects[draggingThreedItemU].scale.x = 1),
+                        (maskObjects[draggingThreedItemU].scale.y = 1),
+                        (maskObjects[draggingThreedItemU].scale.z = 1))
+                  } else rasterImageN.data.angle = 0
+                    ; (tween = new TWEEN.Tween(controls.target)
+                      .to(OBJa.position, 500)
+                      .onUpdate(render)
+                      .start()),
+                      (rasterImageN.visible = true),
+                      (Threed[draggingThreedItemU] = m),
+                      threedGroup[paper.project.activeLayer.data.id].addChild(
+                        Threed[draggingThreedItemU]
+                      ),
+                      (plan.threed[draggingThreedItemU] = {
+                        id: draggingThreedItemU,
+                        name: t,
+                        position: clickableObjects[draggingThreedItemU].position,
+                        scale: clickableObjects[draggingThreedItemU].scale,
+                        rotation: clickableObjects[draggingThreedItemU].rotation,
+                        width: rasterImageN.bounds.width,
+                        depth: rasterImageN.bounds.height,
+                        angle: rasterImageN.data.angle,
+                        level: rasterImageN.data.level,
+                        flipX: rasterImageN.data.flipX,
+                        flipZ: rasterImageN.data.flipZ,
+                      }),
+                      (progressBar.style.display = "none")
+                  for (
+                    var r = rasterImageN.canvas.getContext("2d"),
+                    s = r.getImageData(0, 0, rasterImageN.width, rasterImageN.height),
+                    d = s.data,
+                    g = 0;
+                    g < d.length;
+                    g += 4
                   )
-              */
-              } // end rasterImageN.onload function
-            } // end imageN.onload function
+                    (d[g] = 255 - d[g]),
+                      (d[g + 1] = 255 - d[g + 1]),
+                      (d[g + 2] = 255 - d[g + 2])
+                  r.putImageData(s, 0, 0),
+                    updatePlanHistory(
+                      plan,
+                      draggingThreedItemU,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null,
+                      null
+                    )
+                */
+                } // end rasterImageN.onload function
+              } // end imageN.onload function
 
 
-          } catch (e) {
-            console.dir(e)
-          }
-        },
-        // onProgress,
-        // onError
-      )
-    })
+            } catch (e) {
+              console.dir(e)
+            }
+          },
+          // onProgress,
+          // onError
+        )
+      })
+  } catch (err) {
+    console.debug('initThreed: err', err)
+  }
 }
 
 // ==============================================================
@@ -3107,8 +3141,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       //   loadInViewThumbs()
       // })
       focusPoint = new paper.Point(0, 0)
-      raycaster = new THREE.Raycaster()
-      mouse = new THREE.Vector2()
+      // raycaster = new THREE.Raycaster()
+      // mouse = new THREE.Vector2()
       
       // DONE
       // async function fetchObjects() {
@@ -3411,6 +3445,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         // console.debug('PAPERa', PAPERa)
         let thingN = null
         if (draggingThreedItem.useMask) {
+          console.debug('draggingThreedItem.useMask', draggingThreedItem)
           var l = 51,
             i = 0
           if (
@@ -3425,7 +3460,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               ) {
                 // @ts-expect-error
                 var o = t.getNearestPoint(PAPERa),
-                  r = PAPERa.getDistance(o)
+                    r = PAPERa.getDistance(o)
                 if (r < 50 && r < l) {
                   ; (l = r), (thingN = o)
                   // @ts-expect-error
@@ -3454,6 +3489,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
           }
         }
         if (null === thingN) {
+          // console.debug('thingN === null', thingN)
           var s: any
           Object.keys(verticalGuides).forEach(function (verticalGuide: string) {
             console.debug('verticalGuide', verticalGuide)
@@ -3470,6 +3506,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             //     : (s = new paper.Point(thingN.x, horizontalGuides[horizontalGuides].position.y)))
           })
           if (s) {
+            console.debug('s', s)
             PAPERa = s
             new paper.Path.Circle({
               center: PAPERa,
@@ -3482,6 +3519,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
           }
         }
         if (draggingThreedItem.pivot) {
+          console.debug('draggingThreedItem.pivot', draggingThreedItem)
           var d = PAPERa.add(
             // @ts-expect-error
             new paper.Point(draggingThreedItem.pivot).rotate(draggingThreedAngle)
@@ -3517,11 +3555,14 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       draggingThreedIcon = false
       return  verticalSliderDragging
               ? ((verticalSliderDragging = false), false)
-              : horizontalSliderLeftDragging
+                : horizontalSliderLeftDragging
               ? ((horizontalSliderLeftDragging = false), false)
-              : horizontalSliderRightDragging
+                : horizontalSliderRightDragging
               ? ((horizontalSliderRightDragging = false), false)
-              : (draggingThreedItem !== -1 && addThreed(e, scene),
+
+              : (  draggingThreedItem // !== -1 
+                && addThreed(e, draggingThreedItem, canvasStateVar().state.scene),
+                
                 void (draggingNewGuide && (draggingNewGuide = false)))
     }
     
@@ -4086,7 +4127,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
 <PaperCanvas />
                             
-                            <div id='overlayLogoPlanView' className='overlayLogo'>
+                            <div 
+                              id='overlayLogoPlanView' 
+                              className='overlayLogo'
+                            >
                               <a href='https://threedgarden.com/demo/'
                                 // style='float:leftpadding:0px margin-top:0px'
                               >
@@ -4107,6 +4151,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               <button id='overlayPlanViewGoto3dViewBtn' onClick={() => goto3dView()} className='smallButton'>3d View</button>
                             </div>
                             */}
+
                           </Grid>
                         </Panel>
                         
@@ -4143,7 +4188,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                                 // **
                               />
                             )}
-                            
+
                             {/* <div id='overlayLogo3dView' className='overlayLogo'>
                               <a href='https://threedgarden.com/home-design/'><img
                                   src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
