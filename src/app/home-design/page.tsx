@@ -721,6 +721,9 @@ const PaperCanvas = (props: any) => {
 
 
 function initPlanView() {
+
+  // planCanvas = document.getElementById('planView') // NO, NOT THE SAME
+
   // function e (e: any) {
   function MMe (e: any) {
     var t = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0
