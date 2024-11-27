@@ -721,7 +721,8 @@ const PaperCanvas = (props: any) => {
 
 
 function initPlanView() {
-  function e(e) {
+  // function e (e: any) {
+  function MMe (e: any) {
     var t = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0
     if (t) {
       var o = cumulclick
@@ -734,27 +735,35 @@ function initPlanView() {
             e.pageX - planView.offsetLeft,
             e.pageY - planView.offsetTop
           )
-        ),
-          l = 0.11 * (paper.view.center.x - n.x),
-          i = 0.11 * (paper.view.center.y - n.y)
+        )
+        var l = 0.11 * (paper.view.center.x - n.x)
+        var i = 0.11 * (paper.view.center.y - n.y)
+
         if (t > 0) {
           var r = paper.view.center.x - l,
             s = paper.view.center.y - i,
             d = new paper.Point(r, s)
           paper.view.center = d
-        } else {
+        } 
+        else {
           var r = paper.view.center.x + l,
             s = paper.view.center.y + i,
             d = new paper.Point(r, s)
           paper.view.center = d
         }
-        redrawGrid(), redrawTexts()
-      } else cumulclick = o
+
+        redrawGrid() 
+        // redrawTexts()
+      
+      } else {
+        cumulclick = o
+      }
     }
     return e.preventDefault() && !1
   }
   if (
-    ((planView = document.getElementById("planView")),
+    (
+      (planView = document.getElementById("planView")),
       (paper.project.activeLayer.name = "level0"),
       (paper.project.activeLayer.data = { id: "0", height: 0 }),
       (screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75),
@@ -792,9 +801,10 @@ function initPlanView() {
       // (document.getElementsByClassName("close")[2].onclick = function () {
       //   closeAllModals(), showMouseIndicators()
       // }),
-      "3dView" != UILayout)
+      "3dView" != UILayout
+    )
   ) {
-    ; 
+    // ; 
     // (rulerLeft.oncontextmenu = function () {
     //   return !1
     // }),
@@ -811,10 +821,10 @@ function initPlanView() {
       },
       !1
     )
-    var t = /Firefox/i.test(navigator.userAgent)
+    var MMt = /Firefox/i.test(navigator.userAgent)
       ? "DOMMouseScroll"
       : "mousewheel"
-    planCanvas.addEventListener(t, e)
+    planCanvas.addEventListener(MMt, MMe)
     for (var o = 0; o <= 200; o++) {
       var a = new paper.Point(10 * o, 0),
         n = new paper.Point(10 * o, 100),
@@ -835,48 +845,49 @@ function initPlanView() {
           yLines.push(l),
           gridGroup.addChild(l)
     }
-    ; (toolsGroup = new paper.Group()),
-      (toolsGroup.rotation = 0),
-      (rotateIcon = new paper.Raster("media/rotate.png")),
-      (rotateIcon.data.type = "rotateThreedTool"),
-      (rotateIcon.onMouseEnter = function (e) {
-        planView.style.cursor = "move"
-      }),
-      (rotateIcon.onMouseLeave = function (e) {
-        planView.style.cursor = "default"
-      }),
-      (rotateIcon.visible = !1),
-      toolsGroup.addChild(rotateIcon),
-      (resizeIcon = new paper.Raster("media/expand.png")),
-      (resizeIcon.data.type = "stretchThreedXZTool"),
-      (resizeIcon.onMouseEnter = function (e) {
-        planView.style.cursor = "move"
-      }),
-      (resizeIcon.onMouseLeave = function (e) {
-        planView.style.cursor = "default"
-      }),
-      (resizeIcon.visible = !1),
-      toolsGroup.addChild(resizeIcon),
-      (elevateIcon = new paper.Raster("media/elevation.png")),
-      (elevateIcon.data.type = "elevateThreedTool"),
-      (elevateIcon.onMouseEnter = function (e) {
-        planView.style.cursor = "row-resize"
-      }),
-      (elevateIcon.onMouseLeave = function (e) {
-        planView.style.cursor = "default"
-      }),
-      (elevateIcon.visible = !1),
-      toolsGroup.addChild(elevateIcon),
-      (heightIcon = new paper.Raster("media/height.png")),
-      (heightIcon.data.type = "stretchThreedYTool"),
-      (heightIcon.onMouseEnter = function (e) {
-        planView.style.cursor = "ns-resize"
-      }),
-      (heightIcon.onMouseLeave = function (e) {
-        planView.style.cursor = "default"
-      }),
-      (heightIcon.visible = !1),
-      toolsGroup.addChild(heightIcon)
+    ; 
+    (toolsGroup = new paper.Group()),
+    (toolsGroup.rotation = 0),
+    (rotateIcon = new paper.Raster("media/rotate.png")),
+    (rotateIcon.data.type = "rotateThreedTool"),
+    (rotateIcon.onMouseEnter = function (e) {
+      planView.style.cursor = "move"
+    }),
+    (rotateIcon.onMouseLeave = function (e) {
+      planView.style.cursor = "default"
+    }),
+    (rotateIcon.visible = !1),
+    toolsGroup.addChild(rotateIcon),
+    (resizeIcon = new paper.Raster("media/expand.png")),
+    (resizeIcon.data.type = "stretchThreedXZTool"),
+    (resizeIcon.onMouseEnter = function (e) {
+      planView.style.cursor = "move"
+    }),
+    (resizeIcon.onMouseLeave = function (e) {
+      planView.style.cursor = "default"
+    }),
+    (resizeIcon.visible = !1),
+    toolsGroup.addChild(resizeIcon),
+    (elevateIcon = new paper.Raster("media/elevation.png")),
+    (elevateIcon.data.type = "elevateThreedTool"),
+    (elevateIcon.onMouseEnter = function (e) {
+      planView.style.cursor = "row-resize"
+    }),
+    (elevateIcon.onMouseLeave = function (e) {
+      planView.style.cursor = "default"
+    }),
+    (elevateIcon.visible = !1),
+    toolsGroup.addChild(elevateIcon),
+    (heightIcon = new paper.Raster("media/height.png")),
+    (heightIcon.data.type = "stretchThreedYTool"),
+    (heightIcon.onMouseEnter = function (e) {
+      planView.style.cursor = "ns-resize"
+    }),
+    (heightIcon.onMouseLeave = function (e) {
+      planView.style.cursor = "default"
+    }),
+    (heightIcon.visible = !1),
+    toolsGroup.addChild(heightIcon)
   }
   ; 
   (wallHelperPath = new paper.Path.Line(
