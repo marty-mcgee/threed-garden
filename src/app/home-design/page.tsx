@@ -2541,34 +2541,19 @@ function initThreed(threedItem: any, scene: any) {
               OBJa.scale.x = mmScalePercentage
               OBJa.scale.y = mmScalePercentage
               OBJa.scale.z = mmScalePercentage
-              OBJa.position.x = draggingThreedRectangle.position.x
-              OBJa.position.z = draggingThreedRectangle.position.y
-              OBJa.position.y =
-                threedItem.size.z * mmScalePercentage / 2 / 2 // half the total diameter of the object
-                // OBJa.userData.height / 2 +
-                // 0.5 + 0
-                // paper.project.activeLayer.data.height +
-                // defaultFloorThickness
-              // scene.add(OBJa)
-              // canvasStateVar().scene.add(OBJa)
-              canvasStateVar().state.scene.add(OBJa)
-              console.debug('initThreed: added OBJa')
-              
-              return true
-
 
               var imageN = new Image()
               imageN.crossOrigin = 'anonymous'
               imageN.src = objectsURL + "objects/" + threedItem.title + "_top.png"
               imageN.onload = function () {
-                var l = new THREE.Box3().setFromObject(OBJa)
-                OBJa.userData.width  = l.max.x - l.min.x
-                OBJa.userData.height = l.max.y - l.min.y
-                OBJa.userData.depth  = l.max.z - l.min.z
+                var OBJaBox = new THREE.Box3().setFromObject(OBJa)
+                OBJa.userData.width  = OBJaBox.max.x - OBJaBox.min.x
+                OBJa.userData.height = OBJaBox.max.y - OBJaBox.min.y
+                OBJa.userData.depth  = OBJaBox.max.z - OBJaBox.min.z
                 for (var i = 0; i < OBJa.children.length; i++) {
-                  var r = l.min.x + (l.max.x - l.min.x) / 2
-                  var s = l.min.y + (l.max.y - l.min.y) / 2 - (l.max.y - l.min.y) / 2
-                  var d = l.min.z + (l.max.z - l.min.z) / 2
+                  var r = OBJaBox.min.x + (OBJaBox.max.x - OBJaBox.min.x) / 2
+                  var s = OBJaBox.min.y + (OBJaBox.max.y - OBJaBox.min.y) / 2 - (OBJaBox.max.y - OBJaBox.min.y) / 2
+                  var d = OBJaBox.min.z + (OBJaBox.max.z - OBJaBox.min.z) / 2
                   OBJa.children[i].translateX(-r)
                   OBJa.children[i].translateY(-s)
                   OBJa.children[i].translateZ(-d)
@@ -2577,23 +2562,23 @@ function initThreed(threedItem: any, scene: any) {
                 OBJaBoxHelper.material.linewidth = 5
                 OBJaBoxHelper.visible = false
                 OBJa.add(OBJaBoxHelper)
-                OBJa.position.y =
-                  0.1 +
-                  paper.project.activeLayer.data.height +
-                  defaultFloorThickness
+                OBJa.position.y = threedItem.size.z * mmScalePercentage / 2 / 2 // half the total diameter of the object
+                  // 0.1 +
+                  // paper.project.activeLayer.data.height +
+                  // defaultFloorThickness
                 OBJa.position.x = draggingThreedRectangle.position.x
                 OBJa.position.z = draggingThreedRectangle.position.y
 
-                // // scene.add(OBJa)
-                // // canvasStateVar().scene.add(OBJa)
-                // canvasStateVar().state.scene.add(OBJa)
+                // scene.add(OBJa)
+                // canvasStateVar().scene.add(OBJa)
+                canvasStateVar().state.scene.add(OBJa)
 
                 clickableObjectsCounter++
                 var draggingThreedItemU = clickableObjectsCounter
                 OBJa.name = draggingThreedItemU
                 clickableObjects[draggingThreedItemU] = OBJa
 
-                var p = new THREE.BoxGeometry(
+                var OBJaBoxGeometry = new THREE.BoxGeometry(
                   OBJa.userData.width,
                   OBJa.userData.height,
                   OBJa.userData.depth
@@ -2606,8 +2591,8 @@ function initThreed(threedItem: any, scene: any) {
                     
                     rasterImageN.data.type = "threed"
                     rasterImageN.opacity = 0.5
-                    rasterImageN.bounds.width = l.max.x - l.min.x
-                    rasterImageN.bounds.height = l.max.z - l.min.z
+                    rasterImageN.bounds.width = OBJaBox.max.x - OBJaBox.min.x
+                    rasterImageN.bounds.height = OBJaBox.max.z - OBJaBox.min.z
                     rasterImageN.position = draggingThreedRectangle.position
                     rasterImageN.data.flipX = 1
                     rasterImageN.data.flipZ = 1
@@ -2670,7 +2655,7 @@ function initThreed(threedItem: any, scene: any) {
                   // {
                     // rasterImageN.useMask = true
                     var meshN = new THREE.Mesh(
-                      p,
+                      OBJaBoxGeometry,
                       new THREE.MeshStandardMaterial({})
                     )
                     // imageN.position.x = OBJa.position.x
@@ -2679,9 +2664,9 @@ function initThreed(threedItem: any, scene: any) {
                     // imageN.geometry.translate(0, OBJa.userData.height / 2, 0)
                     // imageN.visible = false
                     
-                    // scene.add(meshN)
-                    // canvasStateVar().scene.add(meshN)
-                    canvasStateVar().state.scene.add(meshN)
+                    // // scene.add(meshN)
+                    // // canvasStateVar().scene.add(meshN)
+                    // canvasStateVar().state.scene.add(meshN)
 
                     // maskObjects[draggingThreedItemU] = meshN
                     // imageN.name = "mask" + draggingThreedItemU
@@ -3559,7 +3544,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         draggingThreedRectangle.position = PAPERa
 
         var PAPERprojectToView = paper.view.projectToView(PAPERa)
-        console.debug('PAPERprojectToView', PAPERprojectToView)
+        // console.debug('PAPERprojectToView', PAPERprojectToView)
         threedDragDiv.style.left = PAPERprojectToView.x + planView.offsetLeft - widthT / 2 + "px"
         threedDragDiv.style.top = PAPERprojectToView.y + planView.offsetTop - heightOh / 2 + "px"
         // [MM]
