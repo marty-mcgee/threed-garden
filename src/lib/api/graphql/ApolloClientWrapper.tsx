@@ -23,11 +23,12 @@ import ccm from '#/lib/utils/console-colors'
 
 const uri_gql = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL    // 'https://threed.design/wp-json/wp/v2'
-// console.clear()
+console.clear()
+console.debug('%c====================================', ccm.darkgreen)
 console.debug('%c🥕 ThreeD Garden 🌱.🦆 Apollo loaded 🍄', ccm.green)
 console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
 // console.debug('%c🦆 - REST API', ccm.darkgreen, uri_rest)
-console.debug('%c====================================', ccm.green)
+console.debug('%c====================================', ccm.darkgreen)
 
 // have a function to create a client for you
 function makeClient() {
