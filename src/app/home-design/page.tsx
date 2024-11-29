@@ -650,6 +650,42 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
 
 // ==============================================================
 // ** PAPER.JS
+
+const PaperCanvas = (props: any) => {
+  
+  const planCanvasRef = useRef(null)
+  
+  useEffect(() => {
+    const planCanvas = planCanvasRef.current
+    // paper.install(window)
+    paper.setup(planCanvas)
+    paper.settings.hitTolerance = 3
+    initThreeDPaper(planCanvas)
+  }, [])
+  
+  return (
+    <canvas 
+      ref={planCanvasRef} 
+      {...props} 
+      id='planCanvas' 
+      // resize='true'
+      style={{
+        // height: '100%',
+        // width: '100%',
+      }}
+    />
+  )
+}
+
+const initThreeDPaper = (planCanvas: any) => {
+  // **
+  console.debug('%c initThreeDPaper THREED PAPER JS', ccm.blackAlert, planCanvas)
+
+  draw1()
+  initPlanView(planCanvas)
+
+}
+
 const draw1 = () => {
   let myPath = new paper.Path()
 
@@ -669,51 +705,18 @@ const draw1 = () => {
     // @ts-expect-error
     myPath.strokeColor = 'darkgreen'
     myPath.strokeWidth = 3
+    myPath = new paper.Path()
   }
 
   // @ts-expect-error
   paper.view.draw()
 }
 
-const initThreeDPaper = () => {
-  // **
-  console.debug('%c initThreeDPaper THREED PAPER JS', ccm.blackAlert)
-
-
-
-}
-
-const PaperCanvas = (props: any) => {
-  
-  const planCanvasRef = useRef(null)
-  
-  useEffect(() => {
-    const planCanvas = planCanvasRef.current
-    // paper.install(window)
-    paper.setup(planCanvas)
-    paper.settings.hitTolerance = 3
-    draw1()
-    initThreeDPaper()
-  }, [])
-  
-  return (
-    <canvas 
-      ref={planCanvasRef} 
-      {...props} 
-      id='planCanvas' 
-      // resize='true'
-      style={{
-        // height: '100%',
-        width: '100%',
-      }}
-    />
-  )
-}
-
-function initPlanView() {
+function initPlanView(planCanvas: any) {
 
   // let planCanvas = document.getElementById('planView') // NO, NOT THE SAME.. need actual ref
-  let planCanvas = document.getElementById('planCanvas') // NO, NOT THE SAME.. need actual ref?
+  // let planCanvas = document.getElementById('planCanvas') // NO, NOT THE SAME.. need actual ref?
+  
 
   // function e (e: any) {
   function MMe (e: any) {
@@ -760,6 +763,7 @@ function initPlanView() {
       paper.project.activeLayer.name = "level0"
       paper.project.activeLayer.data = { id: "0", height: 0 }
       screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
+
       gridGroup[0] = new paper.Group()
       floorsGroup[0] = new paper.Group()
       roofsGroup[0] = new paper.Group()
@@ -5819,7 +5823,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
       // ** ================================================
 
-      initPlanView()
+      // initPlanView()
       // initThreeJS()
       // resize3dView()
       // resizePlanView()
