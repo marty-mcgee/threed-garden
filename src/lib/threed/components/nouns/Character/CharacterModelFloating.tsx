@@ -343,7 +343,7 @@ export default function CharacterModel(props: CharacterModelProps) {
           play={punchEffectProps.play}
           numberOfFrames={7}
           alphaTest={0.01}
-          textureImageURL={'./punchEffect.png'}
+          textureImageURL={'/images/animations/punchEffect.png'}
         />
       </group>
     </Suspense>
