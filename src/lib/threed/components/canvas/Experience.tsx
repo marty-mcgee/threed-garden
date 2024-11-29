@@ -473,6 +473,35 @@ const ThreeDExperience = forwardRef((
             </group>
             )}
             {/* END: CHARACTER MODEL */}
+
+            {/* CHARACTER MODEL */}
+            { true && (
+            <group key='character2' position={[-3.6, 0.396 - 0.396, -3.6]}>
+              {/* <CharacterControls
+                debug={prefs.doWorldDebug}
+                // debug={false}
+                animated={prefs.doCharacterAnimation}
+                // animated={false}
+                disableControl={prefs.doWorldControl}
+                // disableControl={false}
+                // disableFollowCam={prefs.doWorldUnfollowCam}
+                disableFollowCam={true}
+                followLight={true}
+                // springK={2}
+                // dampingC={0.2}
+                // autoBalanceSpringK={1.2}
+                // autoBalanceDampingC={0.04}
+                // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+                // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+                // mode='FixedCamera'
+                // mode='CameraBasedMovement'
+              > */}
+                {/* <CharacterModelStacy scale={1.6} /> */}
+                <CharacterModelChicken scale={2.0} />
+              {/* </CharacterControls> */}
+            </group>
+            )}
+            {/* END: CHARACTER MODEL */}
           
           {/* </KeyboardControls> */}
 
