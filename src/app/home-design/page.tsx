@@ -373,6 +373,7 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   wallHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
   roofHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
   redrawGrid: Function = () => {},
+  redrawTexts: Function = () => {},
   xLines: Object[] = [],
   yLines: Object[] = [],
   // **
@@ -720,7 +721,6 @@ function initPlanView(planCanvas: any) {
   // let planCanvas = document.getElementById('planView') // NO, NOT THE SAME.. need actual ref
   // let planCanvas = document.getElementById('planCanvas') // NO, NOT THE SAME.. need actual ref?
   
-
   // function e (e: any) {
   function MMe (e: any) {
     var t = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0
@@ -753,7 +753,7 @@ function initPlanView(planCanvas: any) {
         }
 
         redrawGrid()
-        // redrawTexts()
+        redrawTexts()
       
       } else {
         cumulclick = o
@@ -983,7 +983,15 @@ function initPlanView(planCanvas: any) {
   threedGroup[paper.project.activeLayer.data.id].addChild(
     draggingThreedRectangle
   )
+
+  // ** TOOLS: MOUSE EVENT LISTENERS
+
+  // ** ON MOUSE DOWN
   tools.onMouseDown = function (e: any) {
+    // **
+    console.debug('initPlanView: tools.onMouseDown', e)
+
+    /*
     if ("pointer" === toolMode)
       if (2 === e.event.buttons) mouseMode = -1
       else if (readOnly) mouseMode = -1
@@ -1013,8 +1021,8 @@ function initPlanView(planCanvas: any) {
                     ? console.debug("this should never happen : scalingY")
                     : ((scalingY = !0),
                       (stretchYStartHeight =
-                        clickableObjects[selectedItem.data.id].userData
-                          .height *
+                        clickableObjects[selectedItem.data.id].userData.height 
+                        *
                         clickableObjects[selectedItem.data.id].scale.y),
                       (stretchYPath = new paper.Path()),
                       // (stretchYPath.strokeColor = "black"),
@@ -1827,8 +1835,15 @@ function initPlanView(planCanvas: any) {
             document.getElementById("textValueProp").select(),
             (startedDrawingText = !1)
       }
+    */
   }
+
+  // ** ON MOUSE UP
   tools.onMouseUp = function (e: any) {
+    // **
+    console.debug('initPlanView: tools.onMouseUp', e)
+
+    /*
     0 === mouseMode && dragging
       ? selectedItem &&
         selectedItem.data &&
@@ -2078,10 +2093,16 @@ function initPlanView(planCanvas: any) {
                       : 9 === mouseMode
                         ? ((selectedGuideId = -1), (mouseMode = -1))
                         : 10 === mouseMode && ((selectedGuideId = -1), (mouseMode = -1))
-  }
 
-  /* */
+    */
+  } // END tools.onMouseUp()
+
+  // ** ON MOUSE DRAG
   tools.onMouseDrag = function (e: any) {
+    // **
+    console.debug('initPlanView: tools.onMouseDrag', e)
+
+    /*
     var t = e.downPoint.subtract(e.point)
     if (mouseMode === -1) {
       paper.view.center = paper.view.center.add(t)
@@ -2737,8 +2758,14 @@ function initPlanView(planCanvas: any) {
         }
       }
     }
+    */
   }
+
+  // ** ON MOUSE MOVE
   tools.onMouseMove = function (e: any) {
+    // **
+    console.debug('initPlanView: tools.onMouseMove', e)
+    /*
     if (((lastMousePoint = e.point), "walls" === toolMode)) {
       if (((snapPoint = null), startedDrawingWalls)) {
         var t = e.point.subtract(wallHelperPath.segments[0].point)
@@ -3133,9 +3160,11 @@ function initPlanView(planCanvas: any) {
           )
         }
     }
+    */
   }
   /* */
 
+  // ** ON MOUSE DOUBLE-CLICK
   planCanvas.addEventListener(
     "dblclick",
     function (e: any) {
@@ -3143,16 +3172,27 @@ function initPlanView(planCanvas: any) {
         ? deselectAll()
         : "floor" === toolMode &&
         startedDrawingFloor &&
-        ((startedDrawingFloor = !1),
+        (
+          (startedDrawingFloor = !1),
           (floorHelperPath.visible = !1),
-          (floorPath.closed = !0))
+          (floorPath.closed = !0)
+        )
     },
     !1
   )
+
+  // ** PAPER CANVAS:
+  // ** -- PREPARE CANVAS
+  // ** -- DRAW PREPARED CONTENT
+  // ** -- RESET GRID
+  // @ts-expect-error
   paper.view.center = [350, 130]
+  // @ts-expect-error
   paper.view.draw()
-  // redrawGrid()
-}
+  // @ ts-expect-error
+  redrawGrid()
+
+} // END initPlanView()
 
 // ** END: PAPER.JS planView PaperCanvas
 // ==============================================================
@@ -5087,7 +5127,7 @@ function initThreed(threedItem: any, scene: any) {
                         var rectangleOh = new paper.Path.Rectangle(this.bounds)
                         this.rotation = this.data.angle
                         rectangleOh.data.type = "toolsRectangle"
-                        rectangleOh.strokeColor = new paper.Color(1, 1, 1, 1) // "#b19064"
+                        rectangleOh.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
                         rectangleOh.strokeWidth = 1
                         rectangleOh.strokeScaling = false
                         rectangleOh.locked = true
@@ -5100,8 +5140,11 @@ function initThreed(threedItem: any, scene: any) {
                         resizeIcon.visible = true
                         elevateIcon.visible = true
                         heightIcon.visible = true
+                        // @ts-expect-error
                         toolsGroup[0].position = selectedItem.bounds.center
+                        // @ts-expect-error
                         toolsGroup[0].visible = true
+                        // @ts-expect-error
                         toolsGroup[0].bringToFront()
                         rotateIcon.bringToFront()
                         resizeIcon.bringToFront()
@@ -5111,6 +5154,7 @@ function initThreed(threedItem: any, scene: any) {
                         resizeIcon.data.level = paper.project.activeLayer.data.id
                         elevateIcon.data.level = paper.project.activeLayer.data.id
                         heightIcon.data.level = paper.project.activeLayer.data.id
+                        // @ts-expect-error
                         toolsGroup[0].data.level = paper.project.activeLayer.data.id
                         modalModel3dThreedId = threedItem.title
                         // updateObjectPropertiesWindow()
