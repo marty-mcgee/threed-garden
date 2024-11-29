@@ -411,12 +411,12 @@ const ThreeDExperience = forwardRef((
           {/* CHARACTER MODELS */}
           {/* <Suspense fallback={null}> */}
 
-          <KeyboardControls map={keyboardMap}>
+          {/* <KeyboardControls map={keyboardMap}> */}
 
             {/* CHARACTER MODEL */}
-            { false && (
+            { true && (
             <group key='character0' position={[-1.6, 0.396 - 0.396, -1.6]}>
-              <CharacterControls
+              {/* <CharacterControls
                 debug={prefs.doWorldDebug}
                 // debug={false}
                 animated={prefs.doCharacterAnimation}
@@ -434,18 +434,18 @@ const ThreeDExperience = forwardRef((
                 // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
-              >
+              > */}
                 <CharacterModelStacy scale={1.6} />
                 {/* <CharacterModelChicken scale={2.0} /> */}
-              </CharacterControls>
+              {/* </CharacterControls> */}
             </group>
             )}
             {/* END: CHARACTER MODEL */}
             
             {/* CHARACTER MODEL */}
-            { false && (
+            { true && (
             <group key='character1' position={[0, 0.396, 0]}>
-              <CharacterControls
+              {/* <CharacterControls
                 debug={prefs.doWorldDebug}
                 // debug={false}
                 animated={prefs.doCharacterAnimation}
@@ -463,18 +463,18 @@ const ThreeDExperience = forwardRef((
                 // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
-              >
+              > */}
                 {/* <CharacterModel /> */}
                 {/* <CharacterModelFloating /> */}
                 {/* <CharacterModelStacy /> */}
                 <CharacterModelFarmerWomanFloating scale={0.016} />
                 {/* <CharacterModelFarmerManFloating scale={0.016} /> */}
-              </CharacterControls>
+              {/* </CharacterControls> */}
             </group>
             )}
             {/* END: CHARACTER MODEL */}
           
-          </KeyboardControls>
+          {/* </KeyboardControls> */}
 
           {/* </Suspense> */}
           {/* END: CHARACTER MODELS */}

@@ -1,21 +1,5 @@
 [
   {
-    "title": "siameseCat",
-    "license": "CC BY 4.0",
-    "author": "Gwinna",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 13.26,
-      "y": 42.06,
-      "z": 81.27
-    }
-  },
-  {
     "title": "bulldog",
     "license": "CC BY 4.0",
     "author": "Priide",
@@ -61,6 +45,22 @@
       "x": 58.27,
       "y": 199.87,
       "z": 261.61
+    }
+  },
+  {
+    "title": "siameseCat",
+    "license": "CC BY 4.0",
+    "author": "Gwinna",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 13.26,
+      "y": 42.06,
+      "z": 81.27
     }
   },
   {
