@@ -218,16 +218,16 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   toolMode: string = 'pointer', // pointer | walls | floor | roof | dimension | text | background | ground | defaults
   selectedItem: any,
   defaultCursor: string = 'default',
-  deselectAll: Function,
-  toolsGroup: Object[] = new Array(),
-  gridGroup: Object[] = new Array(),
-  threedGroup: Object[] = new Array(),
-  wallsGroup: Object[] = new Array(),
-  roofsGroup: Object[] = new Array(),
-  floorsGroup: Object[] = new Array(),
-  dimensionsGroup: Object[] = new Array(),
-  textsGroup: Object[] = new Array(),
-  guidesGroup: Object[] = new Array(),
+  deselectAll: Function = () => {},
+  toolsGroup: Object[] = [],
+  gridGroup: Object[] = [],
+  threedGroup: Object[] = [],
+  wallsGroup: Object[] = [],
+  roofsGroup: Object[] = [],
+  floorsGroup: Object[] = [],
+  dimensionsGroup: Object[] = [],
+  textsGroup: Object[] = [],
+  guidesGroup: Object[] = [],
   defaultWallHeight: number = 265,
   defaultWallThickness: number = 20,
   defaultRoofThickness: number = 25,
@@ -272,7 +272,8 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   camera,
   renderer,
   container,
-  scene: Object = { // https://github.com/three-types/three-ts-types/blob/master/types/three/src/scenes/Scene.d.ts
+  // https://github.com/three-types/three-ts-types/blob/master/types/three/src/scenes/Scene.d.ts
+  scene: Object = { 
     // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
     background: new THREE.Color(0x171717),
   },
@@ -304,14 +305,15 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   draggingThreedIcon: boolean = false,
   draggingThreedItem: TThreedItem, // Object = {},
   draggingThreedAngle: number = 0,
-  draggingThreedRectangle: paper.Path.Rectangle, 
+  draggingThreedRectangle: paper.Path.Rectangle = null, 
   // project is null
   // draggingThreedRectangle = new paper.Path.Rectangle(
   //   new paper.Point(-1, -1),
   //   new paper.Point(1, 1)
   // ),
-
-  
+  // **
+  // **
+  // **
   plan: Object = {
     threed: {},
     walls: {},
@@ -331,77 +333,77 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
     // planHistory.push(JSON.stringify(plan))
   ],
   planHistoryPosition: number = 0,
-
-
-
-  movePointIcons = [],
+  // **
+  // **
+  // **
+  movePointIcons: Object[] = [],
   movePointIconSelectedId: number = 0,
-  selectedMovePointIcon,
-  wallPath,
+  selectedMovePointIcon: any = null,
+  wallPath: paper.Path = null,
   wallIdCounter: number = 0,
-  wallsRectangles = {},
-  wallsRectangles3d = {},
-  wallHelperPath,
-  wallHelperRectangle,
+  wallsRectangles: Object[] = [],
+  wallsRectangles3d: Object[] = [],
+  wallHelperPath: paper.Path = null,
+  wallHelperRectangle: paper.Path.Rectangle = null,
   startedDrawingWalls: boolean = false,
-  floorPath,
+  floorPath: paper.Path = null,
   floorIdCounter: number = 0,
-  floorHelperPath,
+  floorHelperPath: paper.Path = null,
   startedDrawingFloor: boolean = false,
-  roofPath,
+  roofPath: paper.Path = null,
   roofIdCounter: number = 0,
-  roofHelperPath,
-  roofsRectangles = {},
-  roofsRectangles3d = {},
-  roofHelperRectangle,
+  roofHelperPath: paper.Path = null,
+  roofsRectangles: Object[] = [],
+  roofsRectangles3d: Object[] = [],
+  roofHelperRectangle: paper.Path.Rectangle = null,
   startedDrawingRoofs: boolean = false,
-  dimensionPath,
+  dimensionPath: paper.Path = null,
   dimensionIdCounter: number = 0,
-  dimensionHelperPath,
+  dimensionHelperPath: paper.Path = null,
   startedDrawingDimension: boolean = false,
-  stretchYPath,
+  stretchYPath: paper.Path = null,
   stretchYStartHeight: number = 0,
-  elevatePath,
+  elevatePath: paper.Path = null,
   elevating: boolean = false,
   elevateStartHeight: number = 0,
   dragging: boolean = false,
   scalingXY: boolean = false,
   scalingY: boolean = false,
   rotating: boolean = false,
-  wallHelper3dCube,
-  roofHelper3dCube,
-  redrawGrid: Function,
-  xLines = [],
-  yLines = [],
-
-
+  wallHelper3dCube: THREE.Mesh = null, // new THREE.BoxGeometry(),
+  roofHelper3dCube: THREE.Mesh = null, // new THREE.BoxGeometry(),
+  redrawGrid: Function = () => {},
+  xLines: Object[] = [],
+  yLines: Object[] = [],
   // **
-  wallMaterial,
-  floorMaterial,
-  roofMaterial,
-  wallCornersX = [],
-  wallCornersY = [],
-  roofCornersX = [],
-  roofCornersY = [],
-  snapPoint,
-  unjoinedWallSegments = [],
-  allWallSegments = [],
+  // **
+  // **
+  wallMaterial: THREE.Material = null,
+  floorMaterial: THREE.Material = null,
+  roofMaterial: THREE.Material = null,
+  wallCornersX: Object[] = [],
+  wallCornersY: Object[] = [],
+  roofCornersX: Object[] = [],
+  roofCornersY: Object[] = [],
+  snapPoint: paper.Point = null,
+  unjoinedWallSegments: Object[] = [],
+  allWallSegments: Object[] = [],
   unjoinedRoofSegments = [],
   allRoofSegments = [],
   snapPointOverride = {},
-  textPath,
+  textPath: paper.Path = null,
   textIdCounter: number = 0,
   startedDrawingText: boolean = false,
   editingTextId = -1,
-  Threed = {},
-  Walls = {},
-  Roofs = {},
-  Floors = {},
-  Floors3d = {},
-  Dimensions = {},
-  Texts = {},
+  Threed: Object[] = [],
+  Walls: Object[] = [],
+  Roofs: Object[] = [],
+  Floors: Object[] = [],
+  Floors3d: Object[] = [],
+  Dimensions: Object[] = [],
+  Texts: Object[] = [],
   // **
-  backgroundRaster,
+  backgroundRaster: paper.Raster = null,
   backgroundRasterRatioX: number = 1,
   backgroundRasterRatioY: number = 1,
   idToCopyPaste: number = -1,
@@ -419,8 +421,8 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
     depth: defaultFloorThickness,
     bevelEnabled: false,
   },
-
-
+  // **
+  // **
   modalModel3dThreedId: number = -1,
   model3dObjectRef,
   model3dViewOpen: boolean = false,
@@ -429,38 +431,38 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   model3dViewContainer,
   model3dSceneCamera,
   model3dViewCanvas,
-
-
-
+  // **
+  // **
+  // **
   loadingProgressTxt: string = '',
   lastMousePoint,
   dltext: string = '',
   zoomRectangle,
-
+  // **
   sky,
   sunSphere,
   inclination,
   azimuth,
-
+  // **
   examplePlan,
-  
+  // **
   fLineX,
   fLineY,
   fLineZ,
-  
+  // **
   modalsActive: boolean = false,
   shareLinkUrl: string = '',
   shareLinkUrl3d: string = '',
   shareLinkUrlPlan: string = '',
-
-
+  // **
+  // **
   verticalGuides = {},
   horizontalGuides = {},
   selectedGuideId = -1,
   guideCounter: number = 0,
   draggingNewGuide: boolean = false,
-
-  
+  // **
+  // **
   snapTolerance: number = 1,
   groundWidth: number = 5e3,
   groundLength: number = 5e3
@@ -738,19 +740,19 @@ function initPlanView(planCanvas: any) {
         var i = 0.11 * (paper.view.center.y - n.y)
 
         if (t > 0) {
-          var r = paper.view.center.x - l,
-            s = paper.view.center.y - i,
-            d = new paper.Point(r, s)
+          var r = paper.view.center.x - l
+          var s = paper.view.center.y - i
+          var d = new paper.Point(r, s)
           paper.view.center = d
         } 
         else {
-          var r = paper.view.center.x + l,
-            s = paper.view.center.y + i,
-            d = new paper.Point(r, s)
+          var r = paper.view.center.x + l
+          var s = paper.view.center.y + i
+          var d = new paper.Point(r, s)
           paper.view.center = d
         }
 
-        // redrawGrid() 
+        redrawGrid()
         // redrawTexts()
       
       } else {
@@ -760,44 +762,46 @@ function initPlanView(planCanvas: any) {
     return e.preventDefault() && !1
   }
   // if (
-      planView = document.getElementById("planView")
-      paper.project.activeLayer.name = "level0"
-      paper.project.activeLayer.data = { id: "0", height: 0 }
-      screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
+    // "3dView" != UILayout
+    planView = document.getElementById("planView")
+    paper.project.activeLayer.name = "level0"
+    paper.project.activeLayer.data = { id: "0", height: 0 }
+    screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
 
-      gridGroup[0] = new paper.Group()
-      floorsGroup[0] = new paper.Group()
-      roofsGroup[0] = new paper.Group()
-      wallsGroup[0] = new paper.Group()
-      dimensionsGroup[0] = new paper.Group()
-      threedGroup[0] = new paper.Group()
-      textsGroup[0] = new paper.Group()
-      guidesGroup[0] = new paper.Group()
-      
-      rulerLeft = document.getElementById("rulerLeft")
-      rulerBottom = document.getElementById("rulerBottom")
-      mouseIndicatorX = document.getElementById("mouseIndicatorX")
-      mouseIndicatorY = document.getElementById("mouseIndicatorY")
-      
-      planCanvas.width = planCanvas.parentNode.getBoundingClientRect().width
-      planCanvas.height = planCanvas.parentNode.getBoundingClientRect().height
-      rulerBottom.style.width = planCanvas.parentNode.getBoundingClientRect().width
-      rulerLeft.style.height = planCanvas.parentNode.getBoundingClientRect().height
-
-      planCanvas.oncontextmenu = function () {
-        return !1
-      }
-      // (document.getElementsByClassName("close")[0].onclick = function () {
-      //   closeAllModals(), showMouseIndicators()
-      // }),
-      // (document.getElementsByClassName("close")[1].onclick = function () {
-      //   closeAllModals(), showMouseIndicators()
-      // }),
-      // (document.getElementsByClassName("close")[2].onclick = function () {
-      //   closeAllModals(), showMouseIndicators()
-      // }),
-      "3dView" != UILayout
+    gridGroup[0] = new paper.Group()
+    floorsGroup[0] = new paper.Group()
+    roofsGroup[0] = new paper.Group()
+    wallsGroup[0] = new paper.Group()
+    dimensionsGroup[0] = new paper.Group()
+    threedGroup[0] = new paper.Group()
+    textsGroup[0] = new paper.Group()
+    guidesGroup[0] = new paper.Group()
     
+    // @ts-expect-error
+    rulerLeft = document.getElementById("rulerLeft")
+    // @ts-expect-error
+    rulerBottom = document.getElementById("rulerBottom")
+    mouseIndicatorX = document.getElementById("mouseIndicatorX")
+    mouseIndicatorY = document.getElementById("mouseIndicatorY")
+    
+    planCanvas.width = planCanvas.parentNode.getBoundingClientRect().width
+    planCanvas.height = planCanvas.parentNode.getBoundingClientRect().height
+    rulerBottom.style.width = planCanvas.parentNode.getBoundingClientRect().width
+    rulerLeft.style.height = planCanvas.parentNode.getBoundingClientRect().height
+
+    planCanvas.oncontextmenu = function () {
+      return !1
+    }
+    // (document.getElementsByClassName("close")[0].onclick = function () {
+    //   closeAllModals(), showMouseIndicators()
+    // }),
+    // (document.getElementsByClassName("close")[1].onclick = function () {
+    //   closeAllModals(), showMouseIndicators()
+    // }),
+    // (document.getElementsByClassName("close")[2].onclick = function () {
+    //   closeAllModals(), showMouseIndicators()
+    // }),
+
   // ) {
 
     rulerLeft.oncontextmenu = function () {
@@ -833,6 +837,7 @@ function initPlanView(planCanvas: any) {
       pathLineX.strokeWidth = 0.5
       pathLineX.strokeScaling = !1
       xLines.push(pathLineX)
+      // @ts-expect-error
       gridGroup[0].addChild(pathLineX)
     }
     for (var o = 0; o <= 200; o++) {
@@ -843,11 +848,13 @@ function initPlanView(planCanvas: any) {
       pathLineY.strokeWidth = 0.5
       pathLineY.strokeScaling = !1
       yLines.push(pathLineY)
+      // @ts-expect-error
       gridGroup[0].addChild(pathLineY)
     }
 
     // **
     toolsGroup[0] = new paper.Group()
+    // @ts-expect-error
     toolsGroup[0].rotation = 0
     
     rotateIcon = new paper.Raster("images/homedesign/rotate.png")
@@ -859,6 +866,7 @@ function initPlanView(planCanvas: any) {
       planView.style.cursor = "default"
     }
     rotateIcon.visible = !1
+    // @ts-expect-error
     toolsGroup[0].addChild(rotateIcon)
     
     // **
@@ -871,6 +879,7 @@ function initPlanView(planCanvas: any) {
       planView.style.cursor = "default"
     }
     resizeIcon.visible = !1
+    // @ts-expect-error
     toolsGroup[0].addChild(resizeIcon)
 
     // **
@@ -883,6 +892,7 @@ function initPlanView(planCanvas: any) {
       planView.style.cursor = "default"
     }
     elevateIcon.visible = !1
+    // @ts-expect-error
     toolsGroup[0].addChild(elevateIcon)
 
     // **
@@ -895,6 +905,7 @@ function initPlanView(planCanvas: any) {
       planView.style.cursor = "default"
     }
     heightIcon.visible = !1
+    // @ts-expect-error
     toolsGroup[0].addChild(heightIcon)
     
   // }
@@ -907,6 +918,7 @@ function initPlanView(planCanvas: any) {
   wallHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   wallHelperPath.strokeWidth = 2
   wallHelperPath.strokeScaling = !1
+  // @ts-expect-error
   wallsGroup[paper.project.activeLayer.data.id].addChild(wallHelperPath)
   roofHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -916,6 +928,7 @@ function initPlanView(planCanvas: any) {
   roofHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   roofHelperPath.strokeWidth = 2
   roofHelperPath.strokeScaling = !1
+  // @ts-expect-error
   roofsGroup[paper.project.activeLayer.data.id].addChild(roofHelperPath)
   floorHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -925,6 +938,7 @@ function initPlanView(planCanvas: any) {
   floorHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
   floorHelperPath.strokeWidth = 2
   floorHelperPath.strokeScaling = !1
+  // @ts-expect-error
   floorsGroup[paper.project.activeLayer.data.id].addChild(floorHelperPath)
   dimensionHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -934,6 +948,7 @@ function initPlanView(planCanvas: any) {
   dimensionHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
   dimensionHelperPath.strokeWidth = 2
   dimensionHelperPath.strokeScaling = !1
+  // @ts-expect-error
   dimensionsGroup[paper.project.activeLayer.data.id].addChild(dimensionHelperPath)
 
 
@@ -964,6 +979,7 @@ function initPlanView(planCanvas: any) {
   draggingThreedRectangle.strokeScaling = !1
   draggingThreedRectangle.position = new paper.Point(0, 0)
   draggingThreedRectangle.visible = !1
+  // @ts-expect-error
   threedGroup[paper.project.activeLayer.data.id].addChild(
     draggingThreedRectangle
   )
@@ -1033,7 +1049,7 @@ function initPlanView(planCanvas: any) {
                 o.bringToFront(),
                   (o.selected = !0),
                   (selectedItem = o),
-                  o.segments.forEach(function (e) {
+                  o.segments.forEach(function (e: any) {
                     var t = new paper.Raster("images/homedesign/movePointIcon.png")
                       ; (t.data.type = "movePointIconWalls"),
                         (t.data.id = e.index),
@@ -1042,10 +1058,10 @@ function initPlanView(planCanvas: any) {
                         (t.bounds.width = screenScale),
                         (t.bounds.height = screenScale),
                         (t.position = e.point),
-                        (t.onMouseEnter = function (e) {
+                        (t.onMouseEnter = function (e: any) {
                           planView.style.cursor = "move"
                         }),
-                        (t.onMouseLeave = function (e) {
+                        (t.onMouseLeave = function (e: any) {
                           planView.style.cursor = "default"
                         }),
                         (t.visible = !0),
@@ -1053,15 +1069,15 @@ function initPlanView(planCanvas: any) {
                         movePointIcons.push(t)
                   }),
                   (selectedMovePointIcon = null),
-                  (movePointIconSelectedId = null),
-                  updateObjectPropertiesWindow()
+                  (movePointIconSelectedId = null)
+                  // updateObjectPropertiesWindow()
               } else if ("roofRectangle" === t.item.data.type) {
                 deselectAll()
                 var a = Roofs[t.item.data.id]
                 a.bringToFront(),
                   (a.selected = !0),
                   (selectedItem = a),
-                  a.segments.forEach(function (e) {
+                  a.segments.forEach(function (e: any) {
                     var t = new paper.Raster("images/homedesign/movePointIcon.png")
                       ; (t.data.type = "movePointIconRoofs"),
                         (t.data.id = e.index),
@@ -1070,10 +1086,10 @@ function initPlanView(planCanvas: any) {
                         (t.bounds.width = screenScale),
                         (t.bounds.height = screenScale),
                         (t.position = e.point),
-                        (t.onMouseEnter = function (e) {
+                        (t.onMouseEnter = function (e: any) {
                           planView.style.cursor = "move"
                         }),
-                        (t.onMouseLeave = function (e) {
+                        (t.onMouseLeave = function (e: any) {
                           planView.style.cursor = "default"
                         }),
                         (t.visible = !0),
@@ -1081,41 +1097,41 @@ function initPlanView(planCanvas: any) {
                         movePointIcons.push(t)
                   }),
                   (selectedMovePointIcon = null),
-                  (movePointIconSelectedId = null),
-                  updateObjectPropertiesWindow()
+                  (movePointIconSelectedId = null)
+                  // updateObjectPropertiesWindow()
               } else if ("movePointIconWalls" === t.item.data.type)
-                movePointIcons.forEach(function (e) {
+                movePointIcons.forEach(function (e: any) {
                   e.selected = !1
                 }),
                   (selectedMovePointIcon = t.item),
                   (selectedMovePointIcon.selected = !0),
                   (movePointIconSelectedId = t.item.data.id),
-                  recalcAllUnjoinedWallSegments(selectedItem.data.id),
+                  // recalcAllUnjoinedWallSegments(selectedItem.data.id),
                   (mouseMode = 3)
               else if ("movePointIconRoofs" === t.item.data.type)
-                movePointIcons.forEach(function (e) {
+                movePointIcons.forEach(function (e: any) {
                   e.selected = !1
                 }),
                   (selectedMovePointIcon = t.item),
                   (selectedMovePointIcon.selected = !0),
                   (movePointIconSelectedId = t.item.data.id),
-                  recalcAllUnjoinedRoofSegments(selectedItem.data.id),
+                  // recalcAllUnjoinedRoofSegments(selectedItem.data.id),
                   (mouseMode = 11)
               else if ("movePointIconFloors" === t.item.data.type)
-                movePointIcons.forEach(function (e) {
+                movePointIcons.forEach(function (e: any) {
                   e.selected = !1
                 }),
                   (selectedMovePointIcon = t.item),
                   (selectedMovePointIcon.selected = !0),
                   (movePointIconSelectedId = t.item.data.id),
-                  recalcAllWallCorners(),
+                  // recalcAllWallCorners(),
                   (mouseMode = 6)
               else if ("floor" === t.item.data.type) {
                 deselectAll()
                 var n = Floors[t.item.data.id]
                   ; (n.selected = !0),
                     (selectedItem = n),
-                    n.segments.forEach(function (e) {
+                    n.segments.forEach(function (e: any) {
                       var t = new paper.Raster("images/homedesign/movePointIcon.png")
                         ; (t.data.type = "movePointIconFloors"),
                           (t.data.id = e.index),
@@ -1123,10 +1139,10 @@ function initPlanView(planCanvas: any) {
                           (t.bounds.width = screenScale),
                           (t.bounds.height = screenScale),
                           (t.position = e.point),
-                          (t.onMouseEnter = function (e) {
+                          (t.onMouseEnter = function (e: any) {
                             planView.style.cursor = "move"
                           }),
-                          (t.onMouseLeave = function (e) {
+                          (t.onMouseLeave = function (e: any) {
                             planView.style.cursor = "default"
                           }),
                           (t.visible = !0),
@@ -1134,8 +1150,8 @@ function initPlanView(planCanvas: any) {
                           movePointIcons.push(t)
                     }),
                     (selectedMovePointIcon = null),
-                    (movePointIconSelectedId = null),
-                    updateObjectPropertiesWindow()
+                    (movePointIconSelectedId = null)
+                    // updateObjectPropertiesWindow()
                 for (
                   var l = { x: 0, y: 0, z: 0 },
                   i =
@@ -1152,24 +1168,28 @@ function initPlanView(planCanvas: any) {
                       (tween = new TWEEN.Tween(controls.target)
                         .to(l, 500)
                         .onUpdate(render)
-                        .start()),
-                      recalcAllWallCorners()
+                        .start())
+                      // recalcAllWallCorners()
               } else
                 "dimension" === t.item.data.type
-                  ? (deselectAll(),
+                  ? (
+                    deselectAll(),
                     (selectedItem = Dimensions[t.item.data.id].text),
                     (Dimensions[selectedItem.data.id].text.selected = !0),
                     (Dimensions[selectedItem.data.id].line.selected = !0),
                     updateObjectPropertiesWindow(),
                     recalcAllWallCorners(),
-                    recalcAllRoofCorners())
+                    recalcAllRoofCorners()
+                    )
                   : "text" === t.item.data.type
-                    ? (deselectAll(),
+                    ? (
+                      deselectAll(),
                       (mouseMode = 7),
                       (selectedItem = Texts[t.item.data.id]),
                       (Texts[t.item.data.id].selected = !0),
                       (editingTextId = t.item.data.id),
-                      updateObjectPropertiesWindow())
+                      updateObjectPropertiesWindow()
+                      )
                     : console.debug("mouse down not handled")
             else
               t.item.data.level === -1 &&
@@ -1193,7 +1213,7 @@ function initPlanView(planCanvas: any) {
               recalcAllUnjoinedWallSegments(wallIdCounter),
               recalcAllWallSegmentsOnOtherLevels(
                 wallIdCounter,
-                project.activeLayer.data.id
+                paper.project.activeLayer.data.id
               ),
               startedDrawingWalls)
           ) {
@@ -1211,7 +1231,7 @@ function initPlanView(planCanvas: any) {
                 c = wallPath.segments[wallPath.segments.length - 2].point,
                 u = wallPath.segments[wallPath.segments.length - 1].point,
                 p = getAngleRadians(c, u),
-                m = new Path()
+                m = new paper.Path()
                 ; (m.data.type = "wallRectangle"),
                   (m.data.id = wallPath.data.id),
                   (m.data.level = project.activeLayer.data.id),
@@ -2093,7 +2113,7 @@ function initPlanView(planCanvas: any) {
               n = 0,
               l = -1
             if (
-              (Object.keys(Walls).forEach(function (e) {
+              (Object.keys(Walls).forEach(function (e: any) {
                 var t = Walls[e]
                 if (
                   "object" == typeof t &&
@@ -2166,7 +2186,7 @@ function initPlanView(planCanvas: any) {
           } else snapPoint = snapPoint.add(offsetMousePoint)
           if (null === o) {
             var r
-            Object.keys(verticalGuides).forEach(function (e) {
+            Object.keys(verticalGuides).forEach(function (e: any) {
               snapPoint.x >= verticalGuides[e].position.x - 10 &&
                 snapPoint.x <= verticalGuides[e].position.x + 10 &&
                 (r = new paper.Point(
@@ -2174,7 +2194,7 @@ function initPlanView(planCanvas: any) {
                   snapPoint.y
                 ))
             }),
-              Object.keys(horizontalGuides).forEach(function (e) {
+              Object.keys(horizontalGuides).forEach(function (e: any) {
                 snapPoint.y >= horizontalGuides[e].position.y - 10 &&
                   snapPoint.y <= horizontalGuides[e].position.y + 10 &&
                   (r
@@ -3174,7 +3194,7 @@ type TThreedItemScale = {
 function camelCaseToSentence(e: string) {
   e = e.replace(/([A-Z])/g, " $1")
   e = e.replace(/_/g, " ")
-  e = e.replace(/\b\w/g, function (e) {
+  e = e.replace(/\b\w/g, function (e: any) {
     return e.toUpperCase()
   })
   e = e.charAt(0).toUpperCase() + e.slice(1)
@@ -4565,7 +4585,7 @@ function showModel3dView(event: any) {
   //                       if (4 == this.readyState && 200 == this.status) {
   //                         var e = this.responseText,
   //                           t = e.split("\n")
-  //                         t.forEach(function (e) {
+  //                         t.forEach(function (e: any) {
   //                           e.startsWith("#") && (r += e + "\n")
   //                         }),
   //                           (document.getElementById(
@@ -5632,12 +5652,12 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         url: "api/objects.json",
         type: "GET",
         contentType: "application/json",
-        success: function (e) {
+        success: function (e: any) {
           if (((threedItems = e), "default" === UILayout)) {
             var t = 0
             Object.keys(threedItems)
               // .sort()
-              .forEach(function (e) {
+              .forEach(function (e: any) {
                 var o = camelCaseToSentence(e)
                 $("#catalogItems").append(
                   "<div id='" +
@@ -5669,11 +5689,11 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               url: "plans/threed-plan-example-001.threed",
               type: "GET",
               contentType: "application/json",
-              success: function (e) {
+              success: function (e: any) {
                 var t = JSON.parse(e)
                 featuredPlanImage.src = t.thumb
               },
-              error: function (e) {
+              error: function (e: any) {
                 console.debug("document.ready : get thumb ajax : " + e)
               },
             }),
@@ -5701,7 +5721,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   },
                 }),
                 $("#wallSpecular").minicolors({
-                  change: function (e) {
+                  change: function (e: any) {
                     var t = parseInt(e.replace("#", "0x"))
                       ; (wallMaterial.specular = new THREE.Color(t)),
                         (plan.wallSpecular = wallMaterial.specular),
@@ -5709,7 +5729,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   },
                 }),
                 $("#roofSpecular").minicolors({
-                  change: function (e) {
+                  change: function (e: any) {
                     var t = parseInt(e.replace("#", "0x"))
                       ; (roofMaterial.specular = new THREE.Color(t)),
                         (plan.roofSpecular = roofMaterial.specular),
@@ -5728,7 +5748,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   },
                 }),
                 $("#floorSpecular").minicolors({
-                  change: function (e) {
+                  change: function (e: any) {
                     var t = parseInt(e.replace("#", "0x"))
                       ; (floorMaterial.specular = new THREE.Color(t)),
                         (plan.floorSpecular = floorMaterial.specular),
@@ -5747,7 +5767,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   },
                 }),
                 $("#groundSpecular").minicolors({
-                  change: function (e) {
+                  change: function (e: any) {
                     var t = parseInt(e.replace("#", "0x"))
                       ; (groundMat.specular = new THREE.Color(t)),
                         (plan.groundSpecular = groundMat.specular.getHexString()),
@@ -5760,7 +5780,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               url: "api/getsharelink/" + fragment,
               type: "GET",
               contentType: "application/json",
-              success: function (e) {
+              success: function (e: any) {
                 var t = JSON.parse(e)
                 e.error
                   ? console.debug(e.error)
@@ -5771,7 +5791,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                     hideMouseIndicators(),
                     drawPlan(t))
               },
-              error: function (e) {
+              error: function (e: any) {
                 console.debug("document.ready : getsharelink : " + e)
               },
             })
@@ -5788,7 +5808,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             } else showAbout(), setNewPlan()
           }
         },
-        error: function (e) {
+        error: function (e: any) {
           console.dir(e)
         },
       }),
@@ -5796,19 +5816,19 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       (progressBar.style.display = "none"),
       (verticalSlider = document.getElementById("verticalSlider")),
       (verticalSliderDragging = false),
-      (verticalSlider.onmousedown = function (e) {
+      (verticalSlider.onmousedown = function (e: any) {
         ; (verticalSliderDragging = true),
           (verticalSlider.style.left = e.x - 2 + "px")
       }),
       (horizontalSliderLeft = document.getElementById("horizontalSliderLeft")),
       (horizontalSliderLeftDragging = false),
-      (horizontalSliderLeft.onmousedown = function (e) {
+      (horizontalSliderLeft.onmousedown = function (e: any) {
         ; (horizontalSliderLeftDragging = true),
           (horizontalSliderLeft.style.top = e.y - 2 + "px")
       }),
       (horizontalSliderRight = document.getElementById("horizontalSliderRight")),
       (horizontalSliderRightDragging = false),
-      (horizontalSliderRight.onmousedown = function (e) {
+      (horizontalSliderRight.onmousedown = function (e: any) {
         ; (horizontalSliderRightDragging = true),
           (horizontalSliderRight.style.top = e.y - 2 + "px")
       }),
@@ -5833,15 +5853,15 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       threedDragDiv = document.getElementById('threedDragDiv')
       planView = document.getElementById('planView')
       
-      // document.getElementById("catalogTextFilter").onInput = function (e) {
+      // document.getElementById("catalogTextFilter").onInput = function (e: any) {
       //   var t = this.value.toLowerCase()
       //   t.length > 0
-      //     ? Object.keys(threedItems).forEach(function (e) {
+      //     ? Object.keys(threedItems).forEach(function (e: any) {
       //       e.toLowerCase().indexOf(t) > -1
       //         ? (document.getElementById(e).style.display = "block")
       //         : (document.getElementById(e).style.display = "none")
       //     })
-      //     : Object.keys(threedItems).forEach(function (e) {
+      //     : Object.keys(threedItems).forEach(function (e: any) {
       //       document.getElementById(e).style.display = "block"
       //     }),
       //     loadInViewThumbs()
@@ -5851,7 +5871,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       // ** ================================================
     }
 /**/
-    document.onmousemove = function (e) {
+    document.onmousemove = function (e: any) {
       // if (verticalSliderDragging) {
       //   return (
       //     verticalSlider.style.left = e.x - 2 + "px"
@@ -6027,7 +6047,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       // }
     }
     // ** 
-    document.onmouseup = function (e) {
+    document.onmouseup = function (e: any) {
       draggingThreedIcon = false
       return  verticalSliderDragging
               ? ((verticalSliderDragging = false), false)
