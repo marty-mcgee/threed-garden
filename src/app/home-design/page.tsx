@@ -3168,15 +3168,13 @@ function initPlanView(planCanvas: any) {
   planCanvas.addEventListener(
     "dblclick",
     function (e: any) {
-      "pointer" === toolMode
-        ? deselectAll()
-        : "floor" === toolMode &&
-        startedDrawingFloor &&
-        (
-          (startedDrawingFloor = !1),
-          (floorHelperPath.visible = !1),
-          (floorPath.closed = !0)
-        )
+      if ("pointer" === toolMode) {
+        deselectAll()
+      } else if ("floor" === toolMode && startedDrawingFloor) {
+        startedDrawingFloor = !1
+        floorHelperPath.visible = !1
+        floorPath.closed = !0
+      }
     },
     !1
   )
