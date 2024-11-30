@@ -2107,7 +2107,7 @@ function initPlanView(planCanvas: any) {
   // ** ON MOUSE DRAG
   tools.onMouseDrag = function (e: any) {
     // **
-    console.debug('initPlanView: tools.onMouseDrag', e)
+    // console.debug('initPlanView: tools.onMouseDrag', e)
 
     /*
     var t = e.downPoint.subtract(e.point)
@@ -5473,9 +5473,9 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       }
       
     } else if (isPageLoaded) {
-      console.debug('%c🦆 ThreeD Home Design => LOADED !!', ccm.greenAlert, isPageLoaded)
+      console.debug('%c🦆 ThreeD Home Design => LOADED !!', ccm.redAlert, isPageLoaded)
     } else {
-      // console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
     }
 
   }, []) // useEffect
@@ -6660,7 +6660,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                             <Panel
                               className='Panel'
                               defaultSize={2}
-                              maxSize={100}
+                              minSize={2}
+                              maxSize={2}
                             >
                               <canvas 
                                 id='rulerLeft' 
@@ -6678,7 +6679,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               id='planView'
                               className='Panel'
                               defaultSize={98}
-                              maxSize={100}
+                              minSize={98}
+                              maxSize={98}
                             >
 
                               {/* DO RUN THIS */}
@@ -6697,21 +6699,24 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                           >
                             <Panel
                               className='Panel'
-                              defaultSize={50}
-                              maxSize={100}
+                              defaultSize={2}
+                              minSize={2}
+                              maxSize={2}
                             >
                               <canvas 
                                 id='rulerBottom' 
-                                width='1024' 
-                                height='20' 
+                                // width='1024' 
+                                // height='20' 
                                 // onMouseDown={() => addHorizontalGuide()}
                                 // onMouseUp={() => removeHorizontalGuide()}
                               ></canvas>
                             </Panel>
+                            <PanelResizeHandle />
                             <Panel
                               className='Panel'
-                              defaultSize={50}
-                              maxSize={100}
+                              defaultSize={98}
+                              minSize={98}
+                              maxSize={98}
                             >
 
                               <div id='mouseIndicatorY'></div>
