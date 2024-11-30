@@ -6429,8 +6429,9 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
         <Panel 
           className='Panel'
-          defaultSize={4}
-          maxSize={32}
+          defaultSize={0}
+          minSize={0}
+          maxSize={0}
           style={{
             // border: '1px solid darkgreen',
           }}
@@ -6516,7 +6517,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
         <Panel 
           className='Panel'
-          defaultSize={80}
+          defaultSize={100}
           // maxSize={64}
           style={{
             // border: '1px solid darkgreen',
