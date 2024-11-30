@@ -8,7 +8,9 @@
 
 🌱 [threedgarden.com](https://threedgarden.com/particpate)
 
-🥕 [Demo: Actively Participate](https://threedgarden.com/participate)
+🥕 [Demo: 3D](https://threedgarden.com/participate)
+
+🏡 [Demo: 2D + 3D](https://threedgarden.com/home-design)
 
 ## For Developers
 
