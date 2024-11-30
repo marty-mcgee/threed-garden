@@ -6643,7 +6643,54 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                       <PanelGroup 
                         direction='vertical'
                       >
-                        {/* TOP PANEL: 2D PAPER */}
+                        
+                        {/* PANEL: 3D FIBER CANVAS */}
+                        <Panel
+                          className='Panel'
+                          defaultSize={50}
+                          maxSize={100}
+                          style={{
+                            // border: '1px solid darkblue',
+                          }}
+                        >
+                          <Grid 
+                            id='view3d'
+                            style={{
+                              height: '100%',
+                              // width: '100%',
+                              border: '1px solid #222222',
+                            }}
+                          >
+                            {/* <Text>
+                              Main Content (2nd Level)
+                            </Text> */}
+                            {/* <SessionData 
+                              session={session} 
+                            /> */}
+                            {/* THREED HOME DESIGN: 3D CANVAS */}
+
+                            {/* DO RUN THIS */}
+                            { true && (
+                              <ThreeDComponents
+                                // **
+                              />
+                            )}
+
+                            {/* <div id='overlayLogo3dView' className='overlayLogo'>
+                              <a href='https://threedgarden.com/home-design/'><img
+                                  src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
+                              <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
+                            </div>
+                            <div id='overlayMenu3dView'>
+                              <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
+                              <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
+                            </div> */}
+                          </Grid>
+                        </Panel>
+                        
+                        <PanelResizeHandle />
+
+                        {/* PANEL: 2D PAPER */}
                         <Panel
                           className='Panel'
                           defaultSize={50}
@@ -6764,52 +6811,6 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                             </Panel>
 
                           </PanelGroup>
-                        </Panel>
-                        
-                        <PanelResizeHandle />
-                        
-                        {/* BOTTOM PANEL: 3D FIBER CANVAS */}
-                        <Panel
-                          className='Panel'
-                          defaultSize={50}
-                          maxSize={100}
-                          style={{
-                            // border: '1px solid darkblue',
-                          }}
-                        >
-                          <Grid 
-                            id='view3d'
-                            style={{
-                              height: '100%',
-                              // width: '100%',
-                              border: '1px solid #222222',
-                            }}
-                          >
-                            {/* <Text>
-                              Main Content (2nd Level)
-                            </Text> */}
-                            {/* <SessionData 
-                              session={session} 
-                            /> */}
-                            {/* THREED HOME DESIGN: 3D CANVAS */}
-
-                            {/* DO RUN THIS */}
-                            { true && (
-                              <ThreeDComponents
-                                // **
-                              />
-                            )}
-
-                            {/* <div id='overlayLogo3dView' className='overlayLogo'>
-                              <a href='https://threedgarden.com/home-design/'><img
-                                  src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
-                              <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
-                            </div>
-                            <div id='overlayMenu3dView'>
-                              <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
-                              <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
-                            </div> */}
-                          </Grid>
                         </Panel>
                         
                       </PanelGroup>
