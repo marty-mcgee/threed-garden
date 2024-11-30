@@ -651,21 +651,28 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
 /* */
 
 // ==============================================================
-// ** 🖼️ PAPER.JS
-
+// ** 🖼️ PAPER.JS CANVAS
 const PaperCanvas = (props: any) => {
   
-  // ** 🧇🧇🧇🧇🧇
+  // ** 🧇🧇🧇🧇🧇 follow the waffles
   const planCanvasRef = useRef(null)
   
+  // init: intentionally run this client-only listener on every react.render
   useEffect(() => {
+    // ** SET PAPER CANVAS REACT REF
     const planCanvas = planCanvasRef.current
+    
+    // ** PAPER.JS
     // paper.install(window)
     paper.setup(planCanvas)
     paper.settings.hitTolerance = 3
+
+    // ** THREED PAPER
     initThreeDPaper(planCanvas)
-  }, [])
+
+  }, []) // intentionally run this client-only listener on every react.render
   
+  // ** RETURN JSX
   return (
     <canvas 
       ref={planCanvasRef} 
