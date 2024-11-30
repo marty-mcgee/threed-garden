@@ -41,20 +41,36 @@ export default function ThreeDComponents(): JSX.Element {
   // const refThreeDCanvas3 = useRef<any>(null)
 
   return (
-    <>
     <PanelGroup
       direction='vertical'
       style={{
         // minHeight: '300px',
-        minHeight: '50vh',
+        // minHeight: '50vh',
         // minHeight: '50%',
         // border: '1px solid green',
       }}
     >
+
+      {/* THREED TOOLBAR */}
+      <Panel
+        defaultSize={10}
+        minSize={10}
+        maxSize={10}
+        style={{
+          // height: '100px',
+          // border: '1px solid green',
+        }}
+      >
+        <ThreeDToolbar />
+      </Panel>
+
+      <PanelResizeHandle />
+
       {/* THREED GARDEN (CANVAS + EXPERIENCE) */}
       <Panel
         defaultSize={60}
-        maxSize={100}
+        minSize={60}
+        maxSize={60}
         style={{
           // height: '100px',
           // border: '1px solid green',
@@ -68,25 +84,14 @@ export default function ThreeDComponents(): JSX.Element {
             ref={refThreeDCanvas1}
           /> */}
       </Panel>
-      <PanelResizeHandle />
 
-      {/* THREED TOOLBAR */}
-      <Panel
-        defaultSize={10}
-        maxSize={10}
-        style={{
-          // height: '100px',
-          // border: '1px solid green',
-        }}
-      >
-        <ThreeDToolbar />
-      </Panel>
       <PanelResizeHandle />
 
       {/* THREED CONTROLS */}
       <Panel
-        defaultSize={20}
-        maxSize={100}
+        defaultSize={30}
+        minSize={30}
+        maxSize={30}
         style={{
           // height: '100px',
           // border: '1px solid green',
@@ -101,10 +106,11 @@ export default function ThreeDComponents(): JSX.Element {
         />
         <ThreeDControlPanels />
       </Panel>
+
       <PanelResizeHandle />
 
       {/* TESTING PANEL */}
-      <Panel
+      {/* <Panel
         defaultSize={10}
         maxSize={10}
         style={{
@@ -113,8 +119,8 @@ export default function ThreeDComponents(): JSX.Element {
         }}
       >
         <h6>ThreeD Component[s]: All</h6>
-      </Panel>
+      </Panel> */}
+
     </PanelGroup>
-    </>
   )
 }
