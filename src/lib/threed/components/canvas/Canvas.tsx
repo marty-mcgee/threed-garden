@@ -380,7 +380,7 @@ export const ThreeDCanvas = forwardRef((
     newData.gl = state.gl
     // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.green, newData)
     canvasStateVar(newData)
-    console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.darkgreenAlert, canvasStateVar())
+    console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.yellowAlert, canvasStateVar())
   }
 
   // ** DECLARATIVE THREED SCENE

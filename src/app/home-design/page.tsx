@@ -682,7 +682,7 @@ const PaperCanvas = (props: any) => {
 
 const initThreeDPaper = (planCanvas: any) => {
   // ** 
-  console.debug('%c🖼️ THREED PAPER JS: initThreeDPaper()', ccm.blackAlert, planCanvas)
+  console.debug('%c🖼️ THREED PAPER JS: initThreeDPaper(planCanvas)', ccm.blackAlert, planCanvas)
 
   draw1()
   initPlanView(planCanvas)
