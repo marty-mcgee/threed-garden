@@ -673,8 +673,8 @@ const PaperCanvas = (props: any) => {
       id='planCanvas' 
       // resize='true'
       style={{
-        // height: '100%',
-        // width: '100%',
+        height: '100%',
+        width: '100%',
       }}
     />
   )
@@ -682,7 +682,7 @@ const PaperCanvas = (props: any) => {
 
 const initThreeDPaper = (planCanvas: any) => {
   // ** 
-  console.debug('%c🖼️ THREED PAPER JS: initThreeDPaper(planCanvas)', ccm.blackAlert, planCanvas)
+  console.debug('%c🖼️ THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.blackAlert, planCanvas)
 
   draw1()
   initPlanView(planCanvas)
