@@ -373,14 +373,14 @@ export const ThreeDCanvas = forwardRef((
   // ** SET CANVAS STATE VAR (APOLLO CLIENT)
   function setCanvasStateVar (state: any) {
     let newData = {...canvasStateVar()} // latest canvas state
-    // console.debug('%c⚙️ setCanvasStateVar newData', ccm.green, newData)
+    // console.debug('%c⚙️ setCanvasStateVar newData', ccm.yellow, newData)
     newData.state = state
     newData.scene = state.scene
     newData.camera = state.camera
     newData.gl = state.gl
-    // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.green, newData)
+    // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.yellow, newData)
     canvasStateVar(newData)
-    console.debug('%c⚙️ setCanvasStateVar canvasStateVar', ccm.yellowAlert, canvasStateVar())
+    console.debug('%c⚙️ setCanvasStateVar canvasStateVar UPDATED', ccm.yellowAlert, canvasStateVar())
   }
 
   // ** DECLARATIVE THREED SCENE
