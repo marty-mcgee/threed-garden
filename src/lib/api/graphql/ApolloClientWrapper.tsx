@@ -21,14 +21,18 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug(`%c CCM TEST SUCCESS!!`, ccm.greenAlert)
 // console.debug(`%c CCM TEST WHOOPSIES`, ccm.red)
 
+// const appVersion: string = 'v0.17.0'
+const appVersion: string = require('package.json').version
+
 const uri_gql = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
 const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL    // 'https://threed.design/wp-json/wp/v2'
 // console.clear()
-console.debug('%c====================================', ccm.darkgreen)
-console.debug('%c🥕 ThreeD Garden 🌱.🦆 Apollo loaded 🍄', ccm.green)
+console.debug('%c=========================================', ccm.darkgreen)
+console.debug('%c🥕 ThreeD Garden 🌱 Apollo loaded 🍄', ccm.darkgreen)
+console.debug('%c🌱 - appVersion', ccm.darkgreen, appVersion)
 console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
-// console.debug('%c🦆 - REST API', ccm.darkgreen, uri_rest)
-console.debug('%c====================================', ccm.darkgreen)
+console.debug('%c🦉 - REST API', ccm.darkgreen, uri_rest)
+console.debug('%c=========================================', ccm.darkgreen)
 
 // have a function to create a client for you
 function makeClient() {
