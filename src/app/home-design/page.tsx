@@ -2764,7 +2764,7 @@ function initPlanView(planCanvas: any) {
   // ** ON MOUSE MOVE
   tools.onMouseMove = function (e: any) {
     // **
-    console.debug('initPlanView: tools.onMouseMove', e)
+    // console.debug('initPlanView: tools.onMouseMove', e)
     /*
     if (((lastMousePoint = e.point), "walls" === toolMode)) {
       if (((snapPoint = null), startedDrawingWalls)) {

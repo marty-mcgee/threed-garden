@@ -414,7 +414,7 @@ const ThreeDExperience = forwardRef((
           {/* <KeyboardControls map={keyboardMap}> */}
 
             {/* CHARACTER MODEL */}
-            { true && (
+            { false && (
             <group key='character0' position={[-1.6, 0.396 - 0.396, -1.6]}>
               {/* <CharacterControls
                 debug={prefs.doWorldDebug}
@@ -443,7 +443,7 @@ const ThreeDExperience = forwardRef((
             {/* END: CHARACTER MODEL */}
             
             {/* CHARACTER MODEL */}
-            { true && (
+            { false && (
             <group key='character1' position={[0, 0.396, 0]}>
               {/* <CharacterControls
                 debug={prefs.doWorldDebug}
