@@ -6739,16 +6739,16 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                           </PanelGroup>
                             
                           <PanelGroup
-                            direction='vertical' 
+                            direction='horizontal' 
                             style={{
                               border: '1px solid red',
                             }}
                           >
                             <Panel
                               className='Panel'
-                              defaultSize={2}
-                              minSize={2}
-                              maxSize={2}
+                              defaultSize={100}
+                              minSize={100}
+                              maxSize={100}
                             >
                               <canvas 
                                 id='rulerBottom' 
@@ -6758,7 +6758,14 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                                 // onMouseUp={() => removeHorizontalGuide()}
                               ></canvas>
                             </Panel>
-                            <PanelResizeHandle />
+                          </PanelGroup>
+                            
+                          <PanelGroup
+                            direction='vertical' 
+                            style={{
+                              border: '1px solid orange',
+                            }}
+                          >
                             <Panel
                               className='Panel'
                               defaultSize={98}
