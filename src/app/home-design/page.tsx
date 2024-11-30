@@ -6791,7 +6791,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                                 onClick={() => openFullscreen('view3d')} />
                               */}
                             
-                              <div 
+                              {/* <div 
                                 id='overlayLogoPlanView' 
                                 className='overlayLogo'
                               >
@@ -6808,7 +6808,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                                 >
                                   ThreeD Home Design
                                 </a>
-                              </div>
+                              </div> */}
                               {/* 
                               <div id='overlayMenuPlanView'>
                                 <button id='overlayPlanViewRecenterBtn' onClick={() => recenterPlanView()} className='smallButton'>Recenter</button>
