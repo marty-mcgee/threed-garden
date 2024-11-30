@@ -193,10 +193,9 @@ const DEBUG: boolean = true
 // const appVersion: string = 'v0.16.1'
 const appVersion: string = require('package.json').version
 
-if (true && (debug || DEBUG)) {
+if (false && (debug || DEBUG)) {
   console.debug('%c====================================', ccm.darkgreen)
   console.debug('%c🥕 ThreeDHomeDesign<FC,R3F>: {.tsx}', ccm.green)
-  console.debug('%c🌱 appVersion', ccm.darkgreen, appVersion)
   console.debug('%c====================================', ccm.darkgreen)
 }
 
@@ -652,10 +651,11 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
 /* */
 
 // ==============================================================
-// ** PAPER.JS
+// ** 🖼️ PAPER.JS
 
 const PaperCanvas = (props: any) => {
   
+  // ** 🧇🧇🧇🧇🧇
   const planCanvasRef = useRef(null)
   
   useEffect(() => {
@@ -681,8 +681,8 @@ const PaperCanvas = (props: any) => {
 }
 
 const initThreeDPaper = (planCanvas: any) => {
-  // **
-  console.debug('%c initThreeDPaper THREED PAPER JS', ccm.blackAlert, planCanvas)
+  // ** 
+  console.debug('%c🖼️ initThreeDPaper THREED PAPER JS', ccm.blackAlert, planCanvas)
 
   draw1()
   initPlanView(planCanvas)
@@ -3270,7 +3270,7 @@ function closeAllModals() {
 
 // ** VIEW: PROPERTIES (of a threed object, or other dom element)
 const ViewProperties = (props: any) => {
-  console.debug('PropertiesView loading...')
+  // console.debug('PropertiesView loading...')
 
   return (
     <>
@@ -5451,7 +5451,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       // ** DO THE DATA FETCH
       fetchData()
       if (DEBUG) 
-        console.debug('%c fetching data ...', ccm.blue)
+        console.debug('%c🫙 Home Design: fetching data ...', ccm.blueAlert)
 
 
       // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)

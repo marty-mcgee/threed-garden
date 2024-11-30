@@ -342,7 +342,7 @@ const ThreeDGarden = (): JSX.Element => {
       }      
       fetchData()
       if (DEBUG) 
-        console.debug('%c fetching data ...', ccm.blue)
+        console.debug('%c🫙 ThreeDGarden: fetching data ...', ccm.blueAlert)
 
 
       // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
