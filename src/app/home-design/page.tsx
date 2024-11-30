@@ -686,7 +686,7 @@ const PaperCanvas = (props: any) => {
     />
   )
 }
-
+// ** MAIN INITIALIZER
 const initThreeDPaper = (planCanvas: any) => {
   // ** 
   console.debug('%c🖼️ THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.blackAlert, planCanvas)
@@ -695,7 +695,7 @@ const initThreeDPaper = (planCanvas: any) => {
   initPlanView(planCanvas)
 
 }
-
+// ** SUPPORTIVE FUNCTION
 const draw1 = () => {
   let myPath = new paper.Path()
   // **
@@ -722,7 +722,7 @@ const draw1 = () => {
   // @ts-expect-error
   paper.view.draw()
 }
-
+// ** MAIN PAPER VIEW
 function initPlanView(planCanvas: any) {
 
   // let planCanvas = document.getElementById('planView') // NO, NOT THE SAME.. need actual ref
