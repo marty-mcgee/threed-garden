@@ -47,7 +47,8 @@ export default function ThreeDComponents(): JSX.Element {
         // minHeight: '300px',
         // minHeight: '50vh',
         // minHeight: '50%',
-        // border: '1px solid green',
+        // height: '100%',
+        // border: '1px solid darkgreen',
       }}
     >
 
@@ -107,7 +108,7 @@ export default function ThreeDComponents(): JSX.Element {
         <ThreeDControlPanels />
       </Panel>
 
-      <PanelResizeHandle />
+      {/* <PanelResizeHandle /> */}
 
       {/* TESTING PANEL */}
       {/* <Panel
