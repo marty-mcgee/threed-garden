@@ -41,7 +41,8 @@ export default function ThreeDComponents(): JSX.Element {
   // const refThreeDCanvas3 = useRef<any>(null)
 
   return (
-    <PanelGroup
+  <>
+    {/* <PanelGroup
       direction='vertical'
       style={{
         // minHeight: '300px',
@@ -50,10 +51,10 @@ export default function ThreeDComponents(): JSX.Element {
         // height: '100%',
         // border: '1px solid darkgreen',
       }}
-    >
+    > */}
 
       {/* THREED TOOLBAR */}
-      <Panel
+      {/* <Panel
         defaultSize={10}
         minSize={10}
         maxSize={10}
@@ -61,14 +62,14 @@ export default function ThreeDComponents(): JSX.Element {
           // height: '100px',
           // border: '1px solid green',
         }}
-      >
+      > */}
         <ThreeDToolbar />
-      </Panel>
+      {/* </Panel> */}
 
-      <PanelResizeHandle />
+      {/* <PanelResizeHandle /> */}
 
       {/* THREED GARDEN (CANVAS + EXPERIENCE) */}
-      <Panel
+      {/* <Panel
         defaultSize={90}
         minSize={90}
         maxSize={90}
@@ -76,7 +77,7 @@ export default function ThreeDComponents(): JSX.Element {
           // height: '100px',
           // border: '1px solid green',
         }}
-      >
+      > */}
         <ThreeDCanvasViewer />
 
         <ThreeDLevaControls />
@@ -87,9 +88,9 @@ export default function ThreeDComponents(): JSX.Element {
           setProjectNameFromLeva={() => (<></>)}
         />
 
-      </Panel>
+      {/* </Panel> */}
 
-      <PanelResizeHandle />
+      {/* <PanelResizeHandle /> */}
 
       {/* THREED CONTROLS */}
       {/* <Panel
@@ -118,6 +119,8 @@ export default function ThreeDComponents(): JSX.Element {
         <h6>ThreeD Component[s]: All</h6>
       </Panel> */}
 
-    </PanelGroup>
+    {/* </PanelGroup> */}
+
+  </>
   )
 }
