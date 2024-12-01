@@ -5,13 +5,18 @@
 //   useRef,
 // } from 'react'
 
-// ** PANELS Imports
-import { 
-  Panel, 
-  PanelGroup,
-  PanelResizeHandle,
-} from 'react-resizable-panels'
-import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
+// ** RADIX-UI Imports
+import {
+  Flex,
+} from '@radix-ui/themes'
+
+// // ** PANELS Imports
+// import { 
+//   Panel, 
+//   PanelGroup,
+//   PanelResizeHandle,
+// } from 'react-resizable-panels'
+// import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
 
 // THREED: COMPONENTS
 // ** ThreeD: Garden
@@ -42,6 +47,22 @@ export default function ThreeDComponents(): JSX.Element {
 
   return (
   <>
+  <div 
+    id='threedComponents'
+    // display={'inline-flex'}
+    // direction={'column'}
+    style={{ 
+      display: 'flex', 
+      flexDirection: 'column',
+      height: '100%',
+      minHeight: '40vh',
+      // maxHeight: '60vh',
+      // minWidth: '50vw',
+      // maxWidth: '90vw',
+      width: '100%',
+      flexGrow: '0',
+    }}
+  >
     {/* <PanelGroup
       direction='vertical'
       style={{
@@ -120,7 +141,7 @@ export default function ThreeDComponents(): JSX.Element {
       </Panel> */}
 
     {/* </PanelGroup> */}
-
+  </div>
   </>
   )
 }
