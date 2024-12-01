@@ -712,509 +712,505 @@ const ThreeDToolbar: FC = (): JSX.Element => {
   //   }
   // }, [])
 
-  // const pages = ['Products', 'Pricing', 'Blog']
-  // const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
+  // ============================================================
 
+  // ** RETURN JSX
   return (
-    <>
-    {/* <AppBar
-      id='appBar'
-      // position='static'
-    > */}
-      {/* <Box
-        maxWidth='xl'
-        // sx={{ paddingLeft: 0, paddingRight: 0 }}
-      > */}
-        <Toolbar
-          disableGutters
+    <Toolbar
+      disableGutters
+    >
+      <Flex
+        display='inline-flex' // , display: { xs: 'none', md: 'flex' }
+        // flexGrow='1' // not supported
+        justify='start'
+        style={{
+          flexGrow: '1',
+        }}
+      >
+        <Button
+          key='Actions'
+          onClick={handleOpenActionsMenu}
+          sx={{ color: '#FFFFFF', p: 0, ml: 0, mr: 2 }}
         >
-          <Flex
-            // display='none' // , display: { xs: 'none', md: 'flex' }
-            flexGrow='1'
-            justify='start'
+          Actions
+        </Button>
+        <Menu
+          sx={{ mt: 8 }}
+          id='menu-appbar-actions'
+          anchorEl={anchorElActions}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorElActions)}
+          onClose={handleCloseActionsMenu}
+        >
+          <MenuItem
+            key='New ThreeD'
+            onClick={handleCloseActionsMenu}
           >
-            <Button
-              key='Actions'
-              onClick={handleOpenActionsMenu}
-              sx={{ color: '#FFFFFF', p: 0, ml: 0, mr: 2 }}
-            >
-              Actions
-            </Button>
-            <Menu
-              sx={{ mt: 8 }}
-              id='menu-appbar-actions'
-              anchorEl={anchorElActions}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElActions)}
-              onClose={handleCloseActionsMenu}
-            >
-              <MenuItem
-                key='New ThreeD'
-                onClick={handleCloseActionsMenu}
-              >
-                <Typography onClick={() => threedStore.actions.getState().addNew()}>New ThreeD</Typography>
-              </MenuItem>
-              <MenuItem
-                key='New Project'
-                onClick={handleCloseActionsMenu}
-              >
-                <Typography onClick={() => useProjectStore.getState().addProject()}>New Project</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Save Project'
-                onClick={handleCloseActionsMenu}
-              >
-                <Typography onClick={() => useProjectStore.getState().saveProject()}>Save Project</Typography>
-              </MenuItem>
-              <MenuItem
-                key='New Plan'
-                onClick={handleCloseActionsMenu}
-              >
-                <Typography onClick={() => usePlanStore.getState().addPlan()}>New Plan</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Save Plan'
-                onClick={handleCloseActionsMenu}
-              >
-                <Typography
-                  id='saveBtn'
-                  onClick={() => usePlanStore.getState().savePlan()}
-                >
-                  Save Plan
-                </Typography>
-              </MenuItem>
-              <MenuItem
-                key='New Simulation'
-                onClick={handleCloseActionsMenu}
-              >
-                <Typography>New Simulation</Typography>
-              </MenuItem>
-            </Menu>
-
-            <Button
-              key='Files'
-              onClick={handleOpenFilesMenu}
-              sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
-            >
-              Files
-            </Button>
-            <Menu
-              sx={{ mt: 8 }}
-              id='menu-appbar-files'
-              anchorEl={anchorElFiles}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElFiles)}
-              onClose={handleCloseFilesMenu}
-            >
-              <MenuItem
-                key='Load File'
-                onClick={handleCloseFilesMenu}
-              >
-                <Typography
-                  id='loadBtn'
-                  onClick={doLoadFile}
-                >
-                  Load File
-                </Typography>
-                <input
-                  type='file'
-                  style={{ display: 'inline-block', marginLeft: '4px' }}
-                  id='file'
-                  name='file'
-                  onChange={doLoadFileAsText}
-                />
-              </MenuItem>
-              <MenuItem
-                key='Save File'
-                onClick={handleCloseFilesMenu}
-              >
-                <Typography
-                  id='saveBtn'
-                  onClick={doSaveFile}
-                >
-                  Save File
-                </Typography>
-              </MenuItem>
-              <MenuItem
-                key='Export As OBJ'
-                onClick={handleCloseFilesMenu}
-              >
-                <Typography
-                  id='exportBtn'
-                  onClick={() => exportToObj}
-                >
-                  Export As OBJ
-                </Typography>
-              </MenuItem>
-              <MenuItem
-                key='Create Thumb'
-                onClick={handleCloseFilesMenu}
-              >
-                <Typography
-                  id='createThumb'
-                  onClick={() => createThumbForHistory}
-                >
-                  Create Thumb
-                </Typography>
-              </MenuItem>
-            </Menu>
-
-            <Button
-              key='Edits'
-              onClick={handleOpenEditsMenu}
-              sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
-            >
-              Edits
-            </Button>
-            <Menu
-              sx={{ mt: 8 }}
-              id='menu-appbar-edits'
-              anchorEl={anchorElEdits}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElEdits)}
-              onClose={handleCloseEditsMenu}
-            >
-              <MenuItem
-                key='Undo'
-                onClick={handleCloseEditsMenu}
-              >
-                <Typography
-                  id='undoBtn'
-                  onClick={doUndo}
-                >
-                  Undo
-                </Typography>
-              </MenuItem>
-              <MenuItem
-                key='Redo'
-                onClick={handleCloseEditsMenu}
-              >
-                <Typography
-                  id='redoBtn'
-                  onClick={doRedo}
-                >
-                  Redo
-                </Typography>
-              </MenuItem>
-            </Menu>
-
-            <Button
-              key='Views'
-              onClick={handleOpenViewsMenu}
-              sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
-            >
-              Views
-            </Button>
-            <Menu
-              sx={{ mt: 8 }}
-              id='menu-appbar-views'
-              anchorEl={anchorElViews}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElViews)}
-              onClose={handleCloseViewsMenu}
-            >
-              <MenuItem
-                key='Modal: About'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography onClick={(e) => modalAboutStore.actions.handleOpen(e)}>Modal: About</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Modal: Model3d'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography onClick={(e) => modalModel3dStore.actions.handleOpen(e)}>Modal: Model3d</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Modal: Loading'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography onClick={(e) => modalLoadingStore.actions.handleOpen(e)}>Modal: Loading</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Modal: Share'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography onClick={(e) => modalShareStore.actions.handleOpen(e)}>Modal: Share</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Spacer: 1'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography>==============</Typography>
-              </MenuItem>
-              {/* <MenuItem key="Dialog: Share" onClick={handleCloseViewsMenu}>
-                <Typography onClick={doOpenShareDialog}>Dialog: Share</Typography>
-              </MenuItem> */}
-              <MenuItem
-                key='2D Plan Properties'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography onClick={(e) => setPropertiesView('planView')}>2D Plan Properties</Typography>
-              </MenuItem>
-              <MenuItem
-                key='2D Plan Fullscreen'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography onClick={(e) => doOpenFullscreen('#planView')}>2D Plan Fullscreen</Typography>
-              </MenuItem>
-              <MenuItem
-                key='3D Plan Properties'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography onClick={(e) => setPropertiesView('3dView')}>3D Plan Properties</Typography>
-              </MenuItem>
-              <MenuItem
-                key='3D Plan Fullscreen'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography onClick={(e) => doOpenFullscreen('#view3d')}>3D Plan Fullscreen</Typography>
-              </MenuItem>
-              {/* <MenuItem key="Defaults" onClick={handleCloseViewsMenu}>
-                <Typography onClick={() => setPropertiesView('defaults')}>Defaults</Typography>
-              </MenuItem> */}
-              {/* <MenuItem key="Ground Properties" onClick={handleCloseViewsMenu}>
-                <Typography onClick={() => setToolMode('ground')} id="groundPropertiesBtn">Ground Properties</Typography>
-              </MenuItem> */}
-              <MenuItem
-                key='Fullscreen'
-                onClick={handleCloseViewsMenu}
-              >
-                <Typography
-                  onClick={() => doOpenFullscreen('body')}
-                  id='fullscreenApp'
-                >
-                  Fullscreen
-                </Typography>
-              </MenuItem>
-            </Menu>
-
-            <Button
-              key='Layers'
-              onClick={handleOpenLayersMenu}
-              sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
-            >
-              Layers
-            </Button>
-            <Menu
-              sx={{ mt: 8 }}
-              id='menu-appbar-layers'
-              anchorEl={anchorElLayers}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElLayers)}
-              onClose={handleCloseLayersMenu}
-            >
-              <MenuItem
-                key='New Noun Layer'
-                onClick={handleCloseLayersMenu}
-              >
-                <Typography onClick={() => newLevel('noun')}>New Noun Layer</Typography>
-              </MenuItem>
-            </Menu>
-
-            <Button
-              key='Tools'
-              onClick={handleOpenToolsMenu}
-              sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
-            >
-              Tools
-            </Button>
-            <Menu
-              sx={{ mt: 8 }}
-              id='menu-appbar-tools'
-              anchorEl={anchorElTools}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElTools)}
-              onClose={handleCloseToolsMenu}
-            >
-              <MenuItem
-                key='Tool 1'
-                onClick={handleCloseToolsMenu}
-              >
-                <Typography onClick={() => tool1}>Tool 1</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Tool 2'
-                onClick={handleCloseToolsMenu}
-              >
-                <Typography onClick={() => tool2}>Tool 2</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Tool 3'
-                onClick={handleCloseToolsMenu}
-              >
-                <Typography onClick={() => tool3}>Tool 3</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Do Log'
-                onClick={handleCloseToolsMenu}
-              >
-                <Typography onClick={() => doLog}>Do Log</Typography>
-              </MenuItem>
-              <MenuItem
-                key='Show About'
-                onClick={handleCloseToolsMenu}
-              >
-                <Typography onClick={() => showAbout}>Show About</Typography>
-              </MenuItem>
-            </Menu>
-          </Flex>
-
-          <Flex
-            display='none' // , display: { xs: 'none', md: 'flex' }
-            flexGrow='0'
+            <Typography onClick={() => threedStore.actions.getState().addNew()}>New ThreeD</Typography>
+          </MenuItem>
+          <MenuItem
+            key='New Project'
+            onClick={handleCloseActionsMenu}
           >
-            <Tooltip title='Pointer Tool'>
-              <IconButton
-                id='pointerTool'
-                onClick={() => setToolMode('pointer')}
-                aria-label='Pointer Tool'
-                aria-controls='menu-appbar'
-                aria-haspopup='true'
-                size='medium'
-                color='inherit'
-                sx={{ mr: 1 }}
-              >
-                <ToolIconPointer />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title='Hand Tool'>
-              <IconButton
-                id='handTool'
-                onClick={() => setToolMode('hand')}
-                aria-label='Hand Tool'
-                aria-controls='menu-appbar'
-                aria-haspopup='true'
-                size='medium'
-                color='inherit'
-                sx={{ mr: 1 }}
-              >
-                <ToolIconHand />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title='Wall Tool'>
-              <IconButton
-                id='addWallTool'
-                onClick={() => setToolMode('walls')}
-                aria-label='Wall Tool'
-                aria-controls='menu-appbar'
-                aria-haspopup='true'
-                size='medium'
-                color='inherit'
-                sx={{ mr: 1 }}
-              >
-                <ToolIconAddWall />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title='Floor Tool'>
-              <IconButton
-                id='addFloorTool'
-                onClick={() => setToolMode('floor')}
-                aria-label='Floor Tool'
-                aria-controls='menu-appbar'
-                aria-haspopup='true'
-                size='medium'
-                color='inherit'
-                sx={{ mr: 1 }}
-              >
-                <ToolIconAddFloor />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title='Roof Tool'>
-              <IconButton
-                id='addRoofTool'
-                onClick={() => setToolMode('roof')}
-                aria-label='Roof Tool'
-                aria-controls='menu-appbar'
-                aria-haspopup='true'
-                size='medium'
-                color='inherit'
-                sx={{ mr: 1 }}
-              >
-                <ToolIconAddRoof />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title='Ruler Tool'>
-              <IconButton
-                id='addRulerTool'
-                onClick={() => setToolMode('dimension')}
-                aria-label='Ruler Tool'
-                aria-controls='menu-appbar'
-                aria-haspopup='true'
-                size='medium'
-                color='inherit'
-                sx={{ mr: 1 }}
-              >
-                <ToolIconAddRuler />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title='Text Tool'>
-              <IconButton
-                id='addTextTool'
-                onClick={() => setToolMode('text')}
-                aria-label='Text Tool'
-                aria-controls='menu-appbar'
-                aria-haspopup='true'
-                size='medium'
-                color='inherit'
-                sx={{ mr: 0 }}
-              >
-                <ToolIconAddText />
-              </IconButton>
-            </Tooltip>
-          </Flex>
+            <Typography onClick={() => useProjectStore.getState().addProject()}>New Project</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Save Project'
+            onClick={handleCloseActionsMenu}
+          >
+            <Typography onClick={() => useProjectStore.getState().saveProject()}>Save Project</Typography>
+          </MenuItem>
+          <MenuItem
+            key='New Plan'
+            onClick={handleCloseActionsMenu}
+          >
+            <Typography onClick={() => usePlanStore.getState().addPlan()}>New Plan</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Save Plan'
+            onClick={handleCloseActionsMenu}
+          >
+            <Typography
+              id='saveBtn'
+              onClick={() => usePlanStore.getState().savePlan()}
+            >
+              Save Plan
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            key='New Simulation'
+            onClick={handleCloseActionsMenu}
+          >
+            <Typography>New Simulation</Typography>
+          </MenuItem>
+        </Menu>
 
-        </Toolbar>
-      {/* </Box> */}
-    {/* </AppBar> */}
-    </>
+        <Button
+          key='Files'
+          onClick={handleOpenFilesMenu}
+          sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
+        >
+          Files
+        </Button>
+        <Menu
+          sx={{ mt: 8 }}
+          id='menu-appbar-files'
+          anchorEl={anchorElFiles}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorElFiles)}
+          onClose={handleCloseFilesMenu}
+        >
+          <MenuItem
+            key='Load File'
+            onClick={handleCloseFilesMenu}
+          >
+            <Typography
+              id='loadBtn'
+              onClick={doLoadFile}
+            >
+              Load File
+            </Typography>
+            <input
+              type='file'
+              style={{ display: 'inline-block', marginLeft: '4px' }}
+              id='file'
+              name='file'
+              onChange={doLoadFileAsText}
+            />
+          </MenuItem>
+          <MenuItem
+            key='Save File'
+            onClick={handleCloseFilesMenu}
+          >
+            <Typography
+              id='saveBtn'
+              onClick={doSaveFile}
+            >
+              Save File
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            key='Export As OBJ'
+            onClick={handleCloseFilesMenu}
+          >
+            <Typography
+              id='exportBtn'
+              onClick={() => exportToObj}
+            >
+              Export As OBJ
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            key='Create Thumb'
+            onClick={handleCloseFilesMenu}
+          >
+            <Typography
+              id='createThumb'
+              onClick={() => createThumbForHistory}
+            >
+              Create Thumb
+            </Typography>
+          </MenuItem>
+        </Menu>
+
+        <Button
+          key='Edits'
+          onClick={handleOpenEditsMenu}
+          sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
+        >
+          Edits
+        </Button>
+        <Menu
+          sx={{ mt: 8 }}
+          id='menu-appbar-edits'
+          anchorEl={anchorElEdits}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorElEdits)}
+          onClose={handleCloseEditsMenu}
+        >
+          <MenuItem
+            key='Undo'
+            onClick={handleCloseEditsMenu}
+          >
+            <Typography
+              id='undoBtn'
+              onClick={doUndo}
+            >
+              Undo
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            key='Redo'
+            onClick={handleCloseEditsMenu}
+          >
+            <Typography
+              id='redoBtn'
+              onClick={doRedo}
+            >
+              Redo
+            </Typography>
+          </MenuItem>
+        </Menu>
+
+        <Button
+          key='Views'
+          onClick={handleOpenViewsMenu}
+          sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
+        >
+          Views
+        </Button>
+        <Menu
+          sx={{ mt: 8 }}
+          id='menu-appbar-views'
+          anchorEl={anchorElViews}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorElViews)}
+          onClose={handleCloseViewsMenu}
+        >
+          <MenuItem
+            key='Modal: About'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography onClick={(e) => modalAboutStore.actions.handleOpen(e)}>Modal: About</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Modal: Model3d'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography onClick={(e) => modalModel3dStore.actions.handleOpen(e)}>Modal: Model3d</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Modal: Loading'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography onClick={(e) => modalLoadingStore.actions.handleOpen(e)}>Modal: Loading</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Modal: Share'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography onClick={(e) => modalShareStore.actions.handleOpen(e)}>Modal: Share</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Spacer: 1'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography>==============</Typography>
+          </MenuItem>
+          {/* <MenuItem key="Dialog: Share" onClick={handleCloseViewsMenu}>
+            <Typography onClick={doOpenShareDialog}>Dialog: Share</Typography>
+          </MenuItem> */}
+          <MenuItem
+            key='2D Plan Properties'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography onClick={(e) => setPropertiesView('planView')}>2D Plan Properties</Typography>
+          </MenuItem>
+          <MenuItem
+            key='2D Plan Fullscreen'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography onClick={(e) => doOpenFullscreen('#planView')}>2D Plan Fullscreen</Typography>
+          </MenuItem>
+          <MenuItem
+            key='3D Plan Properties'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography onClick={(e) => setPropertiesView('3dView')}>3D Plan Properties</Typography>
+          </MenuItem>
+          <MenuItem
+            key='3D Plan Fullscreen'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography onClick={(e) => doOpenFullscreen('#view3d')}>3D Plan Fullscreen</Typography>
+          </MenuItem>
+          {/* <MenuItem key="Defaults" onClick={handleCloseViewsMenu}>
+            <Typography onClick={() => setPropertiesView('defaults')}>Defaults</Typography>
+          </MenuItem> */}
+          {/* <MenuItem key="Ground Properties" onClick={handleCloseViewsMenu}>
+            <Typography onClick={() => setToolMode('ground')} id="groundPropertiesBtn">Ground Properties</Typography>
+          </MenuItem> */}
+          <MenuItem
+            key='Fullscreen'
+            onClick={handleCloseViewsMenu}
+          >
+            <Typography
+              onClick={() => doOpenFullscreen('body')}
+              id='fullscreenApp'
+            >
+              Fullscreen
+            </Typography>
+          </MenuItem>
+        </Menu>
+
+        <Button
+          key='Layers'
+          onClick={handleOpenLayersMenu}
+          sx={{ color: '#FFFFFF', p: 0, mr: 2 }}
+        >
+          Layers
+        </Button>
+        <Menu
+          sx={{ mt: 8 }}
+          id='menu-appbar-layers'
+          anchorEl={anchorElLayers}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorElLayers)}
+          onClose={handleCloseLayersMenu}
+        >
+          <MenuItem
+            key='New Noun Layer'
+            onClick={handleCloseLayersMenu}
+          >
+            <Typography onClick={() => newLevel('noun')}>New Noun Layer</Typography>
+          </MenuItem>
+        </Menu>
+
+        <Button
+          key='Tools'
+          onClick={handleOpenToolsMenu}
+          sx={{ color: '#FFFFFF', p: 0, mr: 1 }}
+        >
+          Tools
+        </Button>
+        <Menu
+          sx={{ mt: 8 }}
+          id='menu-appbar-tools'
+          anchorEl={anchorElTools}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          open={Boolean(anchorElTools)}
+          onClose={handleCloseToolsMenu}
+        >
+          <MenuItem
+            key='Tool 1'
+            onClick={handleCloseToolsMenu}
+          >
+            <Typography onClick={() => tool1}>Tool 1</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Tool 2'
+            onClick={handleCloseToolsMenu}
+          >
+            <Typography onClick={() => tool2}>Tool 2</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Tool 3'
+            onClick={handleCloseToolsMenu}
+          >
+            <Typography onClick={() => tool3}>Tool 3</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Do Log'
+            onClick={handleCloseToolsMenu}
+          >
+            <Typography onClick={() => doLog}>Do Log</Typography>
+          </MenuItem>
+          <MenuItem
+            key='Show About'
+            onClick={handleCloseToolsMenu}
+          >
+            <Typography onClick={() => showAbout}>Show About</Typography>
+          </MenuItem>
+        </Menu>
+      </Flex>
+
+      <Flex
+        display='inline-flex' // , display: { xs: 'none', md: 'flex' }
+        // flexGrow='0' // not supported
+        justify='end'
+        style={{
+          flexGrow: '0',
+          marginTop: -2,
+        }}
+      >
+        <Tooltip title='Pointer Tool'>
+          <IconButton
+            id='pointerTool'
+            onClick={() => setToolMode('pointer')}
+            aria-label='Pointer Tool'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            size='small'
+            color='inherit'
+            sx={{ mr: 1 }}
+          >
+            <ToolIconPointer />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title='Hand Tool'>
+          <IconButton
+            id='handTool'
+            onClick={() => setToolMode('hand')}
+            aria-label='Hand Tool'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            size='small'
+            color='inherit'
+            sx={{ mr: 1 }}
+          >
+            <ToolIconHand />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title='Wall Tool'>
+          <IconButton
+            id='addWallTool'
+            onClick={() => setToolMode('walls')}
+            aria-label='Wall Tool'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            size='small'
+            color='inherit'
+            sx={{ mr: 1 }}
+          >
+            <ToolIconAddWall />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title='Floor Tool'>
+          <IconButton
+            id='addFloorTool'
+            onClick={() => setToolMode('floor')}
+            aria-label='Floor Tool'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            size='small'
+            color='inherit'
+            sx={{ mr: 1 }}
+          >
+            <ToolIconAddFloor />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title='Roof Tool'>
+          <IconButton
+            id='addRoofTool'
+            onClick={() => setToolMode('roof')}
+            aria-label='Roof Tool'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            size='small'
+            color='inherit'
+            sx={{ mr: 1 }}
+          >
+            <ToolIconAddRoof />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title='Ruler Tool'>
+          <IconButton
+            id='addRulerTool'
+            onClick={() => setToolMode('dimension')}
+            aria-label='Ruler Tool'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            size='small'
+            color='inherit'
+            sx={{ mr: 1 }}
+          >
+            <ToolIconAddRuler />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title='Text Tool'>
+          <IconButton
+            id='addTextTool'
+            onClick={() => setToolMode('text')}
+            aria-label='Text Tool'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            size='small'
+            color='inherit'
+            sx={{ mr: 0 }}
+          >
+            <ToolIconAddText />
+          </IconButton>
+        </Tooltip>
+      </Flex>
+
+    </Toolbar>
   )
 }
 
