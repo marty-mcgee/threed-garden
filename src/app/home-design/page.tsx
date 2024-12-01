@@ -691,6 +691,59 @@ const initThreeDPaper = (planCanvas: any) => {
   // ** 
   console.debug('%c🖼️ THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.blackAlert, planCanvas)
 
+  focusPoint = new paper.Point(0, 0)
+
+  threedDragDiv = document.getElementById('threedDragDiv')
+  planView = document.getElementById('planView')
+
+  // progressBar = document.getElementById("progressBar")
+  // progressBar.style.display = "none"
+
+  verticalSlider = document.getElementById("verticalSlider")
+  verticalSliderDragging = false
+  verticalSlider.onmousedown = function (e: any) {
+    verticalSliderDragging = true
+    verticalSlider.style.left = e.x - 2 + "px"
+  }
+  horizontalSliderLeft = document.getElementById("horizontalSliderLeft")
+  horizontalSliderLeftDragging = false
+  horizontalSliderLeft.onmousedown = function (e: any) {
+    horizontalSliderLeftDragging = true
+    horizontalSliderLeft.style.top = e.y - 2 + "px"
+  }
+  horizontalSliderRight = document.getElementById("horizontalSliderRight")
+  horizontalSliderRightDragging = false
+  horizontalSliderRight.onmousedown = function (e: any) {
+    horizontalSliderRightDragging = true
+    horizontalSliderRight.style.top = e.y - 2 + "px"
+  }
+  
+  // ** ================================================
+  // paper.install(window),
+  // paper.setup(planCanvas),
+  // (paper.settings.hitTolerance = 3),
+  // ** ================================================
+  // initPlanView()
+  // initThreeJS()
+  // resize3dView()
+  // resizePlanView()
+  // animate()
+  // ** ================================================
+  
+  // document.getElementById("catalogTextFilter").onInput = function (e: any) {
+  //   var t = this.value.toLowerCase()
+  //   t.length > 0
+  //     ? Object.keys(threedItems).forEach(function (e: any) {
+  //       e.toLowerCase().indexOf(t) > -1
+  //         ? (document.getElementById(e).style.display = "block")
+  //         : (document.getElementById(e).style.display = "none")
+  //     })
+  //     : Object.keys(threedItems).forEach(function (e: any) {
+  //       document.getElementById(e).style.display = "block"
+  //     }),
+  //     loadInViewThumbs()
+  // }
+
   draw1()
   initPlanView(planCanvas)
 
@@ -5679,7 +5732,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       // $("#catalogItems").scroll(function () {
       //   loadInViewThumbs()
       // })
-      focusPoint = new paper.Point(0, 0)
+      // focusPoint = new paper.Point(0, 0)
       // raycaster = new THREE.Raycaster()
       // mouse = new THREE.Vector2()
       
@@ -5861,60 +5914,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
           console.dir(e)
         },
       }),
-      (progressBar = document.getElementById("progressBar")),
-      (progressBar.style.display = "none"),
-      (verticalSlider = document.getElementById("verticalSlider")),
-      (verticalSliderDragging = false),
-      (verticalSlider.onmousedown = function (e: any) {
-        ; (verticalSliderDragging = true),
-          (verticalSlider.style.left = e.x - 2 + "px")
-      }),
-      (horizontalSliderLeft = document.getElementById("horizontalSliderLeft")),
-      (horizontalSliderLeftDragging = false),
-      (horizontalSliderLeft.onmousedown = function (e: any) {
-        ; (horizontalSliderLeftDragging = true),
-          (horizontalSliderLeft.style.top = e.y - 2 + "px")
-      }),
-      (horizontalSliderRight = document.getElementById("horizontalSliderRight")),
-      (horizontalSliderRightDragging = false),
-      (horizontalSliderRight.onmousedown = function (e: any) {
-        ; (horizontalSliderRightDragging = true),
-          (horizontalSliderRight.style.top = e.y - 2 + "px")
-      }),
       */
-
-      // ** ================================================
-
-      // paper.install(window),
-      // paper.setup(planCanvas),
-      // (paper.settings.hitTolerance = 3),
-
-      // ** ================================================
-
-      // initPlanView()
-      // initThreeJS()
-      // resize3dView()
-      // resizePlanView()
-      // animate()
       
-      // ** ================================================
-
-      threedDragDiv = document.getElementById('threedDragDiv')
-      planView = document.getElementById('planView')
-      
-      // document.getElementById("catalogTextFilter").onInput = function (e: any) {
-      //   var t = this.value.toLowerCase()
-      //   t.length > 0
-      //     ? Object.keys(threedItems).forEach(function (e: any) {
-      //       e.toLowerCase().indexOf(t) > -1
-      //         ? (document.getElementById(e).style.display = "block")
-      //         : (document.getElementById(e).style.display = "none")
-      //     })
-      //     : Object.keys(threedItems).forEach(function (e: any) {
-      //       document.getElementById(e).style.display = "block"
-      //     }),
-      //     loadInViewThumbs()
-      // }
       
       /* end if ajax true */
       // ** ================================================
@@ -6774,6 +6775,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               maxSize={98}
                             >
 
+                              <div id='threedDragDiv'></div>
+
                               <div id='mouseIndicatorY'></div>
                               <div id='mouseIndicatorX'></div>
 
@@ -6782,8 +6785,6 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               <div id='verticalSlider'></div>
                               <div id='horizontalSliderLeft'></div>
                               <div id='horizontalSliderRight'></div>
-
-                              <div id='threedDragDiv'></div>
 
                               {/*
                               <img id='fullscreenPlanViewBtn' src='images/homedesign/fullscreen.png' width='30' height='30'
