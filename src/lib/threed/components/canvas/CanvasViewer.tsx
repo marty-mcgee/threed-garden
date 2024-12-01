@@ -90,11 +90,19 @@ const ThreeDCanvasCamera = forwardRef((
     //       // border: '1px solid green',
     //     }}
     //   >
+    <div
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        flexGrow: '1',
+      }}
+    >
         <ThreeDCanvas
           _id={'_r3fCanvas' + index}
           threeds={threeds}
           ref={refCanvas}
         />
+    </div>
     //   </Panel>
     // </PanelGroup>
   )
