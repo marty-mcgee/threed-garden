@@ -75,28 +75,28 @@ const ThreeDCanvasCamera = forwardRef((
   refCanvas
 ) => {
   return (
-    <PanelGroup
-      direction='vertical'
-      style={{
-        // height: '100%',
-        // minHeight: '200px',
-        // border: '1px solid green',
-      }}
-    >
-      <Panel
-        defaultSize={100}
-        style={{
-          // height: '100px',
-          // border: '1px solid green',
-        }}
-      >
+    // <PanelGroup
+    //   direction='vertical'
+    //   style={{
+    //     height: '100%',
+    //     // minHeight: '200px',
+    //     // border: '1px solid green',
+    //   }}
+    // >
+    //   <Panel
+    //     defaultSize={100}
+    //     style={{
+    //       // height: '100px',
+    //       // border: '1px solid green',
+    //     }}
+    //   >
         <ThreeDCanvas
           _id={'_r3fCanvas' + index}
           threeds={threeds}
           ref={refCanvas}
         />
-      </Panel>
-    </PanelGroup>
+    //   </Panel>
+    // </PanelGroup>
   )
 }
 ) // end forwardRef
@@ -169,14 +169,15 @@ export const ThreeDCanvasViewer = () => {
       // display={'inline-flex'}
       // direction={'column'}
       style={{ 
-        // display: 'flex', 
+        display: 'inline-flex', 
         // flexDirection: 'row',
         height: '100%',
-        // minHeight: '40vh',
+        minHeight: '40vh',
         // maxHeight: '60vh',
         // minWidth: '50vw',
         // maxWidth: '90vw',
-        // width: '100%',
+        width: '100%',
+        flexGrow: '1',
       }}
     >
 
