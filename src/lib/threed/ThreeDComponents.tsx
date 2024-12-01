@@ -69,9 +69,9 @@ export default function ThreeDComponents(): JSX.Element {
 
       {/* THREED GARDEN (CANVAS + EXPERIENCE) */}
       <Panel
-        defaultSize={60}
-        minSize={60}
-        maxSize={60}
+        defaultSize={90}
+        minSize={90}
+        maxSize={90}
         style={{
           // height: '100px',
           // border: '1px solid green',
@@ -84,12 +84,20 @@ export default function ThreeDComponents(): JSX.Element {
             threeds={threeds}
             ref={refThreeDCanvas1}
           /> */}
+
+        <ThreeDLevaControls />
+        {/* <ThreeDLevaComponent 
+          projectName={'ThreeD: MM projectName'}
+          setProjectName={() => (<></>)}
+          projectNameFromLeva={'ThreeD: MM projectName'}
+          setProjectNameFromLeva={() => (<></>)}
+        /> */}
       </Panel>
 
       <PanelResizeHandle />
 
       {/* THREED CONTROLS */}
-      <Panel
+      {/* <Panel
         defaultSize={30}
         minSize={30}
         maxSize={30}
@@ -98,15 +106,8 @@ export default function ThreeDComponents(): JSX.Element {
           // border: '1px solid green',
         }}
       >
-        <ThreeDLevaControls />
-        <ThreeDLevaComponent 
-          projectName={'ThreeD: MM projectName'}
-          setProjectName={() => (<></>)}
-          projectNameFromLeva={'ThreeD: MM projectName'}
-          setProjectNameFromLeva={() => (<></>)}
-        />
         <ThreeDControlPanels />
-      </Panel>
+      </Panel> */}
 
       {/* <PanelResizeHandle /> */}
 

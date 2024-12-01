@@ -75,65 +75,11 @@ const ThreeDCanvasCamera = forwardRef((
   refCanvas
 ) => {
   return (
-    <>
-    {/* <Accordion.Item 
-      value={'Canvas 1 Camera ' + index}
-      className='AccordionItem'
-      style={{ 
-        // borderTop: '1px solid black',
-      }}
-    >
-      <Accordion.Header
-        className='AccordionHeader'
-      >
-        <Flex
-          id={'threed_configs_overlays_' + index}
-          direction='row'
-          style={{
-            alignItems: 'start',
-            width: '100%',
-          }}
-        >
-          { false && 
-            // !config.config && 
-            // <img className={"gear"} src={'/favicon/favicon-16x16.png'} // {ASSETS.other.gear}
-            <Image alt='gear' className={'gearrrrr'} src={'/images/icons/gear.svg'} width={16} height={16}
-              style={{ color: 'gray', backgroundColor: 'darkgreen', paddingLeft: '10px', paddingRight: '10px', paddingTop: '2px', paddingBottom: '2px' }}
-              // onClick={() => setConfig({ ...config, config: true })} 
-            />
-          }
-
-          <Accordion.Trigger 
-            className='AccordionTrigger'
-            style={{
-              // margin: '0',
-              // padding: '0',
-              backgroundColor: 'black',
-              color: 'violet',
-            }}
-          >
-            <ChevronDownIcon 
-              className='AccordionChevron' 
-              aria-hidden 
-            />
-            <span 
-              // style={{ position: 'relative' }}
-            >
-              Camera {index}
-            </span>
-          </Accordion.Trigger>
-          
-        </Flex>
-      </Accordion.Header>
-
-      <Accordion.Content 
-        className='AccordionContent'
-      > */}
-    
     <PanelGroup
       direction='vertical'
       style={{
-        minHeight: '200px',
+        // height: '100%',
+        // minHeight: '200px',
         // border: '1px solid green',
       }}
     >
@@ -151,10 +97,6 @@ const ThreeDCanvasCamera = forwardRef((
         />
       </Panel>
     </PanelGroup>
-
-      {/* </Accordion.Content>
-    </Accordion.Item> */}
-    </>
   )
 }
 ) // end forwardRef
@@ -222,13 +164,14 @@ export const ThreeDCanvasViewer = () => {
 
   // console.debug(`%c=======================================================`, ccm.orange)
   return (
-    <Grid 
+    <Flex 
       id='threedCanvasViewer'
       // display={'inline-flex'}
       // direction={'column'}
       style={{ 
         // display: 'flex', 
         // flexDirection: 'row',
+        height: '100%',
         // minHeight: '40vh',
         // maxHeight: '60vh',
         // minWidth: '50vw',
@@ -340,7 +283,7 @@ export const ThreeDCanvasViewer = () => {
         * [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
       {/* <CollapsibleDemo /> */}
 
-    </Grid>
+    </Flex>
   )
 }
 

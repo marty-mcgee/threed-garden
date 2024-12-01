@@ -460,11 +460,11 @@ export const ThreeDCanvas = forwardRef((
       <Canvas
         key={_id}
 
-        // style={{
-        //   width: '100%',
-        //   // height: '100%',
-        //   minHeight: '300px',
-        // }}
+        style={{
+          // width: '100%',
+          height: '100%',
+          // minHeight: '400px',
+        }}
 
         shadows={true} // boolean || string 'basic' | 'percentage' | 'soft' | 'variance'
         dpr={[1, 2]} // dpr = target pixel ratio (need ???)
