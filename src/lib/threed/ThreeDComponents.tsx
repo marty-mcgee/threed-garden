@@ -78,20 +78,15 @@ export default function ThreeDComponents(): JSX.Element {
         }}
       >
         <ThreeDCanvasViewer />
-        {/* <ThreeDGarden /> */}
-          {/* <ThreeDCanvas
-            _id={'_r3fCanvas' + index}
-            threeds={threeds}
-            ref={refThreeDCanvas1}
-          /> */}
 
         <ThreeDLevaControls />
-        {/* <ThreeDLevaComponent 
+        <ThreeDLevaComponent 
           projectName={'ThreeD: MM projectName'}
           setProjectName={() => (<></>)}
           projectNameFromLeva={'ThreeD: MM projectName'}
           setProjectNameFromLeva={() => (<></>)}
-        /> */}
+        />
+
       </Panel>
 
       <PanelResizeHandle />
