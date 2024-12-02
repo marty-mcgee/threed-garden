@@ -6691,7 +6691,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   padding: '0px',
                   marginLeft: '4px', 
                 }}
-                onClick={() => setShowPanelFirst(!prefs.showPanelFirst)}
+                onClick={() => setShowPanelFirst()}
               >
                 {/* {showPanelFirst ? "hide" : "show"} panel left */}
                 { prefs.showPanelFirst && (
@@ -6720,7 +6720,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   padding: '0px',
                   marginLeft: '0px', 
                 }}
-                onClick={() => setShowPanelLast(!prefs.showPanelLast)}
+                onClick={() => setShowPanelLast()}
               >
                 {/* {showPanelLast ? "hide" : "show"} panel right */}
                 { prefs.showPanelLast && (
