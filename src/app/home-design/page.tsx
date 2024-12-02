@@ -243,9 +243,9 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   mouseIndicatorX: HTMLElement,
   mouseIndicatorY: HTMLElement,
   rulerLeft: HTMLCanvasElement,
-  rulerLeftCtx,
+  rulerLeftCtx: any,
   rulerBottom: HTMLCanvasElement,
-  rulerBottomCtx,
+  rulerBottomCtx: any,
   fullscreenPlanViewBtn,
   fullscreen3dViewBtn,
   modalCloseBtnAbout,
@@ -371,7 +371,7 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   rotating: boolean = false,
   wallHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
   roofHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
-  redrawGrid: Function = () => {},
+  // redrawGrid: Function = () => {},
   redrawTexts: Function = () => {},
   xLines: Object[] = [],
   yLines: Object[] = [],
@@ -456,8 +456,8 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   shareLinkUrlPlan: string = '',
   // **
   // **
-  verticalGuides = {},
-  horizontalGuides = {},
+  verticalGuides: Object[] = [],
+  horizontalGuides: Object[] = [],
   selectedGuideId = -1,
   guideCounter: number = 0,
   draggingNewGuide: boolean = false,
@@ -466,6 +466,36 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   snapTolerance: number = 1,
   groundWidth: number = 5e3,
   groundLength: number = 5e3
+
+  let busy: boolean = !1
+  let screenAvg = 1000 // (screen.width + screen.height) / 2
+  let redrawing: boolean = !1
+  let strokeWidth = 0
+  const onProgress = function (e: any) {
+    if (e.lengthComputable) {
+      var t = (e.loaded / e.total) * 100
+      // @ ts-expect-error
+      // progressBar.value = t
+      // progressBar.style.display = "block"
+    }
+  }
+  const onError = function (e: any) {
+    console.debug('onError: e', e)
+  }
+  const getAngleRadians = function (e: any, t: any) {
+    return Math.atan2(t.y - e.y, t.x - e.x)
+  }
+  const getDistance = function (e: any, t: any) {
+    var o = e.x - t.x,
+      a = e.y - t.y,
+      n = Math.sqrt(o * o + a * a)
+    return n
+  }
+  // String.prototype.capitalize = function () {
+  //   return this.replace(/(^|\s)([a-z])/g, function (e, t, o) {
+  //     return t + o.toUpperCase()
+  //   })
+  // }
 
 // ==============================================================
 
@@ -730,6 +760,11 @@ const initThreeDPaper = (planCanvas: any) => {
   // animate()
   // ** ================================================
   
+  draw1()
+  initPlanView(planCanvas)
+
+  // ** ================================================
+  
   // document.getElementById("catalogTextFilter").onInput = function (e: any) {
   //   var t = this.value.toLowerCase()
   //   t.length > 0
@@ -744,11 +779,8 @@ const initThreeDPaper = (planCanvas: any) => {
   //     loadInViewThumbs()
   // }
 
-  draw1()
-  initPlanView(planCanvas)
-
 }
-// ** SUPPORTIVE FUNCTION
+// ** SIMPLE DRAWING FUNCTION
 const draw1 = () => {
   let myPath = new paper.Path()
   // **
@@ -969,7 +1001,7 @@ function initPlanView(planCanvas: any) {
     toolsGroup[0].addChild(heightIcon)
     
   // }
-  ; 
+  
   wallHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
     new paper.Point(0, 0)
@@ -5334,12 +5366,200 @@ function initThreed(threedItem: any, scene: any) {
               console.dir(e)
             }
           },
-          // onProgress,
-          // onError
+          onProgress,
+          onError
         )
       })
   } catch (err) {
     console.debug('initThreed: err', err)
+  }
+}
+
+// ** REDRAW Functions
+function redrawGrid() {
+  if (!redrawing && "3dView" != UILayout) {
+    if (
+      ((redrawing = !0),
+        (screenScale = screenAvg / paper.view.zoom / 75),
+        selectedItem && selectedItem.data)
+    )
+      // console.debug('selectedItem.data', selectedItem.data)
+
+      if ("wallPath" === selectedItem.data.type) {
+        var e = 0
+        selectedItem.segments.forEach(function (t: any) {
+          movePointIcons[e] &&
+            // @ts-expect-error
+            ((movePointIcons[e].position = t.point),
+            // @ts-expect-error
+              (movePointIcons[e].bounds.width = screenScale),
+            // @ts-expect-error
+              (movePointIcons[e].bounds.height = screenScale),
+              e++)
+        })
+      } 
+      else if ("roofPath" === selectedItem.data.type) {
+        var e = 0
+        selectedItem.segments.forEach(function (t: any) {
+          movePointIcons[e] &&
+            // @ts-expect-error
+            ((movePointIcons[e].position = t.point),
+            // @ts-expect-error
+              (movePointIcons[e].bounds.width = screenScale),
+            // @ts-expect-error
+              (movePointIcons[e].bounds.height = screenScale),
+              e++)
+        })
+      } 
+      else if ("threed" === selectedItem.data.type) {
+        rotateIcon.bounds.width = screenScale
+        rotateIcon.bounds.height = screenScale
+        rotateIcon.position =
+          selectedItem.data.toolsRectangleInner.segments[1].point
+        resizeIcon.bounds.width = screenScale
+        resizeIcon.bounds.height = screenScale
+        resizeIcon.position =
+          selectedItem.data.toolsRectangleInner.segments[3].point
+        heightIcon.bounds.width = screenScale
+        heightIcon.bounds.height = screenScale
+        heightIcon.position =
+          selectedItem.data.toolsRectangleInner.segments[2].point
+        elevateIcon.bounds.width = screenScale
+        elevateIcon.bounds.height = screenScale
+        elevateIcon.position =
+          selectedItem.data.toolsRectangleInner.segments[0].point
+      } 
+      else if ("background" === selectedItem.data.type) {
+        resizeIcon.bounds.width = screenScale
+        resizeIcon.bounds.height = screenScale
+        resizeIcon.position =
+            backgroundRaster.data.toolsRectangleInner.segments[3].point
+      } 
+      else if ("floor" === selectedItem.data.type) {
+        var e = 0
+        selectedItem.segments.forEach(function (t: any) {
+          movePointIcons[e] &&
+            // @ts-expect-error
+            ((movePointIcons[e].position = t.point),
+            // @ts-expect-error
+              (movePointIcons[e].bounds.width = screenScale),
+            // @ts-expect-error
+              (movePointIcons[e].bounds.height = screenScale),
+              e++)
+        })
+      }
+
+      var t = 0,
+          o = 0
+      paper.view.zoom < 0.1875
+      ? ((t = 200),
+        (o = 2e3),
+        (snapTolerance = 100),
+        (paper.settings.hitTolerance = 3))
+      : paper.view.zoom < 0.375
+        ? ((t = 100),
+          (o = 1e3),
+          (snapTolerance = 50),
+          (paper.settings.hitTolerance = 3))
+        : paper.view.zoom < 0.75
+          ? ((t = 50),
+            (o = 500),
+            (snapTolerance = 25),
+            (paper.settings.hitTolerance = 3))
+          : paper.view.zoom < 1.5
+            ? ((t = 20),
+              (o = 200),
+              (snapTolerance = 10),
+              (paper.settings.hitTolerance = 3))
+            : paper.view.zoom < 3
+              ? ((t = 10),
+                (o = 100),
+                (snapTolerance = 5),
+                (paper.settings.hitTolerance = 3))
+              : paper.view.zoom < 6
+                ? ((t = 5),
+                  (o = 50),
+                  (snapTolerance = 2),
+                  (paper.settings.hitTolerance = 3))
+                : paper.view.zoom < 12
+                  ? ((t = 2),
+                    (o = 20),
+                    (snapTolerance = 1),
+                    (paper.settings.hitTolerance = 2))
+                  : paper.view.zoom < 24 &&
+                  ((t = 1),
+                    (o = 10),
+                    (snapTolerance = 0.5),
+                    (paper.settings.hitTolerance = 1))
+      
+      rulerLeftCtx.clearRect(0, 0, 30, rulerLeft.height)
+      rulerBottomCtx.clearRect(0, 0, rulerBottom.width, 20)
+
+      var a = paper.view.bounds.left % t
+      var n = 0
+      xLines.forEach(function (e: any) {
+        e.segments[0].point.x = paper.view.bounds.left + n - a
+        e.segments[0].point.y = paper.view.bounds.top
+        e.segments[1].point.x = paper.view.bounds.left + n - a
+        e.segments[1].point.y = paper.view.bounds.bottom
+        var x = parseInt(e.segments[0].point.x)
+        0 === x
+          ? ((e.style.strokeColor = "white"),
+            rulerBottomCtx.fillText(
+              "0cm",
+              (x - paper.view.bounds.left) * paper.view.zoom,
+              14
+            ))
+          : x % o === 0
+            ? ((e.style.strokeColor = "#81673a"),
+              rulerBottomCtx.fillText(
+                // parseInt(paper.view.bounds.left + n - a),
+                (paper.view.bounds.left + n - a),
+                (x - paper.view.bounds.left) * paper.view.zoom,
+                14
+              ))
+            : (e.style.strokeColor = "#564c3a")
+        n += t
+      })
+      var l = paper.view.bounds.top % t
+      n = 0
+      yLines.forEach(function (e: any) {
+        e.segments[0].point.x = paper.view.bounds.left
+        e.segments[0].point.y = paper.view.bounds.top + n - l
+        e.segments[1].point.x = paper.view.bounds.right
+        e.segments[1].point.y = paper.view.bounds.top + n - l
+        var y = parseInt(e.segments[0].point.y)
+        0 === y
+          ? ((e.style.strokeColor = "white"),
+            rulerLeftCtx.fillText(
+              "0cm",
+              26,
+              (y - paper.view.bounds.top) * paper.view.zoom + 4
+            ))
+          : y % o === 0
+            ? ((e.style.strokeColor = "#81673a"),
+              rulerLeftCtx.fillText(
+                // parseInt(paper.view.bounds.top + n - l),
+                (paper.view.bounds.top + n - l),
+                26,
+                (y - paper.view.bounds.top) * paper.view.zoom + 4
+              ))
+            : (e.style.strokeColor = "#564c3a")
+        n += t
+      })
+      Object.keys(verticalGuides).forEach(function (e: any) {
+        // @ts-expect-error
+        verticalGuides[e].segments[0].point.y = paper.view.bounds.top
+        // @ts-expect-error
+        verticalGuides[e].segments[1].point.y = paper.view.bounds.bottom
+      })
+      Object.keys(horizontalGuides).forEach(function (e: any) {
+        // @ts-expect-error
+        horizontalGuides[e].segments[0].point.x = paper.view.bounds.left
+        // @ts-expect-error
+        horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
+      })
+      redrawing = !1
   }
 }
 
@@ -5559,6 +5779,14 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     preferencesDataVar(newData)
     // console.debug('%c⚙️ showPanelFirstLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
   }
+  function setShowPanelLast () {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ showPanelLastLeva newData', ccm.green, newData)
+    newData.showPanelLast = !prefs.showPanelLast // showPanelLastLeva
+    // console.debug('%c⚙️ showPanelLastLeva newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ showPanelLastLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  }
 
   // ==========================================================
 
@@ -5703,26 +5931,29 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     //     // document.getElementById("propertiesView").style.display = "block"
 
 
-    //     // document.getElementById("rulerLeft").style.top = "54px"
-    //     // document.getElementById("rulerLeft").style.bottom = "50px"
-    //     // document.getElementById("rulerLeft").style.left = "318px"
-    //     // document.getElementById("rulerLeft").style.display = "block"
-    //     // document.getElementById("rulerBottom").style.top = "50%"
-    //     // document.getElementById("rulerBottom").style.marginTop = "-20px"
-    //     // document.getElementById("rulerBottom").style.bottom = "0px"
-    //     // document.getElementById("rulerBottom").style.left = "318px"
-    //     // document.getElementById("rulerBottom").style.right = "0px"
-    //     // document.getElementById("rulerBottom").style.display = "block"
-    //     // document.getElementById("mouseIndicatorX").style.top = "54px"
-    //     // document.getElementById("mouseIndicatorX").style.left = "318px"
-    //     // document.getElementById("mouseIndicatorX").style.width = "1px"
-    //     // document.getElementById("mouseIndicatorX").style.bottom = "50%"
-    //     // document.getElementById("mouseIndicatorX").style.display = "block"
-    //     // document.getElementById("mouseIndicatorY").style.top = "57px"
-    //     // document.getElementById("mouseIndicatorY").style.left = "318px"
-    //     // document.getElementById("mouseIndicatorY").style.right = "0px"
-    //     // document.getElementById("mouseIndicatorY").style.height = "1px"
-    //     // document.getElementById("mouseIndicatorY").style.display = "block")
+        // document.getElementById("rulerLeft").style.top = "56px"
+        // document.getElementById("rulerLeft").style.bottom = "56px"
+        // document.getElementById("rulerLeft").style.left = "320px"
+        // document.getElementById("rulerLeft").style.display = "block"
+        // document.getElementById("rulerBottom").style.top = "50%"
+        // document.getElementById("rulerBottom").style.marginTop = "-20px"
+        // document.getElementById("rulerBottom").style.bottom = "0px"
+        // document.getElementById("rulerBottom").style.left = "320px"
+        // document.getElementById("rulerBottom").style.right = "0px"
+        // document.getElementById("rulerBottom").style.display = "block"
+        document.getElementById("mouseIndicatorX").style.width = "1px"
+        document.getElementById("mouseIndicatorX").style.position = "absolute"
+        document.getElementById("mouseIndicatorX").style.top = "20%"
+        document.getElementById("mouseIndicatorX").style.bottom = "56px"
+        document.getElementById("mouseIndicatorX").style.left = "320px"
+        document.getElementById("mouseIndicatorX").style.display = "inline-flex"
+
+        document.getElementById("mouseIndicatorY").style.height = "1px"
+        document.getElementById("mouseIndicatorY").style.position = "absolute"
+        document.getElementById("mouseIndicatorY").style.top = "56px"
+        document.getElementById("mouseIndicatorY").style.left = "320px"
+        document.getElementById("mouseIndicatorY").style.right = "0px"
+        document.getElementById("mouseIndicatorY").style.display = "inline-flex"
     // }
 
   /* */
@@ -6397,6 +6628,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     <Flex
       // direction='row'
       style={{
+        display: 'inline-flex',
+        flexGrow: '1',
         height: '90vh',
         width: '99.8%',
       }}
@@ -6430,9 +6663,9 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
         <Panel 
           className='Panel'
-          defaultSize={0}
+          defaultSize={4}
           minSize={0}
-          maxSize={0}
+          maxSize={4}
           style={{
             // border: '1px solid darkgreen',
           }}
@@ -6458,7 +6691,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   padding: '0px',
                   marginLeft: '4px', 
                 }}
-                // onClick={() => setShowPanelFirst(!prefs.showPanelFirst)}
+                onClick={() => setShowPanelFirst(!prefs.showPanelFirst)}
               >
                 {/* {showPanelFirst ? "hide" : "show"} panel left */}
                 { prefs.showPanelFirst && (
@@ -6487,7 +6720,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   padding: '0px',
                   marginLeft: '0px', 
                 }}
-                // onClick={() => setShowPanelLast(!prefs.showPanelLast)}
+                onClick={() => setShowPanelLast(!prefs.showPanelLast)}
               >
                 {/* {showPanelLast ? "hide" : "show"} panel right */}
                 { prefs.showPanelLast && (
@@ -6518,8 +6751,9 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
         <Panel 
           className='Panel'
-          defaultSize={100}
-          // maxSize={64}
+          defaultSize={96}
+          minSize={96}
+          maxSize={100}
           style={{
             // border: '1px solid darkgreen',
           }}
@@ -6711,11 +6945,14 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               defaultSize={2}
                               minSize={2}
                               maxSize={2}
+                              style={{
+                                height: '100%'
+                              }}
                             >
                               <canvas 
                                 id='rulerLeft' 
                                 width='30' 
-                                height='500' 
+                                height='100%' 
                                 // onMouseDown={() => addVerticalGuide()}
                                 // onMouseUp={() => removeVerticalGuide()}
                               ></canvas>
@@ -6741,9 +6978,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                           </PanelGroup>
                             
                           <PanelGroup
-                            direction='horizontal' 
+                            direction='vertical' 
                             style={{
                               border: '1px solid red',
+                              height: '100%'
                             }}
                           >
                             <Panel
@@ -6754,8 +6992,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                             >
                               <canvas 
                                 id='rulerBottom' 
-                                // width='1024' 
-                                // height='20' 
+                                width='1024' 
+                                height='20' 
                                 // onMouseDown={() => addHorizontalGuide()}
                                 // onMouseUp={() => removeHorizontalGuide()}
                               ></canvas>
