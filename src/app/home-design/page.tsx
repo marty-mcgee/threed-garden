@@ -6634,11 +6634,86 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         width: '99.8%',
       }}
     >
+      
+      {/* <Heading as='h4'>
+        🥕 Welcome to ThreeD Home Design
+      </Heading> */}
+
+      <Flex 
+        style={{ 
+          marginLeft: '4px', 
+          // marginRight: '6px' 
+        }}
+      >
+        {/* MAIN ACTIONS DROPDOWN MENU */}
+        <DropdownMenuThreeD />
+
+        {/* PANEL SHOW/HIDE */}
+        <span>
+          <Button
+            // className={styles.Button}
+            style={{
+              backgroundColor: 'transparent',
+              border: '0px',
+              width: '16px',
+              height: '16px',
+              padding: '0px',
+              marginLeft: '4px', 
+            }}
+            onClick={() => setShowPanelFirst()}
+          >
+            {/* {showPanelFirst ? "hide" : "show"} panel left */}
+            { prefs.showPanelFirst && (
+              <ArrowLeftEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+            { !prefs.showPanelFirst && (
+              <ArrowRightEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+          </Button>
+          &nbsp;
+          <Button
+            // className={styles.Button}
+            style={{
+              backgroundColor: 'transparent',
+              border: '0px',
+              width: '16px',
+              height: '16px',
+              padding: '0px',
+              marginLeft: '0px', 
+            }}
+            onClick={() => setShowPanelLast()}
+          >
+            {/* {showPanelLast ? "hide" : "show"} panel right */}
+            { prefs.showPanelLast && (
+              <ArrowRightEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+            { !prefs.showPanelLast && (
+              <ArrowLeftEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+          </Button>
+        </span>
+      </Flex>
 
       {/* PAGE PANELS */}
       <PanelGroup 
         direction='vertical'
-        // autoSaveId='ThreeDHomeDesignLayoutMain'
+        autoSaveId='ThreeDHomeDesignLayoutMain'
       >
         {/* PANELS: HEADER */}
         {/* PAGE LOADING PROGRESS? */}
@@ -6663,94 +6738,6 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
         <Panel 
           className='Panel'
-          defaultSize={4}
-          minSize={0}
-          maxSize={4}
-          style={{
-            // border: '1px solid darkgreen',
-          }}
-        >
-          <Container 
-            style={{ 
-              marginLeft: '4px', 
-              // marginRight: '6px' 
-            }}
-          >
-            {/* MAIN ACTIONS DROPDOWN MENU */}
-            <DropdownMenuThreeD />
-
-            {/* PANEL SHOW/HIDE */}
-            <span>
-              <Button
-                // className={styles.Button}
-                style={{
-                  backgroundColor: 'transparent',
-                  border: '0px',
-                  width: '16px',
-                  height: '16px',
-                  padding: '0px',
-                  marginLeft: '4px', 
-                }}
-                onClick={() => setShowPanelFirst()}
-              >
-                {/* {showPanelFirst ? "hide" : "show"} panel left */}
-                { prefs.showPanelFirst && (
-                  <ArrowLeftEndOnRectangleIcon
-                    style={{
-                      color: '#504191', // '#3B3269',
-                    }}
-                  />
-                )}
-                { !prefs.showPanelFirst && (
-                  <ArrowRightEndOnRectangleIcon
-                    style={{
-                      color: '#504191', // '#3B3269',
-                    }}
-                  />
-                )}
-              </Button>
-              &nbsp;
-              <Button
-                // className={styles.Button}
-                style={{
-                  backgroundColor: 'transparent',
-                  border: '0px',
-                  width: '16px',
-                  height: '16px',
-                  padding: '0px',
-                  marginLeft: '0px', 
-                }}
-                onClick={() => setShowPanelLast()}
-              >
-                {/* {showPanelLast ? "hide" : "show"} panel right */}
-                { prefs.showPanelLast && (
-                  <ArrowRightEndOnRectangleIcon
-                    style={{
-                      color: '#504191', // '#3B3269',
-                    }}
-                  />
-                )}
-                { !prefs.showPanelLast && (
-                  <ArrowLeftEndOnRectangleIcon
-                    style={{
-                      color: '#504191', // '#3B3269',
-                    }}
-                  />
-                )}
-              </Button>
-            </span>
-            <span>
-              {/* <Heading as='h4'>
-                🥕 Welcome to ThreeD Garden
-              </Heading> */}
-            </span>
-          </Container>
-        </Panel>
-        
-        {/* <PanelResizeHandle /> */}
-
-        <Panel 
-          className='Panel'
           defaultSize={96}
           minSize={96}
           maxSize={100}
@@ -6760,7 +6747,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         >
           <PanelGroup 
             direction='vertical'
-            // autoSaveId='ThreeDHomeDesignLayoutSub'
+            autoSaveId='ThreeDHomeDesignLayoutSub1'
           >
             {/* EXAMPLE PANEL: SUB-HEADER */}
             {/* <Panel
@@ -6781,7 +6768,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             </Panel> */}
             {/*  */}
             
-            {/* <PanelResizeHandle /> */}
+            <PanelResizeHandle />
             
             <Panel
               className='Panel'
@@ -6793,7 +6780,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             >
               <PanelGroup 
                 direction='horizontal'
-                // autoSaveId='ThreeDHomeDesignLayoutSub2'
+                autoSaveId='ThreeDHomeDesignLayoutSub2'
               >
                 {/* VIEWS: OBJECT CATALOG */}
                 {prefs.showPanelFirst && (
@@ -6810,7 +6797,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                     >
                       <PanelGroup
                         direction='vertical'
-                        // autoSaveId='ThreeDHomeDesignLayoutSub3'
+                        autoSaveId='ThreeDHomeDesignLayoutSub3'
                       >
                         <Panel 
                           id='catalogView'
@@ -6878,6 +6865,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                       {/* MAIN CANVASES (TOP + BOTTOM) */}
                       <PanelGroup 
                         direction='vertical'
+                        autoSaveId='ThreeDHomeDesignLayoutSub4'
                       >
                         
                         {/* PANEL: 3D FIBER CANVAS */}
@@ -6938,6 +6926,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
                           <PanelGroup
                             direction='horizontal'
+                            autoSaveId='ThreeDHomeDesignLayoutSub5'
                           >
                             {/* THREED HOME DESIGN: RULER VERTICAL LEFT */}
                             <Panel
@@ -6979,6 +6968,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                             
                           <PanelGroup
                             direction='vertical' 
+                            autoSaveId='ThreeDHomeDesignLayoutSub6'
                             style={{
                               border: '1px solid red',
                               height: '100%'
@@ -7002,6 +6992,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                             
                           <PanelGroup
                             direction='vertical' 
+                            autoSaveId='ThreeDHomeDesignLayoutSub7'
                             style={{
                               border: '1px solid orange',
                             }}
