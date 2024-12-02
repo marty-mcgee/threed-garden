@@ -40,7 +40,7 @@ const nextConfig = {
   //   styledComponents: true,
   // },
   
-  reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production // Recommended true for the `pages` directory, default in `app`.
+  reactStrictMode: false, // true: causes components to load TWICE in dev only, not active (moot) in production // Recommended true for the `pages` directory, default in `app`.
 
   // trailingSlash: false, // true: add a '/' to the final url address -- can cause url-based query string issues
 

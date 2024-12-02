@@ -13,8 +13,9 @@
 
 // ** REACT Imports
 import {
-  useEffect,
   // useRef,
+  // forwardRef,
+  useEffect,
   useState,
   // useCallback,
   // ReactNode,
@@ -284,6 +285,11 @@ const ThreeDGarden = (): JSX.Element => {
   const [isPageLoaded, setIsPageLoaded] = useState(false)
   const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
+  // ** refs moved to ThreeDCanvasViewer
+  // const refThreeDCanvas1 = useRef<any>(null)
+  // const refThreeDCanvas2 = useRef<any>(null)
+  // const refThreeDCanvas3 = useRef<any>(null)
+
   // ==========================================================
   // Component onMount hook
   // **
@@ -336,7 +342,7 @@ const ThreeDGarden = (): JSX.Element => {
       }      
       fetchData()
       if (DEBUG) 
-        console.debug('%c fetching data ...', ccm.blue)
+        console.debug('%c🫙 ThreeDGarden: fetching data ...', ccm.blueAlert)
 
 
       // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
@@ -497,12 +503,14 @@ const ThreeDGarden = (): JSX.Element => {
             // }}
             direction='column'
           > */}
-            <ThreeDCanvasViewer />
+            <ThreeDCanvasViewer
+              // ref={refThreeDCanvas1}
+            />
           {/* </Flex> */}
           {/* END: THREED CANVAS VIEWER */}
 
           {/* THREED CONTROL PANELS */}
-          {/* -- STORE ACCESS (apollo, zustand, valtio, leva) */}
+          {/* -- STORE ACCESS (apollo + leva) */}
           {/* <Flex
             // item
             id='threed_control_panels'
