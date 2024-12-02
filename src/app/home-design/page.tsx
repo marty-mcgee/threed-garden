@@ -6641,6 +6641,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
       <Flex 
         style={{ 
+          display: 'inline-flex',
+          flexDirection: 'column',
           marginLeft: '4px', 
           // marginRight: '6px' 
         }}
@@ -6649,7 +6651,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         <DropdownMenuThreeD />
 
         {/* PANEL SHOW/HIDE */}
-        <span>
+        {/* <span> */}
           <Button
             // className={styles.Button}
             style={{
@@ -6658,7 +6660,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               width: '16px',
               height: '16px',
               padding: '0px',
-              marginLeft: '4px', 
+              marginLeft: '6px', 
             }}
             onClick={() => setShowPanelFirst()}
           >
@@ -6678,7 +6680,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               />
             )}
           </Button>
-          &nbsp;
+          {/* &nbsp; */}
           <Button
             // className={styles.Button}
             style={{
@@ -6687,7 +6689,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               width: '16px',
               height: '16px',
               padding: '0px',
-              marginLeft: '0px', 
+              marginLeft: '4px', 
             }}
             onClick={() => setShowPanelLast()}
           >
@@ -6707,7 +6709,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               />
             )}
           </Button>
-        </span>
+        {/* </span> */}
       </Flex>
 
       {/* PAGE PANELS */}
