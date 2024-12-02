@@ -2,7 +2,6 @@
 // ==========================================================
 // RESOURCES
 
-import { proxy, useSnapshot } from 'valtio'
 import { useState, useEffect, useRef } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'

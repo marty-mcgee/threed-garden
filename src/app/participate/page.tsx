@@ -35,9 +35,9 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Header from '#/layout/header'
 // import Footer from '#/layout/footer'
 
-// ** THREED Imports
-// import ThreeDComponents from '~/src/lib/threed/threed'
-const ThreeDComponents = dynamic(() => import('#/lib/threed/threed'), { ssr: false })
+// ** THREED Components Imports
+// import ThreeDComponents from '#/lib/threed/threed'
+const ThreeDComponents = dynamic(() => import('#/lib/threed/ThreeDComponents'), { ssr: false })
 // import ThreeDControls from '~/src/lib/threed/Controls'
 // const ThreeDControls = dynamic(() => import('#/lib/threed/Controls'), { ssr: false })
 // import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'

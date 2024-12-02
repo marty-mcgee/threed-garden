@@ -1,0 +1,23 @@
+# import { gql, useQuery } from '@apollo/client'
+
+# const GetCanvasStates = gql`
+query GetCanvasStates ($first: Int, $last: Int, $after: String, $before: String) {
+  canvasStates (first: $first, last: $last, after: $after, before: $before) {
+    nodes {
+      canvasStateId
+      title
+      content
+      status
+      link
+      modified
+      # custom fields
+      version
+      # owner
+      state
+      scene
+      camera
+      gl
+    }
+  }
+}
+# `

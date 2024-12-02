@@ -3,8 +3,12 @@
 // RESOURCES
 
 // ** REACT Imports
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { 
+  useRef,
+  forwardRef,
+  useState,
+  useEffect,
+} from 'react'
 
 // ** NEXT Imports
 import Image from 'next/image'
@@ -65,99 +69,55 @@ const DEBUG: boolean = false
 
 // ==========================================================
 
-const ThreeDCanvasCamera = (
+const ThreeDCanvasCamera = forwardRef((
   { index = 0, canvasKey = '0', threeds = [] }: 
-  { index: number, canvasKey: string, threeds: Object[] }
+  { index: number, canvasKey: string, threeds: Object[] },
+  refCanvas
 ) => {
   return (
-    <>
-    {/* <Accordion.Item 
-      value={'Canvas 1 Camera ' + index}
-      className='AccordionItem'
-      style={{ 
-        // borderTop: '1px solid black',
-      }}
-    >
-      <Accordion.Header
-        className='AccordionHeader'
-      >
-        <Flex
-          id={'threed_configs_overlays_' + index}
-          direction='row'
-          style={{
-            alignItems: 'start',
-            width: '100%',
-          }}
-        >
-          { false && 
-            // !config.config && 
-            // <img className={"gear"} src={'/favicon/favicon-16x16.png'} // {ASSETS.other.gear}
-            <Image alt='gear' className={'gearrrrr'} src={'/images/icons/gear.svg'} width={16} height={16}
-              style={{ color: 'gray', backgroundColor: 'darkgreen', paddingLeft: '10px', paddingRight: '10px', paddingTop: '2px', paddingBottom: '2px' }}
-              // onClick={() => setConfig({ ...config, config: true })} 
-            />
-          }
-
-          <Accordion.Trigger 
-            className='AccordionTrigger'
-            style={{
-              // margin: '0',
-              // padding: '0',
-              backgroundColor: 'black',
-              color: 'violet',
-            }}
-          >
-            <ChevronDownIcon 
-              className='AccordionChevron' 
-              aria-hidden 
-            />
-            <span 
-              // style={{ position: 'relative' }}
-            >
-              Camera {index}
-            </span>
-          </Accordion.Trigger>
-          
-        </Flex>
-      </Accordion.Header>
-
-      <Accordion.Content 
-        className='AccordionContent'
-      > */}
-    
-    <PanelGroup
-      direction='vertical'
+    // <PanelGroup
+    //   direction='vertical'
+    //   style={{
+    //     height: '100%',
+    //     // minHeight: '200px',
+    //     // border: '1px solid green',
+    //   }}
+    // >
+    //   <Panel
+    //     defaultSize={100}
+    //     style={{
+    //       // height: '100px',
+    //       // border: '1px solid green',
+    //     }}
+    //   >
+    <div
       style={{
-        minHeight: '200px',
-        // border: '1px solid green',
+        display: 'inline-flex',
+        flexDirection: 'column',
+        flexGrow: '1',
       }}
     >
-      <Panel
-        defaultSize={100}
-        style={{
-          // height: '100px',
-          // border: '1px solid green',
-        }}
-      >
         <ThreeDCanvas
           _id={'_r3fCanvas' + index}
           threeds={threeds}
+          ref={refCanvas}
         />
-      </Panel>
-    </PanelGroup>
-
-      {/* </Accordion.Content>
-    </Accordion.Item> */}
-    </>
+    </div>
+    //   </Panel>
+    // </PanelGroup>
   )
 }
+) // end forwardRef
 
 // ** export default
 export const ThreeDCanvasViewer = () => {
   // **
   // return <Spinner />
-  const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
-  // console.debug(`%c=======================================================`, ccm.orange)
+  // const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
+
+  // ** threeds[nodes] to provide a canvas
+  let threeds: Object[] = [] // threeds are nodes[] to load to canvas
+  
   // if (debug || DEBUG) 
   console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
   // console.debug(`%c=======================================================`, ccm.black)
@@ -165,14 +125,15 @@ export const ThreeDCanvasViewer = () => {
   // ** USE CLIENT
   // const client = useApolloClient()
 
-  // ** threeds[nodes] to provide a canvas
-  let threeds: [] = [] // threeds are nodes[] to load to canvas
-
   // return <Spinner />
   // ** ⚙️ PREFERENCES
   // const prefs = preferencesDataVar() // NO ??
   const prefs = useReactiveVar(preferencesDataVar) // YES ??
   // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert, prefs)
+
+  const refThreeDCanvas1 = useRef<any>(null)
+  const refThreeDCanvas2 = useRef<any>(null)
+  const refThreeDCanvas3 = useRef<any>(null)
 
   // let project = projectStore.store.get('one')
   // if (prefs.doAutoLoadData) {
@@ -211,18 +172,20 @@ export const ThreeDCanvasViewer = () => {
 
   // console.debug(`%c=======================================================`, ccm.orange)
   return (
-    <Grid 
+    <Flex 
       id='threedCanvasViewer'
       // display={'inline-flex'}
       // direction={'column'}
       style={{ 
-        // display: 'flex', 
-        // flexDirection: 'row',
-        // minHeight: '40vh',
+        display: 'inline-flex', 
+        flexDirection: 'row',
+        flexGrow: '1',
+        width: '100%',
+        height: '100%',
+        minHeight: '40vh',
         // maxHeight: '60vh',
         // minWidth: '50vw',
         // maxWidth: '90vw',
-        // width: '100%',
       }}
     >
 
@@ -262,19 +225,22 @@ export const ThreeDCanvasViewer = () => {
         <ThreeDCanvasCamera 
           index={1} 
           canvasKey={'1'}
-          threeds={threeds} 
+          threeds={threeds}
+          ref={refThreeDCanvas1}
         />
         {/* THREED CANVAS 1 : CAMERA 2 */}
         {/* <ThreeDCanvasCamera 
           index={2} 
           canvasKey={'1'}
           threeds={threeds} 
+          ref={refThreeDCanvas1}
         /> */}
         {/* THREED CANVAS 1 : CAMERA 3 */}
         {/* <ThreeDCanvasCamera 
           index={3} 
           canvasKey={'1'}
           threeds={threeds}
+          ref={refThreeDCanvas1}
         /> */}
         {/**/}
       {/* </Accordion.Root> */}
@@ -305,16 +271,19 @@ export const ThreeDCanvasViewer = () => {
         {/* <ThreeDCanvasCamera 
           index={4} 
           threeds={threeds} 
+          ref={refThreeDCanvas2}
         /> */}
         {/* THREED CANVAS 2 : CAMERA 2 */}
         {/* <ThreeDCanvasCamera 
           index={5} 
           threeds={threeds} 
+          ref={refThreeDCanvas2}
         /> */}
         {/* THREED CANVAS 2 : CAMERA 3 */}
         {/* <ThreeDCanvasCamera 
           index={6} 
           threeds={threeds}
+          ref={refThreeDCanvas2}
         /> */}
         {/**/}
       {/* </Accordion.Root> */}
@@ -323,7 +292,7 @@ export const ThreeDCanvasViewer = () => {
         * [MM] TESTING -- RADIX-UI.primitive.Collapsible */}
       {/* <CollapsibleDemo /> */}
 
-    </Grid>
+    </Flex>
   )
 }
 
@@ -334,88 +303,88 @@ export const ThreeDCanvasViewer = () => {
 // import { RowSpacingIcon, Cross2Icon } from '@radix-ui/react-icons'
 // import './styles.css'
 
-const CollapsibleDemo = () => {
-  const [openCanvas1, setOpenCanvas1] = useState(false)
-  const [openCanvas2, setOpenCanvas2] = useState(false)
-  return (
-    <Flex>
-      {/*  */}
-      <Collapsible.Root className="CollapsibleRoot" open={openCanvas1} onOpenChange={setOpenCanvas1}>
-        <div 
-          style={{ 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Collapsible.Trigger asChild>
-            <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
-          </Collapsible.Trigger>
-          <span className="Text">
-            CANVAS 1
-          </span>
-        </div>
-        {/*  */}
-        <div className="Repository">
-          <span className="Text">REPOSITORY 1: CANVAS 1</span>
-        </div>
-        {/*  */}
-        <Collapsible.Content>
-          {/* <div className="Repository">
-            <span className="Text">1: HEY HEY HEY 1</span>
-          </div>
-          <div className="Repository">
-            <span className="Text">1: YO YO YO 1</span>
-          </div> */}
-          {/* THREED CANVAS 1 : CAMERA 7 */}
-          <ThreeDCanvasCamera 
-            index={7} 
-            canvasKey={'1'}
-            threeds={[]} 
-          />
-        </Collapsible.Content>
-      </Collapsible.Root>
-      {/*  */}
-      <Collapsible.Root className="CollapsibleRoot" open={openCanvas2} onOpenChange={setOpenCanvas2}>
-        <div 
-          style={{ 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Collapsible.Trigger asChild>
-            <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
-          </Collapsible.Trigger>
-          <span className="Text">
-            CANVAS 2
-          </span>
-        </div>
-        {/*  */}
-        <div className="Repository">
-          <span className="Text">REPOSITORY 2: CANVAS 2</span>
-        </div>
-        {/*  */}
-        <Collapsible.Content>
-          {/* <div className="Repository">
-            <span className="Text">2: HEY HEY HEY 2</span>
-          </div>
-          <div className="Repository">
-            <span className="Text">2: YO YO YO 2</span>
-          </div> */}
-          {/* THREED CANVAS 2 : CAMERA 8 */}
-          <ThreeDCanvasCamera 
-            index={8}
-            canvasKey={'2'}
-            threeds={[]} 
-          />
-        </Collapsible.Content>
-      </Collapsible.Root>
-    </Flex>
-  )
-}
+// const CollapsibleDemo = () => {
+//   const [openCanvas1, setOpenCanvas1] = useState(false)
+//   const [openCanvas2, setOpenCanvas2] = useState(false)
+//   return (
+//     <Flex>
+//       {/*  */}
+//       <Collapsible.Root className="CollapsibleRoot" open={openCanvas1} onOpenChange={setOpenCanvas1}>
+//         <div 
+//           style={{ 
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'space-between',
+//           }}
+//         >
+//           <Collapsible.Trigger asChild>
+//             <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
+//           </Collapsible.Trigger>
+//           <span className="Text">
+//             CANVAS 1
+//           </span>
+//         </div>
+//         {/*  */}
+//         <div className="Repository">
+//           <span className="Text">REPOSITORY 1: CANVAS 1</span>
+//         </div>
+//         {/*  */}
+//         <Collapsible.Content>
+//           {/* <div className="Repository">
+//             <span className="Text">1: HEY HEY HEY 1</span>
+//           </div>
+//           <div className="Repository">
+//             <span className="Text">1: YO YO YO 1</span>
+//           </div> */}
+//           {/* THREED CANVAS 1 : CAMERA 7 */}
+//           <ThreeDCanvasCamera 
+//             index={7} 
+//             canvasKey={'1'}
+//             threeds={[]} 
+//           />
+//         </Collapsible.Content>
+//       </Collapsible.Root>
+//       {/*  */}
+//       <Collapsible.Root className="CollapsibleRoot" open={openCanvas2} onOpenChange={setOpenCanvas2}>
+//         <div 
+//           style={{ 
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'space-between',
+//           }}
+//         >
+//           <Collapsible.Trigger asChild>
+//             <button className="IconButton">{open ? <Cross2Icon /> : <RowSpacingIcon />}</button>
+//           </Collapsible.Trigger>
+//           <span className="Text">
+//             CANVAS 2
+//           </span>
+//         </div>
+//         {/*  */}
+//         <div className="Repository">
+//           <span className="Text">REPOSITORY 2: CANVAS 2</span>
+//         </div>
+//         {/*  */}
+//         <Collapsible.Content>
+//           {/* <div className="Repository">
+//             <span className="Text">2: HEY HEY HEY 2</span>
+//           </div>
+//           <div className="Repository">
+//             <span className="Text">2: YO YO YO 2</span>
+//           </div> */}
+//           {/* THREED CANVAS 2 : CAMERA 8 */}
+//           <ThreeDCanvasCamera 
+//             index={8}
+//             canvasKey={'2'}
+//             threeds={[]} 
+//           />
+//         </Collapsible.Content>
+//       </Collapsible.Root>
+//     </Flex>
+//   )
+// }
 
 // ** ======================================================================
-export { CollapsibleDemo }
+// export { CollapsibleDemo }
 export default ThreeDCanvasViewer
 // ** ======================================================================
