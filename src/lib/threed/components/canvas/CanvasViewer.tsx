@@ -113,7 +113,7 @@ const ThreeDCanvasCamera = forwardRef((
 export const ThreeDCanvasViewer = () => {
   // **
   // return <Spinner />
-  const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
+  // const word: string = `[MM] ThreeDCanvasViewer @ ${new Date().toISOString()}`
 
   // ** threeds[nodes] to provide a canvas
   let threeds: Object[] = [] // threeds are nodes[] to load to canvas
@@ -178,14 +178,14 @@ export const ThreeDCanvasViewer = () => {
       // direction={'column'}
       style={{ 
         display: 'inline-flex', 
-        // flexDirection: 'row',
+        flexDirection: 'row',
+        flexGrow: '1',
+        width: '100%',
         height: '100%',
         minHeight: '40vh',
         // maxHeight: '60vh',
         // minWidth: '50vw',
         // maxWidth: '90vw',
-        width: '100%',
-        flexGrow: '1',
       }}
     >
 
