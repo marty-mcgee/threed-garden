@@ -5661,10 +5661,6 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   const client = useApolloClient()
   // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
-  // ** USE CONTEXTS STATE
-  // const abilities = useContext(AbilityContext)
-  // const abilities = ['read', 'write', 'delete']
-
   // ** USE PREFERENCES STATE
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
@@ -5683,6 +5679,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
   const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(useReactiveVar(isCanvasStateSetVar))
 
+  // ==========================================================
+  // ** USE CONTEXTS STATE (role-based abilities)
+  // const abilities = useContext(AbilityContext)
+  // const abilities = ['read', 'write', 'delete']
   // ==========================================================
 
   // ==========================================================
