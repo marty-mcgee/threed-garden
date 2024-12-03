@@ -5643,6 +5643,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   
   // ==========================================================
   // ** HOOKS (into [onMount] STATES)
+  // ==========================================================
 
   // ** USE AUTH STATE
   // const auth = useAuth()
@@ -5681,6 +5682,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // console.debug('getThreeState()', getThreeState())
 
 
+  // ==========================================================
   // ** USE DOM ELEMENT STATE
   // ** TESTING: DOM ELEMENT as React State Variables
   const [domElement, setDomElement] = useState(null) // document.body
@@ -5692,12 +5694,15 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   }, [])
   // }, []) // useEffect
   // ** END TESTING: DOM ELEMENT as React State Variables
+  // ==========================================================
 
 
+  // ==========================================================
   // ** USE PANELS STATE
   // ** PANELS as React State Variables
   // const [showPanelFirst, setShowPanelFirst] = useState(prefs.showPanelFirst)
   // const [showPanelLast, setShowPanelLast] = useState(prefs.showPanelLast)
+  // ==========================================================
   
   
   // ==========================================================
