@@ -5682,11 +5682,12 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // ** TESTING: DOM ELEMENT as React State Variables
   const [domElement, setDomElement] = useState(null) // document.body
   // useEffect(() => {
-    const onChange = useCallback((event: any) => {
-      setDomElement(event.target.domElement)
-      console.debug('onChange: useCallback domElement', domElement)
-    }, [])
+  const onChange = useCallback((event: any) => {
+    setDomElement(event.target.domElement)
+    console.debug('onChange: useCallback domElement', domElement)
+  }, [])
   // }, []) // useEffect
+  // ** END TESTING: DOM ELEMENT as React State Variables
   
   // ==========================================================
   // Component onMount hook
