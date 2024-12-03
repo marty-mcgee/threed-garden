@@ -5642,30 +5642,31 @@ const CatalogItems = (props: any): JSX.Element => {
 export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element { 
   
   // ==========================================================
-  // ** HOOKS
+  // ** HOOKS (into [onMount] STATES)
+
+  // ** USE AUTH STATE
   // const auth = useAuth()
-  // ** USE SESSION
+  
+  // ** USE SESSION STATE
   // // const { data, status } = useSession()
   // const { data: sessionData, status: sessionStatus } = useSession()
   // console.debug('useSession().data', sessionData)
   // console.debug('useSession().status', sessionStatus)
 
-  // ** USE CLIENT
+  // ** USE CLIENT STATE
   const client = useApolloClient()
   // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
-  // ** USE PREFERENCES
+  // ** USE PREFERENCES STATE
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeD Home Design prefs', ccm.orangeAlert, prefs)
 
-  // ** INIT PREFERENCES
+  // ** INIT PAGE STATE
   const [isPageLoaded, setIsPageLoaded] = useState(false)
-  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
-  // ** PANELS (React State)
-  // const [showPanelFirst, setShowPanelFirst] = useState(prefs.showPanelFirst)
-  // const [showPanelLast, setShowPanelLast] = useState(prefs.showPanelLast)
+  // ** INIT PREFERENCES STATE
+  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
   // ** USE CANVAS STATE
   const canvasState = useReactiveVar(canvasStateVar) // YES !!
@@ -5679,6 +5680,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // // getThreeState() // Get fresh state from anywhere you want
   // console.debug('getThreeState()', getThreeState())
 
+
+  // ** USE DOM ELEMENT STATE
   // ** TESTING: DOM ELEMENT as React State Variables
   const [domElement, setDomElement] = useState(null) // document.body
   // useEffect(() => {
@@ -5689,6 +5692,13 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   }, [])
   // }, []) // useEffect
   // ** END TESTING: DOM ELEMENT as React State Variables
+
+
+  // ** USE PANELS STATE
+  // ** PANELS as React State Variables
+  // const [showPanelFirst, setShowPanelFirst] = useState(prefs.showPanelFirst)
+  // const [showPanelLast, setShowPanelLast] = useState(prefs.showPanelLast)
+  
   
   // ==========================================================
   // Component onMount hook
