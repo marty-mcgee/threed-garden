@@ -5658,6 +5658,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   const client = useApolloClient()
   // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
+  // ** USE CONTEXTS STATE
+  // const abilities = useContext(AbilityContext)
+  // const abilities = ['read', 'write', 'delete']
+
   // ** USE PREFERENCES STATE
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
@@ -5675,12 +5679,18 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // ** INIT CANVAS STATE
   const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
   const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(useReactiveVar(isCanvasStateSetVar))
+
+  // ==========================================================
+
+  // ==========================================================
+  // ** TESTING: THREE CANVAS[ES] as React State Variables
   // // ** get scene + camera from child component ThreeDCanvasViewer refCanvas
   // // const scene = useRef()
   // const getThreeState = useThree((state) => state.get)
   // // getThreeState() // Get fresh state from anywhere you want
   // console.debug('getThreeState()', getThreeState())
-
+  // ** END TESTING: THREE CANVAS[ES] as React State Variables
+  // ==========================================================
 
   // ==========================================================
   // ** USE DOM ELEMENT STATE
@@ -5696,14 +5706,12 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // ** END TESTING: DOM ELEMENT as React State Variables
   // ==========================================================
 
-
   // ==========================================================
   // ** USE PANELS STATE
   // ** PANELS as React State Variables
   // const [showPanelFirst, setShowPanelFirst] = useState(prefs.showPanelFirst)
   // const [showPanelLast, setShowPanelLast] = useState(prefs.showPanelLast)
   // ==========================================================
-  
   
   // ==========================================================
   // Component onMount hook
@@ -5816,11 +5824,6 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   }
 
   // ==========================================================
-
-  // ==========================================================
-  // ** USE CONTEXT
-  // const abilities = useContext(AbilityContext)
-  // const abilities = ['read', 'write', 'delete']
 
   // ==========================================================
 
