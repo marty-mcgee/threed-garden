@@ -112,6 +112,22 @@
     }
   },
   {
+    "title": "decorativePlant",
+    "license": "CC BY 4.0",
+    "author": "Nmn9",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 31.77,
+      "y": 60.58,
+      "z": 32.21
+    }
+  },
+  {
     "title": "flowerBox",
     "license": "CC0",
     "author": "ThreeD Garden",
@@ -272,22 +288,6 @@
     }
   },
   {
-    "title": "fotel",
-    "license": "CC BY 4.0",
-    "author": "tripleJ",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 73.48,
-      "y": 69.7,
-      "z": 61.07
-    }
-  },
-  {
     "title": "table_football",
     "license": "CC0",
     "author": "ThreeD Garden",
@@ -301,6 +301,38 @@
       "x": 150.27,
       "y": 100.9,
       "z": 124.61
+    }
+  },
+  {
+    "title": "poolTable",
+    "license": "CC0",
+    "author": "ThreeD Garden",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 255.95,
+      "y": 82.35,
+      "z": 139.25
+    }
+  },
+  {
+    "title": "fotel",
+    "license": "CC BY 4.0",
+    "author": "tripleJ",
+    "threedLink": "#threed-link",
+    "scale": {
+      "x": 1.000,
+      "y": 1.000,
+      "z": 1.000
+    },
+    "size": {
+      "x": 73.48,
+      "y": 69.7,
+      "z": 61.07
     }
   },
   {
@@ -4774,22 +4806,6 @@
     }
   },
   {
-    "title": "poolTable",
-    "license": "CC0",
-    "author": "ThreeD Garden",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 255.95,
-      "y": 82.35,
-      "z": 139.25
-    }
-  },
-  {
     "title": "radiator",
     "license": "CC0",
     "author": "ThreeD Garden",
@@ -5571,22 +5587,6 @@
       "x": 345.76,
       "y": 85.53,
       "z": 155
-    }
-  },
-  {
-    "title": "decorativePlant",
-    "license": "CC BY 4.0",
-    "author": "Nmn9",
-    "threedLink": "#threed-link",
-    "scale": {
-      "x": 1.000,
-      "y": 1.000,
-      "z": 1.000
-    },
-    "size": {
-      "x": 31.77,
-      "y": 60.58,
-      "z": 32.21
     }
   },
   {

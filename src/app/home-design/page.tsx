@@ -52,6 +52,7 @@ import {
   useRef,
   useEffect,
   Suspense,
+  useCallback,
 } from 'react'
 
 // ** PAPER Imports
@@ -5677,6 +5678,15 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // const getThreeState = useThree((state) => state.get)
   // // getThreeState() // Get fresh state from anywhere you want
   // console.debug('getThreeState()', getThreeState())
+
+  // ** TESTING: DOM ELEMENT as React State Variables
+  const [domElement, setDomElement] = useState(null) // document.body
+  // useEffect(() => {
+    const onChange = useCallback((event: any) => {
+      setDomElement(event.target.domElement)
+      console.debug('onChange: useCallback domElement', domElement)
+    }, [])
+  // }, []) // useEffect
   
   // ==========================================================
   // Component onMount hook
@@ -6639,9 +6649,23 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         🥕 Welcome to ThreeD Home Design
       </Heading> */}
 
+      {/* TESTING: DOM ELEMENT as React State Variables */}
+      <>
+        {/* <Canvas>
+          <OrbitControls domElement={domElement} onChange={onChange} />
+        </Canvas>
+        <Canvas>
+          <OrbitControls domElement={domElement} onChange={onChange} />
+        </Canvas>
+        <Canvas>
+          <OrbitControls domElement={domElement} onChange={onChange} />
+        </Canvas> */}
+      </>
+
       <Flex 
         style={{ 
-          display: 'inline-flex',
+          // display: 'inline-flex',
+          display: 'none',
           flexDirection: 'column',
           marginLeft: '4px', 
           // marginRight: '6px' 
