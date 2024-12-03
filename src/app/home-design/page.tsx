@@ -5683,6 +5683,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   const [domElement, setDomElement] = useState(null) // document.body
   // useEffect(() => {
   const onChange = useCallback((event: any) => {
+    console.debug('onChange: useCallback event', event)
     setDomElement(event.target.domElement)
     console.debug('onChange: useCallback domElement', domElement)
   }, [])
