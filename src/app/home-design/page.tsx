@@ -5635,6 +5635,8 @@ const CatalogItems = (props: any): JSX.Element => {
   )
 }
 
+
+// ** EXPORT JSX as NEXT PAGE
 // const HomeDesignPage = (props) => {
 // const HomeDesignPage: NextPage<TPageProps> = (props) => {
 // const HomeDesignPage: NextPage = (): JSX.Element => {
@@ -5647,6 +5649,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
   // ** USE AUTH STATE
   // const auth = useAuth()
+  // console.debug('useAuth(): auth', auth)
   
   // ** USE SESSION STATE
   // // const { data, status } = useSession()
