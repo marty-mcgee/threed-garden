@@ -5698,14 +5698,20 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // ==========================================================
   // ** USE DOM ELEMENT STATE
   // ** TESTING: DOM ELEMENT as React State Variables
-  const [domElement, setDomElement] = useState(null) // document.body
-  // useEffect(() => {
-  const onChange = useCallback((event: any) => {
+  const [domElement, setDomElement] = useState(null)
+  useEffect(() => {
+    console.debug('useEffect: document.body', document.body)
+    setDomElement(document.body)
+    // console.debug('useEffect: domElement', domElement)
+  }, [])
+  useEffect(() => {
+    console.debug('useEffect: domElement', domElement)
+  }, [domElement])
+  const onDomElementChange = useCallback((event: any) => {
     console.debug('onChange: useCallback event', event)
     setDomElement(event.target.domElement)
     console.debug('onChange: useCallback domElement', domElement)
   }, [])
-  // }, []) // useEffect
   // ** END TESTING: DOM ELEMENT as React State Variables
   // ==========================================================
 
@@ -6687,11 +6693,11 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
       <Flex 
         style={{ 
-          // display: 'inline-flex',
-          display: 'none',
+          display: 'inline-flex',
+          // display: 'none',
           flexDirection: 'column',
           marginLeft: '4px', 
-          // marginRight: '6px' 
+          marginRight: '6px' 
         }}
       >
         {/* MAIN ACTIONS DROPDOWN MENU */}
@@ -6817,7 +6823,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             </Panel> */}
             {/*  */}
             
-            <PanelResizeHandle />
+            {/* <PanelResizeHandle /> */}
             
             <Panel
               className='Panel'
@@ -6895,7 +6901,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                       </PanelGroup>
                     </Panel>
 
-                    <PanelResizeHandle />
+                    {/* <PanelResizeHandle /> */}
                   </>
                 )}
 
@@ -7111,7 +7117,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
           </PanelGroup>
 
-          <PanelResizeHandle />
+          {/* <PanelResizeHandle /> */}
 
         </Panel>
 
