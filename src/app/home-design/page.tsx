@@ -5280,16 +5280,22 @@ function initThreed(threedItem: any, scene: any) {
                   // )
 
                   if (threedItem.useMask) {
+                    // @ts-expect-error
                     rasterImageN.useMask = true
                     var meshN = new THREE.Mesh(
                       OBJaBoxGeometry,
                       new THREE.MeshStandardMaterial({})
                     )
                     console.debug('meshN', meshN)
+                    // @ts-expect-error
                     imageN.position.x = OBJa.position.x
+                    // @ts-expect-error
                     imageN.position.y = OBJa.position.y
+                    // @ts-expect-error
                     imageN.position.z = OBJa.position.z
+                    // @ts-expect-error
                     imageN.geometry.translate(0, OBJa.userData.height / 2, 0)
+                    // @ts-expect-error
                     imageN.visible = false
                     
                     // scene.add(meshN)
@@ -5311,14 +5317,20 @@ function initThreed(threedItem: any, scene: any) {
                   // **
                   if (rectangleOh) {
                     var i = (rectangleOh.bounds.left + 360) % 360
-                    rasterImageN.rotate(i),
-                      (rasterImageN.data.angle = i),
-                      clickableObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
-                      maskObjects[draggingThreedItemU] &&
-                      (maskObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
-                        (maskObjects[draggingThreedItemU].scale.x = 1),
-                        (maskObjects[draggingThreedItemU].scale.y = 1),
-                        (maskObjects[draggingThreedItemU].scale.z = 1))
+                    rasterImageN.rotate(i)
+                    rasterImageN.data.angle = i
+                    // @ts-expect-error
+                    clickableObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI)
+                    if (maskObjects[draggingThreedItemU]) {
+                      // @ts-expect-error
+                      maskObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI)
+                      // @ts-expect-error
+                      maskObjects[draggingThreedItemU].scale.x = 1
+                      // @ts-expect-error
+                      maskObjects[draggingThreedItemU].scale.y = 1
+                      // @ts-expect-error
+                      maskObjects[draggingThreedItemU].scale.z = 1
+                    }
                   } 
                   else {
                     rasterImageN.data.angle = 0
@@ -5330,17 +5342,22 @@ function initThreed(threedItem: any, scene: any) {
                     rasterImageN.visible = true
                     Threed[draggingThreedItemU] = threedItem
                     try {
+                      // @ts-expect-error
                       threedGroup[paper.project.activeLayer.data.id].addChild(
                         Threed[draggingThreedItemU]
                       )
                     } catch (err) {
                       console.debug('err', err)
                     }
+                    // @ts-expect-error
                     plan.threed[draggingThreedItemU] = {
                       id: draggingThreedItemU,
                       name: threedItem.title,
+                      // @ts-expect-error
                       position: clickableObjects[draggingThreedItemU].position,
+                      // @ts-expect-error
                       scale: clickableObjects[draggingThreedItemU].scale,
+                      // @ts-expect-error
                       rotation: clickableObjects[draggingThreedItemU].rotation,
                       width: rasterImageN.bounds.width,
                       depth: rasterImageN.bounds.height,
