@@ -5051,10 +5051,7 @@ function beginDrag(event: any, threedItem: TThreedItem) {
         event.pageY - planView.offsetTop
       )
     )
-    draggingThreedRectangle = new paper.Path.Rectangle(
-      new paper.Point(-1, -1),
-      new paper.Point(1, 1)
-    )
+    // console.debug('beginDrag: PAPERviewToProject', PAPERviewToProject)
     draggingThreedRectangle.position = PAPERviewToProject
 
     if (threedItem) {
@@ -5069,7 +5066,6 @@ function beginDrag(event: any, threedItem: TThreedItem) {
 
     threedDragDiv = document.getElementById('threedDragDiv')
     threedDragDiv.style.background = 'url(' + threedItemsURL + 'objects/' + threedItem.title + '_top.png)'
-    // console.debug('threedDragDiv.style.background', threedDragDiv.style.background)
     threedDragDiv.style.backgroundRepeat = 'no-repeat'
     
     let widthA = draggingThreedRectangle.bounds.width
@@ -5096,41 +5092,43 @@ function addThreed(event: any, threedItem: any, scene: any) {
   console.debug('addThreed: threedItem', threedItem)
   try {
     if (!draggingThreedRectangle?.position) {
+      console.debug('addThreed: draggingThreedRectangle POSITION DOES NOT EXIST', draggingThreedRectangle)
       draggingThreedRectangle = new paper.Path.Rectangle(
-        new paper.Point(-1, -1),
+        // new paper.Point(-1, -1),
+        new paper.Point(event.x, event.y),
         new paper.Point(1, 1)
       )
     }
-      console.debug('addThreed: draggingThreedRectangle', draggingThreedRectangle)
-      console.debug('addThreed: paper', paper)
-      // console.debug('addThreed: paper.view.bounds', paper.view.bounds)
+    console.debug('addThreed: draggingThreedRectangle', draggingThreedRectangle)
+    console.debug('addThreed: paper', paper)
+    // console.debug('addThreed: paper.view.bounds', paper.view.bounds)
 
-      if (draggingThreedRectangle.position.x > paper.view.bounds.left + 0) { // [MM] plus N pixel movement
-        if ( draggingThreedRectangle.position.y > paper.view.bounds.top 
-          && draggingThreedRectangle.position.y < paper.view.bounds.bottom ) {
-          console.debug('addThreed: dropped inside planView successfully')
-          // **
-          initThreed(draggingThreedItem, scene)
-          // **
-        } else if (draggingThreedRectangle.position.y > paper.view.bounds.bottom) {
-            console.debug('addThreed: dropped inside 3dView -- todo: implement')
-        } else {
-          console.debug('addThreed: not dropped inside views 2')
-        }
+    if (draggingThreedRectangle.position.x > paper.view.bounds.left + 0) { // [MM] plus N pixel movement
+      if ( draggingThreedRectangle.position.y > paper.view.bounds.top 
+        && draggingThreedRectangle.position.y < paper.view.bounds.bottom ) {
+        console.debug('addThreed: dropped inside planView successfully', draggingThreedRectangle)
+        // **
+        initThreed(draggingThreedItem, scene)
+        // **
+      } else if (draggingThreedRectangle.position.y > paper.view.bounds.bottom) {
+          console.debug('addThreed: dropped inside 3dView -- todo: implement')
       } else {
-        console.debug('addThreed: dropped not inside views 1')
+        console.debug('addThreed: not dropped inside views 2')
       }
+    } else {
+      console.debug('addThreed: dropped not inside views 1')
+    }
 
-      draggingThreedIcon = false
-      threedDragDiv.style.display = 'none'
-      threedDragDiv.style.background = 'url("images/homedesign/thumbPlaceHolder.png")'
-      draggingThreedRectangle.visible = false
-      draggingThreedRectangle.position.x = 0
-      draggingThreedRectangle.position.y = 0
-      // threedItem = draggingThreedItem
-      // console.debug('addThreed: threedItem', threedItem)
-      event.preventDefault()
-    // }
+    draggingThreedIcon = false
+    threedDragDiv.style.display = 'none'
+    threedDragDiv.style.background = 'url("images/homedesign/thumbPlaceHolder.png")'
+    draggingThreedRectangle.visible = false
+    // draggingThreedRectangle.position.x = 0 // NO !!!
+    // draggingThreedRectangle.position.y = 0 // NO !!!
+    // threedItem = draggingThreedItem
+    // console.debug('addThreed: threedItem', threedItem)
+    event.preventDefault()
+
   } catch (err) {
     console.debug('addThreed: err', err)
   }
