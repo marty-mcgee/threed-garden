@@ -128,7 +128,7 @@ export default function MainNav() {
         
             <NavigationMenuItem>
               <NavigationMenuLink
-                href='/about'
+                href='/page'
                 className={navigationMenuTriggerStyle()}
                 style={{
                   // backgroundColor: '#222222', 
