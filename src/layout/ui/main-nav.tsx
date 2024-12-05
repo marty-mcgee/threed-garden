@@ -104,7 +104,7 @@ export default function MainNav() {
                   // fontSize: 12,
                 }}
               >
-                Demo: 1
+                Demo: Basic 3D
               </NavigationMenuLink>
             </NavigationMenuItem>
         
@@ -122,7 +122,7 @@ export default function MainNav() {
                   // fontSize: 12,
                 }}
               >
-                Demo: 2
+                Demo: Advanced 3D + 2D
               </NavigationMenuLink>
             </NavigationMenuItem>
 
