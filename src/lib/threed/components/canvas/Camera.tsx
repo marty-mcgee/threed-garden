@@ -500,8 +500,8 @@ export default function ThreeDCamera(
           makeDefault={true} 
           name={"camera"}
           fov={64} 
-          // near={10} 
-          // far={75000}
+          near={0.10} 
+          far={80000}
           position={camera.position}
           // rotation={[0, 0, 0]}
           // up={[0, 0, 0]}

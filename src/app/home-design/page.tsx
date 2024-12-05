@@ -5154,7 +5154,7 @@ function initThreed(threedItem: any, scene: any) {
           function (OBJa: any) {
             console.debug('initThreed: OBJa', OBJa)
             try {
-              const mmScalePercentage = 0.02 // 1 | 0.1
+              const mmScalePercentage = 1 // 0.02 // 1 | 0.1
               OBJa.scale.x = mmScalePercentage
               OBJa.scale.y = mmScalePercentage
               OBJa.scale.z = mmScalePercentage
