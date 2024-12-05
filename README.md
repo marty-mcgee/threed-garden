@@ -10,17 +10,10 @@
 
 🏡 [Demo: 2D + 3D](https://threedgarden.com/home-design)
 
-## For Developers
-
-🤖 ["name": "threed-garden"](https://www.npmjs.com/package/threed-garden)
-
-🤖 ["version": "0.17.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=versions)
-
-🤖 ["code": "0.17.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=code)
-
-### Install + Run
+### Install + Run Options
 
 #### npm i threed-garden
+#### yarn install threed-garden
 #### git clone https://github.com/marty-mcgee/threed-garden.git
 
 - app currently requires yarn: `npm install -g yarn`
