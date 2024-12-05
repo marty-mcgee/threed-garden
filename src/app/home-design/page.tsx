@@ -6949,6 +6949,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                   </>
                 )}
 
+                <PanelResizeHandle />
+
                 {/* VIEWS: CANVASES */}
                 {prefs.showPanelLast && (
                   <>
