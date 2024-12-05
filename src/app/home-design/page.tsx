@@ -52,6 +52,7 @@ import {
   useRef,
   useEffect,
   Suspense,
+  useCallback,
 } from 'react'
 
 // ** PAPER Imports
@@ -5634,6 +5635,8 @@ const CatalogItems = (props: any): JSX.Element => {
   )
 }
 
+
+// ** EXPORT JSX as NEXT PAGE
 // const HomeDesignPage = (props) => {
 // const HomeDesignPage: NextPage<TPageProps> = (props) => {
 // const HomeDesignPage: NextPage = (): JSX.Element => {
@@ -5641,30 +5644,33 @@ const CatalogItems = (props: any): JSX.Element => {
 export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element { 
   
   // ==========================================================
-  // ** HOOKS
+  // ** HOOKS (into [onMount] STATES)
+  // ==========================================================
+
+  // ** USE AUTH STATE
   // const auth = useAuth()
-  // ** USE SESSION
+  // console.debug('useAuth(): auth', auth)
+  
+  // ** USE SESSION STATE
   // // const { data, status } = useSession()
   // const { data: sessionData, status: sessionStatus } = useSession()
   // console.debug('useSession().data', sessionData)
   // console.debug('useSession().status', sessionStatus)
 
-  // ** USE CLIENT
+  // ** USE CLIENT STATE
   const client = useApolloClient()
   // console.debug('%c🦆 useApolloClient()', ccm.orangeAlert) // , client
 
-  // ** USE PREFERENCES
+  // ** USE PREFERENCES STATE
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeD Home Design prefs', ccm.orangeAlert, prefs)
 
-  // ** INIT PREFERENCES
+  // ** INIT PAGE STATE
   const [isPageLoaded, setIsPageLoaded] = useState(false)
-  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
-  // ** PANELS (React State)
-  // const [showPanelFirst, setShowPanelFirst] = useState(prefs.showPanelFirst)
-  // const [showPanelLast, setShowPanelLast] = useState(prefs.showPanelLast)
+  // ** INIT PREFERENCES STATE
+  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
   // ** USE CANVAS STATE
   const canvasState = useReactiveVar(canvasStateVar) // YES !!
@@ -5672,11 +5678,49 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // ** INIT CANVAS STATE
   const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
   const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(useReactiveVar(isCanvasStateSetVar))
+
+  // ==========================================================
+  // ** USE CONTEXTS STATE (role-based abilities)
+  // const abilities = useContext(AbilityContext)
+  // const abilities = ['read', 'write', 'delete']
+  // ==========================================================
+
+  // ==========================================================
+  // ** TESTING: THREE CANVAS[ES] as React State Variables
   // // ** get scene + camera from child component ThreeDCanvasViewer refCanvas
   // // const scene = useRef()
   // const getThreeState = useThree((state) => state.get)
   // // getThreeState() // Get fresh state from anywhere you want
   // console.debug('getThreeState()', getThreeState())
+  // ** END TESTING: THREE CANVAS[ES] as React State Variables
+  // ==========================================================
+
+  // ==========================================================
+  // ** USE DOM ELEMENT STATE
+  // ** TESTING: DOM ELEMENT as React State Variables
+  const [domElement, setDomElement] = useState(null)
+  useEffect(() => {
+    console.debug('useEffect: document.body', document.body)
+    setDomElement(document.body)
+    // console.debug('useEffect: domElement', domElement)
+  }, [])
+  useEffect(() => {
+    console.debug('useEffect: domElement', domElement)
+  }, [domElement])
+  const onDomElementChange = useCallback((event: any) => {
+    console.debug('onChange: useCallback event', event)
+    setDomElement(event.target.domElement)
+    console.debug('onChange: useCallback domElement', domElement)
+  }, [])
+  // ** END TESTING: DOM ELEMENT as React State Variables
+  // ==========================================================
+
+  // ==========================================================
+  // ** USE PANELS STATE
+  // ** PANELS as React State Variables
+  // const [showPanelFirst, setShowPanelFirst] = useState(prefs.showPanelFirst)
+  // const [showPanelLast, setShowPanelLast] = useState(prefs.showPanelLast)
+  // ==========================================================
   
   // ==========================================================
   // Component onMount hook
@@ -5789,11 +5833,6 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   }
 
   // ==========================================================
-
-  // ==========================================================
-  // ** USE CONTEXT
-  // const abilities = useContext(AbilityContext)
-  // const abilities = ['read', 'write', 'delete']
 
   // ==========================================================
 
@@ -6634,11 +6673,102 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         width: '99.8%',
       }}
     >
+      
+      {/* <Heading as='h4'>
+        🥕 Welcome to ThreeD Home Design
+      </Heading> */}
+
+      {/* TESTING: DOM ELEMENT as React State Variables */}
+      <>
+        {/* <Canvas>
+          <OrbitControls domElement={domElement} onChange={onChange} />
+        </Canvas>
+        <Canvas>
+          <OrbitControls domElement={domElement} onChange={onChange} />
+        </Canvas>
+        <Canvas>
+          <OrbitControls domElement={domElement} onChange={onChange} />
+        </Canvas> */}
+      </>
+
+      <Flex 
+        style={{ 
+          display: 'inline-flex',
+          // display: 'none',
+          flexDirection: 'column',
+          marginLeft: '4px', 
+          marginRight: '6px' 
+        }}
+      >
+        {/* MAIN ACTIONS DROPDOWN MENU */}
+        <DropdownMenuThreeD />
+
+        {/* PANEL SHOW/HIDE */}
+        {/* <span> */}
+          <Button
+            // className={styles.Button}
+            style={{
+              backgroundColor: 'transparent',
+              border: '0px',
+              width: '16px',
+              height: '16px',
+              padding: '0px',
+              marginLeft: '6px', 
+            }}
+            onClick={() => setShowPanelFirst()}
+          >
+            {/* {showPanelFirst ? "hide" : "show"} panel left */}
+            { prefs.showPanelFirst && (
+              <ArrowLeftEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+            { !prefs.showPanelFirst && (
+              <ArrowRightEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+          </Button>
+          {/* &nbsp; */}
+          <Button
+            // className={styles.Button}
+            style={{
+              backgroundColor: 'transparent',
+              border: '0px',
+              width: '16px',
+              height: '16px',
+              padding: '0px',
+              marginLeft: '4px', 
+            }}
+            onClick={() => setShowPanelLast()}
+          >
+            {/* {showPanelLast ? "hide" : "show"} panel right */}
+            { prefs.showPanelLast && (
+              <ArrowRightEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+            { !prefs.showPanelLast && (
+              <ArrowLeftEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+          </Button>
+        {/* </span> */}
+      </Flex>
 
       {/* PAGE PANELS */}
       <PanelGroup 
         direction='vertical'
-        // autoSaveId='ThreeDHomeDesignLayoutMain'
+        autoSaveId='ThreeDHomeDesignLayoutMain'
       >
         {/* PANELS: HEADER */}
         {/* PAGE LOADING PROGRESS? */}
@@ -6663,94 +6793,6 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
         <Panel 
           className='Panel'
-          defaultSize={4}
-          minSize={0}
-          maxSize={4}
-          style={{
-            // border: '1px solid darkgreen',
-          }}
-        >
-          <Container 
-            style={{ 
-              marginLeft: '4px', 
-              // marginRight: '6px' 
-            }}
-          >
-            {/* MAIN ACTIONS DROPDOWN MENU */}
-            <DropdownMenuThreeD />
-
-            {/* PANEL SHOW/HIDE */}
-            <span>
-              <Button
-                // className={styles.Button}
-                style={{
-                  backgroundColor: 'transparent',
-                  border: '0px',
-                  width: '16px',
-                  height: '16px',
-                  padding: '0px',
-                  marginLeft: '4px', 
-                }}
-                onClick={() => setShowPanelFirst()}
-              >
-                {/* {showPanelFirst ? "hide" : "show"} panel left */}
-                { prefs.showPanelFirst && (
-                  <ArrowLeftEndOnRectangleIcon
-                    style={{
-                      color: '#504191', // '#3B3269',
-                    }}
-                  />
-                )}
-                { !prefs.showPanelFirst && (
-                  <ArrowRightEndOnRectangleIcon
-                    style={{
-                      color: '#504191', // '#3B3269',
-                    }}
-                  />
-                )}
-              </Button>
-              &nbsp;
-              <Button
-                // className={styles.Button}
-                style={{
-                  backgroundColor: 'transparent',
-                  border: '0px',
-                  width: '16px',
-                  height: '16px',
-                  padding: '0px',
-                  marginLeft: '0px', 
-                }}
-                onClick={() => setShowPanelLast()}
-              >
-                {/* {showPanelLast ? "hide" : "show"} panel right */}
-                { prefs.showPanelLast && (
-                  <ArrowRightEndOnRectangleIcon
-                    style={{
-                      color: '#504191', // '#3B3269',
-                    }}
-                  />
-                )}
-                { !prefs.showPanelLast && (
-                  <ArrowLeftEndOnRectangleIcon
-                    style={{
-                      color: '#504191', // '#3B3269',
-                    }}
-                  />
-                )}
-              </Button>
-            </span>
-            <span>
-              {/* <Heading as='h4'>
-                🥕 Welcome to ThreeD Garden
-              </Heading> */}
-            </span>
-          </Container>
-        </Panel>
-        
-        {/* <PanelResizeHandle /> */}
-
-        <Panel 
-          className='Panel'
           defaultSize={96}
           minSize={96}
           maxSize={100}
@@ -6760,7 +6802,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         >
           <PanelGroup 
             direction='vertical'
-            // autoSaveId='ThreeDHomeDesignLayoutSub'
+            autoSaveId='ThreeDHomeDesignLayoutSub1'
           >
             {/* EXAMPLE PANEL: SUB-HEADER */}
             {/* <Panel
@@ -6793,7 +6835,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             >
               <PanelGroup 
                 direction='horizontal'
-                // autoSaveId='ThreeDHomeDesignLayoutSub2'
+                autoSaveId='ThreeDHomeDesignLayoutSub2'
               >
                 {/* VIEWS: OBJECT CATALOG */}
                 {prefs.showPanelFirst && (
@@ -6810,7 +6852,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                     >
                       <PanelGroup
                         direction='vertical'
-                        // autoSaveId='ThreeDHomeDesignLayoutSub3'
+                        autoSaveId='ThreeDHomeDesignLayoutSub3'
                       >
                         <Panel 
                           id='catalogView'
@@ -6859,7 +6901,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                       </PanelGroup>
                     </Panel>
 
-                    <PanelResizeHandle />
+                    {/* <PanelResizeHandle /> */}
                   </>
                 )}
 
@@ -6878,6 +6920,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                       {/* MAIN CANVASES (TOP + BOTTOM) */}
                       <PanelGroup 
                         direction='vertical'
+                        autoSaveId='ThreeDHomeDesignLayoutSub4'
                       >
                         
                         {/* PANEL: 3D FIBER CANVAS */}
@@ -6938,6 +6981,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
                           <PanelGroup
                             direction='horizontal'
+                            autoSaveId='ThreeDHomeDesignLayoutSub5'
                           >
                             {/* THREED HOME DESIGN: RULER VERTICAL LEFT */}
                             <Panel
@@ -6979,6 +7023,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                             
                           <PanelGroup
                             direction='vertical' 
+                            autoSaveId='ThreeDHomeDesignLayoutSub6'
                             style={{
                               border: '1px solid red',
                               height: '100%'
@@ -7002,6 +7047,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                             
                           <PanelGroup
                             direction='vertical' 
+                            autoSaveId='ThreeDHomeDesignLayoutSub7'
                             style={{
                               border: '1px solid orange',
                             }}
@@ -7071,7 +7117,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
           </PanelGroup>
 
-          <PanelResizeHandle />
+          {/* <PanelResizeHandle /> */}
 
         </Panel>
 
