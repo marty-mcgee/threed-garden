@@ -5866,6 +5866,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     // console.debug('%c⚙️ showPanelFirstLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ showPanelFirstLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    redrawGrid() // does not work here
   }
   function setShowPanelLast () {
     let newData = {...preferencesDataVar()} // latest prefs
@@ -5874,6 +5875,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     // console.debug('%c⚙️ showPanelLastLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ showPanelLastLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    redrawGrid() // does not work here
   }
 
   // ==========================================================
