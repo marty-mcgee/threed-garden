@@ -12,6 +12,10 @@
 
 ### Install + Run Options
 
+## For Developers
+
+🤖 Source Code: ["name": "threed-garden"](https://github.com/marty-mcgee/threed-garden)
+
 #### npm i threed-garden
 #### yarn install threed-garden
 #### git clone https://github.com/marty-mcgee/threed-garden.git
