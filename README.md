@@ -2,8 +2,6 @@
 
 [WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: WordPress, Apollo GraphQL, Leva Control GUI, Radix-UI, Tailwind CSS, 3D FarmBot React (Beta), Open AI](https://github.com/marty-mcgee/threed-garden/)
 
-3D Dev Environment w React, TypeScript, Three.js, React-Three (pmndrs), on Next.js, Apollo Client, GraphQL, WordPress, REST APIs. ThreeD Interface for Three-Dimensional Objects. Now integrating with FarmBot 3D on React.
-
 ## Live Demo
 
 🌱 [threedgarden.com](https://threedgarden.com/particpate)
