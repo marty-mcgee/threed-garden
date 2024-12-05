@@ -5068,11 +5068,12 @@ function beginDrag(event: any, threedItem: TThreedItem) {
     draggingThreedRectangle.visible = false
 
     threedDragDiv = document.getElementById('threedDragDiv')
-    threedDragDiv.style.background = 'url("" + threedItemsURL + "objects/" + threedItem.title + "_top.png")'
+    threedDragDiv.style.background = 'url(' + threedItemsURL + 'objects/' + threedItem.title + '_top.png)'
+    // console.debug('threedDragDiv.style.background', threedDragDiv.style.background)
     threedDragDiv.style.backgroundRepeat = 'no-repeat'
     
-    let widthA = 100 // draggingThreedRectangle.bounds.width
-    let heightN = 100 // draggingThreedRectangle.bounds.height
+    let widthA = draggingThreedRectangle.bounds.width
+    let heightN = draggingThreedRectangle.bounds.height
     widthA *= paper.view.zoom
     heightN *= paper.view.zoom
     
@@ -5104,7 +5105,7 @@ function addThreed(event: any, threedItem: any, scene: any) {
       console.debug('addThreed: paper', paper)
       // console.debug('addThreed: paper.view.bounds', paper.view.bounds)
 
-      if (draggingThreedRectangle.position.x > paper.view.bounds.left + 100) { // [MM] plus 100 pixel movement
+      if (draggingThreedRectangle.position.x > paper.view.bounds.left + 0) { // [MM] plus N pixel movement
         if ( draggingThreedRectangle.position.y > paper.view.bounds.top 
           && draggingThreedRectangle.position.y < paper.view.bounds.bottom ) {
           console.debug('addThreed: dropped inside planView successfully')
@@ -5181,10 +5182,13 @@ function initThreed(threedItem: any, scene: any) {
                 OBJa.add(OBJaBoxHelper)
                 OBJa.position.x = draggingThreedRectangle.position.x
                 OBJa.position.z = draggingThreedRectangle.position.y
-                OBJa.position.y = threedItem.size.z * mmScalePercentage / 2 / 2 // half the total diameter of the object
+                // OBJa.position.y = (threedItem.size.z * mmScalePercentage / 1) // / 2 // half the total diameter of the object
+                // OBJa.position.y = (OBJa.userData.height * mmScalePercentage / 1) // half the total diameter of the object
+                OBJa.position.y = 0 // floor
                   // 0.1 +
                   // paper.project.activeLayer.data.height +
                   // defaultFloorThickness
+                console.debug('draggingThreedRectangle', draggingThreedRectangle)
                 console.debug('paper.project.activeLayer', paper.project.activeLayer)
                 console.debug('OBJaBox', OBJaBox)
 
