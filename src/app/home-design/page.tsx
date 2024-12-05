@@ -161,8 +161,10 @@ import * as THREE from 'three'
 // console.debug('THREE', THREE)
 // 🟢<script type='text/javascript' src='scripts/threed.js'></script>
 // 🟢ex: import threed from './scripts/threed'
-// 🔘<script type='text/javascript' src='scripts/trackballcontrols.js'></script>
-// 🔘<script type='text/javascript' src='scripts/tween.js'></script>
+// ☑️<script type='text/javascript' src='scripts/trackballcontrols.js'></script>
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
+// ☑️<script type='text/javascript' src='scripts/tween.js'></script>
+import * as TWEEN from '@tweenjs/tween.js'
 // ☑️<script type='text/javascript' src='scripts/MTLLoader.js'></script>
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js'
 // ☑️<script type='text/javascript' src='scripts/OBJLoader.js'></script>
@@ -475,9 +477,9 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   const onProgress = function (e: any) {
     if (e.lengthComputable) {
       var t = (e.loaded / e.total) * 100
-      // @ ts-expect-error
-      // progressBar.value = t
-      // progressBar.style.display = 'block'
+      // @ts-expect-error
+      progressBar.value = t
+      progressBar.style.display = 'block'
     }
   }
   const onError = function (e: any) {
@@ -727,8 +729,8 @@ const initThreeDPaper = (planCanvas: any) => {
   threedDragDiv = document.getElementById('threedDragDiv')
   planView = document.getElementById('planView')
 
-  // progressBar = document.getElementById('progressBar')
-  // progressBar.style.display = 'none'
+  progressBar = document.getElementById('progressBar')
+  progressBar.style.display = 'none'
 
   verticalSlider = document.getElementById('verticalSlider')
   verticalSliderDragging = false
@@ -748,6 +750,20 @@ const initThreeDPaper = (planCanvas: any) => {
     horizontalSliderRightDragging = true
     horizontalSliderRight.style.top = e.y - 2 + 'px'
   }
+
+  // ** ================================================
+
+  // DO NOT USE TRACKBALL CONTROLS (OR TWEEN)
+  // controls = new TrackballControls(camera, container)
+  // controls.rotateSpeed = 4
+  // controls.zoomSpeed = 5
+  // controls.panSpeed = 1.5
+  // controls.noZoom = !1
+  // controls.noPan = !1
+  // controls.staticMoving = !0
+  // controls.dynamicDampingFactor = 0.3
+  // controls.keys = [65, 83, 68]
+  // controls.addEventListener("change", render)
   
   // ** ================================================
   // paper.install(window),
@@ -5188,6 +5204,8 @@ function initThreed(threedItem: any, scene: any) {
                 )
                 console.debug('OBJa', OBJa)
 
+                let rectangleOh: paper.Path.Rectangle = null // new paper.Path.Rectangle(this.bounds)
+
                 var rasterImageN = new paper.Raster(imageN)
                 rasterImageN.visible = false
                 rasterImageN.onLoad = function () {
@@ -5215,7 +5233,7 @@ function initThreed(threedItem: any, scene: any) {
                         selectedItem.bringToFront()
                         this.data.toolsRectangleInner && this.data.toolsRectangleInner.remove()
                         this.rotation = 0
-                        var rectangleOh = new paper.Path.Rectangle(this.bounds)
+                        rectangleOh = new paper.Path.Rectangle(this.bounds)
                         this.rotation = this.data.angle
                         rectangleOh.data.type = 'toolsRectangle'
                         rectangleOh.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
@@ -5256,22 +5274,21 @@ function initThreed(threedItem: any, scene: any) {
                     rasterImageN.data.name = threedItem.title
                     rasterImageN.data.boxHelper = OBJaBoxHelper
                     rasterImageN.data.level = paper.project.activeLayer.data.id
-
-                    // threedItem.useMask
                     
                   // )
-                  // {
-                    // rasterImageN.useMask = true
+
+                  if (threedItem.useMask) {
+                    rasterImageN.useMask = true
                     var meshN = new THREE.Mesh(
                       OBJaBoxGeometry,
                       new THREE.MeshStandardMaterial({})
                     )
                     console.debug('meshN', meshN)
-                    // imageN.position.x = OBJa.position.x
-                    // imageN.position.y = OBJa.position.y
-                    // imageN.position.z = OBJa.position.z
-                    // imageN.geometry.translate(0, OBJa.userData.height / 2, 0)
-                    // imageN.visible = false
+                    imageN.position.x = OBJa.position.x
+                    imageN.position.y = OBJa.position.y
+                    imageN.position.z = OBJa.position.z
+                    imageN.geometry.translate(0, OBJa.userData.height / 2, 0)
+                    imageN.visible = false
                     
                     // scene.add(meshN)
                     // canvasStateVar().scene.add(meshN)
@@ -5279,8 +5296,8 @@ function initThreed(threedItem: any, scene: any) {
                     console.debug('meshN added to scene')
 
                     maskObjects[draggingThreedItemU] = meshN
-                    // imageN.name = 'mask' + draggingThreedItemU
-                  // }
+                    imageN.name = 'mask' + draggingThreedItemU
+                  }
 
 
                   // scene.add(OBJa)
@@ -5290,9 +5307,8 @@ function initThreed(threedItem: any, scene: any) {
 
 
                   // **
-                  /*
                   if (rectangleOh) {
-                    var i = (rectangleOh + 360) % 360
+                    var i = (rectangleOh.bounds.left + 360) % 360
                     rasterImageN.rotate(i),
                       (rasterImageN.data.angle = i),
                       clickableObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
@@ -5301,64 +5317,72 @@ function initThreed(threedItem: any, scene: any) {
                         (maskObjects[draggingThreedItemU].scale.x = 1),
                         (maskObjects[draggingThreedItemU].scale.y = 1),
                         (maskObjects[draggingThreedItemU].scale.z = 1))
-                  } else rasterImageN.data.angle = 0
-                    ; (tween = new TWEEN.Tween(controls.target)
-                      .to(OBJa.position, 500)
-                      .onUpdate(render)
-                      .start()),
-                      (rasterImageN.visible = true),
-                      (Threed[draggingThreedItemU] = m),
+                  } 
+                  else {
+                    rasterImageN.data.angle = 0
+                    // DO NOT USE TRACKBALL CONTROLS (OR TWEEN)
+                    // tween = new TWEEN.Tween(controls.target)
+                    // .to(OBJa.position, 500)
+                    // .onUpdate(render)
+                    // .start()
+                    rasterImageN.visible = true
+                    Threed[draggingThreedItemU] = threedItem
+                    try {
                       threedGroup[paper.project.activeLayer.data.id].addChild(
                         Threed[draggingThreedItemU]
-                      ),
-                      (plan.threed[draggingThreedItemU] = {
-                        id: draggingThreedItemU,
-                        name: t,
-                        position: clickableObjects[draggingThreedItemU].position,
-                        scale: clickableObjects[draggingThreedItemU].scale,
-                        rotation: clickableObjects[draggingThreedItemU].rotation,
-                        width: rasterImageN.bounds.width,
-                        depth: rasterImageN.bounds.height,
-                        angle: rasterImageN.data.angle,
-                        level: rasterImageN.data.level,
-                        flipX: rasterImageN.data.flipX,
-                        flipZ: rasterImageN.data.flipZ,
-                      }),
-                      (progressBar.style.display = 'none')
+                      )
+                    } catch (err) {
+                      console.debug('err', err)
+                    }
+                    plan.threed[draggingThreedItemU] = {
+                      id: draggingThreedItemU,
+                      name: threedItem.title,
+                      position: clickableObjects[draggingThreedItemU].position,
+                      scale: clickableObjects[draggingThreedItemU].scale,
+                      rotation: clickableObjects[draggingThreedItemU].rotation,
+                      width: rasterImageN.bounds.width,
+                      depth: rasterImageN.bounds.height,
+                      angle: rasterImageN.data.angle,
+                      level: rasterImageN.data.level,
+                      flipX: rasterImageN.data.flipX,
+                      flipZ: rasterImageN.data.flipZ,
+                    }
+                    progressBar.style.display = 'none'
+                  }
                   for (
                     var r = rasterImageN.canvas.getContext('2d'),
-                    s = r.getImageData(0, 0, rasterImageN.width, rasterImageN.height),
-                    d = s.data,
-                    g = 0;
-                    g < d.length;
-                    g += 4
+                        s = r.getImageData(0, 0, rasterImageN.width, rasterImageN.height),
+                        d = s.data,
+                        g = 0;
+                        g < d.length;
+                        g += 4
                   )
-                    (d[g] = 255 - d[g]),
-                      (d[g + 1] = 255 - d[g + 1]),
-                      (d[g + 2] = 255 - d[g + 2])
-                  r.putImageData(s, 0, 0),
-                    updatePlanHistory(
-                      plan,
-                      draggingThreedItemU,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null
-                    )
-                */
+                  d[g] = 255 - d[g]
+                  d[g + 1] = 255 - d[g + 1]
+                  d[g + 2] = 255 - d[g + 2]
+                  r.putImageData(s, 0, 0)
+                  // updatePlanHistory(
+                  //   plan,
+                  //   draggingThreedItemU,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null
+                  // )
+                
                 } // end rasterImageN.onload function
               } // end imageN.onload function
 
@@ -5378,76 +5402,76 @@ function initThreed(threedItem: any, scene: any) {
 
 // ** REDRAW Functions
 function redrawGrid() {
-  if (!redrawing && '3dView' != UILayout) {
-    if (
-      ((redrawing = !0),
-        (screenScale = screenAvg / paper.view.zoom / 75),
-        selectedItem && selectedItem.data)
-    )
-      // console.debug('selectedItem.data', selectedItem.data)
+  if (!redrawing && UILayout != '3dView') {
+    if (redrawing = !0) {
+      console.debug('redrawGrid?', true)
+      screenScale = screenAvg / paper.view.zoom / 75
 
-      if ('wallPath' === selectedItem.data.type) {
-        var e = 0
-        selectedItem.segments.forEach(function (t: any) {
-          movePointIcons[e] &&
-            // @ts-expect-error
-            ((movePointIcons[e].position = t.point),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.width = screenScale),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.height = screenScale),
-              e++)
-        })
-      } 
-      else if ('roofPath' === selectedItem.data.type) {
-        var e = 0
-        selectedItem.segments.forEach(function (t: any) {
-          movePointIcons[e] &&
-            // @ts-expect-error
-            ((movePointIcons[e].position = t.point),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.width = screenScale),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.height = screenScale),
-              e++)
-        })
-      } 
-      else if ('threed' === selectedItem.data.type) {
-        rotateIcon.bounds.width = screenScale
-        rotateIcon.bounds.height = screenScale
-        rotateIcon.position =
-          selectedItem.data.toolsRectangleInner.segments[1].point
-        resizeIcon.bounds.width = screenScale
-        resizeIcon.bounds.height = screenScale
-        resizeIcon.position =
-          selectedItem.data.toolsRectangleInner.segments[3].point
-        heightIcon.bounds.width = screenScale
-        heightIcon.bounds.height = screenScale
-        heightIcon.position =
-          selectedItem.data.toolsRectangleInner.segments[2].point
-        elevateIcon.bounds.width = screenScale
-        elevateIcon.bounds.height = screenScale
-        elevateIcon.position =
-          selectedItem.data.toolsRectangleInner.segments[0].point
-      } 
-      else if ('background' === selectedItem.data.type) {
-        resizeIcon.bounds.width = screenScale
-        resizeIcon.bounds.height = screenScale
-        resizeIcon.position =
-            backgroundRaster.data.toolsRectangleInner.segments[3].point
-      } 
-      else if ('floor' === selectedItem.data.type) {
-        var e = 0
-        selectedItem.segments.forEach(function (t: any) {
-          movePointIcons[e] &&
-            // @ts-expect-error
-            ((movePointIcons[e].position = t.point),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.width = screenScale),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.height = screenScale),
-              e++)
-        })
+      if (selectedItem && selectedItem.data) {
+        console.debug('selectedItem.data', selectedItem.data)
+        if ('wallPath' === selectedItem.data.type) {
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
+        } 
+        else if ('roofPath' === selectedItem.data.type) {
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
+        } 
+        else if ('threed' === selectedItem.data.type) {
+          rotateIcon.bounds.width = screenScale
+          rotateIcon.bounds.height = screenScale
+          rotateIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[1].point
+          resizeIcon.bounds.width = screenScale
+          resizeIcon.bounds.height = screenScale
+          resizeIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[3].point
+          heightIcon.bounds.width = screenScale
+          heightIcon.bounds.height = screenScale
+          heightIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[2].point
+          elevateIcon.bounds.width = screenScale
+          elevateIcon.bounds.height = screenScale
+          elevateIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[0].point
+        } 
+        else if ('background' === selectedItem.data.type) {
+          resizeIcon.bounds.width = screenScale
+          resizeIcon.bounds.height = screenScale
+          resizeIcon.position =
+              backgroundRaster.data.toolsRectangleInner.segments[3].point
+        } 
+        else if ('floor' === selectedItem.data.type) {
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
+        }
       }
 
       var t = 0,
@@ -5561,6 +5585,7 @@ function redrawGrid() {
         horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
       })
       redrawing = !1
+    }
   }
 }
 
