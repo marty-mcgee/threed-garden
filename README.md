@@ -4,11 +4,11 @@
 
 ## Live Demo
 
-🌱 [threedgarden.com](https://threedgarden.com/particpate)
+🌱 [threedgarden.com](https://threedgarden.com)
 
-🥕 [Demo: 3D](https://threedgarden.com/participate)
+🏡 [Demo: 2D + 3D Advanced](https://threedgarden.com/home-design)
 
-🏡 [Demo: 2D + 3D](https://threedgarden.com/home-design)
+🥕 [Demo: 3D Basic](https://threedgarden.com/participate)
 
 ### Install + Run Options
 
