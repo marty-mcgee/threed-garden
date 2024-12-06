@@ -10,11 +10,11 @@
 
 🥕 [Demo: 3D Basic](https://threedgarden.com/participate)
 
-### Install + Run Options
-
 ## For Developers
 
 🤖 Source Code: ["name": "threed-garden"](https://github.com/marty-mcgee/threed-garden)
+
+### Install + Run Options
 
 #### npm i threed-garden
 #### yarn install threed-garden
