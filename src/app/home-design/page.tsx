@@ -29,8 +29,7 @@ import {
   // stores,
   preferencesStore,
   canvasStateStore,
-  // projectStore,
-  homeDesignStore,
+  projectStore,
   // queries,
   // mutations,
   // reactive vars:
@@ -5798,8 +5797,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
           setIsPrefsLoaded(isPreferencesSetVar())
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
           if (preferencesDataVar().doAutoLoadData) {
-            // // const homeDesignsFromDataSource = await homeDesignStore.actions.loadFromDataSource(client)
-            // const homeDesignsFromDataSource = await homeDesignStore.actions.loadFromDB(client)
+            // // const homeDesignsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            // const homeDesignsFromDataSource = await projectStore.actions.loadFromDB(client)
             if (DEBUG) 
               console.debug('%c homeDesigns loading...', ccm.orangeAlert)
             // if (homeDesignsFromDataSource) {
@@ -5828,7 +5827,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         if (DEBUG || debug) 
           console.debug('%c🌱 ThreeD Home Design loadNounData()', ccm.yellowAlert, _type, threeds)
         if (_type === 'project') {
-          homeDesignStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
+          projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
         }
         // return <Box>true</Box> // true
       }
