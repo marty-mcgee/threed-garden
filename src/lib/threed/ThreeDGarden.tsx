@@ -172,30 +172,22 @@ interface IThreeDEnv {
   sceneID: number | string
 }
 
-interface IPlayer {
-  action: string
-  actionTime: number | Date
-  object: THREE.Object3D
-  mixer: THREE.AnimationMixer
-  setAction: Function
-  getAction: Function
-  toggleAnimation: Function
-  move: Function
-  movePlayer: Function
-  playerControl: Function
-}
-
-// ==========================================================
-// VARIABLES
-// ==========================================================
-
-// IF CLIENT BROWSER HAS A WINDOW OBJECT... (NOT SERVER SSR)
-// if (typeof window != undefined) {
-//   console.debug('[MM] HEY HEY HEY window', window)
-//   // TESTING PARAMETERS FROM SERVER (PHP)
-//   // const postdata = window?.postdata ? window.postdata : {}
-//   // console.debug(postdata)
+// interface IPlayer {
+//   action: string
+//   actionTime: number | Date
+//   object: THREE.Object3D
+//   mixer: THREE.AnimationMixer
+//   setAction: Function
+//   getAction: Function
+//   toggleAnimation: Function
+//   move: Function
+//   movePlayer: Function
+//   playerControl: Function
 // }
+
+// ==========================================================
+// JS VARIABLES
+// ==========================================================
 
 const postdata: IPostData = {
   plugin_name:    'ThreeD Garden',
