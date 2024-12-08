@@ -3408,7 +3408,7 @@ const ViewProperties = (props: any) => {
             <tr>
               <td>
                 <div 
-                  // onMouseDown={(event) => beginDrag(event, props.t.title)} 
+                  onMouseDown={(event) => beginDrag(event, props.t.title)} 
                   className='disableSelection'
                   style={{ textAlign: 'center' }}
                 >
@@ -5044,44 +5044,52 @@ function beginDrag(event: any, threedItem: TThreedItem) {
   try {
     showThreedLicenseSummary(threedItem)
     setToolMode('pointer')
-    draggingThreedItem = threedItem // set global var to this function parameter
-    draggingThreedIcon = true
-    planView = document.getElementById('planView')
 
-    let PAPERviewToProject = paper.view.viewToProject(
-      new paper.Point(
-        event.pageX - planView.offsetLeft,
-        event.pageY - planView.offsetTop
+    // **
+    // ** ONLY DO THIS IF NEEDED/INTENDED (with intent) ;) [MM]
+    // **
+    if (threedItem != draggingThreedItem) {
+
+      draggingThreedItem = threedItem // set global var to this function parameter
+      draggingThreedIcon = true
+      planView = document.getElementById('planView')
+
+      let PAPERviewToProject = paper.view.viewToProject(
+        new paper.Point(
+          event.pageX - planView.offsetLeft,
+          event.pageY - planView.offsetTop
+        )
       )
-    )
-    // console.debug('beginDrag: PAPERviewToProject', PAPERviewToProject)
-    draggingThreedRectangle.position = PAPERviewToProject
+      // console.debug('beginDrag: PAPERviewToProject', PAPERviewToProject)
+      draggingThreedRectangle.position = PAPERviewToProject
+      draggingThreedRectangle.visible = false
 
-    if (threedItem) {
+      // if (threedItem) {
       threedItem.scale && threedItem.scale.x
         ? draggingThreedRectangle.bounds.width = threedItem.size.x * threedItem.scale.x
         : draggingThreedRectangle.bounds.width = threedItem.size.x
       threedItem.scale && threedItem.scale.z
         ? draggingThreedRectangle.bounds.height = threedItem.size.z * threedItem.scale.z
         : draggingThreedRectangle.bounds.height = threedItem.size.z
-    }
-    draggingThreedRectangle.visible = false
+      // }
 
-    threedDragDiv = document.getElementById('threedDragDiv')
-    threedDragDiv.style.background = 'url(' + threedItemsURL + 'objects/' + threedItem.title + '_top.png)'
-    threedDragDiv.style.backgroundRepeat = 'no-repeat'
+      threedDragDiv = document.getElementById('threedDragDiv')
+      threedDragDiv.style.background = 'url(' + threedItemsURL + 'objects/' + threedItem.title + '_top.png)'
+      threedDragDiv.style.backgroundRepeat = 'no-repeat'
+      
+      let widthA = draggingThreedRectangle.bounds.width
+      let heightN = draggingThreedRectangle.bounds.height
+      widthA *= paper.view.zoom
+      heightN *= paper.view.zoom
+      
+      threedDragDiv.style.left = event.clientX - widthA / 2 + 'px'
+      threedDragDiv.style.top = event.clientY - heightN / 2 + 'px'
+      threedDragDiv.style.width = widthA + 'px'
+      threedDragDiv.style.height = heightN + 'px'
+      threedDragDiv.style.backgroundSize = widthA + 'px ' + heightN + 'px'
+      threedDragDiv.style.display = 'block'
     
-    let widthA = draggingThreedRectangle.bounds.width
-    let heightN = draggingThreedRectangle.bounds.height
-    widthA *= paper.view.zoom
-    heightN *= paper.view.zoom
-    
-    threedDragDiv.style.left = event.clientX - widthA / 2 + 'px'
-    threedDragDiv.style.top = event.clientY - heightN / 2 + 'px'
-    threedDragDiv.style.width = widthA + 'px'
-    threedDragDiv.style.height = heightN + 'px'
-    threedDragDiv.style.backgroundSize = widthA + 'px ' + heightN + 'px'
-    threedDragDiv.style.display = 'block'
+    }
 
   } catch (err) {
     console.debug(err)
@@ -5660,24 +5668,6 @@ const CatalogItems = (props: any): JSX.Element => {
           </div>
         )
       })}
-      {/* 👇️ Iterate the object's KEYS */}
-      {/* {Object.keys(threedItems).map((object) => {
-        return (
-          <div 
-            key={object} 
-            id={object} 
-            className='threedItem disableSelection' 
-            onMouseDown={(event) => beginDrag(event, object)}
-          >
-            <img 
-              src={threedItemsURL + 'objects/' + object + '.png'}
-              className='threedThumb' 
-              alt={object}
-              title={object}
-            />
-          </div>
-        )
-      })} */}
     </div>
   )
 }
@@ -6417,23 +6407,37 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       //       parseInt(rasterImageN.y / snapTolerance) * snapTolerance)
       // }
     }
-    // ** 
-    document.onmouseup = function (e: any) {
-      draggingThreedIcon = false
-      return  verticalSliderDragging
-              ? ((verticalSliderDragging = false), false)
-                : horizontalSliderLeftDragging
-              ? ((horizontalSliderLeftDragging = false), false)
-                : horizontalSliderRightDragging
-              ? ((horizontalSliderRightDragging = false), false)
 
-              : (  draggingThreedItem // !== -1 
-                && addThreed(e, draggingThreedItem, canvasStateVar().state.scene),
-                
-                void (draggingNewGuide && (draggingNewGuide = false)))
+
+    // ** HEY HEY HEY [MM] NEEDS ATTENTION [MM]
+    // ** CAN WE DO THIS WITHIN A SUB "TOOL" MODE? Yes please.
+    document.onmouseup = function (e: any) {
+      // **
+      draggingThreedIcon = false
+
+      // **
+      if (verticalSliderDragging) {
+        verticalSliderDragging = false
+      }
+      if (horizontalSliderLeftDragging) {
+        horizontalSliderLeftDragging = false
+      }
+      if (horizontalSliderRightDragging) {
+        horizontalSliderRightDragging = false
+      }
+
+      // **
+      if (draggingThreedItem) {
+        addThreed(e, draggingThreedItem, canvasStateVar().state.scene)
+        // void (draggingNewGuide && (draggingNewGuide = false))
+      }
+
+      // ** RETURN ???
+      return (
+        null
+      )
     }
     
-
 
   }, []) // end load data useEffect (client)
 
