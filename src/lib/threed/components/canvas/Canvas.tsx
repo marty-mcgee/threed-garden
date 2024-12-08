@@ -560,6 +560,7 @@ export const ThreeDCanvas = forwardRef((
             enableGizmoCube={true}
             enableAxesHelper={true}
             enableGridHelper={true}
+            enableGridHelper2={false}
             enablePerf={true}
 
             // config: Object, // Config
