@@ -27,13 +27,6 @@ import {
 } from '#/lib/stores/apollo'
 
 // ** RADIX-UI Imports
-import * as Collapsible from '@radix-ui/react-collapsible'
-// import * as Accordion from '@radix-ui/react-accordion'
-import {
-  ChevronDownIcon,
-  RowSpacingIcon, 
-  Cross2Icon,
-} from '@radix-ui/react-icons'
 import {
   Box,
   Button,
@@ -41,14 +34,6 @@ import {
   Flex,
   Text,
 } from '@radix-ui/themes'
-
-// ** PANELS Imports
-import { 
-  Panel, 
-  PanelGroup,
-  PanelResizeHandle,
-} from 'react-resizable-panels'
-import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
 
 // ** THREED r3f Canvas Imports
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
@@ -58,9 +43,6 @@ import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-// ==========================================================
-// IMPORTS COMPLETE
-// SETUP VARIABLES...
 // ==========================================================
 
 // DEBUG PREFERENCES FOR THIS MODULE
@@ -75,21 +57,6 @@ const ThreeDCanvasCamera = forwardRef((
   refCanvas
 ) => {
   return (
-    // <PanelGroup
-    //   direction='vertical'
-    //   style={{
-    //     height: '100%',
-    //     // minHeight: '200px',
-    //     // border: '1px solid green',
-    //   }}
-    // >
-    //   <Panel
-    //     defaultSize={100}
-    //     style={{
-    //       // height: '100px',
-    //       // border: '1px solid green',
-    //     }}
-    //   >
     <div
       style={{
         display: 'inline-flex',
@@ -97,14 +64,12 @@ const ThreeDCanvasCamera = forwardRef((
         flexGrow: '1',
       }}
     >
-        <ThreeDCanvas
-          _id={'_r3fCanvas' + index}
-          threeds={threeds}
-          ref={refCanvas}
-        />
+      <ThreeDCanvas
+        _id={'_r3fCanvas' + index}
+        threeds={threeds}
+        ref={refCanvas}
+      />
     </div>
-    //   </Panel>
-    // </PanelGroup>
   )
 }
 ) // end forwardRef
@@ -118,23 +83,25 @@ export const ThreeDCanvasViewer = () => {
   // ** threeds[nodes] to provide a canvas
   let threeds: Object[] = [] // threeds are nodes[] to load to canvas
   
-  // if (debug || DEBUG) 
-  console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
-  // console.debug(`%c=======================================================`, ccm.black)
+  if (debug || DEBUG) {
+    console.debug('%c🥕 ThreeDCanvasViewer ...', ccm.darkredAlert)
+    // console.debug(`%c=======================================================`, ccm.black)
+  }
 
   // ** USE CLIENT
   // const client = useApolloClient()
 
-  // return <Spinner />
-  // ** ⚙️ PREFERENCES
-  // const prefs = preferencesDataVar() // NO ??
-  const prefs = useReactiveVar(preferencesDataVar) // YES ??
+  // ** ⚙️ PREFERENCES STATE
+  // const prefs = preferencesDataVar() // NO
+  const prefs = useReactiveVar(preferencesDataVar) // YES
   // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert, prefs)
 
+  // ** CANVAS DOM REFERENCES (REACT)
   const refThreeDCanvas1 = useRef<any>(null)
   const refThreeDCanvas2 = useRef<any>(null)
   const refThreeDCanvas3 = useRef<any>(null)
 
+  // ** GET DATA (NOT HERE !!!)
   // let project = projectStore.store.get('one')
   // if (prefs.doAutoLoadData) {
   //   // if (debug || DEBUG) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
@@ -170,7 +137,7 @@ export const ThreeDCanvasViewer = () => {
   // }
   
 
-  // console.debug(`%c=======================================================`, ccm.orange)
+  // RETURN JSX
   return (
     <Flex 
       id='threedCanvasViewer'
@@ -182,7 +149,7 @@ export const ThreeDCanvasViewer = () => {
         flexGrow: '1',
         width: '100%',
         height: '100%',
-        minHeight: '40vh',
+        minHeight: '20vh',
         // maxHeight: '60vh',
         // minWidth: '50vw',
         // maxWidth: '90vw',
