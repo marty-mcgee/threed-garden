@@ -2,27 +2,22 @@
 
 [WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: WordPress, Apollo GraphQL, Leva Control GUI, Radix-UI, Tailwind CSS, 3D FarmBot React (Beta), Open AI](https://github.com/marty-mcgee/threed-garden/)
 
-3D Dev Environment w React, TypeScript, Three.js, React-Three (pmndrs), on Next.js, Apollo Client, GraphQL, WordPress, REST APIs. ThreeD Interface for Three-Dimensional Objects. Now integrating with FarmBot 3D on React.
-
 ## Live Demo
 
-🌱 [threedgarden.com](https://threedgarden.com/particpate)
+🌱 [threedgarden.com](https://threedgarden.com)
 
-🥕 [Demo: 3D](https://threedgarden.com/participate)
+🏡 [Demo: 2D + 3D Advanced](https://threedgarden.com/home-design)
 
-🏡 [Demo: 2D + 3D](https://threedgarden.com/home-design)
+🥕 [Demo: 3D Basic](https://threedgarden.com/participate)
 
 ## For Developers
 
-🤖 ["name": "threed-garden"](https://www.npmjs.com/package/threed-garden)
+🤖 Source Code: ["name": "threed-garden"](https://github.com/marty-mcgee/threed-garden)
 
-🤖 ["version": "0.17.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=versions)
-
-🤖 ["code": "0.17.0-x"](https://www.npmjs.com/package/threed-garden?activeTab=code)
-
-### Install + Run
+### Install + Run Options
 
 #### npm i threed-garden
+#### yarn install threed-garden
 #### git clone https://github.com/marty-mcgee/threed-garden.git
 
 - app currently requires yarn: `npm install -g yarn`

@@ -61,10 +61,15 @@ import Spinner from '#/layout/ui/spinner'
 import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
-// IMPORTS COMPLETE
-// console.debug('%c=======================================', ccm.black)
-console.debug('%c🥕 ThreeDGarden<ThreeD>: {page.tsx}', ccm.greenAlert)
-// console.debug('%c=======================================', ccm.black)
+
+// ** DEBUGGING + TESTING
+const debug: boolean = false
+
+if (debug) {
+  // console.debug('%c=======================================', ccm.black)
+  console.debug('%c🥕 ThreeDGarden<ThreeD>: {page.tsx}', ccm.greenAlert)
+  // console.debug('%c=======================================', ccm.black)
+}
 
 // ==============================================================
 

@@ -29,8 +29,7 @@ import {
   // stores,
   preferencesStore,
   canvasStateStore,
-  // projectStore,
-  homeDesignStore,
+  projectStore,
   // queries,
   // mutations,
   // reactive vars:
@@ -161,12 +160,14 @@ import * as THREE from 'three'
 // console.debug('THREE', THREE)
 // 🟢<script type='text/javascript' src='scripts/threed.js'></script>
 // 🟢ex: import threed from './scripts/threed'
-// 🔘<script type='text/javascript' src='scripts/trackballcontrols.js'></script>
-// 🔘<script type='text/javascript' src='scripts/tween.js'></script>
+// ☑️<script type='text/javascript' src='scripts/trackballcontrols.js'></script>
+import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
+// ☑️<script type='text/javascript' src='scripts/tween.js'></script>
+import * as TWEEN from '@tweenjs/tween.js'
 // ☑️<script type='text/javascript' src='scripts/MTLLoader.js'></script>
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js'
 // ☑️<script type='text/javascript' src='scripts/OBJLoader.js'></script>
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
 // 🔘<script type='text/javascript' src='scripts/OBJExporter.js'></script>
 // 🔘<script type='text/javascript' src='scripts/sky.js'></script>
 // 🔘<script type='text/javascript' src='scripts/ThreeCSG.js'></script>
@@ -468,16 +469,18 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   groundWidth: number = 5e3,
   groundLength: number = 5e3
 
-  let busy: boolean = !1
+  let busy: boolean = false
   let screenAvg = 1000 // (screen.width + screen.height) / 2
-  let redrawing: boolean = !1
+  let redrawing: boolean = false
   let strokeWidth = 0
   const onProgress = function (e: any) {
-    if (e.lengthComputable) {
-      var t = (e.loaded / e.total) * 100
-      // @ ts-expect-error
-      // progressBar.value = t
-      // progressBar.style.display = "block"
+    if (true) {
+      if (e.lengthComputable) {
+        var t = (e.loaded / e.total) * 100
+        // @ts-expect-error
+        progressBar.value = t
+        progressBar.style.display = 'block'
+      }
     }
   }
   const onError = function (e: any) {
@@ -593,9 +596,9 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
 //                         {/* <img src='images/homedesign/info.png' className='tooltip' /> */}
 //                         <span className='tooltiptext'>
 //                           <div>
-//                             Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='http://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
+//                             Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='https://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
 //                             More info about 
-//                             <a href='https://www.w3schools.com/HTML/html5_webstorage.asp' target='_blank' rel='noreferrer'>
+//                             <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">
 //                               Local Web Storage
 //                             </a>.
 //                           </div>
@@ -711,7 +714,7 @@ const PaperCanvas = (props: any) => {
       id='planCanvas' 
       // resize='true'
       style={{
-        height: '100%',
+        height: '94%',
         width: '100%',
       }}
     />
@@ -727,27 +730,41 @@ const initThreeDPaper = (planCanvas: any) => {
   threedDragDiv = document.getElementById('threedDragDiv')
   planView = document.getElementById('planView')
 
-  // progressBar = document.getElementById("progressBar")
-  // progressBar.style.display = "none"
+  progressBar = document.getElementById('progressBar')
+  progressBar.style.display = 'none'
 
-  verticalSlider = document.getElementById("verticalSlider")
+  verticalSlider = document.getElementById('verticalSlider')
   verticalSliderDragging = false
   verticalSlider.onmousedown = function (e: any) {
     verticalSliderDragging = true
-    verticalSlider.style.left = e.x - 2 + "px"
+    verticalSlider.style.left = e.x - 2 + 'px'
   }
-  horizontalSliderLeft = document.getElementById("horizontalSliderLeft")
+  horizontalSliderLeft = document.getElementById('horizontalSliderLeft')
   horizontalSliderLeftDragging = false
   horizontalSliderLeft.onmousedown = function (e: any) {
     horizontalSliderLeftDragging = true
-    horizontalSliderLeft.style.top = e.y - 2 + "px"
+    horizontalSliderLeft.style.top = e.y - 2 + 'px'
   }
-  horizontalSliderRight = document.getElementById("horizontalSliderRight")
+  horizontalSliderRight = document.getElementById('horizontalSliderRight')
   horizontalSliderRightDragging = false
   horizontalSliderRight.onmousedown = function (e: any) {
     horizontalSliderRightDragging = true
-    horizontalSliderRight.style.top = e.y - 2 + "px"
+    horizontalSliderRight.style.top = e.y - 2 + 'px'
   }
+
+  // ** ================================================
+
+  // DO NOT USE TRACKBALL CONTROLS (OR TWEEN)
+  // controls = new TrackballControls(camera, container)
+  // controls.rotateSpeed = 4
+  // controls.zoomSpeed = 5
+  // controls.panSpeed = 1.5
+  // controls.noZoom = false
+  // controls.noPan = false
+  // controls.staticMoving = true
+  // controls.dynamicDampingFactor = 0.3
+  // controls.keys = [65, 83, 68]
+  // controls.addEventListener("change", render)
   
   // ** ================================================
   // paper.install(window),
@@ -761,21 +778,21 @@ const initThreeDPaper = (planCanvas: any) => {
   // animate()
   // ** ================================================
   
-  draw1()
+  // draw1()
   initPlanView(planCanvas)
 
   // ** ================================================
   
-  // document.getElementById("catalogTextFilter").onInput = function (e: any) {
+  // document.getElementById('catalogTextFilter').onInput = function (e: any) {
   //   var t = this.value.toLowerCase()
   //   t.length > 0
   //     ? Object.keys(threedItems).forEach(function (e: any) {
   //       e.toLowerCase().indexOf(t) > -1
-  //         ? (document.getElementById(e).style.display = "block")
-  //         : (document.getElementById(e).style.display = "none")
+  //         ? (document.getElementById(e).style.display = 'block')
+  //         : (document.getElementById(e).style.display = 'none')
   //     })
   //     : Object.keys(threedItems).forEach(function (e: any) {
-  //       document.getElementById(e).style.display = "block"
+  //       document.getElementById(e).style.display = 'block'
   //     }),
   //     loadInViewThumbs()
   // }
@@ -852,13 +869,13 @@ function initPlanView(planCanvas: any) {
         cumulclick = o
       }
     }
-    return e.preventDefault() && !1
+    return e.preventDefault() && false
   }
   // if (
-    // "3dView" != UILayout
-    planView = document.getElementById("planView")
-    paper.project.activeLayer.name = "level0"
-    paper.project.activeLayer.data = { id: "0", height: 0 }
+    // '3dView' != UILayout
+    planView = document.getElementById('planView')
+    paper.project.activeLayer.name = 'level0'
+    paper.project.activeLayer.data = { id: '0', height: 0 }
     screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
 
     gridGroup[0] = new paper.Group()
@@ -871,11 +888,11 @@ function initPlanView(planCanvas: any) {
     guidesGroup[0] = new paper.Group()
     
     // @ts-expect-error
-    rulerLeft = document.getElementById("rulerLeft")
+    rulerLeft = document.getElementById('rulerLeft')
     // @ts-expect-error
-    rulerBottom = document.getElementById("rulerBottom")
-    mouseIndicatorX = document.getElementById("mouseIndicatorX")
-    mouseIndicatorY = document.getElementById("mouseIndicatorY")
+    rulerBottom = document.getElementById('rulerBottom')
+    mouseIndicatorX = document.getElementById('mouseIndicatorX')
+    mouseIndicatorY = document.getElementById('mouseIndicatorY')
     
     planCanvas.width = planCanvas.parentNode.getBoundingClientRect().width
     planCanvas.height = planCanvas.parentNode.getBoundingClientRect().height
@@ -883,52 +900,53 @@ function initPlanView(planCanvas: any) {
     rulerLeft.style.height = planCanvas.parentNode.getBoundingClientRect().height
 
     planCanvas.oncontextmenu = function () {
-      return !1
+      return false
     }
-    // (document.getElementsByClassName("close")[0].onclick = function () {
+    // (document.getElementsByClassName('close')[0].onclick = function () {
     //   closeAllModals(), showMouseIndicators()
     // }),
-    // (document.getElementsByClassName("close")[1].onclick = function () {
+    // (document.getElementsByClassName('close')[1].onclick = function () {
     //   closeAllModals(), showMouseIndicators()
     // }),
-    // (document.getElementsByClassName("close")[2].onclick = function () {
+    // (document.getElementsByClassName('close')[2].onclick = function () {
     //   closeAllModals(), showMouseIndicators()
     // }),
 
   // ) {
 
     rulerLeft.oncontextmenu = function () {
-      return !1
+      return false
     }
     rulerBottom.oncontextmenu = function () {
-      return !1
+      return false
     }
-    rulerLeftCtx = rulerLeft.getContext("2d")
-    rulerBottomCtx = rulerBottom.getContext("2d")
+    rulerLeftCtx = rulerLeft.getContext('2d')
+    rulerBottomCtx = rulerBottom.getContext('2d')
 
-    planCanvas.addEventListener(
-      "mousemove",
-      function (e: any) {
-        mouseIndicatorX.style.left = e.clientX + "px"
-        mouseIndicatorY.style.top = e.clientY + "px"
-      },
-      !1
-    )
+    // ** CROSSHAIRS mouse indicators x,y onmousemove
+    // planCanvas.addEventListener(
+    //   'mousemove',
+    //   function (e: any) {
+    //     mouseIndicatorX.style.left = e.clientX + 'px'
+    //     mouseIndicatorY.style.top = e.clientY + 'px'
+    //   },
+    //   false
+    // )
 
     let MMt = /Firefox/i.test(navigator.userAgent)
-      ? "DOMMouseScroll"
-      : "mousewheel"
+      ? 'DOMMouseScroll'
+      : 'mousewheel'
 
     planCanvas.addEventListener(MMt, MMe)
 
-    // ** draw grid path lines x,y
+    // ** DRAW GRID path lines x,y
     for (let o = 0; o <= 200; o++) {
       const a = new paper.Point(10 * o, 0)
       const n = new paper.Point(10 * o, 100)
       let pathLineX = new paper.Path.Line(a, n)
-      pathLineX.strokeColor = new paper.Color(200, 200, 200, 1) // "#cccccc"
+      pathLineX.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
       pathLineX.strokeWidth = 0.5
-      pathLineX.strokeScaling = !1
+      pathLineX.strokeScaling = false
       xLines.push(pathLineX)
       // @ts-expect-error
       gridGroup[0].addChild(pathLineX)
@@ -937,9 +955,9 @@ function initPlanView(planCanvas: any) {
       const i = new paper.Point(0, 10 * o)
       const r = new paper.Point(100, 10 * o)
       let pathLineY = new paper.Path.Line(i, r)
-      pathLineY.strokeColor = new paper.Color(200, 200, 200, 1) // "#cccccc"
+      pathLineY.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
       pathLineY.strokeWidth = 0.5
-      pathLineY.strokeScaling = !1
+      pathLineY.strokeScaling = false
       yLines.push(pathLineY)
       // @ts-expect-error
       gridGroup[0].addChild(pathLineY)
@@ -950,54 +968,54 @@ function initPlanView(planCanvas: any) {
     // @ts-expect-error
     toolsGroup[0].rotation = 0
     
-    rotateIcon = new paper.Raster("images/homedesign/rotate.png")
-    rotateIcon.data.type = "rotateThreedTool"
+    rotateIcon = new paper.Raster('images/homedesign/rotate.png')
+    rotateIcon.data.type = 'rotateThreedTool'
     rotateIcon.onMouseEnter = function (e: any) {
-      planView.style.cursor = "move"
+      planView.style.cursor = 'move'
     }
     rotateIcon.onMouseLeave = function (e: any) {
-      planView.style.cursor = "default"
+      planView.style.cursor = 'default'
     }
-    rotateIcon.visible = !1
+    rotateIcon.visible = false
     // @ts-expect-error
     toolsGroup[0].addChild(rotateIcon)
     
     // **
-    resizeIcon = new paper.Raster("images/homedesign/expand.png")
-    resizeIcon.data.type = "stretchThreedXZTool"
+    resizeIcon = new paper.Raster('images/homedesign/expand.png')
+    resizeIcon.data.type = 'stretchThreedXZTool'
     resizeIcon.onMouseEnter = function (e: any) {
-      planView.style.cursor = "move"
+      planView.style.cursor = 'move'
     }
     resizeIcon.onMouseLeave = function (e: any) {
-      planView.style.cursor = "default"
+      planView.style.cursor = 'default'
     }
-    resizeIcon.visible = !1
+    resizeIcon.visible = false
     // @ts-expect-error
     toolsGroup[0].addChild(resizeIcon)
 
     // **
-    elevateIcon = new paper.Raster("images/homedesign/elevation.png")
-    elevateIcon.data.type = "elevateThreedTool"
+    elevateIcon = new paper.Raster('images/homedesign/elevation.png')
+    elevateIcon.data.type = 'elevateThreedTool'
     elevateIcon.onMouseEnter = function (e: any) {
-      planView.style.cursor = "row-resize"
+      planView.style.cursor = 'row-resize'
     }
     elevateIcon.onMouseLeave = function (e: any) {
-      planView.style.cursor = "default"
+      planView.style.cursor = 'default'
     }
-    elevateIcon.visible = !1
+    elevateIcon.visible = false
     // @ts-expect-error
     toolsGroup[0].addChild(elevateIcon)
 
     // **
-    heightIcon = new paper.Raster("images/homedesign/height.png")
-    heightIcon.data.type = "stretchThreedYTool"
+    heightIcon = new paper.Raster('images/homedesign/height.png')
+    heightIcon.data.type = 'stretchThreedYTool'
     heightIcon.onMouseEnter = function (e: any) {
-      planView.style.cursor = "ns-resize"
+      planView.style.cursor = 'ns-resize'
     }
     heightIcon.onMouseLeave = function (e: any) {
-      planView.style.cursor = "default"
+      planView.style.cursor = 'default'
     }
-    heightIcon.visible = !1
+    heightIcon.visible = false
     // @ts-expect-error
     toolsGroup[0].addChild(heightIcon)
     
@@ -1007,40 +1025,40 @@ function initPlanView(planCanvas: any) {
     new paper.Point(0, 0),
     new paper.Point(0, 0)
   )
-  wallHelperPath.visible = !1
+  wallHelperPath.visible = false
   wallHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   wallHelperPath.strokeWidth = 2
-  wallHelperPath.strokeScaling = !1
+  wallHelperPath.strokeScaling = false
   // @ts-expect-error
   wallsGroup[paper.project.activeLayer.data.id].addChild(wallHelperPath)
   roofHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
     new paper.Point(0, 0)
   )
-  roofHelperPath.visible = !1
+  roofHelperPath.visible = false
   roofHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   roofHelperPath.strokeWidth = 2
-  roofHelperPath.strokeScaling = !1
+  roofHelperPath.strokeScaling = false
   // @ts-expect-error
   roofsGroup[paper.project.activeLayer.data.id].addChild(roofHelperPath)
   floorHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
     new paper.Point(0, 0)
   )
-  floorHelperPath.visible = !1
-  floorHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
+  floorHelperPath.visible = false
+  floorHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   floorHelperPath.strokeWidth = 2
-  floorHelperPath.strokeScaling = !1
+  floorHelperPath.strokeScaling = false
   // @ts-expect-error
   floorsGroup[paper.project.activeLayer.data.id].addChild(floorHelperPath)
   dimensionHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
     new paper.Point(0, 0)
   )
-  dimensionHelperPath.visible = !1
-  dimensionHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
+  dimensionHelperPath.visible = false
+  dimensionHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   dimensionHelperPath.strokeWidth = 2
-  dimensionHelperPath.strokeScaling = !1
+  dimensionHelperPath.strokeScaling = false
   // @ts-expect-error
   dimensionsGroup[paper.project.activeLayer.data.id].addChild(dimensionHelperPath)
 
@@ -1050,28 +1068,28 @@ function initPlanView(planCanvas: any) {
     new paper.Point(0, 0)
   )
   wallHelperRectangle = new paper.Path.Rectangle(s)
-  wallHelperRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
+  wallHelperRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   wallHelperRectangle.strokeWidth = 2
-  wallHelperRectangle.strokeScaling = !1
+  wallHelperRectangle.strokeScaling = false
   s = new paper.Rectangle(
     new paper.Point(0, 0), 
     new paper.Point(0, 0)
   )
   roofHelperRectangle = new paper.Path.Rectangle(s)
-  roofHelperRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
+  roofHelperRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   roofHelperRectangle.strokeWidth = 2
-  roofHelperRectangle.strokeScaling = !1
+  roofHelperRectangle.strokeScaling = false
   offsetMousePoint = new paper.Point(0, 0)
   tools = new paper.Tool()
   draggingThreedRectangle = new paper.Path.Rectangle(
     new paper.Point(-1, -1),
     new paper.Point(1, 1)
   )
-  draggingThreedRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
+  draggingThreedRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   draggingThreedRectangle.strokeWidth = 2
-  draggingThreedRectangle.strokeScaling = !1
+  draggingThreedRectangle.strokeScaling = false
   draggingThreedRectangle.position = new paper.Point(0, 0)
-  draggingThreedRectangle.visible = !1
+  draggingThreedRectangle.visible = false
   // @ts-expect-error
   threedGroup[paper.project.activeLayer.data.id].addChild(
     draggingThreedRectangle
@@ -1085,7 +1103,7 @@ function initPlanView(planCanvas: any) {
     console.debug('initPlanView: tools.onMouseDown', e)
 
     /*
-    if ("pointer" === toolMode)
+    if ('pointer' === toolMode)
       if (2 === e.event.buttons) mouseMode = -1
       else if (readOnly) mouseMode = -1
       else {
@@ -1093,66 +1111,66 @@ function initPlanView(planCanvas: any) {
         if (t) {
           if (t.item.data)
             if (t.item.data.level === paper.project.activeLayer.data.id.toString())
-              if ("toolsRectangle" === t.item.data.type)
+              if ('toolsRectangle' === t.item.data.type)
                 (mouseMode = 0),
                   (offsetMousePoint = selectedItem.position.subtract(
                     e.point
                   )),
                   (offsetMousePoint.x = parseInt(offsetMousePoint.x)),
                   (offsetMousePoint.y = parseInt(offsetMousePoint.y))
-              else if ("rotateThreedTool" === t.item.data.type)
-                (mouseMode = 1), console.debug("isRotateTool")
-              else if ("stretchThreedXZTool" === t.item.data.type)
-                (mouseMode = 2), console.debug("isStretchXY")
-              else if ("stretchThreedYTool" === t.item.data.type)
-                console.debug("isStretchYTool"),
+              else if ('rotateThreedTool' === t.item.data.type)
+                (mouseMode = 1), console.debug('isRotateTool')
+              else if ('stretchThreedXZTool' === t.item.data.type)
+                (mouseMode = 2), console.debug('isStretchXY')
+              else if ('stretchThreedYTool' === t.item.data.type)
+                console.debug('isStretchYTool'),
                   (mouseMode = 4),
                   (snapPoint = e.point),
                   (snapPoint.x = parseInt(e.point.x)),
                   (snapPoint.y = parseInt(e.point.y)),
                   scalingY
-                    ? console.debug("this should never happen : scalingY")
-                    : ((scalingY = !0),
+                    ? console.debug('this should never happen : scalingY')
+                    : ((scalingY = true),
                       (stretchYStartHeight =
                         clickableObjects[selectedItem.data.id].userData.height 
                         *
                         clickableObjects[selectedItem.data.id].scale.y),
                       (stretchYPath = new paper.Path()),
-                      // (stretchYPath.strokeColor = "black"),
+                      // (stretchYPath.strokeColor = 'black'),
                       stretchYPath.add(snapPoint),
                       stretchYPath.add(snapPoint),
-                      (stretchYPath.visible = !0))
-              else if ("elevateThreedTool" === t.item.data.type)
+                      (stretchYPath.visible = true))
+              else if ('elevateThreedTool' === t.item.data.type)
                 (mouseMode = 5),
-                  console.debug("isElevateTool"),
+                  console.debug('isElevateTool'),
                   (snapPoint = e.point),
                   (snapPoint.x = parseInt(e.point.x)),
                   (snapPoint.y = parseInt(e.point.y)),
                   elevating
-                    ? console.debug("this should never happen : elevating")
-                    : ((elevating = !0),
+                    ? console.debug('this should never happen : elevating')
+                    : ((elevating = true),
                       (elevateStartHeight =
                         clickableObjects[selectedItem.data.id].position.y),
                       (elevatePath = new paper.Path()),
-                      // (elevatePath.strokeColor = "black"),
+                      // (elevatePath.strokeColor = 'black'),
                       elevatePath.add(snapPoint),
                       elevatePath.add(snapPoint),
-                      (elevatePath.visible = !0))
-              else if ("threed" === t.item.data.type)
+                      (elevatePath.visible = true))
+              else if ('threed' === t.item.data.type)
                 selectedItem.data.id &&
                   (tween = new TWEEN.Tween(controls.target)
                     .to(clickableObjects[selectedItem.data.id].position, 500)
                     .onUpdate(render)
                     .start())
-              else if ("wallRectangle" === t.item.data.type) {
+              else if ('wallRectangle' === t.item.data.type) {
                 deselectAll()
                 var o = Walls[t.item.data.id]
                 o.bringToFront(),
-                  (o.selected = !0),
+                  (o.selected = true),
                   (selectedItem = o),
                   o.segments.forEach(function (e: any) {
-                    var t = new paper.Raster("images/homedesign/movePointIcon.png")
-                      ; (t.data.type = "movePointIconWalls"),
+                    var t = new paper.Raster('images/homedesign/movePointIcon.png')
+                      ; (t.data.type = 'movePointIconWalls'),
                         (t.data.id = e.index),
                         (t.data.level = project.activeLayer.data.id),
                         (t.data.wallId = o.data.id),
@@ -1160,27 +1178,27 @@ function initPlanView(planCanvas: any) {
                         (t.bounds.height = screenScale),
                         (t.position = e.point),
                         (t.onMouseEnter = function (e: any) {
-                          planView.style.cursor = "move"
+                          planView.style.cursor = 'move'
                         }),
                         (t.onMouseLeave = function (e: any) {
-                          planView.style.cursor = "default"
+                          planView.style.cursor = 'default'
                         }),
-                        (t.visible = !0),
+                        (t.visible = true),
                         t.bringToFront(),
                         movePointIcons.push(t)
                   }),
                   (selectedMovePointIcon = null),
                   (movePointIconSelectedId = null)
                   // updateObjectPropertiesWindow()
-              } else if ("roofRectangle" === t.item.data.type) {
+              } else if ('roofRectangle' === t.item.data.type) {
                 deselectAll()
                 var a = Roofs[t.item.data.id]
                 a.bringToFront(),
-                  (a.selected = !0),
+                  (a.selected = true),
                   (selectedItem = a),
                   a.segments.forEach(function (e: any) {
-                    var t = new paper.Raster("images/homedesign/movePointIcon.png")
-                      ; (t.data.type = "movePointIconRoofs"),
+                    var t = new paper.Raster('images/homedesign/movePointIcon.png')
+                      ; (t.data.type = 'movePointIconRoofs'),
                         (t.data.id = e.index),
                         (t.data.level = project.activeLayer.data.id),
                         (t.data.roofId = a.data.id),
@@ -1188,65 +1206,65 @@ function initPlanView(planCanvas: any) {
                         (t.bounds.height = screenScale),
                         (t.position = e.point),
                         (t.onMouseEnter = function (e: any) {
-                          planView.style.cursor = "move"
+                          planView.style.cursor = 'move'
                         }),
                         (t.onMouseLeave = function (e: any) {
-                          planView.style.cursor = "default"
+                          planView.style.cursor = 'default'
                         }),
-                        (t.visible = !0),
+                        (t.visible = true),
                         t.bringToFront(),
                         movePointIcons.push(t)
                   }),
                   (selectedMovePointIcon = null),
                   (movePointIconSelectedId = null)
                   // updateObjectPropertiesWindow()
-              } else if ("movePointIconWalls" === t.item.data.type)
+              } else if ('movePointIconWalls' === t.item.data.type)
                 movePointIcons.forEach(function (e: any) {
-                  e.selected = !1
+                  e.selected = false
                 }),
                   (selectedMovePointIcon = t.item),
-                  (selectedMovePointIcon.selected = !0),
+                  (selectedMovePointIcon.selected = true),
                   (movePointIconSelectedId = t.item.data.id),
                   // recalcAllUnjoinedWallSegments(selectedItem.data.id),
                   (mouseMode = 3)
-              else if ("movePointIconRoofs" === t.item.data.type)
+              else if ('movePointIconRoofs' === t.item.data.type)
                 movePointIcons.forEach(function (e: any) {
-                  e.selected = !1
+                  e.selected = false
                 }),
                   (selectedMovePointIcon = t.item),
-                  (selectedMovePointIcon.selected = !0),
+                  (selectedMovePointIcon.selected = true),
                   (movePointIconSelectedId = t.item.data.id),
                   // recalcAllUnjoinedRoofSegments(selectedItem.data.id),
                   (mouseMode = 11)
-              else if ("movePointIconFloors" === t.item.data.type)
+              else if ('movePointIconFloors' === t.item.data.type)
                 movePointIcons.forEach(function (e: any) {
-                  e.selected = !1
+                  e.selected = false
                 }),
                   (selectedMovePointIcon = t.item),
-                  (selectedMovePointIcon.selected = !0),
+                  (selectedMovePointIcon.selected = true),
                   (movePointIconSelectedId = t.item.data.id),
                   // recalcAllWallCorners(),
                   (mouseMode = 6)
-              else if ("floor" === t.item.data.type) {
+              else if ('floor' === t.item.data.type) {
                 deselectAll()
                 var n = Floors[t.item.data.id]
-                  ; (n.selected = !0),
+                  ; (n.selected = true),
                     (selectedItem = n),
                     n.segments.forEach(function (e: any) {
-                      var t = new paper.Raster("images/homedesign/movePointIcon.png")
-                        ; (t.data.type = "movePointIconFloors"),
+                      var t = new paper.Raster('images/homedesign/movePointIcon.png')
+                        ; (t.data.type = 'movePointIconFloors'),
                           (t.data.id = e.index),
                           (t.data.level = project.activeLayer.data.id),
                           (t.bounds.width = screenScale),
                           (t.bounds.height = screenScale),
                           (t.position = e.point),
                           (t.onMouseEnter = function (e: any) {
-                            planView.style.cursor = "move"
+                            planView.style.cursor = 'move'
                           }),
                           (t.onMouseLeave = function (e: any) {
-                            planView.style.cursor = "default"
+                            planView.style.cursor = 'default'
                           }),
-                          (t.visible = !0),
+                          (t.visible = true),
                           t.bringToFront(),
                           movePointIcons.push(t)
                     }),
@@ -1272,35 +1290,35 @@ function initPlanView(planCanvas: any) {
                         .start())
                       // recalcAllWallCorners()
               } else
-                "dimension" === t.item.data.type
+                'dimension' === t.item.data.type
                   ? (
                     deselectAll(),
                     (selectedItem = Dimensions[t.item.data.id].text),
-                    (Dimensions[selectedItem.data.id].text.selected = !0),
-                    (Dimensions[selectedItem.data.id].line.selected = !0),
+                    (Dimensions[selectedItem.data.id].text.selected = true),
+                    (Dimensions[selectedItem.data.id].line.selected = true),
                     updateObjectPropertiesWindow(),
                     recalcAllWallCorners(),
                     recalcAllRoofCorners()
                     )
-                  : "text" === t.item.data.type
+                  : 'text' === t.item.data.type
                     ? (
                       deselectAll(),
                       (mouseMode = 7),
                       (selectedItem = Texts[t.item.data.id]),
-                      (Texts[t.item.data.id].selected = !0),
+                      (Texts[t.item.data.id].selected = true),
                       (editingTextId = t.item.data.id),
                       updateObjectPropertiesWindow()
                       )
-                    : console.debug("mouse down not handled")
+                    : console.debug('mouse down not handled')
             else
               t.item.data.level === -1 &&
-                ("verticalGuide" === t.item.data.type
+                ('verticalGuide' === t.item.data.type
                   ? ((selectedGuideId = t.item.data.id), (mouseMode = 9))
-                  : "horizontalGuide" === t.item.data.type &&
+                  : 'horizontalGuide' === t.item.data.type &&
                   ((selectedGuideId = t.item.data.id), (mouseMode = 10)))
-        } else console.debug("hit result nothing"), (mouseMode = -1)
+        } else console.debug('hit result nothing'), (mouseMode = -1)
       }
-    else if ("walls" === toolMode)
+    else if ('walls' === toolMode)
       if (2 === e.event.buttons) mouseMode = -1
       else {
         if (((mouseMode = 0), Date.now() - lastNewWallSegmentClick > 250)) {
@@ -1333,15 +1351,15 @@ function initPlanView(planCanvas: any) {
                 u = wallPath.segments[wallPath.segments.length - 1].point,
                 p = getAngleRadians(c, u),
                 m = new paper.Path()
-                ; (m.data.type = "wallRectangle"),
+                ; (m.data.type = 'wallRectangle'),
                   (m.data.id = wallPath.data.id),
                   (m.data.level = project.activeLayer.data.id),
                   (m.fillColor = new paper.Color(1, 0.9, 0, 0.25)),
-                  (m.strokeColor = "#b19064"),
+                  (m.strokeColor = '#b19064'),
                   (m.strokeWidth = 1),
-                  (m.strokeScaling = !1),
+                  (m.strokeScaling = false),
                   (m.segments = wallHelperRectangle.segments),
-                  (m.closed = !0),
+                  (m.closed = true),
                   (wallsRectangles[wallPath.data.id] = m),
                   wallsGroup[project.activeLayer.data.id].addChild(
                     wallsRectangles[wallPath.data.id]
@@ -1353,7 +1371,7 @@ function initPlanView(planCanvas: any) {
                   (y.position.z = wallHelper3dCube.position.z),
                   (y.userData.id = wallPath.data.id),
                   (y.userData.level = wallPath.data.level),
-                  (y.frustumCulled = !1),
+                  (y.frustumCulled = false),
                   y.geometry.computeFlatVertexNormals(),
                   scene.add(y),
                   (wallsRectangles3d[wallPath.data.id] = y),
@@ -1385,7 +1403,7 @@ function initPlanView(planCanvas: any) {
                     null
                   ),
                   wallPath.segments.length > 2 &&
-                  alert("problem to many segments"),
+                  alert('problem to many segments'),
                   (wallPath = new paper.Path()),
                   (wallPath.strokeColor = new paper.Color(0, 0, 0, 0)),
                   wallPath.add(snapPoint),
@@ -1394,7 +1412,7 @@ function initPlanView(planCanvas: any) {
                   updateObjectPropertiesWindow(),
                   wallIdCounter++,
                   (wallPath.data.id = wallIdCounter),
-                  (wallPath.data.type = "wallPath"),
+                  (wallPath.data.type = 'wallPath'),
                   (wallPath.data.thickness = defaultWallThickness),
                   (wallPath.data.height = [
                     defaultWallHeight,
@@ -1407,7 +1425,7 @@ function initPlanView(planCanvas: any) {
               console.debug(e)
             }
           } else
-            (startedDrawingWalls = !0),
+            (startedDrawingWalls = true),
               (wallPath = new paper.Path()),
               (wallPath.strokeColor = new paper.Color(0, 0, 0, 0)),
               snapPointOverride.id &&
@@ -1421,7 +1439,7 @@ function initPlanView(planCanvas: any) {
               (wallPath.data.id = wallIdCounter),
               (wallPath.data.join0 = { id: null, seg: null }),
               (wallPath.data.join1 = { id: null, seg: null }),
-              (wallPath.data.type = "wallPath"),
+              (wallPath.data.type = 'wallPath'),
               (wallPath.data.thickness = defaultWallThickness),
               (wallPath.data.height = [defaultWallHeight, defaultWallHeight]),
               (wallPath.data.level = project.activeLayer.data.id),
@@ -1431,12 +1449,12 @@ function initPlanView(planCanvas: any) {
               ; (wallHelperPath.segments[0].point = snapPoint),
                 (wallHelperPath.segments[1].point = snapPoint),
                 wallHelperPath.bringToFront(),
-                (wallHelperPath.visible = !0),
+                (wallHelperPath.visible = true),
                 (wallHelperRectangle.segments[0].point = new Point(0, 0)),
                 (wallHelperRectangle.segments[1].point = new Point(0, 0)),
                 (wallHelperRectangle.segments[2].point = new Point(0, 0)),
                 (wallHelperRectangle.segments[3].point = new Point(0, 0)),
-                (wallHelperRectangle.visible = !0),
+                (wallHelperRectangle.visible = true),
                 (wallHelper3dCube.geometry.vertices[1].x =
                   wallHelperRectangle.segments[0].point.x),
                 (wallHelper3dCube.geometry.vertices[1].z =
@@ -1469,8 +1487,8 @@ function initPlanView(planCanvas: any) {
                   wallHelperRectangle.segments[3].point.x),
                 (wallHelper3dCube.geometry.vertices[6].z =
                   wallHelperRectangle.segments[3].point.y),
-                (wallHelper3dCube.geometry.verticesNeedUpdate = !0),
-                (wallHelper3dCube.visible = !0),
+                (wallHelper3dCube.geometry.verticesNeedUpdate = true),
+                (wallHelper3dCube.visible = true),
                 (tween = new TWEEN.Tween(controls.target)
                   .to(wallHelper3dCube.position, 500)
                   .onUpdate(render)
@@ -1480,7 +1498,7 @@ function initPlanView(planCanvas: any) {
         }
         lastNewWallSegmentClick = Date.now()
       }
-    else if ("roof" === toolMode)
+    else if ('roof' === toolMode)
       if (2 === e.event.buttons) mouseMode = -1
       else {
         if (((mouseMode = 0), Date.now() - lastNewRoofSegmentClick > 250)) {
@@ -1513,15 +1531,15 @@ function initPlanView(planCanvas: any) {
                 u = roofPath.segments[roofPath.segments.length - 1].point,
                 p = getAngleRadians(c, u),
                 f = new Path()
-                ; (f.data.type = "roofRectangle"),
+                ; (f.data.type = 'roofRectangle'),
                   (f.data.id = roofPath.data.id),
                   (f.data.level = project.activeLayer.data.id),
                   (f.fillColor = new paper.Color(0.35, 0.65, 0.85, 0.25)),
-                  (f.strokeColor = "#b19064"),
+                  (f.strokeColor = '#b19064'),
                   (f.strokeWidth = 1),
-                  (f.strokeScaling = !1),
+                  (f.strokeScaling = false),
                   (f.segments = roofHelperRectangle.segments),
-                  (f.closed = !0),
+                  (f.closed = true),
                   (roofsRectangles[roofPath.data.id] = f),
                   roofsGroup[project.activeLayer.data.id].addChild(
                     roofsRectangles[roofPath.data.id]
@@ -1533,7 +1551,7 @@ function initPlanView(planCanvas: any) {
                   (h.position.z = roofHelper3dCube.position.z),
                   (h.userData.id = roofPath.data.id),
                   (h.userData.level = roofPath.data.level),
-                  (h.frustumCulled = !1),
+                  (h.frustumCulled = false),
                   h.geometry.computeFlatVertexNormals(),
                   scene.add(h),
                   (roofsRectangles3d[roofPath.data.id] = h),
@@ -1565,7 +1583,7 @@ function initPlanView(planCanvas: any) {
                     null
                   ),
                   roofPath.segments.length > 2 &&
-                  alert("problem to many segments"),
+                  alert('problem to many segments'),
                   (roofPath = new paper.Path()),
                   (roofPath.strokeColor = new paper.Color(0, 0, 0, 0)),
                   roofPath.add(snapPoint),
@@ -1574,7 +1592,7 @@ function initPlanView(planCanvas: any) {
                   updateObjectPropertiesWindow(),
                   roofIdCounter++,
                   (roofPath.data.id = roofIdCounter),
-                  (roofPath.data.type = "roofPath"),
+                  (roofPath.data.type = 'roofPath'),
                   (roofPath.data.width = defaultRoofWidth),
                   (roofPath.data.rise = defaultRoofRise),
                   (roofPath.data.startHeight = defaultRoofStartHeight),
@@ -1586,7 +1604,7 @@ function initPlanView(planCanvas: any) {
               console.debug(e)
             }
           } else
-            (startedDrawingRoofs = !0),
+            (startedDrawingRoofs = true),
               (roofPath = new paper.Path()),
               (roofPath.strokeColor = new paper.Color(0, 0, 0, 0)),
               snapPointOverride.id &&
@@ -1600,7 +1618,7 @@ function initPlanView(planCanvas: any) {
               (roofPath.data.id = roofIdCounter),
               (roofPath.data.join0 = { id: null, seg: null }),
               (roofPath.data.join1 = { id: null, seg: null }),
-              (roofPath.data.type = "roofPath"),
+              (roofPath.data.type = 'roofPath'),
               (roofPath.data.width = defaultRoofWidth),
               (roofPath.data.rise = defaultRoofRise),
               (roofPath.data.startHeight = defaultRoofStartHeight),
@@ -1612,12 +1630,12 @@ function initPlanView(planCanvas: any) {
               ; (roofHelperPath.segments[0].point = snapPoint),
                 (roofHelperPath.segments[1].point = snapPoint),
                 roofHelperPath.bringToFront(),
-                (roofHelperPath.visible = !0),
+                (roofHelperPath.visible = true),
                 (roofHelperRectangle.segments[0].point = new Point(0, 0)),
                 (roofHelperRectangle.segments[1].point = new Point(0, 0)),
                 (roofHelperRectangle.segments[2].point = new Point(0, 0)),
                 (roofHelperRectangle.segments[3].point = new Point(0, 0)),
-                (roofHelperRectangle.visible = !0),
+                (roofHelperRectangle.visible = true),
                 (roofHelper3dCube.geometry.vertices[1].x =
                   roofHelperRectangle.segments[0].point.x),
                 (roofHelper3dCube.geometry.vertices[1].z =
@@ -1660,8 +1678,8 @@ function initPlanView(planCanvas: any) {
               (roofHelper3dCube.geometry.vertices[3].y = -v - w),
               (roofHelper3dCube.geometry.vertices[6].y = -v + w),
               (roofHelper3dCube.geometry.vertices[7].y = -v + w),
-              (roofHelper3dCube.geometry.verticesNeedUpdate = !0),
-              (roofHelper3dCube.visible = !0),
+              (roofHelper3dCube.geometry.verticesNeedUpdate = true),
+              (roofHelper3dCube.visible = true),
               (tween = new TWEEN.Tween(controls.target)
                 .to(roofHelper3dCube.position, 500)
                 .onUpdate(render)
@@ -1671,26 +1689,26 @@ function initPlanView(planCanvas: any) {
         }
         lastNewRoofSegmentClick = Date.now()
       }
-    else if ("background" === toolMode) {
+    else if ('background' === toolMode) {
       var t = project.hitTest(e.point)
       t && t.item.data
-        ? "background" === t.item.data.type
+        ? 'background' === t.item.data.type
           ? ((mouseMode = 0),
             (offsetMousePoint = selectedItem.position.subtract(e.point)),
             (offsetMousePoint.x = parseInt(offsetMousePoint.x)),
             (offsetMousePoint.y = parseInt(offsetMousePoint.y)))
-          : "stretchThreedXZTool" === t.item.data.type
+          : 'stretchThreedXZTool' === t.item.data.type
             ? (mouseMode = 2)
-            : "verticalGuide" === t.item.data.type
+            : 'verticalGuide' === t.item.data.type
               ? (console.debug(t.item.data.type),
                 (selectedGuideId = t.item.data.id),
                 (mouseMode = 9))
-              : "horizontalGuide" === t.item.data.type &&
+              : 'horizontalGuide' === t.item.data.type &&
               (console.debug(t.item.data.type),
                 (selectedGuideId = t.item.data.id),
                 (mouseMode = 10))
         : (mouseMode = -1)
-    } else if ("floor" === toolMode)
+    } else if ('floor' === toolMode)
       2 === e.event.buttons
         ? (mouseMode = -1)
         : ((mouseMode = 0),
@@ -1748,12 +1766,12 @@ function initPlanView(planCanvas: any) {
                   null
                 ),
               render())
-            : ((startedDrawingFloor = !0),
+            : ((startedDrawingFloor = true),
               (floorPath = new Path()),
-              (floorPath.data.type = "floor"),
-              (floorPath.strokeColor = "#b19064"),
+              (floorPath.data.type = 'floor'),
+              (floorPath.strokeColor = '#b19064'),
               (floorPath.strokeWidth = 2),
-              (floorPath.strokeScaling = !1),
+              (floorPath.strokeScaling = false),
               (floorPath.fillColor = new paper.Color(0.5, 0.5, 0.5, 0.5)),
               floorPath.add(snapPoint),
               floorIdCounter++,
@@ -1766,9 +1784,9 @@ function initPlanView(planCanvas: any) {
               ),
               (floorHelperPath.segments[0].point = snapPoint),
               (floorHelperPath.segments[1].point = snapPoint),
-              (floorHelperPath.visible = !0))),
+              (floorHelperPath.visible = true))),
           (lastNewFloorSegmentClick = Date.now()))
-    else if ("dimension" === toolMode)
+    else if ('dimension' === toolMode)
       if (2 === e.event.buttons) mouseMode = -1
       else if (((mouseMode = 0), startedDrawingDimension))
         if (1 === dimensionPath.segments.length) dimensionPath.add(snapPoint)
@@ -1780,18 +1798,18 @@ function initPlanView(planCanvas: any) {
             P = (I.angle - s.angle + 360) % 360,
             b = (P / 180) * Math.PI,
             x = I.length * Math.sin(b)
-            ; (dimensionPath.data.adjacent = x), (dimensionPath.visible = !1)
+            ; (dimensionPath.data.adjacent = x), (dimensionPath.visible = false)
           var s = dimensionPath.segments[1].point.subtract(
             dimensionPath.segments[0].point
           ),
             R = new paper.Path()
             ; (R.data.id = dimensionPath.data.id),
               (R.data.level = project.activeLayer.data.id),
-              (R.data.type = "dimension"),
+              (R.data.type = 'dimension'),
               (R.style = {
-                strokeColor: "white",
+                strokeColor: 'white',
                 strokeWidth: 1,
-                strokeScaling: !1,
+                strokeScaling: false,
               }),
               R.moveTo(dimensionPath.segments[0].point),
               R.lineBy(s.normalize(x).rotate(-90)),
@@ -1809,24 +1827,24 @@ function initPlanView(planCanvas: any) {
             R.lineBy(s.normalize(x).rotate(90))
           var k = new paper.PointText({})
           Math.abs(s.angle) > 90
-            ? ((k.fontFamily = "Courier New"),
-              (k.fillColor = "white"),
+            ? ((k.fontFamily = 'Courier New'),
+              (k.fillColor = 'white'),
               (k.point = M.add(s.normalize(-8).rotate(-90))),
-              (k.justification = "center"),
+              (k.justification = 'center'),
               (k.fontSize = screenScale / 1.5),
               k.rotate(180 + s.angle),
               (k.data.id = dimensionPath.data.id),
               (k.data.level = project.activeLayer.data.id),
-              (k.data.type = "dimension"))
-            : ((k.fontFamily = "Courier New"),
-              (k.fillColor = "white"),
+              (k.data.type = 'dimension'))
+            : ((k.fontFamily = 'Courier New'),
+              (k.fillColor = 'white'),
               (k.point = M.add(s.normalize(8).rotate(-90))),
-              (k.justification = "center"),
+              (k.justification = 'center'),
               (k.fontSize = screenScale / 1.5),
               k.rotate(s.angle),
               (k.data.id = dimensionPath.data.id),
               (k.data.level = project.activeLayer.data.id),
-              (k.data.type = "dimension"))
+              (k.data.type = 'dimension'))
           var E = s.length
             ; (k.content = Math.floor(1e3 * E) / 1e3),
               (Dimensions[dimensionPath.data.id] = {
@@ -1863,35 +1881,35 @@ function initPlanView(planCanvas: any) {
               setEndDrawingDimension()
         }
       else
-        (startedDrawingDimension = !0),
+        (startedDrawingDimension = true),
           (dimensionPath = new Path()),
-          (dimensionPath.data.type = "dimension"),
-          (dimensionPath.strokeColor = "white"),
+          (dimensionPath.data.type = 'dimension'),
+          (dimensionPath.strokeColor = 'white'),
           dimensionPath.add(snapPoint),
           dimensionIdCounter++,
           (dimensionPath.data.id = dimensionIdCounter),
           (dimensionPath.data.adjacent = 0),
           (dimensionPath.data.level = project.activeLayer.data.id),
-          (dimensionPath.visible = !1),
+          (dimensionPath.visible = false),
           dimensionsGroup[dimensionPath.data.level].addChild(dimensionPath),
           (dimensionHelperPath.segments[0].point = snapPoint),
           (dimensionHelperPath.segments[1].point = snapPoint),
-          (dimensionHelperPath.visible = !0)
-    else if ("text" === toolMode)
+          (dimensionHelperPath.visible = true)
+    else if ('text' === toolMode)
       if (2 === e.event.buttons) mouseMode = -1
       else if (((mouseMode = 0), !startedDrawingText)) {
-        deselectAll(), (startedDrawingText = !0)
+        deselectAll(), (startedDrawingText = true)
         var k = new paper.PointText({})
-          ; (k.fontFamily = "Courier New"),
-            (k.fillColor = "white"),
+          ; (k.fontFamily = 'Courier New'),
+            (k.fillColor = 'white'),
             (k.point = e.point),
-            (k.justification = "center"),
+            (k.justification = 'center'),
             (k.fontSize = screenScale / 1.5),
             textIdCounter++,
             (k.data.id = textIdCounter),
             (editingTextId = k.data.id),
-            (k.data.type = "text"),
-            (k.data.value = ""),
+            (k.data.type = 'text'),
+            (k.data.value = ''),
             (k.data.x = k.point.x),
             (k.data.y = k.point.y),
             (k.data.level = project.activeLayer.data.id),
@@ -1921,12 +1939,12 @@ function initPlanView(planCanvas: any) {
               null
             ),
             (selectedItem = Texts[k.data.id]),
-            (Texts[k.data.id].selected = !0),
+            (Texts[k.data.id].selected = true),
             updateObjectPropertiesWindow(),
-            (document.getElementById("textValueProp").style.backgroundColor =
-              "#4e4e4e"),
-            document.getElementById("textValueProp").select(),
-            (startedDrawingText = !1)
+            (document.getElementById('textValueProp').style.backgroundColor =
+              '#4e4e4e'),
+            document.getElementById('textValueProp').select(),
+            (startedDrawingText = false)
       }
     */
   }
@@ -1940,8 +1958,8 @@ function initPlanView(planCanvas: any) {
     0 === mouseMode && dragging
       ? selectedItem &&
         selectedItem.data &&
-        "threed" === selectedItem.data.type
-        ? ((dragging = !1),
+        'threed' === selectedItem.data.type
+        ? ((dragging = false),
           (mouseMode = -1),
           updatePlanHistory(
             plan,
@@ -1967,9 +1985,9 @@ function initPlanView(planCanvas: any) {
           applyMasksToWalls(project.activeLayer.data.id),
           applyMasksToRoofs(project.activeLayer.data.id),
           redrawLevelsFloors(project.activeLayer.data.id))
-        : console.debug("*** mouseup, mousemode=0, " + selectedItem)
+        : console.debug('*** mouseup, mousemode=0, ' + selectedItem)
       : 1 === mouseMode && rotating
-        ? ((rotating = !1),
+        ? ((rotating = false),
           (mouseMode = -1),
           (selectedItem.data.angle = selectedItem.rotation),
           updatePlanHistory(
@@ -1997,7 +2015,7 @@ function initPlanView(planCanvas: any) {
           applyMasksToRoofs(project.activeLayer.data.id),
           redrawLevelsFloors(project.activeLayer.data.id))
         : 2 === mouseMode && scalingXY
-          ? ((scalingXY = !1),
+          ? ((scalingXY = false),
             (mouseMode = -1),
             updatePlanHistory(
               plan,
@@ -2082,9 +2100,9 @@ function initPlanView(planCanvas: any) {
                   null
                 ))
               : 4 === mouseMode && scalingY
-                ? ((scalingY = !1),
+                ? ((scalingY = false),
                   (mouseMode = -1),
-                  (stretchYPath.visible = !1),
+                  (stretchYPath.visible = false),
                   (clickableObjects[selectedItem.data.id].userData.height +=
                     stretchYPath.length),
                   updatePlanHistory(
@@ -2112,9 +2130,9 @@ function initPlanView(planCanvas: any) {
                   applyMasksToRoofs(project.activeLayer.data.id),
                   redrawLevelsFloors(project.activeLayer.data.id))
                 : 5 === mouseMode && elevating
-                  ? ((elevating = !1),
+                  ? ((elevating = false),
                     (mouseMode = -1),
-                    (elevatePath.visible = !1),
+                    (elevatePath.visible = false),
                     updatePlanHistory(
                       plan,
                       null,
@@ -2209,10 +2227,10 @@ function initPlanView(planCanvas: any) {
       horizontalGuides[selectedGuideId].position.y =
         parseInt(e.point.y / snapTolerance) * snapTolerance
     }
-    else if ("pointer" === toolMode) {
+    else if ('pointer' === toolMode) {
       if (0 === mouseMode) {
         if (
-          ((dragging = !0),
+          ((dragging = true),
             (snapPoint = e.point),
             (snapPoint.x = parseInt(e.point.x)),
             (snapPoint.y = parseInt(e.point.y)),
@@ -2230,7 +2248,7 @@ function initPlanView(planCanvas: any) {
               (Object.keys(Walls).forEach(function (e: any) {
                 var t = Walls[e]
                 if (
-                  "object" == typeof t &&
+                  'object' == typeof t &&
                   t.data.level === project.activeLayer.data.id
                 ) {
                   var i = t.getNearestPoint(snapPoint),
@@ -2259,11 +2277,11 @@ function initPlanView(planCanvas: any) {
                 (selectedItem.rotation = 0)
               var i = new paper.Path.Rectangle(selectedItem.bounds)
                 ; (selectedItem.rotation = selectedItem.data.angle),
-                  (i.data.type = "toolsRectangle"),
-                  (i.strokeColor = "#b19064"),
+                  (i.data.type = 'toolsRectangle'),
+                  (i.strokeColor = '#b19064'),
                   (i.strokeWidth = 1),
-                  (i.strokeScaling = !1),
-                  (i.locked = !0),
+                  (i.strokeScaling = false),
+                  (i.locked = true),
                   (selectedItem.data.toolsRectangleInner = i),
                   i.rotate(selectedItem.data.angle),
                   (threedAngleProp.innerText = (
@@ -2375,11 +2393,11 @@ function initPlanView(planCanvas: any) {
             (selectedItem.rotation = 0)
           var i = new paper.Path.Rectangle(selectedItem.bounds)
             ; (selectedItem.rotation = h),
-              (i.data.type = "toolsRectangle"),
-              (i.strokeColor = "#b19064"),
+              (i.data.type = 'toolsRectangle'),
+              (i.strokeColor = '#b19064'),
               (i.strokeWidth = 1),
-              (i.strokeScaling = !1),
-              (i.locked = !0),
+              (i.strokeScaling = false),
+              (i.locked = true),
               (selectedItem.data.toolsRectangleInner = i),
               i.rotate(h)
         } else {
@@ -2388,11 +2406,11 @@ function initPlanView(planCanvas: any) {
             (selectedItem.rotation = 0)
           var i = new paper.Path.Rectangle(selectedItem.bounds)
             ; (selectedItem.rotation = selectedItem.data.angle),
-              (i.data.type = "toolsRectangle"),
-              (i.strokeColor = "#b19064"),
+              (i.data.type = 'toolsRectangle'),
+              (i.strokeColor = '#b19064'),
               (i.strokeWidth = 1),
-              (i.strokeScaling = !1),
-              (i.locked = !0),
+              (i.strokeScaling = false),
+              (i.locked = true),
               (selectedItem.data.toolsRectangleInner = i),
               i.rotate(selectedItem.data.angle)
         }
@@ -2411,7 +2429,7 @@ function initPlanView(planCanvas: any) {
           (elevateIcon.position =
             selectedItem.data.toolsRectangleInner.segments[0].point),
           selectedItem.data.id &&
-          ((rotating = !0),
+          ((rotating = true),
             (clickableObjects[selectedItem.data.id].rotation.y =
               (((selectedItem.rotation + 180) % 360) / 180) * Math.PI),
             (clickableObjects[selectedItem.data.id].rotation.x = Math.PI),
@@ -2424,7 +2442,7 @@ function initPlanView(planCanvas: any) {
             render())
       } else if (2 === mouseMode) {
         if (selectedItem.data.id) {
-          scalingXY = !0
+          scalingXY = true
           try {
             var v = (selectedItem.data.angle / 90) * Math.PI,
               w = e.point,
@@ -2781,8 +2799,8 @@ function initPlanView(planCanvas: any) {
           setTimeout(function () {
             redrawFloor(selectedItem)
           }, 1),
-          (document.getElementById("floorAreaProp").innerHTML =
-            Math.abs(selectedItem.area / 1e4).toFixed(3) + " M&sup2;")
+          (document.getElementById('floorAreaProp').innerHTML =
+            Math.abs(selectedItem.area / 1e4).toFixed(3) + ' M&sup2;')
       } else
         7 === mouseMode &&
           ((snapPoint = e.point),
@@ -2794,16 +2812,16 @@ function initPlanView(planCanvas: any) {
             (selectedItem.position = snapPoint.add(offsetMousePoint)),
             (plan.texts[selectedItem.data.id].data.x = snapPoint.x),
             (plan.texts[selectedItem.data.id].data.y = snapPoint.y),
-            (document.getElementById("textXProp").value =
+            (document.getElementById('textXProp').value =
               snapPoint.x.toFixed(3)),
-            (document.getElementById("textYProp").value =
+            (document.getElementById('textYProp').value =
               snapPoint.y.toFixed(3)))
     }
-    else if ("background" === toolMode) {
+    else if ('background' === toolMode) {
       if (2 === e.event.buttons)
         (paper.view.center = paper.view.center.add(t)), redrawGrid()
       else if (0 === mouseMode) {
-        ; (dragging = !0),
+        ; (dragging = true),
           (snapPoint = e.point),
           (snapPoint.x = parseInt(e.point.x)),
           (snapPoint.y = parseInt(e.point.y)),
@@ -2819,7 +2837,7 @@ function initPlanView(planCanvas: any) {
             (resizeIcon.position =
               selectedItem.data.toolsRectangleInner.segments[3].point))
       } else if (2 === mouseMode) {
-        scalingXY = !0
+        scalingXY = true
         try {
           if (e.point.x > 1 && e.point.y > 1) {
             ; (backgroundRasterRatioX = Math.abs(
@@ -2859,7 +2877,7 @@ function initPlanView(planCanvas: any) {
     // **
     // console.debug('initPlanView: tools.onMouseMove', e)
     /*
-    if (((lastMousePoint = e.point), "walls" === toolMode)) {
+    if (((lastMousePoint = e.point), 'walls' === toolMode)) {
       if (((snapPoint = null), startedDrawingWalls)) {
         var t = e.point.subtract(wallHelperPath.segments[0].point)
         ctrlKeyPressed && (t.angle = 15 * Math.round(t.angle / 15)),
@@ -2921,7 +2939,7 @@ function initPlanView(planCanvas: any) {
               wallHelperRectangle.segments[3].point.x),
             (wallHelper3dCube.geometry.vertices[6].z =
               wallHelperRectangle.segments[3].point.y),
-            (wallHelper3dCube.geometry.verticesNeedUpdate = !0),
+            (wallHelper3dCube.geometry.verticesNeedUpdate = true),
             (tween = new TWEEN.Tween(controls.target)
               .to(wallHelper3dCube.position, 1)
               .onUpdate(render)
@@ -3034,7 +3052,7 @@ function initPlanView(planCanvas: any) {
             break e
           }
     } 
-    else if ("roof" === toolMode) {
+    else if ('roof' === toolMode) {
       if (startedDrawingRoofs) {
         var t = e.point.subtract(roofHelperPath.segments[0].point)
         ctrlKeyPressed && (t.angle = 15 * Math.round(t.angle / 15)),
@@ -3106,7 +3124,7 @@ function initPlanView(planCanvas: any) {
             (roofHelper3dCube.geometry.vertices[3].y = -c - u),
             (roofHelper3dCube.geometry.vertices[6].y = -c + u),
             (roofHelper3dCube.geometry.vertices[7].y = -c + u),
-            (roofHelper3dCube.geometry.verticesNeedUpdate = !0),
+            (roofHelper3dCube.geometry.verticesNeedUpdate = true),
             (tween = new TWEEN.Tween(controls.target)
               .to(roofHelper3dCube.position, 1)
               .onUpdate(render)
@@ -3166,7 +3184,7 @@ function initPlanView(planCanvas: any) {
           }).removeOnMove(),
           (snapPointOverride = { id: i, x: snapPoint.x, y: snapPoint.y }))
     } 
-    else if ("floor" === toolMode) {
+    else if ('floor' === toolMode) {
       snapPoint = e.point
       e: for (var d = 0; d < wallCornersX.length; d++)
         if (
@@ -3212,7 +3230,7 @@ function initPlanView(planCanvas: any) {
           }).removeOnMove()),
         startedDrawingFloor && (floorHelperPath.segments[1].point = snapPoint)
     } 
-    else if ("dimension" === toolMode) {
+    else if ('dimension' === toolMode) {
       snapPoint = e.point
       e: for (var d = 0; d < wallCornersX.length; d++)
         if (
@@ -3253,23 +3271,24 @@ function initPlanView(planCanvas: any) {
           )
         }
     }
+    
     */
   }
   /* */
 
   // ** ON MOUSE DOUBLE-CLICK
   planCanvas.addEventListener(
-    "dblclick",
+    'dblclick',
     function (e: any) {
-      if ("pointer" === toolMode) {
+      if ('pointer' === toolMode) {
         deselectAll()
-      } else if ("floor" === toolMode && startedDrawingFloor) {
-        startedDrawingFloor = !1
-        floorHelperPath.visible = !1
-        floorPath.closed = !0
+      } else if ('floor' === toolMode && startedDrawingFloor) {
+        startedDrawingFloor = false
+        floorHelperPath.visible = false
+        floorPath.closed = true
       }
     },
-    !1
+    false
   )
 
   // ** PAPER CANVAS:
@@ -3323,8 +3342,8 @@ type TThreedItemScale = {
 // ==============================================================
 
 function camelCaseToSentence(e: string) {
-  e = e.replace(/([A-Z])/g, " $1")
-  e = e.replace(/_/g, " ")
+  e = e.replace(/([A-Z])/g, ' $1')
+  e = e.replace(/_/g, ' ')
   e = e.replace(/\b\w/g, function (e: any) {
     return e.toUpperCase()
   })
@@ -3336,8 +3355,8 @@ function validatePlusOrMinusNumber(element: any, numberT: any) {
   console.debug('validatePlusOrMinusNumber', element, numberT, '[MM] Testing')
   var regexOh = /^[-]?[0-9]*\.?[0-9]+$/
   element.value && null !== element.value.match(regexOh)
-    ? ((element.style.backgroundColor = "#4e4e4e"), numberT(element.value), element.blur())
-    : ((element.style.backgroundColor = "#ff8888"), element.focus())
+    ? ((element.style.backgroundColor = '#4e4e4e'), numberT(element.value), element.blur())
+    : ((element.style.backgroundColor = '#ff8888'), element.focus())
 }
 
 function openTab(tab: string = 'tab1') {
@@ -4233,9 +4252,9 @@ const ViewModals = (props: any) => {
                       {/* <img src='images/homedesign/info.png' className='tooltip' /> */}
                       <span className='tooltiptext'>
                         <div>
-                          Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='http://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
+                          Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='https://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
                           More info about 
-                          <a href='https://www.w3schools.com/HTML/html5_webstorage.asp' target='_blank' rel='noreferrer'>
+                          <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">
                             Local Web Storage
                           </a>.
                         </div>
@@ -4599,7 +4618,7 @@ const ViewModals = (props: any) => {
             </div>
           </div>
           <div className='modal-footer'>
-            <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+            <h3><a href='https://threedgarden.com'>ThreeD Home Design</a></h3>
           </div>
         </div>
       </div>
@@ -4616,7 +4635,7 @@ const ViewModals = (props: any) => {
             <textarea id='modalLoadingDataInfo'></textarea>
           </div>
           <div className='modal-small-footer'>
-            <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+            <h3><a href='https://threedgarden.com'>ThreeD Home Design</a></h3>
           </div>
         </div>
       </div>
@@ -4657,7 +4676,7 @@ const ViewModals = (props: any) => {
             </div> */}
           </div>
           <div className='modal-small-footer'>
-            <h3><a href='http://threedgarden.com'>ThreeD Home Design</a></h3>
+            <h3><a href='https://threedgarden.com'>ThreeD Home Design</a></h3>
           </div>
         </div>
       </div>
@@ -4678,15 +4697,15 @@ function showModel3dView(event: any) {
   //   (model3dObjectRef && model3dScene.remove(model3dObjectRef),
   //     new MTLLoader()
   //       .setCrossOrigin('anonymous')
-  //       .setPath(threedItemsURL + "objects/")
-  //       .load(e + ".mtl", function (t) {
-  //         ; (t.baseUrl = threedItemsURL + "objects/"),
+  //       .setPath(threedItemsURL + 'objects/')
+  //       .load(e + '.mtl', function (t) {
+  //         ; (t.baseUrl = threedItemsURL + 'objects/'),
   //           t.preload(),
   //           new OBJLoader()
   //             .setMaterials(t)
-  //             .setPath(threedItemsURL + "objects/")
+  //             .setPath(threedItemsURL + 'objects/')
   //             .load(
-  //               e + ".obj",
+  //               e + '.obj',
   //               function (t) {
   //                 try {
   //                   var o = new THREE.Box3().setFromObject(t)
@@ -4710,30 +4729,30 @@ function showModel3dView(event: any) {
   //                     model3dScene.add(t),
   //                     (model3dObjectRef = t),
   //                     renderModel3d()
-  //                   var r = "",
+  //                   var r = '',
   //                     s = new XMLHttpRequest()
   //                     ; (s.onreadystatechange = function () {
   //                       if (4 == this.readyState && 200 == this.status) {
   //                         var e = this.responseText,
-  //                           t = e.split("\n")
+  //                           t = e.split('\n')
   //                         t.forEach(function (e: any) {
-  //                           e.startsWith("#") && (r += e + "\n")
+  //                           e.startsWith('#') && (r += e + '\n')
   //                         }),
   //                           (document.getElementById(
-  //                             "modalModel3dObjHeader"
+  //                             'modalModel3dObjHeader'
   //                           ).value = r)
   //                       }
   //                     }),
-  //                       s.open("GET", threedItemsURL + "objects/" + e + ".obj", true),
+  //                       s.open('GET', threedItemsURL + 'objects/' + e + '.obj', true),
   //                       s.send()
   //                 } catch (e) {
   //                   console.dir(e)
   //                 }
   //                 setModalModelDescription(e),
-  //                   $("#model3dModal").show(),
+  //                   $('#model3dModal').show(),
   //                   hideMouseIndicators(),
   //                   (model3dViewOpen = true),
-  //                   (progressBar.style.display = "none")
+  //                   (progressBar.style.display = 'none')
   //               },
   //               onProgress,
   //               onError
@@ -4744,125 +4763,125 @@ function showModel3dView(event: any) {
 function setToolMode(toolModeName: string) {
   console.debug('setToolMode to', toolModeName)
   // switch (
-  // ("walls" === toolMode
+  // ('walls' === toolMode
   //   ? setEndDrawingWalls()
-  //   : "floor" === toolMode
+  //   : 'floor' === toolMode
   //     ? setEndDrawingFloors()
-  //     : "roof" === toolMode
+  //     : 'roof' === toolMode
   //       ? setEndDrawingRoofs()
-  //       : "dimension" === toolMode
+  //       : 'dimension' === toolMode
   //         ? setEndDrawingDimension()
-  //         : "text" === toolMode
+  //         : 'text' === toolMode
   //           ? setEndDrawingText()
-  //           : "ground" === toolMode && setEndDrawingGround(),
+  //           : 'ground' === toolMode && setEndDrawingGround(),
   //   (toolMode = toolModeName),
   //   toolModeName)
   // ) {
-  //   case "pointer":
+  //   case 'pointer':
   //     modalsActive || showMouseIndicators(),
-  //       (defaultCursor = "default"),
+  //       (defaultCursor = 'default'),
   //       deselectAll(),
-  //       document.getElementById("pointerTool").classList.add("activeTool"),
-  //       document.getElementById("addWallTool").classList.remove("activeTool"),
-  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
-  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
-  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
-  //       document.getElementById("addTextTool").classList.remove("activeTool")
+  //       document.getElementById('pointerTool').classList.add('activeTool'),
+  //       document.getElementById('addWallTool').classList.remove('activeTool'),
+  //       document.getElementById('addFloorTool').classList.remove('activeTool'),
+  //       document.getElementById('addRoofTool').classList.remove('activeTool'),
+  //       document.getElementById('addRulerTool').classList.remove('activeTool'),
+  //       document.getElementById('addTextTool').classList.remove('activeTool')
   //     break
-  //   case "walls":
-  //     ; (defaultCursor = "crosshair"),
+  //   case 'walls':
+  //     ; (defaultCursor = 'crosshair'),
   //       deselectAll(),
   //       recalcAllUnjoinedWallSegments(-1),
   //       recalcAllWallSegmentsOnOtherLevels(-1, paper.project.activeLayer.data.id),
-  //       document.getElementById("pointerTool").classList.remove("activeTool"),
-  //       document.getElementById("addWallTool").classList.add("activeTool"),
-  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
-  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
-  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
-  //       document.getElementById("addTextTool").classList.remove("activeTool"),
-  //       setPropertiesView("wallDefaults")
+  //       document.getElementById('pointerTool').classList.remove('activeTool'),
+  //       document.getElementById('addWallTool').classList.add('activeTool'),
+  //       document.getElementById('addFloorTool').classList.remove('activeTool'),
+  //       document.getElementById('addRoofTool').classList.remove('activeTool'),
+  //       document.getElementById('addRulerTool').classList.remove('activeTool'),
+  //       document.getElementById('addTextTool').classList.remove('activeTool'),
+  //       setPropertiesView('wallDefaults')
   //     break
-  //   case "floor":
-  //     ; (defaultCursor = "crosshair"),
+  //   case 'floor':
+  //     ; (defaultCursor = 'crosshair'),
   //       deselectAll(),
-  //       document.getElementById("pointerTool").classList.remove("activeTool"),
-  //       document.getElementById("addWallTool").classList.remove("activeTool"),
-  //       document.getElementById("addFloorTool").classList.add("activeTool"),
-  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
-  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
-  //       document.getElementById("addTextTool").classList.remove("activeTool"),
+  //       document.getElementById('pointerTool').classList.remove('activeTool'),
+  //       document.getElementById('addWallTool').classList.remove('activeTool'),
+  //       document.getElementById('addFloorTool').classList.add('activeTool'),
+  //       document.getElementById('addRoofTool').classList.remove('activeTool'),
+  //       document.getElementById('addRulerTool').classList.remove('activeTool'),
+  //       document.getElementById('addTextTool').classList.remove('activeTool'),
   //       recalcAllWallCorners(),
-  //       setPropertiesView("floorDefaults")
+  //       setPropertiesView('floorDefaults')
   //     break
-  //   case "roof":
-  //     ; (defaultCursor = "crosshair"),
+  //   case 'roof':
+  //     ; (defaultCursor = 'crosshair'),
   //       deselectAll(),
-  //       document.getElementById("pointerTool").classList.remove("activeTool"),
-  //       document.getElementById("addWallTool").classList.remove("activeTool"),
-  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
-  //       document.getElementById("addRoofTool").classList.add("activeTool"),
-  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
-  //       document.getElementById("addTextTool").classList.remove("activeTool"),
+  //       document.getElementById('pointerTool').classList.remove('activeTool'),
+  //       document.getElementById('addWallTool').classList.remove('activeTool'),
+  //       document.getElementById('addFloorTool').classList.remove('activeTool'),
+  //       document.getElementById('addRoofTool').classList.add('activeTool'),
+  //       document.getElementById('addRulerTool').classList.remove('activeTool'),
+  //       document.getElementById('addTextTool').classList.remove('activeTool'),
   //       recalcAllRoofCorners(),
-  //       setPropertiesView("roofDefaults")
+  //       setPropertiesView('roofDefaults')
   //     break
-  //   case "dimension":
-  //     ; (defaultCursor = "crosshair"),
+  //   case 'dimension':
+  //     ; (defaultCursor = 'crosshair'),
   //       deselectAll(),
-  //       document.getElementById("pointerTool").classList.remove("activeTool"),
-  //       document.getElementById("addWallTool").classList.remove("activeTool"),
-  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
-  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
-  //       document.getElementById("addRulerTool").classList.add("activeTool"),
-  //       document.getElementById("addTextTool").classList.remove("activeTool"),
+  //       document.getElementById('pointerTool').classList.remove('activeTool'),
+  //       document.getElementById('addWallTool').classList.remove('activeTool'),
+  //       document.getElementById('addFloorTool').classList.remove('activeTool'),
+  //       document.getElementById('addRoofTool').classList.remove('activeTool'),
+  //       document.getElementById('addRulerTool').classList.add('activeTool'),
+  //       document.getElementById('addTextTool').classList.remove('activeTool'),
   //       recalcAllWallCorners(),
   //       recalcAllRoofCorners(),
-  //       setPropertiesView("dimensionDefaults")
+  //       setPropertiesView('dimensionDefaults')
   //     break
-  //   case "text":
-  //     ; (defaultCursor = "crosshair"),
+  //   case 'text':
+  //     ; (defaultCursor = 'crosshair'),
   //       deselectAll(),
-  //       document.getElementById("pointerTool").classList.remove("activeTool"),
-  //       document.getElementById("addWallTool").classList.remove("activeTool"),
-  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
-  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
-  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
-  //       document.getElementById("addTextTool").classList.add("activeTool"),
-  //       setPropertiesView("textnDefaults")
+  //       document.getElementById('pointerTool').classList.remove('activeTool'),
+  //       document.getElementById('addWallTool').classList.remove('activeTool'),
+  //       document.getElementById('addFloorTool').classList.remove('activeTool'),
+  //       document.getElementById('addRoofTool').classList.remove('activeTool'),
+  //       document.getElementById('addRulerTool').classList.remove('activeTool'),
+  //       document.getElementById('addTextTool').classList.add('activeTool'),
+  //       setPropertiesView('textnDefaults')
   //     break
-  //   case "background":
-  //     ; (defaultCursor = "default"),
-  //       document.getElementById("pointerTool").classList.remove("activeTool"),
-  //       document.getElementById("addWallTool").classList.remove("activeTool"),
-  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
-  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
-  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
-  //       document.getElementById("addTextTool").classList.remove("activeTool")
+  //   case 'background':
+  //     ; (defaultCursor = 'default'),
+  //       document.getElementById('pointerTool').classList.remove('activeTool'),
+  //       document.getElementById('addWallTool').classList.remove('activeTool'),
+  //       document.getElementById('addFloorTool').classList.remove('activeTool'),
+  //       document.getElementById('addRoofTool').classList.remove('activeTool'),
+  //       document.getElementById('addRulerTool').classList.remove('activeTool'),
+  //       document.getElementById('addTextTool').classList.remove('activeTool')
   //     break
-  //   case "ground":
-  //     setLevel("0"),
+  //   case 'ground':
+  //     setLevel('0'),
   //       (toolMode = toolModeName),
-  //       (defaultCursor = "default"),
+  //       (defaultCursor = 'default'),
   //       (wallsGroup[0].opacity = 0.25),
   //       (floorsGroup[0].opacity = 0.25),
   //       (threedGroup[0].opacity = 0.25),
-  //       document.getElementById("pointerTool").classList.remove("activeTool"),
-  //       document.getElementById("addWallTool").classList.remove("activeTool"),
-  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
-  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
-  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
-  //       document.getElementById("addTextTool").classList.remove("activeTool"),
-  //       setPropertiesView("ground")
+  //       document.getElementById('pointerTool').classList.remove('activeTool'),
+  //       document.getElementById('addWallTool').classList.remove('activeTool'),
+  //       document.getElementById('addFloorTool').classList.remove('activeTool'),
+  //       document.getElementById('addRoofTool').classList.remove('activeTool'),
+  //       document.getElementById('addRulerTool').classList.remove('activeTool'),
+  //       document.getElementById('addTextTool').classList.remove('activeTool'),
+  //       setPropertiesView('ground')
   //     break
-  //   case "defaults":
-  //     ; (defaultCursor = "default"),
+  //   case 'defaults':
+  //     ; (defaultCursor = 'default'),
   //       deselectAll(),
-  //       document.getElementById("pointerTool").classList.remove("activeTool"),
-  //       document.getElementById("addWallTool").classList.remove("activeTool"),
-  //       document.getElementById("addFloorTool").classList.remove("activeTool"),
-  //       document.getElementById("addRoofTool").classList.remove("activeTool"),
-  //       document.getElementById("addRulerTool").classList.remove("activeTool"),
-  //       document.getElementById("addTextTool").classList.remove("activeTool")
+  //       document.getElementById('pointerTool').classList.remove('activeTool'),
+  //       document.getElementById('addWallTool').classList.remove('activeTool'),
+  //       document.getElementById('addFloorTool').classList.remove('activeTool'),
+  //       document.getElementById('addRoofTool').classList.remove('activeTool'),
+  //       document.getElementById('addRulerTool').classList.remove('activeTool'),
+  //       document.getElementById('addTextTool').classList.remove('activeTool')
   // }
   // planView.style.cursor = defaultCursor
 }
@@ -4871,92 +4890,92 @@ function setPropertiesView(element: string) {
   console.debug('setPropertiesView', element)
   switch (
     /*
-    // "background" != element && "background" === toolMode && setToolMode("pointer"),
-    // document.getElementById("threed3DModelPropertiesView").style.display = "none",
-    // document.getElementById("threedPropertiesView").style.display = "none",
-    // document.getElementById("planViewPropertiesView").style.display = "none",
-    // document.getElementById("3dViewPropertiesView").style.display = "none",
-    // document.getElementById("wallPropertiesView").style.display = "none",
-    // document.getElementById("roofPropertiesView").style.display = "none",
-    // document.getElementById("floorPropertiesView").style.display = "none",
-    // document.getElementById("dimensionPropertiesView").style.display = "none",
-    // document.getElementById("textPropertiesView").style.display = "none",
-    // document.getElementById("defaultsPropertiesView").style.display = "none",
-    // document.getElementById("wallDefaultsPropertiesView").style.display = "none",
-    // document.getElementById("floorDefaultsPropertiesView").style.display = "none",
-    // document.getElementById("roofDefaultsPropertiesView").style.display = "none",
-    // document.getElementById("dimensionDefaultsPropertiesView").style.display = "none",
-    // document.getElementById("textDefaultsPropertiesView").style.display = "none",
-    // document.getElementById("levelPropertiesView").style.display = "none",
-    // document.getElementById("groundPropertiesView").style.display = "none",
+    // 'background' != element && 'background' === toolMode && setToolMode('pointer'),
+    // document.getElementById('threed3DModelPropertiesView').style.display = 'none',
+    // document.getElementById('threedPropertiesView').style.display = 'none',
+    // document.getElementById('planViewPropertiesView').style.display = 'none',
+    // document.getElementById('3dViewPropertiesView').style.display = 'none',
+    // document.getElementById('wallPropertiesView').style.display = 'none',
+    // document.getElementById('roofPropertiesView').style.display = 'none',
+    // document.getElementById('floorPropertiesView').style.display = 'none',
+    // document.getElementById('dimensionPropertiesView').style.display = 'none',
+    // document.getElementById('textPropertiesView').style.display = 'none',
+    // document.getElementById('defaultsPropertiesView').style.display = 'none',
+    // document.getElementById('wallDefaultsPropertiesView').style.display = 'none',
+    // document.getElementById('floorDefaultsPropertiesView').style.display = 'none',
+    // document.getElementById('roofDefaultsPropertiesView').style.display = 'none',
+    // document.getElementById('dimensionDefaultsPropertiesView').style.display = 'none',
+    // document.getElementById('textDefaultsPropertiesView').style.display = 'none',
+    // document.getElementById('levelPropertiesView').style.display = 'none',
+    // document.getElementById('groundPropertiesView').style.display = 'none',
     */
     element
   ) {
-    case "model3dMeta":
-      document.getElementById("threed3DModelPropertiesView").style.display = "block"
+    case 'model3dMeta':
+      document.getElementById('threed3DModelPropertiesView').style.display = 'block'
       break
-    case "threed":
-      document.getElementById("threedPropertiesView").style.display = "block"
+    case 'threed':
+      document.getElementById('threedPropertiesView').style.display = 'block'
       break
     case 'planView':
-      document.getElementById("planViewPropertiesView").style.display = "block"
+      document.getElementById('planViewPropertiesView').style.display = 'block'
       break
-    case "3dView":
-      document.getElementById("3dViewPropertiesView").style.display = "block"
+    case '3dView':
+      document.getElementById('3dViewPropertiesView').style.display = 'block'
       break
-    case "wallPath":
-      document.getElementById("wallPropertiesView").style.display = "block"
+    case 'wallPath':
+      document.getElementById('wallPropertiesView').style.display = 'block'
       break
-    case "roofPath":
-      document.getElementById("roofPropertiesView").style.display = "block"
+    case 'roofPath':
+      document.getElementById('roofPropertiesView').style.display = 'block'
       break
-    case "floor":
-      document.getElementById("floorPropertiesView").style.display = "block"
+    case 'floor':
+      document.getElementById('floorPropertiesView').style.display = 'block'
       break
-    case "dimension":
-      document.getElementById("dimensionPropertiesView").style.display = "block"
+    case 'dimension':
+      document.getElementById('dimensionPropertiesView').style.display = 'block'
       break
-    case "text":
-      document.getElementById("textPropertiesView").style.display = "block"
+    case 'text':
+      document.getElementById('textPropertiesView').style.display = 'block'
       break
-    case "level":
-      document.getElementById("levelPropertiesView").style.display = "block"
+    case 'level':
+      document.getElementById('levelPropertiesView').style.display = 'block'
       break
-    case "ground":
-      document.getElementById("groundPropertiesView").style.display = "block"
-      // document.getElementById("groundWidthProp").value = groundWidth
-      // document.getElementById("groundLengthProp").value = groundLength
+    case 'ground':
+      document.getElementById('groundPropertiesView').style.display = 'block'
+      // document.getElementById('groundWidthProp').value = groundWidth
+      // document.getElementById('groundLengthProp').value = groundLength
       break
-    case "defaults":
-      document.getElementById("defaultsPropertiesView").style.display = "block"
+    case 'defaults':
+      document.getElementById('defaultsPropertiesView').style.display = 'block'
       break
-    case "wallDefaults":
-      document.getElementById("defaultWallHeightProp").style.backgroundColor = "#4e4e4e"
-      // document.getElementById("defaultWallHeightProp").value = defaultWallHeight
-      document.getElementById("defaultWallThicknessProp").style.backgroundColor = "#4e4e4e"
-      // document.getElementById("defaultWallThicknessProp").value = defaultWallThickness
-      document.getElementById("wallDefaultsPropertiesView").style.display = "block"
+    case 'wallDefaults':
+      document.getElementById('defaultWallHeightProp').style.backgroundColor = '#4e4e4e'
+      // document.getElementById('defaultWallHeightProp').value = defaultWallHeight
+      document.getElementById('defaultWallThicknessProp').style.backgroundColor = '#4e4e4e'
+      // document.getElementById('defaultWallThicknessProp').value = defaultWallThickness
+      document.getElementById('wallDefaultsPropertiesView').style.display = 'block'
       break
-    case "floorDefaults":
-      document.getElementById("defaultFloorThicknessProp").style.backgroundColor = "#4e4e4e"
-      // document.getElementById("defaultFloorThicknessProp").value = defaultFloorThickness
-      document.getElementById("floorDefaultsPropertiesView").style.display = "block"
+    case 'floorDefaults':
+      document.getElementById('defaultFloorThicknessProp').style.backgroundColor = '#4e4e4e'
+      // document.getElementById('defaultFloorThicknessProp').value = defaultFloorThickness
+      document.getElementById('floorDefaultsPropertiesView').style.display = 'block'
       break
-    case "roofDefaults":
-      document.getElementById("defaultRoofThicknessProp").style.backgroundColor = "#4e4e4e"
-      // document.getElementById("defaultRoofThicknessProp").value = defaultRoofThickness
-      document.getElementById("defaultRoofWidthProp").style.backgroundColor = "#4e4e4e"
-      // document.getElementById("defaultRoofWidthProp").value = defaultRoofWidth
-      document.getElementById("defaultRoofRiseProp").style.backgroundColor = "#4e4e4e"
-      // document.getElementById("defaultRoofRiseProp").value = defaultRoofRise
-      document.getElementById("defaultRoofStartHeightProp").style.backgroundColor = "#4e4e4e"
-      // document.getElementById("defaultRoofStartHeightProp").value = defaultRoofStartHeight
-      document.getElementById("roofDefaultsPropertiesView").style.display = "block"
+    case 'roofDefaults':
+      document.getElementById('defaultRoofThicknessProp').style.backgroundColor = '#4e4e4e'
+      // document.getElementById('defaultRoofThicknessProp').value = defaultRoofThickness
+      document.getElementById('defaultRoofWidthProp').style.backgroundColor = '#4e4e4e'
+      // document.getElementById('defaultRoofWidthProp').value = defaultRoofWidth
+      document.getElementById('defaultRoofRiseProp').style.backgroundColor = '#4e4e4e'
+      // document.getElementById('defaultRoofRiseProp').value = defaultRoofRise
+      document.getElementById('defaultRoofStartHeightProp').style.backgroundColor = '#4e4e4e'
+      // document.getElementById('defaultRoofStartHeightProp').value = defaultRoofStartHeight
+      document.getElementById('roofDefaultsPropertiesView').style.display = 'block'
       // updateExtraDefaultRoofInfo()
       break
-    case "dimensionDefaults":
+    case 'dimensionDefaults':
       break
-    case "textDefaults":
+    case 'textDefaults':
   }
 }
 
@@ -4965,50 +4984,50 @@ function showThreedLicenseSummary(threedItem: TThreedItem) {
   console.debug('showThreedLicenseSummary', threedItem)
   // const threedItem = threedItem // threedItems[threedItem]
   try {
-    document.getElementById("model3dName").innerText = threedItem.title
+    document.getElementById('model3dName').innerText = threedItem.title
     let o = threedItem.author
-    document.getElementById("model3dAuthor").innerText = threedItem.author
-    let licenseLink = "License: Default"
+    document.getElementById('model3dAuthor').innerText = threedItem.author
+    let licenseLink = 'License: Default'
 
     switch (threedItem.license) {
-      case "Free Art License 1.3":
+      case 'Free Art License 1.3':
         licenseLink =
-          "<a href='http://artlibre.org/licence/lal/en/' target='_blank' rel='noreferrer'>" +
+          '<a href="http://artlibre.org/licence/lal/en/" target="_blank" rel="noreferrer">' +
           threedItem.license +
-          "</a>"
+          '</a>'
         break
-      case "CC0":
+      case 'CC0':
         licenseLink =
-          "<a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noreferrer'>" +
+          '<a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noreferrer">' +
           threedItem.license +
-          "</a>"
+          '</a>'
         break
-      case "CC BY 3.0":
+      case 'CC BY 3.0':
         licenseLink =
-          "<a href='https://creativecommons.org/licenses/by/3.0/' target='_blank' rel='noreferrer'>" +
+          '<a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">' +
           threedItem.license +
-          "</a>"
+          '</a>'
         break
-      case "CC BY 4.0":
+      case 'CC BY 4.0':
         licenseLink =
-          "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+          '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">' +
           threedItem.license +
-          "</a>"
+          '</a>'
         break
       default:
         licenseLink = threedItem.license
-        // "<a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' rel='noreferrer'>" +
+        // '<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">' +
         //   threedItem.license +
-        // "</a>"
+        // '</a>'
     }
-    document.getElementById("model3dLicense").innerHTML = licenseLink
+    document.getElementById('model3dLicense').innerHTML = licenseLink
     // @ts-expect-error
-    document.getElementById("model3dLargeThumb").src = threedItemsURL + "objects/" + threedItem.title + ".png"
-    document.getElementById("model3dLink").innerHTML = 
-      "<a href='" + threedItem.threedLink + "' target='_blank' rel='noreferrer'>" +
-      "external" +
-      "</a>"
-    setPropertiesView("model3dMeta")
+    document.getElementById('model3dLargeThumb').src = threedItemsURL + 'objects/' + threedItem.title + '.png'
+    document.getElementById('model3dLink').innerHTML = 
+      '<a href="' + threedItem.threedLink + '" target="_blank" rel="noreferrer">' +
+      'external' +
+      '</a>'
+    setPropertiesView('model3dMeta')
   } catch (err) {
     console.debug(err)
   }
@@ -5024,10 +5043,10 @@ function beginDrag(event: any, threedItem: TThreedItem) {
 
   try {
     showThreedLicenseSummary(threedItem)
-    setToolMode("pointer")
+    setToolMode('pointer')
     draggingThreedItem = threedItem // set global var to this function parameter
     draggingThreedIcon = true
-    planView = document.getElementById("planView")
+    planView = document.getElementById('planView')
 
     let PAPERviewToProject = paper.view.viewToProject(
       new paper.Point(
@@ -5035,10 +5054,7 @@ function beginDrag(event: any, threedItem: TThreedItem) {
         event.pageY - planView.offsetTop
       )
     )
-    draggingThreedRectangle = new paper.Path.Rectangle(
-      new paper.Point(-1, -1),
-      new paper.Point(1, 1)
-    )
+    // console.debug('beginDrag: PAPERviewToProject', PAPERviewToProject)
     draggingThreedRectangle.position = PAPERviewToProject
 
     if (threedItem) {
@@ -5051,21 +5067,21 @@ function beginDrag(event: any, threedItem: TThreedItem) {
     }
     draggingThreedRectangle.visible = false
 
-    threedDragDiv = document.getElementById("threedDragDiv")
-    threedDragDiv.style.background = "url('" + threedItemsURL + "objects/" + threedItem.title + "_top.png')"
-    threedDragDiv.style.backgroundRepeat = "no-repeat"
+    threedDragDiv = document.getElementById('threedDragDiv')
+    threedDragDiv.style.background = 'url(' + threedItemsURL + 'objects/' + threedItem.title + '_top.png)'
+    threedDragDiv.style.backgroundRepeat = 'no-repeat'
     
-    let widthA = 100 // draggingThreedRectangle.bounds.width
-    let heightN = 100 // draggingThreedRectangle.bounds.height
+    let widthA = draggingThreedRectangle.bounds.width
+    let heightN = draggingThreedRectangle.bounds.height
     widthA *= paper.view.zoom
     heightN *= paper.view.zoom
     
-    threedDragDiv.style.left = event.clientX - widthA / 2 + "px"
-    threedDragDiv.style.top = event.clientY - heightN / 2 + "px"
-    threedDragDiv.style.width = widthA + "px"
-    threedDragDiv.style.height = heightN + "px"
-    threedDragDiv.style.backgroundSize = widthA + "px " + heightN + "px"
-    threedDragDiv.style.display = "block"
+    threedDragDiv.style.left = event.clientX - widthA / 2 + 'px'
+    threedDragDiv.style.top = event.clientY - heightN / 2 + 'px'
+    threedDragDiv.style.width = widthA + 'px'
+    threedDragDiv.style.height = heightN + 'px'
+    threedDragDiv.style.backgroundSize = widthA + 'px ' + heightN + 'px'
+    threedDragDiv.style.display = 'block'
 
   } catch (err) {
     console.debug(err)
@@ -5079,43 +5095,45 @@ function addThreed(event: any, threedItem: any, scene: any) {
   console.debug('addThreed: threedItem', threedItem)
   try {
     if (!draggingThreedRectangle?.position) {
+      console.debug('addThreed: draggingThreedRectangle POSITION DOES NOT EXIST', draggingThreedRectangle)
       draggingThreedRectangle = new paper.Path.Rectangle(
-        new paper.Point(-1, -1),
+        // new paper.Point(-1, -1),
+        new paper.Point(event.x, event.y),
         new paper.Point(1, 1)
       )
     }
-      console.debug('addThreed: draggingThreedRectangle', draggingThreedRectangle)
-      console.debug('addThreed: paper', paper)
-      // console.debug('addThreed: paper.view.bounds', paper.view.bounds)
+    console.debug('addThreed: draggingThreedRectangle', draggingThreedRectangle)
+    console.debug('addThreed: paper', paper)
+    // console.debug('addThreed: paper.view.bounds', paper.view.bounds)
 
-      if (draggingThreedRectangle.position.x > paper.view.bounds.left + 100) { // [MM] plus 100 pixel movement
-        if ( draggingThreedRectangle.position.y > paper.view.bounds.top 
-          && draggingThreedRectangle.position.y < paper.view.bounds.bottom ) {
-          console.debug("addThreed: dropped inside planView successfully")
-          // **
-          initThreed(draggingThreedItem, scene)
-          // **
-        } else if (draggingThreedRectangle.position.y > paper.view.bounds.bottom) {
-            console.debug("addThreed: dropped inside 3dView -- todo: implement")
-        } else {
-          console.debug("addThreed: not dropped inside views 2")
-        }
+    if (draggingThreedRectangle.position.x > paper.view.bounds.left + 0) { // [MM] plus N pixel movement
+      if ( draggingThreedRectangle.position.y > paper.view.bounds.top 
+        && draggingThreedRectangle.position.y < paper.view.bounds.bottom ) {
+        console.debug('addThreed: dropped inside planView successfully', draggingThreedRectangle)
+        // **
+        initThreed(draggingThreedItem, scene)
+        // **
+      } else if (draggingThreedRectangle.position.y > paper.view.bounds.bottom) {
+          console.debug('addThreed: dropped inside 3dView -- todo: implement')
       } else {
-        console.debug("addThreed: dropped not inside views 1")
+        console.debug('addThreed: not dropped inside views 2')
       }
+    } else {
+      console.debug('addThreed: dropped not inside views 1')
+    }
 
-      draggingThreedIcon = false
-      threedDragDiv.style.display = "none"
-      threedDragDiv.style.background = "url('images/homedesign/thumbPlaceHolder.png')"
-      draggingThreedRectangle.visible = false
-      draggingThreedRectangle.position.x = 0
-      draggingThreedRectangle.position.y = 0
-      // threedItem = draggingThreedItem
-      // console.debug('addThreed: threedItem', threedItem)
-      event.preventDefault()
-    // }
+    draggingThreedIcon = false
+    threedDragDiv.style.display = 'none'
+    threedDragDiv.style.background = 'url("images/homedesign/thumbPlaceHolder.png")'
+    draggingThreedRectangle.visible = false
+    // draggingThreedRectangle.position.x = 0 // NO !!!
+    // draggingThreedRectangle.position.y = 0 // NO !!!
+    // threedItem = draggingThreedItem
+    // console.debug('addThreed: threedItem', threedItem)
+    event.preventDefault()
+
   } catch (err) {
-    console.debug("addThreed: err", err)
+    console.debug('addThreed: err', err)
   }
 }
 
@@ -5126,26 +5144,26 @@ function initThreed(threedItem: any, scene: any) {
   try {
     new MTLLoader()
       .setCrossOrigin('anonymous')
-      .setPath(threedItemsURL + "objects/")
-      .load(threedItem.title + ".mtl", function (MTLa: any) {
-        MTLa.baseUrl = threedItemsURL + "objects/"
+      .setPath(threedItemsURL + 'objects/')
+      .load(threedItem.title + '.mtl', function (MTLa: any) {
+        MTLa.baseUrl = threedItemsURL + 'objects/'
         MTLa.preload()
         new OBJLoader()
         .setMaterials(MTLa)
-        .setPath(threedItemsURL + "objects/")
+        .setPath(threedItemsURL + 'objects/')
         .load(
-          threedItem.title + ".obj",
+          threedItem.title + '.obj',
           function (OBJa: any) {
             console.debug('initThreed: OBJa', OBJa)
             try {
-              const mmScalePercentage = 0.02 // 1 | 0.1
+              const mmScalePercentage = 1 // 0.02 // 1 | 0.1
               OBJa.scale.x = mmScalePercentage
               OBJa.scale.y = mmScalePercentage
               OBJa.scale.z = mmScalePercentage
 
               var imageN = new Image()
               imageN.crossOrigin = 'anonymous'
-              imageN.src = threedItemsURL + "objects/" + threedItem.title + "_top.png"
+              imageN.src = threedItemsURL + 'objects/' + threedItem.title + '_top.png'
               imageN.onload = function () {
                 var OBJaBox = new THREE.Box3().setFromObject(OBJa)
                 OBJa.userData.width  = OBJaBox.max.x - OBJaBox.min.x
@@ -5165,10 +5183,13 @@ function initThreed(threedItem: any, scene: any) {
                 OBJa.add(OBJaBoxHelper)
                 OBJa.position.x = draggingThreedRectangle.position.x
                 OBJa.position.z = draggingThreedRectangle.position.y
-                OBJa.position.y = threedItem.size.z * mmScalePercentage / 2 / 2 // half the total diameter of the object
+                // OBJa.position.y = (threedItem.size.z * mmScalePercentage / 1) // / 2 // half the total diameter of the object
+                // OBJa.position.y = (OBJa.userData.height * mmScalePercentage / 1) // half the total diameter of the object
+                OBJa.position.y = 0 // floor
                   // 0.1 +
                   // paper.project.activeLayer.data.height +
                   // defaultFloorThickness
+                console.debug('draggingThreedRectangle', draggingThreedRectangle)
                 console.debug('paper.project.activeLayer', paper.project.activeLayer)
                 console.debug('OBJaBox', OBJaBox)
 
@@ -5188,12 +5209,14 @@ function initThreed(threedItem: any, scene: any) {
                 )
                 console.debug('OBJa', OBJa)
 
+                let rectangleOh: paper.Path.Rectangle = null // new paper.Path.Rectangle(this.bounds)
+
                 var rasterImageN = new paper.Raster(imageN)
                 rasterImageN.visible = false
                 rasterImageN.onLoad = function () {
                   // if (
                     
-                    rasterImageN.data.type = "threed"
+                    rasterImageN.data.type = 'threed'
                     rasterImageN.opacity = 0.5
                     rasterImageN.bounds.width = OBJaBox.max.x - OBJaBox.min.x
                     rasterImageN.bounds.height = OBJaBox.max.z - OBJaBox.min.z
@@ -5205,7 +5228,7 @@ function initThreed(threedItem: any, scene: any) {
 
                     // readOnly ||
                     rasterImageN.onMouseDown = function (e: any) {
-                      if ("pointer" === toolMode) {
+                      if ('pointer' === toolMode) {
                         deselectAll()
                         selectedItem = this
                         mouseMode = 0
@@ -5215,10 +5238,10 @@ function initThreed(threedItem: any, scene: any) {
                         selectedItem.bringToFront()
                         this.data.toolsRectangleInner && this.data.toolsRectangleInner.remove()
                         this.rotation = 0
-                        var rectangleOh = new paper.Path.Rectangle(this.bounds)
+                        rectangleOh = new paper.Path.Rectangle(this.bounds)
                         this.rotation = this.data.angle
-                        rectangleOh.data.type = "toolsRectangle"
-                        rectangleOh.strokeColor = new paper.Color(177, 144, 100, 1) // "#b19064"
+                        rectangleOh.data.type = 'toolsRectangle'
+                        rectangleOh.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
                         rectangleOh.strokeWidth = 1
                         rectangleOh.strokeScaling = false
                         rectangleOh.locked = true
@@ -5256,22 +5279,27 @@ function initThreed(threedItem: any, scene: any) {
                     rasterImageN.data.name = threedItem.title
                     rasterImageN.data.boxHelper = OBJaBoxHelper
                     rasterImageN.data.level = paper.project.activeLayer.data.id
-
-                    // threedItem.useMask
                     
                   // )
-                  // {
-                    // rasterImageN.useMask = true
+
+                  if (threedItem.useMask) {
+                    // @ts-expect-error
+                    rasterImageN.useMask = true
                     var meshN = new THREE.Mesh(
                       OBJaBoxGeometry,
                       new THREE.MeshStandardMaterial({})
                     )
                     console.debug('meshN', meshN)
-                    // imageN.position.x = OBJa.position.x
-                    // imageN.position.y = OBJa.position.y
-                    // imageN.position.z = OBJa.position.z
-                    // imageN.geometry.translate(0, OBJa.userData.height / 2, 0)
-                    // imageN.visible = false
+                    // @ts-expect-error
+                    imageN.position.x = OBJa.position.x
+                    // @ts-expect-error
+                    imageN.position.y = OBJa.position.y
+                    // @ts-expect-error
+                    imageN.position.z = OBJa.position.z
+                    // @ts-expect-error
+                    imageN.geometry.translate(0, OBJa.userData.height / 2, 0)
+                    // @ts-expect-error
+                    imageN.visible = false
                     
                     // scene.add(meshN)
                     // canvasStateVar().scene.add(meshN)
@@ -5279,8 +5307,8 @@ function initThreed(threedItem: any, scene: any) {
                     console.debug('meshN added to scene')
 
                     maskObjects[draggingThreedItemU] = meshN
-                    // imageN.name = "mask" + draggingThreedItemU
-                  // }
+                    imageN.name = 'mask' + draggingThreedItemU
+                  }
 
 
                   // scene.add(OBJa)
@@ -5290,75 +5318,93 @@ function initThreed(threedItem: any, scene: any) {
 
 
                   // **
-                  /*
                   if (rectangleOh) {
-                    var i = (rectangleOh + 360) % 360
-                    rasterImageN.rotate(i),
-                      (rasterImageN.data.angle = i),
-                      clickableObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
-                      maskObjects[draggingThreedItemU] &&
-                      (maskObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI),
-                        (maskObjects[draggingThreedItemU].scale.x = 1),
-                        (maskObjects[draggingThreedItemU].scale.y = 1),
-                        (maskObjects[draggingThreedItemU].scale.z = 1))
-                  } else rasterImageN.data.angle = 0
-                    ; (tween = new TWEEN.Tween(controls.target)
-                      .to(OBJa.position, 500)
-                      .onUpdate(render)
-                      .start()),
-                      (rasterImageN.visible = true),
-                      (Threed[draggingThreedItemU] = m),
+                    var i = (rectangleOh.bounds.left + 360) % 360
+                    rasterImageN.rotate(i)
+                    rasterImageN.data.angle = i
+                    // @ts-expect-error
+                    clickableObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI)
+                    if (maskObjects[draggingThreedItemU]) {
+                      // @ts-expect-error
+                      maskObjects[draggingThreedItemU].rotateY((-i / 180) * Math.PI)
+                      // @ts-expect-error
+                      maskObjects[draggingThreedItemU].scale.x = 1
+                      // @ts-expect-error
+                      maskObjects[draggingThreedItemU].scale.y = 1
+                      // @ts-expect-error
+                      maskObjects[draggingThreedItemU].scale.z = 1
+                    }
+                  } 
+                  else {
+                    rasterImageN.data.angle = 0
+                    // DO NOT USE TRACKBALL CONTROLS (OR TWEEN)
+                    // tween = new TWEEN.Tween(controls.target)
+                    // .to(OBJa.position, 500)
+                    // .onUpdate(render)
+                    // .start()
+                    rasterImageN.visible = true
+                    Threed[draggingThreedItemU] = threedItem
+                    try {
+                      // @ts-expect-error
                       threedGroup[paper.project.activeLayer.data.id].addChild(
                         Threed[draggingThreedItemU]
-                      ),
-                      (plan.threed[draggingThreedItemU] = {
-                        id: draggingThreedItemU,
-                        name: t,
-                        position: clickableObjects[draggingThreedItemU].position,
-                        scale: clickableObjects[draggingThreedItemU].scale,
-                        rotation: clickableObjects[draggingThreedItemU].rotation,
-                        width: rasterImageN.bounds.width,
-                        depth: rasterImageN.bounds.height,
-                        angle: rasterImageN.data.angle,
-                        level: rasterImageN.data.level,
-                        flipX: rasterImageN.data.flipX,
-                        flipZ: rasterImageN.data.flipZ,
-                      }),
-                      (progressBar.style.display = "none")
+                      )
+                    } catch (err) {
+                      console.debug('err', err)
+                    }
+                    // @ts-expect-error
+                    plan.threed[draggingThreedItemU] = {
+                      id: draggingThreedItemU,
+                      name: threedItem.title,
+                      // @ts-expect-error
+                      position: clickableObjects[draggingThreedItemU].position,
+                      // @ts-expect-error
+                      scale: clickableObjects[draggingThreedItemU].scale,
+                      // @ts-expect-error
+                      rotation: clickableObjects[draggingThreedItemU].rotation,
+                      width: rasterImageN.bounds.width,
+                      depth: rasterImageN.bounds.height,
+                      angle: rasterImageN.data.angle,
+                      level: rasterImageN.data.level,
+                      flipX: rasterImageN.data.flipX,
+                      flipZ: rasterImageN.data.flipZ,
+                    }
+                    progressBar.style.display = 'none'
+                  }
                   for (
-                    var r = rasterImageN.canvas.getContext("2d"),
-                    s = r.getImageData(0, 0, rasterImageN.width, rasterImageN.height),
-                    d = s.data,
-                    g = 0;
-                    g < d.length;
-                    g += 4
+                    var r = rasterImageN.canvas.getContext('2d'),
+                        s = r.getImageData(0, 0, rasterImageN.width, rasterImageN.height),
+                        d = s.data,
+                        g = 0;
+                        g < d.length;
+                        g += 4
                   )
-                    (d[g] = 255 - d[g]),
-                      (d[g + 1] = 255 - d[g + 1]),
-                      (d[g + 2] = 255 - d[g + 2])
-                  r.putImageData(s, 0, 0),
-                    updatePlanHistory(
-                      plan,
-                      draggingThreedItemU,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null,
-                      null
-                    )
-                */
+                  d[g] = 255 - d[g]
+                  d[g + 1] = 255 - d[g + 1]
+                  d[g + 2] = 255 - d[g + 2]
+                  r.putImageData(s, 0, 0)
+                  // updatePlanHistory(
+                  //   plan,
+                  //   draggingThreedItemU,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null,
+                  //   null
+                  // )
+                
                 } // end rasterImageN.onload function
               } // end imageN.onload function
 
@@ -5378,76 +5424,76 @@ function initThreed(threedItem: any, scene: any) {
 
 // ** REDRAW Functions
 function redrawGrid() {
-  if (!redrawing && "3dView" != UILayout) {
-    if (
-      ((redrawing = !0),
-        (screenScale = screenAvg / paper.view.zoom / 75),
-        selectedItem && selectedItem.data)
-    )
-      // console.debug('selectedItem.data', selectedItem.data)
+  if (!redrawing && UILayout != '3dView') {
+    if (redrawing = true) {
+      console.debug('redrawGrid?', true)
+      screenScale = screenAvg / paper.view.zoom / 75
 
-      if ("wallPath" === selectedItem.data.type) {
-        var e = 0
-        selectedItem.segments.forEach(function (t: any) {
-          movePointIcons[e] &&
-            // @ts-expect-error
-            ((movePointIcons[e].position = t.point),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.width = screenScale),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.height = screenScale),
-              e++)
-        })
-      } 
-      else if ("roofPath" === selectedItem.data.type) {
-        var e = 0
-        selectedItem.segments.forEach(function (t: any) {
-          movePointIcons[e] &&
-            // @ts-expect-error
-            ((movePointIcons[e].position = t.point),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.width = screenScale),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.height = screenScale),
-              e++)
-        })
-      } 
-      else if ("threed" === selectedItem.data.type) {
-        rotateIcon.bounds.width = screenScale
-        rotateIcon.bounds.height = screenScale
-        rotateIcon.position =
-          selectedItem.data.toolsRectangleInner.segments[1].point
-        resizeIcon.bounds.width = screenScale
-        resizeIcon.bounds.height = screenScale
-        resizeIcon.position =
-          selectedItem.data.toolsRectangleInner.segments[3].point
-        heightIcon.bounds.width = screenScale
-        heightIcon.bounds.height = screenScale
-        heightIcon.position =
-          selectedItem.data.toolsRectangleInner.segments[2].point
-        elevateIcon.bounds.width = screenScale
-        elevateIcon.bounds.height = screenScale
-        elevateIcon.position =
-          selectedItem.data.toolsRectangleInner.segments[0].point
-      } 
-      else if ("background" === selectedItem.data.type) {
-        resizeIcon.bounds.width = screenScale
-        resizeIcon.bounds.height = screenScale
-        resizeIcon.position =
-            backgroundRaster.data.toolsRectangleInner.segments[3].point
-      } 
-      else if ("floor" === selectedItem.data.type) {
-        var e = 0
-        selectedItem.segments.forEach(function (t: any) {
-          movePointIcons[e] &&
-            // @ts-expect-error
-            ((movePointIcons[e].position = t.point),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.width = screenScale),
-            // @ts-expect-error
-              (movePointIcons[e].bounds.height = screenScale),
-              e++)
-        })
+      if (selectedItem && selectedItem.data) {
+        console.debug('selectedItem.data', selectedItem.data)
+        if ('wallPath' === selectedItem.data.type) {
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
+        } 
+        else if ('roofPath' === selectedItem.data.type) {
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
+        } 
+        else if ('threed' === selectedItem.data.type) {
+          rotateIcon.bounds.width = screenScale
+          rotateIcon.bounds.height = screenScale
+          rotateIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[1].point
+          resizeIcon.bounds.width = screenScale
+          resizeIcon.bounds.height = screenScale
+          resizeIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[3].point
+          heightIcon.bounds.width = screenScale
+          heightIcon.bounds.height = screenScale
+          heightIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[2].point
+          elevateIcon.bounds.width = screenScale
+          elevateIcon.bounds.height = screenScale
+          elevateIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[0].point
+        } 
+        else if ('background' === selectedItem.data.type) {
+          resizeIcon.bounds.width = screenScale
+          resizeIcon.bounds.height = screenScale
+          resizeIcon.position =
+              backgroundRaster.data.toolsRectangleInner.segments[3].point
+        } 
+        else if ('floor' === selectedItem.data.type) {
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
+        }
       }
 
       var t = 0,
@@ -5505,21 +5551,21 @@ function redrawGrid() {
         e.segments[1].point.y = paper.view.bounds.bottom
         var x = parseInt(e.segments[0].point.x)
         0 === x
-          ? ((e.style.strokeColor = "white"),
+          ? ((e.style.strokeColor = 'white'),
             rulerBottomCtx.fillText(
-              "0cm",
+              '0cm',
               (x - paper.view.bounds.left) * paper.view.zoom,
               14
             ))
           : x % o === 0
-            ? ((e.style.strokeColor = "#81673a"),
+            ? ((e.style.strokeColor = '#81673a'),
               rulerBottomCtx.fillText(
                 // parseInt(paper.view.bounds.left + n - a),
                 (paper.view.bounds.left + n - a),
                 (x - paper.view.bounds.left) * paper.view.zoom,
                 14
               ))
-            : (e.style.strokeColor = "#564c3a")
+            : (e.style.strokeColor = '#564c3a')
         n += t
       })
       var l = paper.view.bounds.top % t
@@ -5531,21 +5577,21 @@ function redrawGrid() {
         e.segments[1].point.y = paper.view.bounds.top + n - l
         var y = parseInt(e.segments[0].point.y)
         0 === y
-          ? ((e.style.strokeColor = "white"),
+          ? ((e.style.strokeColor = 'white'),
             rulerLeftCtx.fillText(
-              "0cm",
+              '0cm',
               26,
               (y - paper.view.bounds.top) * paper.view.zoom + 4
             ))
           : y % o === 0
-            ? ((e.style.strokeColor = "#81673a"),
+            ? ((e.style.strokeColor = '#81673a'),
               rulerLeftCtx.fillText(
                 // parseInt(paper.view.bounds.top + n - l),
                 (paper.view.bounds.top + n - l),
                 26,
                 (y - paper.view.bounds.top) * paper.view.zoom + 4
               ))
-            : (e.style.strokeColor = "#564c3a")
+            : (e.style.strokeColor = '#564c3a')
         n += t
       })
       Object.keys(verticalGuides).forEach(function (e: any) {
@@ -5560,7 +5606,8 @@ function redrawGrid() {
         // @ts-expect-error
         horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
       })
-      redrawing = !1
+      redrawing = false
+    }
   }
 }
 
@@ -5605,7 +5652,7 @@ const CatalogItems = (props: any): JSX.Element => {
             onMouseDown={(event) => beginDrag(event, object)}
           >
             <img 
-              src={threedItemsURL + "objects/" + object.title + ".png"}
+              src={threedItemsURL + 'objects/' + object.title + '.png'}
               className='threedThumb' 
               alt={object.title}
               title={object.title}
@@ -5623,7 +5670,7 @@ const CatalogItems = (props: any): JSX.Element => {
             onMouseDown={(event) => beginDrag(event, object)}
           >
             <img 
-              src={threedItemsURL + "objects/" + object + ".png"}
+              src={threedItemsURL + 'objects/' + object + '.png'}
               className='threedThumb' 
               alt={object}
               title={object}
@@ -5754,8 +5801,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
           setIsPrefsLoaded(isPreferencesSetVar())
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
           if (preferencesDataVar().doAutoLoadData) {
-            // // const homeDesignsFromDataSource = await homeDesignStore.actions.loadFromDataSource(client)
-            // const homeDesignsFromDataSource = await homeDesignStore.actions.loadFromDB(client)
+            // // const homeDesignsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            // const homeDesignsFromDataSource = await projectStore.actions.loadFromDB(client)
             if (DEBUG) 
               console.debug('%c homeDesigns loading...', ccm.orangeAlert)
             // if (homeDesignsFromDataSource) {
@@ -5784,7 +5831,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         if (DEBUG || debug) 
           console.debug('%c🌱 ThreeD Home Design loadNounData()', ccm.yellowAlert, _type, threeds)
         if (_type === 'project') {
-          homeDesignStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
+          projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
         }
         // return <Box>true</Box> // true
       }
@@ -5822,6 +5869,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     // console.debug('%c⚙️ showPanelFirstLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ showPanelFirstLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    redrawGrid() // does not work here
   }
   function setShowPanelLast () {
     let newData = {...preferencesDataVar()} // latest prefs
@@ -5830,6 +5878,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     // console.debug('%c⚙️ showPanelLastLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ showPanelLastLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    redrawGrid() // does not work here
   }
 
   // ==========================================================
@@ -5849,157 +5898,159 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   useEffect(() => {
     // // ** setup dom elements
     // switch (UILayout) {
-    //   case "3dView":
+    //   case '3dView':
     //     readOnly = true
-    //     document.getElementById('planView').style.display = "none"
-    //     document.getElementById("view3d").style.top = "0px"
-    //     document.getElementById("view3d").style.bottom = "0px"
-    //     document.getElementById("view3d").style.left = "0px"
-    //     document.getElementById("view3d").style.right = "0px"
-    //     document.getElementById("view3d").style.display = "block"
-    //     document.getElementById("catalogView").style.display = "none"
-    //     document.getElementById("verticalSlider").style.display = "none"
-    //     document.getElementById("horizontalSliderLeft").style.display = "none"
-    //     document.getElementById("horizontalSliderRight").style.display = "none"
-    //     document.getElementById("fullscreenPlanViewBtn").style.display = "none"
-    //     document.getElementById("fullscreen3dViewBtn").style.right = "6px"
-    //     document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
-    //     document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
-    //     document.getElementById("fullscreen3dViewBtn").style.display = "block"
-    //     document.getElementById("propertiesView").style.display = "none"
-    //     document.getElementById("rulerLeft").style.display = "none"
-    //     document.getElementById("rulerBottom").style.display = "none"
-    //     document.getElementById("mouseIndicatorX").style.display = "none"
-    //     document.getElementById("mouseIndicatorY").style.display = "none"
-    //     document.getElementById("overlayLogo3dView").style.display = "block"
-    //     document.getElementById("overlayMenu3dView").style.display = "block"
+    //     document.getElementById('planView').style.display = 'none'
+    //     document.getElementById('view3d').style.top = '0px'
+    //     document.getElementById('view3d').style.bottom = '0px'
+    //     document.getElementById('view3d').style.left = '0px'
+    //     document.getElementById('view3d').style.right = '0px'
+    //     document.getElementById('view3d').style.display = 'block'
+    //     document.getElementById('catalogView').style.display = 'none'
+    //     document.getElementById('verticalSlider').style.display = 'none'
+    //     document.getElementById('horizontalSliderLeft').style.display = 'none'
+    //     document.getElementById('horizontalSliderRight').style.display = 'none'
+    //     document.getElementById('fullscreenPlanViewBtn').style.display = 'none'
+    //     document.getElementById('fullscreen3dViewBtn').style.right = '6px'
+    //     document.getElementById('fullscreen3dViewBtn').style.bottom = '6px'
+    //     document.getElementById('fullscreen3dViewBtn').style.opacity = '0.33'
+    //     document.getElementById('fullscreen3dViewBtn').style.display = 'block'
+    //     document.getElementById('propertiesView').style.display = 'none'
+    //     document.getElementById('rulerLeft').style.display = 'none'
+    //     document.getElementById('rulerBottom').style.display = 'none'
+    //     document.getElementById('mouseIndicatorX').style.display = 'none'
+    //     document.getElementById('mouseIndicatorY').style.display = 'none'
+    //     document.getElementById('overlayLogo3dView').style.display = 'block'
+    //     document.getElementById('overlayMenu3dView').style.display = 'block'
     //     break
     //   case 'planView':
     //     readOnly = true
-    //     document.getElementById('planView').style.top = "0px"
-    //     document.getElementById('planView').style.bottom = "0px"
-    //     document.getElementById('planView').style.left = "0px"
-    //     document.getElementById('planView').style.right = "0px"
-    //     document.getElementById('planView').style.display = "block"
-    //     document.getElementById("view3d").style.display = "none"
-    //     document.getElementById("catalogView").style.display = "none"
-    //     document.getElementById("verticalSlider").style.display = "none"
-    //     document.getElementById("horizontalSliderLeft").style.display = "none"
-    //     document.getElementById("horizontalSliderRight").style.display = "none"
-    //     document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
-    //     document.getElementById("fullscreenPlanViewBtn").style.bottom = "30px"
-    //     document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
-    //     document.getElementById("fullscreenPlanViewBtn").style.display = "block"
-    //     document.getElementById("fullscreen3dViewBtn").style.display = "none"
-    //     document.getElementById("propertiesView").style.display = "none"
-    //     document.getElementById("rulerLeft").style.top = "0px"
-    //     document.getElementById("rulerLeft").style.bottom = "20px"
-    //     document.getElementById("rulerLeft").style.left = "0px"
-    //     document.getElementById("rulerLeft").style.display = "block"
-    //     document.getElementById("rulerBottom").style.marginTop = "-20px"
-    //     document.getElementById("rulerBottom").style.bottom = "0px"
-    //     document.getElementById("rulerBottom").style.left = "30px"
-    //     document.getElementById("rulerBottom").style.right = "0px"
-    //     document.getElementById("rulerBottom").style.display = "block"
-    //     document.getElementById("mouseIndicatorX").style.top = "0px"
-    //     document.getElementById("mouseIndicatorX").style.left = "0px"
-    //     document.getElementById("mouseIndicatorX").style.width = "1px"
-    //     document.getElementById("mouseIndicatorX").style.bottom = "0px"
-    //     document.getElementById("mouseIndicatorX").style.display = "block"
-    //     document.getElementById("mouseIndicatorY").style.top = "0px"
-    //     document.getElementById("mouseIndicatorY").style.left = "0px"
-    //     document.getElementById("mouseIndicatorY").style.right = "0px"
-    //     document.getElementById("mouseIndicatorY").style.height = "1px"
-    //     document.getElementById("mouseIndicatorY").style.display = "block"
-    //     document.getElementById("overlayLogoPlanView").style.display = "block"
-    //     document.getElementById("overlayMenuPlanView").style.display = "block"
+    //     document.getElementById('planView').style.top = '0px'
+    //     document.getElementById('planView').style.bottom = '0px'
+    //     document.getElementById('planView').style.left = '0px'
+    //     document.getElementById('planView').style.right = '0px'
+    //     document.getElementById('planView').style.display = 'block'
+    //     document.getElementById('view3d').style.display = 'none'
+    //     document.getElementById('catalogView').style.display = 'none'
+    //     document.getElementById('verticalSlider').style.display = 'none'
+    //     document.getElementById('horizontalSliderLeft').style.display = 'none'
+    //     document.getElementById('horizontalSliderRight').style.display = 'none'
+    //     document.getElementById('fullscreenPlanViewBtn').style.right = '6px'
+    //     document.getElementById('fullscreenPlanViewBtn').style.bottom = '30px'
+    //     document.getElementById('fullscreenPlanViewBtn').style.opacity = '0.33'
+    //     document.getElementById('fullscreenPlanViewBtn').style.display = 'block'
+    //     document.getElementById('fullscreen3dViewBtn').style.display = 'none'
+    //     document.getElementById('propertiesView').style.display = 'none'
+    //     document.getElementById('rulerLeft').style.top = '0px'
+    //     document.getElementById('rulerLeft').style.bottom = '20px'
+    //     document.getElementById('rulerLeft').style.left = '0px'
+    //     document.getElementById('rulerLeft').style.display = 'block'
+    //     document.getElementById('rulerBottom').style.marginTop = '-20px'
+    //     document.getElementById('rulerBottom').style.bottom = '0px'
+    //     document.getElementById('rulerBottom').style.left = '30px'
+    //     document.getElementById('rulerBottom').style.right = '0px'
+    //     document.getElementById('rulerBottom').style.display = 'block'
+    //     document.getElementById('mouseIndicatorX').style.top = '0px'
+    //     document.getElementById('mouseIndicatorX').style.left = '0px'
+    //     document.getElementById('mouseIndicatorX').style.width = '1px'
+    //     document.getElementById('mouseIndicatorX').style.bottom = '0px'
+    //     document.getElementById('mouseIndicatorX').style.display = 'block'
+    //     document.getElementById('mouseIndicatorY').style.top = '0px'
+    //     document.getElementById('mouseIndicatorY').style.left = '0px'
+    //     document.getElementById('mouseIndicatorY').style.right = '0px'
+    //     document.getElementById('mouseIndicatorY').style.height = '1px'
+    //     document.getElementById('mouseIndicatorY').style.display = 'block'
+    //     document.getElementById('overlayLogoPlanView').style.display = 'block'
+    //     document.getElementById('overlayMenuPlanView').style.display = 'block'
     //     break
     //   default:
-    //     UILayout = "default"
+    //     UILayout = 'default'
 
-    //     document.getElementById('planView').style.top = "54px"
-    //     document.getElementById('planView').style.bottom = "50%"
-    //     document.getElementById('planView').style.left = "318px"
-    //     document.getElementById('planView').style.right = "0px"
-    //     document.getElementById('planView').style.display = "block"
+    //     document.getElementById('planView').style.top = '54px'
+    //     document.getElementById('planView').style.bottom = '50%'
+    //     document.getElementById('planView').style.left = '318px'
+    //     document.getElementById('planView').style.right = '0px'
+    //     document.getElementById('planView').style.display = 'block'
         
-    //     document.getElementById("view3d").style.top = "50%"
-    //     document.getElementById("view3d").style.bottom = "0px"
-    //     document.getElementById("view3d").style.left = "318px"
-    //     document.getElementById("view3d").style.right = "0px"
-    //     document.getElementById("view3d").style.display = "block"
+    //     document.getElementById('view3d').style.top = '50%'
+    //     document.getElementById('view3d').style.bottom = '0px'
+    //     document.getElementById('view3d').style.left = '318px'
+    //     document.getElementById('view3d').style.right = '0px'
+    //     document.getElementById('view3d').style.display = 'block'
 
-    //     document.getElementById("catalogView").style.top = "54px"
-    //     document.getElementById("catalogView").style.left = "0px"
-    //     document.getElementById("catalogView").style.width = "316px"
-    //     document.getElementById("catalogView").style.height = "832px"
-    //     document.getElementById("catalogView").style.display = "block"
+    //     document.getElementById('catalogView').style.top = '54px'
+    //     document.getElementById('catalogView').style.left = '0px'
+    //     document.getElementById('catalogView').style.width = '316px'
+    //     document.getElementById('catalogView').style.height = '832px'
+    //     document.getElementById('catalogView').style.display = 'block'
         
 
-    //     // document.getElementById("verticalSlider").style.top = "54px"
-    //     // document.getElementById("verticalSlider").style.bottom = "0px"
-    //     // document.getElementById("verticalSlider").style.left = "316px"
-    //     // document.getElementById("verticalSlider").style.width = "4px"
-    //     // document.getElementById("verticalSlider").style.display = "block"
-    //     // document.getElementById("horizontalSliderLeft").style.top = "879px"
-    //     // document.getElementById("horizontalSliderLeft").style.left = "0px"
-    //     // document.getElementById("horizontalSliderLeft").style.width = "316px"
-    //     // document.getElementById("horizontalSliderLeft").style.height = "4px"
-    //     // document.getElementById("horizontalSliderLeft").style.display = "block"
-    //     // document.getElementById("horizontalSliderRight").style.top = "50%"
-    //     // document.getElementById("horizontalSliderRight").style.left = "318px"
-    //     // document.getElementById("horizontalSliderRight").style.width = "100%"
-    //     // document.getElementById("horizontalSliderRight").style.height = "4px"
-    //     // document.getElementById("horizontalSliderRight").style.display = "block"
-    //     // document.getElementById("fullscreenPlanViewBtn").style.right = "6px"
-    //     // document.getElementById("fullscreenPlanViewBtn").style.top = "50%"
-    //     // document.getElementById("fullscreenPlanViewBtn").style.opacity = "0.33"
-    //     // document.getElementById("fullscreenPlanViewBtn").style.marginTop = "-58px"
-    //     // document.getElementById("fullscreenPlanViewBtn").style.display = "block"
-    //     // document.getElementById("fullscreen3dViewBtn").style.right = "6px"
-    //     // document.getElementById("fullscreen3dViewBtn").style.bottom = "6px"
-    //     // document.getElementById("fullscreen3dViewBtn").style.opacity = "0.33"
-    //     // document.getElementById("fullscreen3dViewBtn").style.display = "block"
+    //     // document.getElementById('verticalSlider').style.top = '54px'
+    //     // document.getElementById('verticalSlider').style.bottom = '0px'
+    //     // document.getElementById('verticalSlider').style.left = '316px'
+    //     // document.getElementById('verticalSlider').style.width = '4px'
+    //     // document.getElementById('verticalSlider').style.display = 'block'
+    //     // document.getElementById('horizontalSliderLeft').style.top = '879px'
+    //     // document.getElementById('horizontalSliderLeft').style.left = '0px'
+    //     // document.getElementById('horizontalSliderLeft').style.width = '316px'
+    //     // document.getElementById('horizontalSliderLeft').style.height = '4px'
+    //     // document.getElementById('horizontalSliderLeft').style.display = 'block'
+    //     // document.getElementById('horizontalSliderRight').style.top = '50%'
+    //     // document.getElementById('horizontalSliderRight').style.left = '318px'
+    //     // document.getElementById('horizontalSliderRight').style.width = '100%'
+    //     // document.getElementById('horizontalSliderRight').style.height = '4px'
+    //     // document.getElementById('horizontalSliderRight').style.display = 'block'
+    //     // document.getElementById('fullscreenPlanViewBtn').style.right = '6px'
+    //     // document.getElementById('fullscreenPlanViewBtn').style.top = '50%'
+    //     // document.getElementById('fullscreenPlanViewBtn').style.opacity = '0.33'
+    //     // document.getElementById('fullscreenPlanViewBtn').style.marginTop = '-58px'
+    //     // document.getElementById('fullscreenPlanViewBtn').style.display = 'block'
+    //     // document.getElementById('fullscreen3dViewBtn').style.right = '6px'
+    //     // document.getElementById('fullscreen3dViewBtn').style.bottom = '6px'
+    //     // document.getElementById('fullscreen3dViewBtn').style.opacity = '0.33'
+    //     // document.getElementById('fullscreen3dViewBtn').style.display = 'block'
         
         
-    //     // // document.getElementById("propertiesView").style.top = "880px"
-    //     // // document.getElementById("propertiesView").style.left = "0px"
-    //     // // document.getElementById("propertiesView").style.width = "306px"
-    //     // // document.getElementById("propertiesView").style.bottom = "0px"
+    //     // // document.getElementById('propertiesView').style.top = '880px'
+    //     // // document.getElementById('propertiesView').style.left = '0px'
+    //     // // document.getElementById('propertiesView').style.width = '306px'
+    //     // // document.getElementById('propertiesView').style.bottom = '0px'
         
-    //     // document.getElementById("propertiesView").style.display = "block"
+    //     // document.getElementById('propertiesView').style.display = 'block'
 
 
-        // document.getElementById("rulerLeft").style.top = "56px"
-        // document.getElementById("rulerLeft").style.bottom = "56px"
-        // document.getElementById("rulerLeft").style.left = "320px"
-        // document.getElementById("rulerLeft").style.display = "block"
-        // document.getElementById("rulerBottom").style.top = "50%"
-        // document.getElementById("rulerBottom").style.marginTop = "-20px"
-        // document.getElementById("rulerBottom").style.bottom = "0px"
-        // document.getElementById("rulerBottom").style.left = "320px"
-        // document.getElementById("rulerBottom").style.right = "0px"
-        // document.getElementById("rulerBottom").style.display = "block"
-        document.getElementById("mouseIndicatorX").style.width = "1px"
-        document.getElementById("mouseIndicatorX").style.position = "absolute"
-        document.getElementById("mouseIndicatorX").style.top = "20%"
-        document.getElementById("mouseIndicatorX").style.bottom = "56px"
-        document.getElementById("mouseIndicatorX").style.left = "320px"
-        document.getElementById("mouseIndicatorX").style.display = "inline-flex"
+        // document.getElementById('rulerLeft').style.top = '56px'
+        // document.getElementById('rulerLeft').style.bottom = '56px'
+        // document.getElementById('rulerLeft').style.left = '320px'
+        // document.getElementById('rulerLeft').style.display = 'block'
+        // document.getElementById('rulerBottom').style.top = '50%'
+        // document.getElementById('rulerBottom').style.marginTop = '-20px'
+        // document.getElementById('rulerBottom').style.bottom = '0px'
+        // document.getElementById('rulerBottom').style.left = '320px'
+        // document.getElementById('rulerBottom').style.right = '0px'
+        // document.getElementById('rulerBottom').style.display = 'block'
+        document.getElementById('mouseIndicatorX').style.width = '1px'
+        document.getElementById('mouseIndicatorX').style.position = 'absolute'
+        document.getElementById('mouseIndicatorX').style.top = '20%'
+        document.getElementById('mouseIndicatorX').style.bottom = '56px'
+        document.getElementById('mouseIndicatorX').style.left = '320px'
+        // document.getElementById('mouseIndicatorX').style.display = 'inline-flex'
+        document.getElementById('mouseIndicatorX').style.display = 'none'
 
-        document.getElementById("mouseIndicatorY").style.height = "1px"
-        document.getElementById("mouseIndicatorY").style.position = "absolute"
-        document.getElementById("mouseIndicatorY").style.top = "56px"
-        document.getElementById("mouseIndicatorY").style.left = "320px"
-        document.getElementById("mouseIndicatorY").style.right = "0px"
-        document.getElementById("mouseIndicatorY").style.display = "inline-flex"
+        document.getElementById('mouseIndicatorY').style.height = '1px'
+        document.getElementById('mouseIndicatorY').style.position = 'absolute'
+        document.getElementById('mouseIndicatorY').style.top = '56px'
+        document.getElementById('mouseIndicatorY').style.left = '320px'
+        document.getElementById('mouseIndicatorY').style.right = '0px'
+        // document.getElementById('mouseIndicatorY').style.display = 'inline-flex'
+        document.getElementById('mouseIndicatorY').style.display = 'none'
     // }
 
   /* */
 
-    // "default" === UILayout &&
+    // 'default' === UILayout &&
     if (UILayout === 'default') {
-      // $("#catalogItems").scroll(function () {
+      // $('#catalogItems').scroll(function () {
       //   loadInViewThumbs()
       // })
       // focusPoint = new paper.Point(0, 0)
@@ -6021,32 +6072,32 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       // DONE
       /*
       $.ajax({
-        url: "api/objects.json",
-        type: "GET",
-        contentType: "application/json",
+        url: 'api/objects.json',
+        type: 'GET',
+        contentType: 'application/json',
         success: function (e: any) {
-          if (((threedItems = e), "default" === UILayout)) {
+          if (((threedItems = e), 'default' === UILayout)) {
             var t = 0
             Object.keys(threedItems)
               // .sort()
               .forEach(function (e: any) {
                 var o = camelCaseToSentence(e)
-                $("#catalogItems").append(
-                  "<div id='" +
+                $('#catalogItems').append(
+                  '<div id='' +
                   e +
-                  "' class='threedItem disableSelection' onmousedown='beginDrag(event, \"" +
+                  '' class='threedItem disableSelection' onmousedown='beginDrag(event, \'' +
                   e +
-                  "\");'><img " +
+                  '\');'><img ' +
                   (t < 32
-                    ? "src='" + threedItemsURL + "objects/" + e + ".png'"
-                    : "src='images/homedesign/homedesign/thumbPlaceHolder.png'") +
-                  " realsrc='" + threedItemsURL + "objects/" +
+                    ? 'src='' + threedItemsURL + 'objects/' + e + '.png''
+                    : 'src='images/homedesign/homedesign/thumbPlaceHolder.png'') +
+                  ' realsrc='' + threedItemsURL + 'objects/' +
                   e +
-                  ".png' class='threedThumb' alt='" +
+                  '.png' class='threedThumb' alt='' +
                   o +
-                  "' title='" +
+                  '' title='' +
                   o +
-                  "' /></div>"
+                  '' /></div>'
                 ),
                   t++
               })
@@ -6058,22 +6109,22 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         /*
           if (
             ($.ajax({
-              url: "plans/threed-plan-example-001.threed",
-              type: "GET",
-              contentType: "application/json",
+              url: 'plans/threed-plan-example-001.threed',
+              type: 'GET',
+              contentType: 'application/json',
               success: function (e: any) {
                 var t = JSON.parse(e)
                 featuredPlanImage.src = t.thumb
               },
               error: function (e: any) {
-                console.debug("document.ready : get thumb ajax : " + e)
+                console.debug('document.ready : get thumb ajax : ' + e)
               },
             }),
-              "default" === UILayout &&
-              ($("#wallDiffuse").minicolors({
+              'default' === UILayout &&
+              ($('#wallDiffuse').minicolors({
                 opacity: true,
                 change: function (e, t) {
-                  var o = parseInt(e.replace("#", "0x"))
+                  var o = parseInt(e.replace('#', '0x'))
                     ; (wallMaterial.color = new THREE.Color(o)),
                       (wallMaterial.opacity = parseFloat(t)),
                       (plan.wallDiffuse = wallMaterial.color),
@@ -6081,10 +6132,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                       render()
                 },
               }),
-                $("#roofDiffuse").minicolors({
+                $('#roofDiffuse').minicolors({
                   opacity: true,
                   change: function (e, t) {
-                    var o = parseInt(e.replace("#", "0x"))
+                    var o = parseInt(e.replace('#', '0x'))
                       ; (roofMaterial.color = new THREE.Color(o)),
                         (roofMaterial.opacity = parseFloat(t)),
                         (plan.roofDiffuse = roofMaterial.color),
@@ -6092,26 +6143,26 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                         render()
                   },
                 }),
-                $("#wallSpecular").minicolors({
+                $('#wallSpecular').minicolors({
                   change: function (e: any) {
-                    var t = parseInt(e.replace("#", "0x"))
+                    var t = parseInt(e.replace('#', '0x'))
                       ; (wallMaterial.specular = new THREE.Color(t)),
                         (plan.wallSpecular = wallMaterial.specular),
                         render()
                   },
                 }),
-                $("#roofSpecular").minicolors({
+                $('#roofSpecular').minicolors({
                   change: function (e: any) {
-                    var t = parseInt(e.replace("#", "0x"))
+                    var t = parseInt(e.replace('#', '0x'))
                       ; (roofMaterial.specular = new THREE.Color(t)),
                         (plan.roofSpecular = roofMaterial.specular),
                         render()
                   },
                 }),
-                $("#floorDiffuse").minicolors({
+                $('#floorDiffuse').minicolors({
                   opacity: true,
                   change: function (e, t) {
-                    var o = parseInt(e.replace("#", "0x"))
+                    var o = parseInt(e.replace('#', '0x'))
                       ; (floorMaterial.color = new THREE.Color(o)),
                         (floorMaterial.opacity = parseFloat(t)),
                         (plan.floorDiffuse = floorMaterial.color),
@@ -6119,18 +6170,18 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                         render()
                   },
                 }),
-                $("#floorSpecular").minicolors({
+                $('#floorSpecular').minicolors({
                   change: function (e: any) {
-                    var t = parseInt(e.replace("#", "0x"))
+                    var t = parseInt(e.replace('#', '0x'))
                       ; (floorMaterial.specular = new THREE.Color(t)),
                         (plan.floorSpecular = floorMaterial.specular),
                         render()
                   },
                 }),
-                $("#groundDiffuse").minicolors({
+                $('#groundDiffuse').minicolors({
                   opacity: true,
                   change: function (e, t) {
-                    var o = parseInt(e.replace("#", "0x"))
+                    var o = parseInt(e.replace('#', '0x'))
                       ; (groundMat.color = new THREE.Color(o)),
                         (groundMat.opacity = parseFloat(t)),
                         (plan.groundDiffuse = groundMat.color.getHexString()),
@@ -6138,9 +6189,9 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                         render()
                   },
                 }),
-                $("#groundSpecular").minicolors({
+                $('#groundSpecular').minicolors({
                   change: function (e: any) {
-                    var t = parseInt(e.replace("#", "0x"))
+                    var t = parseInt(e.replace('#', '0x'))
                       ; (groundMat.specular = new THREE.Color(t)),
                         (plan.groundSpecular = groundMat.specular.getHexString()),
                         render()
@@ -6149,32 +6200,32 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               fragment)
           )
             $.ajax({
-              url: "api/getsharelink/" + fragment,
-              type: "GET",
-              contentType: "application/json",
+              url: 'api/getsharelink/' + fragment,
+              type: 'GET',
+              contentType: 'application/json',
               success: function (e: any) {
                 var t = JSON.parse(e)
                 e.error
                   ? console.debug(e.error)
-                  : ((loadingProgressTxt = "Loading Shared Plan"),
-                    (document.getElementById("modalLoadingDataInfo").innerHTML =
+                  : ((loadingProgressTxt = 'Loading Shared Plan'),
+                    (document.getElementById('modalLoadingDataInfo').innerHTML =
                       loadingProgressTxt),
-                    $("#loadingModal").show(),
+                    $('#loadingModal').show(),
                     hideMouseIndicators(),
                     drawPlan(t))
               },
               error: function (e: any) {
-                console.debug("document.ready : getsharelink : " + e)
+                console.debug('document.ready : getsharelink : ' + e)
               },
             })
           else {
-            var o = localStorage.getItem("plan")
+            var o = localStorage.getItem('plan')
             if (o) {
               var o = JSON.parse(o)
-                ; (loadingProgressTxt = "Loading Cached Plan"),
-                  (document.getElementById("modalLoadingDataInfo").innerHTML =
+                ; (loadingProgressTxt = 'Loading Cached Plan'),
+                  (document.getElementById('modalLoadingDataInfo').innerHTML =
                     loadingProgressTxt),
-                  $("#loadingModal").show(),
+                  $('#loadingModal').show(),
                   hideMouseIndicators(),
                   drawPlan(o)
             } else showAbout(), setNewPlan()
@@ -6194,18 +6245,18 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
     document.onmousemove = function (e: any) {
       // if (verticalSliderDragging) {
       //   return (
-      //     verticalSlider.style.left = e.x - 2 + "px"
-      //     catalogView.style.width = e.x - 2 + "px"
-      //     propertiesView.style.width = e.x - 12 + "px"
-      //     planView.style.left = e.x + 2 + "px"
-      //     rulerLeft.style.left = e.x + 2 + "px"
-      //     rulerBottom.style.left = e.x + 2 + "px"
-      //     mouseIndicatorY.style.left = e.x + 2 + "px"
-      //     view3d.style.left = e.x + 2 + "px"
-      //     horizontalSliderLeft.style.width = e.x - 2 + "px"
-      //     horizontalSliderRight.style.left = e.x + 2 + "px"
+      //     verticalSlider.style.left = e.x - 2 + 'px'
+      //     catalogView.style.width = e.x - 2 + 'px'
+      //     propertiesView.style.width = e.x - 12 + 'px'
+      //     planView.style.left = e.x + 2 + 'px'
+      //     rulerLeft.style.left = e.x + 2 + 'px'
+      //     rulerBottom.style.left = e.x + 2 + 'px'
+      //     mouseIndicatorY.style.left = e.x + 2 + 'px'
+      //     view3d.style.left = e.x + 2 + 'px'
+      //     horizontalSliderLeft.style.width = e.x - 2 + 'px'
+      //     horizontalSliderRight.style.left = e.x + 2 + 'px'
       //     Object.keys(levelButtons).forEach(function (t) {
-      //       levelButtons[t].style.left = e.x + 37 + "px"
+      //       levelButtons[t].style.left = e.x + 37 + 'px'
       //     })
       //     resize3dView()
       //     resizePlanView()
@@ -6215,24 +6266,24 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       // }
       // if (horizontalSliderLeftDragging) {
       //   return (
-      //     horizontalSliderLeft.style.top = e.y - 2 + "px"
-      //     catalogView.style.height = e.y - 56 + "px"
-      //     propertiesView.style.top = e.y + 2 + "px"
+      //     horizontalSliderLeft.style.top = e.y - 2 + 'px'
+      //     catalogView.style.height = e.y - 56 + 'px'
+      //     propertiesView.style.top = e.y + 2 + 'px'
       //     loadInViewThumbs()
       //     false
       //   )
       // }
       // if (horizontalSliderRightDragging) {
       //   return (
-      //     horizontalSliderRight.style.top = e.y - 2 + "px"
-      //     planView.style.height = e.y - 66 + "px"
-      //     rulerLeft.style.bottom = e.y - 66 + "px"
-      //     rulerBottom.style.top = e.y - 2 + "px"
-      //     mouseIndicatorX.style.height = e.y - 58 + "px"
-      //     view3d.style.top = e.y + 2 + "px"
-      //     fullscreenPlanViewBtn.style.top = e.y - 2 + "px"
+      //     horizontalSliderRight.style.top = e.y - 2 + 'px'
+      //     planView.style.height = e.y - 66 + 'px'
+      //     rulerLeft.style.bottom = e.y - 66 + 'px'
+      //     rulerBottom.style.top = e.y - 2 + 'px'
+      //     mouseIndicatorX.style.height = e.y - 58 + 'px'
+      //     view3d.style.top = e.y + 2 + 'px'
+      //     fullscreenPlanViewBtn.style.top = e.y - 2 + 'px'
       //     Object.keys(levelButtons).forEach(function (t) {
-      //       levelButtons[t].style.top = e.y - 48 + "px"
+      //       levelButtons[t].style.top = e.y - 48 + 'px'
       //     }
       //     resize3dView()
       //     resizePlanView()
@@ -6265,7 +6316,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         //       // var t = Walls[e]
         //       var t = Walls[e as keyof typeof Walls] // type T = keyof Walls
         //       if (
-        //         "object" == typeof t &&
+        //         'object' == typeof t &&
         //         // @ts-expect-error
         //         t.data.level === paper.project.activeLayer.data.id
         //       ) {
@@ -6290,11 +6341,11 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         //     })
         //     .removeOnMove()
         //     // .removeOnDrag()
-        //     var r = "rotate(" + i + "deg)"
+        //     var r = 'rotate(' + i + 'deg)'
         //       threedDragDiv.style.transform = r
         //       draggingThreedAngle = i
         //   } else {
-        //     var r = "rotate(0deg)"
+        //     var r = 'rotate(0deg)'
         //       threedDragDiv.style.transform = r
         //       draggingThreedAngle = 0
         //   }
@@ -6346,10 +6397,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
         var PAPERprojectToView = paper.view.projectToView(PAPERa)
         // console.debug('PAPERprojectToView', PAPERprojectToView)
-        threedDragDiv.style.left = PAPERprojectToView.x + planView.offsetLeft - widthT / 2 + "px"
-        threedDragDiv.style.top = PAPERprojectToView.y + planView.offsetTop - heightOh / 2 + "px"
+        threedDragDiv.style.left = PAPERprojectToView.x + planView.offsetLeft - widthT / 2 + 'px'
+        threedDragDiv.style.top = PAPERprojectToView.y + planView.offsetTop - heightOh / 2 + 'px'
         // [MM]
-        // threedDragDiv.style.display = "block"
+        // threedDragDiv.style.display = 'block'
       }
       // if (draggingNewGuide) {
       //   var m = paper.view.viewToProject(
@@ -6692,9 +6743,19 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       </>
 
       <Flex 
+        style={{
+          display: 'none',
+          position: 'absolute',
+          zIndex: 99999
+        }}
+      >
+        <progress id='progressBar' value='0' max='100' className='center'></progress> 
+      </Flex>
+
+      <Flex 
         style={{ 
-          display: 'inline-flex',
-          // display: 'none',
+          // display: 'inline-flex',
+          display: 'none',
           flexDirection: 'column',
           marginLeft: '4px', 
           marginRight: '6px' 
@@ -6717,7 +6778,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             }}
             onClick={() => setShowPanelFirst()}
           >
-            {/* {showPanelFirst ? "hide" : "show"} panel left */}
+            {/* {showPanelFirst ? 'hide' : 'show'} panel left */}
             { prefs.showPanelFirst && (
               <ArrowLeftEndOnRectangleIcon
                 style={{
@@ -6746,7 +6807,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
             }}
             onClick={() => setShowPanelLast()}
           >
-            {/* {showPanelLast ? "hide" : "show"} panel right */}
+            {/* {showPanelLast ? 'hide' : 'show'} panel right */}
             { prefs.showPanelLast && (
               <ArrowRightEndOnRectangleIcon
                 style={{
@@ -6770,64 +6831,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         direction='vertical'
         autoSaveId='ThreeDHomeDesignLayoutMain'
       >
-        {/* PANELS: HEADER */}
-        {/* PAGE LOADING PROGRESS? */}
-        {/* <Panel 
-          className='Panel'
-          defaultSize={4}
-          maxSize={4}
-          style={{
-            // height: '4vh',
-            // border: '1px solid darkgreen',
-          }}
-        >
-          <progress 
-            id='progressBar'
-            value='20' 
-            max='100' 
-            className='center' 
-          ></progress> 
-        </Panel> */}
-
-        {/* <PanelResizeHandle /> */}
-
-        <Panel 
-          className='Panel'
-          defaultSize={96}
-          minSize={96}
-          maxSize={100}
-          style={{
-            // border: '1px solid darkgreen',
-          }}
-        >
-          <PanelGroup 
-            direction='vertical'
-            autoSaveId='ThreeDHomeDesignLayoutSub1'
-          >
-            {/* EXAMPLE PANEL: SUB-HEADER */}
-            {/* <Panel
-              className='Panel'
-              defaultSize={4}
-              maxSize={80}
-              style={{
-                // border: '1px solid darkgreen',
-              }}
-            >
-              <Container
-                className='PanelContent'
-              >
-                <Heading as='h2'>
-                  🌱 ThreeD: Next.js: app (router): home-design: page .tsx
-                </Heading>
-              </Container>
-            </Panel> */}
-            {/*  */}
-            
-            {/* <PanelResizeHandle /> */}
-            
+        
             <Panel
               className='Panel'
-              defaultSize={88}
+              defaultSize={100}
               maxSize={100}
               style={{
                 // border: '1px solid darkgreen',
@@ -6839,303 +6846,230 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               >
                 {/* VIEWS: OBJECT CATALOG */}
                 {prefs.showPanelFirst && (
-                  <>
-                    {/* LEFT PANEL */}
-                    <Panel
-                      id='panelLeft'
-                      // className='Panel'
-                      defaultSize={24}
-                      maxSize={48}
-                      style={{
-                        // border: '1px solid darkred',
-                      }}
+                  
+                  // {/* LEFT PANEL */}
+                  <Panel
+                    id='panelLeft'
+                    // className='Panel'
+                    defaultSize={24}
+                    maxSize={48}
+                    style={{
+                      // border: '1px solid darkred',
+                    }}
+                  >
+                    <PanelGroup
+                      direction='vertical'
+                      autoSaveId='ThreeDHomeDesignLayoutSub3'
                     >
-                      <PanelGroup
-                        direction='vertical'
-                        autoSaveId='ThreeDHomeDesignLayoutSub3'
+                      <Panel 
+                        id='catalogView'
+                        className='Panel'
+                        defaultSize={60}
+                        // maxSize={64}
+                        style={{
+                          // border: '1px solid darkgreen',
+                        }}
                       >
-                        <Panel 
-                          id='catalogView'
-                          className='Panel'
-                          defaultSize={60}
-                          // maxSize={64}
-                          style={{
-                            // border: '1px solid darkgreen',
-                          }}
-                        >
-                          <div id='catalogFilters'>
-                            { false && (
-                              <Container>
-                                <input 
-                                  type='text' 
-                                  id='catalogTextFilter' 
-                                  placeholder='🔍' 
-                                  // width='32' 
-                                />
-                              </Container>
-                            )}
-                          </div>
-                          <div id='catalogItems'>
-                            { true && (
-                              <CatalogItems />
-                            )}
-                          </div>
-                        </Panel>
-
-                        <PanelResizeHandle />
-                        
-                        <Panel 
-                          id='viewProperties'
-                          className='Panel'
-                          defaultSize={40}
-                          // maxSize={64}
-                          style={{
-                            // border: '1px solid darkgreen',
-                          }}
-                        >
-                          { true && (
-                            <ViewProperties />
+                        <div id='catalogFilters'>
+                          { false && (
+                            <Container>
+                              <input 
+                                type='text' 
+                                id='catalogTextFilter' 
+                                placeholder='🔍' 
+                                // width='32' 
+                              />
+                            </Container>
                           )}
-                        </Panel>
+                        </div>
+                        <div id='catalogItems'>
+                          { true && (
+                            <CatalogItems />
+                          )}
+                        </div>
+                      </Panel>
 
-                      </PanelGroup>
-                    </Panel>
+                      <PanelResizeHandle />
+                      
+                      <Panel 
+                        id='viewProperties'
+                        className='Panel'
+                        defaultSize={40}
+                        // maxSize={64}
+                        style={{
+                          // border: '1px solid darkgreen',
+                        }}
+                      >
+                        { true && (
+                          <ViewProperties />
+                        )}
+                      </Panel>
 
-                    {/* <PanelResizeHandle /> */}
-                  </>
+                    </PanelGroup>
+                  </Panel>
+                  
                 )}
+
+                <PanelResizeHandle />
 
                 {/* VIEWS: CANVASES */}
                 {prefs.showPanelLast && (
-                  <>
-                    {/* RIGHT PANEL */}
-                    <Panel
-                      // className='Panel'
-                      defaultSize={76}
-                      maxSize={100}
-                      style={{
-                        // border: '1px solid darkblue',
-                      }}
+
+                  // {/* RIGHT PANEL */}
+                  <Panel
+                    // className='Panel'
+                    defaultSize={76}
+                    maxSize={100}
+                    style={{
+                      // border: '1px solid darkblue',
+                    }}
+                  >
+                    {/* MAIN CANVASES (TOP + BOTTOM) */}
+                    <PanelGroup 
+                      direction='vertical'
+                      autoSaveId='ThreeDHomeDesignLayoutSub4'
                     >
-                      {/* MAIN CANVASES (TOP + BOTTOM) */}
-                      <PanelGroup 
-                        direction='vertical'
-                        autoSaveId='ThreeDHomeDesignLayoutSub4'
+                      
+                      {/* PANEL: 3D FIBER CANVAS */}
+                      <Panel
+                        className='Panel'
+                        defaultSize={50}
+                        maxSize={100}
+                        style={{
+                          // border: '1px solid darkblue',
+                        }}
                       >
-                        
-                        {/* PANEL: 3D FIBER CANVAS */}
-                        <Panel
-                          className='Panel'
-                          defaultSize={50}
-                          maxSize={100}
+                        <Grid 
+                          id='view3d'
                           style={{
-                            // border: '1px solid darkblue',
-                          }}
-                        >
-                          <Grid 
-                            id='view3d'
-                            style={{
-                              height: '100%',
-                              // width: '100%',
-                              border: '1px solid #222222',
-                            }}
-                          >
-                            {/* <Text>
-                              Main Content (2nd Level)
-                            </Text> */}
-                            {/* <SessionData 
-                              session={session} 
-                            /> */}
-                            {/* THREED HOME DESIGN: 3D CANVAS */}
-
-                            {/* DO RUN THIS */}
-                            { true && (
-                              <ThreeDComponents
-                                // **
-                              />
-                            )}
-
-                            {/* <div id='overlayLogo3dView' className='overlayLogo'>
-                              <a href='https://threedgarden.com/home-design/'><img
-                                  src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
-                              <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
-                            </div>
-                            <div id='overlayMenu3dView'>
-                              <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
-                              <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
-                            </div> */}
-                          </Grid>
-                        </Panel>
-                        
-                        <PanelResizeHandle />
-
-                        {/* PANEL: 2D PAPER */}
-                        <Panel
-                          className='Panel'
-                          defaultSize={50}
-                          maxSize={100}
-                          style={{
+                            height: '100%',
+                            // width: '100%',
                             border: '1px solid #222222',
                           }}
                         >
+                          {/* <Text>
+                            Main Content (2nd Level)
+                          </Text> */}
+                          {/* <SessionData 
+                            session={session} 
+                          /> */}
+                          {/* THREED HOME DESIGN: 3D CANVAS */}
 
-                          <PanelGroup
-                            direction='horizontal'
-                            autoSaveId='ThreeDHomeDesignLayoutSub5'
+                          {/* DO RUN THIS */}
+                          { true && (
+                            <ThreeDComponents
+                              // **
+                            />
+                          )}
+
+                          {/* <div id='overlayLogo3dView' className='overlayLogo'>
+                            <a href='https://threedgarden.com/home-design/'><img
+                                src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
+                            <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
+                          </div>
+                          <div id='overlayMenu3dView'>
+                            <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
+                            <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
+                          </div> */}
+                        </Grid>
+                      </Panel>
+                      
+                      <PanelResizeHandle />
+
+                      {/* PANEL: 2D PAPER */}
+                      <Panel
+                        className='Panel'
+                        defaultSize={50}
+                        maxSize={100}
+                        style={{
+                          border: '1px solid #222222',
+                          // width: '100vw',
+                          display: 'flex',
+                          // flexGrow: '1',
+                          // flexDirection: 'column',
+                        }}
+                      >
+
+                        <div
+                          // columns='1'
+                          style={{
+                            // display: 'flex',
+                            // flexGrow: '1',
+                            // flexDirection: 'column',
+                            width: '100%',
+                            height: '100%',
+                          }}
+                        >
+                          <Flex
+                            // columns='2'
+                            style={{
+                              display: 'inline-flex',
+                              // flexGrow: '0',
+                              // flexDirection: 'column',
+                              width: '100%',
+                              height: '90%',
+                            }}
                           >
-                            {/* THREED HOME DESIGN: RULER VERTICAL LEFT */}
-                            <Panel
-                              className='Panel'
-                              defaultSize={2}
-                              minSize={2}
-                              maxSize={2}
+                            <div
                               style={{
-                                height: '100%'
+                                width: '20px',
+                                height: '100%',
                               }}
                             >
-                              <canvas 
-                                id='rulerLeft' 
-                                width='30' 
-                                height='100%' 
-                                // onMouseDown={() => addVerticalGuide()}
-                                // onMouseUp={() => removeVerticalGuide()}
-                              ></canvas>
-                            
-                            </Panel>
-                            <PanelResizeHandle />
+                            <canvas 
+                              id='rulerLeft' 
+                              width='20px' 
+                              height='100%' 
+                              // height='400px'
+                              // onMouseDown={() => addVerticalGuide()}
+                              // onMouseUp={() => removeVerticalGuide()}
+                            ></canvas>
+                            </div>
 
-                            {/* THREED HOME DESIGN: 2D PAPER PLAN VIEW */}
-                            <Panel
-                              id='planView'
-                              className='Panel'
-                              defaultSize={98}
-                              minSize={98}
-                              maxSize={98}
-                            >
-
-                              {/* DO RUN THIS */}
-                              { true && (
-                                <PaperCanvas />
-                              )}
-                            
-                            </Panel>
-                          </PanelGroup>
-                            
-                          <PanelGroup
-                            direction='vertical' 
-                            autoSaveId='ThreeDHomeDesignLayoutSub6'
-                            style={{
-                              border: '1px solid red',
-                              height: '100%'
-                            }}
-                          >
-                            <Panel
-                              className='Panel'
-                              defaultSize={100}
-                              minSize={100}
-                              maxSize={100}
-                            >
-                              <canvas 
-                                id='rulerBottom' 
-                                width='1024' 
-                                height='20' 
-                                // onMouseDown={() => addHorizontalGuide()}
-                                // onMouseUp={() => removeHorizontalGuide()}
-                              ></canvas>
-                            </Panel>
-                          </PanelGroup>
-                            
-                          <PanelGroup
-                            direction='vertical' 
-                            autoSaveId='ThreeDHomeDesignLayoutSub7'
-                            style={{
-                              border: '1px solid orange',
-                            }}
-                          >
-                            <Panel
-                              className='Panel'
-                              defaultSize={98}
-                              minSize={98}
-                              maxSize={98}
-                            >
-
-                              <div id='threedDragDiv'></div>
-
-                              <div id='mouseIndicatorY'></div>
-                              <div id='mouseIndicatorX'></div>
-
-                              <div id='compass'></div>
-
-                              <div id='verticalSlider'></div>
-                              <div id='horizontalSliderLeft'></div>
-                              <div id='horizontalSliderRight'></div>
-
-                              {/*
-                              <img id='fullscreenPlanViewBtn' src='images/homedesign/fullscreen.png' width='30' height='30'
-                                onClick={() => openFullscreen('planView')} />
-                              <img id='fullscreen3dViewBtn' src='images/homedesign/fullscreen.png' width='30' height='30'
-                                onClick={() => openFullscreen('view3d')} />
-                              */}
-                            
-                              {/* <div 
-                                id='overlayLogoPlanView' 
-                                className='overlayLogo'
+                            {/* DO RUN THIS */}
+                            { true && (
+                              <div 
+                                id='planView'
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                }}
                               >
-                                <a href='https://threedgarden.com/demo/'
-                                  // style='float:leftpadding:0px margin-top:0px'
-                                >
-                                  <img
-                                    src='/favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' 
-                                  />
-                                </a>
-                                &nbsp
-                                <a href='https://threedgarden.com/demo/'
-                                  // style='padding-left: 10px text-decoration: none font-size: 32px'
-                                >
-                                  ThreeD Home Design
-                                </a>
-                              </div> */}
-                              {/* 
-                              <div id='overlayMenuPlanView'>
-                                <button id='overlayPlanViewRecenterBtn' onClick={() => recenterPlanView()} className='smallButton'>Recenter</button>
-                                <button id='overlayPlanViewGoto3dViewBtn' onClick={() => goto3dView()} className='smallButton'>3d View</button>
+                                <PaperCanvas />
                               </div>
-                              */}
-                            </Panel>
+                            )}
+                          </Flex>
+                          
+                          <Flex
+                            // columns='1'
+                            style={{
+                              // display: 'inline-flex',
+                              // flexGrow: '0',
+                              // flexDirection: 'row',
+                              width: '100%',
+                              height: '10%',
+                            }}
+                          >
+                            <canvas 
+                              id='rulerBottom' 
+                              width='100%' 
+                              height='20px' 
+                              // onMouseDown={() => addHorizontalGuide()}
+                              // onMouseUp={() => removeHorizontalGuide()}
+                            ></canvas>
+                          </Flex>
+                        </div>
 
-                          </PanelGroup>
-                        </Panel>
-                        
-                      </PanelGroup>
+                      </Panel>
+                      
+                    </PanelGroup>
 
-                    </Panel>
-                  </>
+                  </Panel>
+
                 )}
               </PanelGroup>
-              
             </Panel>
-
-          </PanelGroup>
-
-          {/* <PanelResizeHandle /> */}
-
-        </Panel>
-
-        {/* <PanelResizeHandle /> */}
-
-        {/* PANELS: FOOTER */}
-        {/* <Panel 
-          className='Panel'
-          defaultSize={4}
-          maxSize={8}
-          style={{
-            // height: '4vh',
-            // border: '1px solid darkgreen',
-          }}
-        >
-          <progress value='90' max='100' className='center' id='progressBar'></progress> 
-        </Panel> */}
-
+        
       </PanelGroup>
 
       {/* VIEWS: PROPERTIES */}
@@ -7143,8 +7077,59 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
       {/* VIEWS: MODALS */}
       {/* <ViewModals /> */}
-
       
+      <Flex 
+        id='planHelpers'
+        style={{
+          display: 'inline-flex',
+          flexDirection: 'row',
+        }}
+      >
+
+        <div id='threedDragDiv'></div>
+
+        <div id='mouseIndicatorY'></div>
+        <div id='mouseIndicatorX'></div>
+
+        <div id='compass'></div>
+
+        <div id='verticalSlider'></div>
+        <div id='horizontalSliderLeft'></div>
+        <div id='horizontalSliderRight'></div>
+
+        {/*
+        <img id='fullscreenPlanViewBtn' src='images/homedesign/fullscreen.png' width='30' height='30'
+          onClick={() => openFullscreen('planView')} />
+        <img id='fullscreen3dViewBtn' src='images/homedesign/fullscreen.png' width='30' height='30'
+          onClick={() => openFullscreen('view3d')} />
+        */}
+      
+        {/* <div 
+          id='overlayLogoPlanView' 
+          className='overlayLogo'
+        >
+          <a href='https://threedgarden.com/demo/'
+            // style='float:leftpadding:0px margin-top:0px'
+          >
+            <img
+              src='/favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' 
+            />
+          </a>
+          &nbsp
+          <a href='https://threedgarden.com/demo/'
+            // style='padding-left: 10px text-decoration: none font-size: 32px'
+          >
+            ThreeD Home Design
+          </a>
+        </div> */}
+        {/* 
+        <div id='overlayMenuPlanView'>
+          <button id='overlayPlanViewRecenterBtn' onClick={() => recenterPlanView()} className='smallButton'>Recenter</button>
+          <button id='overlayPlanViewGoto3dViewBtn' onClick={() => goto3dView()} className='smallButton'>3d View</button>
+        </div>
+        */}
+
+    </Flex>
 
       
       

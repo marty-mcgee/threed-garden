@@ -224,7 +224,7 @@ export function ThreeDLevaControls() {
       title: { value: 'START HERE: Project Settings', render: (get) => get('Panel.showTitleBar') },
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
-      position: { value: { x: 10, y: 60 }, render: (get) => get('Panel.showTitleBar') },
+      position: { value: { x: -460, y: 160 }, render: (get) => get('Panel.showTitleBar') },
       // fullScreen: true,
       // oneLineLabels: false,
       // refMonitor: { 

@@ -91,6 +91,7 @@ interface IViewerProps {
   enableGizmoCube: boolean,
   enableAxesHelper: boolean,
   enableGridHelper: boolean,
+  enableGridHelper2: boolean,
   enablePerf: boolean, 
   threeds: Object[],
   // ModelProps
@@ -239,6 +240,7 @@ const ThreeDExperienceViewer = forwardRef((
     enableGizmoCube,
     enableAxesHelper,
     enableGridHelper,
+    enableGridHelper2,
     enablePerf, 
     threeds, 
     // ...props 
@@ -287,19 +289,24 @@ const ThreeDExperienceViewer = forwardRef((
 
           {/* AXES + GRID HELPERS */}
           {enableAxesHelper && (
-            <axesHelper args={[1024]} />
+            <axesHelper args={[3200]} />
           )}
           {enableGridHelper && (
-            // <gridHelper args={[1024, 128]} />
-            <Grid
-              args={[320, 320]} // x = 20rem, z = 20rem
-              sectionColor={'black'}
-              cellColor={'black'}
-              position={[0, -1, 0]} // sea level?
-              // userData={{
-              //   camExcludeCollision: true, // collide by camera ray? true | false
-              // }}
-            />
+            <>
+              {enableGridHelper2 && (
+                <gridHelper args={[25600, 256, 0x333333, 0x222222]}/>
+              )}
+
+              <Grid
+                args={[6400, 6400]} // x = 20rem, z = 20rem
+                sectionColor={'black'}
+                cellColor={'black'}
+                position={[0, 0, 0]} // sea level?
+                // userData={{
+                //   camExcludeCollision: true, // collide by camera ray? true | false
+                // }}
+              />
+            </>
           )}
 
           {/* THREED SCENE
@@ -354,7 +361,7 @@ const ThreeDExperienceViewer = forwardRef((
               <OrbitControls
                 makeDefault
                 minDistance={0.25}
-                maxDistance={480}
+                maxDistance={4800}
                 // // minZoom={10}
                 // // maxZoom={20}
                 // // minAzimuthAngle={-Math.PI / 4}
