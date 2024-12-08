@@ -95,6 +95,6 @@ src/lib/threed/threed.ai
 # src/layout/home-design
 # src/lib/home-design
 # !src/lib/home-design/assets/demo
-src/lib/home-design/assets/demo/**
+# src/lib/home-design/assets/demo/**
 src/lib/home-design/assets/media/**
 src/lib/home-design/assets/threeds/**
