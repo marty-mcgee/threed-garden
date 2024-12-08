@@ -91,6 +91,7 @@ interface IViewerProps {
   enableGizmoCube: boolean,
   enableAxesHelper: boolean,
   enableGridHelper: boolean,
+  enableGridHelper2: boolean,
   enablePerf: boolean, 
   threeds: Object[],
   // ModelProps
@@ -239,6 +240,7 @@ const ThreeDExperienceViewer = forwardRef((
     enableGizmoCube,
     enableAxesHelper,
     enableGridHelper,
+    enableGridHelper2,
     enablePerf, 
     threeds, 
     // ...props 
@@ -291,7 +293,10 @@ const ThreeDExperienceViewer = forwardRef((
           )}
           {enableGridHelper && (
             <>
-              <gridHelper args={[12800, 256, 0x222222, 0x333333]}/>
+              {enableGridHelper2 && (
+                <gridHelper args={[25600, 256, 0x333333, 0x222222]}/>
+              )}
+
               <Grid
                 args={[6400, 6400]} // x = 20rem, z = 20rem
                 sectionColor={'black'}

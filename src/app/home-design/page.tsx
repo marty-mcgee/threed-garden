@@ -167,7 +167,7 @@ import * as TWEEN from '@tweenjs/tween.js'
 // ☑️<script type='text/javascript' src='scripts/MTLLoader.js'></script>
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js'
 // ☑️<script type='text/javascript' src='scripts/OBJLoader.js'></script>
-import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
 // 🔘<script type='text/javascript' src='scripts/OBJExporter.js'></script>
 // 🔘<script type='text/javascript' src='scripts/sky.js'></script>
 // 🔘<script type='text/javascript' src='scripts/ThreeCSG.js'></script>
@@ -469,9 +469,9 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
   groundWidth: number = 5e3,
   groundLength: number = 5e3
 
-  let busy: boolean = !1
+  let busy: boolean = false
   let screenAvg = 1000 // (screen.width + screen.height) / 2
-  let redrawing: boolean = !1
+  let redrawing: boolean = false
   let strokeWidth = 0
   const onProgress = function (e: any) {
     if (e.lengthComputable) {
@@ -712,7 +712,7 @@ const PaperCanvas = (props: any) => {
       id='planCanvas' 
       // resize='true'
       style={{
-        height: '100%',
+        height: '94%',
         width: '100%',
       }}
     />
@@ -757,9 +757,9 @@ const initThreeDPaper = (planCanvas: any) => {
   // controls.rotateSpeed = 4
   // controls.zoomSpeed = 5
   // controls.panSpeed = 1.5
-  // controls.noZoom = !1
-  // controls.noPan = !1
-  // controls.staticMoving = !0
+  // controls.noZoom = false
+  // controls.noPan = false
+  // controls.staticMoving = true
   // controls.dynamicDampingFactor = 0.3
   // controls.keys = [65, 83, 68]
   // controls.addEventListener("change", render)
@@ -867,7 +867,7 @@ function initPlanView(planCanvas: any) {
         cumulclick = o
       }
     }
-    return e.preventDefault() && !1
+    return e.preventDefault() && false
   }
   // if (
     // '3dView' != UILayout
@@ -898,7 +898,7 @@ function initPlanView(planCanvas: any) {
     rulerLeft.style.height = planCanvas.parentNode.getBoundingClientRect().height
 
     planCanvas.oncontextmenu = function () {
-      return !1
+      return false
     }
     // (document.getElementsByClassName('close')[0].onclick = function () {
     //   closeAllModals(), showMouseIndicators()
@@ -913,22 +913,23 @@ function initPlanView(planCanvas: any) {
   // ) {
 
     rulerLeft.oncontextmenu = function () {
-      return !1
+      return false
     }
     rulerBottom.oncontextmenu = function () {
-      return !1
+      return false
     }
     rulerLeftCtx = rulerLeft.getContext('2d')
     rulerBottomCtx = rulerBottom.getContext('2d')
 
-    planCanvas.addEventListener(
-      'mousemove',
-      function (e: any) {
-        mouseIndicatorX.style.left = e.clientX + 'px'
-        mouseIndicatorY.style.top = e.clientY + 'px'
-      },
-      !1
-    )
+    // ** CROSSHAIRS mouse indicators x,y
+    // planCanvas.addEventListener(
+    //   'mousemove',
+    //   function (e: any) {
+    //     mouseIndicatorX.style.left = e.clientX + 'px'
+    //     mouseIndicatorY.style.top = e.clientY + 'px'
+    //   },
+    //   false
+    // )
 
     let MMt = /Firefox/i.test(navigator.userAgent)
       ? 'DOMMouseScroll'
@@ -936,14 +937,14 @@ function initPlanView(planCanvas: any) {
 
     planCanvas.addEventListener(MMt, MMe)
 
-    // ** draw grid path lines x,y
+    // ** DRAW GRID path lines x,y
     for (let o = 0; o <= 200; o++) {
       const a = new paper.Point(10 * o, 0)
       const n = new paper.Point(10 * o, 100)
       let pathLineX = new paper.Path.Line(a, n)
       pathLineX.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
       pathLineX.strokeWidth = 0.5
-      pathLineX.strokeScaling = !1
+      pathLineX.strokeScaling = false
       xLines.push(pathLineX)
       // @ts-expect-error
       gridGroup[0].addChild(pathLineX)
@@ -954,7 +955,7 @@ function initPlanView(planCanvas: any) {
       let pathLineY = new paper.Path.Line(i, r)
       pathLineY.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
       pathLineY.strokeWidth = 0.5
-      pathLineY.strokeScaling = !1
+      pathLineY.strokeScaling = false
       yLines.push(pathLineY)
       // @ts-expect-error
       gridGroup[0].addChild(pathLineY)
@@ -973,7 +974,7 @@ function initPlanView(planCanvas: any) {
     rotateIcon.onMouseLeave = function (e: any) {
       planView.style.cursor = 'default'
     }
-    rotateIcon.visible = !1
+    rotateIcon.visible = false
     // @ts-expect-error
     toolsGroup[0].addChild(rotateIcon)
     
@@ -986,7 +987,7 @@ function initPlanView(planCanvas: any) {
     resizeIcon.onMouseLeave = function (e: any) {
       planView.style.cursor = 'default'
     }
-    resizeIcon.visible = !1
+    resizeIcon.visible = false
     // @ts-expect-error
     toolsGroup[0].addChild(resizeIcon)
 
@@ -999,7 +1000,7 @@ function initPlanView(planCanvas: any) {
     elevateIcon.onMouseLeave = function (e: any) {
       planView.style.cursor = 'default'
     }
-    elevateIcon.visible = !1
+    elevateIcon.visible = false
     // @ts-expect-error
     toolsGroup[0].addChild(elevateIcon)
 
@@ -1012,7 +1013,7 @@ function initPlanView(planCanvas: any) {
     heightIcon.onMouseLeave = function (e: any) {
       planView.style.cursor = 'default'
     }
-    heightIcon.visible = !1
+    heightIcon.visible = false
     // @ts-expect-error
     toolsGroup[0].addChild(heightIcon)
     
@@ -1022,40 +1023,40 @@ function initPlanView(planCanvas: any) {
     new paper.Point(0, 0),
     new paper.Point(0, 0)
   )
-  wallHelperPath.visible = !1
+  wallHelperPath.visible = false
   wallHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   wallHelperPath.strokeWidth = 2
-  wallHelperPath.strokeScaling = !1
+  wallHelperPath.strokeScaling = false
   // @ts-expect-error
   wallsGroup[paper.project.activeLayer.data.id].addChild(wallHelperPath)
   roofHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
     new paper.Point(0, 0)
   )
-  roofHelperPath.visible = !1
+  roofHelperPath.visible = false
   roofHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   roofHelperPath.strokeWidth = 2
-  roofHelperPath.strokeScaling = !1
+  roofHelperPath.strokeScaling = false
   // @ts-expect-error
   roofsGroup[paper.project.activeLayer.data.id].addChild(roofHelperPath)
   floorHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
     new paper.Point(0, 0)
   )
-  floorHelperPath.visible = !1
+  floorHelperPath.visible = false
   floorHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   floorHelperPath.strokeWidth = 2
-  floorHelperPath.strokeScaling = !1
+  floorHelperPath.strokeScaling = false
   // @ts-expect-error
   floorsGroup[paper.project.activeLayer.data.id].addChild(floorHelperPath)
   dimensionHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
     new paper.Point(0, 0)
   )
-  dimensionHelperPath.visible = !1
+  dimensionHelperPath.visible = false
   dimensionHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   dimensionHelperPath.strokeWidth = 2
-  dimensionHelperPath.strokeScaling = !1
+  dimensionHelperPath.strokeScaling = false
   // @ts-expect-error
   dimensionsGroup[paper.project.activeLayer.data.id].addChild(dimensionHelperPath)
 
@@ -1067,7 +1068,7 @@ function initPlanView(planCanvas: any) {
   wallHelperRectangle = new paper.Path.Rectangle(s)
   wallHelperRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   wallHelperRectangle.strokeWidth = 2
-  wallHelperRectangle.strokeScaling = !1
+  wallHelperRectangle.strokeScaling = false
   s = new paper.Rectangle(
     new paper.Point(0, 0), 
     new paper.Point(0, 0)
@@ -1075,7 +1076,7 @@ function initPlanView(planCanvas: any) {
   roofHelperRectangle = new paper.Path.Rectangle(s)
   roofHelperRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   roofHelperRectangle.strokeWidth = 2
-  roofHelperRectangle.strokeScaling = !1
+  roofHelperRectangle.strokeScaling = false
   offsetMousePoint = new paper.Point(0, 0)
   tools = new paper.Tool()
   draggingThreedRectangle = new paper.Path.Rectangle(
@@ -1084,9 +1085,9 @@ function initPlanView(planCanvas: any) {
   )
   draggingThreedRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   draggingThreedRectangle.strokeWidth = 2
-  draggingThreedRectangle.strokeScaling = !1
+  draggingThreedRectangle.strokeScaling = false
   draggingThreedRectangle.position = new paper.Point(0, 0)
-  draggingThreedRectangle.visible = !1
+  draggingThreedRectangle.visible = false
   // @ts-expect-error
   threedGroup[paper.project.activeLayer.data.id].addChild(
     draggingThreedRectangle
@@ -1127,7 +1128,7 @@ function initPlanView(planCanvas: any) {
                   (snapPoint.y = parseInt(e.point.y)),
                   scalingY
                     ? console.debug('this should never happen : scalingY')
-                    : ((scalingY = !0),
+                    : ((scalingY = true),
                       (stretchYStartHeight =
                         clickableObjects[selectedItem.data.id].userData.height 
                         *
@@ -1136,7 +1137,7 @@ function initPlanView(planCanvas: any) {
                       // (stretchYPath.strokeColor = 'black'),
                       stretchYPath.add(snapPoint),
                       stretchYPath.add(snapPoint),
-                      (stretchYPath.visible = !0))
+                      (stretchYPath.visible = true))
               else if ('elevateThreedTool' === t.item.data.type)
                 (mouseMode = 5),
                   console.debug('isElevateTool'),
@@ -1145,14 +1146,14 @@ function initPlanView(planCanvas: any) {
                   (snapPoint.y = parseInt(e.point.y)),
                   elevating
                     ? console.debug('this should never happen : elevating')
-                    : ((elevating = !0),
+                    : ((elevating = true),
                       (elevateStartHeight =
                         clickableObjects[selectedItem.data.id].position.y),
                       (elevatePath = new paper.Path()),
                       // (elevatePath.strokeColor = 'black'),
                       elevatePath.add(snapPoint),
                       elevatePath.add(snapPoint),
-                      (elevatePath.visible = !0))
+                      (elevatePath.visible = true))
               else if ('threed' === t.item.data.type)
                 selectedItem.data.id &&
                   (tween = new TWEEN.Tween(controls.target)
@@ -1163,7 +1164,7 @@ function initPlanView(planCanvas: any) {
                 deselectAll()
                 var o = Walls[t.item.data.id]
                 o.bringToFront(),
-                  (o.selected = !0),
+                  (o.selected = true),
                   (selectedItem = o),
                   o.segments.forEach(function (e: any) {
                     var t = new paper.Raster('images/homedesign/movePointIcon.png')
@@ -1180,7 +1181,7 @@ function initPlanView(planCanvas: any) {
                         (t.onMouseLeave = function (e: any) {
                           planView.style.cursor = 'default'
                         }),
-                        (t.visible = !0),
+                        (t.visible = true),
                         t.bringToFront(),
                         movePointIcons.push(t)
                   }),
@@ -1191,7 +1192,7 @@ function initPlanView(planCanvas: any) {
                 deselectAll()
                 var a = Roofs[t.item.data.id]
                 a.bringToFront(),
-                  (a.selected = !0),
+                  (a.selected = true),
                   (selectedItem = a),
                   a.segments.forEach(function (e: any) {
                     var t = new paper.Raster('images/homedesign/movePointIcon.png')
@@ -1208,7 +1209,7 @@ function initPlanView(planCanvas: any) {
                         (t.onMouseLeave = function (e: any) {
                           planView.style.cursor = 'default'
                         }),
-                        (t.visible = !0),
+                        (t.visible = true),
                         t.bringToFront(),
                         movePointIcons.push(t)
                   }),
@@ -1217,35 +1218,35 @@ function initPlanView(planCanvas: any) {
                   // updateObjectPropertiesWindow()
               } else if ('movePointIconWalls' === t.item.data.type)
                 movePointIcons.forEach(function (e: any) {
-                  e.selected = !1
+                  e.selected = false
                 }),
                   (selectedMovePointIcon = t.item),
-                  (selectedMovePointIcon.selected = !0),
+                  (selectedMovePointIcon.selected = true),
                   (movePointIconSelectedId = t.item.data.id),
                   // recalcAllUnjoinedWallSegments(selectedItem.data.id),
                   (mouseMode = 3)
               else if ('movePointIconRoofs' === t.item.data.type)
                 movePointIcons.forEach(function (e: any) {
-                  e.selected = !1
+                  e.selected = false
                 }),
                   (selectedMovePointIcon = t.item),
-                  (selectedMovePointIcon.selected = !0),
+                  (selectedMovePointIcon.selected = true),
                   (movePointIconSelectedId = t.item.data.id),
                   // recalcAllUnjoinedRoofSegments(selectedItem.data.id),
                   (mouseMode = 11)
               else if ('movePointIconFloors' === t.item.data.type)
                 movePointIcons.forEach(function (e: any) {
-                  e.selected = !1
+                  e.selected = false
                 }),
                   (selectedMovePointIcon = t.item),
-                  (selectedMovePointIcon.selected = !0),
+                  (selectedMovePointIcon.selected = true),
                   (movePointIconSelectedId = t.item.data.id),
                   // recalcAllWallCorners(),
                   (mouseMode = 6)
               else if ('floor' === t.item.data.type) {
                 deselectAll()
                 var n = Floors[t.item.data.id]
-                  ; (n.selected = !0),
+                  ; (n.selected = true),
                     (selectedItem = n),
                     n.segments.forEach(function (e: any) {
                       var t = new paper.Raster('images/homedesign/movePointIcon.png')
@@ -1261,7 +1262,7 @@ function initPlanView(planCanvas: any) {
                           (t.onMouseLeave = function (e: any) {
                             planView.style.cursor = 'default'
                           }),
-                          (t.visible = !0),
+                          (t.visible = true),
                           t.bringToFront(),
                           movePointIcons.push(t)
                     }),
@@ -1291,8 +1292,8 @@ function initPlanView(planCanvas: any) {
                   ? (
                     deselectAll(),
                     (selectedItem = Dimensions[t.item.data.id].text),
-                    (Dimensions[selectedItem.data.id].text.selected = !0),
-                    (Dimensions[selectedItem.data.id].line.selected = !0),
+                    (Dimensions[selectedItem.data.id].text.selected = true),
+                    (Dimensions[selectedItem.data.id].line.selected = true),
                     updateObjectPropertiesWindow(),
                     recalcAllWallCorners(),
                     recalcAllRoofCorners()
@@ -1302,7 +1303,7 @@ function initPlanView(planCanvas: any) {
                       deselectAll(),
                       (mouseMode = 7),
                       (selectedItem = Texts[t.item.data.id]),
-                      (Texts[t.item.data.id].selected = !0),
+                      (Texts[t.item.data.id].selected = true),
                       (editingTextId = t.item.data.id),
                       updateObjectPropertiesWindow()
                       )
@@ -1354,9 +1355,9 @@ function initPlanView(planCanvas: any) {
                   (m.fillColor = new paper.Color(1, 0.9, 0, 0.25)),
                   (m.strokeColor = '#b19064'),
                   (m.strokeWidth = 1),
-                  (m.strokeScaling = !1),
+                  (m.strokeScaling = false),
                   (m.segments = wallHelperRectangle.segments),
-                  (m.closed = !0),
+                  (m.closed = true),
                   (wallsRectangles[wallPath.data.id] = m),
                   wallsGroup[project.activeLayer.data.id].addChild(
                     wallsRectangles[wallPath.data.id]
@@ -1368,7 +1369,7 @@ function initPlanView(planCanvas: any) {
                   (y.position.z = wallHelper3dCube.position.z),
                   (y.userData.id = wallPath.data.id),
                   (y.userData.level = wallPath.data.level),
-                  (y.frustumCulled = !1),
+                  (y.frustumCulled = false),
                   y.geometry.computeFlatVertexNormals(),
                   scene.add(y),
                   (wallsRectangles3d[wallPath.data.id] = y),
@@ -1422,7 +1423,7 @@ function initPlanView(planCanvas: any) {
               console.debug(e)
             }
           } else
-            (startedDrawingWalls = !0),
+            (startedDrawingWalls = true),
               (wallPath = new paper.Path()),
               (wallPath.strokeColor = new paper.Color(0, 0, 0, 0)),
               snapPointOverride.id &&
@@ -1446,12 +1447,12 @@ function initPlanView(planCanvas: any) {
               ; (wallHelperPath.segments[0].point = snapPoint),
                 (wallHelperPath.segments[1].point = snapPoint),
                 wallHelperPath.bringToFront(),
-                (wallHelperPath.visible = !0),
+                (wallHelperPath.visible = true),
                 (wallHelperRectangle.segments[0].point = new Point(0, 0)),
                 (wallHelperRectangle.segments[1].point = new Point(0, 0)),
                 (wallHelperRectangle.segments[2].point = new Point(0, 0)),
                 (wallHelperRectangle.segments[3].point = new Point(0, 0)),
-                (wallHelperRectangle.visible = !0),
+                (wallHelperRectangle.visible = true),
                 (wallHelper3dCube.geometry.vertices[1].x =
                   wallHelperRectangle.segments[0].point.x),
                 (wallHelper3dCube.geometry.vertices[1].z =
@@ -1484,8 +1485,8 @@ function initPlanView(planCanvas: any) {
                   wallHelperRectangle.segments[3].point.x),
                 (wallHelper3dCube.geometry.vertices[6].z =
                   wallHelperRectangle.segments[3].point.y),
-                (wallHelper3dCube.geometry.verticesNeedUpdate = !0),
-                (wallHelper3dCube.visible = !0),
+                (wallHelper3dCube.geometry.verticesNeedUpdate = true),
+                (wallHelper3dCube.visible = true),
                 (tween = new TWEEN.Tween(controls.target)
                   .to(wallHelper3dCube.position, 500)
                   .onUpdate(render)
@@ -1534,9 +1535,9 @@ function initPlanView(planCanvas: any) {
                   (f.fillColor = new paper.Color(0.35, 0.65, 0.85, 0.25)),
                   (f.strokeColor = '#b19064'),
                   (f.strokeWidth = 1),
-                  (f.strokeScaling = !1),
+                  (f.strokeScaling = false),
                   (f.segments = roofHelperRectangle.segments),
-                  (f.closed = !0),
+                  (f.closed = true),
                   (roofsRectangles[roofPath.data.id] = f),
                   roofsGroup[project.activeLayer.data.id].addChild(
                     roofsRectangles[roofPath.data.id]
@@ -1548,7 +1549,7 @@ function initPlanView(planCanvas: any) {
                   (h.position.z = roofHelper3dCube.position.z),
                   (h.userData.id = roofPath.data.id),
                   (h.userData.level = roofPath.data.level),
-                  (h.frustumCulled = !1),
+                  (h.frustumCulled = false),
                   h.geometry.computeFlatVertexNormals(),
                   scene.add(h),
                   (roofsRectangles3d[roofPath.data.id] = h),
@@ -1601,7 +1602,7 @@ function initPlanView(planCanvas: any) {
               console.debug(e)
             }
           } else
-            (startedDrawingRoofs = !0),
+            (startedDrawingRoofs = true),
               (roofPath = new paper.Path()),
               (roofPath.strokeColor = new paper.Color(0, 0, 0, 0)),
               snapPointOverride.id &&
@@ -1627,12 +1628,12 @@ function initPlanView(planCanvas: any) {
               ; (roofHelperPath.segments[0].point = snapPoint),
                 (roofHelperPath.segments[1].point = snapPoint),
                 roofHelperPath.bringToFront(),
-                (roofHelperPath.visible = !0),
+                (roofHelperPath.visible = true),
                 (roofHelperRectangle.segments[0].point = new Point(0, 0)),
                 (roofHelperRectangle.segments[1].point = new Point(0, 0)),
                 (roofHelperRectangle.segments[2].point = new Point(0, 0)),
                 (roofHelperRectangle.segments[3].point = new Point(0, 0)),
-                (roofHelperRectangle.visible = !0),
+                (roofHelperRectangle.visible = true),
                 (roofHelper3dCube.geometry.vertices[1].x =
                   roofHelperRectangle.segments[0].point.x),
                 (roofHelper3dCube.geometry.vertices[1].z =
@@ -1675,8 +1676,8 @@ function initPlanView(planCanvas: any) {
               (roofHelper3dCube.geometry.vertices[3].y = -v - w),
               (roofHelper3dCube.geometry.vertices[6].y = -v + w),
               (roofHelper3dCube.geometry.vertices[7].y = -v + w),
-              (roofHelper3dCube.geometry.verticesNeedUpdate = !0),
-              (roofHelper3dCube.visible = !0),
+              (roofHelper3dCube.geometry.verticesNeedUpdate = true),
+              (roofHelper3dCube.visible = true),
               (tween = new TWEEN.Tween(controls.target)
                 .to(roofHelper3dCube.position, 500)
                 .onUpdate(render)
@@ -1763,12 +1764,12 @@ function initPlanView(planCanvas: any) {
                   null
                 ),
               render())
-            : ((startedDrawingFloor = !0),
+            : ((startedDrawingFloor = true),
               (floorPath = new Path()),
               (floorPath.data.type = 'floor'),
               (floorPath.strokeColor = '#b19064'),
               (floorPath.strokeWidth = 2),
-              (floorPath.strokeScaling = !1),
+              (floorPath.strokeScaling = false),
               (floorPath.fillColor = new paper.Color(0.5, 0.5, 0.5, 0.5)),
               floorPath.add(snapPoint),
               floorIdCounter++,
@@ -1781,7 +1782,7 @@ function initPlanView(planCanvas: any) {
               ),
               (floorHelperPath.segments[0].point = snapPoint),
               (floorHelperPath.segments[1].point = snapPoint),
-              (floorHelperPath.visible = !0))),
+              (floorHelperPath.visible = true))),
           (lastNewFloorSegmentClick = Date.now()))
     else if ('dimension' === toolMode)
       if (2 === e.event.buttons) mouseMode = -1
@@ -1795,7 +1796,7 @@ function initPlanView(planCanvas: any) {
             P = (I.angle - s.angle + 360) % 360,
             b = (P / 180) * Math.PI,
             x = I.length * Math.sin(b)
-            ; (dimensionPath.data.adjacent = x), (dimensionPath.visible = !1)
+            ; (dimensionPath.data.adjacent = x), (dimensionPath.visible = false)
           var s = dimensionPath.segments[1].point.subtract(
             dimensionPath.segments[0].point
           ),
@@ -1806,7 +1807,7 @@ function initPlanView(planCanvas: any) {
               (R.style = {
                 strokeColor: 'white',
                 strokeWidth: 1,
-                strokeScaling: !1,
+                strokeScaling: false,
               }),
               R.moveTo(dimensionPath.segments[0].point),
               R.lineBy(s.normalize(x).rotate(-90)),
@@ -1878,7 +1879,7 @@ function initPlanView(planCanvas: any) {
               setEndDrawingDimension()
         }
       else
-        (startedDrawingDimension = !0),
+        (startedDrawingDimension = true),
           (dimensionPath = new Path()),
           (dimensionPath.data.type = 'dimension'),
           (dimensionPath.strokeColor = 'white'),
@@ -1887,15 +1888,15 @@ function initPlanView(planCanvas: any) {
           (dimensionPath.data.id = dimensionIdCounter),
           (dimensionPath.data.adjacent = 0),
           (dimensionPath.data.level = project.activeLayer.data.id),
-          (dimensionPath.visible = !1),
+          (dimensionPath.visible = false),
           dimensionsGroup[dimensionPath.data.level].addChild(dimensionPath),
           (dimensionHelperPath.segments[0].point = snapPoint),
           (dimensionHelperPath.segments[1].point = snapPoint),
-          (dimensionHelperPath.visible = !0)
+          (dimensionHelperPath.visible = true)
     else if ('text' === toolMode)
       if (2 === e.event.buttons) mouseMode = -1
       else if (((mouseMode = 0), !startedDrawingText)) {
-        deselectAll(), (startedDrawingText = !0)
+        deselectAll(), (startedDrawingText = true)
         var k = new paper.PointText({})
           ; (k.fontFamily = 'Courier New'),
             (k.fillColor = 'white'),
@@ -1936,12 +1937,12 @@ function initPlanView(planCanvas: any) {
               null
             ),
             (selectedItem = Texts[k.data.id]),
-            (Texts[k.data.id].selected = !0),
+            (Texts[k.data.id].selected = true),
             updateObjectPropertiesWindow(),
             (document.getElementById('textValueProp').style.backgroundColor =
               '#4e4e4e'),
             document.getElementById('textValueProp').select(),
-            (startedDrawingText = !1)
+            (startedDrawingText = false)
       }
     */
   }
@@ -1956,7 +1957,7 @@ function initPlanView(planCanvas: any) {
       ? selectedItem &&
         selectedItem.data &&
         'threed' === selectedItem.data.type
-        ? ((dragging = !1),
+        ? ((dragging = false),
           (mouseMode = -1),
           updatePlanHistory(
             plan,
@@ -1984,7 +1985,7 @@ function initPlanView(planCanvas: any) {
           redrawLevelsFloors(project.activeLayer.data.id))
         : console.debug('*** mouseup, mousemode=0, ' + selectedItem)
       : 1 === mouseMode && rotating
-        ? ((rotating = !1),
+        ? ((rotating = false),
           (mouseMode = -1),
           (selectedItem.data.angle = selectedItem.rotation),
           updatePlanHistory(
@@ -2012,7 +2013,7 @@ function initPlanView(planCanvas: any) {
           applyMasksToRoofs(project.activeLayer.data.id),
           redrawLevelsFloors(project.activeLayer.data.id))
         : 2 === mouseMode && scalingXY
-          ? ((scalingXY = !1),
+          ? ((scalingXY = false),
             (mouseMode = -1),
             updatePlanHistory(
               plan,
@@ -2097,9 +2098,9 @@ function initPlanView(planCanvas: any) {
                   null
                 ))
               : 4 === mouseMode && scalingY
-                ? ((scalingY = !1),
+                ? ((scalingY = false),
                   (mouseMode = -1),
-                  (stretchYPath.visible = !1),
+                  (stretchYPath.visible = false),
                   (clickableObjects[selectedItem.data.id].userData.height +=
                     stretchYPath.length),
                   updatePlanHistory(
@@ -2127,9 +2128,9 @@ function initPlanView(planCanvas: any) {
                   applyMasksToRoofs(project.activeLayer.data.id),
                   redrawLevelsFloors(project.activeLayer.data.id))
                 : 5 === mouseMode && elevating
-                  ? ((elevating = !1),
+                  ? ((elevating = false),
                     (mouseMode = -1),
-                    (elevatePath.visible = !1),
+                    (elevatePath.visible = false),
                     updatePlanHistory(
                       plan,
                       null,
@@ -2227,7 +2228,7 @@ function initPlanView(planCanvas: any) {
     else if ('pointer' === toolMode) {
       if (0 === mouseMode) {
         if (
-          ((dragging = !0),
+          ((dragging = true),
             (snapPoint = e.point),
             (snapPoint.x = parseInt(e.point.x)),
             (snapPoint.y = parseInt(e.point.y)),
@@ -2277,8 +2278,8 @@ function initPlanView(planCanvas: any) {
                   (i.data.type = 'toolsRectangle'),
                   (i.strokeColor = '#b19064'),
                   (i.strokeWidth = 1),
-                  (i.strokeScaling = !1),
-                  (i.locked = !0),
+                  (i.strokeScaling = false),
+                  (i.locked = true),
                   (selectedItem.data.toolsRectangleInner = i),
                   i.rotate(selectedItem.data.angle),
                   (threedAngleProp.innerText = (
@@ -2393,8 +2394,8 @@ function initPlanView(planCanvas: any) {
               (i.data.type = 'toolsRectangle'),
               (i.strokeColor = '#b19064'),
               (i.strokeWidth = 1),
-              (i.strokeScaling = !1),
-              (i.locked = !0),
+              (i.strokeScaling = false),
+              (i.locked = true),
               (selectedItem.data.toolsRectangleInner = i),
               i.rotate(h)
         } else {
@@ -2406,8 +2407,8 @@ function initPlanView(planCanvas: any) {
               (i.data.type = 'toolsRectangle'),
               (i.strokeColor = '#b19064'),
               (i.strokeWidth = 1),
-              (i.strokeScaling = !1),
-              (i.locked = !0),
+              (i.strokeScaling = false),
+              (i.locked = true),
               (selectedItem.data.toolsRectangleInner = i),
               i.rotate(selectedItem.data.angle)
         }
@@ -2426,7 +2427,7 @@ function initPlanView(planCanvas: any) {
           (elevateIcon.position =
             selectedItem.data.toolsRectangleInner.segments[0].point),
           selectedItem.data.id &&
-          ((rotating = !0),
+          ((rotating = true),
             (clickableObjects[selectedItem.data.id].rotation.y =
               (((selectedItem.rotation + 180) % 360) / 180) * Math.PI),
             (clickableObjects[selectedItem.data.id].rotation.x = Math.PI),
@@ -2439,7 +2440,7 @@ function initPlanView(planCanvas: any) {
             render())
       } else if (2 === mouseMode) {
         if (selectedItem.data.id) {
-          scalingXY = !0
+          scalingXY = true
           try {
             var v = (selectedItem.data.angle / 90) * Math.PI,
               w = e.point,
@@ -2818,7 +2819,7 @@ function initPlanView(planCanvas: any) {
       if (2 === e.event.buttons)
         (paper.view.center = paper.view.center.add(t)), redrawGrid()
       else if (0 === mouseMode) {
-        ; (dragging = !0),
+        ; (dragging = true),
           (snapPoint = e.point),
           (snapPoint.x = parseInt(e.point.x)),
           (snapPoint.y = parseInt(e.point.y)),
@@ -2834,7 +2835,7 @@ function initPlanView(planCanvas: any) {
             (resizeIcon.position =
               selectedItem.data.toolsRectangleInner.segments[3].point))
       } else if (2 === mouseMode) {
-        scalingXY = !0
+        scalingXY = true
         try {
           if (e.point.x > 1 && e.point.y > 1) {
             ; (backgroundRasterRatioX = Math.abs(
@@ -2936,7 +2937,7 @@ function initPlanView(planCanvas: any) {
               wallHelperRectangle.segments[3].point.x),
             (wallHelper3dCube.geometry.vertices[6].z =
               wallHelperRectangle.segments[3].point.y),
-            (wallHelper3dCube.geometry.verticesNeedUpdate = !0),
+            (wallHelper3dCube.geometry.verticesNeedUpdate = true),
             (tween = new TWEEN.Tween(controls.target)
               .to(wallHelper3dCube.position, 1)
               .onUpdate(render)
@@ -3121,7 +3122,7 @@ function initPlanView(planCanvas: any) {
             (roofHelper3dCube.geometry.vertices[3].y = -c - u),
             (roofHelper3dCube.geometry.vertices[6].y = -c + u),
             (roofHelper3dCube.geometry.vertices[7].y = -c + u),
-            (roofHelper3dCube.geometry.verticesNeedUpdate = !0),
+            (roofHelper3dCube.geometry.verticesNeedUpdate = true),
             (tween = new TWEEN.Tween(controls.target)
               .to(roofHelper3dCube.position, 1)
               .onUpdate(render)
@@ -3268,6 +3269,7 @@ function initPlanView(planCanvas: any) {
           )
         }
     }
+    
     */
   }
   /* */
@@ -3279,12 +3281,12 @@ function initPlanView(planCanvas: any) {
       if ('pointer' === toolMode) {
         deselectAll()
       } else if ('floor' === toolMode && startedDrawingFloor) {
-        startedDrawingFloor = !1
-        floorHelperPath.visible = !1
-        floorPath.closed = !0
+        startedDrawingFloor = false
+        floorHelperPath.visible = false
+        floorPath.closed = true
       }
     },
-    !1
+    false
   )
 
   // ** PAPER CANVAS:
@@ -5421,7 +5423,7 @@ function initThreed(threedItem: any, scene: any) {
 // ** REDRAW Functions
 function redrawGrid() {
   if (!redrawing && UILayout != '3dView') {
-    if (redrawing = !0) {
+    if (redrawing = true) {
       console.debug('redrawGrid?', true)
       screenScale = screenAvg / paper.view.zoom / 75
 
@@ -5602,7 +5604,7 @@ function redrawGrid() {
         // @ts-expect-error
         horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
       })
-      redrawing = !1
+      redrawing = false
     }
   }
 }
@@ -6030,14 +6032,16 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         document.getElementById('mouseIndicatorX').style.top = '20%'
         document.getElementById('mouseIndicatorX').style.bottom = '56px'
         document.getElementById('mouseIndicatorX').style.left = '320px'
-        document.getElementById('mouseIndicatorX').style.display = 'inline-flex'
+        // document.getElementById('mouseIndicatorX').style.display = 'inline-flex'
+        document.getElementById('mouseIndicatorX').style.display = 'none'
 
         document.getElementById('mouseIndicatorY').style.height = '1px'
         document.getElementById('mouseIndicatorY').style.position = 'absolute'
         document.getElementById('mouseIndicatorY').style.top = '56px'
         document.getElementById('mouseIndicatorY').style.left = '320px'
         document.getElementById('mouseIndicatorY').style.right = '0px'
-        document.getElementById('mouseIndicatorY').style.display = 'inline-flex'
+        // document.getElementById('mouseIndicatorY').style.display = 'inline-flex'
+        document.getElementById('mouseIndicatorY').style.display = 'none'
     // }
 
   /* */
@@ -7037,13 +7041,15 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               minSize={2}
                               maxSize={2}
                               style={{
-                                height: '100%'
+                                // height: '100%'
+                                // height: '400px'
                               }}
                             >
                               <canvas 
                                 id='rulerLeft' 
                                 width='30' 
-                                height='100%' 
+                                // height='100%' 
+                                height='400px'
                                 // onMouseDown={() => addVerticalGuide()}
                                 // onMouseUp={() => removeVerticalGuide()}
                               ></canvas>
@@ -7064,11 +7070,19 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               { true && (
                                 <PaperCanvas />
                               )}
+
+                              <canvas 
+                                id='rulerBottom' 
+                                width='1024' 
+                                height='20px' 
+                                // onMouseDown={() => addHorizontalGuide()}
+                                // onMouseUp={() => removeHorizontalGuide()}
+                              ></canvas>
                             
                             </Panel>
                           </PanelGroup>
                             
-                          <PanelGroup
+                          {/* <PanelGroup
                             direction='vertical' 
                             autoSaveId='ThreeDHomeDesignLayoutSub6'
                             style={{
@@ -7085,12 +7099,12 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                               <canvas 
                                 id='rulerBottom' 
                                 width='1024' 
-                                height='20' 
+                                height='20px' 
                                 // onMouseDown={() => addHorizontalGuide()}
                                 // onMouseUp={() => removeHorizontalGuide()}
                               ></canvas>
                             </Panel>
-                          </PanelGroup>
+                          </PanelGroup> */}
                             
                           <PanelGroup
                             direction='vertical' 
