@@ -6410,6 +6410,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
 
     // ** HEY HEY HEY [MM] NEEDS ATTENTION [MM]
+    // ** CAN WE DO THIS WITHIN A SUB "TOOL" MODE? Yes please.
     document.onmouseup = function (e: any) {
       // **
       draggingThreedIcon = false
