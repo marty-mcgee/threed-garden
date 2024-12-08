@@ -2,7 +2,7 @@
 
 [WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: WordPress, Apollo GraphQL, Leva Control GUI, Radix-UI, Tailwind CSS, FarmBot React 3D (Beta), Open AI](https://github.com/marty-mcgee/threed-garden/)
 
-## Live Demo
+## Live Demo (v0.17.0-x)
 
 🌱 [threedgarden.com](https://threedgarden.com)
 
