@@ -20,7 +20,6 @@ import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
 import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
-import GetHomeDesigns from '#/lib/api/graphql/scripts/getHomeDesigns.gql'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
@@ -390,9 +389,6 @@ function nounStore(this: IStore, _type = 'noun') {
             break
           case 'project':
             QUERY = GetProjects
-            break
-          case 'homeDesign':
-            QUERY = GetHomeDesigns // GetProjects // GetHomeDesigns
             break
           case 'participants':
             QUERY = GetParticipants
@@ -906,7 +902,6 @@ export const preferencesStore = new (nounStore as any)('preferences')
 export const canvasStateStore = new (nounStore as any)('canvasState')
 // regular nouns
 export const projectStore = new (nounStore as any)('project')
-export const homeDesignStore = new (nounStore as any)('homeDesign')
 export const sceneStore = new (nounStore as any)('scene')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
@@ -929,7 +924,6 @@ export const stores = {
   preferencesStore,
   canvasStateStore,
   projectStore,
-  homeDesignStore,
   sceneStore,
   participantStore,
   planStore,
@@ -953,7 +947,6 @@ export const queries = {
   GetPreferences,
   GetCanvasStates,
   GetProjects,
-  GetHomeDesigns,
   GetScenes,
   GetParticipants,
   GetPlans,
@@ -969,7 +962,6 @@ export const mutations = {
   UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
   UpdateCanvasStates: 'HEY HEY HEY UpdateCanvasStates',
   UpdateProjects: 'HEY HEY HEY UpdateProjects',
-  // UpdateHomeDesigns: 'HEY HEY HEY UpdateHomeDesigns',
   UpdatePlans: 'HEY HEY HEY UpdatePlans',
   UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs',
 }
