@@ -5045,7 +5045,9 @@ function beginDrag(event: any, threedItem: TThreedItem) {
     showThreedLicenseSummary(threedItem)
     setToolMode('pointer')
 
-    // ONLY DO THIS IF NEEDED/INTENDED (with intent)
+    // **
+    // ** ONLY DO THIS IF NEEDED/INTENDED (with intent) ;) [MM]
+    // **
     if (threedItem != draggingThreedItem) {
 
       draggingThreedItem = threedItem // set global var to this function parameter
@@ -5060,16 +5062,16 @@ function beginDrag(event: any, threedItem: TThreedItem) {
       )
       // console.debug('beginDrag: PAPERviewToProject', PAPERviewToProject)
       draggingThreedRectangle.position = PAPERviewToProject
+      draggingThreedRectangle.visible = false
 
       // if (threedItem) {
-        threedItem.scale && threedItem.scale.x
-          ? draggingThreedRectangle.bounds.width = threedItem.size.x * threedItem.scale.x
-          : draggingThreedRectangle.bounds.width = threedItem.size.x
-        threedItem.scale && threedItem.scale.z
-          ? draggingThreedRectangle.bounds.height = threedItem.size.z * threedItem.scale.z
-          : draggingThreedRectangle.bounds.height = threedItem.size.z
+      threedItem.scale && threedItem.scale.x
+        ? draggingThreedRectangle.bounds.width = threedItem.size.x * threedItem.scale.x
+        : draggingThreedRectangle.bounds.width = threedItem.size.x
+      threedItem.scale && threedItem.scale.z
+        ? draggingThreedRectangle.bounds.height = threedItem.size.z * threedItem.scale.z
+        : draggingThreedRectangle.bounds.height = threedItem.size.z
       // }
-      draggingThreedRectangle.visible = false
 
       threedDragDiv = document.getElementById('threedDragDiv')
       threedDragDiv.style.background = 'url(' + threedItemsURL + 'objects/' + threedItem.title + '_top.png)'
@@ -6405,23 +6407,36 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       //       parseInt(rasterImageN.y / snapTolerance) * snapTolerance)
       // }
     }
-    // ** 
-    document.onmouseup = function (e: any) {
-      draggingThreedIcon = false
-      return  verticalSliderDragging
-              ? ((verticalSliderDragging = false), false)
-                : horizontalSliderLeftDragging
-              ? ((horizontalSliderLeftDragging = false), false)
-                : horizontalSliderRightDragging
-              ? ((horizontalSliderRightDragging = false), false)
 
-              : (  draggingThreedItem // !== -1 
-                && addThreed(e, draggingThreedItem, canvasStateVar().state.scene),
-                
-                void (draggingNewGuide && (draggingNewGuide = false)))
+
+    // ** HEY HEY HEY [MM] NEEDS ATTENTION [MM]
+    document.onmouseup = function (e: any) {
+      // **
+      draggingThreedIcon = false
+
+      // **
+      if (verticalSliderDragging) {
+        verticalSliderDragging = false
+      }
+      if (horizontalSliderLeftDragging) {
+        horizontalSliderLeftDragging = false
+      }
+      if (horizontalSliderRightDragging) {
+        horizontalSliderRightDragging = false
+      }
+
+      // **
+      if (draggingThreedItem) {
+        addThreed(e, draggingThreedItem, canvasStateVar().state.scene)
+        // void (draggingNewGuide && (draggingNewGuide = false))
+      }
+
+      // ** RETURN ???
+      return (
+        null
+      )
     }
     
-
 
   }, []) // end load data useEffect (client)
 
