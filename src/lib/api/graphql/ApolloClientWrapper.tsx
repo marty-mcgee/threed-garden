@@ -1,5 +1,10 @@
+// ==============================================================
+// TITLE: Apollo Client State+Store Wrapper
+
 'use client'
 // ^ this file needs the 'use client' pragma
+
+// ==============================================================
 
 import {
   ApolloLink,
@@ -21,20 +26,30 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug(`%c CCM TEST SUCCESS!!`, ccm.greenAlert)
 // console.debug(`%c CCM TEST WHOOPSIES`, ccm.red)
 
+// ==============================================================
+
+// ** APP VERSION
 // const appVersion: string = 'v0.17.0'
 const appVersion: string = require('package.json').version
 
-const uri_gql = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
-const uri_rest = process.env.NEXT_PUBLIC_WP_REST_API_URL    // 'https://threed.design/wp-json/wp/v2'
-// console.clear()
-console.debug('%c=========================================', ccm.darkgreen)
-console.debug('%c🥕 ThreeD Garden 🌱 Apollo loaded 🍄', ccm.darkgreen)
-console.debug('%c🌱 - appVersion', ccm.darkgreen, appVersion)
-console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
-console.debug('%c🦉 - REST API', ccm.darkgreen, uri_rest)
-console.debug('%c=========================================', ccm.darkgreen)
+// ** API ENDPOINTS
+const uri_gql: string = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_URL  // 'https://threed.design/graphql'
+const uri_rest: string = process.env.NEXT_PUBLIC_WP_REST_API_URL    // 'https://threed.design/wp-json/wp/v2'
 
-// have a function to create a client for you
+// ** DEBUGGING + TESTING
+const debug: boolean = false
+
+if (debug) {
+  // console.clear()
+  console.debug('%c=========================================', ccm.darkgreen)
+  console.debug('%c🥕 ThreeD Garden 🌱 Apollo loaded 🍄', ccm.darkgreen)
+  console.debug('%c🌱 - appVersion', ccm.darkgreen, appVersion)
+  console.debug('%c🦆 - GQL API', ccm.darkgreen, uri_gql)
+  console.debug('%c🦉 - REST API', ccm.darkgreen, uri_rest)
+  console.debug('%c=========================================', ccm.darkgreen)
+}
+
+// create a state+store client
 function makeClient() {
   // **
   const httpLink = new HttpLink({
@@ -70,7 +85,7 @@ function makeClient() {
   })
 }
 
-// you need to create a component to wrap your app in
+// component to wrap the app
 // export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
 export function ApolloClientWrapper({ children }: { children: any }) {
   // ** makeClient()
