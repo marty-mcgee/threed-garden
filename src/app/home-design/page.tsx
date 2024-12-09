@@ -6836,243 +6836,255 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         autoSaveId='ThreeDHomeDesignLayoutMain'
       >
         
-            <Panel
-              className='Panel'
-              defaultSize={100}
-              maxSize={100}
-              style={{
-                // border: '1px solid darkgreen',
-              }}
-            >
-              <PanelGroup 
-                direction='horizontal'
-                autoSaveId='ThreeDHomeDesignLayoutSub2'
+        <Panel
+          id='panelMain'
+          order={1}
+          className='Panel'
+          defaultSize={100}
+          maxSize={100}
+          style={{
+            // border: '1px solid darkgreen',
+          }}
+          // onResize={redrawGrid()}
+        >
+          <PanelGroup 
+            direction='horizontal'
+            autoSaveId='ThreeDHomeDesignLayoutSub1'
+          >
+            {/* VIEWS: OBJECT CATALOG */}
+            {prefs.showPanelFirst && (
+              
+              // {/* LEFT PANEL */}
+              <Panel
+                id='panelLeft'
+                // className='Panel'
+                order={2}
+                defaultSize={24}
+                maxSize={48}
+                style={{
+                  // border: '1px solid darkred',
+                }}
               >
-                {/* VIEWS: OBJECT CATALOG */}
-                {prefs.showPanelFirst && (
-                  
-                  // {/* LEFT PANEL */}
-                  <Panel
-                    id='panelLeft'
-                    // className='Panel'
-                    defaultSize={24}
-                    maxSize={48}
+                <PanelGroup
+                  direction='vertical'
+                  autoSaveId='ThreeDHomeDesignLayoutSub3'
+                >
+                  <Panel 
+                    id='catalogView'
+                    className='Panel'
+                    order={4}
+                    defaultSize={60}
+                    // maxSize={64}
                     style={{
-                      // border: '1px solid darkred',
+                      // border: '1px solid darkgreen',
                     }}
                   >
-                    <PanelGroup
-                      direction='vertical'
-                      autoSaveId='ThreeDHomeDesignLayoutSub3'
-                    >
-                      <Panel 
-                        id='catalogView'
-                        className='Panel'
-                        defaultSize={60}
-                        // maxSize={64}
-                        style={{
-                          // border: '1px solid darkgreen',
-                        }}
-                      >
-                        <div id='catalogFilters'>
-                          { false && (
-                            <Container>
-                              <input 
-                                type='text' 
-                                id='catalogTextFilter' 
-                                placeholder='🔍' 
-                                // width='32' 
-                              />
-                            </Container>
-                          )}
-                        </div>
-                        <div id='catalogItems'>
-                          { true && (
-                            <CatalogItems />
-                          )}
-                        </div>
-                      </Panel>
-
-                      <PanelResizeHandle />
-                      
-                      <Panel 
-                        id='viewProperties'
-                        className='Panel'
-                        defaultSize={40}
-                        // maxSize={64}
-                        style={{
-                          // border: '1px solid darkgreen',
-                        }}
-                      >
-                        { true && (
-                          <ViewProperties />
-                        )}
-                      </Panel>
-
-                    </PanelGroup>
+                    <div id='catalogFilters'>
+                      { false && (
+                        <Container>
+                          <input 
+                            type='text' 
+                            id='catalogTextFilter' 
+                            placeholder='🔍' 
+                            // width='32' 
+                          />
+                        </Container>
+                      )}
+                    </div>
+                    <div id='catalogItems'>
+                      { true && (
+                        <CatalogItems />
+                      )}
+                    </div>
                   </Panel>
+
+                  <PanelResizeHandle />
                   
-                )}
+                  <Panel 
+                    id='viewProperties'
+                    className='Panel'
+                    order={5}
+                    defaultSize={40}
+                    // maxSize={64}
+                    style={{
+                      // border: '1px solid darkgreen',
+                    }}
+                  >
+                    { true && (
+                      <ViewProperties />
+                    )}
+                  </Panel>
 
-                <PanelResizeHandle />
+                </PanelGroup>
+              </Panel>
+              
+            )}
 
-                {/* VIEWS: CANVASES */}
-                {prefs.showPanelLast && (
+            <PanelResizeHandle />
 
-                  // {/* RIGHT PANEL */}
+            {/* VIEWS: CANVASES */}
+            {prefs.showPanelLast && (
+
+              // {/* RIGHT PANEL */}
+              <Panel
+                id='panelRight'
+                order={3}
+                className='Panel'
+                defaultSize={76}
+                maxSize={100}
+                style={{
+                  // border: '1px solid darkblue',
+                }}
+              >
+                {/* MAIN CANVASES (TOP + BOTTOM) */}
+                <PanelGroup 
+                  direction='vertical'
+                  autoSaveId='ThreeDHomeDesignLayoutSub4'
+                >
+                  
+                  {/* PANEL: 3D FIBER CANVAS */}
                   <Panel
-                    // className='Panel'
-                    defaultSize={76}
+                    id='panel3DCanvas'
+                    order={6}
+                    className='Panel'
+                    defaultSize={50}
                     maxSize={100}
                     style={{
                       // border: '1px solid darkblue',
                     }}
                   >
-                    {/* MAIN CANVASES (TOP + BOTTOM) */}
-                    <PanelGroup 
-                      direction='vertical'
-                      autoSaveId='ThreeDHomeDesignLayoutSub4'
+                    <Grid 
+                      id='view3d'
+                      style={{
+                        height: '100%',
+                        // width: '100%',
+                        border: '1px solid #222222',
+                      }}
                     >
-                      
-                      {/* PANEL: 3D FIBER CANVAS */}
-                      <Panel
-                        className='Panel'
-                        defaultSize={50}
-                        maxSize={100}
+                      {/* <Text>
+                        Main Content (2nd Level)
+                      </Text> */}
+                      {/* <SessionData 
+                        session={session} 
+                      /> */}
+                      {/* THREED HOME DESIGN: 3D CANVAS */}
+
+                      {/* DO RUN THIS */}
+                      { true && (
+                        <ThreeDComponents
+                          // **
+                        />
+                      )}
+
+                      {/* <div id='overlayLogo3dView' className='overlayLogo'>
+                        <a href='https://threedgarden.com/home-design/'><img
+                            src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
+                        <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
+                      </div>
+                      <div id='overlayMenu3dView'>
+                        <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
+                        <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
+                      </div> */}
+                    </Grid>
+                  </Panel>
+                  
+                  <PanelResizeHandle />
+
+                  {/* PANEL: 2D PAPER */}
+                  <Panel
+                    id='panel2DCanvas'
+                    order={7}
+                    className='Panel'
+                    defaultSize={50}
+                    maxSize={100}
+                    style={{
+                      border: '1px solid #222222',
+                      // width: '100vw',
+                      // display: 'flex',
+                      // flexGrow: '1',
+                      // flexDirection: 'column',
+                    }}
+                  >
+
+                    <div
+                      // columns='1'
+                      style={{
+                        // display: 'flex',
+                        // flexGrow: '1',
+                        // flexDirection: 'column',
+                        width: '100%',
+                        height: '100%',
+                      }}
+                    >
+                      <Flex
+                        // columns='2'
                         style={{
-                          // border: '1px solid darkblue',
-                        }}
-                      >
-                        <Grid 
-                          id='view3d'
-                          style={{
-                            height: '100%',
-                            // width: '100%',
-                            border: '1px solid #222222',
-                          }}
-                        >
-                          {/* <Text>
-                            Main Content (2nd Level)
-                          </Text> */}
-                          {/* <SessionData 
-                            session={session} 
-                          /> */}
-                          {/* THREED HOME DESIGN: 3D CANVAS */}
-
-                          {/* DO RUN THIS */}
-                          { true && (
-                            <ThreeDComponents
-                              // **
-                            />
-                          )}
-
-                          {/* <div id='overlayLogo3dView' className='overlayLogo'>
-                            <a href='https://threedgarden.com/home-design/'><img
-                                src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
-                            <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
-                          </div>
-                          <div id='overlayMenu3dView'>
-                            <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
-                            <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
-                          </div> */}
-                        </Grid>
-                      </Panel>
-                      
-                      <PanelResizeHandle />
-
-                      {/* PANEL: 2D PAPER */}
-                      <Panel
-                        className='Panel'
-                        defaultSize={50}
-                        maxSize={100}
-                        style={{
-                          border: '1px solid #222222',
-                          // width: '100vw',
-                          display: 'flex',
-                          // flexGrow: '1',
+                          display: 'inline-flex',
+                          // flexGrow: '0',
                           // flexDirection: 'column',
+                          width: '100%',
+                          height: '90%',
                         }}
                       >
-
                         <div
-                          // columns='1'
                           style={{
-                            // display: 'flex',
-                            // flexGrow: '1',
-                            // flexDirection: 'column',
-                            width: '100%',
+                            width: '20px',
                             height: '100%',
                           }}
                         >
-                          <Flex
-                            // columns='2'
-                            style={{
-                              display: 'inline-flex',
-                              // flexGrow: '0',
-                              // flexDirection: 'column',
-                              width: '100%',
-                              height: '90%',
-                            }}
-                          >
-                            <div
-                              style={{
-                                width: '20px',
-                                height: '100%',
-                              }}
-                            >
-                            <canvas 
-                              id='rulerLeft' 
-                              width='20px' 
-                              height='100%' 
-                              // height='400px'
-                              // onMouseDown={() => addVerticalGuide()}
-                              // onMouseUp={() => removeVerticalGuide()}
-                            ></canvas>
-                            </div>
-
-                            {/* DO RUN THIS */}
-                            { true && (
-                              <div 
-                                id='planView'
-                                style={{
-                                  width: '100%',
-                                  height: '100%',
-                                }}
-                              >
-                                <PaperCanvas />
-                              </div>
-                            )}
-                          </Flex>
-                          
-                          <Flex
-                            // columns='1'
-                            style={{
-                              // display: 'inline-flex',
-                              // flexGrow: '0',
-                              // flexDirection: 'row',
-                              width: '100%',
-                              height: '10%',
-                            }}
-                          >
-                            <canvas 
-                              id='rulerBottom' 
-                              width='100%' 
-                              height='20px' 
-                              // onMouseDown={() => addHorizontalGuide()}
-                              // onMouseUp={() => removeHorizontalGuide()}
-                            ></canvas>
-                          </Flex>
+                        <canvas 
+                          id='rulerLeft' 
+                          width='20px' 
+                          height='100%' 
+                          // height='400px'
+                          // onMouseDown={() => addVerticalGuide()}
+                          // onMouseUp={() => removeVerticalGuide()}
+                        ></canvas>
                         </div>
 
-                      </Panel>
+                        {/* DO RUN THIS */}
+                        { true && (
+                          <div 
+                            id='planView'
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                            }}
+                          >
+                            <PaperCanvas />
+                          </div>
+                        )}
+                      </Flex>
                       
-                    </PanelGroup>
+                      <Flex
+                        // columns='1'
+                        style={{
+                          // display: 'inline-flex',
+                          // flexGrow: '0',
+                          // flexDirection: 'row',
+                          width: '100%',
+                          height: '10%',
+                        }}
+                      >
+                        <canvas 
+                          id='rulerBottom' 
+                          width='100%' 
+                          height='20px' 
+                          // onMouseDown={() => addHorizontalGuide()}
+                          // onMouseUp={() => removeHorizontalGuide()}
+                        ></canvas>
+                      </Flex>
+                    </div>
 
                   </Panel>
+                  
+                </PanelGroup>
 
-                )}
-              </PanelGroup>
-            </Panel>
+              </Panel>
+
+            )}
+          </PanelGroup>
+        </Panel>
         
       </PanelGroup>
 
@@ -7133,10 +7145,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         </div>
         */}
 
-    </Flex>
-
-      
-      
+      </Flex>
     </Flex>
   )
 }
