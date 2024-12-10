@@ -51,7 +51,7 @@
     "@clerk/nextjs": "6.3.1",
     
     "@apollo/client": "3.11.10",
-    "@apollo/experimental-nextjs-app-support": "0.11.6",
+    "@apollo/experimental-nextjs-app-support": "0.11.7",
     "@apollo/react-hooks": "4.0.0",
     "graphql": "16.9.0",
     "graphql-tag": "2.12.6",
@@ -70,6 +70,8 @@
     "r3f-perf": "7.2.1",
     
     "paper": "0.12.18",
+    
+    "@tweenjs/tween.js": "18.6.4",
 
     "leva": "0.9.35",
     
@@ -94,11 +96,12 @@
     "@radix-ui/react-switch": "1.1.0",
     "@radix-ui/react-tooltip": "1.1.2",
 
-    "@mui/material": "6.1.1",
-    "@mui/icons-material": "6.1.1",
     "styled-components": "6.1.11",
     "@emotion/styled": "11.13.0",
     "@emotion/react": "11.13.3",
+
+    "@mui/material": "6.1.1",
+    "@mui/icons-material": "6.1.1",
 
     "tailwindcss": "3.4.10",
     "tailwind-merge": "2.5.2",
@@ -107,8 +110,6 @@
     "postcss": "8.4.41",
     "html-react-parser": "5.1.10",
     "autoprefixer": "10.4.20",
-    
-    "@tweenjs/tween.js": "18.6.4",
 
     "glsl-random": "0.0.5",
     "glslify-loader": "2.0.0",
@@ -124,33 +125,10 @@
     "@casl/ability": "5.4.3",
     "@casl/react": "3.1.0",
 
-    
+
     "farmbot": "15.8.8",
     "lodash": "4.17.21",
-    "chroma-js": "3.1.2",
-
-
-    "ai": "3.4.18",
-    "openai": "4.68.4",
-    "zod": "3.23.8",
-    "@ai-sdk/openai": "0.0.68",
-    
-    "@vercel/analytics": "1.3.1",
-    "@vercel/kv": "3.0.0",
-
-    "sonner": "1.5.0",
-    "react-markdown": "8.0.7",
-    "framer-motion": "11.3.30",
-    "geist": "1.3.1",
-    "nanoid": "5.0.7",
-    "react-intersection-observer": "9.10.3",
-    "react-syntax-highlighter": "15.5.0",
-    "react-textarea-autosize": "8.5.3",
-    "remark-gfm": "3.0.1",
-    "remark-math": "5.1.1",
-
-    "attr-accept": "2.2.4",
-    "react-dropzone": "14.2.9"
+    "chroma-js": "3.1.2"
     
   },
 
