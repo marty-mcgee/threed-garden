@@ -87,9 +87,9 @@ src/lib/ecctrl-new
 src/lib/ecctrl/src-old
 
 # threed.ai
-src/app/ai
-src/layout/ai
-src/lib/threed/threed.ai
+# src/app/ai
+# src/layout/ai
+# src/lib/threed/threed.ai
 
 # threed.home-design
 # src/app/home-design
