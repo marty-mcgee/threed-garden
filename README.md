@@ -12,14 +12,15 @@
 
 ## For Developers
 
-🤖 Source Code: ["name": "threed-garden"](https://github.com/marty-mcgee/threed-garden)
+🤖 Source Code: [github](https://github.com/marty-mcgee/threed-garden)
 
 ### Install + Run Options
 
 `git clone https://github.com/marty-mcgee/threed-garden.git`
+
 `yarn install threed-garden`
 
-- note: you can use `npm` or `pnpm` as well
+- note: you can use `yarn` or `npm` or `pnpm`
 
 1. install app: `yarn install`
 2. run in local env: `yarn dev`
