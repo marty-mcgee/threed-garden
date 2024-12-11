@@ -779,8 +779,8 @@ const initThreeDPaper = (planCanvas: any) => {
   // animate()
   // ** ================================================
   
-  // draw1()
-  // initPlanView(planCanvas)
+  draw1()
+  initPlanView(planCanvas)
 
   // ** ================================================
   
@@ -6882,7 +6882,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                     }}
                   >
                     <div id='catalogFilters'>
-                      { false && (
+                      { true && (
                         <Container>
                           <input 
                             type='text' 
