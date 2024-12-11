@@ -59,7 +59,8 @@ import paper from 'paper'
 
 // ** THREED Imports
 // import ThreeDComponents from '~/src/lib/threed/threed'
-const ThreeDComponents = dynamic(() => import('~/src/lib/threed/ThreeDComponents'), { ssr: false })
+// const ThreeDComponents = dynamic(() => import('~/src/lib/threed/ThreeDComponents'), { ssr: false })
+const ThreeD = dynamic(() => import('~/src/lib/threed/ThreeD'), { ssr: false })
 
 // ** R3F Imports
 import {
@@ -779,7 +780,7 @@ const initThreeDPaper = (planCanvas: any) => {
   // ** ================================================
   
   // draw1()
-  initPlanView(planCanvas)
+  // initPlanView(planCanvas)
 
   // ** ================================================
   
@@ -5092,7 +5093,7 @@ function beginDrag(event: any, threedItem: TThreedItem) {
     }
 
   } catch (err) {
-    console.debug(err)
+    console.debug('%c beginDrag: err', ccm.redAlert, err)
   }
 }
 
@@ -5141,7 +5142,7 @@ function addThreed(event: any, threedItem: any, scene: any) {
     event.preventDefault()
 
   } catch (err) {
-    console.debug('addThreed: err', err)
+    console.debug('%c addThreed: err', ccm.redAlert, err)
   }
 }
 
@@ -5426,7 +5427,7 @@ function initThreed(threedItem: any, scene: any) {
         )
       })
   } catch (err) {
-    console.debug('initThreed: err', err)
+    console.debug('%c initThreed: err', ccm.redAlert, err)
   }
 }
 
@@ -5614,6 +5615,7 @@ function redrawGrid() {
         // @ts-expect-error
         horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
       })
+      // ** done: set redrawing to false
       redrawing = false
     }
   }
@@ -5733,8 +5735,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // ==========================================================
 
   // ==========================================================
-  // ** USE DOM ELEMENT STATE
   // ** TESTING: DOM ELEMENT as React State Variables
+  // ** USE DOM ELEMENT STATE
   const [domElement, setDomElement] = useState(null)
   useEffect(() => {
     console.debug('useEffect: document.body', document.body)
@@ -6833,7 +6835,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
       {/* PAGE PANELS */}
       <PanelGroup 
         direction='vertical'
-        autoSaveId='ThreeDHomeDesignLayoutMain'
+        // autoSaveId='ThreeDHomeDesignLayoutMain'
       >
         
         <Panel
@@ -6849,7 +6851,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
         >
           <PanelGroup 
             direction='horizontal'
-            autoSaveId='ThreeDHomeDesignLayoutSub1'
+            // autoSaveId='ThreeDHomeDesignLayoutSub1'
           >
             {/* VIEWS: OBJECT CATALOG */}
             {prefs.showPanelFirst && (
@@ -6867,16 +6869,16 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
               >
                 <PanelGroup
                   direction='vertical'
-                  autoSaveId='ThreeDHomeDesignLayoutSub3'
+                  // autoSaveId='ThreeDHomeDesignLayoutSub2'
                 >
                   <Panel 
                     id='catalogView'
                     className='Panel'
                     order={4}
-                    defaultSize={60}
+                    defaultSize={50}
                     // maxSize={64}
                     style={{
-                      // border: '1px solid darkgreen',
+                      border: '1px solid green',
                     }}
                   >
                     <div id='catalogFilters'>
@@ -6904,10 +6906,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                     id='viewProperties'
                     className='Panel'
                     order={5}
-                    defaultSize={40}
+                    defaultSize={50}
                     // maxSize={64}
                     style={{
-                      // border: '1px solid darkgreen',
+                      border: '1px solid darkgreen',
                     }}
                   >
                     { true && (
@@ -6939,7 +6941,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                 {/* MAIN CANVASES (TOP + BOTTOM) */}
                 <PanelGroup 
                   direction='vertical'
-                  autoSaveId='ThreeDHomeDesignLayoutSub4'
+                  // autoSaveId='ThreeDHomeDesignLayoutSub3'
                 >
                   
                   {/* PANEL: 3D FIBER CANVAS */}
@@ -6948,9 +6950,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                     order={6}
                     className='Panel'
                     defaultSize={50}
-                    maxSize={100}
+                    minSize={1}
+                    maxSize={99}
                     style={{
-                      // border: '1px solid darkblue',
+                      border: '1px solid green',
                     }}
                   >
                     <Grid 
@@ -6961,17 +6964,10 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                         border: '1px solid #222222',
                       }}
                     >
-                      {/* <Text>
-                        Main Content (2nd Level)
-                      </Text> */}
-                      {/* <SessionData 
-                        session={session} 
-                      /> */}
-                      {/* THREED HOME DESIGN: 3D CANVAS */}
 
-                      {/* DO RUN THIS */}
+                      {/* THREED HOME DESIGN: 3D CANVAS */}
                       { true && (
-                        <ThreeDComponents
+                        <ThreeD // <ThreeDComponents
                           // **
                         />
                       )}
@@ -6996,59 +6992,54 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                     order={7}
                     className='Panel'
                     defaultSize={50}
-                    maxSize={100}
+                    minSize={1}
+                    maxSize={99}
                     style={{
-                      border: '1px solid #222222',
+                      border: '1px solid darkgreen',
                       // width: '100vw',
                       // display: 'flex',
                       // flexGrow: '1',
                       // flexDirection: 'column',
+                      overflow: 'auto',
                     }}
                   >
-
-                    <div
-                      // columns='1'
-                      style={{
-                        // display: 'flex',
-                        // flexGrow: '1',
-                        // flexDirection: 'column',
-                        width: '100%',
-                        height: '100%',
-                      }}
-                    >
                       <Flex
-                        // columns='2'
                         style={{
-                          display: 'inline-flex',
+                          // display: 'inline-flex',
                           // flexGrow: '0',
                           // flexDirection: 'column',
-                          width: '100%',
-                          height: '90%',
+                          // width: '100%',
+                          // height: '90%',
+                          // height: 'calc(100% - 0px)',
                         }}
                       >
-                        <div
+                        {/* <div
                           style={{
                             width: '20px',
-                            height: '100%',
+                            // height: '100%',
+                            // height: 'calc(100vh - 20px)',
+                            backgroundColor: 'gray', // '#636363',
                           }}
-                        >
-                        <canvas 
-                          id='rulerLeft' 
-                          width='20px' 
-                          height='100%' 
-                          // height='400px'
-                          // onMouseDown={() => addVerticalGuide()}
-                          // onMouseUp={() => removeVerticalGuide()}
-                        ></canvas>
-                        </div>
+                        > */}
+                          <canvas 
+                            id='rulerLeft' 
+                            width='20px' 
+                            // height='calc(100vh - 20px)'
+                            // height='400px'
+                            // height={getSize(7)}
+                            // onMouseDown={() => addVerticalGuide()}
+                            // onMouseUp={() => removeVerticalGuide()}
+                          ></canvas>
+                        {/* </div> */}
 
                         {/* DO RUN THIS */}
                         { true && (
                           <div 
                             id='planView'
                             style={{
-                              width: '100%',
-                              height: '100%',
+                              // width: '100%',
+                              // height: '100%',
+                              overflow: 'auto',
                             }}
                           >
                             <PaperCanvas />
@@ -7056,25 +7047,26 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
                         )}
                       </Flex>
                       
-                      <Flex
+                      <Grid
                         // columns='1'
                         style={{
                           // display: 'inline-flex',
-                          // flexGrow: '0',
+                          // flexGrow: '1',
                           // flexDirection: 'row',
-                          width: '100%',
-                          height: '10%',
+                          // width: '100vw',
+                          height: '20px',
+                          backgroundColor: 'gray', // '#636363',
                         }}
                       >
                         <canvas 
                           id='rulerBottom' 
                           width='100%' 
-                          height='20px' 
+                          height='20px'
+                          // height='100%'
                           // onMouseDown={() => addHorizontalGuide()}
                           // onMouseUp={() => removeHorizontalGuide()}
                         ></canvas>
-                      </Flex>
-                    </div>
+                      </Grid>
 
                   </Panel>
                   
