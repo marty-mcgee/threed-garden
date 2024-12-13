@@ -101,8 +101,8 @@ import {
 
 // ** STATIC DATA Imports
 import threedItemsJSON from '#/app/api/home-design/objects.json'
-// import planJSON from 'plans/threed-plan-example-001.threed'
-import planJSON from '#/app/api/home-design/threed-plan-demo-1.json'
+// import currentPlanJSON from 'plans/threed-plan-example-001.threed'
+import currentPlanJSON from '#/app/api/home-design/threed-plan-demo-1.json'
 
 // ** Helper Components
 // import Spinner from '#/layout/ui/spinner'
@@ -152,8 +152,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
 const debug: boolean = true
 const DEBUG: boolean = true
 
-// const appVersion: string = 'v0.16.1'
-const appVersion: string = require('package.json').version
+// const appVersion: string = require('package.json').version
 
 if (false && (debug || DEBUG)) {
   console.debug('%c====================================', ccm.darkgreen)
