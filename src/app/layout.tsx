@@ -8,17 +8,16 @@
 // ** NEXT Imports
 import dynamic from 'next/dynamic'
 
-// ** CSS + FONT Imports
-import { Inter } from 'next/font/google'
+// ** CSS Imports
 import '#/layout/styles/styles-tailwind-globals.css'
 // import '#/layout/styles/styles-radix-ui-themes.css'
-// import '#/layout/styles/styles-radix-ui-custom.css'
-import '#/lib/home-design/src/styles/radix-ui.css'
+import '#/layout/styles/styles-radix-ui-custom.css'
 import '#/layout/styles/styles-panels.module.css'
 // ** THREED CSS Imports
 import '#/lib/home-design/src/styles/threed-home-design.css'
-// import '#/lib/home-design/src/styles/annotations.css'
-// import '#/lib/home-design/src/styles/fa-550.css'
+import '#/lib/home-design/src/styles/annotations.css'
+// ** FONT Imports
+import { inter } from '#/layout/styles/fonts'
 
 // ** Apollo Client -- State Management using Cache/Store (via GraphQL)
 import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
@@ -40,9 +39,6 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 // ** HELPER Imports
 // ** Colorful Console Messages
 import ccm from '#/lib/utils/console-colors'
-
-// ** FONT SETTINGS
-const inter = Inter({ subsets: ['latin'] })
 
 // const appVersion: string = 'v0.17.0'
 const appVersion: string = require('package.json').version
@@ -67,7 +63,7 @@ export default function RootLayout({ children }: { children: any }) {
   // **
   return (
     <html lang='en' className='antialiased'>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <ApolloClientWrapper>
           <SessionWrapper>
             <ClerkProvider dynamic>
