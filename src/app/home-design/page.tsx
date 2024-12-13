@@ -6760,8 +6760,8 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
       <Flex 
         style={{ 
-          // display: 'inline-flex',
-          display: 'none',
+          display: 'inline-flex',
+          // display: 'none',
           flexDirection: 'column',
           marginLeft: '4px', 
           marginRight: '6px' 
