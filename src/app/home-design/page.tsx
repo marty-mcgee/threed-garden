@@ -32,7 +32,7 @@ import {
   projectStore,
   // queries,
   // mutations,
-  // reactive vars:
+  // reactive state vars:
   isPreferencesSetVar,
   preferencesDataVar,
   isCanvasStateSetVar,
@@ -57,6 +57,8 @@ import {
 
 // import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { DropdownMenuThreeD } from '#/lib/threed/components/controls/ThreeDDropdownControls'
+// import * as Dialog from '@radix-ui/react-dialog'
+// import { DialogModalsThreeD } from '#/lib/threed/components/controls/ThreeDDialogModals'
 
 // ** PAPER Imports
 import paper from 'paper'
@@ -163,19 +165,21 @@ if (false && (debug || DEBUG)) {
 // ==============================================================
 // ** 🟣 TYPED VARIABLES
 
-const enableOrbit: boolean = true
-const enableGizmoCube: boolean = true
+type TUILayout = '3dView' | 'planView' | 'default'
+type TToolMode = 'pointer' | 'walls' | 'floor' | 'roof' | 'dimension' | 'text' | 'background' | 'ground' | 'defaults'
 
-// <script type='text/javascript' data-cfasync='false'>
+let enableOrbit: boolean = true
+let enableGizmoCube: boolean = true
+
+let UILayout: TUILayout = 'default'
+let toolMode: TToolMode = 'pointer'
+let threedItemsURL: string = 'https://threedpublic.s3.amazonaws.com/demo/'
+
 let fragment: any = null
 let readOnly: boolean = false
-let UILayout: string = 'default' // 3dView | planView | default
-let threedItemsURL: string = 'https://threedpublic.s3.amazonaws.com/demo/'
-// </script>
 
-let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
+let threedHomeDesign: string = 'HEY HEY HEY ___',
   mouseMode: number = 0,
-  toolMode: string = 'pointer', // pointer | walls | floor | roof | dimension | text | background | ground | defaults
   selectedItem: any,
   defaultCursor: string = 'default',
   deselectAll: Function = () => {},
@@ -463,184 +467,7 @@ let threedHomeDesign: string = 'HEY HEY HEY _____________________________',
 // ==============================================================
 
 /* */
-
-// // import React from 'react'
-// import * as Dialog from '@radix-ui/react-dialog'
-// import { Cross2Icon } from '@radix-ui/react-icons'
-// // import './styles.css' 
-
-// const DialogModals = () => {
-//   const [containerAboutModal, setContainerAboutModal] = useState(null)
-//   console.debug('containerAboutModal', containerAboutModal)
-  
-//   return (
-//     <>
-//       <Dialog.Root>
-//         <Dialog.Trigger asChild>
-//           <button className='Button violet'>Show About Modal</button>
-//         </Dialog.Trigger>
-//         {/* <Dialog.Portal container={containerAboutModal}> */}
-//           <Dialog.Overlay className='DialogOverlay' />
-//           <Dialog.Content className='DialogContent'>
-//             <Dialog.Title className='DialogTitle'>
-//               About ThreeD Home Design
-//             </Dialog.Title>
-//             <Dialog.Description className='DialogDescription'>
-//               Make changes to your profile here. Click save when you're done.
-//             </Dialog.Description>
-//             {/* 
-//             <fieldset className='Fieldset'>
-//               <label className='Label' htmlFor='name'>
-//                 Name
-//               </label>
-//               <input className='Input' id='name' defaultValue='Marty McGee' />
-//             </fieldset>
-//             <fieldset className='Fieldset'>
-//               <label className='Label' htmlFor='username'>
-//                 Username
-//               </label>
-//               <input className='Input' id='username' defaultValue='@martymcgee' />
-//             </fieldset>
-//             <div
-//               style={{ display: 'flex', marginTop: 25, justifyContent: 'flex-end' }}
-//             >
-//               <Dialog.Close asChild>
-//                 <button className='Button green'>Save changes</button>
-//               </Dialog.Close>
-//             </div>
-//             */}
-//             <Dialog.Close asChild>
-//               <button className='IconButton' aria-label='Close'>
-//                 <Cross2Icon />
-//               </button>
-//             </Dialog.Close>
-//             <div className='modal-content'>
-//               <div className='modal-header'>
-//                 {/* <span className='close'><br/>-X-<br/></span> */}
-//                 {/* <a href='https://threedgarden.com/' title='ThreeD Garden'
-//                   // style='color: #FFFFFF text-decoration: none'
-//                 >        
-//                   <img src='favicon/favicon.png' 
-//                     height='48px' 
-//                     // 
-//                     alt='ThreeD Home Design' 
-//                   />
-//                   <h2>ThreeD Home Design</h2>
-//                 </a> */}
-//               </div>
-//               <div className='modal-body'>
-
-//                 <div className='tab'>
-//                   <button 
-//                     className='tablinks active' 
-//                     onClick={() => openTab('tab1')} 
-//                     id='tab1'
-//                   >
-//                     Intro
-//                   </button>
-//                 </div>
-
-//                 <div id='tab1Content' className='tabcontent' style={{display: 'block'}}>
-//                   <h3>ThreeD Home Design Introduction</h3>
-//                   <p>Plan + Share Ideas for your Home Design in 2D + 3D</p>
-//                   <div style={{padding: '12px'}}>
-//                     <div>
-//                       Save Plan Edits to local web storage? 
-//                       <input 
-//                         type='checkbox' 
-//                         id='saveEditsToLocalStorage' 
-//                         onChange={() => handleSaveEditsLocalStorageOption()}
-//                       />
-//                       <span className='tooltip'>
-//                         {/* <img src='images/homedesign/info.png' className='tooltip' /> */}
-//                         <span className='tooltiptext'>
-//                           <div>
-//                             Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='https://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
-//                             More info about 
-//                             <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">
-//                               Local Web Storage
-//                             </a>.
-//                           </div>
-//                         </span>
-//                       </span>
-//                       <div id='localStoragePlanDiv'>
-//                         <table>
-//                           <tbody>
-//                             <tr>
-//                               <td style={{ textAlign: 'center'}}>
-//                                 Most Recent Edit saved in Local Web Storage.
-//                                 <br />
-//                                 <button 
-//                                   id='loadLocalStoragePlanBtn'
-//                                   onClick={() => loadFromLocalStorage()}
-//                                 >
-//                                   Load Plan
-//                                 </button>
-//                                 <br />
-//                                 <br />
-//                                 <span id='localStoragePlanLastSavedDate'></span>
-//                               </td>
-//                               <td>
-//                                 <div>
-//                                   <img 
-//                                     id='localStoragePlanImage' 
-//                                     onClick={() => loadFromLocalStorage()}
-//                                   />
-//                                 </div>
-//                               </td>
-//                             </tr>
-//                           </tbody>
-//                         </table>
-//                       </div>
-//                     </div>
-//                     <div id='featuredPlan'>
-//                       <table>
-//                         <tbody>
-//                           <tr>
-//                             <td style={{ textAlign: 'center', width: '300px'}}>
-//                               <button 
-//                                 id='loadFeaturedPlanBtn'
-//                                 className='largeButton'
-//                                 onClick={() => loadExamplePlan()}
-//                               >
-//                                 Load Example Plan
-//                               </button>
-//                               <br /><br />
-//                               or
-//                               <br />
-//                               <button onClick={() => closeAllModals()} className='largeButton'>Start New Plan</button>
-//                             </td>
-//                             <td>
-//                               <div><img id='featuredPlanImage' onClick={() => loadExamplePlan()} /></div>
-//                             </td>
-//                           </tr>
-//                         </tbody>
-//                       </table>
-//                     </div>
-//                   </div>
-//                 </div>
-
-//               </div>
-//             </div>
-//           </Dialog.Content>
-//         {/* </Dialog.Portal> */}
-//       </Dialog.Root>
-
-//       {/* <div 
-//         id='modalAbout' 
-//         // className='modal' 
-//         ref={setContainerAboutModal}
-//       >
-//         <Text>HEY HEY HEY</Text>
-//       </div> */}
-
-//     </>
-//   )
-// }
-
-// export default DialogModals
-// ==============================================================
-
+// DIALOG MODALS (imported as component)
 /* */
 
 // ==============================================================
