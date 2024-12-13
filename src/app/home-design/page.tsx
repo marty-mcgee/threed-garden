@@ -50,44 +50,21 @@ import {
   useState,
   useRef,
   useEffect,
-  Suspense,
+  // Suspense,
   useCallback,
 } from 'react'
+
+
+// import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import { DropdownMenuThreeD } from '#/lib/threed/components/controls/ThreeDDropdownControls'
 
 // ** PAPER Imports
 import paper from 'paper'
 
 // ** THREED Imports
-// import ThreeDComponents from '~/src/lib/threed/threed'
-// const ThreeDComponents = dynamic(() => import('~/src/lib/threed/ThreeDComponents'), { ssr: false })
-const ThreeD = dynamic(() => import('~/src/lib/threed/ThreeD'), { ssr: false })
-
-// ** R3F Imports
-import {
-  Canvas,
-  // Camera, // use PerspectiveCamera from drei library
-  useFrame,
-  useThree,
-  useLoader,
-  // extend, // if using function extend({ OrbitControls })
-} from '@react-three/fiber'
-
-// ** R3F HELPERS Imports
-import {
-  PerspectiveCamera,
-  // Environment, Stage,
-  // KeyboardControls,
-  OrbitControls, TransformControls, PivotControls,
-  GizmoHelper, GizmoViewcube, GizmoViewport,
-  // ContactShadows, BakeShadows,
-  // softShadows, // softShadows()
-  Preload,
-  Loader, useProgress,
-  Html, Center,
-  // useGLTF, useFBX,
-} from '@react-three/drei'
-// ** QUESTION: do stuff with IMPORTS ??
-// extend({ OrbitControls })
+// import ThreeDComponents from '#/lib/threed/threed'
+// const ThreeDComponents = dynamic(() => import('#/lib/threed/ThreeDComponents'), { ssr: false })
+const ThreeD = dynamic(() => import('#/lib/threed/ThreeD'), { ssr: false })
 
 // ** RADIX-UI Imports
 import {
@@ -107,29 +84,20 @@ import {
 } from 'react-resizable-panels'
 import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
 
-// moved to layout
-// // ** STYLE Imports
-// // import '#/layout/styles/styles-radix-ui-themes.css'
-// // import '#/layout/styles/styles-radix-ui-custom.css'
-// import '#/lib/home-design/src/styles/radix-ui.css'
-// import stylesPanels from '#/layout/styles/styles-panels.module.css'
-// // ** THREED CSS Imports
-// import '#/lib/home-design/src/styles/threed-home-design.css'
-// // import '#/lib/home-design/src/styles/annotations.css'
-// // import '#/lib/home-design/src/styles/fa-550.css'
-
 // ** ICON Imports
 import { 
   ArrowLeftEndOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
 } from '@heroicons/react/24/outline'
-
-// ** LAYOUT Components (Head, Body, Foot)
-// import Header from '#/layout/header'
-// import Footer from '#/layout/footer'
+import {
+	HamburgerMenuIcon,
+	DotFilledIcon,
+	CheckIcon,
+	ChevronRightIcon,
+} from '@radix-ui/react-icons'
 
 // ** COMPONENT Imports
-import Logo from '#/layout/ui/logo'
+// import Logo from '#/layout/ui/logo'
 
 // ** STATIC DATA Imports
 import threedItemsJSON from '#/app/api/home-design/objects.json'
@@ -140,15 +108,6 @@ import planJSON from '#/app/api/home-design/threed-plan-demo-1.json'
 // import Spinner from '#/layout/ui/spinner'
 // ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
-
-// import React from 'react'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {
-	HamburgerMenuIcon,
-	DotFilledIcon,
-	CheckIcon,
-	ChevronRightIcon,
-} from '@radix-ui/react-icons'
 
 // ==============================================================
 
@@ -162,9 +121,9 @@ import * as THREE from 'three'
 // 🟢<script type='text/javascript' src='scripts/threed.js'></script>
 // 🟢ex: import threed from './scripts/threed'
 // ☑️<script type='text/javascript' src='scripts/trackballcontrols.js'></script>
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
+// import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
 // ☑️<script type='text/javascript' src='scripts/tween.js'></script>
-import * as TWEEN from '@tweenjs/tween.js'
+// import * as TWEEN from '@tweenjs/tween.js'
 // ☑️<script type='text/javascript' src='scripts/MTLLoader.js'></script>
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js'
 // ☑️<script type='text/javascript' src='scripts/OBJLoader.js'></script>
@@ -6494,227 +6453,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
 
 
 
-  // ** RADIX-UI DropdownMenu
-  const DropdownMenuThreeD = () => {
-    const [bookmarksChecked, setBookmarksChecked] = useState(true)
-    const [urlsChecked, setUrlsChecked] = useState(false)
-    const [person, setPerson] = useState('marty')
   
-    return (
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <button className='IconButton' aria-label='Customise options'>
-            <HamburgerMenuIcon />
-          </button>
-        </DropdownMenu.Trigger>
-  
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content 
-            className='DropdownMenuContent' 
-            // sideOffset={5}
-          >
-            <DropdownMenu.Item 
-              className='DropdownMenuItem'
-              // onClick={() => handleShowModalAbout()}
-            >
-              About <div className='RightSlot'>⌘+A</div>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item 
-              className='DropdownMenuItem'
-              // onClick={() => handleShowModal3dModel()}
-            >
-              3D Model <div className='RightSlot'>⌘+N</div>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item 
-              className='DropdownMenuItem'
-              // onClick={() => handleShowModalShare()}
-            >
-              Share <div className='RightSlot'>⌘+N</div>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item 
-              className='DropdownMenuItem'
-              // onClick={() => handleShowModalLoading()}
-            >
-              Loading <div className='RightSlot'>⌘+N</div>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item 
-              className='DropdownMenuItem' 
-              disabled
-            >
-              New Private Modal <div className='RightSlot'>⇧+⌘+N</div>
-            </DropdownMenu.Item>
-            <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
-                Files
-                <div className='RightSlot'>
-                  <ChevronRightIcon />
-                </div>
-              </DropdownMenu.SubTrigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.SubContent
-                  className='DropdownMenuSubContent'
-                  sideOffset={2}
-                  alignOffset={-5}
-                >
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Save Page As… <div className='RightSlot'>⌘+S</div>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Create Shortcut…
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Name Window…
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator className='DropdownMenu.Separator' />
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Developer Tools
-                  </DropdownMenu.Item>
-                </DropdownMenu.SubContent>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Sub>
-            <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
-                Edits
-                <div className='RightSlot'>
-                  <ChevronRightIcon />
-                </div>
-              </DropdownMenu.SubTrigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.SubContent
-                  className='DropdownMenuSubContent'
-                  sideOffset={2}
-                  alignOffset={-5}
-                >
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Save Page As… <div className='RightSlot'>⌘+S</div>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Create Shortcut…
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Name Window…
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator className='DropdownMenu.Separator' />
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Developer Tools
-                  </DropdownMenu.Item>
-                </DropdownMenu.SubContent>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Sub>
-            <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
-                Plan Views
-                <div className='RightSlot'>
-                  <ChevronRightIcon />
-                </div>
-              </DropdownMenu.SubTrigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.SubContent
-                  className='DropdownMenuSubContent'
-                  sideOffset={2}
-                  alignOffset={-5}
-                >
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Save Page As… <div className='RightSlot'>⌘+S</div>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Create Shortcut…
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Name Window…
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator className='DropdownMenu.Separator' />
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Developer Tools
-                  </DropdownMenu.Item>
-                </DropdownMenu.SubContent>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Sub>
-            <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
-                3D Views
-                <div className='RightSlot'>
-                  <ChevronRightIcon />
-                </div>
-              </DropdownMenu.SubTrigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.SubContent
-                  className='DropdownMenuSubContent'
-                  sideOffset={2}
-                  alignOffset={-5}
-                >
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Save Page As… <div className='RightSlot'>⌘+S</div>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Create Shortcut…
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Name Window…
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator className='DropdownMenu.Separator' />
-                  <DropdownMenu.Item className='DropdownMenuItem'>
-                    Developer Tools
-                  </DropdownMenu.Item>
-                </DropdownMenu.SubContent>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Sub>
-  
-            <DropdownMenu.Separator className='DropdownMenuSeparator' />
-  
-            <DropdownMenu.CheckboxItem
-              className='DropdownMenuCheckboxItem'
-              checked={bookmarksChecked}
-              onCheckedChange={setBookmarksChecked}
-            >
-              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                <CheckIcon />
-              </DropdownMenu.ItemIndicator>
-              Show Bookmarks <div className='RightSlot'>⌘+B</div>
-            </DropdownMenu.CheckboxItem>
-            <DropdownMenu.CheckboxItem
-              className='DropdownMenuCheckboxItem'
-              checked={urlsChecked}
-              onCheckedChange={setUrlsChecked}
-            >
-              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                <CheckIcon />
-              </DropdownMenu.ItemIndicator>
-              Show Full URLs
-            </DropdownMenu.CheckboxItem>
-  
-            <DropdownMenu.Separator className='DropdownMenuSeparator' />
-  
-            <DropdownMenu.Label className='DropdownMenuLabel'>
-              People
-            </DropdownMenu.Label>
-            <DropdownMenu.RadioGroup value={person} onValueChange={setPerson}>
-              <DropdownMenu.RadioItem
-                className='DropdownMenuRadioItem'
-                value='marty'
-              >
-                <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                  <DotFilledIcon />
-                </DropdownMenu.ItemIndicator>
-                Marty McGee
-              </DropdownMenu.RadioItem>
-              <DropdownMenu.RadioItem
-                className='DropdownMenuRadioItem'
-                value='alex'
-              >
-                <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                  <DotFilledIcon />
-                </DropdownMenu.ItemIndicator>
-                Alex Uychocde
-              </DropdownMenu.RadioItem>
-            </DropdownMenu.RadioGroup>
-  
-            <DropdownMenu.Arrow className='DropdownMenuArrow' />
-          </DropdownMenu.Content>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Root>
-    )
-  }
 
 
   // ** RETURN JSX
