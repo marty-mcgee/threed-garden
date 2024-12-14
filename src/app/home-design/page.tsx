@@ -7,8 +7,10 @@
 // ==============================================================
 // RESOURCES
 
-// ** THREED Imports
-import ThreeDHomeDesign from '#/lib/home-design/src/HomeDesign'
+// ** REACT Imports
+import {
+  Suspense
+} from 'react'
 
 // ** NEXT Imports
 // import type { NextPage } from 'next'
@@ -48,6 +50,13 @@ import { useSession } from 'next-auth/react'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
 // import SessionData from '~/src/layout/ui/session-data'
 // import CustomLink from '~/src/layout/ui/custom-link'
+
+
+
+
+// ** THREED Imports
+// import ThreeDHomeDesign from '#/lib/home-design/src/HomeDesign'
+const ThreeDHomeDesign = dynamic(() => import('#/lib/home-design/src/HomeDesign'), { ssr: false })
 
 
 // ** EXPORT JSX as NEXT PAGE
@@ -315,17 +324,17 @@ export default async function HomeDesignPage() {
   // ** Return Jsx
   // ** retuRn JSX.Element
   return (
-    <div
-      // direction='row'
-      style={{
-        display: 'inline-flex',
-        flexGrow: '1',
-        height: '90vh',
-        width: '99.8%',
-      }}
-    >
-      <ThreeDHomeDesign />
-      
-    </div>
+    <Suspense fallback={'HEY HEY HEY'}>
+      <div
+        style={{
+          display: 'inline-flex',
+          flexGrow: '1',
+          height: '90vh',
+          width: '99.8%',
+        }}
+      >
+        <ThreeDHomeDesign />
+      </div>
+    </Suspense>
   )
 }
