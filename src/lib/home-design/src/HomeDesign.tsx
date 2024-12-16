@@ -14,18 +14,17 @@ import Image from 'next/image'
 
 // ** APOLLO Imports
 import { 
+  getApolloContext,
+
   useApolloClient,
   useReactiveVar,
-  // getApolloClient,
-  // getApolloContext,
+  
+  useQuery,
+  useSuspenseQuery,
+  useBackgroundQuery,
+  useReadQuery,
+  useFragment,
 } from '@apollo/client'
-// import {
-//   useQuery,
-//   useSuspenseQuery,
-//   useBackgroundQuery,
-//   useReadQuery,
-//   useFragment
-// } from '@apollo/experimental-nextjs-app-support/ssr'
 import {
   // stores,
   preferencesStore,
@@ -4959,7 +4958,7 @@ function initThreed(threedItem: any, scene: any) {
               OBJa.scale.y = mmScalePercentage
               OBJa.scale.z = mmScalePercentage
 
-              var imageN = new Image()
+              var imageN = document.createElement('img') // new Image()
               imageN.crossOrigin = 'anonymous'
               imageN.src = threedItemsURL + 'objects/' + threedItem.title + '_top.png'
               imageN.onload = function () {
@@ -5464,16 +5463,22 @@ const CatalogItems = (props: any): JSX.Element => {
 }
 
 
-// ** EXPORT JSX as NEXT PAGE
-// const HomeDesignPage = (props) => {
-// const HomeDesignPage: NextPage<TPageProps> = (props) => {
-// const HomeDesignPage: NextPage = (): JSX.Element => {
-// const HomeDesignPage: TNextPageWithProps = (): JSX.Element => {
-export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element { 
+// ** EXPORT JSX
+export default function ThreeDHomeDesign(): JSX.Element { 
   
   // ==========================================================
   // ** HOOKS (into [onMount] STATES)
   // ==========================================================
+
+  // **
+  // console.debug('ThreeDHomeDesign: =================================')
+  // console.debug('ThreeDHomeDesign: getApolloContext()', getApolloContext())
+  // console.debug('ThreeDHomeDesign: preferencesStore', preferencesStore)
+  // console.debug('ThreeDHomeDesign: preferencesStore.store.getState()', preferencesStore.store.getState())
+  // console.debug('ThreeDHomeDesign: preferencesStore.actions.getState()', preferencesStore.actions.getState())
+  // console.debug('ThreeDHomeDesign: preferencesDataVar()', preferencesDataVar())
+  // console.debug('ThreeDHomeDesign: canvasStateVar()', canvasStateVar())
+  // console.debug('ThreeDHomeDesign: =================================')
 
   // ** USE AUTH STATE
   // const auth = useAuth()
@@ -5493,19 +5498,18 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeD Home Design prefs', ccm.orangeAlert, prefs)
-
-  // ** INIT PAGE STATE
-  const [isPageLoaded, setIsPageLoaded] = useState(false)
-
   // ** INIT PREFERENCES STATE
-  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
+  // const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
 
   // ** USE CANVAS STATE
   const canvasState = useReactiveVar(canvasStateVar) // YES !!
   // console.debug('%c⚙️ ThreeD Home Design canvasState', ccm.orangeAlert, canvasState)
   // ** INIT CANVAS STATE
-  const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
-  const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(useReactiveVar(isCanvasStateSetVar))
+  // const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
+  // const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(useReactiveVar(isCanvasStateSetVar))
+
+  // ** INIT PAGE STATE
+  const [isPageLoaded, setIsPageLoaded] = useState(false)
 
   // ==========================================================
   // ** USE CONTEXTS STATE (role-based abilities)
@@ -5555,13 +5559,16 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
   // **
   useEffect(() => {
 
-    if (!isPageLoaded && !isPrefsLoaded) {
+    if (
+      false &&
+      !isPageLoaded && !useReactiveVar(isPreferencesSetVar)
+    ) {
     
       // ** GET PREFERENCES
       const fetchData = async () => {
         // try {
           // ** GET PREFERENCES
-          if (!isPrefsLoaded) {
+          if (!useReactiveVar(isPreferencesSetVar)) {
             // **
             // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
             const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
@@ -5579,7 +5586,7 @@ export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element {
           preferencesDataVar(loadPreferencesOne.data)
           // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
           isPreferencesSetVar(true)
-          setIsPrefsLoaded(isPreferencesSetVar())
+          // setIsPrefsLoaded(isPreferencesSetVar())
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
           if (preferencesDataVar().doAutoLoadData) {
             // // const homeDesignsFromDataSource = await projectStore.actions.loadFromDataSource(client)

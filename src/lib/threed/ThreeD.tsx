@@ -15,59 +15,40 @@
 import {
   // useRef,
   // forwardRef,
-  useEffect,
+  // useEffect,
   useState,
   // useCallback,
   // ReactNode,
   // Suspense,
-  PointerEventHandler,
-  SyntheticEvent,
+  // PointerEventHandler,
+  // SyntheticEvent,
 } from 'react'
 
-// ** APOLLO Imports
-// ** Apollo Client 3 -- State Management using Cache/Store (via GraphQL)
-import { 
-  useApolloClient,
-  useReactiveVar,
-  // getApolloClient, 
-  // getApolloContext,
-} from '@apollo/client'
+// // ** APOLLO Imports
+// import { 
+//   useApolloClient,
+//   useReactiveVar,
+// } from '@apollo/client'
 // import {
-//   useQuery,
-//   useSuspenseQuery,
-//   useBackgroundQuery,
-//   useReadQuery,
-//   useFragment
-// } from '@apollo/experimental-nextjs-app-support/ssr'
-import {
-  // stores,
-  preferencesStore,
-  projectStore,
-  // queries,
-  // mutations,
-  // reactive vars:
-  isPreferencesSetVar,
-  preferencesDataVar,
-} from '#/lib/stores/apollo'
+//   // stores,
+//   preferencesStore,
+//   projectStore,
+//   // queries,
+//   // mutations,
+//   // reactive vars:
+//   isPreferencesSetVar,
+//   preferencesDataVar,
+// } from '#/lib/stores/apollo'
 
-// ** RADIX-UI Imports
-import {
-  Button,
-  Text,
-} from '@radix-ui/themes'
+// // ** RADIX-UI Imports
+// import {
+//   Button,
+//   Text,
+// } from '@radix-ui/themes'
 
-// ** THREE JS Imports (not here, use R3F)
-import * as THREE from 'three'
-// ** Three JS Loading Progress
-// import { Html, Loader, useProgress } from '@react-three/drei'
 
 // ** ThreeD r3f Canvas Imports
 import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
-// const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
-// import { Canvas } from '@react-three/fiber'
-// import { ThreeDCanvasViewer } from '#/lib/threed/components/canvas/Canvas'
-// import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
-// import { ThreeDEnvironment } from '#/lib/threed/components/canvas/Canvas'
 
 // ** ThreeD Controls Imports
 // import ThreeDControls from '~/src/lib/threed/Controls'
@@ -93,15 +74,6 @@ import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // ** ThreeD Joystick Imports
 import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
-// ** CSS Styles Imports
-// import stylesDemo from '#/layout/ui/styles/demo/demo.module.css'
-
-// ** Paper Imports (DEPRECATED -- requires jQuery)
-// import paper from 'paper'
-
-// ** jQuery Imports (DEPRECATED -- no no no, never again)
-// import * as $ from 'jquery'
-
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot'), { ssr: false })
@@ -118,7 +90,7 @@ import ccm from '#/lib/utils/console-colors'
 
 // DEBUG PREFERENCES FOR THIS MODULE
 const debug: boolean = false
-const DEBUG: boolean = true
+const DEBUG: boolean = false
 
 // const appVersion: string = 'v0.16.1'
 const appVersion: string = require('package.json').version
@@ -194,7 +166,7 @@ const env: IThreeDEnv = {
   sceneID:        postdata.scene_id,
 }
 
-if (debug) {
+if (debug || DEBUG) {
   console.debug('%c🌱 api plugin:', ccm.darkgreen, env.pluginName, env.pluginVersion, postdata)
   console.debug('postdata', postdata)
   console.debug(`%c====================================`, ccm.darkgreen)
@@ -215,12 +187,12 @@ if (debug) {
 // } = ThreeDModals
 
 // ** Views
-const {
-  CatalogView,
-  PlanView,
-  PropertiesView,
-  TheBottom
-} = ThreeDViews
+// const {
+//   CatalogView,
+//   PlanView,
+//   PropertiesView,
+//   TheBottom
+// } = ThreeDViews
 
 // ==========================================================
 
@@ -229,133 +201,8 @@ const {
 // const ThreeDGarden = ({threedData}): JSX.Element => {
 const ThreeDGarden = (): JSX.Element => {
 // const ThreeDGarden = (): React.ReactNode => {
-  // **
-  // ==========================================================
-  // ** TESTING: JSX
-  // return <Spinner />
-
-  // ==========================================================
-  // ** LOCAL VARS
-  // const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
-
-  // ==========================================================
-  // ** HOOKS
-
-  // ** USE SESSION
-  // // const { data, status } = useSession()
-  // const { data: sessionData, status: sessionStatus } = useSession()
-  // console.debug('useSession().data', sessionData)
-  // console.debug('useSession().status', sessionStatus)
-
-  // ** USE CLIENT
-  const client = useApolloClient()
-  // console.debug('%c🦆 useApolloClient()', ccm.redAlert, client)
-
-  // ** USE PREFERENCES
-  // const prefs = preferencesDataVar() // NO
-  const prefs = useReactiveVar(preferencesDataVar) // YES !!
-  // console.debug('%c⚙️ ThreeD Garden prefs', ccm.orangeAlert, prefs)
-
-  // ** INIT PREFERENCES
-  const [isPageLoaded, setIsPageLoaded] = useState(false)
-  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
-
-  // ** refs moved to ThreeDCanvasViewer
-  // const refThreeDCanvas1 = useRef<any>(null)
-  // const refThreeDCanvas2 = useRef<any>(null)
-  // const refThreeDCanvas3 = useRef<any>(null)
-
-  // ==========================================================
-  // Component onMount hook
-  // **
-  useEffect(() => {
-
-    if (!isPageLoaded || !isPrefsLoaded) {
-    
-      // ** GET PREFERENCES
-      const fetchData = async () => {
-        try {
-          // ** GET PREFERENCES
-          if (!isPrefsLoaded) {
-            // **
-            const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
-            // const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
-            if (DEBUG) 
-              console.debug('%c preferences loading...', ccm.greenAlert)
-            if (preferencesFromDataSource) {
-              if (DEBUG) 
-                console.debug('%c preferencesFromDataSource', ccm.greenAlert)
-            }
-          }
-
-          const loadPreferencesOne = await preferencesStore.store.get('one')
-          // const loadPreferencesOne = await preferencesStore.store.useStore('one')
-          // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
-          preferencesDataVar(loadPreferencesOne.data)
-          // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
-          isPreferencesSetVar(true)
-          setIsPrefsLoaded(isPreferencesSetVar())
-          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
-          // if (preferencesDataVar().doAutoLoadData) {
-          //   // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-          //   const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
-          //   if (DEBUG) 
-          //     console.debug('%c projects loading...', ccm.orangeAlert)
-          //   if (projectsFromDataSource) {
-          //     // console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
-          //     // ** TODO
-          //     // ** do more tasks here ??
-          //   }
-          // }
-
-          // ** READY TO GO ???
-          setIsPageLoaded(true)
-
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      }      
-      fetchData()
-      if (DEBUG) {
-        console.debug('%c🫙 ThreeDGarden: fetching data ...', ccm.blueAlert)
-      }
-      // // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-      // const loadNounData = (_type: string = 'project', threeds: any = []) => {
-      //   // load these threeds into r3f canvas
-      //   if (DEBUG || debug) 
-      //     console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
-      //   if (_type === 'project') {
-      //     projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
-      //   }
-      //   // return <Box>true</Box> // true
-      // }
-      
-    } else if (isPageLoaded) {
-      console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isPageLoaded)
-    } else {
-      console.debug('%c🦆 ThreeDGarden => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
-    }
-
-  }, []) // useEffect
-
-  // ==========================================================
-  // ** USE CONTEXT
-  // const abilities = useContext(AbilityContext)
-  // const abilities = ['read', 'write', 'delete']
-
-  // ==========================================================
-
-  // if (DEBUG || debug) 
-  //   console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreenAlert)
-
-    
-  let project_title = 'NOT EVEN CLOSE'
-  // if (DEBUG || debug) 
-  //   console.debug('%c🌱 ThreeDGarden mounting ...', ccm.darkgreen, project_title)
-
-
   
-
+  // **
 
   const EcctrlJoystickControls = () => {
     // const [isTouchScreen, setIsTouchScreen] = useState(false)
@@ -378,125 +225,57 @@ const ThreeDGarden = (): JSX.Element => {
     )
   }
 
-
-
   // ==========================================================
   // ** RETURN JSX
   return (
     <>
 
-      {/* [MM] HEY HEY HEY */}
-      {/* <Text>{project_title}</Text> */}
-      {/* [MM] HEY HEY HEY */}
+      {/* THREED: TOOLBAR */}
+      <ThreeDToolbar />
+      
+      {/* THREED: CANVAS VIEWER */}
+      <ThreeDCanvasViewer
+        // ref={refThreeDCanvas1}
+      />
+      
+      {/* THREED: CONTROLS: ALL */}
+      {/* <ThreeDControls /> */}
 
-      { (!isPageLoaded || !isPrefsLoaded) && (
-        <>
-          {/* LOADING... */}
-          <Spinner />  
-        </>
+      {/* THREED: CONTROLS: LEVA GUI + CUSTOMIZED */}
+      <ThreeDLevaControls />
+    
+      {/* THREED: CONTROLS: CLICK LOADERS */}
+      {/* <Button onClick={() => loadNounData('project', [])}>load project</Button> */}
+      {/* <Button onClick={() => loadNounData('scene', [])}>load scene</Button> */}
+      {/* <Button onClick={() => loadNounData('character', [])}>load character</Button> */}
+      {/* <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button> */}
+      
+      {/* THREED: CONTROL PANELS */}
+      <ThreeDControlPanels />
         
-      )}
+      {/* THREED: VIEWS */}
+      {/* <CatalogView /> */}
+      {/* <PropertiesView /> */}
+      {/* <PlanView /> */}
+      {/* <TheBottom /> */}
 
-      { (isPageLoaded && isPrefsLoaded) && (
-        
-        <>
+      {/* THREED: MODALS */}
+      {/* <ModalAbout /> */}
+      {/* <ModalModel3d /> */}
+      {/* <ModalLoading /> */}
+      {/* <ModalShare /> */}
 
-          {/* THREED: CONTROLS: ALL */}
-          <>
-            {/* <ThreeDControls /> */}
+      {/* THREED FARMBOT */}
+      {/* <ThreeDFarmBotMain /> */}
+      
+      {/* THREED: CHARACTER CONTROLS: JOYSTICK */}
+      {/* CHARACTER CONTROL JOYSTICK */}
+      {/* <EcctrlJoystick buttonNumber={0} /> */}
+      {/* <EcctrlJoystick buttonNumber={5} /> */}
+      {/* <EcctrlJoystickControls /> */}
 
-            {/* THREED: CONTROLS: LEVA GUI + CUSTOMIZED */}
-            <>
-              <ThreeDLevaControls />
-            </>
-            {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-
-
-            {/* THREED: CONTROLS: CLICK LOADERS */}
-            <>
-              {/* <Button onClick={() => loadNounData('project', [])}>load project</Button> */}
-              {/* <Button onClick={() => loadNounData('scene', [])}>load scene</Button> */}
-              {/* <Button onClick={() => loadNounData('character', [])}>load character</Button> */}
-              {/* <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button> */}
-            </>
-            {/* END THREED CLICK LOADERS */}
-
-          </>
-          {/* END: THREED CONTROLS: ALL */}
-
-
-          {/* THREED: TOOLBAR */}
-          <>
-            {/* <ThreeDToolbar /> */}
-          </>
-          {/* END: THREED TOOLBAR */}
-
-          
-          {/* THREED: CANVAS VIEWER */}
-          <>
-            <ThreeDCanvasViewer
-              // ref={refThreeDCanvas1}
-            />
-          </>
-          {/* END: THREED CANVAS VIEWER */}
-
-
-          {/* THREED: CONTROL PANELS */}
-          {/* -- STORE ACCESS (apollo + leva) */}
-          <>
-            <ThreeDControlPanels />
-            {/* <ThreeDControlPanels tabs={tabProps} /> */}
-          </>
-          {/* END: THREED CONTROL PANELS */}
-
-
-          {/* THREED: VIEWS */}
-          <>
-            {/* <CatalogView /> */}
-            {/* <PropertiesView /> */}
-            {/* <PlanView /> */}
-            {/* <TheBottom /> */}
-          </>
-          {/* END: THREED VIEWS */}
-
-
-          {/* THREED: MODALS */}
-          <>
-            {/* <ModalAbout /> */}
-            {/* <ModalModel3d /> */}
-            {/* <ModalLoading /> */}
-            {/* <ModalShare /> */}
-          </>
-          {/* END: THREED MODALS */}
-
-
-          {/* THREED FARMBOT */}
-          <>
-            {/* <ThreeDFarmBotMain /> */}
-          </>
-          {/* END: THREED FARMBOT */}
-
-          
-          {/* THREED: CHARACTER CONTROLS: JOYSTICK */}
-          <>
-            {/* CHARACTER CONTROL JOYSTICK */}
-            {/* <EcctrlJoystick buttonNumber={0} /> */}
-            {/* <EcctrlJoystick buttonNumber={5} /> */}
-            {/* <EcctrlJoystickControls /> */}
-
-          </>
-          {/* END: THREED JOYSTICK */}
-
-          
-        </>
-        
-      )}
     </>
   )
 }
 
-// const ThreeDGarden_UseClient = dynamic(() => Promise.resolve(ThreeDGarden), {
-//   ssr: false
-// })
-// export default ThreeDGarden_UseClient
 export default ThreeDGarden
