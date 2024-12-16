@@ -6093,6 +6093,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
         )
         // console.debug('PAPERa', PAPERa)
         let thingN = null
+
         // ** USEMASK?
         // if (draggingThreedItem.useMask) {
         //   console.debug('draggingThreedItem.useMask', draggingThreedItem)
@@ -6138,6 +6139,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
         //       draggingThreedAngle = 0
         //   }
         // }
+        
         if (null === thingN) {
           // console.debug('thingN === null', thingN)
           var s: any
@@ -6271,8 +6273,8 @@ export default function ThreeDHomeDesign(): JSX.Element {
   // ** END MODALS
 
 
-  // {/* BASIC JSX ACTION BUTTONS */}
-  // {/* <Flex>
+  // ** BASIC JSX ACTION BUTTONS
+  // <div>
   // <Button onClick={() => handleShowModalAbout()}>
   //   Show Modal: About
   // </Button>
@@ -6285,7 +6287,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
   // <Button onClick={() => handleShowModalLoading()}>
   //   Show Modal: Loading
   // </Button>
-  // </Flex> */}
+  // </div>
 
 
 
@@ -6294,10 +6296,8 @@ export default function ThreeDHomeDesign(): JSX.Element {
 
 
   // ** RETURN JSX
-  // ** Return Jsx
-  // ** retuRn JSX.Element
   return (
-    <Flex
+    <div
       // direction='row'
       style={{
         display: 'inline-flex',
@@ -6324,7 +6324,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
         </Canvas> */}
       </>
 
-      <Flex 
+      <div 
         style={{
           display: 'none',
           position: 'absolute',
@@ -6332,9 +6332,9 @@ export default function ThreeDHomeDesign(): JSX.Element {
         }}
       >
         <progress id='progressBar' value='0' max='100' className='center'></progress> 
-      </Flex>
+      </div>
 
-      <Flex 
+      <div 
         style={{ 
           display: 'inline-flex',
           // display: 'none',
@@ -6406,7 +6406,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
             )}
           </Button>
         {/* </span> */}
-      </Flex>
+      </div>
 
       {/* PAGE PANELS */}
       <PanelGroup 
@@ -6576,10 +6576,10 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       // display: 'flex',
                       // flexGrow: '1',
                       // flexDirection: 'column',
-                      overflow: 'auto',
+                      // overflow: 'auto', // no
                     }}
                   >
-                      <Flex
+                      <div
                         style={{
                           // display: 'inline-flex',
                           // flexGrow: '0',
@@ -6621,9 +6621,9 @@ export default function ThreeDHomeDesign(): JSX.Element {
                             <PaperCanvas />
                           </div>
                         )}
-                      </Flex>
+                      </div>
                       
-                      <Grid
+                      <div
                         // columns='1'
                         style={{
                           // display: 'inline-flex',
@@ -6642,7 +6642,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                           // onMouseDown={() => addHorizontalGuide()}
                           // onMouseUp={() => removeHorizontalGuide()}
                         ></canvas>
-                      </Grid>
+                      </div>
 
                   </Panel>
                   
@@ -6662,7 +6662,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
       {/* VIEWS: MODALS */}
       {/* <ViewModals /> */}
       
-      <Flex 
+      <div 
         id='planHelpers'
         style={{
           display: 'inline-flex',
@@ -6713,7 +6713,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
         </div>
         */}
 
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   )
 }
