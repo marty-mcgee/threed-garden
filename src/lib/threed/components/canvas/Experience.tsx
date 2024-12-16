@@ -369,13 +369,13 @@ const ThreeDExperience = forwardRef((
 
           {/* toddler steps (advanced degrees) */}
           {/* Rough Plane */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
+          <group rotation={[0, 0, 0]} scale={100.0} position={[800.4, -0.40, 1000]}>
             <RoughPlane />
-          </group> */}
+          </group>
           {/* Slopes + Stairs */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
+          <group rotation={[0, 0, 0]} scale={100.0} position={[100, -0.40, 100]}>
             <Slopes />
-          </group> */}
+          </group>
           {/* Rigid Body Objects */}
           {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
             <RigidObjects />
@@ -398,11 +398,11 @@ const ThreeDExperience = forwardRef((
           </group> */}
 
           {/* THREED FARMBOT */}
-          {/* <group rotation={[-Math.PI/2, 0, 0]} scale={0.002} position={[-8, 0.665, -2]}>
+          <group rotation={[-Math.PI/2, 0, 0]} scale={1.002} position={[-8, 0.665, -2]}>
             <ThreeDFarmBotGarden 
               // key={'ThreeDFarmBotGarden_' + newUUID()} 
             />
-          </group> */}
+          </group>
           {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
             <ThreeDFarmBotMain />
           </group> */}
@@ -435,6 +435,9 @@ const ThreeDExperience = forwardRef((
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
               > */}
+                {/* <CharacterModel /> */}
+                {/* <CharacterModelFloating /> */}
+                {/* <CharacterModelStacy /> */}
                 <CharacterModelStacy scale={100.6} />
                 {/* <CharacterModelChicken scale={2.0} /> */}
               {/* </CharacterControls> */}
@@ -464,9 +467,6 @@ const ThreeDExperience = forwardRef((
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
               > */}
-                {/* <CharacterModel /> */}
-                {/* <CharacterModelFloating /> */}
-                {/* <CharacterModelStacy /> */}
                 <CharacterModelFarmerWomanFloating scale={1.016} />
                 {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
               {/* </CharacterControls> */}
@@ -496,7 +496,6 @@ const ThreeDExperience = forwardRef((
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
               > */}
-                {/* <CharacterModelStacy scale={1.6} /> */}
                 <CharacterModelChicken scale={200.0} />
               {/* </CharacterControls> */}
             </group>
