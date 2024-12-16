@@ -414,7 +414,7 @@ const ThreeDExperience = forwardRef((
           {/* <KeyboardControls map={keyboardMap}> */}
 
             {/* CHARACTER MODEL */}
-            { false && (
+            { true && (
             <group key='character0' position={[-1.6, 0.396 - 0.396, -1.6]}>
               {/* <CharacterControls
                 debug={prefs.doWorldDebug}
@@ -435,7 +435,7 @@ const ThreeDExperience = forwardRef((
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
               > */}
-                <CharacterModelStacy scale={1.6} />
+                <CharacterModelStacy scale={100.6} />
                 {/* <CharacterModelChicken scale={2.0} /> */}
               {/* </CharacterControls> */}
             </group>
@@ -443,7 +443,7 @@ const ThreeDExperience = forwardRef((
             {/* END: CHARACTER MODEL */}
             
             {/* CHARACTER MODEL */}
-            { false && (
+            { true && (
             <group key='character1' position={[0, 0.396, 0]}>
               {/* <CharacterControls
                 debug={prefs.doWorldDebug}
@@ -467,15 +467,15 @@ const ThreeDExperience = forwardRef((
                 {/* <CharacterModel /> */}
                 {/* <CharacterModelFloating /> */}
                 {/* <CharacterModelStacy /> */}
-                <CharacterModelFarmerWomanFloating scale={0.016} />
-                {/* <CharacterModelFarmerManFloating scale={0.016} /> */}
+                <CharacterModelFarmerWomanFloating scale={1.016} />
+                {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
               {/* </CharacterControls> */}
             </group>
             )}
             {/* END: CHARACTER MODEL */}
 
             {/* CHARACTER MODEL */}
-            { false && (
+            { true && (
             <group key='character2' position={[-3.6, 0.396 - 0.396, -3.6]}>
               {/* <CharacterControls
                 debug={prefs.doWorldDebug}
@@ -497,7 +497,7 @@ const ThreeDExperience = forwardRef((
                 // mode='CameraBasedMovement'
               > */}
                 {/* <CharacterModelStacy scale={1.6} /> */}
-                <CharacterModelChicken scale={2.0} />
+                <CharacterModelChicken scale={200.0} />
               {/* </CharacterControls> */}
             </group>
             )}
