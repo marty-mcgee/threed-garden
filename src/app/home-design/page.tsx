@@ -15,12 +15,12 @@ import {
 // ** NEXT Imports
 // import type { NextPage } from 'next'
 // import type { TNextPageWithProps } from '#/lib/types/TAppProps'
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
 // ** APOLLO Imports
 import { 
-  getApolloContext,
+  // getApolloContext,
 
   // useApolloClient,
   // useReactiveVar,
@@ -32,17 +32,17 @@ import {
   // useFragment
 } from '@apollo/client'
 import {
-  // stores,
-  preferencesStore,
-  canvasStateStore,
-  projectStore,
-  // queries,
-  // mutations,
-  // reactive state vars:
-  isPreferencesSetVar,
-  preferencesDataVar,
-  isCanvasStateSetVar,
-  canvasStateVar,
+  // // stores,
+  // preferencesStore,
+  // canvasStateStore,
+  // projectStore,
+  // // queries,
+  // // mutations,
+  // // reactive state vars:
+  // isPreferencesSetVar,
+  // preferencesDataVar,
+  // isCanvasStateSetVar,
+  // canvasStateVar,
 } from '#/lib/stores/apollo'
 
 // import { useSession } from 'next-auth/react'
@@ -53,8 +53,8 @@ import {
 
 // ==============================================================
 // ** THREED Imports
-// import ThreeDHomeDesign from '#/lib/home-design/src/HomeDesign'
-const ThreeDHomeDesign = dynamic(() => import('#/lib/home-design/src/HomeDesign'), { ssr: false })
+import ThreeDHomeDesign from '#/lib/home-design/src/HomeDesign'
+// const ThreeDHomeDesign = dynamic(() => import('#/lib/home-design/src/HomeDesign'), { ssr: false })
 
 // ==============================================================
 // ** EXPORT JSX as NEXT PAGE
@@ -65,19 +65,22 @@ const ThreeDHomeDesign = dynamic(() => import('#/lib/home-design/src/HomeDesign'
 // export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element { 
 export default async function HomeDesignPage() {
 
-  // **
-  console.debug('HomeDesignPage: getApolloContext()', getApolloContext())
-  console.debug('HomeDesignPage: preferencesStore', preferencesStore)
-  console.debug('HomeDesignPage: preferencesStore.store.getState()', preferencesStore.store.getState())
-  console.debug('HomeDesignPage: preferencesStore.actions.getState()', preferencesStore.actions.getState())
-  console.debug('HomeDesignPage: preferencesDataVar()', preferencesDataVar())
-  console.debug('HomeDesignPage: canvasStateVar()', canvasStateVar())
+  // ** stores
+  // console.debug('HomeDesignPage: =================================')
+  // console.debug('HomeDesignPage: stores', stores)
+  // console.debug('HomeDesignPage: =================================')
+  // console.debug('HomeDesignPage: getApolloContext()', getApolloContext())
+  // console.debug('HomeDesignPage: preferencesStore', preferencesStore)
+  // console.debug('HomeDesignPage: preferencesStore.store.getState()', preferencesStore.store.getState())
+  // console.debug('HomeDesignPage: preferencesStore.actions.getState()', preferencesStore.actions.getState())
+  // console.debug('HomeDesignPage: preferencesDataVar()', preferencesDataVar())
+  // console.debug('HomeDesignPage: canvasStateVar()', canvasStateVar())
   
   // const revenue = await fetchRevenue() // delete this line
 
   // ** RETURN JSX or React.ReactNode
   return (
-    <Suspense fallback={'HEY HEY HEY'}>
+    <Suspense fallback={<>HEY HEY HEY</>}>
       <ThreeDHomeDesign />
     </Suspense>
   )
