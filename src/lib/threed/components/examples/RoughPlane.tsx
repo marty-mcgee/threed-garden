@@ -2,14 +2,14 @@
 // ==========================================================
 // RESOURCES
 
-import { RigidBody } from "@react-three/rapier";
-import { useGLTF } from "@react-three/drei";
-import { useEffect } from "react";
-import * as THREE from "three";
+import { RigidBody } from "@react-three/rapier"
+import { useGLTF } from "@react-three/drei"
+import { useEffect } from "react"
+import * as THREE from "three"
 
 export default function RoughPlane() {
   // Load models
-  const roughPlane = useGLTF("./objects/glb/roughPlane.glb");
+  const roughPlane = useGLTF("./objects/glb/roughPlane.glb")
 
   useEffect(() => {
     // Receive Shadows
@@ -18,14 +18,14 @@ export default function RoughPlane() {
         child instanceof THREE.Mesh &&
         child.material instanceof THREE.MeshStandardMaterial
       ) {
-        child.receiveShadow = true;
+        child.receiveShadow = true
       }
-    });
-  }, []);
+    })
+  }, [])
 
   return (
     <RigidBody type="fixed" colliders="trimesh">
       <primitive object={roughPlane.scene} />
     </RigidBody>
-  );
+  )
 }
