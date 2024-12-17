@@ -29,8 +29,7 @@ export default async function Header() {
     <div
       id='ThreeDAppHeader'
       style={{
-        display: 'inline-flex',
-        flexDirection: 'row',
+        display: 'flex',
       }}
     >
       <div
