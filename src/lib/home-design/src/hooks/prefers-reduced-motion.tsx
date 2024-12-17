@@ -1,14 +1,14 @@
-import React from "react"
+import { useState, useEffect } from "react"
 
 // User system can indicate reduced motion setting https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion
 
 const query = "(prefers-reduced-motion: no-preference)"
 
 export function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
     !window.matchMedia(query).matches
   )
-  React.useEffect(() => {
+  useEffect(() => {
     const mediaQueryList = window.matchMedia(query)
     const listener = (event: any) => {
       setPrefersReducedMotion(!event.matches)

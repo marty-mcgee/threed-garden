@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react"
-import { useSpring } from "react-spring"
+import { useState, useCallback, useEffect } from "react"
+import { useSpring } from "@react-spring/three"
 import { usePrefersReducedMotion } from "./prefers-reduced-motion"
 // Heavily inspired by Josh Comeau: https://www.joshwcomeau.com/react/boop/ 💖
 
@@ -31,7 +31,7 @@ export function useWiggle({
 
   // Timing parameter determines how long the wiggle lasts using browser setTimeout function
   // React useEffect function https://reactjs.org/docs/hooks-effect.html
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isActive) {
       return
     }
