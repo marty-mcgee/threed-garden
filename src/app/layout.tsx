@@ -24,8 +24,6 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 
 // ** NEXT AUTH -- Client Session Management
 import SessionWrapper from '#/layout/SessionWrapper'
-// ** CLERK AUTH -- External User Authentication
-import { ClerkProvider } from '@clerk/nextjs'
 
 // ** LAYOUT Components (Head, Body, Foot)
 // import Header from '#/layout/header'
@@ -37,7 +35,6 @@ const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 import { GoogleAnalytics } from '@next/third-parties/google'
 
 // ** HELPER Imports
-// ** Colorful Console Messages
 import ccm from '#/lib/utils/console-colors'
 
 // const appVersion: string = 'v0.17.0'
@@ -66,19 +63,17 @@ export default function RootLayout({ children }: { children: any }) {
       <body className={`${inter.className} antialiased`}>
         <ApolloClientWrapper>
           <SessionWrapper>
-            <ClerkProvider dynamic>
-              <Header 
-                key='ThreeDAppHeader'
-              />
-              <div
-                id='ThreeDAppMain'
-              >
-                {children}
-              </div>
-              <Footer 
-                key='ThreeDAppFooter'
-              />
-            </ClerkProvider>
+            <Header 
+              key='ThreeDAppHeader'
+            />
+            <div
+              id='ThreeDAppMain'
+            >
+              {children}
+            </div>
+            <Footer 
+              key='ThreeDAppFooter'
+            />
           </SessionWrapper>
         </ApolloClientWrapper>
       </body>

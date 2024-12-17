@@ -91,12 +91,12 @@ import {
   ArrowLeftEndOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
 } from '@heroicons/react/24/outline'
-import {
-	HamburgerMenuIcon,
-	DotFilledIcon,
-	CheckIcon,
-	ChevronRightIcon,
-} from '@radix-ui/react-icons'
+// import {
+// 	HamburgerMenuIcon,
+// 	DotFilledIcon,
+// 	CheckIcon,
+// 	ChevronRightIcon,
+// } from '@radix-ui/react-icons'
 
 // ** COMPONENT Imports
 // import Logo from '#/layout/ui/logo'
@@ -106,9 +106,8 @@ import threedItemsJSON from '#/app/api/home-design/objects.json'
 // import currentPlanJSON from 'plans/threed-plan-example-001.threed'
 import currentPlanJSON from '#/app/api/home-design/threed-plan-demo-1.json'
 
-// ** Helper Components
+// ** HELPER Imports
 // import Spinner from '#/layout/ui/spinner'
-// ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================
@@ -6139,7 +6138,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
         //       draggingThreedAngle = 0
         //   }
         // }
-        
+
         if (null === thingN) {
           // console.debug('thingN === null', thingN)
           var s: any

@@ -2,14 +2,9 @@
 // 'use server'
 // ^^ does this file require client or server pragma ???
 
-// ** RADIX-UI Imports
-import {
-  Container,
-  Grid,
-  Flex,
-  Text,
-  Button,
-} from '@radix-ui/themes'
+// ** REACT Imports
+import React from 'react'
+// import { Button } from './button'
 
 // ** NEXT Imports
 import Image from 'next/image'
@@ -26,28 +21,26 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from './navigation-menu'
-// ** REACT Imports
-import React from 'react'
-// import { Button } from './button'
+
+// ** RADIX-UI Imports
+// import {
+//   Container,
+//   Grid,
+//   Flex,
+//   Text,
+//   Button,
+// } from '@radix-ui/themes'
 
 export default function MainNav() {
   return (
-    <>
-    <Flex
-      // direction='row'
-      // justify='between'
-      // gap='2'
-      // align='center'
-      // className='
-      //   m-0
-      // '
+    <div
       style={{
         display: 'inline-flex',
         marginLeft: '2px',
         marginTop: '-4px',
       }}
     >
-      <Flex
+      <div
         style={{
           display: 'inline-flex',
           // flexGrow: '0',
@@ -59,8 +52,8 @@ export default function MainNav() {
             src='/favicon/favicon.png' 
             // priority={true} 
             alt='ThreeD App Home'
-            width='30'
-            height='30'
+            width={30}
+            height={30}
           />
         {/* </CustomLink> */}
         <CustomLink href='/#threedgarden' 
@@ -73,12 +66,9 @@ export default function MainNav() {
         >
           ThreeD Garden
         </CustomLink>
-      </Flex>
+      </div>
       
-      <Flex
-        // justify={'between'}
-        // gap={'2'}
-        // align={'center'}
+      <div
         style={{
           flexGrow: '1'
         }}
@@ -319,10 +309,9 @@ export default function MainNav() {
 
           </NavigationMenuList>
         </NavigationMenu>
-      </Flex>
+      </div>
 
-    </Flex>
-    </>
+    </div>
   )
 }
 
