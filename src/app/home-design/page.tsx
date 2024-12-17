@@ -1,6 +1,7 @@
 // ==============================================================
 // Home Design Page (main landing page for 2D-3D Demo)
 
+// 'use server'
 // 'use client'
 // ^^ this is now a server component. default pragma 'use server'
 
@@ -19,31 +20,31 @@ import {
 // import Image from 'next/image'
 
 // ** APOLLO Imports
-import { 
-  // getApolloContext,
+// import { 
+//   // getApolloContext,
 
-  // useApolloClient,
-  // useReactiveVar,
+//   // useApolloClient,
+//   // useReactiveVar,
   
-  // useQuery,
-  // useSuspenseQuery,
-  // useBackgroundQuery,
-  // useReadQuery,
-  // useFragment
-} from '@apollo/client'
-import {
-  // // stores,
-  // preferencesStore,
-  // canvasStateStore,
-  // projectStore,
-  // // queries,
-  // // mutations,
-  // // reactive state vars:
-  // isPreferencesSetVar,
-  // preferencesDataVar,
-  // isCanvasStateSetVar,
-  // canvasStateVar,
-} from '#/lib/stores/apollo'
+//   // useQuery,
+//   // useSuspenseQuery,
+//   // useBackgroundQuery,
+//   // useReadQuery,
+//   // useFragment
+// } from '@apollo/client'
+// import {
+//   // // stores,
+//   // preferencesStore,
+//   // canvasStateStore,
+//   // projectStore,
+//   // // queries,
+//   // // mutations,
+//   // // reactive state vars:
+//   // isPreferencesSetVar,
+//   // preferencesDataVar,
+//   // isCanvasStateSetVar,
+//   // canvasStateVar,
+// } from '#/lib/stores/apollo'
 
 // import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
@@ -80,7 +81,7 @@ export default async function HomeDesignPage() {
 
   // ** RETURN JSX or React.ReactNode
   return (
-    <Suspense fallback={<>ThreeD Home Design: HEY HEY HEY</>}>
+    <Suspense fallback={<>ThreeD Home Design: Loading...</>}>
       <ThreeDHomeDesign />
     </Suspense>
   )
