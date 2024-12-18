@@ -84,7 +84,7 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from 'react-resizable-panels'
-import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
+// import PanelResizeHandleHorizontal from '#/layout/ui/resize-handle'
 
 // ** ICON Imports
 import { 
@@ -498,10 +498,10 @@ const PaperCanvas = (props: any) => {
       {...props} 
       id='planCanvas' 
       // resize='true'
-      style={{
-        height: '94%',
-        width: '100%',
-      }}
+      // style={{
+      //   height: '94%',
+      //   width: '100%',
+      // }}
     />
   )
 }
@@ -615,6 +615,7 @@ function initPlanView(planCanvas: any) {
 
   // let planCanvas = document.getElementById('planView') // NO, NOT THE SAME.. need actual ref
   // let planCanvas = document.getElementById('planCanvas') // NO, NOT THE SAME.. need actual ref?
+  planView = document.getElementById('planView')
   
   // function e (e: any) {
   function MMe (e: any) {
@@ -658,7 +659,6 @@ function initPlanView(planCanvas: any) {
   }
   // if (
     // '3dView' != UILayout
-    planView = document.getElementById('planView')
     paper.project.activeLayer.name = 'level0'
     paper.project.activeLayer.data = { id: '0', height: 0 }
     screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
@@ -6528,7 +6528,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                     minSize={1}
                     maxSize={99}
                     style={{
-                      border: '1px solid green',
+                      border: '1px solid darkgreen',
                     }}
                   >
                     <Grid 
@@ -6541,7 +6541,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                     >
 
                       {/* THREED HOME DESIGN: 3D CANVAS */}
-                      { true && (
+                      { false && (
                         <ThreeD // <ThreeDComponents
                           // **
                         />
@@ -6572,30 +6572,37 @@ export default function ThreeDHomeDesign(): JSX.Element {
                     style={{
                       border: '1px solid darkgreen',
                       // width: '100vw',
-                      // display: 'flex',
+                      display: 'flex',
+                      // alignItems: 'stretch',
                       // flexGrow: '1',
-                      // flexDirection: 'column',
+                      flexDirection: 'column',
                       // overflow: 'auto', // no
                     }}
                   >
                       <div
                         style={{
-                          // display: 'inline-flex',
-                          // flexGrow: '0',
+                          display: 'inline-flex',
+                          // alignSelf: 'stretch',
+                          // alignItems: 'stretch',
+                          // alignItems: 'flex-end',
+                          flexGrow: '1',
                           // flexDirection: 'column',
                           // width: '100%',
+                          // width: 'calc(100% - 20px)',
                           // height: '90%',
                           // height: 'calc(100% - 0px)',
                         }}
                       >
-                        {/* <div
+                        <div
                           style={{
+                            display: 'flex',
+                            alignSelf: 'stretch',
                             width: '20px',
                             // height: '100%',
                             // height: 'calc(100vh - 20px)',
                             backgroundColor: 'gray', // '#636363',
                           }}
-                        > */}
+                        >
                           <canvas 
                             id='rulerLeft' 
                             width='20px' 
@@ -6605,16 +6612,20 @@ export default function ThreeDHomeDesign(): JSX.Element {
                             // onMouseDown={() => addVerticalGuide()}
                             // onMouseUp={() => removeVerticalGuide()}
                           ></canvas>
-                        {/* </div> */}
+                        </div>
 
                         {/* DO RUN THIS */}
                         { true && (
                           <div 
                             id='planView'
                             style={{
-                              // width: '100%',
+                              display: 'flex',
+                              alignItems: 'stretch',
+                              alignSelf: 'stretch',
+                              width: '100%',
                               // height: '100%',
-                              overflow: 'auto',
+                              // overflow: 'auto',
+                              backgroundColor: '#222222',
                             }}
                           >
                             <PaperCanvas />
@@ -6625,18 +6636,20 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       <div
                         // columns='1'
                         style={{
-                          // display: 'inline-flex',
-                          // flexGrow: '1',
+                          display: 'flex',
+                          alignItems: 'stretch',
+                          alignSelf: 'stretch',
+                          flexGrow: '0',
                           // flexDirection: 'row',
-                          // width: '100vw',
-                          height: '20px',
-                          backgroundColor: 'gray', // '#636363',
+                          width: '100%',
+                          // height: '20px',
+                          backgroundColor: 'gray',
                         }}
                       >
                         <canvas 
                           id='rulerBottom' 
-                          width='100%' 
-                          height='20px'
+                          width='10000' 
+                          height='20'
                           // height='100%'
                           // onMouseDown={() => addHorizontalGuide()}
                           // onMouseUp={() => removeHorizontalGuide()}
