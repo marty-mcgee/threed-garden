@@ -79,7 +79,8 @@ export default async function HomeDesignPage() {
 
   // ** RETURN JSX or React.ReactNode
   return (
-    <Suspense fallback={<>ThreeD Home Design: Loading...</>}>
+    <Suspense fallback={null}>
+    {/* <Suspense fallback={<>ThreeD Home Design: Loading...</>}> */}
       <ThreeDHomeDesign />
     </Suspense>
   )
