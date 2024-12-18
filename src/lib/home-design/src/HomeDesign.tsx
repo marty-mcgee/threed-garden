@@ -436,7 +436,7 @@ let threedHomeDesign: string = 'HEY HEY HEY ___',
   let redrawing: boolean = false
   let strokeWidth = 0
   const onProgress = function (e: any) {
-    if (true) {
+    if (false) { // run this??
       if (e.lengthComputable) {
         var t = (e.loaded / e.total) * 100
         // @ts-expect-error
@@ -496,12 +496,7 @@ const PaperCanvas = (props: any) => {
     <canvas 
       ref={planCanvasRef} 
       {...props} 
-      id='planCanvas' 
-      // resize='true'
-      // style={{
-      //   height: '94%',
-      //   width: '100%',
-      // }}
+      id='planCanvas'
     />
   )
 }
@@ -725,28 +720,7 @@ function initPlanView(planCanvas: any) {
     planCanvas.addEventListener(MMt, MMe)
 
     // ** DRAW GRID path lines x,y
-    for (let o = 0; o <= 200; o++) {
-      const a = new paper.Point(10 * o, 0)
-      const n = new paper.Point(10 * o, 100)
-      let pathLineX = new paper.Path.Line(a, n)
-      pathLineX.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
-      pathLineX.strokeWidth = 0.5
-      pathLineX.strokeScaling = false
-      xLines.push(pathLineX)
-      // @ts-expect-error
-      gridGroup[0].addChild(pathLineX)
-    }
-    for (var o = 0; o <= 200; o++) {
-      const i = new paper.Point(0, 10 * o)
-      const r = new paper.Point(100, 10 * o)
-      let pathLineY = new paper.Path.Line(i, r)
-      pathLineY.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
-      pathLineY.strokeWidth = 0.5
-      pathLineY.strokeScaling = false
-      yLines.push(pathLineY)
-      // @ts-expect-error
-      gridGroup[0].addChild(pathLineY)
-    }
+    drawGrid()
 
     // **
     toolsGroup[0] = new paper.Group()
@@ -5218,6 +5192,32 @@ function initThreed(threedItem: any, scene: any) {
   }
 }
 
+// ** DRAW GRID path lines x,y
+function drawGrid() {
+  for (let o = 0; o <= 200; o++) {
+    const a = new paper.Point(10 * o, 0)
+    const n = new paper.Point(10 * o, 100)
+    let pathLineX = new paper.Path.Line(a, n)
+    pathLineX.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
+    pathLineX.strokeWidth = 1
+    pathLineX.strokeScaling = false
+    xLines.push(pathLineX)
+    // @ts-expect-error
+    gridGroup[0].addChild(pathLineX)
+  }
+  for (var o = 0; o <= 200; o++) {
+    const i = new paper.Point(0, 10 * o)
+    const r = new paper.Point(100, 10 * o)
+    let pathLineY = new paper.Path.Line(i, r)
+    pathLineY.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
+    pathLineY.strokeWidth = 0.5
+    pathLineY.strokeScaling = false
+    yLines.push(pathLineY)
+    // @ts-expect-error
+    gridGroup[0].addChild(pathLineY)
+  }
+}
+
 // ** REDRAW Functions
 function redrawGrid() {
   if (!redrawing && UILayout != '3dView') {
@@ -5338,8 +5338,10 @@ function redrawGrid() {
       rulerLeftCtx.clearRect(0, 0, 30, rulerLeft.height)
       rulerBottomCtx.clearRect(0, 0, rulerBottom.width, 20)
 
+
       var a = paper.view.bounds.left % t
       var n = 0
+
       xLines.forEach(function (e: any) {
         e.segments[0].point.x = paper.view.bounds.left + n - a
         e.segments[0].point.y = paper.view.bounds.top
@@ -5390,6 +5392,8 @@ function redrawGrid() {
             : (e.style.strokeColor = '#564c3a')
         n += t
       })
+
+
       Object.keys(verticalGuides).forEach(function (e: any) {
         // @ts-expect-error
         verticalGuides[e].segments[0].point.y = paper.view.bounds.top
@@ -5402,6 +5406,8 @@ function redrawGrid() {
         // @ts-expect-error
         horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
       })
+
+      
       // ** done: set redrawing to false
       redrawing = false
     }
