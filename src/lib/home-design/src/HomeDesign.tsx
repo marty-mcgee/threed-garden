@@ -5241,9 +5241,9 @@ function initThreed(threedItem: any, scene: any) {
 // ** DRAW GRID path lines x,y
 function drawGrid() {
   // x
-  for (let o = 0; o <= 1000; o++) {
+  for (let o = 0; o <= 2000; o++) {
     const a = new paper.Point(10 * o, -200)
-    const n = new paper.Point(10 * o, 1000)
+    const n = new paper.Point(10 * o, 2000)
     let pathLineX = new paper.Path.Line(a, n)
     pathLineX.strokeColor = new paper.Color(96, 96, 96, 1)
     pathLineX.strokeWidth = 0.25
@@ -5253,9 +5253,9 @@ function drawGrid() {
     gridGroup[0].addChild(pathLineX)
   }
   // y
-  for (var o = 0; o <= 1000; o++) {
+  for (var o = 0; o <= 2000; o++) {
     const i = new paper.Point(-200,    10 * o)
-    const r = new paper.Point(1000, 10 * o)
+    const r = new paper.Point(2000, 10 * o)
     let pathLineY = new paper.Path.Line(i, r)
     pathLineY.strokeColor = new paper.Color(96, 96, 96, 1)
     pathLineY.strokeWidth = 0.25
@@ -5453,14 +5453,14 @@ function redrawGrid() {
               rulerBottomCtx.fillText(
                 '0cm',
                 (x - paper.view.bounds.left) * paper.view.zoom,
-                10
+                14
               ))
             : x % o === 0
               ? ((e.style.strokeColor = '#81673a'),
                 rulerBottomCtx.fillText(
                   (paper.view.bounds.left + n - a).toString() + 'cm',
                   (x - paper.view.bounds.left) * paper.view.zoom,
-                  10
+                  14
                 ))
               : (e.style.strokeColor = '#564c3a')
           n += hitToleranceT
