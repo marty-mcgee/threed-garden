@@ -18,9 +18,9 @@ import { useFrame, useThree } from '@react-three/fiber'
 
 // ** APOLLO Imports
 import { useReactiveVar, useApolloClient } from '@apollo/client'
-import { preferencesDataVar } from '#/lib/stores/apollo'
-// import { stores, queries, mutations } from '#/lib/stores/apollo'
-import stores from '#/lib/stores/apollo'
+import { preferencesDataVar } from '#/lib/api/graphql/apollo'
+// import { stores, queries, mutations } from '#/lib/api/graphql/apollo'
+import stores from '#/lib/api/graphql/apollo'
 
 // ** Leva GUI
 // import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'

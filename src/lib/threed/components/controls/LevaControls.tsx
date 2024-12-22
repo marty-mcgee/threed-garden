@@ -17,10 +17,10 @@ import {
 // import Noise from 'noisejs'
 
 // ** APOLLO Imports
-// import { stores, queries, mutations } from '#/lib/stores/apollo'
-// import stores from '#/lib/stores/apollo'
+// import { stores, queries, mutations } from '#/lib/api/graphql/apollo'
+// import stores from '#/lib/api/graphql/apollo'
 import { useReactiveVar } from '@apollo/client'
-import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
+import { isPreferencesSetVar, preferencesDataVar } from '#/lib/api/graphql/apollo'
 
 // ** RADIX-UI Imports
 import { 

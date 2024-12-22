@@ -48,7 +48,7 @@ import {
   // reactive vars:
   isPreferencesSetVar,
   preferencesDataVar,
-} from '#/lib/stores/apollo'
+} from '#/lib/api/graphql/apollo'
 
 // ** RADIX-UI Imports
 import {

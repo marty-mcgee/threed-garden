@@ -11,7 +11,7 @@ import {
 
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
-import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
+import { isPreferencesSetVar, preferencesDataVar } from '#/lib/api/graphql/apollo'
 
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
