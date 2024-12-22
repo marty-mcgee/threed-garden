@@ -42,7 +42,7 @@ import {
 //   // preferencesDataVar,
 //   // isCanvasStateSetVar,
 //   // canvasStateVar,
-// } from '#/lib/stores/apollo'
+// } from '#/lib/api/graphql/apollo'
 
 // import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'

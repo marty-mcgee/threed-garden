@@ -9,7 +9,7 @@ import {
   preferencesDataVar,
   // preferencesStore,
   // projectStore,
-} from '#/lib/stores/apollo'
+} from '#/lib/api/graphql/apollo'
 
 // REACT Imports
 import { 

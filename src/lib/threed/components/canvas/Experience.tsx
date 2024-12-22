@@ -4,7 +4,7 @@
 
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
-import { preferencesDataVar } from '#/lib/stores/apollo'
+import { preferencesDataVar } from '#/lib/api/graphql/apollo'
 
 // ** NEXT Imports
 // import dynamic from 'next/dynamic'

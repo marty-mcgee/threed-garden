@@ -14,7 +14,7 @@ import {
   canvasStateStore,
   isCanvasStateSetVar,
   canvasStateVar,
-} from '#/lib/stores/apollo'
+} from '#/lib/api/graphql/apollo'
 // ** ZUSTAND (X?) // for cameras, lights, canvas props
 // import { create } from 'zustand'
 import { createStore } from 'zustand-x'

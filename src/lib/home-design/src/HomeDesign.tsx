@@ -37,7 +37,7 @@ import {
   preferencesDataVar,
   isCanvasStateSetVar,
   canvasStateVar,
-} from '#/lib/stores/apollo'
+} from '#/lib/api/graphql/apollo'
 
 import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
@@ -164,15 +164,15 @@ if (false && (debug || DEBUG)) {
 // ==============================================================
 // ** 🟣 TYPED VARIABLES
 
-type TUILayout = '3dView' | 'planView' | 'default'
-type TToolMode = 'pointer' | 'walls' | 'floor' | 'roof' | 'dimension' | 'text' | 'background' | 'ground' | 'defaults'
+type TUILayout = 'default' | 'planView' | '3dView' 
+type TThreedTool = 'pointer' | 'walls' | 'floor' | 'roof' | 'dimension' | 'text' | 'background' | 'ground' | 'defaults'
+
+let threedUILayout: TUILayout = 'default'
+let threedTool: TThreedTool = 'pointer'
+let threedItemsURL: string = 'https://threedpublic.s3.amazonaws.com/demo/'
 
 let enableOrbit: boolean = true
 let enableGizmoCube: boolean = true
-
-let UILayout: TUILayout = 'default'
-let toolMode: TToolMode = 'pointer'
-let threedItemsURL: string = 'https://threedpublic.s3.amazonaws.com/demo/'
 
 let fragment: any = null
 let readOnly: boolean = false
@@ -206,9 +206,9 @@ let threedHomeDesign: string = 'HEY HEY HEY ___',
   planView: HTMLElement,
   mouseIndicatorX: HTMLElement,
   mouseIndicatorY: HTMLElement,
-  rulerLeft: HTMLCanvasElement,
+  rulerLeft: HTMLCanvasElement = null,
   rulerLeftCtx: any,
-  rulerBottom: HTMLCanvasElement,
+  rulerBottom: HTMLCanvasElement = null,
   rulerBottomCtx: any,
   fullscreenPlanViewBtn,
   fullscreen3dViewBtn,
@@ -432,7 +432,7 @@ let threedHomeDesign: string = 'HEY HEY HEY ___',
   groundLength: number = 5e3
 
   let busy: boolean = false
-  let screenAvg = 1000 // (screen.width + screen.height) / 2
+  // let screenAvg = 1000 // (screen.width + screen.height) / 2
   let redrawing: boolean = false
   let strokeWidth = 0
   const onProgress = function (e: any) {
@@ -462,6 +462,51 @@ let threedHomeDesign: string = 'HEY HEY HEY ___',
   //     return t + o.toUpperCase()
   //   })
   // }
+
+  // ** firefox browser mouse controls
+  // // function e (e: any) {
+  function MMeMouse (e: any) {
+    
+    // let
+    planView = document.getElementById('planView')
+    var t = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0
+    if (t) {
+      var o = cumulclick
+      cumulclick += Math.min(Math.max(t / 3, -1), 1)
+      var a = Math.pow(scaleFactor, cumulclick)
+      if (a > 0.0625 && a < 16) {
+        paper.view.zoom = a
+        var n = paper.view.viewToProject(
+          new paper.Point(
+            e.pageX - planView.offsetLeft,
+            e.pageY - planView.offsetTop
+          )
+        )
+        var l = 0.11 * (paper.view.center.x - n.x)
+        var i = 0.11 * (paper.view.center.y - n.y)
+
+        if (t > 0) {
+          var r = paper.view.center.x - l
+          var s = paper.view.center.y - i
+          var d = new paper.Point(r, s)
+          paper.view.center = d
+        } 
+        else {
+          var r = paper.view.center.x + l
+          var s = paper.view.center.y + i
+          var d = new paper.Point(r, s)
+          paper.view.center = d
+        }
+
+        redrawGrid()
+        redrawTexts()
+      
+      } else {
+        cumulclick = o
+      }
+    }
+    return e.preventDefault() && false
+  }
 
 // ==============================================================
 
@@ -558,7 +603,7 @@ const initThreeDPaper = (planCanvas: any) => {
   // animate()
   // ** ================================================
   
-  draw1()
+  // draw1()
   initPlanView(planCanvas)
 
   // ** ================================================
@@ -578,6 +623,7 @@ const initThreeDPaper = (planCanvas: any) => {
   // }
 
 }
+
 // ** SIMPLE DRAWING FUNCTION
 const draw1 = () => {
   let myPath = new paper.Path()
@@ -605,180 +651,146 @@ const draw1 = () => {
   // @ts-expect-error
   paper.view.draw()
 }
+
 // ** MAIN PAPER VIEW
 function initPlanView(planCanvas: any) {
 
-  // let planCanvas = document.getElementById('planView') // NO, NOT THE SAME.. need actual ref
-  // let planCanvas = document.getElementById('planCanvas') // NO, NOT THE SAME.. need actual ref?
+  // let
   planView = document.getElementById('planView')
-  
-  // function e (e: any) {
-  function MMe (e: any) {
-    var t = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0
-    if (t) {
-      var o = cumulclick
-      cumulclick += Math.min(Math.max(t / 3, -1), 1)
-      var a = Math.pow(scaleFactor, cumulclick)
-      if (a > 0.0625 && a < 16) {
-        paper.view.zoom = a
-        var n = paper.view.viewToProject(
-          new paper.Point(
-            e.pageX - planView.offsetLeft,
-            e.pageY - planView.offsetTop
-          )
-        )
-        var l = 0.11 * (paper.view.center.x - n.x)
-        var i = 0.11 * (paper.view.center.y - n.y)
-
-        if (t > 0) {
-          var r = paper.view.center.x - l
-          var s = paper.view.center.y - i
-          var d = new paper.Point(r, s)
-          paper.view.center = d
-        } 
-        else {
-          var r = paper.view.center.x + l
-          var s = paper.view.center.y + i
-          var d = new paper.Point(r, s)
-          paper.view.center = d
-        }
-
-        redrawGrid()
-        redrawTexts()
-      
-      } else {
-        cumulclick = o
-      }
-    }
-    return e.preventDefault() && false
+  // let
+  planCanvas = document.getElementById('planCanvas')
+  planCanvas.width = planCanvas.parentNode.getBoundingClientRect().width
+  planCanvas.height = planCanvas.parentNode.getBoundingClientRect().height
+  planCanvas.oncontextmenu = function () {
+    return false
   }
-  // if (
-    // '3dView' != UILayout
-    paper.project.activeLayer.name = 'level0'
-    paper.project.activeLayer.data = { id: '0', height: 0 }
-    screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
 
-    gridGroup[0] = new paper.Group()
-    floorsGroup[0] = new paper.Group()
-    roofsGroup[0] = new paper.Group()
-    wallsGroup[0] = new paper.Group()
-    dimensionsGroup[0] = new paper.Group()
-    threedGroup[0] = new paper.Group()
-    textsGroup[0] = new paper.Group()
-    guidesGroup[0] = new paper.Group()
+  paper.project.activeLayer.name = 'level_0'
+  paper.project.activeLayer.data = { id: '0', height: 0 }
+
+  screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
+
+  gridGroup[0] = new paper.Group()
+  floorsGroup[0] = new paper.Group()
+  roofsGroup[0] = new paper.Group()
+  wallsGroup[0] = new paper.Group()
+  dimensionsGroup[0] = new paper.Group()
+  threedGroup[0] = new paper.Group()
+  textsGroup[0] = new paper.Group()
+  guidesGroup[0] = new paper.Group()
+
+  // ** RULERS
+  // @ts-expect-error
+  rulerLeft = document.getElementById('rulerLeft')
+  // @ts-expect-error
+  rulerBottom = document.getElementById('rulerBottom')
+  rulerBottom.style.width = planCanvas.parentNode.getBoundingClientRect().width
+  rulerLeft.style.height = planCanvas.parentNode.getBoundingClientRect().height
+  // ** RULER CONTEXTS
+  rulerLeft.oncontextmenu = function () {
+    return false
+  }
+  rulerBottom.oncontextmenu = function () {
+    return false
+  }
+  rulerLeftCtx = rulerLeft.getContext('2d')
+  rulerBottomCtx = rulerBottom.getContext('2d')
+
+  // ** MOUSE INDICATORS
+  // mouseIndicatorX = document.getElementById('mouseIndicatorX')
+  // mouseIndicatorY = document.getElementById('mouseIndicatorY')
+  // (document.getElementsByClassName('close')[0].onclick = function () {
+  //   closeAllModals(), showMouseIndicators()
+  // }),
+  // (document.getElementsByClassName('close')[1].onclick = function () {
+  //   closeAllModals(), showMouseIndicators()
+  // }),
+  // (document.getElementsByClassName('close')[2].onclick = function () {
+  //   closeAllModals(), showMouseIndicators()
+  // }),
+  // ** CROSSHAIRS mouse indicators x,y onmousemove
+  // planCanvas.addEventListener(
+  //   'mousemove',
+  //   function (e: any) {
+  //     mouseIndicatorX.style.left = e.clientX + 'px'
+  //     mouseIndicatorY.style.top = e.clientY + 'px'
+  //   },
+  //   false
+  // )
+
+  // ** SUPPORT FIREFOX + MOUSEPAD
+  let MMtUserAgent = /Firefox/i.test(navigator.userAgent)
+    ? 'DOMMouseScroll'
+    : 'mousewheel'
+  planCanvas.addEventListener(MMtUserAgent, MMeMouse)
+
+  // **
+
+  // ** DRAW GRID path lines x,y
+  drawGrid()
+  // drawGridNew(paper, 10)
+  // redrawGrid()
+
+  
+  // **
+
+  // **
+  toolsGroup[0] = new paper.Group()
+  // @ts-expect-error
+  toolsGroup[0].rotation = 0
+  
+  rotateIcon = new paper.Raster('images/homedesign/rotate.png')
+  rotateIcon.data.type = 'rotateThreedTool'
+  rotateIcon.onMouseEnter = function (e: any) {
+    planView.style.cursor = 'move'
+  }
+  rotateIcon.onMouseLeave = function (e: any) {
+    planView.style.cursor = 'default'
+  }
+  rotateIcon.visible = false
+  // @ts-expect-error
+  toolsGroup[0].addChild(rotateIcon)
+  
+  // **
+  resizeIcon = new paper.Raster('images/homedesign/expand.png')
+  resizeIcon.data.type = 'stretchThreedXZTool'
+  resizeIcon.onMouseEnter = function (e: any) {
+    planView.style.cursor = 'move'
+  }
+  resizeIcon.onMouseLeave = function (e: any) {
+    planView.style.cursor = 'default'
+  }
+  resizeIcon.visible = false
+  // @ts-expect-error
+  toolsGroup[0].addChild(resizeIcon)
+
+  // **
+  elevateIcon = new paper.Raster('images/homedesign/elevation.png')
+  elevateIcon.data.type = 'elevateThreedTool'
+  elevateIcon.onMouseEnter = function (e: any) {
+    planView.style.cursor = 'row-resize'
+  }
+  elevateIcon.onMouseLeave = function (e: any) {
+    planView.style.cursor = 'default'
+  }
+  elevateIcon.visible = false
+  // @ts-expect-error
+  toolsGroup[0].addChild(elevateIcon)
+
+  // **
+  heightIcon = new paper.Raster('images/homedesign/height.png')
+  heightIcon.data.type = 'stretchThreedYTool'
+  heightIcon.onMouseEnter = function (e: any) {
+    planView.style.cursor = 'ns-resize'
+  }
+  heightIcon.onMouseLeave = function (e: any) {
+    planView.style.cursor = 'default'
+  }
+  heightIcon.visible = false
+  // @ts-expect-error
+  toolsGroup[0].addChild(heightIcon)
     
-    // @ts-expect-error
-    rulerLeft = document.getElementById('rulerLeft')
-    // @ts-expect-error
-    rulerBottom = document.getElementById('rulerBottom')
-    mouseIndicatorX = document.getElementById('mouseIndicatorX')
-    mouseIndicatorY = document.getElementById('mouseIndicatorY')
-    
-    planCanvas.width = planCanvas.parentNode.getBoundingClientRect().width
-    planCanvas.height = planCanvas.parentNode.getBoundingClientRect().height
-    rulerBottom.style.width = planCanvas.parentNode.getBoundingClientRect().width
-    rulerLeft.style.height = planCanvas.parentNode.getBoundingClientRect().height
-
-    planCanvas.oncontextmenu = function () {
-      return false
-    }
-    // (document.getElementsByClassName('close')[0].onclick = function () {
-    //   closeAllModals(), showMouseIndicators()
-    // }),
-    // (document.getElementsByClassName('close')[1].onclick = function () {
-    //   closeAllModals(), showMouseIndicators()
-    // }),
-    // (document.getElementsByClassName('close')[2].onclick = function () {
-    //   closeAllModals(), showMouseIndicators()
-    // }),
-
-  // ) {
-
-    rulerLeft.oncontextmenu = function () {
-      return false
-    }
-    rulerBottom.oncontextmenu = function () {
-      return false
-    }
-    rulerLeftCtx = rulerLeft.getContext('2d')
-    rulerBottomCtx = rulerBottom.getContext('2d')
-
-    // ** CROSSHAIRS mouse indicators x,y onmousemove
-    // planCanvas.addEventListener(
-    //   'mousemove',
-    //   function (e: any) {
-    //     mouseIndicatorX.style.left = e.clientX + 'px'
-    //     mouseIndicatorY.style.top = e.clientY + 'px'
-    //   },
-    //   false
-    // )
-
-    let MMt = /Firefox/i.test(navigator.userAgent)
-      ? 'DOMMouseScroll'
-      : 'mousewheel'
-
-    planCanvas.addEventListener(MMt, MMe)
-
-    // ** DRAW GRID path lines x,y
-    drawGrid()
-
-    // **
-    toolsGroup[0] = new paper.Group()
-    // @ts-expect-error
-    toolsGroup[0].rotation = 0
-    
-    rotateIcon = new paper.Raster('images/homedesign/rotate.png')
-    rotateIcon.data.type = 'rotateThreedTool'
-    rotateIcon.onMouseEnter = function (e: any) {
-      planView.style.cursor = 'move'
-    }
-    rotateIcon.onMouseLeave = function (e: any) {
-      planView.style.cursor = 'default'
-    }
-    rotateIcon.visible = false
-    // @ts-expect-error
-    toolsGroup[0].addChild(rotateIcon)
-    
-    // **
-    resizeIcon = new paper.Raster('images/homedesign/expand.png')
-    resizeIcon.data.type = 'stretchThreedXZTool'
-    resizeIcon.onMouseEnter = function (e: any) {
-      planView.style.cursor = 'move'
-    }
-    resizeIcon.onMouseLeave = function (e: any) {
-      planView.style.cursor = 'default'
-    }
-    resizeIcon.visible = false
-    // @ts-expect-error
-    toolsGroup[0].addChild(resizeIcon)
-
-    // **
-    elevateIcon = new paper.Raster('images/homedesign/elevation.png')
-    elevateIcon.data.type = 'elevateThreedTool'
-    elevateIcon.onMouseEnter = function (e: any) {
-      planView.style.cursor = 'row-resize'
-    }
-    elevateIcon.onMouseLeave = function (e: any) {
-      planView.style.cursor = 'default'
-    }
-    elevateIcon.visible = false
-    // @ts-expect-error
-    toolsGroup[0].addChild(elevateIcon)
-
-    // **
-    heightIcon = new paper.Raster('images/homedesign/height.png')
-    heightIcon.data.type = 'stretchThreedYTool'
-    heightIcon.onMouseEnter = function (e: any) {
-      planView.style.cursor = 'ns-resize'
-    }
-    heightIcon.onMouseLeave = function (e: any) {
-      planView.style.cursor = 'default'
-    }
-    heightIcon.visible = false
-    // @ts-expect-error
-    toolsGroup[0].addChild(heightIcon)
-    
-  // }
+  // **
   
   wallHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -862,7 +874,7 @@ function initPlanView(planCanvas: any) {
     console.debug('initPlanView: tools.onMouseDown', e)
 
     /*
-    if ('pointer' === toolMode)
+    if ('pointer' === threedTool)
       if (2 === e.event.buttons) mouseMode = -1
       else if (readOnly) mouseMode = -1
       else {
@@ -1077,7 +1089,7 @@ function initPlanView(planCanvas: any) {
                   ((selectedGuideId = t.item.data.id), (mouseMode = 10)))
         } else console.debug('hit result nothing'), (mouseMode = -1)
       }
-    else if ('walls' === toolMode)
+    else if ('walls' === threedTool)
       if (2 === e.event.buttons) mouseMode = -1
       else {
         if (((mouseMode = 0), Date.now() - lastNewWallSegmentClick > 250)) {
@@ -1257,7 +1269,7 @@ function initPlanView(planCanvas: any) {
         }
         lastNewWallSegmentClick = Date.now()
       }
-    else if ('roof' === toolMode)
+    else if ('roof' === threedTool)
       if (2 === e.event.buttons) mouseMode = -1
       else {
         if (((mouseMode = 0), Date.now() - lastNewRoofSegmentClick > 250)) {
@@ -1448,7 +1460,7 @@ function initPlanView(planCanvas: any) {
         }
         lastNewRoofSegmentClick = Date.now()
       }
-    else if ('background' === toolMode) {
+    else if ('background' === threedTool) {
       var t = project.hitTest(e.point)
       t && t.item.data
         ? 'background' === t.item.data.type
@@ -1467,7 +1479,7 @@ function initPlanView(planCanvas: any) {
                 (selectedGuideId = t.item.data.id),
                 (mouseMode = 10))
         : (mouseMode = -1)
-    } else if ('floor' === toolMode)
+    } else if ('floor' === threedTool)
       2 === e.event.buttons
         ? (mouseMode = -1)
         : ((mouseMode = 0),
@@ -1545,7 +1557,7 @@ function initPlanView(planCanvas: any) {
               (floorHelperPath.segments[1].point = snapPoint),
               (floorHelperPath.visible = true))),
           (lastNewFloorSegmentClick = Date.now()))
-    else if ('dimension' === toolMode)
+    else if ('dimension' === threedTool)
       if (2 === e.event.buttons) mouseMode = -1
       else if (((mouseMode = 0), startedDrawingDimension))
         if (1 === dimensionPath.segments.length) dimensionPath.add(snapPoint)
@@ -1654,7 +1666,7 @@ function initPlanView(planCanvas: any) {
           (dimensionHelperPath.segments[0].point = snapPoint),
           (dimensionHelperPath.segments[1].point = snapPoint),
           (dimensionHelperPath.visible = true)
-    else if ('text' === toolMode)
+    else if ('text' === threedTool)
       if (2 === e.event.buttons) mouseMode = -1
       else if (((mouseMode = 0), !startedDrawingText)) {
         deselectAll(), (startedDrawingText = true)
@@ -1986,7 +1998,7 @@ function initPlanView(planCanvas: any) {
       horizontalGuides[selectedGuideId].position.y =
         parseInt(e.point.y / snapTolerance) * snapTolerance
     }
-    else if ('pointer' === toolMode) {
+    else if ('pointer' === threedTool) {
       if (0 === mouseMode) {
         if (
           ((dragging = true),
@@ -2576,7 +2588,7 @@ function initPlanView(planCanvas: any) {
             (document.getElementById('textYProp').value =
               snapPoint.y.toFixed(3)))
     }
-    else if ('background' === toolMode) {
+    else if ('background' === threedTool) {
       if (2 === e.event.buttons)
         (paper.view.center = paper.view.center.add(t)), redrawGrid()
       else if (0 === mouseMode) {
@@ -2636,7 +2648,7 @@ function initPlanView(planCanvas: any) {
     // **
     // console.debug('initPlanView: tools.onMouseMove', e)
     /*
-    if (((lastMousePoint = e.point), 'walls' === toolMode)) {
+    if (((lastMousePoint = e.point), 'walls' === threedTool)) {
       if (((snapPoint = null), startedDrawingWalls)) {
         var t = e.point.subtract(wallHelperPath.segments[0].point)
         ctrlKeyPressed && (t.angle = 15 * Math.round(t.angle / 15)),
@@ -2811,7 +2823,7 @@ function initPlanView(planCanvas: any) {
             break e
           }
     } 
-    else if ('roof' === toolMode) {
+    else if ('roof' === threedTool) {
       if (startedDrawingRoofs) {
         var t = e.point.subtract(roofHelperPath.segments[0].point)
         ctrlKeyPressed && (t.angle = 15 * Math.round(t.angle / 15)),
@@ -2943,7 +2955,7 @@ function initPlanView(planCanvas: any) {
           }).removeOnMove(),
           (snapPointOverride = { id: i, x: snapPoint.x, y: snapPoint.y }))
     } 
-    else if ('floor' === toolMode) {
+    else if ('floor' === threedTool) {
       snapPoint = e.point
       e: for (var d = 0; d < wallCornersX.length; d++)
         if (
@@ -2989,7 +3001,7 @@ function initPlanView(planCanvas: any) {
           }).removeOnMove()),
         startedDrawingFloor && (floorHelperPath.segments[1].point = snapPoint)
     } 
-    else if ('dimension' === toolMode) {
+    else if ('dimension' === threedTool) {
       snapPoint = e.point
       e: for (var d = 0; d < wallCornersX.length; d++)
         if (
@@ -3039,9 +3051,9 @@ function initPlanView(planCanvas: any) {
   planCanvas.addEventListener(
     'dblclick',
     function (e: any) {
-      if ('pointer' === toolMode) {
+      if ('pointer' === threedTool) {
         deselectAll()
-      } else if ('floor' === toolMode && startedDrawingFloor) {
+      } else if ('floor' === threedTool && startedDrawingFloor) {
         startedDrawingFloor = false
         floorHelperPath.visible = false
         floorPath.closed = true
@@ -3054,8 +3066,8 @@ function initPlanView(planCanvas: any) {
   // ** -- PREPARE CANVAS
   // ** -- DRAW PREPARED CONTENT
   // ** -- RESET GRID
-  // @ts-expect-error
-  paper.view.center = [350, 130]
+  // @ ts-expect-error
+  // paper.view.center = [350, 130]
   // @ts-expect-error
   paper.view.draw()
   // @ ts-expect-error
@@ -3140,7 +3152,7 @@ function closeAllModals() {
 // ** VIEWS (COMPONENTS)
 
 // ** VIEW: PROPERTIES (of a threed object, or other dom element)
-const ViewProperties = (props: any) => {
+const ViewProperties = () => {
   // console.debug('PropertiesView loading...')
 
   return (
@@ -3148,7 +3160,9 @@ const ViewProperties = (props: any) => {
     <div 
       id='propertiesView' 
       style={{ 
-        height: '100%',
+        // display: 'flex',
+        // flexDirection: 'row',
+        // height: '100%',
         padding: '6px',
         // paddingLeft: '10px',
         // border: '1px solid orange',
@@ -3156,22 +3170,24 @@ const ViewProperties = (props: any) => {
     >
       <div 
         id='threed3DModelPropertiesView' 
-        // style={{ display: 'none' }}
+        style={{ 
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       >
         <h3>Model Properties</h3>
         <table 
-          className='propertiesTable' 
-          // style={{ minWidth: '290px', minHeight: '290px' }}
+          className='propertiesTable'
         >
           <tbody>
             <tr>
               <td>
                 <div 
-                  onMouseDown={(event) => beginDrag(event, props.t.title)} 
+                  onMouseDown={(event) => beginDrag(event, draggingThreedItem)} 
                   className='disableSelection'
                   style={{ textAlign: 'center' }}
                 >
-                  <Image
+                  <img // Image
                     id='model3dLargeThumb'
                     alt='model3dLargeThumb'
                     width={100}
@@ -3214,11 +3230,17 @@ const ViewProperties = (props: any) => {
       </div>
       <div 
         id='threedPropertiesView'
-        style={{ display: 'none' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       >
         <h3>Threed Properties</h3>
-        <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                      <tbody>
+        <table 
+          className='propertiesTable' 
+          // style={{ minWidth: '290px' }}
+        >
+          <tbody>
           <tr>
             <td>Id</td>
             <td><span id='objectId'></span></td>
@@ -3280,10 +3302,10 @@ const ViewProperties = (props: any) => {
                 maxLength={8} 
               />
               cm
-              <input type='checkbox' id='flipX' 
+              {/* <input type='checkbox' id='flipX' 
                 // onChange={() => flipX(this.checked)} 
               />
-              Flip X
+              Flip X */}
             </td>
           </tr>
           <tr>
@@ -3309,11 +3331,11 @@ const ViewProperties = (props: any) => {
                 maxLength={8} 
               />
               cm
-              <input type='checkbox' 
+              {/* <input type='checkbox' 
                 id='flipZ' 
                 // onChange={() => flipZ(this.checked)} 
               />
-              Flip Z
+              Flip Z */}
             </td>
           </tr>
           <tr>
@@ -3331,11 +3353,11 @@ const ViewProperties = (props: any) => {
                 className='moreInfoBtn' 
                 // onClick={() => showModel3dView()}
               >
-                View
+                VIEW
               </button>
             </td>
           </tr>
-                      </tbody>
+          </tbody>
         </table>
       </div>
       <div id='defaultsPropertiesView' style={{ display: 'none' }}>
@@ -3469,7 +3491,10 @@ const ViewProperties = (props: any) => {
 
       <div 
         id='planViewPropertiesView' 
-        style={{ display: 'none' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       >
         <h3>Background Template</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
@@ -3813,7 +3838,10 @@ const ViewProperties = (props: any) => {
                       </tbody>
         </table>
       </div>
-      <div id='textPropertiesView' style={{ display: 'none' }}>
+      <div id='textPropertiesView' style={{
+          display: 'flex',
+          flexDirection: 'column',
+      }}>
         <h3>Text Annotation Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
@@ -3857,7 +3885,13 @@ const ViewProperties = (props: any) => {
         {/* <div>Type<span id='textDataTypeProp'></span></div> */}
         {/* <div><button id='deleteTextAnnotationBtn' onClick={() => deleteTextBtnClick()}>Delete</button></div> */}
       </div>
-      <div id='levelPropertiesView' style={{ display: 'none' }}>
+      <div 
+        id='levelPropertiesView' 
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <h3>Level Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
@@ -3887,7 +3921,10 @@ const ViewProperties = (props: any) => {
       </div>
       <div 
         id='groundPropertiesView' 
-        style={{ display: 'none' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
       >
         <h3>Ground Layer Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
@@ -4264,7 +4301,7 @@ const ViewModals = (props: any) => {
             <a id='saveBtn' onClick={() => savePlan()}>Save</a>
             <a id='shareBtn' onClick={() => openShareDialog()}>Share</a>
             <a id='defaultsBtn' onClick={() => setPropertiesView('defaults')}>Defaults</a>
-            <!--<a  id='groundPropertiesButton' onClick={() => setToolMode('ground')}>Ground Properties</a>-->
+            <!--<a  id='groundPropertiesButton' onClick={() => setThreedTool('ground')}>Ground Properties</a>-->
             <a id='fullscreenApp' onClick={() => openFullscreen('appBody')}>Fullscreen</a>
           </div>
         </li> */}
@@ -4299,40 +4336,40 @@ const ViewModals = (props: any) => {
           <a onClick={() => showModalAbout()}>About</a>
         </li> --> */}
         {/* <li>
-          <a id='pointerTool' onClick={() => setToolMode('pointer')} className='toolButton activeTool'
+          <a id='pointerTool' onClick={() => setThreedTool('pointer')} className='toolButton activeTool'
             title='Pointer Select' alt='Pointer Select'>
             <img src='images/homedesign/pointericonWhite.png' height='42px'>
           </a>
         </li> */}
         {/* <!-- <li>
-          <a onClick={() => setToolMode('hand')}>
+          <a onClick={() => setThreedTool('hand')}>
             <img src='images/homedesign/handicon.png' width='50px'>
           </a>
         </li> --> */}
         {/* <li>
-          <a id='addWallTool' onClick={() => setToolMode('walls')} className='toolButton' title='Add Wall' alt='Add Wall'>
+          <a id='addWallTool' onClick={() => setThreedTool('walls')} className='toolButton' title='Add Wall' alt='Add Wall'>
             <img src='images/homedesign/newWallWhite2.png' height='42px'>
           </a>
         </li> */}
         {/* <li>
-          <a id='addFloorTool' onClick={() => setToolMode('floor')} className='toolButton' title='Add Floor'
+          <a id='addFloorTool' onClick={() => setThreedTool('floor')} className='toolButton' title='Add Floor'
             alt='Add Floor'>
             <img src='images/homedesign/newFloorWhite2.png' height='42px'>
           </a>
         </li> */}
         {/* <li>
-          <a id='addRoofTool' onClick={() => setToolMode('roof')} className='toolButton' title='Add Roof' alt='Add Roof'>
+          <a id='addRoofTool' onClick={() => setThreedTool('roof')} className='toolButton' title='Add Roof' alt='Add Roof'>
             <img src='images/homedesign/newRoofWhite2.png' height='42px'>
           </a>
         </li> */}
         {/* <li>
-          <a id='addRulerTool' onClick={() => setToolMode('dimension')} className='toolButton' title='Add Dimension'
+          <a id='addRulerTool' onClick={() => setThreedTool('dimension')} className='toolButton' title='Add Dimension'
             alt='Add Dimension'>
             <img src='images/homedesign/newRulerWhite2.png' height='42px'>
           </a>
         </li> */}
         {/* <li>
-          <a id='addTextTool' onClick={() => setToolMode('text')} className='toolButton' title='Add Text Annotation'
+          <a id='addTextTool' onClick={() => setThreedTool('text')} className='toolButton' title='Add Text Annotation'
             alt='Add Text Annotation'>
             <img src='images/homedesign/newTextWhite.png' height='42px'>
           </a>
@@ -4522,22 +4559,22 @@ function showModel3dView(event: any) {
   //       }))
 }
 
-function setToolMode(toolModeName: string) {
-  console.debug('setToolMode to', toolModeName)
+function setThreedTool(threedToolName: string) {
+  console.debug('setThreedTool to', threedToolName)
   // switch (
-  // ('walls' === toolMode
+  // ('walls' === threedTool
   //   ? setEndDrawingWalls()
-  //   : 'floor' === toolMode
+  //   : 'floor' === threedTool
   //     ? setEndDrawingFloors()
-  //     : 'roof' === toolMode
+  //     : 'roof' === threedTool
   //       ? setEndDrawingRoofs()
-  //       : 'dimension' === toolMode
+  //       : 'dimension' === threedTool
   //         ? setEndDrawingDimension()
-  //         : 'text' === toolMode
+  //         : 'text' === threedTool
   //           ? setEndDrawingText()
-  //           : 'ground' === toolMode && setEndDrawingGround(),
-  //   (toolMode = toolModeName),
-  //   toolModeName)
+  //           : 'ground' === threedTool && setEndDrawingGround(),
+  //   (threedTool = threedToolName),
+  //   threedToolName)
   // ) {
   //   case 'pointer':
   //     modalsActive || showMouseIndicators(),
@@ -4622,7 +4659,7 @@ function setToolMode(toolModeName: string) {
   //     break
   //   case 'ground':
   //     setLevel('0'),
-  //       (toolMode = toolModeName),
+  //       (threedTool = threedToolName),
   //       (defaultCursor = 'default'),
   //       (wallsGroup[0].opacity = 0.25),
   //       (floorsGroup[0].opacity = 0.25),
@@ -4652,7 +4689,7 @@ function setPropertiesView(element: string) {
   console.debug('setPropertiesView', element)
   switch (
     /*
-    // 'background' != element && 'background' === toolMode && setToolMode('pointer'),
+    // 'background' != element && 'background' === threedTool && setThreedTool('pointer'),
     // document.getElementById('threed3DModelPropertiesView').style.display = 'none',
     // document.getElementById('threedPropertiesView').style.display = 'none',
     // document.getElementById('planViewPropertiesView').style.display = 'none',
@@ -4805,12 +4842,12 @@ function beginDrag(event: any, threedItem: TThreedItem) {
 
   try {
     showThreedLicenseSummary(threedItem)
-    setToolMode('pointer')
+    setThreedTool('pointer')
 
     // **
-    // ** ONLY DO THIS IF NEEDED/INTENDED (with intent) ;) [MM]
+    // ** ?? ONLY DO THIS IF NEEDED/INTENDED (with intent) ;) [MM]
     // **
-    if (threedItem != draggingThreedItem) {
+    // if (threedItem != draggingThreedItem) {
 
       draggingThreedItem = threedItem // set global var to this function parameter
       draggingThreedIcon = true
@@ -4851,7 +4888,7 @@ function beginDrag(event: any, threedItem: TThreedItem) {
       threedDragDiv.style.backgroundSize = widthA + 'px ' + heightN + 'px'
       threedDragDiv.style.display = 'block'
     
-    }
+    // }
 
   } catch (err) {
     console.debug('%c beginDrag: err', ccm.redAlert, err)
@@ -4885,11 +4922,20 @@ function addThreed(event: any, threedItem: any, scene: any) {
         // **
       } else if (draggingThreedRectangle.position.y > paper.view.bounds.bottom) {
           console.debug('addThreed: dropped inside 3dView -- todo: implement')
+          // **
+          initThreed(draggingThreedItem, scene)
+          // **
       } else {
         console.debug('addThreed: not dropped inside views 2')
+        // **
+        initThreed(draggingThreedItem, scene)
+        // **
       }
     } else {
       console.debug('addThreed: dropped not inside views 1')
+      // **
+      initThreed(draggingThreedItem, scene)
+      // **
     }
 
     draggingThreedIcon = false
@@ -4998,7 +5044,7 @@ function initThreed(threedItem: any, scene: any) {
 
                     // readOnly ||
                     rasterImageN.onMouseDown = function (e: any) {
-                      if ('pointer' === toolMode) {
+                      if ('pointer' === threedTool) {
                         deselectAll()
                         selectedItem = this
                         mouseMode = 0
@@ -5194,222 +5240,275 @@ function initThreed(threedItem: any, scene: any) {
 
 // ** DRAW GRID path lines x,y
 function drawGrid() {
-  for (let o = 0; o <= 200; o++) {
-    const a = new paper.Point(10 * o, 0)
-    const n = new paper.Point(10 * o, 100)
+  // x
+  for (let o = 0; o <= 1000; o++) {
+    const a = new paper.Point(10 * o, -200)
+    const n = new paper.Point(10 * o, 1000)
     let pathLineX = new paper.Path.Line(a, n)
-    pathLineX.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
-    pathLineX.strokeWidth = 1
-    pathLineX.strokeScaling = false
+    pathLineX.strokeColor = new paper.Color(96, 96, 96, 1)
+    pathLineX.strokeWidth = 0.25
+    pathLineX.strokeScaling = true
     xLines.push(pathLineX)
     // @ts-expect-error
     gridGroup[0].addChild(pathLineX)
   }
-  for (var o = 0; o <= 200; o++) {
-    const i = new paper.Point(0, 10 * o)
-    const r = new paper.Point(100, 10 * o)
+  // y
+  for (var o = 0; o <= 1000; o++) {
+    const i = new paper.Point(-200,    10 * o)
+    const r = new paper.Point(1000, 10 * o)
     let pathLineY = new paper.Path.Line(i, r)
-    pathLineY.strokeColor = new paper.Color(200, 200, 200, 1) // '#cccccc'
-    pathLineY.strokeWidth = 0.5
-    pathLineY.strokeScaling = false
+    pathLineY.strokeColor = new paper.Color(96, 96, 96, 1)
+    pathLineY.strokeWidth = 0.25
+    pathLineY.strokeScaling = true
     yLines.push(pathLineY)
     // @ts-expect-error
     gridGroup[0].addChild(pathLineY)
   }
 }
+// new version
+function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
+  const { view, Path } = paperScope
+  const { width, height } = view.size
+
+  for (let x = 0; x <= width; x += gridSize) {
+    new Path.Line({
+      from: [x, 0],
+      to: [x, height],
+      strokeColor: 'lightgray'
+    })
+  }
+
+  for (let y = 0; y <= height; y += gridSize) {
+    new Path.Line({
+      from: [0, y],
+      to: [width, y],
+      strokeColor: 'lightgray'
+    })
+  }
+}
 
 // ** REDRAW Functions
 function redrawGrid() {
-  if (!redrawing && UILayout != '3dView') {
-    if (redrawing = true) {
-      console.debug('redrawGrid?', true)
-      screenScale = screenAvg / paper.view.zoom / 75
+  if (true && 'needs redraw' === 'needs redraw') {
 
-      if (selectedItem && selectedItem.data) {
-        console.debug('selectedItem.data', selectedItem.data)
-        if ('wallPath' === selectedItem.data.type) {
-          var e = 0
-          selectedItem.segments.forEach(function (t: any) {
-            movePointIcons[e] &&
-              // @ts-expect-error
-              ((movePointIcons[e].position = t.point),
-              // @ts-expect-error
-                (movePointIcons[e].bounds.width = screenScale),
-              // @ts-expect-error
-                (movePointIcons[e].bounds.height = screenScale),
-                e++)
-          })
-        } 
-        else if ('roofPath' === selectedItem.data.type) {
-          var e = 0
-          selectedItem.segments.forEach(function (t: any) {
-            movePointIcons[e] &&
-              // @ts-expect-error
-              ((movePointIcons[e].position = t.point),
-              // @ts-expect-error
-                (movePointIcons[e].bounds.width = screenScale),
-              // @ts-expect-error
-                (movePointIcons[e].bounds.height = screenScale),
-                e++)
-          })
-        } 
-        else if ('threed' === selectedItem.data.type) {
-          rotateIcon.bounds.width = screenScale
-          rotateIcon.bounds.height = screenScale
-          rotateIcon.position =
-            selectedItem.data.toolsRectangleInner.segments[1].point
-          resizeIcon.bounds.width = screenScale
-          resizeIcon.bounds.height = screenScale
-          resizeIcon.position =
-            selectedItem.data.toolsRectangleInner.segments[3].point
-          heightIcon.bounds.width = screenScale
-          heightIcon.bounds.height = screenScale
-          heightIcon.position =
-            selectedItem.data.toolsRectangleInner.segments[2].point
-          elevateIcon.bounds.width = screenScale
-          elevateIcon.bounds.height = screenScale
-          elevateIcon.position =
-            selectedItem.data.toolsRectangleInner.segments[0].point
-        } 
-        else if ('background' === selectedItem.data.type) {
-          resizeIcon.bounds.width = screenScale
-          resizeIcon.bounds.height = screenScale
-          resizeIcon.position =
-              backgroundRaster.data.toolsRectangleInner.segments[3].point
-        } 
-        else if ('floor' === selectedItem.data.type) {
-          var e = 0
-          selectedItem.segments.forEach(function (t: any) {
-            movePointIcons[e] &&
-              // @ts-expect-error
-              ((movePointIcons[e].position = t.point),
-              // @ts-expect-error
-                (movePointIcons[e].bounds.width = screenScale),
-              // @ts-expect-error
-                (movePointIcons[e].bounds.height = screenScale),
-                e++)
-          })
-        }
-      }
+    if (!redrawing && threedUILayout != '3dView') {
+      if (redrawing = true) {
+        console.debug('redrawGrid: redrawing?', true)
 
-      var t = 0,
-          o = 0
-      paper.view.zoom < 0.1875
-      ? ((t = 200),
-        (o = 2e3),
-        (snapTolerance = 100),
-        (paper.settings.hitTolerance = 3))
-      : paper.view.zoom < 0.375
-        ? ((t = 100),
-          (o = 1e3),
-          (snapTolerance = 50),
+        screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
+        // console.debug('redrawGrid: screenScale', screenScale)
+
+        // console.debug('selectedItem? commented out //', selectedItem)
+
+        // if (selectedItem && selectedItem.data) {
+        //   console.debug('selectedItem.data', selectedItem.data)
+        //   if ('wallPath' === selectedItem.data.type) {
+        //     console.debug('selectedItem.data.type', selectedItem.data.type)
+        //     var e = 0
+        //     selectedItem.segments.forEach(function (t: any) {
+        //       movePointIcons[e] &&
+        //         // @ts-expect-error
+        //         ((movePointIcons[e].position = t.point),
+        //         // @ts-expect-error
+        //           (movePointIcons[e].bounds.width = screenScale),
+        //         // @ts-expect-error
+        //           (movePointIcons[e].bounds.height = screenScale),
+        //           e++)
+        //     })
+        //   } 
+        //   else if ('roofPath' === selectedItem.data.type) {
+        //     console.debug('selectedItem.data.type', selectedItem.data.type)
+        //     var e = 0
+        //     selectedItem.segments.forEach(function (t: any) {
+        //       movePointIcons[e] &&
+        //         // @ts-expect-error
+        //         ((movePointIcons[e].position = t.point),
+        //         // @ts-expect-error
+        //           (movePointIcons[e].bounds.width = screenScale),
+        //         // @ts-expect-error
+        //           (movePointIcons[e].bounds.height = screenScale),
+        //           e++)
+        //     })
+        //   } 
+        //   else if ('threed' === selectedItem.data.type) {
+        //     console.debug('selectedItem.data.type', selectedItem.data.type)
+        //     rotateIcon.bounds.width = screenScale
+        //     rotateIcon.bounds.height = screenScale
+        //     rotateIcon.position =
+        //       selectedItem.data.toolsRectangleInner.segments[1].point
+        //     resizeIcon.bounds.width = screenScale
+        //     resizeIcon.bounds.height = screenScale
+        //     resizeIcon.position =
+        //       selectedItem.data.toolsRectangleInner.segments[3].point
+        //     heightIcon.bounds.width = screenScale
+        //     heightIcon.bounds.height = screenScale
+        //     heightIcon.position =
+        //       selectedItem.data.toolsRectangleInner.segments[2].point
+        //     elevateIcon.bounds.width = screenScale
+        //     elevateIcon.bounds.height = screenScale
+        //     elevateIcon.position =
+        //       selectedItem.data.toolsRectangleInner.segments[0].point
+        //   } 
+        //   else if ('background' === selectedItem.data.type) {
+        //     console.debug('selectedItem.data.type', selectedItem.data.type)
+        //     resizeIcon.bounds.width = screenScale
+        //     resizeIcon.bounds.height = screenScale
+        //     resizeIcon.position =
+        //         backgroundRaster.data.toolsRectangleInner.segments[3].point
+        //   } 
+        //   else if ('floor' === selectedItem.data.type) {
+        //     console.debug('selectedItem.data.type', selectedItem.data.type)
+        //     var e = 0
+        //     selectedItem.segments.forEach(function (t: any) {
+        //       movePointIcons[e] &&
+        //         // @ts-expect-error
+        //         ((movePointIcons[e].position = t.point),
+        //         // @ts-expect-error
+        //           (movePointIcons[e].bounds.width = screenScale),
+        //         // @ts-expect-error
+        //           (movePointIcons[e].bounds.height = screenScale),
+        //           e++)
+        //     })
+        //   }
+        // }
+
+        // ** [MM] Paper: Hit Tolerance ???
+        var hitToleranceT = 0,
+            o = 0
+        paper.view.zoom < 0.1875
+        
+        ? ((hitToleranceT = 200),
+          (o = 2e3),
+          (snapTolerance = 100),
           (paper.settings.hitTolerance = 3))
-        : paper.view.zoom < 0.75
-          ? ((t = 50),
-            (o = 500),
-            (snapTolerance = 25),
+        
+        : paper.view.zoom < 0.375
+
+          ? ((hitToleranceT = 100),
+            (o = 1e3),
+            (snapTolerance = 50),
             (paper.settings.hitTolerance = 3))
-          : paper.view.zoom < 1.5
-            ? ((t = 20),
-              (o = 200),
-              (snapTolerance = 10),
+          
+          : paper.view.zoom < 0.75
+
+            ? ((hitToleranceT = 50),
+              (o = 500),
+              (snapTolerance = 25),
               (paper.settings.hitTolerance = 3))
-            : paper.view.zoom < 3
-              ? ((t = 10),
-                (o = 100),
-                (snapTolerance = 5),
+              
+            : paper.view.zoom < 1.5
+
+              ? ((hitToleranceT = 20),
+                (o = 200),
+                (snapTolerance = 10),
                 (paper.settings.hitTolerance = 3))
-              : paper.view.zoom < 6
-                ? ((t = 5),
-                  (o = 50),
-                  (snapTolerance = 2),
+
+              : paper.view.zoom < 3
+
+                ? ((hitToleranceT = 10),
+                  (o = 100),
+                  (snapTolerance = 5),
                   (paper.settings.hitTolerance = 3))
-                : paper.view.zoom < 12
-                  ? ((t = 2),
-                    (o = 20),
-                    (snapTolerance = 1),
-                    (paper.settings.hitTolerance = 2))
-                  : paper.view.zoom < 24 &&
-                  ((t = 1),
-                    (o = 10),
-                    (snapTolerance = 0.5),
-                    (paper.settings.hitTolerance = 1))
-      
-      rulerLeftCtx.clearRect(0, 0, 30, rulerLeft.height)
-      rulerBottomCtx.clearRect(0, 0, rulerBottom.width, 20)
 
+                : paper.view.zoom < 6
 
-      var a = paper.view.bounds.left % t
-      var n = 0
+                  ? ((hitToleranceT = 5),
+                    (o = 50),
+                    (snapTolerance = 2),
+                    (paper.settings.hitTolerance = 3))
 
-      xLines.forEach(function (e: any) {
-        e.segments[0].point.x = paper.view.bounds.left + n - a
-        e.segments[0].point.y = paper.view.bounds.top
-        e.segments[1].point.x = paper.view.bounds.left + n - a
-        e.segments[1].point.y = paper.view.bounds.bottom
-        var x = parseInt(e.segments[0].point.x)
-        0 === x
-          ? ((e.style.strokeColor = 'white'),
-            rulerBottomCtx.fillText(
-              '0cm',
-              (x - paper.view.bounds.left) * paper.view.zoom,
-              14
-            ))
-          : x % o === 0
-            ? ((e.style.strokeColor = '#81673a'),
+                  : paper.view.zoom < 12
+
+                    ? ((hitToleranceT = 2),
+                      (o = 20),
+                      (snapTolerance = 1),
+                      (paper.settings.hitTolerance = 2))
+                      
+                    : paper.view.zoom < 24 &&
+
+                      ((hitToleranceT = 1),
+                        (o = 10),
+                        (snapTolerance = 0.5),
+                        (paper.settings.hitTolerance = 1))
+        // ** [MM] END: Paper: Hit Tolerance ???
+        
+
+        // ** [MM] RULER CONTEXT ???
+        // rulerLeftCtx.clearRect(0, 0, 30, rulerLeft.height)
+        // rulerBottomCtx.clearRect(0, 0, rulerBottom.width, 20)
+
+        // ** [MM] RULER LINES ???
+        var a = paper.view.bounds.left % hitToleranceT
+        var n = 0
+
+        xLines.forEach(function (e: any) {
+          e.segments[0].point.x = paper.view.bounds.left + n - a
+          e.segments[0].point.y = paper.view.bounds.top
+          e.segments[1].point.x = paper.view.bounds.left + n - a
+          e.segments[1].point.y = paper.view.bounds.bottom
+          var x = parseInt(e.segments[0].point.x)
+          0 === x
+            ? ((e.style.strokeColor = 'white'),
               rulerBottomCtx.fillText(
-                // parseInt(paper.view.bounds.left + n - a),
-                (paper.view.bounds.left + n - a),
+                '0cm',
                 (x - paper.view.bounds.left) * paper.view.zoom,
-                14
+                10
               ))
-            : (e.style.strokeColor = '#564c3a')
-        n += t
-      })
-      var l = paper.view.bounds.top % t
-      n = 0
-      yLines.forEach(function (e: any) {
-        e.segments[0].point.x = paper.view.bounds.left
-        e.segments[0].point.y = paper.view.bounds.top + n - l
-        e.segments[1].point.x = paper.view.bounds.right
-        e.segments[1].point.y = paper.view.bounds.top + n - l
-        var y = parseInt(e.segments[0].point.y)
-        0 === y
-          ? ((e.style.strokeColor = 'white'),
-            rulerLeftCtx.fillText(
-              '0cm',
-              26,
-              (y - paper.view.bounds.top) * paper.view.zoom + 4
-            ))
-          : y % o === 0
-            ? ((e.style.strokeColor = '#81673a'),
+            : x % o === 0
+              ? ((e.style.strokeColor = '#81673a'),
+                rulerBottomCtx.fillText(
+                  (paper.view.bounds.left + n - a).toString() + 'cm',
+                  (x - paper.view.bounds.left) * paper.view.zoom,
+                  10
+                ))
+              : (e.style.strokeColor = '#564c3a')
+          n += hitToleranceT
+        })
+
+        var l = paper.view.bounds.top % hitToleranceT
+            n = 0
+        yLines.forEach(function (e: any) {
+          e.segments[0].point.x = paper.view.bounds.left
+          e.segments[0].point.y = paper.view.bounds.top + n - l
+          e.segments[1].point.x = paper.view.bounds.right
+          e.segments[1].point.y = paper.view.bounds.top + n - l
+          var y = parseInt(e.segments[0].point.y)
+          0 === y
+            ? ((e.style.strokeColor = 'white'),
               rulerLeftCtx.fillText(
-                // parseInt(paper.view.bounds.top + n - l),
-                (paper.view.bounds.top + n - l),
+                '0cm',
                 26,
                 (y - paper.view.bounds.top) * paper.view.zoom + 4
               ))
-            : (e.style.strokeColor = '#564c3a')
-        n += t
-      })
+            : y % o === 0
+              ? ((e.style.strokeColor = '#81673a'),
+                rulerLeftCtx.fillText(
+                  (paper.view.bounds.top + n - l).toString() + 'cm',
+                  26,
+                  (y - paper.view.bounds.top) * paper.view.zoom + 4
+                ))
+              : (e.style.strokeColor = '#564c3a')
+          n += hitToleranceT
+        })
+        //
+
+        Object.keys(verticalGuides).forEach(function (e: any) {
+          // @ts-expect-error
+          verticalGuides[e].segments[0].point.y = paper.view.bounds.top
+          // @ts-expect-error
+          verticalGuides[e].segments[1].point.y = paper.view.bounds.bottom
+        })
+        Object.keys(horizontalGuides).forEach(function (e: any) {
+          // @ts-expect-error
+          horizontalGuides[e].segments[0].point.x = paper.view.bounds.left
+          // @ts-expect-error
+          horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
+        })
 
 
-      Object.keys(verticalGuides).forEach(function (e: any) {
-        // @ts-expect-error
-        verticalGuides[e].segments[0].point.y = paper.view.bounds.top
-        // @ts-expect-error
-        verticalGuides[e].segments[1].point.y = paper.view.bounds.bottom
-      })
-      Object.keys(horizontalGuides).forEach(function (e: any) {
-        // @ts-expect-error
-        horizontalGuides[e].segments[0].point.x = paper.view.bounds.left
-        // @ts-expect-error
-        horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
-      })
-
-      
-      // ** done: set redrawing to false
-      redrawing = false
+        // ** done: set redrawing to false
+        redrawing = false
+      }
     }
   }
 }
@@ -5504,14 +5603,14 @@ export default function ThreeDHomeDesign(): JSX.Element {
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeD Home Design prefs', ccm.orangeAlert, prefs)
   // ** INIT PREFERENCES STATE
-  // const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
+  // const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesSetVar())
 
   // ** USE CANVAS STATE
   const canvasState = useReactiveVar(canvasStateVar) // YES !!
   // console.debug('%c⚙️ ThreeD Home Design canvasState', ccm.orangeAlert, canvasState)
   // ** INIT CANVAS STATE
   // const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
-  // const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(useReactiveVar(isCanvasStateSetVar))
+  // const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(isCanvasStateSetVar())
 
   // ** INIT PAGE STATE
   const [isPageLoaded, setIsPageLoaded] = useState(false)
@@ -5662,7 +5761,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
     // console.debug('%c⚙️ showPanelFirstLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ showPanelFirstLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    redrawGrid() // does not work here
+    // redrawGrid() // does not work here
   }
   function setShowPanelLast () {
     let newData = {...preferencesDataVar()} // latest prefs
@@ -5671,7 +5770,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
     // console.debug('%c⚙️ showPanelLastLeva newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ showPanelLastLeva preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    redrawGrid() // does not work here
+    // redrawGrid() // does not work here
   }
 
   // ==========================================================
@@ -5690,7 +5789,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
   // ** load old data.. no
   useEffect(() => {
     // // ** setup dom elements
-    // switch (UILayout) {
+    // switch (threedUILayout) {
     //   case '3dView':
     //     readOnly = true
     //     document.getElementById('planView').style.display = 'none'
@@ -5757,7 +5856,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
     //     document.getElementById('overlayMenuPlanView').style.display = 'block'
     //     break
     //   default:
-    //     UILayout = 'default'
+    //     threedUILayout = 'default'
 
     //     document.getElementById('planView').style.top = '54px'
     //     document.getElementById('planView').style.bottom = '50%'
@@ -5841,61 +5940,12 @@ export default function ThreeDHomeDesign(): JSX.Element {
 
   /* */
 
-    // 'default' === UILayout &&
-    if (UILayout === 'default') {
+    // 'default' === threedUILayout &&
+    if (threedUILayout === 'default') {
       // $('#catalogItems').scroll(function () {
       //   loadInViewThumbs()
       // })
-      // focusPoint = new paper.Point(0, 0)
-      // raycaster = new THREE.Raycaster()
-      // mouse = new THREE.Vector2()
       
-      // DONE
-      // async function fetchObjects() {
-      //   let res = await fetch('api/objects.json')
-      //   let data = await res.json()
-      //   console.debug('fetchObjects data', data)
-      //   setCatalogItems(data)
-      //   // let arr = Array.from(Object.entries(data))
-      //   // setCatalogItems(arr)
-      //   // console.debug('fetchObjects data arr', arr)
-      // }
-      // fetchObjects()
-
-      // DONE
-      /*
-      $.ajax({
-        url: 'api/objects.json',
-        type: 'GET',
-        contentType: 'application/json',
-        success: function (e: any) {
-          if (((threedItems = e), 'default' === UILayout)) {
-            var t = 0
-            Object.keys(threedItems)
-              // .sort()
-              .forEach(function (e: any) {
-                var o = camelCaseToSentence(e)
-                $('#catalogItems').append(
-                  '<div id='' +
-                  e +
-                  '' class='threedItem disableSelection' onmousedown='beginDrag(event, \'' +
-                  e +
-                  '\');'><img ' +
-                  (t < 32
-                    ? 'src='' + threedItemsURL + 'objects/' + e + '.png''
-                    : 'src='images/homedesign/homedesign/thumbPlaceHolder.png'') +
-                  ' realsrc='' + threedItemsURL + 'objects/' +
-                  e +
-                  '.png' class='threedThumb' alt='' +
-                  o +
-                  '' title='' +
-                  o +
-                  '' /></div>'
-                ),
-                  t++
-              })
-          }
-        */  
 
         // WORKING ON...
         
@@ -5913,7 +5963,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                 console.debug('document.ready : get thumb ajax : ' + e)
               },
             }),
-              'default' === UILayout &&
+              'default' === threedUILayout &&
               ($('#wallDiffuse').minicolors({
                 opacity: true,
                 change: function (e, t) {
@@ -6217,7 +6267,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
     // ** HEY HEY HEY [MM] NEEDS ATTENTION [MM]
     // ** CAN WE DO THIS WITHIN A SUB "TOOL" MODE? Yes please.
     document.onmouseup = function (e: any) {
-      // **
+      // ** MOVED TO threedTool.pointer
       draggingThreedIcon = false
 
       // **
@@ -6234,6 +6284,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
       // **
       if (draggingThreedItem) {
         addThreed(e, draggingThreedItem, canvasStateVar().state.scene)
+        // addThreed(e, draggingThreedItem, canvasState.state.scene)
         // void (draggingNewGuide && (draggingNewGuide = false))
       }
 
@@ -6452,6 +6503,25 @@ export default function ThreeDHomeDesign(): JSX.Element {
                   direction='vertical'
                   // autoSaveId='ThreeDHomeDesignLayoutSub2'
                 >
+                  
+                  <Panel 
+                    id='viewProperties'
+                    className='Panel'
+                    order={5}
+                    defaultSize={50}
+                    // maxSize={64}
+                    style={{
+                      border: '1px solid darkgreen',
+                      overflow: 'auto',
+                    }}
+                  >
+                    { true && (
+                      <ViewProperties />
+                    )}
+                  </Panel>
+
+                  <PanelResizeHandle />
+
                   <Panel 
                     id='catalogView'
                     className='Panel'
@@ -6459,7 +6529,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                     defaultSize={50}
                     // maxSize={64}
                     style={{
-                      border: '1px solid green',
+                      border: '1px solid darkgreen',
                     }}
                   >
                     <div id='catalogFilters'>
@@ -6479,23 +6549,6 @@ export default function ThreeDHomeDesign(): JSX.Element {
                         <CatalogItems />
                       )}
                     </div>
-                  </Panel>
-
-                  <PanelResizeHandle />
-                  
-                  <Panel 
-                    id='viewProperties'
-                    className='Panel'
-                    order={5}
-                    defaultSize={50}
-                    // maxSize={64}
-                    style={{
-                      border: '1px solid darkgreen',
-                    }}
-                  >
-                    { true && (
-                      <ViewProperties />
-                    )}
                   </Panel>
 
                 </PanelGroup>
@@ -6540,17 +6593,15 @@ export default function ThreeDHomeDesign(): JSX.Element {
                     <Grid 
                       id='view3d'
                       style={{
-                        height: '100%',
+                        // height: '100%',
                         // width: '100%',
                         border: '1px solid #222222',
                       }}
                     >
 
                       {/* THREED HOME DESIGN: 3D CANVAS */}
-                      { false && (
-                        <ThreeD // <ThreeDComponents
-                          // **
-                        />
+                      { true && (
+                        <ThreeD />
                       )}
 
                       {/* <div id='overlayLogo3dView' className='overlayLogo'>
@@ -6576,43 +6627,45 @@ export default function ThreeDHomeDesign(): JSX.Element {
                     minSize={1}
                     maxSize={99}
                     style={{
-                      border: '1px solid darkgreen',
+                      // display: 'block',
                       // width: '100vw',
-                      display: 'flex',
+                      // display: 'flex',
                       // alignItems: 'stretch',
                       // flexGrow: '1',
-                      flexDirection: 'column',
+                      // flexDirection: 'column',
                       // overflow: 'auto', // no
+                      border: '1px solid darkgreen',
                     }}
                   >
                       <div
+                        id='planView'
                         style={{
-                          display: 'inline-flex',
+                          display: 'flex',
                           // alignSelf: 'stretch',
                           // alignItems: 'stretch',
                           // alignItems: 'flex-end',
-                          flexGrow: '1',
+                          // flexGrow: '1',
                           // flexDirection: 'column',
                           // width: '100%',
                           // width: 'calc(100% - 20px)',
                           // height: '90%',
-                          // height: 'calc(100% - 0px)',
+                          height: 'calc(100% - 20px)',
                         }}
                       >
                         <div
                           style={{
-                            display: 'flex',
-                            alignSelf: 'stretch',
+                            display: 'inline-flex',
+                            // alignSelf: 'stretch',
                             width: '20px',
                             // height: '100%',
-                            // height: 'calc(100vh - 20px)',
+                            // height: 'calc(100% - 20px)',
                             backgroundColor: 'gray', // '#636363',
                           }}
                         >
                           <canvas 
                             id='rulerLeft' 
-                            width='20px' 
-                            // height='calc(100vh - 20px)'
+                            // width={20}
+                            // height={'calc(100% - 20px)'}
                             // height='400px'
                             // height={getSize(7)}
                             // onMouseDown={() => addVerticalGuide()}
@@ -6620,43 +6673,45 @@ export default function ThreeDHomeDesign(): JSX.Element {
                           ></canvas>
                         </div>
 
-                        {/* DO RUN THIS */}
                         { true && (
+                          <>
                           <div 
-                            id='planView'
+                            // id='planView'
                             style={{
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'stretch',
-                              alignSelf: 'stretch',
-                              width: '100%',
+                              // alignSelf: 'stretch',
+                              // width: '100%',
                               // height: '100%',
+                              // height: 'calc(100% - 20px)',
                               // overflow: 'auto',
                               backgroundColor: '#222222',
                             }}
                           >
                             <PaperCanvas />
                           </div>
+                          </>
                         )}
                       </div>
                       
                       <div
-                        // columns='1'
                         style={{
-                          display: 'flex',
-                          alignItems: 'stretch',
-                          alignSelf: 'stretch',
-                          flexGrow: '0',
+                          display: 'block',
+                          // alignItems: 'stretch',
+                          // alignSelf: 'stretch',
+                          // flexGrow: '0',
                           // flexDirection: 'row',
-                          width: '100%',
-                          // height: '20px',
+                          // width: '100%',
+                          height: '20px',
+                          maxHeight: '20px',
                           backgroundColor: 'gray',
                         }}
                       >
                         <canvas 
                           id='rulerBottom' 
-                          width='10000' 
-                          height='20'
-                          // height='100%'
+                          // width={100} 
+                          // height={20}
+                          // height={'100%'}
                           // onMouseDown={() => addHorizontalGuide()}
                           // onMouseUp={() => removeHorizontalGuide()}
                         ></canvas>
@@ -6673,12 +6728,6 @@ export default function ThreeDHomeDesign(): JSX.Element {
         </Panel>
         
       </PanelGroup>
-
-      {/* VIEWS: PROPERTIES */}
-      {/* <ViewProperties /> */}
-
-      {/* VIEWS: MODALS */}
-      {/* <ViewModals /> */}
       
       <div 
         id='planHelpers'
