@@ -542,6 +542,7 @@ const PaperCanvas = (props: any) => {
       ref={planCanvasRef} 
       {...props} 
       id='planCanvas'
+      width={props.width? props.width : 1000}
     />
   )
 }
@@ -3066,11 +3067,11 @@ function initPlanView(planCanvas: any) {
   // ** -- PREPARE CANVAS
   // ** -- DRAW PREPARED CONTENT
   // ** -- RESET GRID
-  // @ ts-expect-error
+  // @ts-expect-error
+  paper.view.center = [0, 0]
   // paper.view.center = [350, 130]
   // @ts-expect-error
   paper.view.draw()
-  // @ ts-expect-error
   redrawGrid()
 
 } // END initPlanView()
@@ -6711,7 +6712,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       >
                         <canvas 
                           id='rulerBottom' 
-                          // width={100} 
+                          width={2000} 
                           // height={20}
                           // height={'100%'}
                           // onMouseDown={() => addHorizontalGuide()}
