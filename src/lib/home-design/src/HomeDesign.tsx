@@ -6590,12 +6590,14 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       border: '1px solid darkgreen',
                     }}
                   >
-                    <Grid 
+                    <div 
                       id='view3d'
                       style={{
-                        // height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '100%',
                         // width: '100%',
-                        border: '1px solid #222222',
+                        border: '1px solid #003300',
                       }}
                     >
 
@@ -6613,7 +6615,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                         <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
                         <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
                       </div> */}
-                    </Grid>
+                    </div>
                   </Panel>
                   
                   <PanelResizeHandle />
