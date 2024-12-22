@@ -539,10 +539,9 @@ const PaperCanvas = (props: any) => {
   // ** RETURN JSX
   return (
     <canvas 
-      ref={planCanvasRef} 
-      {...props} 
       id='planCanvas'
-      width={props.width? props.width : 1000}
+      ref={planCanvasRef}
+      // width={props.width? props.width : '2000'}
     />
   )
 }
@@ -5434,9 +5433,10 @@ function redrawGrid() {
         // ** [MM] END: Paper: Hit Tolerance ???
         
 
-        // ** [MM] RULER CONTEXT ???
-        // rulerLeftCtx.clearRect(0, 0, 30, rulerLeft.height)
-        // rulerBottomCtx.clearRect(0, 0, rulerBottom.width, 20)
+        // ** [MM] RULER CONTEXT ??? 
+        // ** YES -- THIS CLEARS THE GRID BEFORE REDRAWING
+        rulerLeftCtx.clearRect(0, 0, 30, rulerLeft.height)
+        rulerBottomCtx.clearRect(0, 0, rulerBottom.width, 20)
 
         // ** [MM] RULER LINES ???
         var a = paper.view.bounds.left % hitToleranceT
@@ -6667,7 +6667,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                         >
                           <canvas 
                             id='rulerLeft' 
-                            // width={20}
+                            width={20}
                             // height={'calc(100% - 20px)'}
                             // height='400px'
                             // height={getSize(7)}
@@ -6681,10 +6681,11 @@ export default function ThreeDHomeDesign(): JSX.Element {
                           <div 
                             // id='planView'
                             style={{
-                              display: 'inline-flex',
-                              alignItems: 'stretch',
+                              display: 'flex',
+                              // flexDirection: 'column',
+                              // alignItems: 'stretch',
                               // alignSelf: 'stretch',
-                              // width: '100%',
+                              width: '100%',
                               // height: '100%',
                               // height: 'calc(100% - 20px)',
                               // overflow: 'auto',
@@ -6712,7 +6713,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       >
                         <canvas 
                           id='rulerBottom' 
-                          width={2000} 
+                          width={1200} 
                           // height={20}
                           // height={'100%'}
                           // onMouseDown={() => addHorizontalGuide()}
