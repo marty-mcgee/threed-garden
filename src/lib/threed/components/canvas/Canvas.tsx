@@ -14,7 +14,7 @@ import {
   canvasStateStore,
   isCanvasStateSetVar,
   canvasStateVar,
-} from '#/lib/stores/apollo'
+} from '#/lib/api/graphql/apollo'
 // ** ZUSTAND (X?) // for cameras, lights, canvas props
 // import { create } from 'zustand'
 import { createStore } from 'zustand-x'
@@ -61,14 +61,14 @@ import {
 } from '@react-three/drei'
 
 // ** RADIX-UI Imports
-import * as Progress from '@radix-ui/react-progress'
-import * as Collapsible from '@radix-ui/react-collapsible'
-import * as Accordion from '@radix-ui/react-accordion'
-import {
-  ChevronDownIcon,
-  RowSpacingIcon, 
-  Cross2Icon,
-} from '@radix-ui/react-icons'
+// import * as Progress from '@radix-ui/react-progress'
+// import * as Collapsible from '@radix-ui/react-collapsible'
+// import * as Accordion from '@radix-ui/react-accordion'
+// import {
+//   ChevronDownIcon,
+//   RowSpacingIcon, 
+//   Cross2Icon,
+// } from '@radix-ui/react-icons'
 import {
   Grid,
   Flex,
@@ -133,43 +133,44 @@ const threedOI = tunnel()
 // Model interactive 'modes' using TransformControls
 const actionModes = ['translate', 'rotate', 'scale']
 
-// example working simple <Loader />
-function ThreeDLoaderSimple() {
+
+// Progress example radix-ui simple <Loader />
+// function ThreeDLoaderSimple() {
   
-  // ** using react-three-drei
-  const { active, progress, errors, item, loaded, total } = useProgress()
+//   // ** using react-three-drei
+//   const { active, progress, errors, item, loaded, total } = useProgress()
 
-  // ** using radix-ui
-  // import React from 'react'
-  // import * as Progress from '@radix-ui/react-progress'
-  // import './styles.css'
+//   // ** using radix-ui
+//   // import React from 'react'
+//   // import * as Progress from '@radix-ui/react-progress'
+//   // import './styles.css'
 
-  // const ProgressDisplay = () => {
-    const [progressValue, setProgressValue] = useState(progress)
+//   // const ProgressDisplay = () => {
+//     const [progressValue, setProgressValue] = useState(progress)
 
-    useEffect(() => {
-      const timer = setTimeout(() => setProgressValue(progress), 0)
-      return () => clearTimeout(timer)
-    }, [])
+//     useEffect(() => {
+//       const timer = setTimeout(() => setProgressValue(progress), 0)
+//       return () => clearTimeout(timer)
+//     }, [])
 
-    // ** integrate drei with radix
-    return (
-      <Html center>
-        <Progress.Root
-          value={progressValue}
-          className="ProgressRoot"
-        >
-          <span style={{paddingLeft: '8px'}}>THREED UI LOADING... {Math.round(progress).toFixed(0)} %</span>
-          <Progress.Indicator
-            className="ProgressIndicator"
-            style={{ transform: `translateX(-${100 - progress}%)` }}
-          />
-        </Progress.Root>
-      </Html>
-    )
-  // }
-  // export default ProgressDisplay
-}
+//     // ** integrate drei with radix
+//     return (
+//       <Html center>
+//         <Progress.Root
+//           value={progressValue}
+//           className="ProgressRoot"
+//         >
+//           <span style={{paddingLeft: '8px'}}>THREED UI LOADING... {Math.round(progress).toFixed(0)} %</span>
+//           <Progress.Indicator
+//             className="ProgressIndicator"
+//             style={{ transform: `translateX(-${100 - progress}%)` }}
+//           />
+//         </Progress.Root>
+//       </Html>
+//     )
+//   // }
+//   // export default ProgressDisplay
+// }
 
 export function ThreeDLoaderMesh() {
   const [scale, setScale] = useState(1)

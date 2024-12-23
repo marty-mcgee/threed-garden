@@ -101,13 +101,13 @@ export default function ThreeDComponents(): JSX.Element {
       > */}
         <ThreeDCanvasViewer />
 
-        <ThreeDLevaControls />
+        {/* <ThreeDLevaControls />
         <ThreeDLevaComponent 
           projectName={'ThreeD: MM projectName'}
           setProjectName={() => (<></>)}
           projectNameFromLeva={'ThreeD: MM projectName'}
           setProjectNameFromLeva={() => (<></>)}
-        />
+        /> */}
 
       {/* </Panel> */}
 

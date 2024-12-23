@@ -4,7 +4,7 @@
 
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
-import { preferencesDataVar } from '#/lib/stores/apollo'
+import { preferencesDataVar } from '#/lib/api/graphql/apollo'
 
 // ** NEXT Imports
 // import dynamic from 'next/dynamic'
@@ -363,19 +363,19 @@ const ThreeDExperience = forwardRef((
 
           {/* baby steps */}
           {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
-          <group rotation={[0, 0, 0]} scale={50.0} position={[0, 0.1, 0]}>
+          <group rotation={[0, 0, 0]} scale={50.0} position={[0, 0, 0]}>
             <Steps />
           </group>
 
           {/* toddler steps (advanced degrees) */}
           {/* Rough Plane */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[8.4, -0.40, 10]}>
+          <group rotation={[0, 0, 0]} scale={100.0} position={[800, -30, 1000]}>
             <RoughPlane />
-          </group> */}
+          </group>
           {/* Slopes + Stairs */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -0.00, 0]}>
+          <group rotation={[0, 0, 0]} scale={100.0} position={[100, 0, 100]}>
             <Slopes />
-          </group> */}
+          </group>
           {/* Rigid Body Objects */}
           {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
             <RigidObjects />
@@ -398,11 +398,11 @@ const ThreeDExperience = forwardRef((
           </group> */}
 
           {/* THREED FARMBOT */}
-          {/* <group rotation={[-Math.PI/2, 0, 0]} scale={0.002} position={[-8, 0.665, -2]}>
+          <group rotation={[-Math.PI/2, 0, 0]} scale={0.160} position={[-400, 50, -300]}>
             <ThreeDFarmBotGarden 
               // key={'ThreeDFarmBotGarden_' + newUUID()} 
             />
-          </group> */}
+          </group>
           {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
             <ThreeDFarmBotMain />
           </group> */}
@@ -411,40 +411,11 @@ const ThreeDExperience = forwardRef((
           {/* CHARACTER MODELS */}
           {/* <Suspense fallback={null}> */}
 
-          {/* <KeyboardControls map={keyboardMap}> */}
+          <KeyboardControls map={keyboardMap}>
 
             {/* CHARACTER MODEL */}
-            { false && (
-            <group key='character0' position={[-1.6, 0.396 - 0.396, -1.6]}>
-              {/* <CharacterControls
-                debug={prefs.doWorldDebug}
-                // debug={false}
-                animated={prefs.doCharacterAnimation}
-                // animated={false}
-                disableControl={prefs.doWorldControl}
-                // disableControl={false}
-                // disableFollowCam={prefs.doWorldUnfollowCam}
-                disableFollowCam={true}
-                followLight={true}
-                // springK={2}
-                // dampingC={0.2}
-                // autoBalanceSpringK={1.2}
-                // autoBalanceDampingC={0.04}
-                // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-                // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-                // mode='FixedCamera'
-                // mode='CameraBasedMovement'
-              > */}
-                <CharacterModelStacy scale={1.6} />
-                {/* <CharacterModelChicken scale={2.0} /> */}
-              {/* </CharacterControls> */}
-            </group>
-            )}
-            {/* END: CHARACTER MODEL */}
-            
-            {/* CHARACTER MODEL */}
-            { false && (
-            <group key='character1' position={[0, 0.396, 0]}>
+            { true && (
+            <group key='character0' position={[200, 0, 0]}>
               {/* <CharacterControls
                 debug={prefs.doWorldDebug}
                 // debug={false}
@@ -467,16 +438,45 @@ const ThreeDExperience = forwardRef((
                 {/* <CharacterModel /> */}
                 {/* <CharacterModelFloating /> */}
                 {/* <CharacterModelStacy /> */}
-                <CharacterModelFarmerWomanFloating scale={0.016} />
-                {/* <CharacterModelFarmerManFloating scale={0.016} /> */}
+                <CharacterModelStacy scale={102} />
+                {/* <CharacterModelChicken scale={2.0} /> */}
               {/* </CharacterControls> */}
+            </group>
+            )}
+            {/* END: CHARACTER MODEL */}
+            
+            {/* CHARACTER MODEL */}
+            { true && (
+            <group key='character1' position={[0, 0, 0]}>
+              <CharacterControls
+                debug={prefs.doWorldDebug}
+                // debug={false}
+                animated={prefs.doCharacterAnimation}
+                // animated={false}
+                disableControl={prefs.doWorldControl}
+                // disableControl={false}
+                // disableFollowCam={prefs.doWorldUnfollowCam}
+                disableFollowCam={true}
+                followLight={true}
+                // springK={2}
+                // dampingC={0.2}
+                // autoBalanceSpringK={1.2}
+                // autoBalanceDampingC={0.04}
+                // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
+                // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+                // mode='FixedCamera'
+                // mode='CameraBasedMovement'
+              >
+                <CharacterModelFarmerWomanFloating scale={1} />
+                {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
+              </CharacterControls>
             </group>
             )}
             {/* END: CHARACTER MODEL */}
 
             {/* CHARACTER MODEL */}
-            { false && (
-            <group key='character2' position={[-3.6, 0.396 - 0.396, -3.6]}>
+            { true && (
+            <group key='character2' position={[-200, 0, 0]}>
               {/* <CharacterControls
                 debug={prefs.doWorldDebug}
                 // debug={false}
@@ -496,14 +496,13 @@ const ThreeDExperience = forwardRef((
                 // mode='FixedCamera'
                 // mode='CameraBasedMovement'
               > */}
-                {/* <CharacterModelStacy scale={1.6} /> */}
-                <CharacterModelChicken scale={2.0} />
+                <CharacterModelChicken scale={160} />
               {/* </CharacterControls> */}
             </group>
             )}
             {/* END: CHARACTER MODEL */}
           
-          {/* </KeyboardControls> */}
+          </KeyboardControls>
 
           {/* </Suspense> */}
           {/* END: CHARACTER MODELS */}
@@ -542,7 +541,7 @@ const ThreeDExperience = forwardRef((
         {/* solid steps (levels, safety) */}
         {/* The Floor (Plane 0) */}
         <group rotation={[0, 0, 0]} scale={100.0} position={[0, 0, 0]}>
-          <Floor color={'darkgreen'} opacity={0.4} />
+          <Floor color={'darkgreen'} opacity={0.6} />
         </group>
           {/* backup solid steps (levels[1+], safety) */}
           {/* Sub-Floor[s] (Plane < 0) */}

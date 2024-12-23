@@ -1,4 +1,5 @@
 // 'use client'
+
 // ==========================================================
 // RESOURCES
 
@@ -16,10 +17,10 @@ import {
 // import Noise from 'noisejs'
 
 // ** APOLLO Imports
-// import { stores, queries, mutations } from '#/lib/stores/apollo'
-// import stores from '#/lib/stores/apollo'
+// import { stores, queries, mutations } from '#/lib/api/graphql/apollo'
+// import stores from '#/lib/api/graphql/apollo'
 import { useReactiveVar } from '@apollo/client'
-import { isPreferencesSetVar, preferencesDataVar } from '#/lib/stores/apollo'
+import { isPreferencesSetVar, preferencesDataVar } from '#/lib/api/graphql/apollo'
 
 // ** RADIX-UI Imports
 import { 
@@ -224,7 +225,15 @@ export function ThreeDLevaControls() {
       title: { value: 'START HERE: Project Settings', render: (get) => get('Panel.showTitleBar') },
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
-      position: { value: { x: -460, y: 160 }, render: (get) => get('Panel.showTitleBar') },
+      // position: { value: { x: -460, y: 160 }, render: (get) => get('Panel.showTitleBar') },
+      // position: { value: { x: -2, y: 62 }, render: (get) => get('Panel.showTitleBar') },
+      position: { 
+        value: { 
+          x: -32, 
+          y: 4,
+        }, 
+        render: (get) => get('Panel.showTitleBar') 
+      },
       // fullScreen: true,
       // oneLineLabels: false,
       // refMonitor: { 
@@ -382,20 +391,11 @@ export function ThreeDLevaControls() {
 
   return (
     <>
-      <Box
-        // display={'column'}
+      <div
         style={{
-          // display: 'grid',
-          width: '420px',
-          // gap: 10,
-          // paddingBottom: 0,
-          // marginRight: 0,
-          // float: 'left',
-          // background: '#181C20',
-          position: 'absolute',
-          // // zIndex: 9600,
-          top: -46,
-          left: 460,
+          // display: 'none',
+          display: 'inline-flex',
+          width: '320px',
         }}
       >
         <Leva
@@ -404,35 +404,22 @@ export function ThreeDLevaControls() {
           // hideTitleBar={true} // default = false. true hides the GUI header
           theme={theme} // you can pass a custom theme (see the styling section)
           collapsed={true} // default = false. true makes the GUI collapsed to start
-          fill={true} // default = false. true makes the pane fill the parent dom node it's rendered in
+          fill={false} // default = false. true makes the pane fill the parent dom node it's rendered in
           flat={true} // default = false. true removes border radius and shadow
           hidden={false} // default = false. true hides the GUI
           neverHide={true} // default = true. false allows hiding of the GUI
           oneLineLabels={false} // default = false. true makes labels + fields on separate rows
           hideCopyButton={true} // default = false. true hides the onHover copy button
         />
-      </Box>
-      {/* <Box
-        style={{
-          // display: 'grid',
-          // width: 300,
-          // gap: 10,
-          // paddingBottom: 0,
-          // marginRight: 0,
-          // float: 'left',
-          // background: '#181C20',
-        }}
-      > */}
-        {/* <LevaPanel fill flat titleBar={false} store={colorsStore} /> */}
-        {/* <LevaPanel fill flat titleBar={false} store={radiiStore} /> */}
-        {/* <LevaPanel fill flat titleBar={false} store={spaceStore} /> */}
-        {/* <LevaPanel fill flat titleBar={false} store={fontSizesStore} /> */}
-        {/* <LevaPanel fill flat titleBar={false} store={sizesStore} /> */}
-        {/* <LevaPanel fill flat titleBar={false} store={borderWidthsStore} /> */}
-        {/* <LevaPanel fill flat titleBar={false} store={fontWeightsStore} /> */}
-        {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
-      {/* </Box> */}
-    
+      </div>
+      {/* <LevaPanel fill flat titleBar={false} store={colorsStore} /> */}
+      {/* <LevaPanel fill flat titleBar={false} store={radiiStore} /> */}
+      {/* <LevaPanel fill flat titleBar={false} store={spaceStore} /> */}
+      {/* <LevaPanel fill flat titleBar={false} store={fontSizesStore} /> */}
+      {/* <LevaPanel fill flat titleBar={false} store={sizesStore} /> */}
+      {/* <LevaPanel fill flat titleBar={false} store={borderWidthsStore} /> */}
+      {/* <LevaPanel fill flat titleBar={false} store={fontWeightsStore} /> */}
+      {/* <pre>{JSON.stringify(theme, null, '  ')}</pre> */}
     </>
   )
 }

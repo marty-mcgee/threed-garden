@@ -55,9 +55,8 @@ import PanelResizeHandle from '#/layout/ui/resize-handle'
 import Logo from '#/layout/ui/logo'
 import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
-// ** Helper Components
+// ** HELPER Imports
 import Spinner from '#/layout/ui/spinner'
-// ** Colorful Console Messages: Utility
 import ccm from '#/lib/utils/console-colors'
 
 // ==============================================================

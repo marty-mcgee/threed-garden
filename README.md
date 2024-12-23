@@ -1,8 +1,8 @@
 # 🥕 ThreeD Garden
 
-[WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: WordPress, Apollo GraphQL, Leva Control GUI, Radix-UI, Tailwind CSS, FarmBot React 3D (Beta), Open AI](https://github.com/marty-mcgee/threed-garden/)
+[WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: WordPress, Apollo GraphQL, Leva Control GUI, Radix-UI, Tailwind CSS, FarmBot React 3D (beta)](https://github.com/marty-mcgee/threed-garden/)
 
-## Live Demo
+## Live Demo (v0.17.0-x)
 
 🌱 [threedgarden.com](https://threedgarden.com)
 
@@ -12,16 +12,15 @@
 
 ## For Developers
 
-🤖 Source Code: ["name": "threed-garden"](https://github.com/marty-mcgee/threed-garden)
+🤖 Source Code: [github](https://github.com/marty-mcgee/threed-garden)
 
 ### Install + Run Options
 
-#### npm i threed-garden
-#### yarn install threed-garden
-#### git clone https://github.com/marty-mcgee/threed-garden.git
+`git clone https://github.com/marty-mcgee/threed-garden.git`
 
-- app currently requires yarn: `npm install -g yarn`
-- (you can instead, of course, use pnpm or npm easily)
+`yarn install threed-garden`
+
+- note: you can use `yarn` or `npm` or `pnpm`
 
 1. install app: `yarn install`
 2. run in local env: `yarn dev`

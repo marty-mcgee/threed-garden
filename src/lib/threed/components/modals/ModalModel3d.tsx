@@ -17,7 +17,7 @@ import MuiTabs from '@mui/material/Tabs'
 import Image from 'next/image'
 
 // ** Store Imports
-import { modalModel3dStore } from '#/lib/stores/apollo'
+import { modalModel3dStore } from '#/lib/api/graphql/apollo'
 
 // ** CSS Styles Imports
 import stylesThreeD from '#/lib/threed/styles/threed.module.css'
