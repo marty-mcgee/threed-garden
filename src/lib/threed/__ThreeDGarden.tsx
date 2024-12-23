@@ -19,7 +19,6 @@ import {
   useState,
   // useCallback,
   // ReactNode,
-  // FC,
   // Suspense,
   PointerEventHandler,
   SyntheticEvent,
@@ -49,26 +48,13 @@ import {
   // reactive vars:
   isPreferencesSetVar,
   preferencesDataVar,
-} from '#/lib/stores/apollo'
+} from '#/lib/api/graphql/apollo'
 
 // ** RADIX-UI Imports
-// import { 
-//   Box,
-//   Button,
-//   Grid,
-//   Flex,
-//   Text,
-// } from '@radix-ui/themes'
-// ** MUI Imports
-// import { styled } from '@mui/material/styles'
-// mui: ui
-// import Typography from '@mui/material/Typography'
-// import Box from '@mui/material/Box'
-// import Button from '@mui/material/Button'
-// import MuiButton from '@mui/material/Button'
-// import Grid from '@mui/material/Grid'
-// import MDTabPanel, { tabProps } from '#/lib/mui/MDTabPanel'
-
+import {
+  Button,
+  Text,
+} from '@radix-ui/themes'
 
 // ** THREE JS Imports (not here, use R3F)
 import * as THREE from 'three'
@@ -86,18 +72,15 @@ import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 // ** ThreeD Controls Imports
 // import ThreeDControls from '~/src/lib/threed/Controls'
 
-// // ** ThreeD using Leva GUI
-// import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+// ** ThreeD Leva Controls
+import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 
-// // ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
-// import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
-// // const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
+// ** ThreeD using Apollo + React to View Control + Info Panels (Apollo Store/ReactiveVar/State Access)
+import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
+// const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
 
-// // ** ThreeD Toolbar
-// import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
-
-
-
+// ** ThreeD Toolbar
+import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
 
 // ** ThreeD Modal Imports
 // import ThreeDModals from '#/lib/threed/components/modals/Modals'
@@ -333,20 +316,19 @@ const ThreeDGarden = (): JSX.Element => {
         }
       }      
       fetchData()
-      if (DEBUG) 
+      if (DEBUG) {
         console.debug('%c🫙 ThreeDGarden: fetching data ...', ccm.blueAlert)
-
-
-      // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-      const loadNounData = (_type: string = 'project', threeds: any = []) => {
-        // load these threeds into r3f canvas
-        if (DEBUG || debug) 
-          console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
-        if (_type === 'project') {
-          projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
-        }
-        // return <Box>true</Box> // true
       }
+      // // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
+      // const loadNounData = (_type: string = 'project', threeds: any = []) => {
+      //   // load these threeds into r3f canvas
+      //   if (DEBUG || debug) 
+      //     console.debug('%c🌱 ThreeDGarden loadNounData()', ccm.yellowAlert, _type, threeds)
+      //   if (_type === 'project') {
+      //     projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
+      //   }
+      //   // return <Box>true</Box> // true
+      // }
       
     } else if (isPageLoaded) {
       console.debug('%c🦆 ThreeDGarden => LOADED !!', ccm.greenAlert, isPageLoaded)
@@ -402,15 +384,6 @@ const ThreeDGarden = (): JSX.Element => {
   // ** RETURN JSX
   return (
     <>
-    {/* <Box
-      id='threed_garden'
-      // direction='column'
-      // columns={{ initial: '1', md: '1' }} 
-      // width='100%'
-      // px='2'
-      // py='1'
-      // pr='2'
-    > */}
 
       {/* [MM] HEY HEY HEY */}
       {/* <Text>{project_title}</Text> */}
@@ -428,164 +401,96 @@ const ThreeDGarden = (): JSX.Element => {
         
         <>
 
-          {/* THREED CONTROLS: ALL */}
-          {/* <Flex
-            // item
-            id='threed_controls'
-            direction='column'
-            // style={{
-            //   // borderTop: '1px solid darkgreen',
-            // }}
-          > */}
+          {/* THREED: CONTROLS: ALL */}
+          <>
             {/* <ThreeDControls /> */}
 
-            {/* THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
-            {/* <Flex
-              // item
-              id='threed_leva_controls'
-              style={{
-                // borderTop: '1px solid darkred',
-              }}
-              direction='column'
-            >
+            {/* THREED: CONTROLS: LEVA GUI + CUSTOMIZED */}
+            <>
               <ThreeDLevaControls />
-            </Flex> */}
+            </>
             {/* END THREED CONTROLS: LEVA GUI + CUSTOMIZED */}
 
-            {/* THREED CLICK LOADERS */}
-            {/* <Flex
-              // item
-              id='threed_actions'
-              direction='row'
-            >
-              <ThreeDToolbar />
-              <Button onClick={() => loadNounData('proj`ect', [])}>load project</Button>
-              <Button onClick={() => loadNounData('scene', [])}>load scene</Button>
-              <Button onClick={() => loadNounData('character', [])}>load character</Button>
-              <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button>
-            </Flex> */}
+
+            {/* THREED: CONTROLS: CLICK LOADERS */}
+            <>
+              {/* <Button onClick={() => loadNounData('project', [])}>load project</Button> */}
+              {/* <Button onClick={() => loadNounData('scene', [])}>load scene</Button> */}
+              {/* <Button onClick={() => loadNounData('character', [])}>load character</Button> */}
+              {/* <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button> */}
+            </>
             {/* END THREED CLICK LOADERS */}
 
-          {/* </Flex> */}
+          </>
           {/* END: THREED CONTROLS: ALL */}
 
-          {/* THREED TOOLBAR */}
-          {/* <Flex
-            // item
-            id='threed_toolbar'
-            // md={12}
-            // xs={12}
-            // style={{
-            //   // display: 'none',
-            //   borderTop: '1px solid darkgreen',
-            //   // paddingLeft: '5px',
-            // }}
-            // direction='column'
-          > */}
+
+          {/* THREED: TOOLBAR */}
+          <>
             {/* <ThreeDToolbar /> */}
-          {/* </Flex> */}
+          </>
           {/* END: THREED TOOLBAR */}
+
           
-          {/* THREED CANVAS VIEWER */}
-          {/* <Flex
-            // item
-            id='threed_canvas_viewer'
-            // style={{ 
-            //   // borderTop: '1px solid darkgreen',
-            // }}
-            direction='column'
-          > */}
+          {/* THREED: CANVAS VIEWER */}
+          <>
             <ThreeDCanvasViewer
               // ref={refThreeDCanvas1}
             />
-          {/* </Flex> */}
+          </>
           {/* END: THREED CANVAS VIEWER */}
 
-          {/* THREED CONTROL PANELS */}
+
+          {/* THREED: CONTROL PANELS */}
           {/* -- STORE ACCESS (apollo + leva) */}
-          {/* <Flex
-            // item
-            id='threed_control_panels'
-            // style={{ 
-            //   borderTop: '1px solid darkgreen' 
-            // }}
-            direction='column'
-          > */}
-            {/* <ThreeDControlPanels /> */}
+          <>
+            <ThreeDControlPanels />
             {/* <ThreeDControlPanels tabs={tabProps} /> */}
-          {/* </Flex> */}
+          </>
           {/* END: THREED CONTROL PANELS */}
 
-          {/* THREED VIEWS */}
-          {/* <Flex
-            // item
-            id='threed_views'
-            // style={{ 
-            //   // borderTop: '0px solid darkgreen' 
-            // }}
-            direction='column'
-          > */}
+
+          {/* THREED: VIEWS */}
+          <>
             {/* <CatalogView /> */}
             {/* <PropertiesView /> */}
             {/* <PlanView /> */}
             {/* <TheBottom /> */}
-          {/* </Flex> */}
+          </>
           {/* END: THREED VIEWS */}
 
-          {/* THREED MODALS */}
-          {/* <Flex
-            // item
-            id='threed_modals'
-            // style={{ 
-            //   // borderTop: '0px solid darkgreen' 
-            // }}
-            direction='column'
-          > */}
+
+          {/* THREED: MODALS */}
+          <>
             {/* <ModalAbout /> */}
             {/* <ModalModel3d /> */}
             {/* <ModalLoading /> */}
             {/* <ModalShare /> */}
-          {/* </Flex> */}
+          </>
           {/* END: THREED MODALS */}
 
+
           {/* THREED FARMBOT */}
-          {/* <Flex
-            // item
-            id='threed_farmbot'
-            style={{ 
-              // borderTop: '1px solid darkgreen', 
-              // padding: '16px' 
-            }}
-            direction='column'
-          > */}
+          <>
             {/* <ThreeDFarmBotMain /> */}
-          {/* </Flex> */}
+          </>
           {/* END: THREED FARMBOT */}
+
           
-          {/* THREED JOYSTICK */}
-          {/* <Flex
-            // item
-            id='threed_joystick'
-            // width='50%'
-            // direction='row'
-            direction='column'
-            // style={{
-            //   // borderTop: '1px solid darkgreen',
-            //   width: '50%',
-            // }}
-          > */}
+          {/* THREED: CHARACTER CONTROLS: JOYSTICK */}
+          <>
             {/* CHARACTER CONTROL JOYSTICK */}
             {/* <EcctrlJoystick buttonNumber={0} /> */}
             {/* <EcctrlJoystick buttonNumber={5} /> */}
             {/* <EcctrlJoystickControls /> */}
 
-          {/* </Flex> */}
+          </>
           {/* END: THREED JOYSTICK */}
+
           
         </>
         
       )}
-    {/* </Box> */}
     </>
   )
 }

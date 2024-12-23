@@ -35,14 +35,7 @@ export default async function UserButton() {
   
   return (
     <div 
-      // className='
-      //   flex
-      //   items-center
-      //   p-2
-      // '
       style={{
-        // marginTop: 4, // wth? !!!
-        // marginRight: 2, // wth? !!!
       }}
     >
       {/* <span className='hidden text-sm sm:inline-flex'>
@@ -51,13 +44,6 @@ export default async function UserButton() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
-            // className='relative rounded-full'
-            // className='
-            //   bg-background 
-            //   text-foreground 
-            //   text-xs 
-            //   p-2
-            // '
             style={{
               // border: 0,
               // marginRight: 4,

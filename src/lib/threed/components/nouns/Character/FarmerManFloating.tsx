@@ -5,7 +5,7 @@
 
 // ** APOLLO Imports (NOT HERE?, preferably)
 // import { useReactiveVar } from '@apollo/client'
-// import { preferencesDataVar } from '#/lib/stores/apollo'
+// import { preferencesDataVar } from '#/lib/api/graphql/apollo'
 
 // ** REACT Imports
 import {

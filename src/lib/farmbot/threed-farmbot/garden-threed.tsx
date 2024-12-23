@@ -276,7 +276,7 @@ const Model = (props: ModelProps) => {
     {/* END: THREED FARMBOT */}
     
     {/* 2D PLANTS (FARMBOT AVIF) */}
-    {/* <group 
+    <group 
       name={"plant-icon-preload"} 
       visible={false}
       // key={'GroupPlantIconPreload_' + newUUID()} 
@@ -319,7 +319,7 @@ const Model = (props: ModelProps) => {
           // labelOnly={true} // TESTING|DEBUGGING
         />
       )}
-    </group> */}
+    </group>
     {/* END: 2D PLANTS (FARMBOT AVIF) */}
 
     {/* 3D TEXT LABEL */}
@@ -334,7 +334,7 @@ const Model = (props: ModelProps) => {
       outlineOpacity={0.75}
       position={[
         0,
-        threeSpace(-500, config.bedWidthOuter),
+        threeSpace(-240, config.bedWidthOuter),
         -groundZ + 100,
       ]}
       rotation={[Math.PI / 4, 0, 0]}
