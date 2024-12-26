@@ -62,6 +62,8 @@ import { ThreeDDropdownMenu } from '~/src/lib/threed/components/controls/Dropdow
 
 // ** PAPER Imports
 import paper from 'paper'
+// import GridPaper from '#/lib/gridpaper/GridPaper'
+const GridPaper = dynamic(() => import('#/lib/gridpaper/GridPaper'), { ssr: false })
 
 // ** THREED Imports
 // import ThreeDComponents from '#/lib/threed/threed'
@@ -534,6 +536,13 @@ const PaperCanvas = (props: any) => {
     // ** THREED PAPER
     initThreeDPaper(planCanvas)
 
+    // ** Initialize GridPaper
+    // const canvas = document.getElementById('planCanvas') as HTMLCanvasElement;
+    if (planCanvas) {
+      const gridPaper = new GridPaper({ planCanvas });
+      (window as any).gridPaper = gridPaper; // Optional: Attach to window for debugging
+    }
+    
   }, []) // intentionally run this client-only listener on every react.render
   
   // ** RETURN JSX
@@ -727,8 +736,8 @@ function initPlanView(planCanvas: any) {
   // **
 
   // ** DRAW GRID path lines x,y
-  drawGrid()
-  // drawGridNew(paper, 10)
+  // drawGrid()
+  drawGridNew(paper, 10)
   // redrawGrid()
 
   
@@ -5241,9 +5250,9 @@ function initThreed(threedItem: any, scene: any) {
 // ** DRAW GRID path lines x,y
 function drawGrid() {
   // x
-  for (let o = 0; o <= 2000; o++) {
+  for (let o = 0; o <= 3000; o++) {
     const a = new paper.Point(10 * o, -200)
-    const n = new paper.Point(10 * o, 2000)
+    const n = new paper.Point(10 * o, 3000)
     let pathLineX = new paper.Path.Line(a, n)
     pathLineX.strokeColor = new paper.Color(96, 96, 96, 1)
     pathLineX.strokeWidth = 0.25
@@ -5253,9 +5262,9 @@ function drawGrid() {
     gridGroup[0].addChild(pathLineX)
   }
   // y
-  for (var o = 0; o <= 2000; o++) {
-    const i = new paper.Point(-200,    10 * o)
-    const r = new paper.Point(2000, 10 * o)
+  for (var o = 0; o <= 3000; o++) {
+    const i = new paper.Point(-200, 10 * o)
+    const r = new paper.Point(3000, 10 * o)
     let pathLineY = new paper.Path.Line(i, r)
     pathLineY.strokeColor = new paper.Color(96, 96, 96, 1)
     pathLineY.strokeWidth = 0.25
@@ -5271,19 +5280,25 @@ function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
   const { width, height } = view.size
 
   for (let x = 0; x <= width; x += gridSize) {
-    new Path.Line({
+    let pathLineX = new Path.Line({
       from: [x, 0],
       to: [x, height],
       strokeColor: 'lightgray'
     })
+    xLines.push(pathLineX)
+    // @ts-expect-error
+    gridGroup[0].addChild(pathLineX)
   }
 
   for (let y = 0; y <= height; y += gridSize) {
-    new Path.Line({
+    let pathLineY = new Path.Line({
       from: [0, y],
       to: [width, y],
       strokeColor: 'lightgray'
     })
+    yLines.push(pathLineY)
+    // @ts-expect-error
+    gridGroup[0].addChild(pathLineY)
   }
 }
 

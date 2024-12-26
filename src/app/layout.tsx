@@ -16,6 +16,8 @@ import '#/layout/styles/styles-panels.module.css'
 // ** THREED CSS Imports
 import '#/lib/home-design/src/styles/threed-home-design.css'
 import '#/lib/home-design/src/styles/annotations.css'
+// ** GRIDPAPER CSS Imports
+import '#/lib/gridpaper/style.css'
 // ** FONT Imports
 import { inter } from '#/layout/styles/fonts'
 
