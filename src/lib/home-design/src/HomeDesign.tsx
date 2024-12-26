@@ -62,8 +62,9 @@ import { ThreeDDropdownMenu } from '~/src/lib/threed/components/controls/Dropdow
 
 // ** PAPER Imports
 import paper from 'paper'
-// import GridPaper from '#/lib/gridpaper/GridPaper'
-const GridPaper = dynamic(() => import('#/lib/gridpaper/GridPaper'), { ssr: false })
+// // import GridPaper from '#/lib/gridpaper/GridPaper'
+// const GridPaper = dynamic(() => import('#/lib/gridpaper/GridPaper'), { ssr: false })
+const GridPaper = dynamic(() => import('gridpaper'), { ssr: false })
 
 // ** THREED Imports
 // import ThreeDComponents from '#/lib/threed/threed'
@@ -5048,7 +5049,7 @@ function initThreed(threedItem: any, scene: any) {
                     rasterImageN.position = draggingThreedRectangle.position
                     rasterImageN.data.flipX = 1
                     rasterImageN.data.flipZ = 1
-                    rasterImageN.fillColor = new paper.Color(1, 1, 1, 1)
+                    rasterImageN.fillColor = new paper.Color(100, 100, 100, 1)
                     rasterImageN.selectedColor = new paper.Color(0, 0, 0, 0)
 
                     // readOnly ||

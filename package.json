@@ -67,7 +67,8 @@
     "r3f-perf": "7.2.1",
     
     "paper": "0.12.18",
-    "dual-range-bar": "1.1.0",
+    "gridpaper": "0.1.3",
+    "dual-range-bar": "0.2.0",
     
     "@tweenjs/tween.js": "18.6.4",
 
