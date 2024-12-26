@@ -14,8 +14,8 @@ import {
 } from 'react'
 
 // ** NEXT Imports
-// import type { NextPage } from 'next'
-// import type { TNextPageWithProps } from '#/lib/types/TAppProps'
+import type { NextPage } from 'next'
+import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import dynamic from 'next/dynamic'
 // import Image from 'next/image'
 
