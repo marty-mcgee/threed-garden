@@ -1,3 +1,6 @@
+// ** PAPER Imports
+import paper from 'paper'
+// ** GRIDPAPER Imports
 import { Config, defaultConfig } from './Config';
 import { Rect, GeometricRect } from './Rect';
 import UIOverlay from './UiController';
@@ -204,9 +207,9 @@ export default class GridPaper {
       || this.displayRect.minY === this.bound.minY && this.displayRect.maxY === this.bound.maxY))
       return;
     // Too small to scale
-    if (scale < 1 && this.uiOverlay.horizontalBar.upperRange - this.uiOverlay.horizontalBar.lowerRange < this.uiOverlay.horizontalBar.minDifference)
+    if (scale < 1 && this.uiOverlay.horizontalBar.upperBound - this.uiOverlay.horizontalBar.lowerBound < this.uiOverlay.horizontalBar.lower)
       return;
-    if (scale < 1 && this.uiOverlay.verticalBar.upperRange - this.uiOverlay.verticalBar.lowerRange < this.uiOverlay.verticalBar.minDifference)
+    if (scale < 1 && this.uiOverlay.verticalBar.upperBound - this.uiOverlay.verticalBar.lowerBound < this.uiOverlay.verticalBar.upper)
       return;
     let offsets: Rect = {
       minX: this.displayRect.minX - x,
@@ -390,12 +393,12 @@ export default class GridPaper {
 
   /** Stylizing major grid lines */
   stylizeMajor(line: paper.Path) {
-    line.strokeColor = '#CCCCCC';
+    line.strokeColor = new paper.Color(200, 200, 200, 1) // '#CCCCCC';
     line.strokeWidth = this.zoomFactor * 2;
   }
   /** Styleizing minor grid lines */
   stylizeMinor(line: paper.Path) {
-    line.strokeColor = '#DDDDDD';
+    line.strokeColor = new paper.Color(222, 222, 222, 1) // '#DDDDDD';
     line.strokeWidth = this.zoomFactor;
   }
 
