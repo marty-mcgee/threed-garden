@@ -20,34 +20,11 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // ** REACT Imports
 // import { Suspense } from 'react'
 
-// ** RADIX-UI Imports
-// import {
-//   Grid,
-// } from '@radix-ui/themes'
-// // ** MUI Imports
-// import Grid from '@mui/material/Grid'
-// import Card from '@mui/material/Card'
-// import CardHeader from '@mui/material/CardHeader'
-// import Typography from '@mui/material/Typography'
-// import CardContent from '@mui/material/CardContent'
-
-// // ** LAYOUT Components (Head, Body, Foot)
-// import Header from '#/layout/header'
-// import Footer from '#/layout/footer'
-
 // ** THREED Components Imports
 // import ThreeDComponents from '#/lib/threed/threed'
 const ThreeDComponents = dynamic(() => import('#/lib/threed/ThreeDComponents'), { ssr: false })
-// import ThreeDControls from '~/src/lib/threed/Controls'
-// const ThreeDControls = dynamic(() => import('#/lib/threed/Controls'), { ssr: false })
-// import ThreeDGarden from '~/src/lib/threed/ThreeDGarden'
-// const ThreeDGarden = dynamic(() => import('#/lib/threed/ThreeDGarden'), { ssr: false })
-// import ThreeDControls from '#/lib/threed/components/controls/Controls'
-// const ThreeDControls = dynamic(() => import('#/lib/threed/components/controls/Controls'), { ssr: false })
 
 // ** HELPER Imports
-// import Spinner from '#/layout/ui/spinner'
-// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 // import ccm from '#/lib/utils/console-colors'
 
 const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
@@ -84,8 +61,4 @@ const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
   )
 }
 
-// const ParticipatePage_UseClient = dynamic(() => Promise.resolve(ParticipatePage), {
-//   ssr: false
-// })
-// export default ParticipatePage_UseClient
 export default ParticipatePage
