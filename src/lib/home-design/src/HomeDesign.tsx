@@ -3213,16 +3213,22 @@ const ViewProperties = () => {
               <td>Link</td>
               <td><span id='model3dLink'></span></td>
             </tr>
-            <tr>
+            {/* <tr>
               <td>
                 <button className='moreInfoBtn' 
                   onClick={(event) => showModel3dView(event)}
                 >
-                  View
+                  Preview
                 </button>
               </td>
-              <td></td>
-            </tr>
+              <td>
+                <button className='moreInfoBtn' 
+                  onClick={(event) => addThreed(event, draggingThreedItem, canvasStateVar().state.scene)}
+                >
+                  Add To Canvas
+                </button>
+              </td>
+            </tr> */}
           </tbody>
         </table>
       </div>
@@ -3231,6 +3237,7 @@ const ViewProperties = () => {
         style={{
           display: 'flex',
           flexDirection: 'column',
+          marginTop: '8px',
         }}
       >
         <h3>Threed Properties</h3>
@@ -3239,14 +3246,14 @@ const ViewProperties = () => {
           // style={{ minWidth: '290px' }}
         >
           <tbody>
-          <tr>
+          {/* <tr>
             <td>Id</td>
             <td><span id='objectId'></span></td>
           </tr>
           <tr>
             <td>Name</td>
             <td><span id='objectName'></span></td>
-          </tr>
+          </tr> */}
           <tr>
             <td>X</td>
             <td>
@@ -3263,10 +3270,8 @@ const ViewProperties = () => {
           <tr>
             <td>Y</td>
             <td>
-              <input type='text' id='threedYProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
+              <input type='text' 
+                id='threedYProp'
                 className='editable' 
                 // onChange={() => validatePlusOrMinusNumber(this, updateThreedPosY)}
                 maxLength={8} 
@@ -3277,10 +3282,8 @@ const ViewProperties = () => {
           <tr>
             <td>Z</td>
             <td>
-              <input type='text' id='threedZProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
+              <input type='text' 
+                id='threedZProp'
                 className='editable' 
                 // onChange={() => validatePlusOrMinusNumber(this, updateThreedPosZ)}
                 maxLength={8} 
@@ -3291,10 +3294,8 @@ const ViewProperties = () => {
           <tr>
             <td>Width</td>
             <td>
-              <input type='text' id='threedWidthProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
+              <input type='text' 
+                id='threedWidthProp'
                 className='editable' 
                 // onChange={() => validatePlusNumber(this, updateThreedWidth)} 
                 maxLength={8} 
@@ -3308,22 +3309,21 @@ const ViewProperties = () => {
           </tr>
           <tr>
             <td>Height</td>
-            <td><input type='text' id='threedHeightProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
+            <td>
+              <input type='text' 
+                id='threedHeightProp'
                 className='editable' 
                 // onChange={() => validatePlusOrMinusNumber(this, updateThreedHeight)}
-                maxLength={8} /> cm</td>
+                maxLength={8} 
+              />
+              cm
+            </td>
           </tr>
           <tr>
             <td>Depth</td>
             <td>
               <input type='text' 
                 id='threedDepthProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
                 className='editable' 
                 // onChange={() => validatePlusNumber(this, updateThreedDepth)} 
                 maxLength={8} 
@@ -3351,17 +3351,20 @@ const ViewProperties = () => {
                 className='moreInfoBtn' 
                 // onClick={() => showModel3dView()}
               >
-                VIEW
+                VIEW 3D MODEL
               </button>
             </td>
           </tr>
           </tbody>
         </table>
       </div>
-      <div id='defaultsPropertiesView' style={{ display: 'none' }}>
+      <div 
+        id='defaultsPropertiesView' 
+        // style={{ display: 'none' }}
+      >
         <h3>Default Settings</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                      <tbody>
+          <tbody>
           <tr>
             <td>Compass Heading</td>
             <td>
@@ -3372,7 +3375,7 @@ const ViewProperties = () => {
               <span id='compassHdgLbl'>0°</span>
             </td>
           </tr>
-                      </tbody>
+          </tbody>
         </table>
       </div>
       <div id='wallDefaultsPropertiesView' style={{ display: 'none' }}>

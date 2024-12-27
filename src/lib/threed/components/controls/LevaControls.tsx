@@ -218,19 +218,17 @@ export function ThreeDLevaControls() {
     // oneLineLabels,
     // refMonitor
   }, setControlPanelLeva] = useControls(
-    'ThreeD Control Panel',
+    'Leva Control Panel',
     () => ({
       showTitleBar: { value: true, render: (get) => get('Panel.showTitleBar') },
       // prefs.projectName
-      title: { value: 'START HERE: Project Settings', render: (get) => get('Panel.showTitleBar') },
+      title: { value: prefs.projectName, render: (get) => get('Panel.showTitleBar') },
       drag: { value: true, render: (get) => get('Panel.showTitleBar') },
       filter: { value: false, render: (get) => get('Panel.showTitleBar') },
-      // position: { value: { x: -460, y: 160 }, render: (get) => get('Panel.showTitleBar') },
-      // position: { value: { x: -2, y: 62 }, render: (get) => get('Panel.showTitleBar') },
       position: { 
         value: { 
-          x: -32, 
-          y: 4,
+          x: -440, 
+          y: 6
         }, 
         render: (get) => get('Panel.showTitleBar') 
       },

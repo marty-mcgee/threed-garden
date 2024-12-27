@@ -842,7 +842,7 @@ export const preferencesDataVar = makeVar(
     doAutoLoadData: false, // boolean: false | true
     doAutoRotate: false, // boolean: false | true
     // project prefs
-    projectName: 'client should never see this string', // string: ''
+    projectName: '', // string: 'client should never see this string'
     // scene prefs
     environmentPreset: 'forest', // default (client should never see this)
     environmentBgBlur: 0.20, // default (our chosen maximum blur)
