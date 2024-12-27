@@ -55,7 +55,7 @@ import ccm from '#/lib/utils/console-colors'
 // **
 const DebugHeadless = () => {
 
-  // @ts-expect-error
+  // @ ts-expect-error
   const [log, getReport] = usePerf((s) => [s.log, s.getReport])
   // console.log(getReport())
 
@@ -113,7 +113,7 @@ const Debug = () => {
       // style?: {} // override style
       // position?: 'top-right'|'top-left'|'bottom-right'|'bottom-left' // quickly set the position, default is top-right
       // minimal={width < 712} 
-      showGraph={true} // show the graphs
+      // showGraph={true} // show the graphs
       // logsPerSecond={1} // Refresh rate of the logs
       // chart={{
       //   hz: 1, // graphs refresh frequency parameter
