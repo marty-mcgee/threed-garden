@@ -16,8 +16,6 @@ import '#/layout/styles/styles-panels.module.css'
 // ** THREED CSS Imports
 import '#/lib/home-design/src/styles/threed-home-design.css'
 import '#/lib/home-design/src/styles/annotations.css'
-// ** GRIDPAPER CSS Imports
-import '#/lib/gridpaper/style.css'
 // ** FONT Imports
 import { inter } from '#/layout/styles/fonts'
 
@@ -37,10 +35,10 @@ const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 import { GoogleAnalytics } from '@next/third-parties/google'
 
 // ** HELPER Imports
-import ccm from '#/lib/utils/console-colors'
+// import ccm from '#/lib/utils/console-colors'
 
 // const appVersion: string = 'v0.17.0'
-const appVersion: string = require('package.json').version
+// const appVersion: string = require('package.json').version
 
 // ==============================================================
 
