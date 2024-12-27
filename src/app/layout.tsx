@@ -10,7 +10,6 @@ import dynamic from 'next/dynamic'
 
 // ** CSS Imports
 import '#/layout/styles/styles-tailwind-globals.css'
-// import '#/layout/styles/styles-radix-ui-themes.css'
 import '#/layout/styles/styles-radix-ui-custom.css'
 import '#/layout/styles/styles-panels.module.css'
 // ** THREED CSS Imports
@@ -25,7 +24,7 @@ import { ApolloClientWrapper } from '#/lib/api/graphql/ApolloClientWrapper'
 // ** NEXT AUTH -- Client Session Management
 import SessionWrapper from '#/layout/SessionWrapper'
 
-// ** LAYOUT Components (Head, Body, Foot)
+// ** LAYOUT Components (Header, Main, Footer)
 // import Header from '#/layout/header'
 const Header = dynamic(() => import('#/layout/header'), { ssr: false })
 // import Footer from '#/layout/footer'

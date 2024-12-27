@@ -60,9 +60,6 @@ import { ThreeDDropdownMenu } from '~/src/lib/threed/components/controls/Dropdow
 
 // ** PAPER Imports
 import paper from 'paper'
-// // import GridPaper from '#/lib/gridpaper/GridPaper'
-// const GridPaper = dynamic(() => import('#/lib/gridpaper/GridPaper'), { ssr: false })
-const GridPaper = dynamic(() => import('gridpaper'), { ssr: false })
 
 // ** THREED Imports
 // import ThreeDComponents from '#/lib/threed/threed'
@@ -534,13 +531,6 @@ const PaperCanvas = (props: any) => {
 
     // ** THREED PAPER
     initThreeDPaper(planCanvas)
-
-    // ** Initialize GridPaper
-    // const canvas = document.getElementById('planCanvas') as HTMLCanvasElement;
-    if (planCanvas) {
-      const gridPaper = new GridPaper({ planCanvas });
-      (window as any).gridPaper = gridPaper; // Optional: Attach to window for debugging
-    }
     
   }, []) // intentionally run this client-only listener on every react.render
   
