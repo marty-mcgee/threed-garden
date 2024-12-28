@@ -550,12 +550,12 @@ const PaperCanvas = (props: any) => {
           // ...place circle at new view center
           startCircle.position = paper.view.center
         }
-        // draw instructions
-        new paper.PointText({
-          content: 'Resize the window and see that view is automatically resized',
-          point: paper.view.center.subtract(0, 80),
-          justification: 'center'
-        })
+        // // draw instructions
+        // new paper.PointText({
+        //   content: 'Resize the window and see that view is automatically resized',
+        //   point: paper.view.center.subtract(0, 80),
+        //   justification: 'center'
+        // })
 
     // ** THREED PAPER.JS
     initThreeDPaper(planCanvas)
@@ -3541,7 +3541,7 @@ const ViewProperties = () => {
       <div id='textDefaultsPropertiesView' style={{ display: 'none' }}>
         <h3>Default Text Settings</h3>
       </div>
-      
+
       <hr/>
 
       <div 
@@ -3876,24 +3876,24 @@ const ViewProperties = () => {
       <div id='dimensionPropertiesView' style={{ display: 'none' }}>
         <h3>Dimension Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                      <tbody>
-          <tr>
-            <td width='70'>Id</td>
-            <td><span id='dimensionIdProp'></span></td>
-          </tr>
-          <tr>
-            <td>Length</td>
-            <td><span id='dimensionLengthProp'></span></td>
-          </tr>
-          <tr>
-            <td>Adjacent</td>
-            <td><span id='dimensionAdjacentProp'></span></td>
-          </tr>
-          <tr>
-            <td>Level</td>
-            <td><span id='dimensionLevelProp'></span></td>
-          </tr>
-                      </tbody>
+          <tbody>
+            <tr>
+              <td width='70'>Id</td>
+              <td><span id='dimensionIdProp'></span></td>
+            </tr>
+            <tr>
+              <td>Length</td>
+              <td><span id='dimensionLengthProp'></span></td>
+            </tr>
+            <tr>
+              <td>Adjacent</td>
+              <td><span id='dimensionAdjacentProp'></span></td>
+            </tr>
+            <tr>
+              <td>Level</td>
+              <td><span id='dimensionLevelProp'></span></td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -3905,43 +3905,43 @@ const ViewProperties = () => {
       }}>
         <h3>Text Annotation Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                      <tbody>
-          <tr>
-            <td width='70'>Id</td>
-            <td><span id='textIdProp'></span></td>
-          </tr>
-          {/* <tr>
-            <td>Text</td>
-            <td><input type='text' id='textValueProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
-                className='editable' onKeyUp={() => validateText(event, this, updateTextValue)} maxLength={100} />
-            </td>
-          </tr>
-          <tr>
-            <td>X</td>
-            <td><input type='text' id='textXProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
-                className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextX)} maxLength={8} />
-            </td>
-          </tr>
-          <tr>
-            <td>Y</td>
-            <td><input type='text' id='textYProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
-                className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextY)} maxLength={8} />
-            </td>
-          </tr> */}
-          <tr>
-            <td>Level</td>
-            <td><span id='textLevelProp'></span></td>
-          </tr>
-                      </tbody>
+          <tbody>
+            <tr>
+              <td width='70'>Id</td>
+              <td><span id='textIdProp'></span></td>
+            </tr>
+            {/* <tr>
+              <td>Text</td>
+              <td><input type='text' id='textValueProp'
+                  style={{
+                    // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                  }}
+                  className='editable' onKeyUp={() => validateText(event, this, updateTextValue)} maxLength={100} />
+              </td>
+            </tr>
+            <tr>
+              <td>X</td>
+              <td><input type='text' id='textXProp'
+                  style={{
+                    // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                  }}
+                  className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextX)} maxLength={8} />
+              </td>
+            </tr>
+            <tr>
+              <td>Y</td>
+              <td><input type='text' id='textYProp'
+                  style={{
+                    // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
+                  }}
+                  className='editable' onChange={() => validatePlusOrMinusNumber(this, updateTextY)} maxLength={8} />
+              </td>
+            </tr> */}
+            <tr>
+              <td>Level</td>
+              <td><span id='textLevelProp'></span></td>
+            </tr>
+          </tbody>
         </table>
         {/* <div>Type<span id='textDataTypeProp'></span></div> */}
         {/* <div><button id='deleteTextAnnotationBtn' onClick={() => deleteTextBtnClick()}>Delete</button></div> */}
@@ -3958,29 +3958,26 @@ const ViewProperties = () => {
       >
         <h3>Level Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                      <tbody>
-          <tr>
-            <td width='70'>Id</td>
-            <td><span id='levelIdProp'></span></td>
-          </tr>
-          <tr>
-            <td>Name</td>
-            <td><span id='levelNameProp'></span></td>
-          </tr>
-          <tr>
-            <td>Height</td>
-            <td>
-              <input type='text' id='levelHeightProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
-                className='editable' 
-                // onChange={() => validatePlusOrMinusNumber(this, updateLevelHeight)}
-                maxLength={8} 
-              />
-            </td>
-          </tr>
-                      </tbody>
+          <tbody>
+            <tr>
+              <td width='70'>Id</td>
+              <td><span id='levelIdProp'></span></td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td><span id='levelNameProp'></span></td>
+            </tr>
+            <tr>
+              <td>Height</td>
+              <td>
+                <input type='text' id='levelHeightProp'
+                  className='editable' 
+                  // onChange={() => validatePlusOrMinusNumber(this, updateLevelHeight)}
+                  maxLength={8} 
+                />
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -3995,34 +3992,31 @@ const ViewProperties = () => {
       >
         <h3>Ground Layer Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
-                      <tbody>
-          <tr>
-            <td>Width</td>
-            <td><input type='text' id='groundWidthProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
-                className='editable' 
-                // onChange={() => validatePlusNumber(this, updateGroundWidth)} 
-                maxLength={8} 
-                />
-              cm</td>
-          </tr>
-          <tr>
-            <td>Length</td>
-            <td><input type='text' id='groundLengthProp'
-                style={{
-                  // 'width: 80px border: 1px solid #2a2a2a font-size: 14px color: white font-family: 'Courier New', Courier, monospace'
-                }}
-                className='editable' 
-                // onChange={() => validatePlusNumber(this, updateGroundLength)} 
-                maxLength={8} 
-                />
-              cm</td>
-          </tr>
-                      </tbody>
+          <tbody>
+            <tr>
+              <td>Width</td>
+              <td><input type='text' id='groundWidthProp'
+                  className='editable' 
+                  // onChange={() => validatePlusNumber(this, updateGroundWidth)} 
+                  maxLength={8} 
+                  />
+                cm</td>
+            </tr>
+            <tr>
+              <td>Length</td>
+              <td><input type='text' id='groundLengthProp'
+                  className='editable' 
+                  // onChange={() => validatePlusNumber(this, updateGroundLength)} 
+                  maxLength={8} 
+                  />
+                cm</td>
+            </tr>
+          </tbody>
         </table>
       </div>
+
+      <hr/>
+
     </div>
     </>
   )
