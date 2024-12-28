@@ -176,335 +176,342 @@ let fragment: any = null
 let readOnly: boolean = false
 
 let threedHomeDesign: string = 'HEY HEY HEY ___',
-  mouseMode: number = 0,
-  selectedItem: any,
-  defaultCursor: string = 'default',
-  deselectAll: Function = () => {},
-  toolsGroup: Object[] = [],
-  gridGroup: Object[] = [],
-  threedGroup: Object[] = [],
-  wallsGroup: Object[] = [],
-  roofsGroup: Object[] = [],
-  floorsGroup: Object[] = [],
-  dimensionsGroup: Object[] = [],
-  textsGroup: Object[] = [],
-  guidesGroup: Object[] = [],
-  defaultWallHeight: number = 265,
-  defaultWallThickness: number = 20,
-  defaultRoofThickness: number = 25,
-  defaultRoofWidth: number = 350,
-  defaultRoofRise: number = 300,
-  defaultRoofStartHeight: number = 0,
-  defaultFloorThickness: number = 25,
-  rotateIcon: any,
-  resizeIcon: any,
-  elevateIcon: any,
-  heightIcon: any,
-  // **
-  planView: HTMLElement,
-  mouseIndicatorX: HTMLElement,
-  mouseIndicatorY: HTMLElement,
-  rulerLeft: HTMLCanvasElement = null,
-  rulerLeftCtx: any,
-  rulerBottom: HTMLCanvasElement = null,
-  rulerBottomCtx: any,
-  fullscreenPlanViewBtn,
-  fullscreen3dViewBtn,
-  modalCloseBtnAbout,
-  modalCloseBtnModel3d,
-  // **
-  threedToLoadCount: number = 0,
-  loadedThreedCount: number = 0,
-  tools,
-  offsetMousePoint: any, // Object = {x: 0, y: 0}, // number = 0,
-  ctrlKeyPressed: boolean = false,
-  scaleFactor: number = 1.1,
-  cumulclick: number = 0,
-  screenScale: number = 1,
-  ratioX: number = 0,
-  ratioY: number = 0,
-  lastNewWallSegmentClick: number = 0,
-  lastNewRoofSegmentClick: number = 0,
-  lastNewFloorSegmentClick: number = 0,
-  // **
-  threedItems: Object[] = threedItemsJSON,
-  // **
-  canvas3d,
-  camera,
-  renderer,
-  container,
-  // https://github.com/three-types/three-ts-types/blob/master/types/three/src/scenes/Scene.d.ts
-  scene: Object = { 
-    // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
-    background: new THREE.Color(0x171717),
-  },
-  mesh,
-  ground,
-  groundMat,
-  hemiLight,
-  dirLight,
-  ambientLight,
-  pointLight,
-  controls: any,
-  tween,
-  raycaster: THREE.Raycaster = new THREE.Raycaster(),
-  mouse: THREE.Vector2 = new THREE.Vector2(),
-  clickableObjects: Object[] = [],
-  clickableObjectsCounter: number = 0,
-  maskObjects: Object[] = [],
-  maskObjectsApplied: Object[] = [],
-  maskObjectsAppliedRoof: Object[] = [],
-  // **
-  verticalSlider: HTMLElement,
-  verticalSliderDragging: boolean,
-  horizontalSliderLeft: HTMLElement,
-  horizontalSliderLeftDragging: boolean,
-  horizontalSliderRight: HTMLElement,
-  horizontalSliderRightDragging: boolean,
-  // **
-  threedDragDiv: HTMLElement, // JSX.Element = <div></div>,
-  draggingThreedIcon: boolean = false,
-  draggingThreedItem: TThreedItem, // Object = {},
-  draggingThreedAngle: number = 0,
-  draggingThreedRectangle: paper.Path.Rectangle = null, 
-  // project is null
-  // draggingThreedRectangle = new paper.Path.Rectangle(
-  //   new paper.Point(-1, -1),
-  //   new paper.Point(1, 1)
-  // ),
-  // **
-  // **
-  // **
-  plan: Object = {
-    threed: {},
-    walls: {},
-    roofs: {},
-    floors: {},
-    levels: [
-      { id: 0, height: 0 },
-    ],
-    dimensions: {},
-    texts: {},
-    verticalGuides: {},
-    horizontalGuides: {}
-  },
-  // **
-  planHistory = [
-    JSON.stringify(plan)
-    // planHistory.push(JSON.stringify(plan))
+mouseMode: number = 0,
+selectedItem: any,
+defaultCursor: string = 'default',
+deselectAll: Function = () => {},
+toolsGroup: Object[] = [],
+gridGroup: Object[] = [],
+threedGroup: Object[] = [],
+wallsGroup: Object[] = [],
+roofsGroup: Object[] = [],
+floorsGroup: Object[] = [],
+dimensionsGroup: Object[] = [],
+textsGroup: Object[] = [],
+guidesGroup: Object[] = [],
+defaultWallHeight: number = 265,
+defaultWallThickness: number = 20,
+defaultRoofThickness: number = 25,
+defaultRoofWidth: number = 350,
+defaultRoofRise: number = 300,
+defaultRoofStartHeight: number = 0,
+defaultFloorThickness: number = 25,
+rotateIcon: any,
+resizeIcon: any,
+elevateIcon: any,
+heightIcon: any,
+// **
+planView: HTMLElement,
+mouseIndicatorX: HTMLElement,
+mouseIndicatorY: HTMLElement,
+rulerLeft: HTMLCanvasElement = null,
+rulerLeftCtx: any,
+rulerBottom: HTMLCanvasElement = null,
+rulerBottomCtx: any,
+fullscreenPlanViewBtn,
+fullscreen3dViewBtn,
+modalCloseBtnAbout,
+modalCloseBtnModel3d,
+// **
+threedToLoadCount: number = 0,
+loadedThreedCount: number = 0,
+tools,
+offsetMousePoint: any, // Object = {x: 0, y: 0}, // number = 0,
+ctrlKeyPressed: boolean = false,
+scaleFactor: number = 1.1,
+cumulclick: number = 0,
+screenScale: number = 1,
+ratioX: number = 0,
+ratioY: number = 0,
+lastNewWallSegmentClick: number = 0,
+lastNewRoofSegmentClick: number = 0,
+lastNewFloorSegmentClick: number = 0,
+// **
+threedItems: Object[] = threedItemsJSON,
+// **
+canvas3d,
+camera,
+renderer,
+container,
+// https://github.com/three-types/three-ts-types/blob/master/types/three/src/scenes/Scene.d.ts
+scene: Object = { 
+  // background: new THREE.CubeTextureLoader().load(cubeMapURLs), // ThreeDGarden1.tsx
+  background: new THREE.Color(0x171717),
+},
+mesh,
+ground,
+groundMat,
+hemiLight,
+dirLight,
+ambientLight,
+pointLight,
+controls: any,
+tween,
+raycaster: THREE.Raycaster = new THREE.Raycaster(),
+mouse: THREE.Vector2 = new THREE.Vector2(),
+clickableObjects: Object[] = [],
+clickableObjectsCounter: number = 0,
+maskObjects: Object[] = [],
+maskObjectsApplied: Object[] = [],
+maskObjectsAppliedRoof: Object[] = [],
+// **
+verticalSlider: HTMLElement,
+verticalSliderDragging: boolean,
+horizontalSliderLeft: HTMLElement,
+horizontalSliderLeftDragging: boolean,
+horizontalSliderRight: HTMLElement,
+horizontalSliderRightDragging: boolean,
+// **
+threedDragDiv: HTMLElement, // JSX.Element = <div></div>,
+draggingThreedIcon: boolean = false,
+draggingThreedItem: TThreedItem, // Object = {},
+draggingThreedAngle: number = 0,
+draggingThreedRectangle: paper.Path.Rectangle = null, 
+// project is null
+// draggingThreedRectangle = new paper.Path.Rectangle(
+//   new paper.Point(-1, -1),
+//   new paper.Point(1, 1)
+// ),
+// **
+// **
+// **
+plan: Object = {
+  threed: {},
+  walls: {},
+  roofs: {},
+  floors: {},
+  levels: [
+    { id: 0, height: 0 },
   ],
-  planHistoryPosition: number = 0,
-  // **
-  // **
-  // **
-  movePointIcons: Object[] = [],
-  movePointIconSelectedId: number = 0,
-  selectedMovePointIcon: any = null,
-  wallPath: paper.Path = null,
-  wallIdCounter: number = 0,
-  wallsRectangles: Object[] = [],
-  wallsRectangles3d: Object[] = [],
-  wallHelperPath: paper.Path = null,
-  wallHelperRectangle: paper.Path.Rectangle = null,
-  startedDrawingWalls: boolean = false,
-  floorPath: paper.Path = null,
-  floorIdCounter: number = 0,
-  floorHelperPath: paper.Path = null,
-  startedDrawingFloor: boolean = false,
-  roofPath: paper.Path = null,
-  roofIdCounter: number = 0,
-  roofHelperPath: paper.Path = null,
-  roofsRectangles: Object[] = [],
-  roofsRectangles3d: Object[] = [],
-  roofHelperRectangle: paper.Path.Rectangle = null,
-  startedDrawingRoofs: boolean = false,
-  dimensionPath: paper.Path = null,
-  dimensionIdCounter: number = 0,
-  dimensionHelperPath: paper.Path = null,
-  startedDrawingDimension: boolean = false,
-  stretchYPath: paper.Path = null,
-  stretchYStartHeight: number = 0,
-  elevatePath: paper.Path = null,
-  elevating: boolean = false,
-  elevateStartHeight: number = 0,
-  dragging: boolean = false,
-  scalingXY: boolean = false,
-  scalingY: boolean = false,
-  rotating: boolean = false,
-  wallHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
-  roofHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
-  // redrawGrid: Function = () => {},
-  redrawTexts: Function = () => {},
-  xLines: Object[] = [],
-  yLines: Object[] = [],
-  // **
-  // **
-  // **
-  wallMaterial: THREE.Material = null,
-  floorMaterial: THREE.Material = null,
-  roofMaterial: THREE.Material = null,
-  wallCornersX: Object[] = [],
-  wallCornersY: Object[] = [],
-  roofCornersX: Object[] = [],
-  roofCornersY: Object[] = [],
-  snapPoint: paper.Point = null,
-  unjoinedWallSegments: Object[] = [],
-  allWallSegments: Object[] = [],
-  unjoinedRoofSegments = [],
-  allRoofSegments = [],
-  snapPointOverride = {},
-  textPath: paper.Path = null,
-  textIdCounter: number = 0,
-  startedDrawingText: boolean = false,
-  editingTextId = -1,
-  Threed: Object[] = [],
-  Walls: Object[] = [],
-  Roofs: Object[] = [],
-  Floors: Object[] = [],
-  Floors3d: Object[] = [],
-  Dimensions: Object[] = [],
-  Texts: Object[] = [],
-  // **
-  backgroundRaster: paper.Raster = null,
-  backgroundRasterRatioX: number = 1,
-  backgroundRasterRatioY: number = 1,
-  idToCopyPaste: number = -1,
-  lastPasteX: number = 0,
-  lastPasteY: number = 0,
-  progressBar: HTMLElement,
-  focusPoint: paper.Point = null, // = new paper.Point(0, 0),
-  selectedItem3DAxes,
-  activeLevel,
-  levelButtons,
-  otherLayerWallsRasters = [],
-  otherLayerThreedRasters = [],
-  extrudeSettings = {
-    steps: 1,
-    depth: defaultFloorThickness,
-    bevelEnabled: false,
-  },
-  // **
-  // **
-  modalModel3dThreedId: number = -1,
-  model3dObjectRef,
-  model3dViewOpen: boolean = false,
-  model3dScene,
-  model3dSceneRenderer,
-  model3dViewContainer,
-  model3dSceneCamera,
-  model3dViewCanvas,
-  // **
-  // **
-  // **
-  loadingProgressTxt: string = '',
-  lastMousePoint,
-  dltext: string = '',
-  zoomRectangle,
-  // **
-  sky,
-  sunSphere,
-  inclination,
-  azimuth,
-  // **
-  examplePlan,
-  // **
-  fLineX,
-  fLineY,
-  fLineZ,
-  // **
-  modalsActive: boolean = false,
-  shareLinkUrl: string = '',
-  shareLinkUrl3d: string = '',
-  shareLinkUrlPlan: string = '',
-  // **
-  // **
-  verticalGuides: Object[] = [],
-  horizontalGuides: Object[] = [],
-  selectedGuideId = -1,
-  guideCounter: number = 0,
-  draggingNewGuide: boolean = false,
-  // **
-  // **
-  snapTolerance: number = 1,
-  groundWidth: number = 5e3,
-  groundLength: number = 5e3
+  dimensions: {},
+  texts: {},
+  verticalGuides: {},
+  horizontalGuides: {}
+},
+// **
+planHistory = [
+  JSON.stringify(plan)
+  // planHistory.push(JSON.stringify(plan))
+],
+planHistoryPosition: number = 0,
+// **
+// **
+// **
+movePointIcons: Object[] = [],
+movePointIconSelectedId: number = 0,
+selectedMovePointIcon: any = null,
+wallPath: paper.Path = null,
+wallIdCounter: number = 0,
+wallsRectangles: Object[] = [],
+wallsRectangles3d: Object[] = [],
+wallHelperPath: paper.Path = null,
+wallHelperRectangle: paper.Path.Rectangle = null,
+startedDrawingWalls: boolean = false,
+floorPath: paper.Path = null,
+floorIdCounter: number = 0,
+floorHelperPath: paper.Path = null,
+startedDrawingFloor: boolean = false,
+roofPath: paper.Path = null,
+roofIdCounter: number = 0,
+roofHelperPath: paper.Path = null,
+roofsRectangles: Object[] = [],
+roofsRectangles3d: Object[] = [],
+roofHelperRectangle: paper.Path.Rectangle = null,
+startedDrawingRoofs: boolean = false,
+dimensionPath: paper.Path = null,
+dimensionIdCounter: number = 0,
+dimensionHelperPath: paper.Path = null,
+startedDrawingDimension: boolean = false,
+stretchYPath: paper.Path = null,
+stretchYStartHeight: number = 0,
+elevatePath: paper.Path = null,
+elevating: boolean = false,
+elevateStartHeight: number = 0,
+dragging: boolean = false,
+scalingXY: boolean = false,
+scalingY: boolean = false,
+rotating: boolean = false,
+wallHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
+roofHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
+// redrawGrid: Function = () => {},
+redrawTexts: Function = () => {},
+xLines: Object[] = [],
+yLines: Object[] = [],
+// **
+// **
+// **
+wallMaterial: THREE.Material = null,
+floorMaterial: THREE.Material = null,
+roofMaterial: THREE.Material = null,
+wallCornersX: Object[] = [],
+wallCornersY: Object[] = [],
+roofCornersX: Object[] = [],
+roofCornersY: Object[] = [],
+snapPoint: paper.Point = null,
+unjoinedWallSegments: Object[] = [],
+allWallSegments: Object[] = [],
+unjoinedRoofSegments = [],
+allRoofSegments = [],
+snapPointOverride = {},
+textPath: paper.Path = null,
+textIdCounter: number = 0,
+startedDrawingText: boolean = false,
+editingTextId = -1,
+Threed: Object[] = [],
+Walls: Object[] = [],
+Roofs: Object[] = [],
+Floors: Object[] = [],
+Floors3d: Object[] = [],
+Dimensions: Object[] = [],
+Texts: Object[] = [],
+// **
+backgroundRaster: paper.Raster = null,
+backgroundRasterRatioX: number = 1,
+backgroundRasterRatioY: number = 1,
+idToCopyPaste: number = -1,
+lastPasteX: number = 0,
+lastPasteY: number = 0,
+progressBar: HTMLElement,
+focusPoint: paper.Point = null, // = new paper.Point(0, 0),
+selectedItem3DAxes,
+activeLevel,
+levelButtons,
+otherLayerWallsRasters = [],
+otherLayerThreedRasters = [],
+extrudeSettings = {
+  steps: 1,
+  depth: defaultFloorThickness,
+  bevelEnabled: false,
+},
+// **
+// **
+modalModel3dThreedId: number = -1,
+model3dObjectRef,
+model3dViewOpen: boolean = false,
+model3dScene,
+model3dSceneRenderer,
+model3dViewContainer,
+model3dSceneCamera,
+model3dViewCanvas,
+// **
+// **
+// **
+loadingProgressTxt: string = '',
+lastMousePoint,
+dltext: string = '',
+zoomRectangle,
+// **
+sky,
+sunSphere,
+inclination,
+azimuth,
+// **
+examplePlan,
+// **
+fLineX,
+fLineY,
+fLineZ,
+// **
+modalsActive: boolean = false,
+shareLinkUrl: string = '',
+shareLinkUrl3d: string = '',
+shareLinkUrlPlan: string = '',
+// **
+// **
+verticalGuides: Object[] = [],
+horizontalGuides: Object[] = [],
+selectedGuideId: number = -1,
+guideCounter: number = 0,
+draggingNewGuide: boolean = false,
+// **
+// **
+snapTolerance: number = 1,
+groundWidth: number = 5e3,
+groundLength: number = 5e3
 
-  let busy: boolean = false
-  // let screenAvg = 1000 // (screen.width + screen.height) / 2
-  let redrawing: boolean = false
-  let strokeWidth = 0
-  const onProgress = function (e: any) {
-    if (false) { // run this??
-      if (e.lengthComputable) {
-        var t = (e.loaded / e.total) * 100
-        // @ts-expect-error
-        progressBar.value = t
-        progressBar.style.display = 'block'
-      }
+let busy: boolean = false
+// let screenAvg = 1000 // (screen.width + screen.height) / 2
+let redrawing: boolean = false
+let strokeWidth: number = 0
+const onProgress = function (e: any) {
+  if (false) { // run this??
+    if (e.lengthComputable) {
+      var t = (e.loaded / e.total) * 100
+      // @ts-expect-error
+      progressBar.value = t
+      progressBar.style.display = 'block'
     }
   }
-  const onError = function (e: any) {
-    console.debug('onError: e', e)
-  }
-  const getAngleRadians = function (e: any, t: any) {
-    return Math.atan2(t.y - e.y, t.x - e.x)
-  }
-  const getDistance = function (e: any, t: any) {
-    var o = e.x - t.x,
-      a = e.y - t.y,
-      n = Math.sqrt(o * o + a * a)
-    return n
-  }
-  // String.prototype.capitalize = function () {
-  //   return this.replace(/(^|\s)([a-z])/g, function (e, t, o) {
-  //     return t + o.toUpperCase()
-  //   })
-  // }
+}
+const onError = function (e: any) {
+  console.debug('onError: e', e)
+}
+const getAngleRadians = function (e: any, t: any) {
+  return Math.atan2(t.y - e.y, t.x - e.x)
+}
+const getDistance = function (e: any, t: any) {
+  var o = e.x - t.x,
+    a = e.y - t.y,
+    n = Math.sqrt(o * o + a * a)
+  return n
+}
+// String.prototype.capitalize = function () {
+//   return this.replace(/(^|\s)([a-z])/g, function (e, t, o) {
+//     return t + o.toUpperCase()
+//   })
+// }
 
-  // ** firefox browser mouse controls
-  // // function e (e: any) {
-  function MMeMouse (e: any) {
-    
-    // let
-    planView = document.getElementById('planView')
-    var t = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0
-    if (t) {
-      var o = cumulclick
-      cumulclick += Math.min(Math.max(t / 3, -1), 1)
-      var a = Math.pow(scaleFactor, cumulclick)
-      if (a > 0.0625 && a < 16) {
-        paper.view.zoom = a
-        var n = paper.view.viewToProject(
-          new paper.Point(
-            e.pageX - planView.offsetLeft,
-            e.pageY - planView.offsetTop
-          )
+// ** firefox browser mouse controls
+// // function e (e: any) {
+function MMeMouse (e: any) {
+  
+  // let
+  planView = document.getElementById('planView')
+  var t = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0
+  if (t) {
+    var o = cumulclick
+    cumulclick += Math.min(Math.max(t / 3, -1), 1)
+    var a = Math.pow(scaleFactor, cumulclick)
+    if (a > 0.0625 && a < 16) {
+      paper.view.zoom = a
+      var n = paper.view.viewToProject(
+        new paper.Point(
+          e.pageX - planView.offsetLeft,
+          e.pageY - planView.offsetTop
         )
-        var l = 0.11 * (paper.view.center.x - n.x)
-        var i = 0.11 * (paper.view.center.y - n.y)
+      )
+      var l = 0.11 * (paper.view.center.x - n.x)
+      var i = 0.11 * (paper.view.center.y - n.y)
 
-        if (t > 0) {
-          var r = paper.view.center.x - l
-          var s = paper.view.center.y - i
-          var d = new paper.Point(r, s)
-          paper.view.center = d
-        } 
-        else {
-          var r = paper.view.center.x + l
-          var s = paper.view.center.y + i
-          var d = new paper.Point(r, s)
-          paper.view.center = d
-        }
-
-        redrawGrid()
-        redrawTexts()
-      
-      } else {
-        cumulclick = o
+      if (t > 0) {
+        var r = paper.view.center.x - l
+        var s = paper.view.center.y - i
+        var d = new paper.Point(r, s)
+        paper.view.center = d
+      } 
+      else {
+        var r = paper.view.center.x + l
+        var s = paper.view.center.y + i
+        var d = new paper.Point(r, s)
+        paper.view.center = d
       }
+
+      redrawGrid()
+      redrawTexts()
+    
+    } else {
+      cumulclick = o
     }
-    return e.preventDefault() && false
   }
+  return e.preventDefault() && false
+}
+
+function recenterPlanView () {
+  const planView = document.getElementById('planView')
+  paper.view.center = new paper.Point(planView.clientWidth / 2, planView.clientHeight / 2)
+  redrawGrid()
+  redrawTexts()
+}
 
 // ==============================================================
 
@@ -529,10 +536,32 @@ const PaperCanvas = (props: any) => {
     paper.setup(planCanvas)
     paper.settings.hitTolerance = 3
 
-    // ** THREED PAPER
+        // draw a circle at view center
+        var startCircle = new paper.Path.Circle({
+          center: paper.view.center,
+          radius: 50,
+          fillColor: 'orange'
+        })
+
+        // when view is resized...
+        paper.view.onResize = function() {
+          // ...log new view width
+          console.log('PaperCanvas paper.view.bounds.width is now: ' + paper.view.bounds.width)
+          // ...place circle at new view center
+          startCircle.position = paper.view.center
+        }
+        // draw instructions
+        new paper.PointText({
+          content: 'Resize the window and see that view is automatically resized',
+          point: paper.view.center.subtract(0, 80),
+          justification: 'center'
+        })
+
+    // ** THREED PAPER.JS
     initThreeDPaper(planCanvas)
     
   }, []) // intentionally run this client-only listener on every react.render
+  // END useEffect
   
   // ** RETURN JSX
   return (
@@ -3213,7 +3242,7 @@ const ViewProperties = () => {
               <td>Link</td>
               <td><span id='model3dLink'></span></td>
             </tr>
-            {/* <tr>
+            <tr>
               <td>
                 <button className='moreInfoBtn' 
                   onClick={(event) => showModel3dView(event)}
@@ -3228,7 +3257,19 @@ const ViewProperties = () => {
                   Add To Canvas
                 </button>
               </td>
-            </tr> */}
+            </tr>
+            <tr>
+              <td>
+                <button className='moreInfoBtn' 
+                  onClick={() => recenterPlanView()}
+                >
+                  Recenter
+                </button>
+              </td>
+              <td>
+                
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -5303,81 +5344,81 @@ function redrawGrid() {
         console.debug('redrawGrid: redrawing?', true)
 
         screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
-        // console.debug('redrawGrid: screenScale', screenScale)
+        console.debug('redrawGrid: screenScale', screenScale)
 
         // console.debug('selectedItem? commented out //', selectedItem)
 
-        // if (selectedItem && selectedItem.data) {
-        //   console.debug('selectedItem.data', selectedItem.data)
-        //   if ('wallPath' === selectedItem.data.type) {
-        //     console.debug('selectedItem.data.type', selectedItem.data.type)
-        //     var e = 0
-        //     selectedItem.segments.forEach(function (t: any) {
-        //       movePointIcons[e] &&
-        //         // @ts-expect-error
-        //         ((movePointIcons[e].position = t.point),
-        //         // @ts-expect-error
-        //           (movePointIcons[e].bounds.width = screenScale),
-        //         // @ts-expect-error
-        //           (movePointIcons[e].bounds.height = screenScale),
-        //           e++)
-        //     })
-        //   } 
-        //   else if ('roofPath' === selectedItem.data.type) {
-        //     console.debug('selectedItem.data.type', selectedItem.data.type)
-        //     var e = 0
-        //     selectedItem.segments.forEach(function (t: any) {
-        //       movePointIcons[e] &&
-        //         // @ts-expect-error
-        //         ((movePointIcons[e].position = t.point),
-        //         // @ts-expect-error
-        //           (movePointIcons[e].bounds.width = screenScale),
-        //         // @ts-expect-error
-        //           (movePointIcons[e].bounds.height = screenScale),
-        //           e++)
-        //     })
-        //   } 
-        //   else if ('threed' === selectedItem.data.type) {
-        //     console.debug('selectedItem.data.type', selectedItem.data.type)
-        //     rotateIcon.bounds.width = screenScale
-        //     rotateIcon.bounds.height = screenScale
-        //     rotateIcon.position =
-        //       selectedItem.data.toolsRectangleInner.segments[1].point
-        //     resizeIcon.bounds.width = screenScale
-        //     resizeIcon.bounds.height = screenScale
-        //     resizeIcon.position =
-        //       selectedItem.data.toolsRectangleInner.segments[3].point
-        //     heightIcon.bounds.width = screenScale
-        //     heightIcon.bounds.height = screenScale
-        //     heightIcon.position =
-        //       selectedItem.data.toolsRectangleInner.segments[2].point
-        //     elevateIcon.bounds.width = screenScale
-        //     elevateIcon.bounds.height = screenScale
-        //     elevateIcon.position =
-        //       selectedItem.data.toolsRectangleInner.segments[0].point
-        //   } 
-        //   else if ('background' === selectedItem.data.type) {
-        //     console.debug('selectedItem.data.type', selectedItem.data.type)
-        //     resizeIcon.bounds.width = screenScale
-        //     resizeIcon.bounds.height = screenScale
-        //     resizeIcon.position =
-        //         backgroundRaster.data.toolsRectangleInner.segments[3].point
-        //   } 
-        //   else if ('floor' === selectedItem.data.type) {
-        //     console.debug('selectedItem.data.type', selectedItem.data.type)
-        //     var e = 0
-        //     selectedItem.segments.forEach(function (t: any) {
-        //       movePointIcons[e] &&
-        //         // @ts-expect-error
-        //         ((movePointIcons[e].position = t.point),
-        //         // @ts-expect-error
-        //           (movePointIcons[e].bounds.width = screenScale),
-        //         // @ts-expect-error
-        //           (movePointIcons[e].bounds.height = screenScale),
-        //           e++)
-        //     })
-        //   }
-        // }
+        if (selectedItem && selectedItem.data) {
+          console.debug('selectedItem.data', selectedItem.data)
+          if ('wallPath' === selectedItem.data.type) {
+            console.debug('selectedItem.data.type', selectedItem.data.type)
+            var e = 0
+            selectedItem.segments.forEach(function (t: any) {
+              movePointIcons[e] &&
+                // @ts-expect-error
+                ((movePointIcons[e].position = t.point),
+                // @ts-expect-error
+                  (movePointIcons[e].bounds.width = screenScale),
+                // @ts-expect-error
+                  (movePointIcons[e].bounds.height = screenScale),
+                  e++)
+            })
+          } 
+          else if ('roofPath' === selectedItem.data.type) {
+            console.debug('selectedItem.data.type', selectedItem.data.type)
+            var e = 0
+            selectedItem.segments.forEach(function (t: any) {
+              movePointIcons[e] &&
+                // @ts-expect-error
+                ((movePointIcons[e].position = t.point),
+                // @ts-expect-error
+                  (movePointIcons[e].bounds.width = screenScale),
+                // @ts-expect-error
+                  (movePointIcons[e].bounds.height = screenScale),
+                  e++)
+            })
+          } 
+          else if ('threed' === selectedItem.data.type) {
+            console.debug('selectedItem.data.type', selectedItem.data.type)
+            rotateIcon.bounds.width = screenScale
+            rotateIcon.bounds.height = screenScale
+            rotateIcon.position =
+              selectedItem.data.toolsRectangleInner.segments[1].point
+            resizeIcon.bounds.width = screenScale
+            resizeIcon.bounds.height = screenScale
+            resizeIcon.position =
+              selectedItem.data.toolsRectangleInner.segments[3].point
+            heightIcon.bounds.width = screenScale
+            heightIcon.bounds.height = screenScale
+            heightIcon.position =
+              selectedItem.data.toolsRectangleInner.segments[2].point
+            elevateIcon.bounds.width = screenScale
+            elevateIcon.bounds.height = screenScale
+            elevateIcon.position =
+              selectedItem.data.toolsRectangleInner.segments[0].point
+          } 
+          else if ('background' === selectedItem.data.type) {
+            console.debug('selectedItem.data.type', selectedItem.data.type)
+            resizeIcon.bounds.width = screenScale
+            resizeIcon.bounds.height = screenScale
+            resizeIcon.position =
+                backgroundRaster.data.toolsRectangleInner.segments[3].point
+          } 
+          else if ('floor' === selectedItem.data.type) {
+            console.debug('selectedItem.data.type', selectedItem.data.type)
+            var e = 0
+            selectedItem.segments.forEach(function (t: any) {
+              movePointIcons[e] &&
+                // @ts-expect-error
+                ((movePointIcons[e].position = t.point),
+                // @ts-expect-error
+                  (movePointIcons[e].bounds.width = screenScale),
+                // @ts-expect-error
+                  (movePointIcons[e].bounds.height = screenScale),
+                  e++)
+            })
+          }
+        }
 
         // ** [MM] Paper: Hit Tolerance ???
         var hitToleranceT = 0,
@@ -5438,6 +5479,7 @@ function redrawGrid() {
                         (snapTolerance = 0.5),
                         (paper.settings.hitTolerance = 1))
         // ** [MM] END: Paper: Hit Tolerance ???
+        console.debug('redrawGrid: hitToleranceT', hitToleranceT)
         
 
         // ** [MM] RULER CONTEXT ??? 
@@ -5465,7 +5507,7 @@ function redrawGrid() {
             : x % o === 0
               ? ((e.style.strokeColor = '#81673a'),
                 rulerBottomCtx.fillText(
-                  (paper.view.bounds.left + n - a).toString() + 'cm',
+                  (paper.view.bounds.left + n - a).toString() + '',
                   (x - paper.view.bounds.left) * paper.view.zoom,
                   14
                 ))
@@ -5491,7 +5533,7 @@ function redrawGrid() {
             : y % o === 0
               ? ((e.style.strokeColor = '#81673a'),
                 rulerLeftCtx.fillText(
-                  (paper.view.bounds.top + n - l).toString() + 'cm',
+                  (paper.view.bounds.top + n - l).toString() + '',
                   26,
                   (y - paper.view.bounds.top) * paper.view.zoom + 4
                 ))
@@ -5512,7 +5554,6 @@ function redrawGrid() {
           // @ts-expect-error
           horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
         })
-
 
         // ** done: set redrawing to false
         redrawing = false
@@ -6364,10 +6405,11 @@ export default function ThreeDHomeDesign(): JSX.Element {
     <div
       // direction='row'
       style={{
+        // display: 'inline-block',
         display: 'inline-flex',
-        flexGrow: '1',
-        height: '90vh',
-        width: '99.8%',
+        // flexGrow: '1',
+        height: '92vh',
+        width: '99.9%',
       }}
     >
       
@@ -6377,15 +6419,17 @@ export default function ThreeDHomeDesign(): JSX.Element {
 
       {/* TESTING: DOM ELEMENT as React State Variables */}
       <>
-        {/* <Canvas>
-          <OrbitControls domElement={domElement} onChange={onChange} />
-        </Canvas>
+        {/* 
         <Canvas>
           <OrbitControls domElement={domElement} onChange={onChange} />
         </Canvas>
         <Canvas>
           <OrbitControls domElement={domElement} onChange={onChange} />
-        </Canvas> */}
+        </Canvas>
+        <Canvas>
+          <OrbitControls domElement={domElement} onChange={onChange} />
+        </Canvas> 
+        */}
       </>
 
       <div 
@@ -6481,13 +6525,14 @@ export default function ThreeDHomeDesign(): JSX.Element {
         <Panel
           id='panelMain'
           order={1}
-          className='Panel'
+          // className='Panel'
           defaultSize={100}
+          minSize={100}
           maxSize={100}
           style={{
-            // border: '1px solid darkgreen',
+            border: '1px solid darkgreen',
           }}
-          // onResize={redrawGrid()}
+          // onResize={() => redrawGrid()} // ** TESTING
         >
           <PanelGroup 
             direction='horizontal'
@@ -6501,8 +6546,9 @@ export default function ThreeDHomeDesign(): JSX.Element {
                 id='panelLeft'
                 // className='Panel'
                 order={2}
-                defaultSize={24}
-                maxSize={48}
+                defaultSize={25}
+                minSize={0}
+                maxSize={100}
                 style={{
                   // border: '1px solid darkred',
                 }}
@@ -6514,12 +6560,12 @@ export default function ThreeDHomeDesign(): JSX.Element {
                   
                   <Panel 
                     id='viewProperties'
-                    className='Panel'
+                    // className='Panel'
                     order={5}
                     defaultSize={50}
-                    // maxSize={64}
+                    maxSize={100}
                     style={{
-                      border: '1px solid darkgreen',
+                      border: '1px solid #1A1A1A',
                       overflow: 'auto',
                     }}
                   >
@@ -6532,12 +6578,13 @@ export default function ThreeDHomeDesign(): JSX.Element {
 
                   <Panel 
                     id='catalogView'
-                    className='Panel'
+                    // className='Panel'
                     order={4}
                     defaultSize={50}
-                    // maxSize={64}
+                    maxSize={100}
                     style={{
-                      border: '1px solid darkgreen',
+                      border: '1px solid #1A1A1A',
+                      overflow: 'auto',
                     }}
                   >
                     <div id='catalogFilters'>
@@ -6573,8 +6620,9 @@ export default function ThreeDHomeDesign(): JSX.Element {
               <Panel
                 id='panelRight'
                 order={3}
-                className='Panel'
-                defaultSize={76}
+                // className='Panel'
+                defaultSize={75}
+                minSize={0}
                 maxSize={100}
                 style={{
                   // border: '1px solid darkblue',
@@ -6590,27 +6638,27 @@ export default function ThreeDHomeDesign(): JSX.Element {
                   <Panel
                     id='panel3DCanvas'
                     order={6}
-                    className='Panel'
+                    // className='Panel'
                     defaultSize={50}
-                    minSize={1}
-                    maxSize={99}
+                    minSize={0}
+                    maxSize={100}
                     style={{
-                      border: '1px solid darkgreen',
+                      border: '1px solid #1A1A1A',
                     }}
                   >
                     <div 
                       id='view3d'
                       style={{
-                        display: 'flex',
-                        flexDirection: 'column',
+                        // display: 'flex',
+                        // flexDirection: 'column',
+                        width: '100%',
                         height: '100%',
-                        // width: '100%',
-                        border: '1px solid #003300',
+                        // border: '1px solid #003300',
                       }}
                     >
 
                       {/* THREED HOME DESIGN: 3D CANVAS */}
-                      { true && (
+                      { false && (
                         <ThreeD />
                       )}
 
@@ -6632,10 +6680,10 @@ export default function ThreeDHomeDesign(): JSX.Element {
                   <Panel
                     id='panel2DCanvas'
                     order={7}
-                    className='Panel'
+                    // className='Panel'
                     defaultSize={50}
-                    minSize={1}
-                    maxSize={99}
+                    minSize={0}
+                    maxSize={100}
                     style={{
                       // display: 'block',
                       // width: '100vw',
@@ -6644,30 +6692,32 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       // flexGrow: '1',
                       // flexDirection: 'column',
                       // overflow: 'auto', // no
-                      border: '1px solid darkgreen',
+                      border: '1px solid #1A1A1A',
                     }}
                   >
                       <div
                         id='planView'
                         style={{
-                          display: 'flex',
+                          // display: 'inline-block',
+                          // display: 'flex',
+                          display: 'inline-flex',
                           // alignSelf: 'stretch',
                           // alignItems: 'stretch',
                           // alignItems: 'flex-end',
                           // flexGrow: '1',
                           // flexDirection: 'column',
-                          // width: '100%',
+                          width: '100%',
                           // width: 'calc(100% - 20px)',
-                          // height: '90%',
+                          // height: '100%',
                           height: 'calc(100% - 20px)',
                         }}
                       >
                         <div
                           style={{
+                            // display: 'inline-block',
                             display: 'inline-flex',
-                            // alignSelf: 'stretch',
                             width: '20px',
-                            // height: '100%',
+                            height: '100%',
                             // height: 'calc(100% - 20px)',
                             backgroundColor: 'gray', // '#636363',
                           }}
@@ -6684,24 +6734,24 @@ export default function ThreeDHomeDesign(): JSX.Element {
                         </div>
 
                         { true && (
-                          <>
                           <div 
-                            // id='planView'
+                            id='paperView'
                             style={{
-                              display: 'flex',
+                              // display: 'inline-block',
+                              display: 'inline-flex',
                               // flexDirection: 'column',
                               // alignItems: 'stretch',
                               // alignSelf: 'stretch',
-                              width: '100%',
-                              // height: '100%',
+                              // width: '100%',
+                              width: 'calc(100% - 20px)',
+                              height: '100%',
                               // height: 'calc(100% - 20px)',
                               // overflow: 'auto',
-                              backgroundColor: '#222222',
+                              // backgroundColor: '#222222',
                             }}
                           >
                             <PaperCanvas />
                           </div>
-                          </>
                         )}
                       </div>
                       
@@ -6743,8 +6793,8 @@ export default function ThreeDHomeDesign(): JSX.Element {
       <div 
         id='planHelpers'
         style={{
-          display: 'inline-flex',
-          flexDirection: 'row',
+          // display: 'inline-flex',
+          // flexDirection: 'row',
         }}
       >
 
@@ -6765,8 +6815,16 @@ export default function ThreeDHomeDesign(): JSX.Element {
         <img id='fullscreen3dViewBtn' src='images/homedesign/fullscreen.png' width='30' height='30'
           onClick={() => openFullscreen('view3d')} />
         */}
+
+        {/* 
+        <div id='overlayMenuPlanView'>
+          <button id='overlayPlanViewRecenterBtn' onClick={() => recenterPlanView()} className='smallButton'>Recenter</button>
+          <button id='overlayPlanViewGoto3dViewBtn' onClick={() => goto3dView()} className='smallButton'>3d View</button>
+        </div>
+        */}
       
-        {/* <div 
+        {/* 
+        <div 
           id='overlayLogoPlanView' 
           className='overlayLogo'
         >
@@ -6783,12 +6841,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
           >
             ThreeD Home Design
           </a>
-        </div> */}
-        {/* 
-        <div id='overlayMenuPlanView'>
-          <button id='overlayPlanViewRecenterBtn' onClick={() => recenterPlanView()} className='smallButton'>Recenter</button>
-          <button id='overlayPlanViewGoto3dViewBtn' onClick={() => goto3dView()} className='smallButton'>3d View</button>
-        </div>
+        </div> 
         */}
 
       </div>

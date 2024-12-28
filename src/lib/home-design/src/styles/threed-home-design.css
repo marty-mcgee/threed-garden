@@ -8,25 +8,32 @@
   background-color: #888888;
 } */
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
+/* Scale canvas with resize attribute to full size */
+canvas[resize] {
+  width: 100%;
+  height: 100%;
 }
+
+
+/* Scrollbar */
+/* ::-webkit-scrollbar {
+  width: 10px;
+} */
 
 /* Track */
-::-webkit-scrollbar-track {
+/* ::-webkit-scrollbar-track {
   background: #f1f1f1;
-}
+} */
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
   background: #888;
-}
+} */
 
 /* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
+/* ::-webkit-scrollbar-thumb:hover {
   background: #787878;
-}
+} */
 
 #progressBar {
   width: 500px;
@@ -35,7 +42,7 @@
   left: 50%;
   top: 10px;
   margin-left: -250px;
-  }
+}
 
   
 #toolBar {
@@ -232,9 +239,9 @@
 
 #compass {
   /* display: none; */
-  position: absolute;
+  /* position: absolute;
   right: 70px;
-  top: 140px;
+  top: 140px; */
   opacity: 0.5;
   pointer-events: none;
   transform-origin: bottom center;
@@ -242,9 +249,9 @@
 
 #compass:after {
   /* content: url('/media/compass_140.png'); */
-  position: absolute;
+  /* position: absolute;
   margin-top: -70px;
-  margin-left: -21px;
+  margin-left: -21px; */
   pointer-events: none;
 }
 
@@ -287,18 +294,18 @@
   background-color: #787878;
 }
 
-li a:hover, .dropdown:hover .dropbtn {
+/* li a:hover, .dropdown:hover .dropbtn {
   background-color: #787878;
-}
+} */
 
 /* li a:focus,
 .dropdown:hover .dropbtn {
   background-color: #bbbbbb;
 } */
 
-li.dropdown {
+/* li.dropdown {
   display: inline-block;
-}
+} */
 
 .dropdown-content {
   display: none;
@@ -476,7 +483,7 @@ li.dropdown {
 
 /* Add Animation */
 
-@keyframes animatetop {
+/* @keyframes animatetop {
   from {
     top: -300px;
     opacity: 0
@@ -485,49 +492,11 @@ li.dropdown {
     top: 15%;
     opacity: 1
   }
-}
-
-/* .center {
-  width: 300px;
-  height: 12px;
-  position: absolute;
-  left: 50%;
-  top: 60px;
-  margin-left: -150px;
 } */
 
-/* .brand a {
-  font-weight: 100;
-  font-size: 21px;
-  padding: 0px;
-}
 
-li .brandImg a {
-  padding-top: 0px;
-  padding-left: 0px;
-  padding-right: 0px;
-  margin: 0px;
-}
 
-li .brandImg img {
-  margin: 0px;
-  padding-top: 0px;
-  padding-left: 0px;
-  padding-right: 0px;
-} */
-
-/* .propertiesTable table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.propertiesTable th, td {
-  padding: 4px 0px 4px 0px;
-  text-align: left;
-  border-bottom: 1px solid #2a2a2a;
-} */
-
-/* #fullscreenPlanViewBtn {
+#fullscreenPlanViewBtn {
   position: absolute;
   cursor: pointer;
 }
@@ -535,13 +504,8 @@ li .brandImg img {
 #fullscreen3dViewBtn {
   position: absolute;
   cursor: pointer;
-} */
+}
 
-/* 
-a[target="_blank"]:after {
-  content: url("/media/externallink.png");
-} 
-*/
 
 .moreInfoBtn {
   font-size: 12px;
@@ -557,68 +521,6 @@ a[target="_blank"]:after {
   height: 128px;
   pointer-events: none;
 }
-
-
-/* Style the buttons that are used to open the tab content */
-/* .tab {
-  overflow: hidden;
-  border: 1px solid #2a2a2a;
-  background-color: #131418;
-  margin-top: 10px;
-} */
-/* .tab button {
-  font-size: 16px;
-  color: white;
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding-top: 16px;
-  padding-left: 24px;
-  padding-right: 24px;
-  padding-bottom: 16px;
-  transition: 0.15s;
-} */
-/* .tab button:hover {
-  background-color: #787878;
-}
-.tab button.active {
-  background-color: #787878;
-} */
-/* .tabcontent {
-  display: none;
-  padding: 6px 12px;
-  border: 1px solid #2a2a2a;
-  border-top: none;
-  height: 400px;
-  overflow-y: auto;
-} */
-
-
-/*
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px solid 2a2a2a;
-}
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 400px;
-  background-color: #131418;
-  color: #fff;
-  text-align: left;
-  padding: 6px 12px;
-  position: absolute;
-  z-index: 1;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
-*/
-
 
 
 
@@ -660,10 +562,6 @@ a[target="_blank"]:after {
 #featuredPlanImage:hover {
   background-color: #09090D;
 }
-
-/* hr {
-  border: 1px solid #2a2a2a;
-} */
 
 #localStoragePlanLastSavedDate {
   font-size: 12px;
@@ -730,10 +628,6 @@ a[target="_blank"]:after {
   font-size: 12px;
 }
 
-/* input[type='checkbox'] {
-  background-color: #2a2a2a;
-  margin: 6px 3px 3px 3px;
- } */
 
 .propertiesViewBtn {
   font-size: 16px;
