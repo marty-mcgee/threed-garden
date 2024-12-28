@@ -3209,6 +3209,35 @@ const ViewProperties = () => {
           <tbody>
             <tr>
               <td>
+                <button className='moreInfoBtn' 
+                  onClick={(event) => showModel3dView(event)}
+                >
+                  Preview
+                </button>
+                <button className='moreInfoBtn' 
+                  onClick={(event) => addThreed(event, draggingThreedItem, canvasStateVar().state.scene)}
+                >
+                  Add To Canvas
+                </button>
+                <button className='moreInfoBtn' 
+                  onClick={() => recenterPlanView()}
+                >
+                  Recenter
+                </button>
+                <button className='moreInfoBtn' 
+                  onClick={() => drawGridNew(paper, 10)}
+                >
+                  Draw Grid
+                </button>
+                <button className='moreInfoBtn' 
+                  onClick={() => redrawGrid()}
+                >
+                  ReDraw Grid
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <div 
                   onMouseDown={(event) => beginDrag(event, draggingThreedItem)} 
                   className='disableSelection'
@@ -3242,43 +3271,19 @@ const ViewProperties = () => {
               <td>Link</td>
               <td><span id='model3dLink'></span></td>
             </tr>
-            <tr>
-              <td>
-                <button className='moreInfoBtn' 
-                  onClick={(event) => showModel3dView(event)}
-                >
-                  Preview
-                </button>
-              </td>
-              <td>
-                <button className='moreInfoBtn' 
-                  onClick={(event) => addThreed(event, draggingThreedItem, canvasStateVar().state.scene)}
-                >
-                  Add To Canvas
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <button className='moreInfoBtn' 
-                  onClick={() => recenterPlanView()}
-                >
-                  Recenter
-                </button>
-              </td>
-              <td>
-                
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
+
+      <hr/>
+      
       <div 
         id='threedPropertiesView'
         style={{
           display: 'flex',
           flexDirection: 'column',
           marginTop: '8px',
+          paddingTop: '8px',
         }}
       >
         <h3>Threed Properties</h3>
@@ -3399,6 +3404,9 @@ const ViewProperties = () => {
           </tbody>
         </table>
       </div>
+
+      <hr/>
+
       <div 
         id='defaultsPropertiesView' 
         // style={{ display: 'none' }}
@@ -3419,6 +3427,9 @@ const ViewProperties = () => {
           </tbody>
         </table>
       </div>
+
+      <hr/>
+      
       <div id='wallDefaultsPropertiesView' style={{ display: 'none' }}>
         <h3>Default Wall Settings</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
@@ -3530,6 +3541,8 @@ const ViewProperties = () => {
       <div id='textDefaultsPropertiesView' style={{ display: 'none' }}>
         <h3>Default Text Settings</h3>
       </div>
+      
+      <hr/>
 
       <div 
         id='planViewPropertiesView' 
@@ -3602,6 +3615,9 @@ const ViewProperties = () => {
                       </tbody>
         </table>
       </div>
+
+      <hr/>
+      
       <div id='3dViewPropertiesView' style={{ display: 'none' }}>
         <h3>3d View Properties</h3>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
@@ -3880,6 +3896,9 @@ const ViewProperties = () => {
                       </tbody>
         </table>
       </div>
+
+      <hr/>
+
       <div id='textPropertiesView' style={{
           display: 'flex',
           flexDirection: 'column',
@@ -3927,6 +3946,9 @@ const ViewProperties = () => {
         {/* <div>Type<span id='textDataTypeProp'></span></div> */}
         {/* <div><button id='deleteTextAnnotationBtn' onClick={() => deleteTextBtnClick()}>Delete</button></div> */}
       </div>
+      
+      <hr/>
+
       <div 
         id='levelPropertiesView' 
         style={{
@@ -3961,6 +3983,9 @@ const ViewProperties = () => {
                       </tbody>
         </table>
       </div>
+
+      <hr/>
+      
       <div 
         id='groundPropertiesView' 
         style={{
@@ -6296,6 +6321,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
         // [MM]
         // threedDragDiv.style.display = 'block'
       }
+
       // if (draggingNewGuide) {
       //   var m = paper.view.viewToProject(
       //     new paper.Point(
@@ -6310,7 +6336,9 @@ export default function ThreeDHomeDesign(): JSX.Element {
       //     (horizontalGuides[selectedGuideId].position.y =
       //       parseInt(rasterImageN.y / snapTolerance) * snapTolerance)
       // }
+
     }
+    // END: document.onmousemove = function (e: any) {}
 
 
     // ** HEY HEY HEY [MM] NEEDS ATTENTION [MM]
@@ -6330,18 +6358,20 @@ export default function ThreeDHomeDesign(): JSX.Element {
         horizontalSliderRightDragging = false
       }
 
-      // **
-      if (draggingThreedItem) {
-        addThreed(e, draggingThreedItem, canvasStateVar().state.scene)
-        // addThreed(e, draggingThreedItem, canvasState.state.scene)
-        // void (draggingNewGuide && (draggingNewGuide = false))
-      }
+      // // ** [MM] NOT EVEN CLOSE
+      // if (draggingThreedItem) {
+      //   addThreed(e, draggingThreedItem, canvasStateVar().state.scene)
+      //   // addThreed(e, draggingThreedItem, canvasState.state.scene)
+      //   // void (draggingNewGuide && (draggingNewGuide = false))
+      // }
 
       // ** RETURN ???
-      return (
-        null
-      )
+      // return (
+      //   null
+      // )
+      return
     }
+    // END: document.onmouseup = function (e: any) {}
     
 
   }, []) // end load data useEffect (client)
@@ -6658,11 +6688,33 @@ export default function ThreeDHomeDesign(): JSX.Element {
                     >
 
                       {/* THREED HOME DESIGN: 3D CANVAS */}
-                      { false && (
-                        <ThreeD />
+                      { true && (
+                        <>
+                          {/* <div 
+                            id='paperView'
+                            style={{
+                              // display: 'inline-block',
+                              display: 'inline-flex',
+                              // flexDirection: 'column',
+                              // alignItems: 'stretch',
+                              // alignSelf: 'stretch',
+                              // width: '100%',
+                              width: 'calc(100% - 20px)',
+                              height: '100%',
+                              // height: 'calc(100% - 20px)',
+                              // overflow: 'auto',
+                              // backgroundColor: '#222222',
+                            }}
+                          > */}
+
+                            <ThreeD />
+
+                          {/* </div> */}
+                        </>
                       )}
 
-                      {/* <div id='overlayLogo3dView' className='overlayLogo'>
+                      {/* 
+                      <div id='overlayLogo3dView' className='overlayLogo'>
                         <a href='https://threedgarden.com/home-design/'><img
                             src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
                         <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
@@ -6670,7 +6722,9 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       <div id='overlayMenu3dView'>
                         <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
                         <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
-                      </div> */}
+                      </div> 
+                      */}
+
                     </div>
                   </Panel>
                   
@@ -6734,24 +6788,28 @@ export default function ThreeDHomeDesign(): JSX.Element {
                         </div>
 
                         { true && (
-                          <div 
-                            id='paperView'
-                            style={{
-                              // display: 'inline-block',
-                              display: 'inline-flex',
-                              // flexDirection: 'column',
-                              // alignItems: 'stretch',
-                              // alignSelf: 'stretch',
-                              // width: '100%',
-                              width: 'calc(100% - 20px)',
-                              height: '100%',
-                              // height: 'calc(100% - 20px)',
-                              // overflow: 'auto',
-                              // backgroundColor: '#222222',
-                            }}
-                          >
-                            <PaperCanvas />
-                          </div>
+                          <>
+                            {/* <div 
+                              id='paperView'
+                              style={{
+                                // display: 'inline-block',
+                                display: 'inline-flex',
+                                // flexDirection: 'column',
+                                // alignItems: 'stretch',
+                                // alignSelf: 'stretch',
+                                // width: '100%',
+                                width: 'calc(100% - 20px)',
+                                height: '100%',
+                                // height: 'calc(100% - 20px)',
+                                // overflow: 'auto',
+                                // backgroundColor: '#222222',
+                              }}
+                            > */}
+
+                              <PaperCanvas />
+                            
+                            {/* </div> */}
+                          </>
                         )}
                       </div>
                       
