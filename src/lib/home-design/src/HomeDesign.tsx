@@ -539,7 +539,7 @@ const PaperCanvas = (props: any) => {
         // draw a circle at view center
         var startCircle = new paper.Path.Circle({
           center: paper.view.center,
-          radius: 50,
+          radius: 33,
           fillColor: 'orange'
         })
 
@@ -550,6 +550,7 @@ const PaperCanvas = (props: any) => {
           // ...place circle at new view center
           startCircle.position = paper.view.center
         }
+        
         // // draw instructions
         // new paper.PointText({
         //   content: 'Resize the window and see that view is automatically resized',
