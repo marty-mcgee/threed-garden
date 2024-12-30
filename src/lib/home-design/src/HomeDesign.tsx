@@ -542,20 +542,23 @@ const PaperCanvas = (props: any) => {
           radius: 33,
           fillColor: 'orange'
         })
+        console.debug('PaperCanvas paper.view.bounds.width is now: ' + paper.view.bounds.width)
 
-        // when view is resized...
-        paper.view.onResize = function() {
-          // ...log new view width
-          console.log('PaperCanvas paper.view.bounds.width is now: ' + paper.view.bounds.width)
-          // ...place circle at new view center
-          startCircle.position = paper.view.center
-        }
+        // // DOES NOT WORK AS EXPECTED
+        // // when view is resized...
+        // paper.view.onResize = function() {
+        //   // ...debug new view width
+        //   console.debug('PaperCanvas paper.view.bounds.width is now: ' + paper.view.bounds.width)
+        //   // ...place circle at new view center
+        //   startCircle.position = paper.view.center
+        // }
         
         // // draw instructions
         // new paper.PointText({
         //   content: 'Resize the window and see that view is automatically resized',
-        //   point: paper.view.center.subtract(0, 80),
-        //   justification: 'center'
+        //   point: paper.view.center.subtract(80),
+        //   justification: 'center',
+        //   color: new paper.Color(255, 255, 255, 1),
         // })
 
     // ** THREED PAPER.JS

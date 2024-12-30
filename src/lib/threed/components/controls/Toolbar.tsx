@@ -87,8 +87,8 @@ const Toolbar = styled(MuiToolbar)(({ theme }) => ({
   minHeight: `24px !important`,
   // transition: 'padding .25s ease-in-out, box-shadow .25s ease-in-out, backdrop-filter .25s ease-in-out'
   // color: theme.palette.text.primary,
-  color: 'purple',
-  opacity: 0.25,
+  color: '#504191', // #3B3269
+  opacity: 0.7,
   opacityHover: 1.00,
 }))
 
