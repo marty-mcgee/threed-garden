@@ -6687,28 +6687,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
 
                       {/* THREED HOME DESIGN: 3D CANVAS */}
                       { true && (
-                        <>
-                          {/* <div 
-                            id='paperView'
-                            style={{
-                              // display: 'inline-block',
-                              display: 'inline-flex',
-                              // flexDirection: 'column',
-                              // alignItems: 'stretch',
-                              // alignSelf: 'stretch',
-                              // width: '100%',
-                              width: 'calc(100% - 20px)',
-                              height: '100%',
-                              // height: 'calc(100% - 20px)',
-                              // overflow: 'auto',
-                              // backgroundColor: '#222222',
-                            }}
-                          > */}
-
-                            <ThreeD />
-
-                          {/* </div> */}
-                        </>
+                        <ThreeD />
                       )}
 
                       {/* 
@@ -6737,12 +6716,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                     minSize={0}
                     maxSize={100}
                     style={{
-                      // display: 'block',
-                      // width: '100vw',
-                      // display: 'flex',
-                      // alignItems: 'stretch',
-                      // flexGrow: '1',
-                      // flexDirection: 'column',
+                      display: 'inline-block',
                       // overflow: 'auto', // no
                       border: '1px solid #1A1A1A',
                     }}
@@ -6750,36 +6724,22 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       <div
                         id='planView'
                         style={{
-                          // display: 'inline-block',
-                          // display: 'flex',
-                          display: 'inline-flex',
-                          // alignSelf: 'stretch',
-                          // alignItems: 'stretch',
-                          // alignItems: 'flex-end',
-                          // flexGrow: '1',
-                          // flexDirection: 'column',
+                          display: 'flex',
                           width: '100%',
-                          // width: 'calc(100% - 20px)',
-                          // height: '100%',
                           height: 'calc(100% - 20px)',
                         }}
                       >
                         <div
                           style={{
-                            // display: 'inline-block',
-                            display: 'inline-flex',
+                            display: 'flex',
                             width: '20px',
                             height: '100%',
-                            // height: 'calc(100% - 20px)',
                             backgroundColor: 'gray', // '#636363',
                           }}
                         >
                           <canvas 
                             id='rulerLeft' 
                             width={20}
-                            // height={'calc(100% - 20px)'}
-                            // height='400px'
-                            // height={getSize(7)}
                             // onMouseDown={() => addVerticalGuide()}
                             // onMouseUp={() => removeVerticalGuide()}
                           ></canvas>
@@ -6787,26 +6747,17 @@ export default function ThreeDHomeDesign(): JSX.Element {
 
                         { true && (
                           <>
-                            {/* <div 
+                            <div 
                               id='paperView'
                               style={{
-                                // display: 'inline-block',
-                                display: 'inline-flex',
-                                // flexDirection: 'column',
-                                // alignItems: 'stretch',
-                                // alignSelf: 'stretch',
-                                // width: '100%',
+                                display: 'flex',
                                 width: 'calc(100% - 20px)',
                                 height: '100%',
-                                // height: 'calc(100% - 20px)',
-                                // overflow: 'auto',
                                 // backgroundColor: '#222222',
                               }}
-                            > */}
-
+                            >
                               <PaperCanvas />
-                            
-                            {/* </div> */}
+                            </div>
                           </>
                         )}
                       </div>
@@ -6814,11 +6765,6 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       <div
                         style={{
                           display: 'block',
-                          // alignItems: 'stretch',
-                          // alignSelf: 'stretch',
-                          // flexGrow: '0',
-                          // flexDirection: 'row',
-                          // width: '100%',
                           height: '20px',
                           maxHeight: '20px',
                           backgroundColor: 'gray',
@@ -6826,9 +6772,7 @@ export default function ThreeDHomeDesign(): JSX.Element {
                       >
                         <canvas 
                           id='rulerBottom' 
-                          width={1200} 
-                          // height={20}
-                          // height={'100%'}
+                          width={1200}
                           // onMouseDown={() => addHorizontalGuide()}
                           // onMouseUp={() => removeHorizontalGuide()}
                         ></canvas>
