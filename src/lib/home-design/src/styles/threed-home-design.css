@@ -8,11 +8,38 @@
   background-color: #888888;
 } */
 
+#planView {
+  /* position: absolute; */
+  /* background-color: white; */
+}
+
+#planCanvas {
+  /* top: 0px;
+  bottom: 50px;
+  left: 30px;
+  right: 0px; */
+  background-color: #09090D;
+}
+
+#rulerLeft {
+  /* position: absolute; */
+  background-color: #636363;
+}
+
+#rulerBottom {
+  /* position: absolute; */
+  background-color: #636363;
+}
+
+
+
+
+
 /* Scale canvas with resize attribute to full size */
-canvas[resize] {
+/* canvas[resize] {
   width: 100%;
   height: 100%;
-}
+} */
 
 
 /* Scrollbar */
@@ -119,28 +146,14 @@ canvas[resize] {
   color: white;
 }
 
-#planView {
-  /* position: absolute; */
-  /* background-color: white; */
-}
 
-#planCanvas {
-  /* top: 0px;
-  bottom: 50px;
-  left: 30px;
-  right: 0px; */
-  background-color: #09090D;
-}
 
-#rulerLeft {
-  /* position: absolute; */
-  background-color: #636363;
-}
 
-#rulerBottom {
-  /* position: absolute; */
-  background-color: #636363;
-}
+
+
+
+
+
 
 #view3d {
   /* position: absolute; */

@@ -5359,230 +5359,238 @@ function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
 }
 
 // ** REDRAW Functions
-function redrawGrid() {
-  if (true && 'needs redraw' === 'needs redraw') {
+function redrawGrid(): boolean {
+  // **
+  if (redrawing = true && threedUILayout != '3dView') {
+    console.debug('redrawGrid: redrawing?', true)
+    
+    if (paper.view == null) {
+      // ...do we need this?
+      // redrawing = false
+      // default: did not redrawGrid
+      return false
 
-    if (!redrawing && threedUILayout != '3dView') {
-      if (redrawing = true) {
-        console.debug('redrawGrid: redrawing?', true)
+    } else {
 
-        screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
-        console.debug('redrawGrid: screenScale', screenScale)
+      screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
+      console.debug('redrawGrid: screenScale', screenScale)
 
-        // console.debug('selectedItem? commented out //', selectedItem)
-
-        if (selectedItem && selectedItem.data) {
-          console.debug('selectedItem.data', selectedItem.data)
-          if ('wallPath' === selectedItem.data.type) {
-            console.debug('selectedItem.data.type', selectedItem.data.type)
-            var e = 0
-            selectedItem.segments.forEach(function (t: any) {
-              movePointIcons[e] &&
-                // @ts-expect-error
-                ((movePointIcons[e].position = t.point),
-                // @ts-expect-error
-                  (movePointIcons[e].bounds.width = screenScale),
-                // @ts-expect-error
-                  (movePointIcons[e].bounds.height = screenScale),
-                  e++)
-            })
-          } 
-          else if ('roofPath' === selectedItem.data.type) {
-            console.debug('selectedItem.data.type', selectedItem.data.type)
-            var e = 0
-            selectedItem.segments.forEach(function (t: any) {
-              movePointIcons[e] &&
-                // @ts-expect-error
-                ((movePointIcons[e].position = t.point),
-                // @ts-expect-error
-                  (movePointIcons[e].bounds.width = screenScale),
-                // @ts-expect-error
-                  (movePointIcons[e].bounds.height = screenScale),
-                  e++)
-            })
-          } 
-          else if ('threed' === selectedItem.data.type) {
-            console.debug('selectedItem.data.type', selectedItem.data.type)
-            rotateIcon.bounds.width = screenScale
-            rotateIcon.bounds.height = screenScale
-            rotateIcon.position =
-              selectedItem.data.toolsRectangleInner.segments[1].point
-            resizeIcon.bounds.width = screenScale
-            resizeIcon.bounds.height = screenScale
-            resizeIcon.position =
-              selectedItem.data.toolsRectangleInner.segments[3].point
-            heightIcon.bounds.width = screenScale
-            heightIcon.bounds.height = screenScale
-            heightIcon.position =
-              selectedItem.data.toolsRectangleInner.segments[2].point
-            elevateIcon.bounds.width = screenScale
-            elevateIcon.bounds.height = screenScale
-            elevateIcon.position =
-              selectedItem.data.toolsRectangleInner.segments[0].point
-          } 
-          else if ('background' === selectedItem.data.type) {
-            console.debug('selectedItem.data.type', selectedItem.data.type)
-            resizeIcon.bounds.width = screenScale
-            resizeIcon.bounds.height = screenScale
-            resizeIcon.position =
-                backgroundRaster.data.toolsRectangleInner.segments[3].point
-          } 
-          else if ('floor' === selectedItem.data.type) {
-            console.debug('selectedItem.data.type', selectedItem.data.type)
-            var e = 0
-            selectedItem.segments.forEach(function (t: any) {
-              movePointIcons[e] &&
-                // @ts-expect-error
-                ((movePointIcons[e].position = t.point),
-                // @ts-expect-error
-                  (movePointIcons[e].bounds.width = screenScale),
-                // @ts-expect-error
-                  (movePointIcons[e].bounds.height = screenScale),
-                  e++)
-            })
-          }
+      // ** [MM] SELECTED ITEM -- Testing
+      console.debug('selectedItem?', selectedItem)
+      if (selectedItem && selectedItem.data) {
+        console.debug('selectedItem.data', selectedItem.data)
+        if ('wallPath' === selectedItem.data.type) {
+          console.debug('selectedItem.data.type', selectedItem.data.type)
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
+        } 
+        else if ('roofPath' === selectedItem.data.type) {
+          console.debug('selectedItem.data.type', selectedItem.data.type)
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
+        } 
+        else if ('threed' === selectedItem.data.type) {
+          console.debug('selectedItem.data.type', selectedItem.data.type)
+          rotateIcon.bounds.width = screenScale
+          rotateIcon.bounds.height = screenScale
+          rotateIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[1].point
+          resizeIcon.bounds.width = screenScale
+          resizeIcon.bounds.height = screenScale
+          resizeIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[3].point
+          heightIcon.bounds.width = screenScale
+          heightIcon.bounds.height = screenScale
+          heightIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[2].point
+          elevateIcon.bounds.width = screenScale
+          elevateIcon.bounds.height = screenScale
+          elevateIcon.position =
+            selectedItem.data.toolsRectangleInner.segments[0].point
+        } 
+        else if ('background' === selectedItem.data.type) {
+          console.debug('selectedItem.data.type', selectedItem.data.type)
+          resizeIcon.bounds.width = screenScale
+          resizeIcon.bounds.height = screenScale
+          resizeIcon.position =
+              backgroundRaster.data.toolsRectangleInner.segments[3].point
+        } 
+        else if ('floor' === selectedItem.data.type) {
+          console.debug('selectedItem.data.type', selectedItem.data.type)
+          var e = 0
+          selectedItem.segments.forEach(function (t: any) {
+            movePointIcons[e] &&
+              // @ts-expect-error
+              ((movePointIcons[e].position = t.point),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.width = screenScale),
+              // @ts-expect-error
+                (movePointIcons[e].bounds.height = screenScale),
+                e++)
+          })
         }
+      }
 
-        // ** [MM] Paper: Hit Tolerance ???
-        var hitToleranceT = 0,
-            o = 0
-        paper.view.zoom < 0.1875
-        
-        ? ((hitToleranceT = 200),
-          (o = 2e3),
-          (snapTolerance = 100),
+      // ** [MM] Paper: Hit Tolerance and Zoom Amount
+      var hitToleranceT = 0,
+          o = 0
+      paper.view.zoom < 0.1875
+      
+      ? ((hitToleranceT = 200),
+        (o = 2e3),
+        (snapTolerance = 100),
+        (paper.settings.hitTolerance = 3))
+      
+      : paper.view.zoom < 0.375
+
+        ? ((hitToleranceT = 100),
+          (o = 1e3),
+          (snapTolerance = 50),
           (paper.settings.hitTolerance = 3))
         
-        : paper.view.zoom < 0.375
+        : paper.view.zoom < 0.75
 
-          ? ((hitToleranceT = 100),
-            (o = 1e3),
-            (snapTolerance = 50),
+          ? ((hitToleranceT = 50),
+            (o = 500),
+            (snapTolerance = 25),
             (paper.settings.hitTolerance = 3))
-          
-          : paper.view.zoom < 0.75
+            
+          : paper.view.zoom < 1.5
 
-            ? ((hitToleranceT = 50),
-              (o = 500),
-              (snapTolerance = 25),
+            ? ((hitToleranceT = 20),
+              (o = 200),
+              (snapTolerance = 10),
               (paper.settings.hitTolerance = 3))
-              
-            : paper.view.zoom < 1.5
 
-              ? ((hitToleranceT = 20),
-                (o = 200),
-                (snapTolerance = 10),
+            : paper.view.zoom < 3
+
+              ? ((hitToleranceT = 10),
+                (o = 100),
+                (snapTolerance = 5),
                 (paper.settings.hitTolerance = 3))
 
-              : paper.view.zoom < 3
+              : paper.view.zoom < 6
 
-                ? ((hitToleranceT = 10),
-                  (o = 100),
-                  (snapTolerance = 5),
+                ? ((hitToleranceT = 5),
+                  (o = 50),
+                  (snapTolerance = 2),
                   (paper.settings.hitTolerance = 3))
 
-                : paper.view.zoom < 6
+                : paper.view.zoom < 12
 
-                  ? ((hitToleranceT = 5),
-                    (o = 50),
-                    (snapTolerance = 2),
-                    (paper.settings.hitTolerance = 3))
+                  ? ((hitToleranceT = 2),
+                    (o = 20),
+                    (snapTolerance = 1),
+                    (paper.settings.hitTolerance = 2))
+                    
+                  : paper.view.zoom < 24 &&
 
-                  : paper.view.zoom < 12
+                    ((hitToleranceT = 1),
+                      (o = 10),
+                      (snapTolerance = 0.5),
+                      (paper.settings.hitTolerance = 1))
+      // ** [MM] END: Paper: Hit Tolerance ???
+      console.debug('redrawGrid: hitToleranceT', hitToleranceT)
+      
 
-                    ? ((hitToleranceT = 2),
-                      (o = 20),
-                      (snapTolerance = 1),
-                      (paper.settings.hitTolerance = 2))
-                      
-                    : paper.view.zoom < 24 &&
+      // ** [MM] RULER CONTEXT ??? 
+      // ** YES -- THIS CLEARS THE GRID BEFORE REDRAWING
+      rulerLeftCtx.clearRect(0, 0, 30, rulerLeft.height)
+      rulerBottomCtx.clearRect(0, 0, rulerBottom.width, 20)
 
-                      ((hitToleranceT = 1),
-                        (o = 10),
-                        (snapTolerance = 0.5),
-                        (paper.settings.hitTolerance = 1))
-        // ** [MM] END: Paper: Hit Tolerance ???
-        console.debug('redrawGrid: hitToleranceT', hitToleranceT)
-        
+      // ** [MM] RULER LINES ???
+      var a = paper.view.bounds.left % hitToleranceT
+      var n = 0
 
-        // ** [MM] RULER CONTEXT ??? 
-        // ** YES -- THIS CLEARS THE GRID BEFORE REDRAWING
-        rulerLeftCtx.clearRect(0, 0, 30, rulerLeft.height)
-        rulerBottomCtx.clearRect(0, 0, rulerBottom.width, 20)
-
-        // ** [MM] RULER LINES ???
-        var a = paper.view.bounds.left % hitToleranceT
-        var n = 0
-
-        xLines.forEach(function (e: any) {
-          e.segments[0].point.x = paper.view.bounds.left + n - a
-          e.segments[0].point.y = paper.view.bounds.top
-          e.segments[1].point.x = paper.view.bounds.left + n - a
-          e.segments[1].point.y = paper.view.bounds.bottom
-          var x = parseInt(e.segments[0].point.x)
-          0 === x
-            ? ((e.style.strokeColor = 'white'),
+      xLines.forEach(function (e: any) {
+        e.segments[0].point.x = paper.view.bounds.left + n - a
+        e.segments[0].point.y = paper.view.bounds.top
+        e.segments[1].point.x = paper.view.bounds.left + n - a
+        e.segments[1].point.y = paper.view.bounds.bottom
+        var x = parseInt(e.segments[0].point.x)
+        0 === x
+          ? ((e.style.strokeColor = 'white'),
+            rulerBottomCtx.fillText(
+              '0cm',
+              (x - paper.view.bounds.left) * paper.view.zoom,
+              14
+            ))
+          : x % o === 0
+            ? ((e.style.strokeColor = '#81673a'),
               rulerBottomCtx.fillText(
-                '0cm',
+                (paper.view.bounds.left + n - a).toString() + '',
                 (x - paper.view.bounds.left) * paper.view.zoom,
                 14
               ))
-            : x % o === 0
-              ? ((e.style.strokeColor = '#81673a'),
-                rulerBottomCtx.fillText(
-                  (paper.view.bounds.left + n - a).toString() + '',
-                  (x - paper.view.bounds.left) * paper.view.zoom,
-                  14
-                ))
-              : (e.style.strokeColor = '#564c3a')
-          n += hitToleranceT
-        })
+            : (e.style.strokeColor = '#564c3a')
+        n += hitToleranceT
+      })
 
-        var l = paper.view.bounds.top % hitToleranceT
-            n = 0
-        yLines.forEach(function (e: any) {
-          e.segments[0].point.x = paper.view.bounds.left
-          e.segments[0].point.y = paper.view.bounds.top + n - l
-          e.segments[1].point.x = paper.view.bounds.right
-          e.segments[1].point.y = paper.view.bounds.top + n - l
-          var y = parseInt(e.segments[0].point.y)
-          0 === y
-            ? ((e.style.strokeColor = 'white'),
+      var l = paper.view.bounds.top % hitToleranceT
+          n = 0
+      yLines.forEach(function (e: any) {
+        e.segments[0].point.x = paper.view.bounds.left
+        e.segments[0].point.y = paper.view.bounds.top + n - l
+        e.segments[1].point.x = paper.view.bounds.right
+        e.segments[1].point.y = paper.view.bounds.top + n - l
+        var y = parseInt(e.segments[0].point.y)
+        0 === y
+          ? ((e.style.strokeColor = 'white'),
+            rulerLeftCtx.fillText(
+              '0cm',
+              26,
+              (y - paper.view.bounds.top) * paper.view.zoom + 4
+            ))
+          : y % o === 0
+            ? ((e.style.strokeColor = '#81673a'),
               rulerLeftCtx.fillText(
-                '0cm',
+                (paper.view.bounds.top + n - l).toString() + '',
                 26,
                 (y - paper.view.bounds.top) * paper.view.zoom + 4
               ))
-            : y % o === 0
-              ? ((e.style.strokeColor = '#81673a'),
-                rulerLeftCtx.fillText(
-                  (paper.view.bounds.top + n - l).toString() + '',
-                  26,
-                  (y - paper.view.bounds.top) * paper.view.zoom + 4
-                ))
-              : (e.style.strokeColor = '#564c3a')
-          n += hitToleranceT
-        })
-        //
+            : (e.style.strokeColor = '#564c3a')
+        n += hitToleranceT
+      })
+      //
 
-        Object.keys(verticalGuides).forEach(function (e: any) {
-          // @ts-expect-error
-          verticalGuides[e].segments[0].point.y = paper.view.bounds.top
-          // @ts-expect-error
-          verticalGuides[e].segments[1].point.y = paper.view.bounds.bottom
-        })
-        Object.keys(horizontalGuides).forEach(function (e: any) {
-          // @ts-expect-error
-          horizontalGuides[e].segments[0].point.x = paper.view.bounds.left
-          // @ts-expect-error
-          horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
-        })
+      Object.keys(verticalGuides).forEach(function (e: any) {
+        // @ts-expect-error
+        verticalGuides[e].segments[0].point.y = paper.view.bounds.top
+        // @ts-expect-error
+        verticalGuides[e].segments[1].point.y = paper.view.bounds.bottom
+      })
+      Object.keys(horizontalGuides).forEach(function (e: any) {
+        // @ts-expect-error
+        horizontalGuides[e].segments[0].point.x = paper.view.bounds.left
+        // @ts-expect-error
+        horizontalGuides[e].segments[1].point.x = paper.view.bounds.right
+      })
 
-        // ** done: set redrawing to false
-        redrawing = false
-      }
+      // ** done: set redrawing to false
+      redrawing = false
+      return true
     }
   }
+  // default: did not redrawGrid
+  return false
 }
 
 // ==============================================================
@@ -5640,7 +5648,16 @@ const CatalogItems = (props: any): JSX.Element => {
 
 
 // ** EXPORT JSX
-export default function ThreeDHomeDesign(): JSX.Element { 
+export default function ThreeDHomeDesign({
+  panelLayout,
+}: {
+  panelLayout: number[]
+}): JSX.Element { 
+
+  // ** get panel layout from cookies
+  const onLayout = (sizes: number[]) => {
+    document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`
+  }
   
   // ==========================================================
   // ** HOOKS (into [onMount] STATES)
@@ -6544,250 +6561,235 @@ export default function ThreeDHomeDesign(): JSX.Element {
         {/* </span> */}
       </div>
 
-      {/* PAGE PANELS */}
+      {/* PAGE LAYOUT PANELS */}
       <PanelGroup 
-        direction='vertical'
-        // autoSaveId='ThreeDHomeDesignLayoutMain'
+        direction='horizontal'
+        autoSaveId='ThreeDPanelGroup1'
+        // onLayout={onLayout}
       >
-        
-        <Panel
-          id='panelMain'
-          order={1}
-          // className='Panel'
-          defaultSize={100}
-          minSize={100}
-          maxSize={100}
-          style={{
-            border: '1px solid darkgreen',
-          }}
-          // onResize={() => redrawGrid()} // ** TESTING
-        >
-          <PanelGroup 
-            direction='horizontal'
-            // autoSaveId='ThreeDHomeDesignLayoutSub1'
+        {/* VIEWS: OBJECT CATALOG */}
+        {prefs.showPanelFirst && (
+          
+          // {/* LEFT PANEL */}
+          <Panel
+            id='panelLeft'
+            // className='Panel'
+            order={2}
+            defaultSize={25}
+            minSize={0}
+            maxSize={100}
+            style={{
+              // border: '1px solid darkred',
+            }}
+            // onResize={() => redrawGrid()} // ** TESTING
           >
-            {/* VIEWS: OBJECT CATALOG */}
-            {prefs.showPanelFirst && (
+            <PanelGroup
+              direction='vertical'
+              autoSaveId='ThreeDPanelGroup2'
+              // onLayout={onLayout}
+            >
               
-              // {/* LEFT PANEL */}
-              <Panel
-                id='panelLeft'
+              <Panel 
+                id='viewProperties'
                 // className='Panel'
-                order={2}
-                defaultSize={25}
+                order={5}
+                defaultSize={50}
+                maxSize={100}
+                style={{
+                  border: '1px solid #1A1A1A',
+                  overflow: 'auto',
+                }}
+              >
+                { true && (
+                  <ViewProperties />
+                )}
+              </Panel>
+
+              <PanelResizeHandle />
+
+              <Panel 
+                id='catalogView'
+                // className='Panel'
+                order={4}
+                defaultSize={50}
+                maxSize={100}
+                style={{
+                  border: '1px solid #1A1A1A',
+                  overflow: 'auto',
+                }}
+              >
+                <div id='catalogFilters'>
+                  { true && (
+                    <Container>
+                      <input 
+                        type='text' 
+                        id='catalogTextFilter' 
+                        placeholder='🔍' 
+                        // width='32' 
+                      />
+                    </Container>
+                  )}
+                </div>
+                <div id='catalogItems'>
+                  { true && (
+                    <CatalogItems />
+                  )}
+                </div>
+              </Panel>
+
+            </PanelGroup>
+          </Panel>
+          
+        )}
+
+        <PanelResizeHandle />
+
+        {/* VIEWS: CANVASES */}
+        {prefs.showPanelLast && (
+
+          // {/* RIGHT PANEL */}
+          <Panel
+            id='panelRight'
+            order={3}
+            // className='Panel'
+            defaultSize={75}
+            minSize={0}
+            maxSize={100}
+            style={{
+              // border: '1px solid darkblue',
+            }}
+            // onResize={() => redrawGrid()} // ** TESTING
+          >
+            {/* MAIN CANVASES (TOP + BOTTOM) */}
+            <PanelGroup 
+              direction='vertical'
+              autoSaveId='ThreeDPanelGroup3'
+              // onLayout={onLayout}
+            >
+              
+              {/* PANEL: 3D FIBER CANVAS */}
+              <Panel
+                id='panel3DCanvas'
+                order={6}
+                // className='Panel'
+                defaultSize={50}
                 minSize={0}
                 maxSize={100}
                 style={{
-                  // border: '1px solid darkred',
+                  border: '1px solid #1A1A1A',
                 }}
+                // onResize={() => redrawGrid()} // ** TESTING
               >
-                <PanelGroup
-                  direction='vertical'
-                  // autoSaveId='ThreeDHomeDesignLayoutSub2'
+                <div 
+                  id='view3d'
+                  style={{
+                    // display: 'flex',
+                    // flexDirection: 'column',
+                    width: '100%',
+                    height: '100%',
+                    // border: '1px solid #003300',
+                  }}
                 >
-                  
-                  <Panel 
-                    id='viewProperties'
-                    // className='Panel'
-                    order={5}
-                    defaultSize={50}
-                    maxSize={100}
-                    style={{
-                      border: '1px solid #1A1A1A',
-                      overflow: 'auto',
-                    }}
-                  >
-                    { true && (
-                      <ViewProperties />
-                    )}
-                  </Panel>
 
-                  <PanelResizeHandle />
+                  {/* THREED HOME DESIGN: 3D CANVAS */}
+                  { true && (
+                    <ThreeD />
+                  )}
 
-                  <Panel 
-                    id='catalogView'
-                    // className='Panel'
-                    order={4}
-                    defaultSize={50}
-                    maxSize={100}
-                    style={{
-                      border: '1px solid #1A1A1A',
-                      overflow: 'auto',
-                    }}
-                  >
-                    <div id='catalogFilters'>
-                      { true && (
-                        <Container>
-                          <input 
-                            type='text' 
-                            id='catalogTextFilter' 
-                            placeholder='🔍' 
-                            // width='32' 
-                          />
-                        </Container>
-                      )}
-                    </div>
-                    <div id='catalogItems'>
-                      { true && (
-                        <CatalogItems />
-                      )}
-                    </div>
-                  </Panel>
+                  {/* 
+                  <div id='overlayLogo3dView' className='overlayLogo'>
+                    <a href='https://threedgarden.com/home-design/'><img
+                        src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
+                    <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
+                  </div>
+                  <div id='overlayMenu3dView'>
+                    <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
+                    <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
+                  </div> 
+                  */}
 
-                </PanelGroup>
+                </div>
               </Panel>
               
-            )}
+              <PanelResizeHandle />
 
-            <PanelResizeHandle />
-
-            {/* VIEWS: CANVASES */}
-            {prefs.showPanelLast && (
-
-              // {/* RIGHT PANEL */}
+              {/* PANEL: 2D PAPER */}
               <Panel
-                id='panelRight'
-                order={3}
+                id='panel2DCanvas'
+                order={7}
                 // className='Panel'
-                defaultSize={75}
+                defaultSize={50}
                 minSize={0}
                 maxSize={100}
                 style={{
-                  // border: '1px solid darkblue',
+                  display: 'inline-block',
+                  // overflow: 'auto', // no
+                  border: '1px solid #1A1A1A',
                 }}
+                // onResize={() => redrawGrid()} // ** TESTING
               >
-                {/* MAIN CANVASES (TOP + BOTTOM) */}
-                <PanelGroup 
-                  direction='vertical'
-                  // autoSaveId='ThreeDHomeDesignLayoutSub3'
-                >
-                  
-                  {/* PANEL: 3D FIBER CANVAS */}
-                  <Panel
-                    id='panel3DCanvas'
-                    order={6}
-                    // className='Panel'
-                    defaultSize={50}
-                    minSize={0}
-                    maxSize={100}
+                  <div
+                    id='planView'
                     style={{
-                      border: '1px solid #1A1A1A',
+                      display: 'flex',
+                      flexGrow: '0',
+                      width: '100%',
+                      height: 'calc(100% - 20px)',
                     }}
                   >
-                    <div 
-                      id='view3d'
+                    <div
                       style={{
-                        // display: 'flex',
-                        // flexDirection: 'column',
-                        width: '100%',
+                        display: 'flex',
+                        flexGrow: '0',
+                        width: '20px',
                         height: '100%',
-                        // border: '1px solid #003300',
+                        backgroundColor: 'gray', // '#636363',
                       }}
                     >
-
-                      {/* THREED HOME DESIGN: 3D CANVAS */}
-                      { true && (
-                        <ThreeD />
-                      )}
-
-                      {/* 
-                      <div id='overlayLogo3dView' className='overlayLogo'>
-                        <a href='https://threedgarden.com/home-design/'><img
-                            src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
-                        <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
-                      </div>
-                      <div id='overlayMenu3dView'>
-                        <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
-                        <button id='overlay3dviewGotoPlanViewBtn' onClick={() => gotoPlanView()} className='smallButton'>Plan View</button>
-                      </div> 
-                      */}
-
+                      <canvas 
+                        id='rulerLeft' 
+                        width={20}
+                        // onMouseDown={() => addVerticalGuide()}
+                        // onMouseUp={() => removeVerticalGuide()}
+                      ></canvas>
                     </div>
-                  </Panel>
-                  
-                  <PanelResizeHandle />
 
-                  {/* PANEL: 2D PAPER */}
-                  <Panel
-                    id='panel2DCanvas'
-                    order={7}
-                    // className='Panel'
-                    defaultSize={50}
-                    minSize={0}
-                    maxSize={100}
-                    style={{
-                      display: 'inline-block',
-                      // overflow: 'auto', // no
-                      border: '1px solid #1A1A1A',
-                    }}
-                  >
-                      <div
-                        id='planView'
+                    { true && (
+                      <div 
+                        id='paperView'
                         style={{
                           display: 'flex',
-                          width: '100%',
-                          height: 'calc(100% - 20px)',
+                          flexGrow: '0',
+                          width: 'calc(100% - 20px)',
+                          height: '100%',
+                          // backgroundColor: '#222222',
                         }}
                       >
-                        <div
-                          style={{
-                            display: 'flex',
-                            width: '20px',
-                            height: '100%',
-                            backgroundColor: 'gray', // '#636363',
-                          }}
-                        >
-                          <canvas 
-                            id='rulerLeft' 
-                            width={20}
-                            // onMouseDown={() => addVerticalGuide()}
-                            // onMouseUp={() => removeVerticalGuide()}
-                          ></canvas>
-                        </div>
-
-                        { true && (
-                          <>
-                            <div 
-                              id='paperView'
-                              style={{
-                                display: 'flex',
-                                width: 'calc(100% - 20px)',
-                                height: '100%',
-                                // backgroundColor: '#222222',
-                              }}
-                            >
-                              <PaperCanvas />
-                            </div>
-                          </>
-                        )}
+                        <PaperCanvas />
                       </div>
-                      
-                      <div
-                        style={{
-                          display: 'block',
-                          height: '20px',
-                          maxHeight: '20px',
-                          backgroundColor: 'gray',
-                        }}
-                      >
-                        <canvas 
-                          id='rulerBottom' 
-                          width={1200}
-                          // onMouseDown={() => addHorizontalGuide()}
-                          // onMouseUp={() => removeHorizontalGuide()}
-                        ></canvas>
-                      </div>
-
-                  </Panel>
+                    )}
+                  </div>
                   
-                </PanelGroup>
+                  <div
+                    style={{
+                      display: 'block',
+                      height: '20px',
+                      maxHeight: '20px',
+                      backgroundColor: 'gray',
+                    }}
+                  >
+                    <canvas 
+                      id='rulerBottom' 
+                      width={1200}
+                      // onMouseDown={() => addHorizontalGuide()}
+                      // onMouseUp={() => removeHorizontalGuide()}
+                    ></canvas>
+                  </div>
 
               </Panel>
-
-            )}
-          </PanelGroup>
-        </Panel>
-        
+            </PanelGroup>
+          </Panel>
+        )}
       </PanelGroup>
       
       <div 
