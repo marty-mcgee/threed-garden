@@ -542,7 +542,7 @@ const PaperCanvas = (props: any) => {
     // ** PAPER.JS -- load?
     if (!isPaperCanvasLoadedVar()) {
     
-      console.debug('%c PaperCanvas paper.setup(planCanvasRef.current)', planCanvasRef.current)
+      console.debug('%c PaperCanvas paper.setup(planCanvasRef.current)', ccm.darkorangeAlert, planCanvasRef.current)
 
       if (planCanvasRef.current != null) {
         // paper.install(window)
@@ -551,7 +551,7 @@ const PaperCanvas = (props: any) => {
           
         console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
           paper.view.bounds.width.toFixed(0) 
-          + ' x ' +
+          + ' : ' +
           paper.view.bounds.height.toFixed(0)
         )
 
@@ -582,7 +582,8 @@ const PaperCanvas = (props: any) => {
         // ** THREED PAPER.JS
         // initThreeDPaper(planCanvas)
         // ** 
-        console.debug('%c🖼️ PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkgreenAlert, planCanvas)
+        console.debug('%c🖼️ PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkgreenAlert, planCanvasRef.current)
+        // console.debug(`%c🖼️ `, ccm.darkgreenAlert, planCanvas)
 
         // ** ================================================
         
