@@ -886,6 +886,9 @@ export const canvasStateVar = makeVar(
 
 // ==============================================================
 
+export const isPaperCanvasLoadedVar = makeVar(false) // boolean: false | true
+export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
+
 // ==============================================================
 
 // ==============================================================
