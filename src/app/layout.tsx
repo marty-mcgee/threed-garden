@@ -13,8 +13,8 @@ import '#/layout/styles/styles-tailwind-globals.css'
 import '#/layout/styles/styles-radix-ui-custom.css'
 import '#/layout/styles/styles-panels.module.css'
 // ** THREED CSS Imports
-import '#/lib/home-design/src/styles/threed-home-design.css'
-import '#/lib/home-design/src/styles/annotations.css'
+import '#/lib/threed/styles/threed-home-design.css'
+import '#/lib/threed/styles/annotations.css'
 // ** FONT Imports
 import { inter } from '#/layout/styles/fonts'
 

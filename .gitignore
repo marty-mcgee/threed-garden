@@ -92,10 +92,6 @@ src/lib/ecctrl/src-old
 # src/lib/threed/threed.ai
 
 # threed.home-design
-# src/app/home-design
-# src/layout/home-design
-# src/lib/home-design
-# !src/lib/home-design/assets/demo
-src/lib/home-design/assets/demo/**
-src/lib/home-design/assets/media/**
-src/lib/home-design/assets/threeds/**
+src/lib/threed/assets/demo/**
+src/lib/threed/assets/media/**
+src/lib/threed/assets/threeds/**

@@ -53,8 +53,8 @@ import { cookies } from 'next/headers'
 
 // ==============================================================
 // ** THREED Imports
-import ThreeDHomeDesign from '#/lib/home-design/src/HomeDesign'
-// const ThreeDHomeDesign = dynamic(() => import('#/lib/home-design/src/HomeDesign'), { ssr: false })
+import ThreeDHomeDesign from '~/src/lib/threed/HomeDesign'
+// const ThreeDHomeDesign = dynamic(() => import('#/lib/threed/HomeDesign'), { ssr: false })
 
 // ==============================================================
 
