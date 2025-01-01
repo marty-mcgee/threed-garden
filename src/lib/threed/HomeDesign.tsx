@@ -528,20 +528,21 @@ const PaperCanvas = (props: any) => {
   // ** 🧇🧇🧇🧇🧇 follow the waffles
   const planCanvasRef = useRef(null)
 
-  // ** SET PAPER CANVAS REACT REF
-  const planCanvas = planCanvasRef.current
-  console.debug('PaperCanvas planCanvasRef.current', planCanvasRef.current)
-
   // ** REACT STATE -- isPaperCanvasLoaded?
   // ** to prevent setting up Paper more than once
   // const [ isPaperCanvasLoaded, setIsPaperCanvasLoaded ] = useState(false)
   
   // init: intentionally run this client-only listener on every react.render
   useEffect(() => {
+
+    // ** SET PAPER CANVAS REACT REF
+    const planCanvas = planCanvasRef.current
+    // console.debug('%c PaperCanvas planCanvasRef.current', planCanvasRef.current)
+
     // ** PAPER.JS -- load?
     if (!isPaperCanvasLoadedVar()) {
     
-      console.debug('PaperCanvas paper.setup(planCanvasRef.current)', planCanvasRef.current)
+      console.debug('%c PaperCanvas paper.setup(planCanvasRef.current)', planCanvasRef.current)
 
       if (planCanvasRef.current != null) {
         // paper.install(window)
@@ -549,9 +550,9 @@ const PaperCanvas = (props: any) => {
         paper.settings.hitTolerance = 3
           
         console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
-          paper.view.bounds.width.toFixed(1) 
+          paper.view.bounds.width.toFixed(0) 
           + ' x ' +
-          paper.view.bounds.height.toFixed(1)
+          paper.view.bounds.height.toFixed(0)
         )
 
             // // draw a circle at view center
