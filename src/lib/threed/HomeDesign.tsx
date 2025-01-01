@@ -35,6 +35,8 @@ import {
   preferencesDataVar,
   isCanvasStateSetVar,
   canvasStateVar,
+  isPaperCanvasLoadedVar,
+  isThreeDCanvasLoadedVar,
 } from '#/lib/api/graphql/apollo'
 
 import { useSession } from 'next-auth/react'
@@ -458,8 +460,7 @@ const getDistance = function (e: any, t: any) {
 //   })
 // }
 
-// ** firefox browser mouse controls
-// // function e (e: any) {
+// ** [MM] firefox browser mouse controls
 function MMeMouse (e: any) {
   
   // let
@@ -511,55 +512,99 @@ function recenterPlanView () {
 }
 
 // ==============================================================
-
-/* */
-// DIALOG MODALS (imported as component)
-/* */
+// **
+// ** DIALOG MODALS (now imported as separate component)
+// **
+// ==============================================================
 
 // ==============================================================
+// **
 // ** 🖼️ PAPER.JS CANVAS
+// **
 const PaperCanvas = (props: any) => {
+  
+  // ** PLAN CANVAS 'planCanvas'
   
   // ** 🧇🧇🧇🧇🧇 follow the waffles
   const planCanvasRef = useRef(null)
+
+  // ** SET PAPER CANVAS REACT REF
+  const planCanvas = planCanvasRef.current
+  console.debug('PaperCanvas planCanvasRef.current', planCanvasRef.current)
+
+  // ** REACT STATE -- isPaperCanvasLoaded?
+  // ** to prevent setting up Paper more than once
+  // const [ isPaperCanvasLoaded, setIsPaperCanvasLoaded ] = useState(false)
   
   // init: intentionally run this client-only listener on every react.render
   useEffect(() => {
-    // ** SET PAPER CANVAS REACT REF
-    const planCanvas = planCanvasRef.current
+    // ** PAPER.JS -- load?
+    if (!isPaperCanvasLoadedVar()) {
     
-    // ** PAPER.JS
-    // paper.install(window)
-    paper.setup(planCanvas)
-    paper.settings.hitTolerance = 3
+      console.debug('PaperCanvas paper.setup(planCanvasRef.current)', planCanvasRef.current)
 
-        // draw a circle at view center
-        var startCircle = new paper.Path.Circle({
-          center: paper.view.center,
-          radius: 33,
-          fillColor: 'orange'
-        })
-        console.debug('PaperCanvas paper.view.bounds.width is now: ' + paper.view.bounds.width)
+      if (planCanvasRef.current != null) {
+        // paper.install(window)
+        paper.setup(planCanvas)
+        paper.settings.hitTolerance = 3
+          
+        console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
+          paper.view.bounds.width.toFixed(1) 
+          + ' x ' +
+          paper.view.bounds.height.toFixed(1)
+        )
 
-        // // DOES NOT WORK AS EXPECTED
-        // // when view is resized...
-        // paper.view.onResize = function() {
-        //   // ...debug new view width
-        //   console.debug('PaperCanvas paper.view.bounds.width is now: ' + paper.view.bounds.width)
-        //   // ...place circle at new view center
-        //   startCircle.position = paper.view.center
-        // }
+            // // draw a circle at view center
+            // var startCircle = new paper.Path.Circle({
+            //   center: paper.view.center,
+            //   radius: 33,
+            //   fillColor: 'orange'
+            // })
+
+            // // DOES NOT WORK AS EXPECTED
+            // // when view is resized...
+            // paper.view.onResize = function() {
+            //   // ...debug new view width
+            //   console.debug('PaperCanvas paper.view.bounds.width is now: ' + paper.view.bounds.width)
+            //   // ...place circle at new view center
+            //   startCircle.position = paper.view.center
+            // }
+            
+            // // draw instructions
+            // new paper.PointText({
+            //   content: 'Resize the window and see that view is automatically resized',
+            //   point: paper.view.center.subtract(80),
+            //   justification: 'center',
+            //   color: new paper.Color(255, 255, 255, 1),
+            // })
+
+        // ** THREED PAPER.JS
+        // initThreeDPaper(planCanvas)
+        // ** 
+        console.debug('%c🖼️ PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkgreenAlert, planCanvas)
+
+        // ** ================================================
         
-        // // draw instructions
-        // new paper.PointText({
-        //   content: 'Resize the window and see that view is automatically resized',
-        //   point: paper.view.center.subtract(80),
-        //   justification: 'center',
-        //   color: new paper.Color(255, 255, 255, 1),
-        // })
+        draw1()
+        initPlanView(planCanvas)
 
-    // ** THREED PAPER.JS
-    initThreeDPaper(planCanvas)
+        // ** ================================================
+
+        focusPoint = new paper.Point(0, 0)
+
+        threedDragDiv = document.getElementById('threedDragDiv')
+
+        progressBar = document.getElementById('progressBar')
+        progressBar.style.display = 'none'
+
+      } // planCanvasRef.current != null
+      // ** ================================================
+
+      
+      // ** THREED APOLLO STATE REACTIVE VAR
+      isPaperCanvasLoadedVar(true)
+
+    }
     
   }, []) // intentionally run this client-only listener on every react.render
   // END useEffect
@@ -572,84 +617,6 @@ const PaperCanvas = (props: any) => {
       // width={props.width? props.width : '2000'}
     />
   )
-}
-// ** MAIN INITIALIZER
-const initThreeDPaper = (planCanvas: any) => {
-  // ** 
-  console.debug('%c🖼️ THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.blackAlert, planCanvas)
-
-  focusPoint = new paper.Point(0, 0)
-
-  threedDragDiv = document.getElementById('threedDragDiv')
-  planView = document.getElementById('planView')
-
-  progressBar = document.getElementById('progressBar')
-  progressBar.style.display = 'none'
-
-  verticalSlider = document.getElementById('verticalSlider')
-  verticalSliderDragging = false
-  verticalSlider.onmousedown = function (e: any) {
-    verticalSliderDragging = true
-    verticalSlider.style.left = e.x - 2 + 'px'
-  }
-  horizontalSliderLeft = document.getElementById('horizontalSliderLeft')
-  horizontalSliderLeftDragging = false
-  horizontalSliderLeft.onmousedown = function (e: any) {
-    horizontalSliderLeftDragging = true
-    horizontalSliderLeft.style.top = e.y - 2 + 'px'
-  }
-  horizontalSliderRight = document.getElementById('horizontalSliderRight')
-  horizontalSliderRightDragging = false
-  horizontalSliderRight.onmousedown = function (e: any) {
-    horizontalSliderRightDragging = true
-    horizontalSliderRight.style.top = e.y - 2 + 'px'
-  }
-
-  // ** ================================================
-
-  // DO NOT USE TRACKBALL CONTROLS (OR TWEEN)
-  // controls = new TrackballControls(camera, container)
-  // controls.rotateSpeed = 4
-  // controls.zoomSpeed = 5
-  // controls.panSpeed = 1.5
-  // controls.noZoom = false
-  // controls.noPan = false
-  // controls.staticMoving = true
-  // controls.dynamicDampingFactor = 0.3
-  // controls.keys = [65, 83, 68]
-  // controls.addEventListener("change", render)
-  
-  // ** ================================================
-  // paper.install(window),
-  // paper.setup(planCanvas),
-  // (paper.settings.hitTolerance = 3),
-  // ** ================================================
-  // initPlanView()
-  // initThreeJS()
-  // resize3dView()
-  // resizePlanView()
-  // animate()
-  // ** ================================================
-  
-  // draw1()
-  initPlanView(planCanvas)
-
-  // ** ================================================
-  
-  // document.getElementById('catalogTextFilter').onInput = function (e: any) {
-  //   var t = this.value.toLowerCase()
-  //   t.length > 0
-  //     ? Object.keys(threedItems).forEach(function (e: any) {
-  //       e.toLowerCase().indexOf(t) > -1
-  //         ? (document.getElementById(e).style.display = 'block')
-  //         : (document.getElementById(e).style.display = 'none')
-  //     })
-  //     : Object.keys(threedItems).forEach(function (e: any) {
-  //       document.getElementById(e).style.display = 'block'
-  //     }),
-  //     loadInViewThumbs()
-  // }
-
 }
 
 // ** SIMPLE DRAWING FUNCTION
@@ -680,7 +647,7 @@ const draw1 = () => {
   paper.view.draw()
 }
 
-// ** MAIN PAPER VIEW
+// ** MAIN PAPER VIEW on a PaperCanvas
 function initPlanView(planCanvas: any) {
 
   // let
@@ -689,15 +656,25 @@ function initPlanView(planCanvas: any) {
   planCanvas = document.getElementById('planCanvas')
   planCanvas.width = planCanvas.parentNode.getBoundingClientRect().width
   planCanvas.height = planCanvas.parentNode.getBoundingClientRect().height
+  console.debug(
+    '%c PaperCanvas: initPlanView: planCanvas width:height', 
+    ccm.blueAlert, 
+    planCanvas.width, 
+    planCanvas.height
+  )
+
   planCanvas.oncontextmenu = function () {
     return false
   }
 
+  // ** ACTIVATE PAPER PROJECT LAYER
   paper.project.activeLayer.name = 'level_0'
   paper.project.activeLayer.data = { id: '0', height: 0 }
 
+  // ** CURRENT SCREEN DIMENSIONS
   screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
 
+  // ** GROUPS
   gridGroup[0] = new paper.Group()
   floorsGroup[0] = new paper.Group()
   roofsGroup[0] = new paper.Group()
@@ -706,6 +683,26 @@ function initPlanView(planCanvas: any) {
   threedGroup[0] = new paper.Group()
   textsGroup[0] = new paper.Group()
   guidesGroup[0] = new paper.Group()
+
+  // ** SLIDERS
+  verticalSlider = document.getElementById('verticalSlider')
+  verticalSliderDragging = false
+  verticalSlider.onmousedown = function (e: any) {
+    verticalSliderDragging = true
+    verticalSlider.style.left = e.x - 2 + 'px'
+  }
+  horizontalSliderLeft = document.getElementById('horizontalSliderLeft')
+  horizontalSliderLeftDragging = false
+  horizontalSliderLeft.onmousedown = function (e: any) {
+    horizontalSliderLeftDragging = true
+    horizontalSliderLeft.style.top = e.y - 2 + 'px'
+  }
+  horizontalSliderRight = document.getElementById('horizontalSliderRight')
+  horizontalSliderRightDragging = false
+  horizontalSliderRight.onmousedown = function (e: any) {
+    horizontalSliderRightDragging = true
+    horizontalSliderRight.style.top = e.y - 2 + 'px'
+  }
 
   // ** RULERS
   // @ts-expect-error
@@ -6751,7 +6748,8 @@ export default function ThreeDHomeDesign({
                       ></canvas>
                     </div>
 
-                    { true && (
+                    { true && 
+                      !isPaperCanvasLoadedVar() && (
                       <div 
                         id='paperView'
                         style={{
