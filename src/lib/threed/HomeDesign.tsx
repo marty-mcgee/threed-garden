@@ -52,20 +52,6 @@ import {
   useCallback,
 } from 'react'
 
-
-// import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { ThreeDDropdownMenu } from '~/src/lib/threed/components/controls/DropdownControls'
-// import * as Dialog from '@radix-ui/react-dialog'
-// import { ThreeDDialogModals } from '#/lib/threed/components/controls/DialogModals'
-
-// ** PAPER Imports
-import paper from 'paper'
-
-// ** THREED Imports
-// import ThreeDComponents from '#/lib/threed/threed'
-// const ThreeDComponents = dynamic(() => import('#/lib/threed/ThreeDComponents'), { ssr: false })
-const ThreeD = dynamic(() => import('#/lib/threed/ThreeD'), { ssr: false })
-
 // ** RADIX-UI Imports
 import {
   Flex,
@@ -98,6 +84,19 @@ import {
 
 // ** COMPONENT Imports
 // import Logo from '#/layout/ui/logo'
+
+
+// ** PAPER Imports
+import paper from 'paper'
+
+// ** THREED Imports
+// import ThreeDComponents from '#/lib/threed/threed'
+const ThreeD = dynamic(() => import('#/lib/threed/ThreeD'), { ssr: false })
+// import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import { ThreeDDropdownMenu } from '~/src/lib/threed/components/controls/DropdownControls'
+// import * as Dialog from '@radix-ui/react-dialog'
+// import { ThreeDDialogModals } from '#/lib/threed/components/controls/DialogModals'
+
 
 // ** STATIC DATA Imports
 import threedItemsJSON from '#/app/api/home-design/objects.json'

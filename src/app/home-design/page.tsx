@@ -20,38 +20,13 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import Image from 'next/image'
 import { cookies } from 'next/headers'
 
-// ** APOLLO Imports
-// import { 
-//   // getApolloContext,
-//   // useApolloClient,
-//   // useReactiveVar,
-//   // useQuery,
-//   // useSuspenseQuery,
-//   // useBackgroundQuery,
-//   // useReadQuery,
-//   // useFragment
-// } from '@apollo/client'
-// import {
-//   // // stores,
-//   // preferencesStore,
-//   // canvasStateStore,
-//   // projectStore,
-//   // // queries,
-//   // // mutations,
-//   // // reactive state vars:
-//   // isPreferencesSetVar,
-//   // preferencesDataVar,
-//   // isCanvasStateSetVar,
-//   // canvasStateVar,
-// } from '#/lib/api/graphql/apollo'
-
+// ** AUTH Imports
 // import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
-// import SessionData from '~/src/layout/ui/session-data'
-// import CustomLink from '~/src/layout/ui/custom-link'
+// import SessionData from '#/layout/ui/session-data'
+// import CustomLink from '#/layout/ui/custom-link'
 
-// ==============================================================
 // ** THREED Imports
 import ThreeDHomeDesign from '~/src/lib/threed/HomeDesign'
 // const ThreeDHomeDesign = dynamic(() => import('#/lib/threed/HomeDesign'), { ssr: false })
@@ -77,23 +52,9 @@ export default async function HomeDesignPage() {
 
   const panelLayout = getPanelLayout()
 
-  // ** stores
-  // console.debug('HomeDesignPage: =================================')
-  // console.debug('HomeDesignPage: stores', stores)
-  // console.debug('HomeDesignPage: =================================')
-  // console.debug('HomeDesignPage: getApolloContext()', getApolloContext())
-  // console.debug('HomeDesignPage: preferencesStore', preferencesStore)
-  // console.debug('HomeDesignPage: preferencesStore.store.getState()', preferencesStore.store.getState())
-  // console.debug('HomeDesignPage: preferencesStore.actions.getState()', preferencesStore.actions.getState())
-  // console.debug('HomeDesignPage: preferencesDataVar()', preferencesDataVar())
-  // console.debug('HomeDesignPage: canvasStateVar()', canvasStateVar())
-  
-  // const revenue = await fetchRevenue() // delete this line
-
   // ** RETURN JSX or React.ReactNode
   return (
     <Suspense fallback={null}>
-    {/* <Suspense fallback={<>ThreeD Home Design: Loading...</>}> */}
       <ThreeDHomeDesign panelLayout={panelLayout} />
     </Suspense>
   )
