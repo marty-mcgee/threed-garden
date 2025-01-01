@@ -6574,7 +6574,7 @@ export default function ThreeDHomeDesign({
           <Panel
             id='panelLeft'
             // className='Panel'
-            order={2}
+            order={1}
             defaultSize={25}
             minSize={0}
             maxSize={100}
@@ -6592,7 +6592,7 @@ export default function ThreeDHomeDesign({
               <Panel 
                 id='viewProperties'
                 // className='Panel'
-                order={5}
+                order={3}
                 defaultSize={50}
                 maxSize={100}
                 style={{
@@ -6650,7 +6650,7 @@ export default function ThreeDHomeDesign({
           // {/* RIGHT PANEL */}
           <Panel
             id='panelRight'
-            order={3}
+            order={2}
             // className='Panel'
             defaultSize={75}
             minSize={0}
@@ -6670,7 +6670,7 @@ export default function ThreeDHomeDesign({
               {/* PANEL: 3D FIBER CANVAS */}
               <Panel
                 id='panel3DCanvas'
-                order={6}
+                order={5}
                 // className='Panel'
                 defaultSize={50}
                 minSize={0}
@@ -6716,7 +6716,7 @@ export default function ThreeDHomeDesign({
               {/* PANEL: 2D PAPER */}
               <Panel
                 id='panel2DCanvas'
-                order={7}
+                order={6}
                 // className='Panel'
                 defaultSize={50}
                 minSize={0}
@@ -6732,7 +6732,7 @@ export default function ThreeDHomeDesign({
                     id='planView'
                     style={{
                       display: 'flex',
-                      flexGrow: '0',
+                      // flexGrow: '0',
                       width: '100%',
                       height: 'calc(100% - 20px)',
                     }}
@@ -6740,9 +6740,9 @@ export default function ThreeDHomeDesign({
                     <div
                       style={{
                         display: 'flex',
-                        flexGrow: '0',
+                        // flexGrow: '0',
                         width: '20px',
-                        height: '100%',
+                        // height: '100%',
                         backgroundColor: 'gray', // '#636363',
                       }}
                     >
@@ -6759,9 +6759,9 @@ export default function ThreeDHomeDesign({
                         id='paperView'
                         style={{
                           display: 'flex',
-                          flexGrow: '0',
+                          // flexGrow: '1',
                           width: 'calc(100% - 20px)',
-                          height: '100%',
+                          // height: '100%',
                           // backgroundColor: '#222222',
                         }}
                       >
@@ -6773,6 +6773,7 @@ export default function ThreeDHomeDesign({
                   <div
                     style={{
                       display: 'block',
+                      width: '100%',
                       height: '20px',
                       maxHeight: '20px',
                       backgroundColor: 'gray',
@@ -6780,7 +6781,7 @@ export default function ThreeDHomeDesign({
                   >
                     <canvas 
                       id='rulerBottom' 
-                      width={1200}
+                      width={1600}
                       // onMouseDown={() => addHorizontalGuide()}
                       // onMouseUp={() => removeHorizontalGuide()}
                     ></canvas>
@@ -6795,8 +6796,7 @@ export default function ThreeDHomeDesign({
       <div 
         id='planHelpers'
         style={{
-          // display: 'inline-flex',
-          // flexDirection: 'row',
+          // display: 'flex',
         }}
       >
 
