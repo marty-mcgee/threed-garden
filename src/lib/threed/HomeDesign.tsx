@@ -85,7 +85,6 @@ import {
 // ** COMPONENT Imports
 // import Logo from '#/layout/ui/logo'
 
-
 // ** PAPER Imports
 import paper from 'paper'
 
@@ -96,7 +95,6 @@ const ThreeD = dynamic(() => import('#/lib/threed/ThreeD'), { ssr: false })
 import { ThreeDDropdownMenu } from '~/src/lib/threed/components/controls/DropdownControls'
 // import * as Dialog from '@radix-ui/react-dialog'
 // import { ThreeDDialogModals } from '#/lib/threed/components/controls/DialogModals'
-
 
 // ** STATIC DATA Imports
 import threedItemsJSON from '#/app/api/home-design/objects.json'
