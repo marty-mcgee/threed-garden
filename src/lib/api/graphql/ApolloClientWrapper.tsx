@@ -6,6 +6,7 @@
 
 // ==============================================================
 
+// ** APOLLO Imports
 import {
   ApolloLink,
   HttpLink,
@@ -18,13 +19,10 @@ import {
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support'
 
+// ** HELPER Imports
+import ccm from '#/lib/utils/console-colors'
 // import { setVerbosity } from 'ts-invariant'
 // setVerbosity('debug')
-
-// [MM] COLORFUL CONSOLE MESSAGES (ccm)
-import ccm from '#/lib/utils/console-colors'
-// console.debug(`%c CCM TEST SUCCESS!!`, ccm.greenAlert)
-// console.debug(`%c CCM TEST WHOOPSIES`, ccm.red)
 
 // ==============================================================
 
@@ -48,6 +46,8 @@ if (debug) {
   console.debug('%c🦉 - REST API', ccm.darkgreen, uri_rest)
   console.debug('%c=========================================', ccm.darkgreen)
 }
+
+// ==============================================================
 
 // create a state+store client
 function makeClient() {
