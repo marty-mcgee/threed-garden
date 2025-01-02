@@ -61,12 +61,11 @@ import { useGame } from '#/lib/ecctrl/src/stores/useGame'
 // ** HELPER Imports
 // import { Perf } from 'r3f-perf'
 // import Spinner from '#/layout/ui/spinner'
-// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-
-const debug: boolean = true
-const debugAnimation: boolean = false
+// ** DEBUG: this module
+const debug: boolean = false
+const DEBUG: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
@@ -364,7 +363,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     const wordX: string = group.current.getWorldPosition(bodyPosition).x.toString()
     const wordY: string = group.current.getWorldPosition(bodyPosition).y.toString()
     const wordZ: string = group.current.getWorldPosition(bodyPosition).z.toString()
-    if (debugAnimation) {
+    if (debug || DEBUG) {
       // console.debug(`%c Chicken: useFrame :(`, ccm.redAlert, word)
       if (debug) console.debug(`%c Chicken: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
     }

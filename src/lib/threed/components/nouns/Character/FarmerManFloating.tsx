@@ -63,9 +63,9 @@ import { GLTF } from 'three-stdlib'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-
-const debug: boolean = true
-const debugAnimation: boolean = false
+// ** DEBUG: this module
+const debug: boolean = false
+const DEBUG: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
@@ -382,7 +382,7 @@ export default function CharacterModel(props: CharacterModelProps) {
     const wordX: string = group.current.getWorldPosition(bodyPosition).x
     const wordY: string = group.current.getWorldPosition(bodyPosition).y
     const wordZ: string = group.current.getWorldPosition(bodyPosition).z
-    if (debugAnimation) {
+    if (DEBUG) {
       // console.debug(`%c FarmerManFloating: useFrame :(`, ccm.redAlert, word)
       if (debug) console.debug(`%c FarmerManFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
     }

@@ -58,9 +58,9 @@ import ccm from '#/lib/utils/console-colors'
 // IMPORTS COMPLETE
 // ==========================================================
 
-// DEBUG PREFERENCES FOR THIS MODULE
-const debug: boolean = true
-const DEBUG: boolean = true
+// ** DEBUG: this module
+const debug: boolean = false
+const DEBUG: boolean = false
 
 // ==========================================================
 

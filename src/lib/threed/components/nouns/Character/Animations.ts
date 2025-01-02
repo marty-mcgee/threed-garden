@@ -28,9 +28,10 @@ const loaderFBX = new FBXLoader()
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-// ** DEBUG
-const debug: boolean = true
-const debugAnimation: boolean = true
+
+// ** DEBUG: this module
+const debug: boolean = false
+const DEBUG: boolean = false
   
 // **
 // ** ANIMATIONS ****************************************

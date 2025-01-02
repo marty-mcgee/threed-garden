@@ -146,9 +146,9 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
 // IMPORTS COMPLETE
 // ==============================================================
 
-// DEBUG PREFERENCES FOR THIS MODULE
-const debug: boolean = true
-const DEBUG: boolean = true
+// ** DEBUG: this module
+const debug: boolean = false
+const DEBUG: boolean = false
 
 // const appVersion: string = require('package.json').version
 
@@ -175,10 +175,22 @@ let fragment: any = null
 let readOnly: boolean = false
 
 let threedHomeDesign: string = 'HEY HEY HEY ___',
-mouseMode: number = 0,
+// **
+// **
+// **
+// redrawGrid: Function = () => {},
+// redrawTexts: Function = () => {},
+xLines: Object[] = [],
+yLines: Object[] = [],
+// **
+// **
+threedItems: Object[] = threedItemsJSON,
 selectedItem: any,
-defaultCursor: string = 'default',
 deselectAll: Function = () => {},
+// **
+mouseMode: number = 0,
+defaultCursor: string = 'default',
+// **
 toolsGroup: Object[] = [],
 gridGroup: Object[] = [],
 threedGroup: Object[] = [],
@@ -188,13 +200,7 @@ floorsGroup: Object[] = [],
 dimensionsGroup: Object[] = [],
 textsGroup: Object[] = [],
 guidesGroup: Object[] = [],
-defaultWallHeight: number = 265,
-defaultWallThickness: number = 20,
-defaultRoofThickness: number = 25,
-defaultRoofWidth: number = 350,
-defaultRoofRise: number = 300,
-defaultRoofStartHeight: number = 0,
-defaultFloorThickness: number = 25,
+// **
 rotateIcon: any,
 resizeIcon: any,
 elevateIcon: any,
@@ -214,7 +220,17 @@ modalCloseBtnModel3d,
 // **
 threedToLoadCount: number = 0,
 loadedThreedCount: number = 0,
+// **
+defaultWallHeight: number = 265,
+defaultWallThickness: number = 20,
+defaultRoofThickness: number = 25,
+defaultRoofWidth: number = 350,
+defaultRoofRise: number = 300,
+defaultRoofStartHeight: number = 0,
+defaultFloorThickness: number = 25,
+// **
 tools,
+// **
 offsetMousePoint: any, // Object = {x: 0, y: 0}, // number = 0,
 ctrlKeyPressed: boolean = false,
 scaleFactor: number = 1.1,
@@ -226,7 +242,6 @@ lastNewWallSegmentClick: number = 0,
 lastNewRoofSegmentClick: number = 0,
 lastNewFloorSegmentClick: number = 0,
 // **
-threedItems: Object[] = threedItemsJSON,
 // **
 canvas3d,
 camera,
@@ -332,10 +347,6 @@ scalingY: boolean = false,
 rotating: boolean = false,
 wallHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
 roofHelper3dCube: THREE.Mesh = null, // new THREE.Mesh(),
-// redrawGrid: Function = () => {},
-redrawTexts: Function = () => {},
-xLines: Object[] = [],
-yLines: Object[] = [],
 // **
 // **
 // **
@@ -497,7 +508,7 @@ function MMeMouse (e: any) {
       redrawGrid()
       redrawTexts()
     
-    } else {
+    } else {redrawGrid
       cumulclick = o
     }
   }
@@ -582,7 +593,7 @@ const PaperCanvas = (props: any) => {
         // ** THREED PAPER.JS
         // initThreeDPaper(planCanvas)
         // ** 
-        console.debug('%c🖼️ PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkgreenAlert, planCanvasRef.current)
+        console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkgreenAlert, planCanvasRef.current)
         // console.debug(`%c🖼️ `, ccm.darkgreenAlert, planCanvas)
 
         // ** ================================================
@@ -5355,6 +5366,18 @@ function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
 }
 
 // ** REDRAW Functions
+function redrawTexts() {
+  Object.keys(Dimensions).forEach(function (e: any) {
+    var t = Dimensions[e as any]
+    // @ts-expect-error
+    "object" == typeof t && (Dimensions[e].text.fontSize = screenScale / 1.5)
+  }),
+    Object.keys(Texts).forEach(function (e: any) {
+      var t = Texts[e as any]
+      // @ts-expect-error
+      "object" == typeof t && (Texts[e].fontSize = screenScale / 1.5)
+    })
+}
 function redrawGrid(): boolean {
   // **
   if (redrawing = true && threedUILayout != '3dView') {
@@ -6718,7 +6741,7 @@ export default function ThreeDHomeDesign({
                 minSize={0}
                 maxSize={100}
                 style={{
-                  display: 'inline-block',
+                  // display: 'inline-block',
                   // overflow: 'auto', // no
                   border: '1px solid #1A1A1A',
                 }}
@@ -6731,27 +6754,30 @@ export default function ThreeDHomeDesign({
                       // flexGrow: '0',
                       width: '100%',
                       height: 'calc(100% - 20px)',
+                      backgroundColor: '#222222',
                     }}
                   >
                     <div
+                      id='rulerLeftContainer'
                       style={{
                         display: 'flex',
                         // flexGrow: '0',
                         width: '20px',
+                        maxWidth: '20px',
                         // height: '100%',
-                        backgroundColor: 'gray', // '#636363',
+                        // backgroundColor: 'transparent',
+                        backgroundColor: '#FFFFFF',
                       }}
                     >
                       <canvas 
                         id='rulerLeft' 
-                        width={20}
+                        width={'8px'} // not working well: 8px = 20px
                         // onMouseDown={() => addVerticalGuide()}
                         // onMouseUp={() => removeVerticalGuide()}
                       ></canvas>
                     </div>
 
-                    { true && 
-                      !isPaperCanvasLoadedVar() && (
+                    { true && (
                       <div 
                         id='paperView'
                         style={{
@@ -6773,7 +6799,7 @@ export default function ThreeDHomeDesign({
                       width: '100%',
                       height: '20px',
                       maxHeight: '20px',
-                      backgroundColor: 'gray',
+                      // backgroundColor: '#636363',
                     }}
                   >
                     <canvas 

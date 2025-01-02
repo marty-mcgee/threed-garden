@@ -18,10 +18,9 @@ import ccm from '#/lib/utils/console-colors'
 // IMPORTS COMPLETE
 // ==========================================================
 
-// DEBUG PREFERENCES FOR THIS MODULE
-const debug: boolean = true
-const DEBUG: boolean = true
-const debug_deep: boolean = true
+// ** DEBUG: this module
+const debug: boolean = false
+const DEBUG: boolean = false
 
 const appVersion = 'v0.15.0-bot'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
@@ -29,7 +28,7 @@ const appVersion = 'v0.15.0-bot'
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
-if ((debug || DEBUG) && debug_deep) {
+if (debug || DEBUG) {
   console.log('%c🥕 ThreeDGarden<FARMBOT>: {.tsx}', ccm.green)
   console.log('%c🌱 appVersion', ccm.darkgreen, appVersion)
   console.log(`%c====================================`, ccm.darkgreen)

@@ -79,8 +79,8 @@ import {
 import ccm from '#/lib/utils/console-colors'
 
 // ** DEBUG
-const debug: boolean = true
-const debugAnimation: boolean = true
+const debug: boolean = false
+const DEBUG: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
 // const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
