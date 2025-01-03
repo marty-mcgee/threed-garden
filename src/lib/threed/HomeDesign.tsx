@@ -627,7 +627,6 @@ const PaperCanvas = (props: any) => {
       } // planCanvasRef.current != null
       // ** ================================================
 
-      
       // ** THREED APOLLO STATE REACTIVE VAR
       isPaperCanvasLoadedVar(true)
 
@@ -643,6 +642,58 @@ const PaperCanvas = (props: any) => {
       ref={planCanvasRef}
       // width={props.width? props.width : '2000'}
     />
+  )
+}
+function RulerLeft () {
+  // ** <RulerLeft />
+  return (
+    <div
+      id='rulerLeftContainer'
+      style={{
+        // display: 'inline-block',
+        // display: 'flex',
+        // flexGrow: '0',
+        // width: '20px',
+        // maxWidth: '20px',
+        // height: '100%',
+        // backgroundColor: 'darkred', // '#FFFFFF',
+        // backgroundColor: 'rgba(116, 6, 6, 1.0)', // '#636363',
+        backgroundColor: 'transparent',
+      }}
+    >
+      <canvas 
+        id='rulerLeft' 
+        // width={'8px'} // not working well: 8px = 20px
+        // onMouseDown={() => addVerticalGuide()}
+        // onMouseUp={() => removeVerticalGuide()}
+      ></canvas>
+    </div>
+  )
+}
+function RulerBottom () {
+  // ** <RulerBottom />
+  return (              
+    <div
+      id='rulerBottomContainer'
+      style={{
+        // display: 'inline-block',
+        // display: 'flex',
+        // flexGrow: '0',
+        // width: '100%',
+        // height: '20px',
+        // maxHeight: '20px',
+        // backgroundColor: 'darkred', // '#636363',
+        // backgroundColor: 'rgba(244, 244, 12, 1.0)', // '#636363',
+        backgroundColor: 'transparent',
+      }}
+    >
+      <canvas 
+        id='rulerBottom' 
+        // width={1600}
+        // onMouseDown={() => addHorizontalGuide()}
+        // onMouseUp={() => removeHorizontalGuide()}
+      ></canvas>
+    </div>
   )
 }
 
@@ -6736,76 +6787,47 @@ export default function ThreeDHomeDesign({
                 defaultSize={50}
                 minSize={0}
                 maxSize={100}
-                style={{
-                  display: 'inline-block',
-                  // overflow: 'auto', // no
-                  border: '1px solid #1A1A1A',
-                  backgroundColor: 'darkblue', // '#222222',
-                }}
+                // style={{
+                //   // display: 'inline-block',
+                //   // overflow: 'auto', // no
+                //   // height: '100%',
+                //   // width: '100%',
+                //   // border: '1px solid #1A1A1A',
+                //   backgroundColor: '#222222', // 'rgba(68, 22, 147, 1.0)', 
+                // }}
                 // onResize={() => redrawGrid()} // ** TESTING
               >
-                  <div
-                    id='planView'
-                    style={{
-                      display: 'inline-block',
-                      // flexGrow: '0',
-                      // width: '100%',
-                      height: 'calc(100% - 20px)',
-                      backgroundColor: 'darkred', // '#222222',
-                    }}
-                  >
-                    <div
-                      id='rulerLeftContainer'
-                      style={{
-                        display: 'inline-block',
-                        // flexGrow: '0',
-                        width: '20px',
-                        maxWidth: '20px',
-                        height: '100%',
-                        // backgroundColor: 'transparent',
-                        backgroundColor: 'whitesmoke', // '#FFFFFF',
-                      }}
-                    >
-                      <canvas 
-                        id='rulerLeft' 
-                        // width={'8px'} // not working well: 8px = 20px
-                        // onMouseDown={() => addVerticalGuide()}
-                        // onMouseUp={() => removeVerticalGuide()}
-                      ></canvas>
-                    </div>
-
+                <div
+                  id='planView'
+                  style={{
+                    display: 'inline-block',
+                    // flexGrow: '0',
+                    // width: '100%',
+                    // height: 'calc(100% - 20px)',
+                    // backgroundColor: 'darkorange', // '#222222',
+                    // backgroundColor: 'rgba(116, 70, 6, 1.0)', // '#636363',
+                  }}
+                >
                     { true && (
-                      <div 
-                        id='paperView'
-                        style={{
-                          display: 'inline-block',
-                          // flexGrow: '1',
-                          width: 'calc(100% - 20px)',
-                          height: '100%',
-                          backgroundColor: 'darkgreen', // '#222222',
-                        }}
-                      >
-                        <PaperCanvas />
-                      </div>
+                      <>
+                        <RulerLeft />
+                        <div 
+                          id='paperView'
+                          style={{
+                            // display: 'inline-block',
+                            // flexGrow: '1',
+                            // width: 'calc(100% - 20px)',
+                            // height: '100%',
+                            backgroundColor: 'rgba(8, 133, 22, 0.2)', // '#222222',
+                          }}
+                        >
+                          <PaperCanvas />
+                        </div>
+                        <RulerBottom />
+                      </>
                     )}
-                  </div>
-                  
-                  <div
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      height: '20px',
-                      maxHeight: '20px',
-                      backgroundColor: 'tan', // '#636363',
-                    }}
-                  >
-                    <canvas 
-                      id='rulerBottom' 
-                      width={1600}
-                      // onMouseDown={() => addHorizontalGuide()}
-                      // onMouseUp={() => removeHorizontalGuide()}
-                    ></canvas>
-                  </div>
+
+                </div>
 
               </Panel>
             </PanelGroup>
