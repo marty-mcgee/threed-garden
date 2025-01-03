@@ -550,15 +550,15 @@ const PaperCanvas = (props: any) => {
   // ** to prevent setting up Paper more than once
   const [ isPaperCanvasLoaded, setIsPaperCanvasLoaded ] = useState(false)
   // ** planView width:height
-  const [ statePlanViewWidth, setStatePlanViewWidth ] = useState(0)
-  const [ statePlanViewHeight, setStatePlanViewHeight ] = useState(0)
+  const [ statePlanViewWidth, setStatePlanViewWidth ] = useState(666)
+  const [ statePlanViewHeight, setStatePlanViewHeight ] = useState(333)
   
   // init: intentionally run this client-only listener on every react.render
   useEffect(() => {
 
     // ** SET PAPER CANVAS REACT REF
     const planCanvas = planCanvasRef.current
-    // console.debug('%c PaperCanvas planCanvasRef.current', planCanvasRef.current)
+    console.debug('%c PaperCanvas planCanvasRef.current', ccm.darkorangeAlert, planCanvasRef.current)
 
     // ** PAPER.JS -- load?
     if (!isPaperCanvasLoadedVar()) {
@@ -566,15 +566,30 @@ const PaperCanvas = (props: any) => {
       console.debug('%c PaperCanvas planCanvasRef.current', ccm.darkorangeAlert, planCanvasRef.current)
 
       if (planCanvasRef.current != null) {
+
+        // ** ================================================
+
         // paper.install(window)
         paper.setup(planCanvas)
         // paper.settings.hitTolerance = 3 // do not set this here (yet)
+
+        // ** ================================================
           
         console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
           roundTo(paper.view.bounds.width, 0)
           + ' : ' +
           roundTo(paper.view.bounds.height, 0)
         )
+
+        // ** STATE SET
+        setStatePlanViewWidth(roundTo(paper.view.bounds.width, 0))
+        setStatePlanViewHeight(roundTo(paper.view.bounds.height, 0))
+          
+        // console.debug('%c PaperCanvas REACT STATE = ', ccm.darkredAlert, 
+        //   roundTo(statePlanViewWidth, 0)
+        //   + ' : ' +
+        //   roundTo(statePlanViewHeight, 0)
+        // )
 
         // ** ================================================
 
@@ -607,8 +622,8 @@ const PaperCanvas = (props: any) => {
         // ** THREED PAPER.JS
         // initThreeDPaper(planCanvas)
         // ** 
-        console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkgreenAlert, planCanvasRef.current)
-        // console.debug(`%c🖼️ `, ccm.darkgreenAlert, planCanvas)
+        console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkorangeAlert, planCanvasRef.current)
+        console.debug(`%c🖼️ planCanvas`, ccm.darkgreenAlert, planCanvas)
 
         // ** ================================================
         
@@ -637,21 +652,12 @@ const PaperCanvas = (props: any) => {
   
   // ** RETURN JSX
   return (
-    <canvas 
-      id='planCanvas'
-      ref={planCanvasRef}
-      // width={props.width? props.width : '2000'}
-    />
-  )
-}
-function RulerLeft () {
-  // ** <RulerLeft />
-  return (
     <div
-      id='rulerLeftContainer'
+      id='planCanvasContainer'
       style={{
         // display: 'inline-block',
         // display: 'flex',
+        // display: 'inline-flex',
         // flexGrow: '0',
         // width: '20px',
         // maxWidth: '20px',
@@ -662,8 +668,41 @@ function RulerLeft () {
       }}
     >
       <canvas 
+        id='planCanvas'
+        ref={planCanvasRef}
+        // width={props.width? props.width : '2000'}
+        width={statePlanViewWidth}
+        // height={props.height? props.height : '1000'}
+        height={statePlanViewHeight}
+      />
+    </div>
+  )
+}
+function RulerLeft () {
+  // ** <RulerLeft />
+  return (
+    <div
+      id='rulerLeftContainer'
+      style={{
+        // display: 'inline-block',
+        // display: 'flex',
+        // display: 'inline-flex',
+        // flexGrow: '0',
+        // width: '20px',
+        // maxWidth: '20px',
+        // height: '100%',
+        backgroundColor: 'darkred', // '#FFFFFF',
+        // backgroundColor: 'rgba(116, 6, 6, 1.0)', // '#636363',
+        // backgroundColor: 'transparent',
+      }}
+    >
+      <canvas 
         id='rulerLeft' 
         // width={'8px'} // not working well: 8px = 20px
+        // width={props.width? props.width : '2000'}
+        // width={statePlanViewWidth}
+        // height={props.height? props.height : '1000'}
+        // height={statePlanViewHeight}
         // onMouseDown={() => addVerticalGuide()}
         // onMouseUp={() => removeVerticalGuide()}
       ></canvas>
@@ -678,18 +717,23 @@ function RulerBottom () {
       style={{
         // display: 'inline-block',
         // display: 'flex',
+        // display: 'inline-flex',
         // flexGrow: '0',
         // width: '100%',
         // height: '20px',
         // maxHeight: '20px',
-        // backgroundColor: 'darkred', // '#636363',
+        backgroundColor: 'yellow', // '#636363',
         // backgroundColor: 'rgba(244, 244, 12, 1.0)', // '#636363',
-        backgroundColor: 'transparent',
+        // backgroundColor: 'transparent',
       }}
     >
       <canvas 
         id='rulerBottom' 
         // width={1600}
+        // width={props.width? props.width : '2000'}
+        // width={statePlanViewWidth}
+        // height={props.height? props.height : '1000'}
+        // height={statePlanViewHeight}
         // onMouseDown={() => addHorizontalGuide()}
         // onMouseUp={() => removeHorizontalGuide()}
       ></canvas>
@@ -5786,25 +5830,25 @@ export default function ThreeDHomeDesign({
   // ** END TESTING: THREE CANVAS[ES] as React State Variables
   // ==========================================================
 
-  // ==========================================================
-  // ** TESTING: DOM ELEMENT as React State Variables
-  // ** USE DOM ELEMENT STATE
-  const [domElement, setDomElement] = useState(null)
-  useEffect(() => {
-    console.debug('useEffect: document.body', document.body)
-    setDomElement(document.body)
-    // console.debug('useEffect: domElement', domElement)
-  }, [])
-  useEffect(() => {
-    console.debug('useEffect: domElement', domElement)
-  }, [domElement])
-  const onDomElementChange = useCallback((event: any) => {
-    console.debug('onChange: useCallback event', event)
-    setDomElement(event.target.domElement)
-    console.debug('onChange: useCallback domElement', domElement)
-  }, [])
-  // ** END TESTING: DOM ELEMENT as React State Variables
-  // ==========================================================
+  // // ==========================================================
+  // // ** TESTING: DOM ELEMENT as React State Variables
+  // // ** USE DOM ELEMENT STATE
+  // const [domElement, setDomElement] = useState(null)
+  // useEffect(() => {
+  //   console.debug('useEffect: document.body', document.body)
+  //   setDomElement(document.body)
+  //   // console.debug('useEffect: domElement', domElement)
+  // }, [])
+  // useEffect(() => {
+  //   console.debug('useEffect: domElement', domElement)
+  // }, [domElement])
+  // const onDomElementChange = useCallback((event: any) => {
+  //   console.debug('onChange: useCallback event', event)
+  //   setDomElement(event.target.domElement)
+  //   console.debug('onChange: useCallback domElement', domElement)
+  // }, [])
+  // // ** END TESTING: DOM ELEMENT as React State Variables
+  // // ==========================================================
 
   // ==========================================================
   // ** USE PANELS STATE
@@ -5886,7 +5930,7 @@ export default function ThreeDHomeDesign({
     } else if (isPageLoaded) {
       console.debug('%c🦆 ThreeD Home Design => LOADED !!', ccm.redAlert, isPageLoaded)
     } else {
-      console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
     }
 
   }, []) // useEffect
