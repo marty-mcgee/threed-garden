@@ -479,7 +479,7 @@ const getDistance = function (e: any, t: any) {
 // }
 
 // ** [MM] firefox browser mouse controls
-function MMeMouse (e: any) {
+function MMeMouseRedrawGrid (e: any) {
   
   // let
   planView = document.getElementById('planView')
@@ -558,12 +558,12 @@ const PaperCanvas = (props: any) => {
 
     // ** SET PAPER CANVAS REACT REF
     const planCanvas = planCanvasRef.current
-    console.debug('%c PaperCanvas planCanvasRef.current', ccm.darkorangeAlert, planCanvasRef.current)
+    // console.debug('%c PaperCanvas planCanvasRef.current', ccm.darkorangeAlert, planCanvasRef.current)
 
     // ** PAPER.JS -- load?
     if (!isPaperCanvasLoadedVar()) {
     
-      console.debug('%c PaperCanvas planCanvasRef.current', ccm.darkorangeAlert, planCanvasRef.current)
+      // console.debug('%c PaperCanvas planCanvasRef.current', ccm.darkorangeAlert, planCanvasRef.current)
 
       if (planCanvasRef.current != null) {
 
@@ -575,15 +575,17 @@ const PaperCanvas = (props: any) => {
 
         // ** ================================================
           
-        console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
-          roundTo(paper.view.bounds.width, 0)
-          + ' : ' +
-          roundTo(paper.view.bounds.height, 0)
-        )
+        // console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
+        //   roundTo(paper.view.bounds.width, 0)
+        //   + ' : ' +
+        //   roundTo(paper.view.bounds.height, 0)
+        // )
 
         // ** STATE SET
         setStatePlanViewWidth(roundTo(paper.view.bounds.width, 0))
         setStatePlanViewHeight(roundTo(paper.view.bounds.height, 0))
+        setStatePlanViewWidth(roundTo(1000, 0))
+        setStatePlanViewHeight(roundTo(500, 0))
           
         // console.debug('%c PaperCanvas REACT STATE = ', ccm.darkredAlert, 
         //   roundTo(statePlanViewWidth, 0)
@@ -622,8 +624,8 @@ const PaperCanvas = (props: any) => {
         // ** THREED PAPER.JS
         // initThreeDPaper(planCanvas)
         // ** 
-        console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkorangeAlert, planCanvasRef.current)
-        console.debug(`%c🖼️ planCanvas`, ccm.darkgreenAlert, planCanvas)
+        // console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkorangeAlert, planCanvasRef.current)
+        // console.debug(`%c🖼️ planCanvas`, ccm.darkgreenAlert, planCanvas)
 
         // ** ================================================
         
@@ -632,18 +634,20 @@ const PaperCanvas = (props: any) => {
 
         // ** ================================================
 
-        focusPoint = new paper.Point(0, 0)
+        // focusPoint = new paper.Point(0, 0)
 
-        threedDragDiv = document.getElementById('threedDragDiv')
+        // threedDragDiv = document.getElementById('threedDragDiv')
 
-        progressBar = document.getElementById('progressBar')
-        progressBar.style.display = 'none'
+        // progressBar = document.getElementById('progressBar')
+        // progressBar.style.display = 'none'
+
+        // ** ================================================
+
+        // ** THREED APOLLO STATE REACTIVE VAR
+        isPaperCanvasLoadedVar(true)
 
       } // planCanvasRef.current != null
       // ** ================================================
-
-      // ** THREED APOLLO STATE REACTIVE VAR
-      isPaperCanvasLoadedVar(true)
 
     }
     
@@ -865,11 +869,11 @@ function initPlanView(planCanvas: any) {
   //   false
   // )
 
-  // ** SUPPORT FIREFOX + MOUSEPAD
-  let MMtUserAgent = /Firefox/i.test(navigator.userAgent)
-    ? 'DOMMouseScroll'
-    : 'mousewheel'
-  planCanvas.addEventListener(MMtUserAgent, MMeMouse)
+  // // ** SUPPORT FIREFOX + MOUSEPAD
+  // let MMtUserAgent = /Firefox/i.test(navigator.userAgent)
+  //   ? 'DOMMouseScroll'
+  //   : 'mousewheel'
+  // planCanvas.addEventListener(MMtUserAgent, MMeMouseRedrawGrid)
 
   // **
 
@@ -885,6 +889,8 @@ function initPlanView(planCanvas: any) {
   // @ts-expect-error
   toolsGroup[0].rotation = 0
   
+  /*
+
   rotateIcon = new paper.Raster('images/homedesign/rotate.png')
   rotateIcon.data.type = 'rotateThreedTool'
   rotateIcon.onMouseEnter = function (e: any) {
@@ -894,7 +900,7 @@ function initPlanView(planCanvas: any) {
     planView.style.cursor = 'default'
   }
   rotateIcon.visible = false
-  // @ts-expect-error
+  // @ ts-expect-error
   toolsGroup[0].addChild(rotateIcon)
   
   // **
@@ -907,7 +913,7 @@ function initPlanView(planCanvas: any) {
     planView.style.cursor = 'default'
   }
   resizeIcon.visible = false
-  // @ts-expect-error
+  // @ ts-expect-error
   toolsGroup[0].addChild(resizeIcon)
 
   // **
@@ -920,7 +926,7 @@ function initPlanView(planCanvas: any) {
     planView.style.cursor = 'default'
   }
   elevateIcon.visible = false
-  // @ts-expect-error
+  // @ ts-expect-error
   toolsGroup[0].addChild(elevateIcon)
 
   // **
@@ -933,7 +939,7 @@ function initPlanView(planCanvas: any) {
     planView.style.cursor = 'default'
   }
   heightIcon.visible = false
-  // @ts-expect-error
+  // @ ts-expect-error
   toolsGroup[0].addChild(heightIcon)
     
   // **
@@ -946,7 +952,7 @@ function initPlanView(planCanvas: any) {
   wallHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   wallHelperPath.strokeWidth = 2
   wallHelperPath.strokeScaling = false
-  // @ts-expect-error
+  // @ ts-expect-error
   wallsGroup[paper.project.activeLayer.data.id].addChild(wallHelperPath)
   roofHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -956,7 +962,7 @@ function initPlanView(planCanvas: any) {
   roofHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   roofHelperPath.strokeWidth = 2
   roofHelperPath.strokeScaling = false
-  // @ts-expect-error
+  // @ ts-expect-error
   roofsGroup[paper.project.activeLayer.data.id].addChild(roofHelperPath)
   floorHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -966,7 +972,7 @@ function initPlanView(planCanvas: any) {
   floorHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   floorHelperPath.strokeWidth = 2
   floorHelperPath.strokeScaling = false
-  // @ts-expect-error
+  // @ ts-expect-error
   floorsGroup[paper.project.activeLayer.data.id].addChild(floorHelperPath)
   dimensionHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -976,7 +982,7 @@ function initPlanView(planCanvas: any) {
   dimensionHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   dimensionHelperPath.strokeWidth = 2
   dimensionHelperPath.strokeScaling = false
-  // @ts-expect-error
+  // @ ts-expect-error
   dimensionsGroup[paper.project.activeLayer.data.id].addChild(dimensionHelperPath)
 
 
@@ -997,7 +1003,15 @@ function initPlanView(planCanvas: any) {
   roofHelperRectangle.strokeWidth = 2
   roofHelperRectangle.strokeScaling = false
   offsetMousePoint = new paper.Point(0, 0)
+
+  */
+  
+  
+  
   tools = new paper.Tool()
+
+
+
   draggingThreedRectangle = new paper.Path.Rectangle(
     new paper.Point(-1, -1),
     new paper.Point(1, 1)
@@ -6688,10 +6702,10 @@ export default function ThreeDHomeDesign({
             defaultSize={25}
             minSize={0}
             maxSize={100}
-            style={{
-              // border: '1px solid darkred',
-            }}
-            // onResize={() => redrawGrid()} // ** TESTING
+            // style={{
+            //   // border: '1px solid darkred',
+            // }}
+            onResize={() => redrawGrid()} // ** TESTING
           >
             <PanelGroup
               direction='vertical'
@@ -6706,7 +6720,7 @@ export default function ThreeDHomeDesign({
                 defaultSize={50}
                 maxSize={100}
                 style={{
-                  border: '1px solid #1A1A1A',
+                  // border: '1px solid #1A1A1A',
                   overflow: 'auto',
                 }}
               >
@@ -6724,7 +6738,7 @@ export default function ThreeDHomeDesign({
                 defaultSize={50}
                 maxSize={100}
                 style={{
-                  border: '1px solid #1A1A1A',
+                  // border: '1px solid #1A1A1A',
                   overflow: 'auto',
                 }}
               >
@@ -6768,7 +6782,7 @@ export default function ThreeDHomeDesign({
             style={{
               // border: '1px solid darkblue',
             }}
-            // onResize={() => redrawGrid()} // ** TESTING
+            onResize={() => redrawGrid()} // ** TESTING
           >
             {/* MAIN CANVASES (TOP + BOTTOM) */}
             <PanelGroup 
@@ -6786,7 +6800,8 @@ export default function ThreeDHomeDesign({
                 minSize={0}
                 maxSize={100}
                 style={{
-                  border: '1px solid #1A1A1A',
+                  overflow: 'auto',
+                  // border: '1px solid #1A1A1A',
                 }}
                 // onResize={() => redrawGrid()} // ** TESTING
               >
@@ -6796,7 +6811,7 @@ export default function ThreeDHomeDesign({
                     // display: 'flex',
                     // flexDirection: 'column',
                     width: '100%',
-                    height: '100%',
+                    height: 'calc(100% - 160px',
                     // border: '1px solid #003300',
                   }}
                 >
