@@ -443,6 +443,13 @@ let busy: boolean = false
 // let screenAvg = 1000 // (screen.width + screen.height) / 2
 let redrawing: boolean = false
 let strokeWidth: number = 0
+
+function roundTo(value: number, digits: number) {
+  value = value * Math.pow(10, digits)
+  value = Math.round(value)
+  value = value / Math.pow(10, digits)
+  return value
+}
 const onProgress = function (e: any) {
   if (false) { // run this??
     if (e.lengthComputable) {
@@ -508,7 +515,7 @@ function MMeMouse (e: any) {
       redrawGrid()
       redrawTexts()
     
-    } else {redrawGrid
+    } else {
       cumulclick = o
     }
   }
@@ -541,7 +548,10 @@ const PaperCanvas = (props: any) => {
 
   // ** REACT STATE -- isPaperCanvasLoaded?
   // ** to prevent setting up Paper more than once
-  // const [ isPaperCanvasLoaded, setIsPaperCanvasLoaded ] = useState(false)
+  const [ isPaperCanvasLoaded, setIsPaperCanvasLoaded ] = useState(false)
+  // ** planView width:height
+  const [ statePlanViewWidth, setStatePlanViewWidth ] = useState(0)
+  const [ statePlanViewHeight, setStatePlanViewHeight ] = useState(0)
   
   // init: intentionally run this client-only listener on every react.render
   useEffect(() => {
@@ -553,18 +563,20 @@ const PaperCanvas = (props: any) => {
     // ** PAPER.JS -- load?
     if (!isPaperCanvasLoadedVar()) {
     
-      console.debug('%c PaperCanvas paper.setup(planCanvasRef.current)', ccm.darkorangeAlert, planCanvasRef.current)
+      console.debug('%c PaperCanvas planCanvasRef.current', ccm.darkorangeAlert, planCanvasRef.current)
 
       if (planCanvasRef.current != null) {
         // paper.install(window)
         paper.setup(planCanvas)
-        paper.settings.hitTolerance = 3
+        // paper.settings.hitTolerance = 3 // do not set this here (yet)
           
         console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
-          paper.view.bounds.width.toFixed(0) 
+          roundTo(paper.view.bounds.width, 0)
           + ' : ' +
-          paper.view.bounds.height.toFixed(0)
+          roundTo(paper.view.bounds.height, 0)
         )
+
+        // ** ================================================
 
             // // draw a circle at view center
             // var startCircle = new paper.Path.Circle({
@@ -589,6 +601,8 @@ const PaperCanvas = (props: any) => {
             //   justification: 'center',
             //   color: new paper.Color(255, 255, 255, 1),
             // })
+
+        // ** ================================================
 
         // ** THREED PAPER.JS
         // initThreeDPaper(planCanvas)
@@ -667,8 +681,8 @@ function initPlanView(planCanvas: any) {
   planView = document.getElementById('planView')
   // let
   planCanvas = document.getElementById('planCanvas')
-  planCanvas.width = planCanvas.parentNode.getBoundingClientRect().width
-  planCanvas.height = planCanvas.parentNode.getBoundingClientRect().height
+  // planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
+  // planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
   console.debug(
     '%c PaperCanvas: initPlanView: planCanvas width:height', 
     ccm.blueAlert, 
@@ -722,8 +736,8 @@ function initPlanView(planCanvas: any) {
   rulerLeft = document.getElementById('rulerLeft')
   // @ts-expect-error
   rulerBottom = document.getElementById('rulerBottom')
-  rulerBottom.style.width = planCanvas.parentNode.getBoundingClientRect().width
-  rulerLeft.style.height = planCanvas.parentNode.getBoundingClientRect().height
+  // rulerBottom.style.width = planCanvas.parentNode.getBoundingClientRect().width
+  // rulerLeft.style.height = planCanvas.parentNode.getBoundingClientRect().height
   // ** RULER CONTEXTS
   rulerLeft.oncontextmenu = function () {
     return false
@@ -764,11 +778,10 @@ function initPlanView(planCanvas: any) {
 
   // **
 
-  // ** DRAW GRID path lines x,y
-  // drawGrid()
-  drawGridNew(paper, 10)
-  // redrawGrid()
-
+  // // ** DRAW GRID path lines x,y
+  // // drawGrid()
+  // drawGridNew(paper, 20)
+  // // redrawGrid()
   
   // **
 
@@ -3104,13 +3117,17 @@ function initPlanView(planCanvas: any) {
   // ** -- PREPARE CANVAS
   // ** -- DRAW PREPARED CONTENT
   // ** -- RESET GRID
-  // @ts-expect-error
-  paper.view.center = [0, 0]
-  // paper.view.center = [350, 130]
-  // @ts-expect-error
-  paper.view.draw()
-  redrawGrid()
+  // @ ts-expect-error
+  // paper.view.center = [0, 0]
+  // paper.view.center = [400, 200]
+  // @ ts-expect-error
+  // paper.view.draw()
 
+  // ** DRAW GRID path lines x,y
+  // drawGrid()
+  drawGridNew(paper, 20)
+  // redrawGrid()
+  
 } // END initPlanView()
 
 // ** END: PAPER.JS planView PaperCanvas
@@ -5311,60 +5328,39 @@ function initThreed(threedItem: any, scene: any) {
 }
 
 // ** DRAW GRID path lines x,y
-function drawGrid() {
+function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
+  const { view, Path } = paperScope
+  let { width, height } = view.size
+  width = roundTo(width, 0)
+  height = roundTo(height, 0)
+  console.debug('%c drawGridNew: width:height', ccm.darkgrayAlert, width, height)
   // x
-  for (let o = 0; o <= 3000; o++) {
-    const a = new paper.Point(10 * o, -200)
-    const n = new paper.Point(10 * o, 3000)
-    let pathLineX = new paper.Path.Line(a, n)
-    pathLineX.strokeColor = new paper.Color(96, 96, 96, 1)
-    pathLineX.strokeWidth = 0.25
-    pathLineX.strokeScaling = true
+  for (let x = 0; x <= width; x += gridSize) {
+    let pathLineX = new Path.Line({
+      from: [x, 0],
+      to: [x, height],
+      strokeColor: new paper.Color(96, 96, 96, 1),
+      strokeWidth: 0.25,
+      strokeScaling: true,
+    })
     xLines.push(pathLineX)
     // @ts-expect-error
     gridGroup[0].addChild(pathLineX)
   }
   // y
-  for (var o = 0; o <= 3000; o++) {
-    const i = new paper.Point(-200, 10 * o)
-    const r = new paper.Point(3000, 10 * o)
-    let pathLineY = new paper.Path.Line(i, r)
-    pathLineY.strokeColor = new paper.Color(96, 96, 96, 1)
-    pathLineY.strokeWidth = 0.25
-    pathLineY.strokeScaling = true
-    yLines.push(pathLineY)
-    // @ts-expect-error
-    gridGroup[0].addChild(pathLineY)
-  }
-}
-// new version
-function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
-  const { view, Path } = paperScope
-  const { width, height } = view.size
-
-  for (let x = 0; x <= width; x += gridSize) {
-    let pathLineX = new Path.Line({
-      from: [x, 0],
-      to: [x, height],
-      strokeColor: 'lightgray'
-    })
-    xLines.push(pathLineX)
-    // @ts-expect-error
-    gridGroup[0].addChild(pathLineX)
-  }
-
   for (let y = 0; y <= height; y += gridSize) {
     let pathLineY = new Path.Line({
       from: [0, y],
       to: [width, y],
-      strokeColor: 'lightgray'
+      strokeColor: new paper.Color(96, 96, 96, 1),
+      strokeWidth: 0.25,
+      strokeScaling: true,
     })
     yLines.push(pathLineY)
     // @ts-expect-error
     gridGroup[0].addChild(pathLineY)
   }
 }
-
 // ** REDRAW Functions
 function redrawTexts() {
   Object.keys(Dimensions).forEach(function (e: any) {
@@ -6741,37 +6737,38 @@ export default function ThreeDHomeDesign({
                 minSize={0}
                 maxSize={100}
                 style={{
-                  // display: 'inline-block',
+                  display: 'inline-block',
                   // overflow: 'auto', // no
                   border: '1px solid #1A1A1A',
+                  backgroundColor: 'darkblue', // '#222222',
                 }}
                 // onResize={() => redrawGrid()} // ** TESTING
               >
                   <div
                     id='planView'
                     style={{
-                      display: 'flex',
+                      display: 'inline-block',
                       // flexGrow: '0',
-                      width: '100%',
+                      // width: '100%',
                       height: 'calc(100% - 20px)',
-                      backgroundColor: '#222222',
+                      backgroundColor: 'darkred', // '#222222',
                     }}
                   >
                     <div
                       id='rulerLeftContainer'
                       style={{
-                        display: 'flex',
+                        display: 'inline-block',
                         // flexGrow: '0',
                         width: '20px',
                         maxWidth: '20px',
-                        // height: '100%',
+                        height: '100%',
                         // backgroundColor: 'transparent',
-                        backgroundColor: '#FFFFFF',
+                        backgroundColor: 'whitesmoke', // '#FFFFFF',
                       }}
                     >
                       <canvas 
                         id='rulerLeft' 
-                        width={'8px'} // not working well: 8px = 20px
+                        // width={'8px'} // not working well: 8px = 20px
                         // onMouseDown={() => addVerticalGuide()}
                         // onMouseUp={() => removeVerticalGuide()}
                       ></canvas>
@@ -6781,11 +6778,11 @@ export default function ThreeDHomeDesign({
                       <div 
                         id='paperView'
                         style={{
-                          display: 'flex',
+                          display: 'inline-block',
                           // flexGrow: '1',
                           width: 'calc(100% - 20px)',
-                          // height: '100%',
-                          // backgroundColor: '#222222',
+                          height: '100%',
+                          backgroundColor: 'darkgreen', // '#222222',
                         }}
                       >
                         <PaperCanvas />
@@ -6799,7 +6796,7 @@ export default function ThreeDHomeDesign({
                       width: '100%',
                       height: '20px',
                       maxHeight: '20px',
-                      // backgroundColor: '#636363',
+                      backgroundColor: 'tan', // '#636363',
                     }}
                   >
                     <canvas 
