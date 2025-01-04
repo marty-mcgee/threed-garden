@@ -237,21 +237,21 @@ const ThreeDGarden = (): JSX.Element => {
       <ThreeDCanvasViewer
         // ref={refThreeDCanvas1}
       />
-      
-      {/* THREED: CONTROLS: ALL */}
-      {/* <ThreeDControls /> */}
 
       {/* THREED: CONTROLS: LEVA GUI + CUSTOMIZED */}
       <ThreeDLevaControls />
+      
+      {/* THREED: CONTROL PANELS */}
+      <ThreeDControlPanels />
     
+      
+      {/* THREED: CONTROLS: ALL */}
+      {/* <ThreeDControls /> */}
       {/* THREED: CONTROLS: CLICK LOADERS */}
       {/* <Button onClick={() => loadNounData('project', [])}>load project</Button> */}
       {/* <Button onClick={() => loadNounData('scene', [])}>load scene</Button> */}
       {/* <Button onClick={() => loadNounData('character', [])}>load character</Button> */}
       {/* <Button onClick={() => loadNounData('farmbot', [])}>load farmbot</Button> */}
-      
-      {/* THREED: CONTROL PANELS */}
-      <ThreeDControlPanels />
         
       {/* THREED: VIEWS */}
       {/* <CatalogView /> */}
