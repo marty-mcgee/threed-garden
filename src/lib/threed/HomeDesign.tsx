@@ -5376,9 +5376,13 @@ function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
   const { view, Path } = paperScope
   // let { width, height } = view.size
   let planCanvas = document.getElementById('planCanvas')
+  // @ts-expect-error
   planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
+  // @ts-expect-error
   planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
+  // @ts-expect-error
   let width = roundTo(planCanvas.width, 0)
+  // @ts-expect-error
   let height = roundTo(planCanvas.height, 0)
   console.debug('%c drawGridNew: width:height', ccm.darkgrayAlert, width, height)
   // x
