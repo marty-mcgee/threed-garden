@@ -92,7 +92,17 @@ import paper from 'paper'
 
 // ** THREED Imports
 // import ThreeDComponents from '#/lib/threed/threed'
-const ThreeD = dynamic(() => import('#/lib/threed/ThreeD'), { ssr: false })
+// const ThreeD = dynamic(() => import('#/lib/threed/ThreeD'), { ssr: false })
+// ** ThreeD r3f Canvas Imports
+// import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
+const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
+// ** ThreeD Toolbar
+import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
+// ** ThreeD Leva Controls
+import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+// ** ThreeD using Apollo + React to View Control + Info Panels 
+// ** (Apollo Store/ReactiveVar/State Access)
+import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 // import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { ThreeDDropdownMenu } from '~/src/lib/threed/components/controls/DropdownControls'
 // import * as Dialog from '@radix-ui/react-dialog'
@@ -584,8 +594,8 @@ const PaperCanvas = (props: any) => {
         // ** STATE SET
         setStatePlanViewWidth(roundTo(paper.view.bounds.width, 0))
         setStatePlanViewHeight(roundTo(paper.view.bounds.height, 0))
-        setStatePlanViewWidth(roundTo(1000, 0))
-        setStatePlanViewHeight(roundTo(500, 0))
+        // setStatePlanViewWidth(roundTo(1000, 0))
+        // setStatePlanViewHeight(roundTo(500, 0))
           
         // console.debug('%c PaperCanvas REACT STATE = ', ccm.darkredAlert, 
         //   roundTo(statePlanViewWidth, 0)
@@ -632,17 +642,6 @@ const PaperCanvas = (props: any) => {
         draw1()
         initPlanView(planCanvas)
 
-        // ** ================================================
-
-        // focusPoint = new paper.Point(0, 0)
-
-        // threedDragDiv = document.getElementById('threedDragDiv')
-
-        // progressBar = document.getElementById('progressBar')
-        // progressBar.style.display = 'none'
-
-        // ** ================================================
-
         // ** THREED APOLLO STATE REACTIVE VAR
         isPaperCanvasLoadedVar(true)
 
@@ -660,9 +659,9 @@ const PaperCanvas = (props: any) => {
       id='planCanvas'
       ref={planCanvasRef}
       // width={props.width? props.width : '2000'}
-      // width={statePlanViewWidth}
+      width={statePlanViewWidth}
       // height={props.height? props.height : '1000'}
-      // height={statePlanViewHeight}
+      height={statePlanViewHeight}
     />
   )
 }
@@ -714,6 +713,17 @@ function initPlanView(planCanvas: any) {
   planCanvas.oncontextmenu = function () {
     return false
   }
+
+  // ** ================================================
+
+  focusPoint = new paper.Point(0, 0)
+
+  threedDragDiv = document.getElementById('threedDragDiv')
+
+  progressBar = document.getElementById('progressBar')
+  progressBar.style.display = 'none'
+
+  // ** ================================================
 
   // ** ACTIVATE PAPER PROJECT LAYER
   paper.project.activeLayer.name = 'level_0'
@@ -791,11 +801,11 @@ function initPlanView(planCanvas: any) {
   //   false
   // )
 
-  // // ** SUPPORT FIREFOX + MOUSEPAD
-  // let MMtUserAgent = /Firefox/i.test(navigator.userAgent)
-  //   ? 'DOMMouseScroll'
-  //   : 'mousewheel'
-  // planCanvas.addEventListener(MMtUserAgent, MMeMouseRedrawGrid)
+  // ** SUPPORT FIREFOX + MOUSEPAD
+  let MMtUserAgent = /Firefox/i.test(navigator.userAgent)
+    ? 'DOMMouseScroll'
+    : 'mousewheel'
+  planCanvas.addEventListener(MMtUserAgent, MMeMouseRedrawGrid)
 
   // **
 
@@ -6494,10 +6504,11 @@ export default function ThreeDHomeDesign({
   // ** RETURN JSX
   return (
     <div
-      // direction='row'
       style={{
         // display: 'inline-block',
-        display: 'inline-flex',
+        // display: 'inline-flex',
+        display: 'flex',
+        flexDirection: 'column',
         // flexGrow: '1',
         height: '92vh',
         width: '99.9%',
@@ -6533,73 +6544,93 @@ export default function ThreeDHomeDesign({
         <progress id='progressBar' value='0' max='100' className='center'></progress> 
       </div>
 
+      {/* THREED: TOOLBAR (ACTIONS) */}
       <div 
         style={{ 
-          display: 'inline-flex',
+          display: 'flex',
           // display: 'none',
-          flexDirection: 'column',
-          marginLeft: '4px', 
-          marginRight: '6px' 
+          flexDirection: 'row',
+          // marginLeft: '4px', 
+          // marginRight: '6px' 
         }}
       >
-        {/* MAIN ACTIONS DROPDOWN MENU */}
-        <ThreeDDropdownMenu />
 
-        {/* PANEL SHOW/HIDE */}
-        <Button
-          // className={styles.Button}
-          style={{
-            backgroundColor: 'transparent',
-            border: '0px',
-            width: '16px',
-            height: '16px',
-            padding: '0px',
-            marginLeft: '6px', 
-          }}
-          onClick={() => setShowPanelFirst()}
-        >
-          { prefs.showPanelFirst && (
-            <ArrowLeftEndOnRectangleIcon
-              style={{
-                color: '#504191', // '#3B3269',
-              }}
-            />
-          )}
-          { !prefs.showPanelFirst && (
-            <ArrowRightEndOnRectangleIcon
-              style={{
-                color: '#504191', // '#3B3269',
-              }}
-            />
-          )}
-        </Button>
-        <Button
-          // className={styles.Button}
-          style={{
-            backgroundColor: 'transparent',
-            border: '0px',
-            width: '16px',
-            height: '16px',
-            padding: '0px',
+        <div 
+          style={{ 
+            display: 'inline-flex',
+            // display: 'none',
+            flexDirection: 'row',
+            alignItems: 'center',
             marginLeft: '4px', 
+            marginRight: '6px' 
           }}
-          onClick={() => setShowPanelLast()}
         >
-          { prefs.showPanelLast && (
-            <ArrowRightEndOnRectangleIcon
-              style={{
-                color: '#504191', // '#3B3269',
-              }}
-            />
-          )}
-          { !prefs.showPanelLast && (
-            <ArrowLeftEndOnRectangleIcon
-              style={{
-                color: '#504191', // '#3B3269',
-              }}
-            />
-          )}
-        </Button>
+          {/* MAIN ACTIONS DROPDOWN MENU */}
+          <ThreeDDropdownMenu />
+
+          {/* PANEL SHOW/HIDE */}
+          <Button
+            // className={styles.Button}
+            style={{
+              backgroundColor: 'transparent',
+              border: '0px',
+              width: '16px',
+              height: '16px',
+              padding: '0px',
+              marginLeft: '6px', 
+            }}
+            onClick={() => setShowPanelFirst()}
+          >
+            { prefs.showPanelFirst && (
+              <ArrowLeftEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+            { !prefs.showPanelFirst && (
+              <ArrowRightEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+          </Button>
+          <Button
+            // className={styles.Button}
+            style={{
+              backgroundColor: 'transparent',
+              border: '0px',
+              width: '16px',
+              height: '16px',
+              padding: '0px',
+              marginLeft: '4px', 
+            }}
+            onClick={() => setShowPanelLast()}
+          >
+            { prefs.showPanelLast && (
+              <ArrowRightEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+            { !prefs.showPanelLast && (
+              <ArrowLeftEndOnRectangleIcon
+                style={{
+                  color: '#504191', // '#3B3269',
+                }}
+              />
+            )}
+          </Button>
+        </div>
+
+        {/* THREED: TOOLBAR (ACTIONS) */}
+        <ThreeDToolbar />
+                
+        {/* THREED: CONTROLS: LEVA GUI */}
+        <ThreeDLevaControls />
+                
       </div>
 
       {/* PAGE LAYOUT PANELS */}
@@ -6629,6 +6660,9 @@ export default function ThreeDHomeDesign({
               autoSaveId='ThreeDPanelGroup2'
               // onLayout={onLayout}
             >
+                      
+              {/* THREED: CONTROL PANELS (NOUNS, API) */}
+              <ThreeDControlPanels />
               
               <Panel 
                 id='viewProperties'
@@ -6725,17 +6759,32 @@ export default function ThreeDHomeDesign({
                 <div 
                   id='view3d'
                   style={{
-                    // display: 'flex',
-                    // flexDirection: 'column',
+                    display: 'flex',
+                    flexDirection: 'column',
                     width: '100%',
-                    height: 'calc(100% - 160px',
+                    height: 'calc(100% - 0px)',
                     // border: '1px solid #003300',
                   }}
                 >
 
                   {/* THREED HOME DESIGN: 3D CANVAS */}
                   { true && (
-                    <ThreeD />
+                    <>
+                      {/* THREED: COMPONENTS (ALL) */}
+                      {/* <ThreeD /> */}
+
+                      {/* THREED: TOOLBAR (ACTIONS) */}
+                      {/* <ThreeDToolbar /> */}
+                      
+                      {/* THREED: CANVAS VIEWER */}
+                      <ThreeDCanvasViewer />
+                
+                      {/* THREED: CONTROLS: LEVA GUI */}
+                      {/* <ThreeDLevaControls /> */}
+                      
+                      {/* THREED: CONTROL PANELS (NOUNS, API) */}
+                      {/* <ThreeDControlPanels /> */}
+                    </>
                   )}
 
                   {/* 
@@ -6777,8 +6826,8 @@ export default function ThreeDHomeDesign({
                   id='paperView'
                   style={{
                     // display: 'inline-block',
-                    // display: 'flex',
-                    display: 'inline-flex',
+                    display: 'flex',
+                    // display: 'inline-flex',
                     // flexGrow: '0',
                     // width: '100%',
                     // height: 'calc(100% - 20px)',
