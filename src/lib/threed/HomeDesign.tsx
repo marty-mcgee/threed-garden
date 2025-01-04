@@ -6842,10 +6842,10 @@ export default function ThreeDHomeDesign({
                     display: 'flex',
                     // display: 'inline-flex',
                     // flexGrow: '0',
-                    width: '100%',
+                    // width: '100%',
                     // width: 'calc(100% - 20px)',
                     // height: '100%',
-                    height: 'calc(100% - 20px)',
+                    height: 'calc(100% - 20px)', // !important
                     // backgroundColor: 'darkorange', // '#222222',
                     // backgroundColor: 'rgba(116, 70, 6, 1.0)', // '#636363',
                   }}
@@ -6853,11 +6853,11 @@ export default function ThreeDHomeDesign({
                   <div
                     id='rulerLeftContainer'
                     style={{
-                      display: 'inline-block',
+                      // display: 'inline-block',
                       // display: 'flex',
                       // display: 'inline-flex',
                       // flexGrow: '0',
-                      width: '20px',
+                      // width: '20px', // !important???
                       // maxWidth: '20px',
                       // height: '100%',
                       // backgroundColor: 'darkred', // '#FFFFFF',
@@ -6884,7 +6884,7 @@ export default function ThreeDHomeDesign({
                       // display: 'flex',
                       // display: 'inline-flex',
                       // flexGrow: '1',
-                      width: 'calc(100% - 20px)',
+                      width: 'calc(100% - 0px)', // !important
                       // height: 'calc(100% - 20px)',
                       backgroundColor: 'rgba(8, 133, 22, 0.2)', // '#222222',
                     }}
