@@ -6636,7 +6636,7 @@ export default function ThreeDHomeDesign({
       {/* PAGE LAYOUT PANELS */}
       <PanelGroup 
         direction='horizontal'
-        autoSaveId='ThreeDPanelGroup1'
+        // autoSaveId='ThreeDPanelGroup1'
         // onLayout={onLayout}
       >
         {/* VIEWS: OBJECT CATALOG */}
@@ -6657,7 +6657,7 @@ export default function ThreeDHomeDesign({
           >
             <PanelGroup
               direction='vertical'
-              autoSaveId='ThreeDPanelGroup2'
+              // autoSaveId='ThreeDPanelGroup2'
               // onLayout={onLayout}
             >
                       
@@ -6738,7 +6738,7 @@ export default function ThreeDHomeDesign({
             {/* MAIN CANVASES (TOP + BOTTOM) */}
             <PanelGroup 
               direction='vertical'
-              autoSaveId='ThreeDPanelGroup3'
+              // autoSaveId='ThreeDPanelGroup3'
               // onLayout={onLayout}
             >
               
@@ -6751,7 +6751,7 @@ export default function ThreeDHomeDesign({
                 minSize={0}
                 maxSize={100}
                 style={{
-                  overflow: 'auto',
+                  // overflow: 'auto',
                   // border: '1px solid #1A1A1A',
                 }}
                 // onResize={() => redrawGrid()} // ** TESTING
@@ -6759,10 +6759,11 @@ export default function ThreeDHomeDesign({
                 <div 
                   id='view3d'
                   style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    width: '100%',
-                    height: 'calc(100% - 0px)',
+                    // display: 'flex',
+                    // flexDirection: 'column',
+                    // width: '100%',
+                    height: '100%',
+                    // height: 'calc(100% - 0px)',
                     // border: '1px solid #003300',
                   }}
                 >
@@ -6855,6 +6856,7 @@ export default function ThreeDHomeDesign({
                       width={20}
                       // width={props.width? props.width : '2000'}
                       // width={statePlanViewWidth}
+                      // height={'100%'}
                       // height={props.height? props.height : '1000'}
                       // height={statePlanViewHeight}
                       // onMouseDown={() => addVerticalGuide()}
@@ -6897,9 +6899,9 @@ export default function ThreeDHomeDesign({
                     width={1600}
                     // width={props.width? props.width : '2000'}
                     // width={statePlanViewWidth}
+                    height={20}
                     // height={props.height? props.height : '1000'}
                     // height={statePlanViewHeight}
-                    height={20}
                     // onMouseDown={() => addHorizontalGuide()}
                     // onMouseUp={() => removeHorizontalGuide()}
                   ></canvas>
