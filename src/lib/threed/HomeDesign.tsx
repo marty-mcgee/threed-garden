@@ -5373,6 +5373,7 @@ function initThreed(threedItem: any, scene: any) {
 
 // ** DRAW GRID path lines x,y
 function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
+
   const { view, Path } = paperScope
   // let { width, height } = view.size
   let planCanvas = document.getElementById('planCanvas')
@@ -5385,7 +5386,8 @@ function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
   // @ts-expect-error
   let height = roundTo(planCanvas.height, 0)
   console.debug('%c drawGridNew: width:height', ccm.darkgrayAlert, width, height)
-  // x
+
+  // x lines
   for (let x = 0; x <= width; x += gridSize) {
     let pathLineX = new Path.Line({
       from: [x, 0],
@@ -5398,7 +5400,7 @@ function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
     // @ts-expect-error
     gridGroup[0].addChild(pathLineX)
   }
-  // y
+  // y lines
   for (let y = 0; y <= height; y += gridSize) {
     let pathLineY = new Path.Line({
       from: [0, y],
@@ -6858,9 +6860,9 @@ export default function ThreeDHomeDesign({
                       width: '20px',
                       // maxWidth: '20px',
                       // height: '100%',
-                      backgroundColor: 'darkred', // '#FFFFFF',
+                      // backgroundColor: 'darkred', // '#FFFFFF',
                       // backgroundColor: 'rgba(116, 6, 6, 1.0)', // '#636363',
-                      // backgroundColor: 'transparent',
+                      backgroundColor: 'transparent',
                     }}
                   >
                     <canvas 
