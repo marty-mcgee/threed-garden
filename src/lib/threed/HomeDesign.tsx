@@ -560,8 +560,8 @@ const PaperCanvas = (props: any) => {
   // ** to prevent setting up Paper more than once
   const [ isPaperCanvasLoaded, setIsPaperCanvasLoaded ] = useState(false)
   // ** planView width:height
-  const [ statePlanViewWidth, setStatePlanViewWidth ] = useState(666)
-  const [ statePlanViewHeight, setStatePlanViewHeight ] = useState(333)
+  const [ statePlanViewWidth, setStatePlanViewWidth ] = useState(0)
+  const [ statePlanViewHeight, setStatePlanViewHeight ] = useState(0)
   
   // init: intentionally run this client-only listener on every react.render
   useEffect(() => {
@@ -577,6 +577,19 @@ const PaperCanvas = (props: any) => {
 
       if (planCanvasRef.current != null) {
 
+        // let
+        // planCanvas = document.getElementById('planCanvas')
+        planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
+        planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
+
+        // ** STATE SET
+        // setStatePlanViewWidth(roundTo(1000, 0))
+        // setStatePlanViewHeight(roundTo(500, 0))
+        // setStatePlanViewWidth(roundTo(paper.view.bounds.width, 0))
+        // setStatePlanViewHeight(roundTo(paper.view.bounds.height, 0))
+        setStatePlanViewWidth(planCanvas.width)
+        setStatePlanViewHeight(planCanvas.height)
+
         // ** ================================================
 
         // paper.install(window)
@@ -585,35 +598,25 @@ const PaperCanvas = (props: any) => {
 
         // ** ================================================
           
-        // console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
-        //   roundTo(paper.view.bounds.width, 0)
-        //   + ' : ' +
-        //   roundTo(paper.view.bounds.height, 0)
-        // )
-
-        // ** STATE SET
-        setStatePlanViewWidth(roundTo(paper.view.bounds.width, 0))
-        setStatePlanViewHeight(roundTo(paper.view.bounds.height, 0))
-        // setStatePlanViewWidth(roundTo(1000, 0))
-        // setStatePlanViewHeight(roundTo(500, 0))
-          
-        // console.debug('%c PaperCanvas REACT STATE = ', ccm.darkredAlert, 
-        //   roundTo(statePlanViewWidth, 0)
-        //   + ' : ' +
-        //   roundTo(statePlanViewHeight, 0)
-        // )
+        console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
+          roundTo(paper.view.bounds.width, 0)
+          + ' : ' +
+          roundTo(paper.view.bounds.height, 0)
+        )
 
         // ** ================================================
 
-            // // draw a circle at view center
-            // var startCircle = new paper.Path.Circle({
-            //   center: paper.view.center,
-            //   radius: 33,
-            //   fillColor: 'orange'
-            // })
+        // ** PAPER.JS -- TESTING : DEBUGGING
 
-            // // DOES NOT WORK AS EXPECTED
-            // // when view is resized...
+            // ** draw a circle at paper view center
+            var startCircle = new paper.Path.Circle({
+              center: paper.view.center,
+              radius: 20,
+              fillColor: 'orange'
+            })
+
+            // ** DOES NOT WORK AS EXPECTED
+            // ** when view is resized...
             // paper.view.onResize = function() {
             //   // ...debug new view width
             //   console.debug('PaperCanvas paper.view.bounds.width is now: ' + paper.view.bounds.width)
@@ -621,8 +624,8 @@ const PaperCanvas = (props: any) => {
             //   startCircle.position = paper.view.center
             // }
             
-            // // draw instructions
-            // new paper.PointText({
+            // ** draw instructions
+            // var startInstructions = new paper.PointText({
             //   content: 'Resize the window and see that view is automatically resized',
             //   point: paper.view.center.subtract(80),
             //   justification: 'center',
@@ -632,15 +635,12 @@ const PaperCanvas = (props: any) => {
         // ** ================================================
 
         // ** THREED PAPER.JS
-        // initThreeDPaper(planCanvas)
-        // ** 
-        // console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaper(planCanvasRef)', ccm.darkorangeAlert, planCanvasRef.current)
-        // console.debug(`%c🖼️ planCanvas`, ccm.darkgreenAlert, planCanvas)
-
-        // ** ================================================
         
-        draw1()
-        initPlanView(planCanvas)
+        // draw1()
+        initThreeDPaperPlanView(planCanvas)
+        // ** 
+        // console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaperPlanView(planCanvasRef)', ccm.darkorangeAlert, planCanvasRef.current)
+        // console.debug(`%c PaperCanvas planCanvas`, ccm.darkgreenAlert, planCanvas)
 
         // ** THREED APOLLO STATE REACTIVE VAR
         isPaperCanvasLoadedVar(true)
@@ -659,9 +659,9 @@ const PaperCanvas = (props: any) => {
       id='planCanvas'
       ref={planCanvasRef}
       // width={props.width? props.width : '2000'}
-      width={statePlanViewWidth}
+      // width={statePlanViewWidth}
       // height={props.height? props.height : '1000'}
-      height={statePlanViewHeight}
+      // height={statePlanViewHeight}
     />
   )
 }
@@ -695,7 +695,7 @@ const draw1 = () => {
 }
 
 // ** MAIN PAPER VIEW on a PaperCanvas
-function initPlanView(planCanvas: any) {
+function initThreeDPaperPlanView(planCanvas: any) {
 
   // let
   planView = document.getElementById('planView')
@@ -703,8 +703,10 @@ function initPlanView(planCanvas: any) {
   planCanvas = document.getElementById('planCanvas')
   planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
   planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
+  // planCanvas.width = roundTo(planView.getBoundingClientRect().width, 0)
+  // planCanvas.height = roundTo(planView.getBoundingClientRect().height, 0)
   console.debug(
-    '%c PaperCanvas: initPlanView: planCanvas width:height', 
+    '%c PaperCanvas: initThreeDPaperPlanView: planCanvas width:height', 
     ccm.blueAlert, 
     planCanvas.width, 
     planCanvas.height
@@ -963,7 +965,7 @@ function initPlanView(planCanvas: any) {
   // ** ON MOUSE DOWN
   tools.onMouseDown = function (e: any) {
     // **
-    console.debug('initPlanView: tools.onMouseDown', e)
+    console.debug('initThreeDPaperPlanView: tools.onMouseDown', e)
 
     /*
     if ('pointer' === threedTool)
@@ -1815,7 +1817,7 @@ function initPlanView(planCanvas: any) {
   // ** ON MOUSE UP
   tools.onMouseUp = function (e: any) {
     // **
-    console.debug('initPlanView: tools.onMouseUp', e)
+    console.debug('initThreeDPaperPlanView: tools.onMouseUp', e)
 
     /*
     0 === mouseMode && dragging
@@ -2074,7 +2076,7 @@ function initPlanView(planCanvas: any) {
   // ** ON MOUSE DRAG
   tools.onMouseDrag = function (e: any) {
     // **
-    // console.debug('initPlanView: tools.onMouseDrag', e)
+    // console.debug('initThreeDPaperPlanView: tools.onMouseDrag', e)
 
     /*
     var t = e.downPoint.subtract(e.point)
@@ -2738,7 +2740,7 @@ function initPlanView(planCanvas: any) {
   // ** ON MOUSE MOVE
   tools.onMouseMove = function (e: any) {
     // **
-    // console.debug('initPlanView: tools.onMouseMove', e)
+    // console.debug('initThreeDPaperPlanView: tools.onMouseMove', e)
     /*
     if (((lastMousePoint = e.point), 'walls' === threedTool)) {
       if (((snapPoint = null), startedDrawingWalls)) {
@@ -3169,9 +3171,9 @@ function initPlanView(planCanvas: any) {
   drawGridNew(paper, 20)
   // redrawGrid()
   
-} // END initPlanView()
+} // END initThreeDPaperPlanView()
 
-// ** END: PAPER.JS planView PaperCanvas
+// ** END: ThreeD PAPER.JS planView PaperCanvas
 // ==============================================================
 
 /* */
@@ -5371,9 +5373,12 @@ function initThreed(threedItem: any, scene: any) {
 // ** DRAW GRID path lines x,y
 function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
   const { view, Path } = paperScope
-  let { width, height } = view.size
-  width = roundTo(width, 0)
-  height = roundTo(height, 0)
+  // let { width, height } = view.size
+  let planCanvas = document.getElementById('planCanvas')
+  planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
+  planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
+  let width = roundTo(planCanvas.width, 0)
+  let height = roundTo(planCanvas.height, 0)
   console.debug('%c drawGridNew: width:height', ccm.darkgrayAlert, width, height)
   // x
   for (let x = 0; x <= width; x += gridSize) {
@@ -6752,7 +6757,7 @@ export default function ThreeDHomeDesign({
                 maxSize={100}
                 style={{
                   // overflow: 'auto',
-                  // border: '1px solid #1A1A1A',
+                  // border: '1px solid #003300',
                 }}
                 // onResize={() => redrawGrid()} // ** TESTING
               >
@@ -6867,8 +6872,8 @@ export default function ThreeDHomeDesign({
                     id='planView'
                     style={{
                       // display: 'inline-block',
-                      // display: 'flex',
-                      display: 'inline-flex',
+                      display: 'flex',
+                      // display: 'inline-flex',
                       // flexGrow: '1',
                       width: 'calc(100% - 20px)',
                       height: 'calc(100% - 20px)',
@@ -6881,9 +6886,9 @@ export default function ThreeDHomeDesign({
                 <div
                   id='rulerBottomContainer'
                   style={{
-                    display: 'block',
+                    // display: 'block',
                     // display: 'inline-block',
-                    // display: 'flex',
+                    display: 'flex',
                     // display: 'inline-flex',
                     // flexGrow: '0',
                     // width: '100%',
