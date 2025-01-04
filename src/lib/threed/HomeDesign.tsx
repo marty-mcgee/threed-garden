@@ -656,92 +656,14 @@ const PaperCanvas = (props: any) => {
   
   // ** RETURN JSX
   return (
-    <div
-      id='planCanvasContainer'
-      style={{
-        // display: 'inline-block',
-        // display: 'flex',
-        // display: 'inline-flex',
-        // flexGrow: '0',
-        // width: '20px',
-        // maxWidth: '20px',
-        // height: '100%',
-        // backgroundColor: 'darkred', // '#FFFFFF',
-        // backgroundColor: 'rgba(116, 6, 6, 1.0)', // '#636363',
-        backgroundColor: 'transparent',
-      }}
-    >
-      <canvas 
-        id='planCanvas'
-        ref={planCanvasRef}
-        // width={props.width? props.width : '2000'}
-        width={statePlanViewWidth}
-        // height={props.height? props.height : '1000'}
-        height={statePlanViewHeight}
-      />
-    </div>
-  )
-}
-function RulerLeft () {
-  // ** <RulerLeft />
-  return (
-    <div
-      id='rulerLeftContainer'
-      style={{
-        // display: 'inline-block',
-        // display: 'flex',
-        // display: 'inline-flex',
-        // flexGrow: '0',
-        // width: '20px',
-        // maxWidth: '20px',
-        // height: '100%',
-        backgroundColor: 'darkred', // '#FFFFFF',
-        // backgroundColor: 'rgba(116, 6, 6, 1.0)', // '#636363',
-        // backgroundColor: 'transparent',
-      }}
-    >
-      <canvas 
-        id='rulerLeft' 
-        // width={'8px'} // not working well: 8px = 20px
-        // width={props.width? props.width : '2000'}
-        // width={statePlanViewWidth}
-        // height={props.height? props.height : '1000'}
-        // height={statePlanViewHeight}
-        // onMouseDown={() => addVerticalGuide()}
-        // onMouseUp={() => removeVerticalGuide()}
-      ></canvas>
-    </div>
-  )
-}
-function RulerBottom () {
-  // ** <RulerBottom />
-  return (              
-    <div
-      id='rulerBottomContainer'
-      style={{
-        // display: 'inline-block',
-        // display: 'flex',
-        // display: 'inline-flex',
-        // flexGrow: '0',
-        // width: '100%',
-        // height: '20px',
-        // maxHeight: '20px',
-        backgroundColor: 'yellow', // '#636363',
-        // backgroundColor: 'rgba(244, 244, 12, 1.0)', // '#636363',
-        // backgroundColor: 'transparent',
-      }}
-    >
-      <canvas 
-        id='rulerBottom' 
-        // width={1600}
-        // width={props.width? props.width : '2000'}
-        // width={statePlanViewWidth}
-        // height={props.height? props.height : '1000'}
-        // height={statePlanViewHeight}
-        // onMouseDown={() => addHorizontalGuide()}
-        // onMouseUp={() => removeHorizontalGuide()}
-      ></canvas>
-    </div>
+    <canvas 
+      id='planCanvas'
+      ref={planCanvasRef}
+      // width={props.width? props.width : '2000'}
+      // width={statePlanViewWidth}
+      // height={props.height? props.height : '1000'}
+      // height={statePlanViewHeight}
+    />
   )
 }
 
@@ -780,8 +702,8 @@ function initPlanView(planCanvas: any) {
   planView = document.getElementById('planView')
   // let
   planCanvas = document.getElementById('planCanvas')
-  // planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
-  // planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
+  planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
+  planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
   console.debug(
     '%c PaperCanvas: initPlanView: planCanvas width:height', 
     ccm.blueAlert, 
@@ -6624,65 +6546,60 @@ export default function ThreeDHomeDesign({
         <ThreeDDropdownMenu />
 
         {/* PANEL SHOW/HIDE */}
-        {/* <span> */}
-          <Button
-            // className={styles.Button}
-            style={{
-              backgroundColor: 'transparent',
-              border: '0px',
-              width: '16px',
-              height: '16px',
-              padding: '0px',
-              marginLeft: '6px', 
-            }}
-            onClick={() => setShowPanelFirst()}
-          >
-            {/* {showPanelFirst ? 'hide' : 'show'} panel left */}
-            { prefs.showPanelFirst && (
-              <ArrowLeftEndOnRectangleIcon
-                style={{
-                  color: '#504191', // '#3B3269',
-                }}
-              />
-            )}
-            { !prefs.showPanelFirst && (
-              <ArrowRightEndOnRectangleIcon
-                style={{
-                  color: '#504191', // '#3B3269',
-                }}
-              />
-            )}
-          </Button>
-          {/* &nbsp; */}
-          <Button
-            // className={styles.Button}
-            style={{
-              backgroundColor: 'transparent',
-              border: '0px',
-              width: '16px',
-              height: '16px',
-              padding: '0px',
-              marginLeft: '4px', 
-            }}
-            onClick={() => setShowPanelLast()}
-          >
-            {/* {showPanelLast ? 'hide' : 'show'} panel right */}
-            { prefs.showPanelLast && (
-              <ArrowRightEndOnRectangleIcon
-                style={{
-                  color: '#504191', // '#3B3269',
-                }}
-              />
-            )}
-            { !prefs.showPanelLast && (
-              <ArrowLeftEndOnRectangleIcon
-                style={{
-                  color: '#504191', // '#3B3269',
-                }}
-              />
-            )}
-          </Button>
-        {/* </span> */}
+        <Button
+          // className={styles.Button}
+          style={{
+            backgroundColor: 'transparent',
+            border: '0px',
+            width: '16px',
+            height: '16px',
+            padding: '0px',
+            marginLeft: '6px', 
+          }}
+          onClick={() => setShowPanelFirst()}
+        >
+          { prefs.showPanelFirst && (
+            <ArrowLeftEndOnRectangleIcon
+              style={{
+                color: '#504191', // '#3B3269',
+              }}
+            />
+          )}
+          { !prefs.showPanelFirst && (
+            <ArrowRightEndOnRectangleIcon
+              style={{
+                color: '#504191', // '#3B3269',
+              }}
+            />
+          )}
+        </Button>
+        <Button
+          // className={styles.Button}
+          style={{
+            backgroundColor: 'transparent',
+            border: '0px',
+            width: '16px',
+            height: '16px',
+            padding: '0px',
+            marginLeft: '4px', 
+          }}
+          onClick={() => setShowPanelLast()}
+        >
+          { prefs.showPanelLast && (
+            <ArrowRightEndOnRectangleIcon
+              style={{
+                color: '#504191', // '#3B3269',
+              }}
+            />
+          )}
+          { !prefs.showPanelLast && (
+            <ArrowLeftEndOnRectangleIcon
+              style={{
+                color: '#504191', // '#3B3269',
+              }}
+            />
+          )}
+        </Button>
       </div>
 
       {/* PAGE LAYOUT PANELS */}
@@ -6857,37 +6774,86 @@ export default function ThreeDHomeDesign({
                 // onResize={() => redrawGrid()} // ** TESTING
               >
                 <div
-                  id='planView'
+                  id='paperView'
                   style={{
-                    display: 'inline-block',
+                    // display: 'inline-block',
+                    // display: 'flex',
+                    display: 'inline-flex',
                     // flexGrow: '0',
                     // width: '100%',
                     // height: 'calc(100% - 20px)',
                     // backgroundColor: 'darkorange', // '#222222',
                     // backgroundColor: 'rgba(116, 70, 6, 1.0)', // '#636363',
                   }}
-                >
-                    { true && (
-                      <>
-                        <RulerLeft />
-                        <div 
-                          id='paperView'
-                          style={{
-                            // display: 'inline-block',
-                            // flexGrow: '1',
-                            // width: 'calc(100% - 20px)',
-                            // height: '100%',
-                            backgroundColor: 'rgba(8, 133, 22, 0.2)', // '#222222',
-                          }}
-                        >
-                          <PaperCanvas />
-                        </div>
-                        <RulerBottom />
-                      </>
-                    )}
-
+                > 
+                  <div
+                    id='rulerLeftContainer'
+                    style={{
+                      display: 'inline-block',
+                      // display: 'flex',
+                      // display: 'inline-flex',
+                      // flexGrow: '0',
+                      width: '20px',
+                      // maxWidth: '20px',
+                      // height: '100%',
+                      backgroundColor: 'darkred', // '#FFFFFF',
+                      // backgroundColor: 'rgba(116, 6, 6, 1.0)', // '#636363',
+                      // backgroundColor: 'transparent',
+                    }}
+                  >
+                    <canvas 
+                      id='rulerLeft' 
+                      width={20}
+                      // width={props.width? props.width : '2000'}
+                      // width={statePlanViewWidth}
+                      // height={props.height? props.height : '1000'}
+                      // height={statePlanViewHeight}
+                      // onMouseDown={() => addVerticalGuide()}
+                      // onMouseUp={() => removeVerticalGuide()}
+                    ></canvas>
+                  </div>
+                  <div 
+                    id='planView'
+                    style={{
+                      // display: 'inline-block',
+                      // display: 'flex',
+                      display: 'inline-flex',
+                      // flexGrow: '1',
+                      width: 'calc(100% - 20px)',
+                      height: 'calc(100% - 20px)',
+                      backgroundColor: 'rgba(8, 133, 22, 0.2)', // '#222222',
+                    }}
+                  >
+                    <PaperCanvas />
+                  </div>
                 </div>
-
+                <div
+                  id='rulerBottomContainer'
+                  style={{
+                    display: 'block',
+                    // display: 'inline-block',
+                    // display: 'flex',
+                    // display: 'inline-flex',
+                    // flexGrow: '0',
+                    // width: '100%',
+                    height: '20px',
+                    // maxHeight: '20px',
+                    backgroundColor: 'yellow', // '#636363',
+                    // backgroundColor: 'rgba(244, 244, 12, 1.0)', // '#636363',
+                    // backgroundColor: 'transparent',
+                  }}
+                >
+                  <canvas 
+                    id='rulerBottom' 
+                    width={1600}
+                    // width={props.width? props.width : '2000'}
+                    // width={statePlanViewWidth}
+                    // height={props.height? props.height : '1000'}
+                    // height={statePlanViewHeight}
+                    // onMouseDown={() => addHorizontalGuide()}
+                    // onMouseUp={() => removeHorizontalGuide()}
+                  ></canvas>
+                </div>
               </Panel>
             </PanelGroup>
           </Panel>
