@@ -6827,7 +6827,7 @@ export default function ThreeDHomeDesign({
                 //   // border: '1px solid #1A1A1A',
                 //   backgroundColor: '#222222', // 'rgba(68, 22, 147, 1.0)', 
                 // }}
-                // onResize={() => redrawGrid()} // ** TESTING
+                onResize={() => redrawGrid()} // ** TESTING
               >
                 <div
                   id='paperView'
