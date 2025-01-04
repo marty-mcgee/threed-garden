@@ -579,19 +579,20 @@ const PaperCanvas = (props: any) => {
 
         // let
         // planCanvas = document.getElementById('planCanvas')
-        planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
-        planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
+        // const thisStatePlanViewWidth = roundTo(paper.view.bounds.width, 0)
+        // const thisStatePlanViewHeight = roundTo(paper.view.bounds.height, 0)
+        const thisStatePlanViewWidth = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
+        const thisStatePlanViewHeight = roundTo(planCanvas.parentNode.getBoundingClientRect().height + 100, 0)
+        planCanvas.width = thisStatePlanViewWidth
+        planCanvas.height = thisStatePlanViewHeight
 
         // ** STATE SET
-        // setStatePlanViewWidth(roundTo(1000, 0))
-        // setStatePlanViewHeight(roundTo(500, 0))
-        // setStatePlanViewWidth(roundTo(paper.view.bounds.width, 0))
-        // setStatePlanViewHeight(roundTo(paper.view.bounds.height, 0))
-        setStatePlanViewWidth(planCanvas.width)
-        setStatePlanViewHeight(planCanvas.height)
+        setStatePlanViewWidth(thisStatePlanViewWidth)
+        setStatePlanViewHeight(thisStatePlanViewHeight)
 
         // ** ================================================
 
+        // ** PAPER.JS -- SETUP
         // paper.install(window)
         paper.setup(planCanvas)
         // paper.settings.hitTolerance = 3 // do not set this here (yet)
@@ -700,9 +701,9 @@ function initThreeDPaperPlanView(planCanvas: any) {
   // let
   planView = document.getElementById('planView')
   // let
-  planCanvas = document.getElementById('planCanvas')
-  planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
-  planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
+  // planCanvas = document.getElementById('planCanvas')
+  // planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
+  // planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
   // planCanvas.width = roundTo(planView.getBoundingClientRect().width, 0)
   // planCanvas.height = roundTo(planView.getBoundingClientRect().height, 0)
   console.debug(
@@ -6835,8 +6836,10 @@ export default function ThreeDHomeDesign({
                     display: 'flex',
                     // display: 'inline-flex',
                     // flexGrow: '0',
-                    // width: '100%',
-                    // height: 'calc(100% - 20px)',
+                    width: '100%',
+                    // width: 'calc(100% - 20px)',
+                    // height: '100%',
+                    height: 'calc(100% - 20px)',
                     // backgroundColor: 'darkorange', // '#222222',
                     // backgroundColor: 'rgba(116, 70, 6, 1.0)', // '#636363',
                   }}
@@ -6871,12 +6874,12 @@ export default function ThreeDHomeDesign({
                   <div 
                     id='planView'
                     style={{
-                      // display: 'inline-block',
-                      display: 'flex',
+                      display: 'inline-block',
+                      // display: 'flex',
                       // display: 'inline-flex',
                       // flexGrow: '1',
                       width: 'calc(100% - 20px)',
-                      height: 'calc(100% - 20px)',
+                      // height: 'calc(100% - 20px)',
                       backgroundColor: 'rgba(8, 133, 22, 0.2)', // '#222222',
                     }}
                   >
