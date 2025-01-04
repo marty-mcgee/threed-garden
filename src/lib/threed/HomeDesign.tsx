@@ -6899,6 +6899,7 @@ export default function ThreeDHomeDesign({
                     // width={statePlanViewWidth}
                     // height={props.height? props.height : '1000'}
                     // height={statePlanViewHeight}
+                    height={20}
                     // onMouseDown={() => addHorizontalGuide()}
                     // onMouseUp={() => removeHorizontalGuide()}
                   ></canvas>
