@@ -3425,10 +3425,12 @@ const ViewProperties = () => {
                 maxLength={8} 
               />
               cm
-              {/* <input type='checkbox' id='flipX' 
+              |
+              Flip X
+              <input type='checkbox' 
+                id='flipX' 
                 // onChange={() => flipX(this.checked)} 
               />
-              Flip X */}
             </td>
           </tr>
           <tr>
@@ -3453,11 +3455,12 @@ const ViewProperties = () => {
                 maxLength={8} 
               />
               cm
-              {/* <input type='checkbox' 
+              |
+              Flip Z
+              <input type='checkbox' 
                 id='flipZ' 
                 // onChange={() => flipZ(this.checked)} 
               />
-              Flip Z */}
             </td>
           </tr>
           <tr>
@@ -3473,7 +3476,7 @@ const ViewProperties = () => {
             <td>
               <button 
                 className='moreInfoBtn' 
-                // onClick={() => showModel3dView()}
+                onClick={(event) => showModel3dView(event)}
               >
                 VIEW 3D MODEL
               </button>
