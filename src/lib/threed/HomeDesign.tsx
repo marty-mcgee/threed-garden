@@ -6825,14 +6825,17 @@ export default function ThreeDHomeDesign({
                 defaultSize={50}
                 minSize={0}
                 maxSize={100}
-                // style={{
-                //   // display: 'inline-block',
-                //   // overflow: 'auto', // no
-                //   // height: '100%',
-                //   // width: '100%',
-                //   // border: '1px solid #1A1A1A',
-                //   backgroundColor: '#222222', // 'rgba(68, 22, 147, 1.0)', 
-                // }}
+                style={{
+                  display: 'inline-block',
+                  // display: 'flex',
+                  // display: 'inline-flex',
+                  // flexGrow: '0',
+                  // overflow: 'auto', // no
+                  // height: '100%',
+                  // width: '100%',
+                  // border: '1px solid #1A1A1A',
+                  backgroundColor: '#222222', // 'rgba(68, 22, 147, 1.0)', 
+                }}
                 onResize={() => redrawGrid()} // ** TESTING
               >
                 <div
