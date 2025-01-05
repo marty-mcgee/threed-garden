@@ -3308,7 +3308,7 @@ const ViewProperties = () => {
           flexDirection: 'column',
         }}
       >
-        <h3>Model Properties</h3>
+        <h4>Model Properties</h4>
         <table 
           className='propertiesTable'
         >
@@ -3353,7 +3353,7 @@ const ViewProperties = () => {
         </table>
       </div>
 
-      <hr/>
+      {/* <hr/> */}
       
       <div 
         id='threedPropertiesView'
@@ -3364,7 +3364,7 @@ const ViewProperties = () => {
           paddingTop: '8px',
         }}
       >
-        <h3>Threed Properties</h3>
+        <h4>Threed Properties</h4>
         <table 
           className='propertiesTable' 
           // style={{ minWidth: '290px' }}
@@ -3483,13 +3483,13 @@ const ViewProperties = () => {
         </table>
       </div>
 
-      <hr/>
+      {/* <hr/> */}
 
       <div 
         id='defaultsPropertiesView' 
-        // style={{ display: 'none' }}
+        style={{ display: 'flex' }}
       >
-        <h3>Default Settings</h3>
+        <h4>Default Settings</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
           <tbody>
           <tr>
@@ -3508,8 +3508,8 @@ const ViewProperties = () => {
 
       <hr/>
       
-      <div id='wallDefaultsPropertiesView' style={{ display: 'none' }}>
-        <h3>Default Wall Settings</h3>
+      <div id='wallDefaultsPropertiesView' style={{ display: 'flex' }}>
+        <h4>Default Wall Settings</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
           <tr>
@@ -3537,8 +3537,8 @@ const ViewProperties = () => {
                       </tbody>
         </table>
       </div>
-      <div id='floorDefaultsPropertiesView' style={{ display: 'none' }}>
-        <h3>Default Floor Settings</h3>
+      <div id='floorDefaultsPropertiesView' style={{ display: 'flex' }}>
+        <h4>Default Floor Settings</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
           <tr>
@@ -3554,8 +3554,8 @@ const ViewProperties = () => {
                       </tbody>
         </table>
       </div>
-      <div id='roofDefaultsPropertiesView' style={{ display: 'none' }}>
-        <h3>Default Roof Settings</h3>
+      <div id='roofDefaultsPropertiesView' style={{ display: 'flex' }}>
+        <h4>Default Roof Settings</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
           <tr>
@@ -3613,14 +3613,14 @@ const ViewProperties = () => {
                       </tbody>
         </table>
       </div>
-      <div id='dimensionDefaultsPropertiesView' style={{ display: 'none' }}>
-        <h3>Default Dimension Settings</h3>
+      <div id='dimensionDefaultsPropertiesView' style={{ display: 'flex' }}>
+        <h4>Default Dimension Settings</h4>
       </div>
-      <div id='textDefaultsPropertiesView' style={{ display: 'none' }}>
-        <h3>Default Text Settings</h3>
+      <div id='textDefaultsPropertiesView' style={{ display: 'flex' }}>
+        <h4>Default Text Settings</h4>
       </div>
 
-      <hr/>
+      {/* <hr/> */}
 
       <div 
         id='planViewPropertiesView' 
@@ -3629,7 +3629,7 @@ const ViewProperties = () => {
           flexDirection: 'column',
         }}
       >
-        <h3>Background Template</h3>
+        <h4>Background Template</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
           <tr>
@@ -3697,7 +3697,7 @@ const ViewProperties = () => {
       <hr/>
       
       <div id='3dViewPropertiesView' style={{ display: 'none' }}>
-        <h3>3d View Properties</h3>
+        <h4>3d View Properties</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
           <tr>
@@ -3812,7 +3812,7 @@ const ViewProperties = () => {
         </table>
       </div>
       <div id='wallPropertiesView' style={{ display: 'none' }}>
-        <h3>Wall Properties</h3>
+        <h4>Wall Properties</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
           <tr>
@@ -3866,7 +3866,7 @@ const ViewProperties = () => {
         </table>
       </div>
       <div id='roofPropertiesView' style={{ display: 'none' }}>
-        <h3>Roof Properties</h3>
+        <h4>Roof Properties</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
           <tr>
@@ -3929,7 +3929,7 @@ const ViewProperties = () => {
         </table>
       </div>
       <div id='floorPropertiesView' style={{ display: 'none' }}>
-        <h3>Floor Properties</h3>
+        <h4>Floor Properties</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
                       <tbody>
           <tr>
@@ -3952,7 +3952,7 @@ const ViewProperties = () => {
         </table>
       </div>
       <div id='dimensionPropertiesView' style={{ display: 'none' }}>
-        <h3>Dimension Properties</h3>
+        <h4>Dimension Properties</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
           <tbody>
             <tr>
@@ -3981,7 +3981,7 @@ const ViewProperties = () => {
           display: 'flex',
           flexDirection: 'column',
       }}>
-        <h3>Text Annotation Properties</h3>
+        <h4>Text Annotation Properties</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
           <tbody>
             <tr>
@@ -4034,7 +4034,7 @@ const ViewProperties = () => {
           flexDirection: 'column',
         }}
       >
-        <h3>Level Properties</h3>
+        <h4>Level Properties</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
           <tbody>
             <tr>
@@ -4068,7 +4068,7 @@ const ViewProperties = () => {
           flexDirection: 'column',
         }}
       >
-        <h3>Ground Layer Properties</h3>
+        <h4>Ground Layer Properties</h4>
         <table className='propertiesTable' style={{ minWidth: '290px' }}>
           <tbody>
             <tr>
@@ -4176,7 +4176,7 @@ const ViewModals = (props: any) => {
               </div>
 
               <div id='tab1Content' className='tabcontent' style={{display: 'block'}}>
-                <h3>ThreeD Home Design Introduction</h3>
+                <h4>ThreeD Home Design Introduction</h4>
                 <p>Plan + Share Ideas for your Home Design in 2D + 3D</p>
                 <div style={{padding: '12px'}}>
                   <div>
@@ -4266,7 +4266,7 @@ const ViewModals = (props: any) => {
 
             </div>
             <div className='modal-footer'>
-              <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+              <h4><a href='https://threedgarden.com'>Modal: Footer</a></h4>
             </div>
           </div>
         </div>
@@ -4291,7 +4291,7 @@ const ViewModals = (props: any) => {
                 <canvas id='model3dViewCanvas'></canvas>
               </div>
               <div id='modalModelDescription'>
-                <h3>3d Model Properties</h3>
+                <h4>3d Model Properties</h4>
                 <table className='propertiesTable'>
                   <tbody>
                     <tr>
@@ -4316,7 +4316,7 @@ const ViewModals = (props: any) => {
               </div>
             </div>
             <div className='modal-footer'>
-              <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+              <h4><a href='https://threedgarden.com'>Modal: Footer</a></h4>
             </div>
           </div>
         </div>
@@ -4337,7 +4337,7 @@ const ViewModals = (props: any) => {
               <h2>ThreeD Home Design</h2>
             </div>
             <div className='modal-small-body'>
-              <h3>Share Plan</h3>
+              <h4>Share Plan</h4>
               <button 
                 id='getShareLinkBtn' 
                 className='mediumButton' 
@@ -4369,7 +4369,7 @@ const ViewModals = (props: any) => {
               </div> */}
             </div>
             <div className='modal-small-footer'>
-              <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+              <h4><a href='https://threedgarden.com'>Modal: Footer</a></h4>
             </div>
           </div>
         </div>
@@ -4390,11 +4390,11 @@ const ViewModals = (props: any) => {
               <h2>ThreeD Home Design</h2>
             </div>
             <div className='modal-small-body'>
-              <h3>Loading Model Progress</h3>
+              <h4>Loading Model Progress</h4>
               <textarea id='modalLoadingDataInfo'></textarea>
             </div>
             <div className='modal-small-footer'>
-              <h3><a href='https://threedgarden.com'>Modal: Footer</a></h3>
+              <h4><a href='https://threedgarden.com'>Modal: Footer</a></h4>
             </div>
           </div>
         </div>
@@ -4531,7 +4531,7 @@ const ViewModals = (props: any) => {
               <canvas id='model3dViewCanvas'></canvas>
             </div>
             <div id='modalModelDescription'>
-              <h3>3d Model Properties</h3>
+              <h4>3d Model Properties</h4>
               <table className='propertiesTable' style={{ width: '400px'}}>
                 <tbody>
                   <tr>
@@ -4556,7 +4556,7 @@ const ViewModals = (props: any) => {
             </div>
           </div>
           <div className='modal-footer'>
-            <h3><a href='https://threedgarden.com'>ThreeD Home Design</a></h3>
+            <h4><a href='https://threedgarden.com'>ThreeD Home Design</a></h4>
           </div>
         </div>
       </div>
@@ -4569,11 +4569,11 @@ const ViewModals = (props: any) => {
             <h2>ThreeD Home Design</h2>
           </div>
           <div className='modal-small-body'>
-            <h3>Loading Model Progress</h3>
+            <h4>Loading Model Progress</h4>
             <textarea id='modalLoadingDataInfo'></textarea>
           </div>
           <div className='modal-small-footer'>
-            <h3><a href='https://threedgarden.com'>ThreeD Home Design</a></h3>
+            <h4><a href='https://threedgarden.com'>ThreeD Home Design</a></h4>
           </div>
         </div>
       </div>
@@ -4587,7 +4587,7 @@ const ViewModals = (props: any) => {
             <h2>ThreeD Home Design</h2>
           </div>
           <div className='modal-small-body'>
-            <h3>Share Plan</h3>
+            <h4>Share Plan</h4>
             {/* <button id='getShareLinkBtn' className='mediumButton' onClick={() => generateShareLink()}>Generate Share
               Link</button>
             <div style='margin:10px 0px 10px 0px'>
@@ -4614,7 +4614,7 @@ const ViewModals = (props: any) => {
             </div> */}
           </div>
           <div className='modal-small-footer'>
-            <h3><a href='https://threedgarden.com'>ThreeD Home Design</a></h3>
+            <h4><a href='https://threedgarden.com'>ThreeD Home Design</a></h4>
           </div>
         </div>
       </div>
