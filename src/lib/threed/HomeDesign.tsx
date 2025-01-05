@@ -3268,6 +3268,40 @@ const ViewProperties = () => {
       }}
     >
       <div 
+        id='threed3DButtons' 
+        style={{ 
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <button className='moreInfoBtn' 
+          onClick={(event) => showModel3dView(event)}
+        >
+          Preview
+        </button>
+        <button className='moreInfoBtn' 
+          onClick={(event) => addThreed(event, draggingThreedItem, canvasStateVar().state.scene)}
+        >
+          Add To Canvas
+        </button>
+        <button className='moreInfoBtn' 
+          onClick={() => recenterPlanView()}
+        >
+          Recenter
+        </button>
+        <button className='moreInfoBtn' 
+          onClick={() => drawGridNew(paper, 10)}
+        >
+          Draw Grid
+        </button>
+        <button className='moreInfoBtn' 
+          onClick={() => redrawGrid()}
+        >
+          ReDraw Grid
+        </button>
+      </div>
+
+      <div 
         id='threed3DModelPropertiesView' 
         style={{ 
           display: 'flex',
@@ -3281,37 +3315,9 @@ const ViewProperties = () => {
           <tbody>
             <tr>
               <td>
-                <button className='moreInfoBtn' 
-                  onClick={(event) => showModel3dView(event)}
-                >
-                  Preview
-                </button>
-                <button className='moreInfoBtn' 
-                  onClick={(event) => addThreed(event, draggingThreedItem, canvasStateVar().state.scene)}
-                >
-                  Add To Canvas
-                </button>
-                <button className='moreInfoBtn' 
-                  onClick={() => recenterPlanView()}
-                >
-                  Recenter
-                </button>
-                <button className='moreInfoBtn' 
-                  onClick={() => drawGridNew(paper, 10)}
-                >
-                  Draw Grid
-                </button>
-                <button className='moreInfoBtn' 
-                  onClick={() => redrawGrid()}
-                >
-                  ReDraw Grid
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>
                 <div 
                   onMouseDown={(event) => beginDrag(event, draggingThreedItem)} 
+                  // onMouseUp={(event) => addThreed(event, draggingThreedItem, canvasStateVar().state.scene)}
                   className='disableSelection'
                   style={{ textAlign: 'center' }}
                 >
