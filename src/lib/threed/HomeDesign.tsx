@@ -6771,9 +6771,9 @@ export default function ThreeDHomeDesign({
                 <div 
                   id='view3d'
                   style={{
-                    // display: 'flex',
+                    display: 'flex',
                     // flexDirection: 'column',
-                    // width: '100%',
+                    width: '100%',
                     height: '100%',
                     // height: 'calc(100% - 0px)',
                     // border: '1px solid #003300',
