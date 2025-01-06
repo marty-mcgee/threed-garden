@@ -211,10 +211,10 @@ dimensionsGroup: Object[] = [],
 textsGroup: Object[] = [],
 guidesGroup: Object[] = [],
 // **
-rotateIcon: any,
-resizeIcon: any,
-elevateIcon: any,
-heightIcon: any,
+rotateIcon: paper.Raster,
+resizeIcon: paper.Raster,
+elevateIcon: paper.Raster,
+heightIcon: paper.Raster,
 // **
 planView: HTMLElement,
 mouseIndicatorX: HTMLElement,
@@ -698,9 +698,9 @@ const draw1 = () => {
 // ** MAIN PAPER VIEW on a PaperCanvas
 function initThreeDPaperPlanView(planCanvas: any) {
 
-  // let
+  // ** let planView is parent container for planCanvas
   planView = document.getElementById('planView')
-  // let
+  // ** let planCanvas is the main paper canvas
   // planCanvas = document.getElementById('planCanvas')
   // planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
   // planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
@@ -712,17 +712,23 @@ function initThreeDPaperPlanView(planCanvas: any) {
     planCanvas.width, 
     planCanvas.height
   )
-
+  // ** disable default context menu on planCanvas
   planCanvas.oncontextmenu = function () {
     return false
   }
 
   // ** ================================================
+  
+  // ** CURRENT SCREEN DIMENSIONS
+  screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
 
+  // **
   focusPoint = new paper.Point(0, 0)
 
+  // **
   threedDragDiv = document.getElementById('threedDragDiv')
 
+  // **
   progressBar = document.getElementById('progressBar')
   progressBar.style.display = 'none'
 
@@ -732,9 +738,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   paper.project.activeLayer.name = 'level_0'
   paper.project.activeLayer.data = { id: '0', height: 0 }
 
-  // ** CURRENT SCREEN DIMENSIONS
-  screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
-
+  // ==============================================================
   // ** GROUPS
   gridGroup[0] = new paper.Group()
   floorsGroup[0] = new paper.Group()
@@ -744,7 +748,9 @@ function initThreeDPaperPlanView(planCanvas: any) {
   threedGroup[0] = new paper.Group()
   textsGroup[0] = new paper.Group()
   guidesGroup[0] = new paper.Group()
+  toolsGroup[0] = new paper.Group()
 
+  // ==============================================================
   // ** SLIDERS
   verticalSlider = document.getElementById('verticalSlider')
   verticalSliderDragging = false
@@ -765,6 +771,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
     horizontalSliderRight.style.top = e.y - 2 + 'px'
   }
 
+  // ==============================================================
   // ** RULERS
   // @ts-expect-error
   rulerLeft = document.getElementById('rulerLeft')
@@ -782,6 +789,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   rulerLeftCtx = rulerLeft.getContext('2d')
   rulerBottomCtx = rulerBottom.getContext('2d')
 
+  // ==============================================================
   // ** MOUSE INDICATORS
   // mouseIndicatorX = document.getElementById('mouseIndicatorX')
   // mouseIndicatorY = document.getElementById('mouseIndicatorY')
@@ -804,12 +812,29 @@ function initThreeDPaperPlanView(planCanvas: any) {
   //   false
   // )
 
-  // ** SUPPORT FIREFOX + MOUSEPAD
+  // ** MOUSE MOVEMENTS -- SUPPORT FIREFOX + OTHERS
   let MMtUserAgent = /Firefox/i.test(navigator.userAgent)
     ? 'DOMMouseScroll'
     : 'mousewheel'
   planCanvas.addEventListener(MMtUserAgent, MMeMouseRedrawGrid)
 
+  // ==============================================================
+  // ** DRAGGING A SIMPLE RECTANGLE
+  draggingThreedRectangle = new paper.Path.Rectangle(
+    new paper.Point(-1, -1),
+    new paper.Point(1, 1)
+  )
+  draggingThreedRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
+  draggingThreedRectangle.strokeWidth = 2
+  draggingThreedRectangle.strokeScaling = false
+  draggingThreedRectangle.position = new paper.Point(0, 0)
+  draggingThreedRectangle.visible = false
+  // @ts-expect-error
+  threedGroup[paper.project.activeLayer.data.id].addChild(
+    draggingThreedRectangle
+  )
+
+  // ==============================================================
   // **
 
   // // ** DRAW GRID path lines x,y
@@ -819,13 +844,13 @@ function initThreeDPaperPlanView(planCanvas: any) {
   
   // **
 
-  // **
-  toolsGroup[0] = new paper.Group()
+  // ==============================================================
+  // ** TOOLS: PAPER GROUP OF TOOLS
+  // toolsGroup[0] = new paper.Group()
   // @ts-expect-error
   toolsGroup[0].rotation = 0
   
-  /*
-
+  // ** 
   rotateIcon = new paper.Raster('images/homedesign/rotate.png')
   rotateIcon.data.type = 'rotateThreedTool'
   rotateIcon.onMouseEnter = function (e: any) {
@@ -835,7 +860,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
     planView.style.cursor = 'default'
   }
   rotateIcon.visible = false
-  // @ ts-expect-error
+  // @ts-expect-error
   toolsGroup[0].addChild(rotateIcon)
   
   // **
@@ -848,7 +873,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
     planView.style.cursor = 'default'
   }
   resizeIcon.visible = false
-  // @ ts-expect-error
+  // @ts-expect-error
   toolsGroup[0].addChild(resizeIcon)
 
   // **
@@ -861,7 +886,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
     planView.style.cursor = 'default'
   }
   elevateIcon.visible = false
-  // @ ts-expect-error
+  // @ts-expect-error
   toolsGroup[0].addChild(elevateIcon)
 
   // **
@@ -874,11 +899,11 @@ function initThreeDPaperPlanView(planCanvas: any) {
     planView.style.cursor = 'default'
   }
   heightIcon.visible = false
-  // @ ts-expect-error
+  // @ts-expect-error
   toolsGroup[0].addChild(heightIcon)
-    
-  // **
   
+  // ==============================================================
+  // **
   wallHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
     new paper.Point(0, 0)
@@ -887,7 +912,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   wallHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   wallHelperPath.strokeWidth = 2
   wallHelperPath.strokeScaling = false
-  // @ ts-expect-error
+  // @ts-expect-error
   wallsGroup[paper.project.activeLayer.data.id].addChild(wallHelperPath)
   roofHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -897,7 +922,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   roofHelperPath.strokeColor = new paper.Color(0, 0, 0, 0)
   roofHelperPath.strokeWidth = 2
   roofHelperPath.strokeScaling = false
-  // @ ts-expect-error
+  // @ts-expect-error
   roofsGroup[paper.project.activeLayer.data.id].addChild(roofHelperPath)
   floorHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -907,7 +932,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   floorHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   floorHelperPath.strokeWidth = 2
   floorHelperPath.strokeScaling = false
-  // @ ts-expect-error
+  // @ts-expect-error
   floorsGroup[paper.project.activeLayer.data.id].addChild(floorHelperPath)
   dimensionHelperPath = new paper.Path.Line(
     new paper.Point(0, 0),
@@ -917,7 +942,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   dimensionHelperPath.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
   dimensionHelperPath.strokeWidth = 2
   dimensionHelperPath.strokeScaling = false
-  // @ ts-expect-error
+  // @ts-expect-error
   dimensionsGroup[paper.project.activeLayer.data.id].addChild(dimensionHelperPath)
 
 
@@ -939,27 +964,11 @@ function initThreeDPaperPlanView(planCanvas: any) {
   roofHelperRectangle.strokeScaling = false
   offsetMousePoint = new paper.Point(0, 0)
 
-  */
+  /* */
   
-  
-  
+  // ==============================================================
+  // ** TOOLS: PAPER TOOL MANAGER
   tools = new paper.Tool()
-
-
-
-  draggingThreedRectangle = new paper.Path.Rectangle(
-    new paper.Point(-1, -1),
-    new paper.Point(1, 1)
-  )
-  draggingThreedRectangle.strokeColor = new paper.Color(177, 144, 100, 1) // '#b19064'
-  draggingThreedRectangle.strokeWidth = 2
-  draggingThreedRectangle.strokeScaling = false
-  draggingThreedRectangle.position = new paper.Point(0, 0)
-  draggingThreedRectangle.visible = false
-  // @ts-expect-error
-  threedGroup[paper.project.activeLayer.data.id].addChild(
-    draggingThreedRectangle
-  )
 
   // ** TOOLS: MOUSE EVENT LISTENERS
 
@@ -3142,6 +3151,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   }
   /* */
 
+  // ==============================================================
   // ** ON MOUSE DOUBLE-CLICK
   planCanvas.addEventListener(
     'dblclick',
@@ -3157,6 +3167,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
     false
   )
 
+  // ==============================================================
   // ** PAPER CANVAS:
   // ** -- PREPARE CANVAS
   // ** -- DRAW PREPARED CONTENT
