@@ -1,3 +1,5 @@
+---
+
 initThreeDPaperPlanView: tools.onMouseUp 
 Object { tool: {…}, type: "mouseup", event: mouseup }
 ​
@@ -36,8 +38,7 @@ type: "mouseup"
 <prototype>: Object { _class: "ToolEvent", _item: null, initialize: ToolEvent(tool, type, event), … }
 HomeDesign.tsx:1821:12
 
-
-------
+--
 
 _scope: Object { settings: {…}, project: {…}, _id: 0, … }
 ​​​
@@ -81,11 +82,8 @@ tool: Object { _index: 0, _moveCount: 51, _downCount: 5, … }
 ​​​
 tools: Array [ {…} ]
 
+--
 
-------
-
-
-​​​​
 _view: Object { _pixelRatio: 1, _id: "planCanvas", _frameItemCount: 0, … }
 ​​​​​
 _autoUpdate: true
@@ -119,3 +117,5 @@ _requested: false
 _scope: Object { settings: {…}, project: {…}, _id: 0, … }
 ​​​​​
 _viewSize: Object { _width: 974, _height: 491, _setter: "setSize", … }
+
+---
