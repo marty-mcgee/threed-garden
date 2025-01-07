@@ -862,7 +862,7 @@ const preferencesDataVarDefaults =
     // set functions
     setPreferencesDataVar: () => {}, // function: set properties of "this"
   }
-// export const isCanvasStateSetVar: Function = makeVar(false) // boolean: false | true
+// export const isCanvasStateSetVar = makeVar(false) // boolean: false | true
 const canvasStateVarDefaults: Object = 
   {
     // user prefs
@@ -878,8 +878,8 @@ const canvasStateVarDefaults: Object =
 
 // ==============================================================
 
-export const isPaperCanvasLoadedVar: Function = makeVar(false) // boolean: false | true
-export const isThreeDCanvasLoadedVar: Function = makeVar(false) // boolean: false | true
+export const isPaperCanvasLoadedVar = makeVar(false) // boolean: false | true
+export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
 
 // ==============================================================
 
@@ -943,12 +943,12 @@ export const stores = {
 }
 
 // ** REACTIVE VARS
-export const preferencesDataVar: Function = makeVar(preferencesDataVarDefaults)
+export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
   console.debug('preferencesDataVar', preferencesDataVar())
-export const isPreferencesDataSetVar: Function = makeVar(false) // boolean: false | true
-export const canvasStateVar: Function = makeVar(canvasStateVarDefaults)
+export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
+export const canvasStateVar = makeVar(canvasStateVarDefaults)
   console.debug('canvasStateVar', canvasStateVar())
-export const isCanvasStateSetVar: Function = makeVar(false) // boolean: false | true
+export const isCanvasStateSetVar = makeVar(false) // boolean: false | true
 // ** export REACTIVE VARS
 export const reactiveVars = {
   preferencesDataVar,
