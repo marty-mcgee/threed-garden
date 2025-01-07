@@ -862,28 +862,101 @@ const preferencesDataVarDefaults =
     // set functions
     setPreferencesDataVar: () => {}, // function: set properties of "this"
   }
+
+
 // export const isCanvasStateSetVar = makeVar(false) // boolean: false | true
-const canvasStateVarDefaults: Object = 
+const canvasStatePaperVarDefaults: Object = 
   {
     // user prefs
     ownerId: 1,
     version: '0.0.0',
-    state: null,
-    scene: null,
-    camera: null,
-    gl: null,
+    state: {
+      scene: null,
+      camera: null,
+      gl: null,
+      // advance: function advance(timestamp, runGlobalEffects)​​
+      // camera: Object { isObject3D: true, uuid: "11e47621-59c8-xxx", type: "PerspectiveCamera" }
+      // clock: Object { autoStart: true, startTime: 7005, oldTime: 17507 }
+      // controls: null
+      // events: Object { priority: 1, enabled: true, compute: compute(event, state, previous) }
+      // flat: false
+      // frameloop: "always"
+      // get: function getState()​​
+      // gl: Object { isWebGLRenderer: true, autoClear: true, autoClearColor: true }
+      // internal: Object { active: false, priority: 0, frames: 0 }
+      // invalidate: function invalidate(frames)
+      // legacy: false
+      // linear: false
+      // mouse: Object { x: 0.973346743776716, y: 0.24613951964073832 }
+      // onPointerMissed: function onPointerMissed(args)​​
+      // performance: Object { current: 1, min: 0.5, max: 1 }
+      // pointer: Object { x: 0.973346743776716, y: 0.24613951964073832 }
+      // previousRoot: undefined
+      // raycaster: Object { ray: {}, near: 0, far: Infinity }
+      // scene: Object { isObject3D: true, uuid: "bc359d14-2566-4839-b743-b302632761be", type: "Scene" }
+      // set: function setState(partial, replace)​​
+      // setDpr: function setDpr(dpr)​​
+      // setEvents: function setEvents(events)​​
+      // setFrameloop: function setFrameloop(frameloop)​​
+      // setSize: function setSize(width, height, updateStyle, top, left)​​
+      // size: Object { width: 994.25, height: 411.2166748046875, top: 89.5 }
+      // viewport: Object { initialDpr: 1, dpr: 1, width: 18.552624553963852 }
+      // xr: Object { connect: connect(), disconnect: disconnect() }
+    },
     // set functions
-    setCanvasStateVar: () => {}, // function: set properties of "this"
+    setCanvasStatePaperVar: () => {}, // function: set properties of "this"
   }
 
 // ==============================================================
 
-export const isPaperCanvasLoadedVar = makeVar(false) // boolean: false | true
-export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
+// export const isCanvasStateThreeDSetVar = makeVar(false) // boolean: false | true
+const canvasStateThreeDVarDefaults: Object = 
+  {
+    // user prefs
+    ownerId: 1,
+    version: '0.0.0',
+    state: {
+      scene: null,
+      camera: null,
+      gl: null,
+      // advance: function advance(timestamp, runGlobalEffects)​​
+      // camera: Object { isObject3D: true, uuid: "11e47621-59c8-xxxx", type: "PerspectiveCamera" }
+      // clock: Object { autoStart: true, startTime: 7005, oldTime: 17507 }
+      // controls: null
+      // events: Object { priority: 1, enabled: true, compute: compute(event, state, previous) }
+      // flat: false
+      // frameloop: "always"
+      // get: function getState()​​
+      // gl: Object { isWebGLRenderer: true, autoClear: true, autoClearColor: true }
+      // internal: Object { active: false, priority: 0, frames: 0 }
+      // invalidate: function invalidate(frames)
+      // legacy: false
+      // linear: false
+      // mouse: Object { x: 0.973346743776716, y: 0.24613951964073832 }
+      // onPointerMissed: function onPointerMissed(args)​​
+      // performance: Object { current: 1, min: 0.5, max: 1 }
+      // pointer: Object { x: 0.973346743776716, y: 0.24613951964073832 }
+      // previousRoot: undefined
+      // raycaster: Object { ray: {}, near: 0, far: Infinity }
+      // scene: Object { isObject3D: true, uuid: "bc359d14-2566-xxxx", type: "Scene" }
+      // set: function setState(partial, replace)​​
+      // setDpr: function setDpr(dpr)​​
+      // setEvents: function setEvents(events)​​
+      // setFrameloop: function setFrameloop(frameloop)​​
+      // setSize: function setSize(width, height, updateStyle, top, left)​​
+      // size: Object { width: 994.25, height: 411.2166748046875, top: 89.5 }
+      // viewport: Object { initialDpr: 1, dpr: 1, width: 18.552624553963852 }
+      // xr: Object { connect: connect(), disconnect: disconnect() }
+    },
+    // set functions
+    setCanvasStateThreeDVar: () => {}, // function: set properties of "this"
+  }
 
 // ==============================================================
 
 // ==============================================================
+// ** STORES
+
 // ** Construct Stores + Export as Group of Stores
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
@@ -942,17 +1015,38 @@ export const stores = {
   modalStoreNoun,
 }
 
+// ==============================================================
 // ** REACTIVE VARS
+
+export const isPaperCanvasLoadedVar = makeVar(false) // boolean: false | true
+  console.debug('isPaperCanvasLoadedVar()', isPaperCanvasLoadedVar())
+export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
+  console.debug('isThreeDCanvasLoadedVar()', isThreeDCanvasLoadedVar())
+
+// ** preferences(s)
 export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
-  console.debug('preferencesDataVar', preferencesDataVar())
+  console.debug('preferencesDataVar()', preferencesDataVar())
 export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
-export const canvasStateVar = makeVar(canvasStateVarDefaults)
-  console.debug('canvasStateVar', canvasStateVar())
-export const isCanvasStateSetVar = makeVar(false) // boolean: false | true
+  console.debug('isPreferencesDataSetVar()', isPreferencesDataSetVar())
+// ** canvasStatePaper(s)
+export const canvasStatePaperVar = makeVar(canvasStatePaperVarDefaults)
+  console.debug('canvasStatePaperVar()', canvasStatePaperVar())
+export const isCanvasStatePaperSetVar = makeVar(false) // boolean: false | true
+  console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
+// ** canvasStateThreeD(s)
+export const canvasStateThreeDVar = makeVar(canvasStateThreeDVarDefaults)
+  console.debug('canvasStateThreeDVar()', canvasStateThreeDVar())
+export const isCanvasStateThreeDSetVar = makeVar(false) // boolean: false | true
+  console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
+
 // ** export REACTIVE VARS
 export const reactiveVars = {
   preferencesDataVar,
-  canvasStateVar,
+  isPreferencesDataSetVar,
+  canvasStatePaperVar,
+  isCanvasStatePaperSetVar,
+  canvasStateThreeDVar,
+  isCanvasStateThreeDSetVar,
 }
 
 // export QUERIES

@@ -13,7 +13,7 @@ import {
   preferencesStore,
   canvasStateStore,
   isCanvasStateSetVar,
-  canvasStateVar,
+  canvasStateThreeDVar,
 } from '#/lib/api/graphql/apollo'
 // ** ZUSTAND (X?) // for cameras, lights, canvas props
 // import { create } from 'zustand'
@@ -349,9 +349,9 @@ export const ThreeDCanvas = forwardRef((
   //   console.debug('%c📐 ThreeDCanvas props.threeds', ccm.darkredAlert, threeds)
 
   // ** HOOKS
-  const prefs = useReactiveVar(preferencesDataVar)
+  // const prefs = useReactiveVar(preferencesDataVar)
   // console.debug('%c prefs', ccm.red, prefs)
-  const canvasState = useReactiveVar(canvasStateVar)
+  // const canvasState = useReactiveVar(canvasStateThreeDVar)
   // console.debug('%c canvasState', ccm.red, canvasState)
   
   {/* ⚙️ &#x2699 */}
@@ -372,16 +372,16 @@ export const ThreeDCanvas = forwardRef((
   }
 
   // ** SET CANVAS STATE VAR (APOLLO CLIENT)
-  function setCanvasStateVar (state: any) {
-    let newData = {...canvasStateVar()} // latest canvas state
-    // console.debug('%c⚙️ setCanvasStateVar newData', ccm.yellow, newData)
+  function setCanvasStateThreeDVar (state: any) {
+    let newData = {...canvasStateThreeDVar()} // latest canvas state
+    // console.debug('%c⚙️ setCanvasStateThreeDVar newData', ccm.yellow, newData)
     newData.state = state
-    newData.scene = state.scene
-    newData.camera = state.camera
-    newData.gl = state.gl
-    // console.debug('%c⚙️ setCanvasStateVar newData UPDATED', ccm.yellow, newData)
-    canvasStateVar(newData)
-    console.debug('%c⚙️ setCanvasStateVar canvasStateVar UPDATED', ccm.yellowAlert, canvasStateVar())
+    // newData.scene = state.scene
+    // newData.camera = state.camera
+    // newData.gl = state.gl
+    // console.debug('%c⚙️ setCanvasStateThreeDVar newData UPDATED', ccm.yellow, newData)
+    canvasStateThreeDVar(newData)
+    console.debug('%c⚙️ setCanvasStateThreeDVar canvasStateThreeDVar UPDATED', ccm.yellowAlert, canvasStateThreeDVar())
   }
 
   // ** DECLARATIVE THREED SCENE
@@ -489,7 +489,7 @@ export const ThreeDCanvas = forwardRef((
             // state.camera.position = new THREE.Vector3(2, -4, 8)
             // console.debug('%c Canvas onCreated state.camera.position(lookAt)', ccm.redAlert, state.camera.position)
             // ** SET CANVAS STATE
-            setCanvasStateVar(state)
+            setCanvasStateThreeDVar(state)
           }
         }
         

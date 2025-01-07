@@ -34,7 +34,7 @@ import {
   isPreferencesSetVar,
   preferencesDataVar,
   isCanvasStateSetVar,
-  canvasStateVar,
+  canvasStateThreeDVar,
   isPaperCanvasLoadedVar,
   isThreeDCanvasLoadedVar,
 } from '#/lib/api/graphql/apollo'
@@ -3291,7 +3291,7 @@ const ViewProperties = () => {
           Preview
         </button>
         <button className='moreInfoBtn' 
-          onClick={(event) => addThreed(event, draggingThreedItem, canvasStateVar().state.scene)}
+          onClick={(event) => addThreed(event, draggingThreedItem, canvasStateThreeDVar().state.scene)}
         >
           Add To Canvas
         </button>
@@ -3328,7 +3328,7 @@ const ViewProperties = () => {
               <td>
                 <div 
                   onMouseDown={(event) => beginDrag(event, draggingThreedItem)} 
-                  // onMouseUp={(event) => addThreed(event, draggingThreedItem, canvasStateVar().state.scene)}
+                  // onMouseUp={(event) => addThreed(event, draggingThreedItem, canvasStateThreeDVar().state.scene)}
                   className='disableSelection'
                   style={{ textAlign: 'center' }}
                 >
@@ -5163,8 +5163,8 @@ function initThreed(threedItem: any, scene: any) {
                 console.debug('OBJaBox', OBJaBox)
 
                 // // scene.add(OBJa)
-                // // canvasStateVar().scene.add(OBJa)
-                // canvasStateVar().state.scene.add(OBJa)
+                // // canvasStateThreeDVar().scene.add(OBJa)
+                // canvasStateThreeDVar().state.scene.add(OBJa)
 
                 clickableObjectsCounter++
                 var draggingThreedItemU = clickableObjectsCounter
@@ -5271,8 +5271,8 @@ function initThreed(threedItem: any, scene: any) {
                     imageN.visible = false
                     
                     // scene.add(meshN)
-                    // canvasStateVar().scene.add(meshN)
-                    canvasStateVar().state.scene.add(meshN)
+                    // canvasStateThreeDVar().scene.add(meshN)
+                    canvasStateThreeDVar().state.scene.add(meshN)
                     console.debug('meshN added to scene')
 
                     maskObjects[draggingThreedItemU] = meshN
@@ -5281,8 +5281,8 @@ function initThreed(threedItem: any, scene: any) {
 
 
                   // scene.add(OBJa)
-                  // canvasStateVar().scene.add(OBJa)
-                  canvasStateVar().state.scene.add(OBJa)
+                  // canvasStateThreeDVar().scene.add(OBJa)
+                  canvasStateThreeDVar().state.scene.add(OBJa)
                   console.debug('OBJa added to scene')
 
 
@@ -5460,8 +5460,24 @@ function redrawGrid(): boolean {
 
     } else {
 
-      screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
-      console.debug('redrawGrid: screenScale', screenScale)
+      const planView = document.getElementById('planView')
+      const planViewWidth = planView.clientWidth
+      const planViewHeight = planView.clientHeight
+      console.debug('redrawGrid: planView.width:height', planViewWidth, planViewHeight)
+      const planCanvas = document.getElementById('planCanvas')
+      planCanvas.width = planViewWidth
+      planCanvas.height = planViewHeight
+      const planCanvasWidth = planCanvas.clientWidth
+      const planCanvasHeight = planCanvas.clientHeight
+      console.debug('redrawGrid: planCanvas.width:height', planCanvasWidth, planCanvasHeight)
+
+      // console.debug('redrawGrid: screen.width:height', screen.width, screen.height)
+      // screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
+      // screenScale = ((screen.width + screen.height) / 2)
+      // console.debug('redrawGrid: screenScale', screenScale)
+
+      // dimensions of planView container of planCanvas
+      
 
       // ** [MM] SELECTED ITEM -- Testing
       console.debug('selectedItem?', selectedItem)
@@ -5607,7 +5623,6 @@ function redrawGrid(): boolean {
       // ** [MM] RULER LINES ???
       var a = paper.view.bounds.left % hitToleranceT
       var n = 0
-
       xLines.forEach(function (e: any) {
         e.segments[0].point.x = paper.view.bounds.left + n - a
         e.segments[0].point.y = paper.view.bounds.top
@@ -5631,7 +5646,6 @@ function redrawGrid(): boolean {
             : (e.style.strokeColor = '#564c3a')
         n += hitToleranceT
       })
-
       var l = paper.view.bounds.top % hitToleranceT
           n = 0
       yLines.forEach(function (e: any) {
@@ -5758,7 +5772,7 @@ export default function ThreeDHomeDesign({
   // console.debug('ThreeDHomeDesign: preferencesStore.store.getState()', preferencesStore.store.getState())
   // console.debug('ThreeDHomeDesign: preferencesStore.actions.getState()', preferencesStore.actions.getState())
   // console.debug('ThreeDHomeDesign: preferencesDataVar()', preferencesDataVar())
-  // console.debug('ThreeDHomeDesign: canvasStateVar()', canvasStateVar())
+  // console.debug('ThreeDHomeDesign: canvasStateThreeDVar()', canvasStateThreeDVar())
   // console.debug('ThreeDHomeDesign: =================================')
 
   // ** USE AUTH STATE
@@ -5783,7 +5797,7 @@ export default function ThreeDHomeDesign({
   // const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesSetVar())
 
   // ** USE CANVAS STATE
-  const canvasState = useReactiveVar(canvasStateVar) // YES !!
+  // const canvasState = useReactiveVar(canvasStateThreeDVar) // YES !!
   // console.debug('%c⚙️ ThreeD Home Design canvasState', ccm.orangeAlert, canvasState)
   // ** INIT CANVAS STATE
   // const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
@@ -6461,12 +6475,12 @@ export default function ThreeDHomeDesign({
         horizontalSliderRightDragging = false
       }
 
-      // // ** [MM] NOT EVEN CLOSE
-      // if (draggingThreedItem) {
-      //   addThreed(e, draggingThreedItem, canvasStateVar().state.scene)
-      //   // addThreed(e, draggingThreedItem, canvasState.state.scene)
-      //   // void (draggingNewGuide && (draggingNewGuide = false))
-      // }
+      // ** [MM] CLOSER.. NOT EVEN CLOSE
+      if (draggingThreedItem) {
+        addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
+        // addThreed(e, draggingThreedItem, canvasState.state.scene)
+        void (draggingNewGuide && (draggingNewGuide = false))
+      }
 
       // ** RETURN ???
       // return (
