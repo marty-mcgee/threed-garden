@@ -852,8 +852,8 @@ const preferencesDataVarDefaults =
     doCharacterAnimation: true, // boolean: false | true
     // world prefs
     doWorldDebug: false, // boolean: false | true
-    doWorldTesting: true, // boolean: false | true
-    doWorldPhysics: false, // boolean: false | true
+    doWorldTesting: false, // boolean: false | true
+    doWorldPhysics: true, // boolean: false | true
     doWorldControl: false, // boolean: false | true
     doWorldUnfollowCam: false, // boolean: false | true
     // home design prefs
