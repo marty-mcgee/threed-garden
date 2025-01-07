@@ -88,24 +88,26 @@ function noun(this: INoun, _type: string = 'noun') {
   this._type = _type.toLowerCase()
   this._name = _type.toUpperCase() + ' NAME (default)'
   // wp custom fields
-  this.data = {
-    title: 'NOTHING YET, SIR',
-    // custom fields (to be overwritten from db)
-    doAutoLoadData: false, // true | false
-    doAutoRotate: false, // true | false
-    projectName: 'blank', // 'string'
-    environmentPreset: 'park', // park | forest | sunset | warehouse | studio ...
-    environmentBgBlur: 0.00, // 0.00 to 1.00 // Background Blur
-    // character prefs
-    doCharacterAnimation: true, // boolean: false | true
-    // world prefs
-    doWorldDebug: false, // boolean: false | true
-    doWorldTesting: false, // boolean: false | true
-    doWorldPhysics: false, // boolean: false | true
-    doWorldUnfollowCam: false, // boolean: false | true
-    showPanelFirst: true, // boolean: true | false
-    showPanelLast: true, // boolean: true | false
-  }
+  this.data = {}
+      // defaults
+      // {
+      //   title: 'NOTHING YET, SIR',
+      //   // custom fields (to be overwritten from db)
+      //   doAutoLoadData: false, // true | false
+      //   doAutoRotate: false, // true | false
+      //   projectName: 'blank', // 'string'
+      //   environmentPreset: 'park', // park | forest | sunset | warehouse | studio ...
+      //   environmentBgBlur: 0.00, // 0.00 to 1.00 // Background Blur
+      //   // character prefs
+      //   doCharacterAnimation: true, // boolean: false | true
+      //   // world prefs
+      //   doWorldDebug: false, // boolean: false | true
+      //   doWorldTesting: false, // boolean: false | true
+      //   doWorldPhysics: false, // boolean: false | true
+      //   doWorldUnfollowCam: false, // boolean: false | true
+      //   showPanelFirst: true, // boolean: true | false
+      //   showPanelLast: true, // boolean: true | false
+      // }
   // layers/levels
   this.layers = [
     {
@@ -834,23 +836,23 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 
 // ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
 export const isPreferencesSetVar = makeVar(false) // boolean: false | true
-export const preferencesDataVar = makeVar(
+const preferencesDataVarDefaults = 
   {
     // user prefs
     ownerId: 1,
-    version: '0.0.1',
+    version: '0.0.0',
     doAutoLoadData: false, // boolean: false | true
     doAutoRotate: false, // boolean: false | true
     // project prefs
     projectName: '', // string: 'client should never see this string'
     // scene prefs
-    environmentPreset: 'forest', // default (client should never see this)
+    environmentPreset: 'park', // default (client should never see this)
     environmentBgBlur: 0.20, // default (our chosen maximum blur)
     // character prefs
     doCharacterAnimation: true, // boolean: false | true
     // world prefs
     doWorldDebug: false, // boolean: false | true
-    doWorldTesting: false, // boolean: false | true
+    doWorldTesting: true, // boolean: false | true
     doWorldPhysics: false, // boolean: false | true
     doWorldControl: false, // boolean: false | true
     doWorldUnfollowCam: false, // boolean: false | true
@@ -860,13 +862,8 @@ export const preferencesDataVar = makeVar(
     // set functions
     setPreferencesDataVar: () => {}, // function: set properties of "this"
   }
-)
-// console.debug('Apollo Stores ReactiveVar preferencesDataVar()', preferencesDataVar())
-// console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoLoadData', preferencesDataVar().doAutoLoadData)
-// console.debug('Apollo Stores ReactiveVar preferencesDataVar().doAutoRotate', preferencesDataVar().doAutoRotate)
-// console.debug('Apollo Stores ReactiveVar preferencesDataVar().projectName', preferencesDataVar().projectName)
-export const isCanvasStateSetVar = makeVar(false) // boolean: false | true
-export const canvasStateVar = makeVar(
+// export const isCanvasStateSetVar: Function = makeVar(false) // boolean: false | true
+const canvasStateVarDefaults: Object = 
   {
     // user prefs
     ownerId: 1,
@@ -878,26 +875,28 @@ export const canvasStateVar = makeVar(
     // set functions
     setCanvasStateVar: () => {}, // function: set properties of "this"
   }
-)
-// console.debug('Apollo Stores ReactiveVar canvasStateVar()', canvasStateVar())
-// console.debug('Apollo Stores ReactiveVar canvasStateVar().scene', canvasStateVar().scene)
-// console.debug('Apollo Stores ReactiveVar canvasStateVar().camera', canvasStateVar().camera)
-// console.debug('Apollo Stores ReactiveVar canvasStateVar().gl', canvasStateVar().gl)
 
 // ==============================================================
 
-export const isPaperCanvasLoadedVar = makeVar(false) // boolean: false | true
-export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
+export const isPaperCanvasLoadedVar: Function = makeVar(false) // boolean: false | true
+export const isThreeDCanvasLoadedVar: Function = makeVar(false) // boolean: false | true
 
 // ==============================================================
 
 // ==============================================================
 // ** Construct Stores + Export as Group of Stores
-
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
 // export { preferencesStore }
 export const preferencesStore = new (nounStore as any)('preferences')
+  // console.debug('preferencesStore', preferencesStore)
+  // console.debug('preferencesStore.store.getState()', preferencesStore.store.getState())
+  // console.debug('preferencesStore.store.get(one) #1', preferencesStore.store.get('one').data)
+  // const initialPreferences = async () => await preferencesStore.actions.loadFromDataSource()
+  // console.debug('preferencesStore.actions.loadFromDataSource()', initialPreferences())
+const initialPreferences = async () => await preferencesStore.store.get('one').data
+  console.debug('initialPreferences', initialPreferences())
+  // console.debug('preferencesStore.store.get(one) #2', preferencesStore.store.get('one').data)
 // EXTEND nounStore to become preferencesStoreCustom
 // export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
 export const canvasStateStore = new (nounStore as any)('canvasState')
@@ -920,6 +919,7 @@ export const modalLoadingStore = new (modalStore as any)('modalLoading')
 export const modalShareStore = new (modalStore as any)('modalShare')
 export const modalStoreNoun = new (nounStore as any)('modal')
 
+// ** export NOUN STORES
 export const stores = {
   nounStore,
   preferencesStore,
@@ -942,6 +942,20 @@ export const stores = {
   modalStoreNoun,
 }
 
+// ** REACTIVE VARS
+export const preferencesDataVar: Function = makeVar(preferencesDataVarDefaults)
+  console.debug('preferencesDataVar', preferencesDataVar())
+export const isPreferencesDataSetVar: Function = makeVar(false) // boolean: false | true
+export const canvasStateVar: Function = makeVar(canvasStateVarDefaults)
+  console.debug('canvasStateVar', canvasStateVar())
+export const isCanvasStateSetVar: Function = makeVar(false) // boolean: false | true
+// ** export REACTIVE VARS
+export const reactiveVars = {
+  preferencesDataVar,
+  canvasStateVar,
+}
+
+// export QUERIES
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 export const queries = {
   GetNouns,
@@ -958,6 +972,8 @@ export const queries = {
   GetPlants,
   GetPlantingPlans,
 }
+
+// export MUTATIONS
 export const mutations = {
   // :) [MM] THREED MILESTONE
   UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
@@ -967,5 +983,6 @@ export const mutations = {
   UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs',
 }
 
+// export DEFAULT
 // export { stores, queries, mutations }
 export default stores
