@@ -14,9 +14,9 @@ query GetCanvasStates ($first: Int, $last: Int, $after: String, $before: String)
       version
       # owner
       state
-      scene
-      camera
-      gl
+      # scene
+      # camera
+      # gl
     }
   }
 }
