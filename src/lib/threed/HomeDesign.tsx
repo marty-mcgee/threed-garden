@@ -33,7 +33,9 @@ import {
   // reactive state vars:
   isPreferencesSetVar,
   preferencesDataVar,
-  isCanvasStateSetVar,
+  isCanvasStatePaperSetVar,
+  canvasStatePaperVar,
+  isCanvasStateThreeDSetVar,
   canvasStateThreeDVar,
   isPaperCanvasLoadedVar,
   isThreeDCanvasLoadedVar,
