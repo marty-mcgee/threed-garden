@@ -641,7 +641,7 @@ const PaperCanvas = (props: any) => {
         
         initThreeDPaperPlanView(planCanvas)
         initPaperOrbitControls()
-        draw1()
+        drawFreestyle()
         // ** 
         // console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaperPlanView(planCanvasRef)', ccm.darkorangeAlert, planCanvasRef.current)
         // console.debug(`%c PaperCanvas planCanvas`, ccm.darkgreenAlert, planCanvas)
@@ -671,14 +671,14 @@ const PaperCanvas = (props: any) => {
 }
 
 // ** SIMPLE DRAWING FUNCTION
-const draw1 = () => {
+const drawFreestyle = () => {
   let myPath = new paper.Path()
   // **
   paper.view.onMouseDown = (event: any) => {
     // myPath.remove()
     // @ts-expect-error
     myPath.strokeColor = 'orange'
-    myPath.strokeWidth = 3
+    myPath.strokeWidth = 4
   }
   // **
   paper.view.onMouseDrag = (event: any) => {
@@ -689,7 +689,7 @@ const draw1 = () => {
   paper.view.onMouseUp = (event: any) => {
     // @ts-expect-error
     myPath.strokeColor = 'darkgreen'
-    myPath.strokeWidth = 3
+    myPath.strokeWidth = 4
     // reset myPath
     myPath = new paper.Path()
   }
@@ -866,16 +866,6 @@ function initThreeDPaperPlanView(planCanvas: any) {
   threedGroup[paper.project.activeLayer.data.id].addChild(
     draggingThreedRectangle
   )
-
-  // ==============================================================
-  // **
-
-  // // ** DRAW GRID path lines x,y
-  // // drawGrid()
-  // drawGridNew(paper, 20)
-  // // redrawGrid()
-  
-  // **
 
   // ==============================================================
   // ** TOOLS: PAPER GROUP OF TOOLS
@@ -3213,8 +3203,8 @@ function initThreeDPaperPlanView(planCanvas: any) {
 
   // ** DRAW GRID path lines x,y
   // drawGrid()
-  drawGridNew(paper, 20)
-  // redrawGrid()
+  // drawGridNew(paper, 20)
+  redrawGrid()
   
 } // END initThreeDPaperPlanView()
 
@@ -5498,12 +5488,14 @@ function redrawGrid(): boolean {
     console.debug('redrawGrid: redrawing?', true)
     
     if (paper.view == null) {
-      // ...do we need this? yes
       // redrawing = false
       // default: did not redrawGrid
       return false
 
     } else {
+
+      // draw initial grid on paper planCanvas
+      drawGridNew(paper, 20)
 
       // dimensions of planView container of planCanvas
       const planView = document.getElementById('planView')
@@ -6531,10 +6523,10 @@ export default function ThreeDHomeDesign({
         horizontalSliderRightDragging = false
       }
 
-      // ** [MM] CLOSER.. NOT EVEN CLOSE
+      // ** [MM] CLOSER.. NOT EVEN CLOSE -- DON't DO THIS UNTIL YOU HAVE IT AS A threedTool.pointer
       if (draggingThreedItem) {
-        // @ts-expect-error
-        addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
+        // @ ts-expect-error
+        // addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
         // addThreed(e, draggingThreedItem, useCanvasStateThreeDVar.state.scene)
         void (draggingNewGuide && (draggingNewGuide = false))
       }
