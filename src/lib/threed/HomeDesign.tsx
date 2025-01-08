@@ -6373,7 +6373,7 @@ export default function ThreeDHomeDesign({
       //   )
       // }
       if (draggingThreedIcon) {
-        // console.debug('draggingThreedIcon', draggingThreedIcon)
+        console.debug('draggingThreedIcon', draggingThreedIcon)
         var widthT, heightOh
             widthT = draggingThreedRectangle.bounds.width
             heightOh = draggingThreedRectangle.bounds.height
@@ -6506,38 +6506,38 @@ export default function ThreeDHomeDesign({
     // END: document.onmousemove = function (e: any) {}
 
 
-    // ** HEY HEY HEY [MM] NEEDS ATTENTION [MM]
-    // ** CAN WE DO THIS WITHIN A SUB "TOOL" MODE? Yes please.
-    document.onmouseup = function (e: any) {
-      // ** MOVED TO threedTool.pointer
-      draggingThreedIcon = false
+    // // ** HEY HEY HEY [MM] NEEDS ATTENTION [MM]
+    // // ** CAN WE DO THIS WITHIN A SUB "TOOL" MODE? Yes please.
+    // document.onmouseup = function (e: any) {
+    //   // ** MOVED TO threedTool.pointer
+    //   draggingThreedIcon = false
 
-      // **
-      if (verticalSliderDragging) {
-        verticalSliderDragging = false
-      }
-      if (horizontalSliderLeftDragging) {
-        horizontalSliderLeftDragging = false
-      }
-      if (horizontalSliderRightDragging) {
-        horizontalSliderRightDragging = false
-      }
+    //   // **
+    //   if (verticalSliderDragging) {
+    //     verticalSliderDragging = false
+    //   }
+    //   if (horizontalSliderLeftDragging) {
+    //     horizontalSliderLeftDragging = false
+    //   }
+    //   if (horizontalSliderRightDragging) {
+    //     horizontalSliderRightDragging = false
+    //   }
 
-      // ** [MM] CLOSER.. NOT EVEN CLOSE -- DON't DO THIS UNTIL YOU HAVE IT AS A threedTool.pointer
-      if (draggingThreedItem) {
-        // @ ts-expect-error
-        // addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
-        // addThreed(e, draggingThreedItem, useCanvasStateThreeDVar.state.scene)
-        void (draggingNewGuide && (draggingNewGuide = false))
-      }
+    //   // ** [MM] CLOSER.. NOT EVEN CLOSE -- DON't DO THIS UNTIL YOU HAVE IT AS A threedTool.pointer
+    //   if (draggingThreedItem) {
+    //     // @ ts-expect-error
+    //     // addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
+    //     // addThreed(e, draggingThreedItem, useCanvasStateThreeDVar.state.scene)
+    //     void (draggingNewGuide && (draggingNewGuide = false))
+    //   }
 
-      // ** RETURN ???
-      // return (
-      //   null
-      // )
-      return
-    }
-    // END: document.onmouseup = function (e: any) {}
+    //   // ** RETURN ???
+    //   // return (
+    //   //   null
+    //   // )
+    //   return
+    // }
+    // // END: document.onmouseup = function (e: any) {}
     
 
   }, []) // end load data useEffect (client)
