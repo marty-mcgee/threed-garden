@@ -967,8 +967,8 @@ export const preferencesStore = new (nounStore as any)('preferences')
   // console.debug('preferencesStore.store.get(one) #1', preferencesStore.store.get('one').data)
   // const initialPreferences = async () => await preferencesStore.actions.loadFromDataSource()
   // console.debug('preferencesStore.actions.loadFromDataSource()', initialPreferences())
-const initialPreferences = async () => await preferencesStore.store.get('one').data
-  console.debug('initialPreferences', initialPreferences())
+// const initialPreferences = async () => await preferencesStore.store.get('one').data
+  // console.debug('initialPreferences', initialPreferences())
   // console.debug('preferencesStore.store.get(one) #2', preferencesStore.store.get('one').data)
 // EXTEND nounStore to become preferencesStoreCustom
 // export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
@@ -1018,26 +1018,29 @@ export const stores = {
 // ==============================================================
 // ** REACTIVE VARS
 
-export const isPaperCanvasLoadedVar = makeVar(false) // boolean: false | true
-  console.debug('isPaperCanvasLoadedVar()', isPaperCanvasLoadedVar())
-export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
-  console.debug('isThreeDCanvasLoadedVar()', isThreeDCanvasLoadedVar())
-
 // ** preferences(s)
 export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
-  console.debug('preferencesDataVar()', preferencesDataVar())
+  // console.debug('preferencesDataVar()', preferencesDataVar())
 export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
-  console.debug('isPreferencesDataSetVar()', isPreferencesDataSetVar())
+  // console.debug('isPreferencesDataSetVar()', isPreferencesDataSetVar())
+
 // ** canvasStatePaper(s)
 export const canvasStatePaperVar = makeVar(canvasStatePaperVarDefaults)
-  console.debug('canvasStatePaperVar()', canvasStatePaperVar())
+  // console.debug('canvasStatePaperVar()', canvasStatePaperVar())
 export const isCanvasStatePaperSetVar = makeVar(false) // boolean: false | true
-  console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
+  // console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
+  
 // ** canvasStateThreeD(s)
 export const canvasStateThreeDVar = makeVar(canvasStateThreeDVarDefaults)
-  console.debug('canvasStateThreeDVar()', canvasStateThreeDVar())
+  // console.debug('canvasStateThreeDVar()', canvasStateThreeDVar())
 export const isCanvasStateThreeDSetVar = makeVar(false) // boolean: false | true
-  console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
+  // console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
+
+// ** loaded?(s)
+export const isPaperCanvasLoadedVar = makeVar(false) // boolean: false | true
+  // console.debug('isPaperCanvasLoadedVar()', isPaperCanvasLoadedVar())
+export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
+  // console.debug('isThreeDCanvasLoadedVar()', isThreeDCanvasLoadedVar())
 
 // ** export REACTIVE VARS
 export const reactiveVars = {
@@ -1047,6 +1050,8 @@ export const reactiveVars = {
   isCanvasStatePaperSetVar,
   canvasStateThreeDVar,
   isCanvasStateThreeDSetVar,
+  isPaperCanvasLoadedVar,
+  isThreeDCanvasLoadedVar,
 }
 
 // export QUERIES
