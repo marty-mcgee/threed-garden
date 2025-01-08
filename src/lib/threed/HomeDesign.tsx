@@ -601,11 +601,11 @@ const PaperCanvas = (props: any) => {
 
         // ** ================================================
           
-        console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
-          roundTo(paper.view.bounds.width, 0)
-          + ' : ' +
-          roundTo(paper.view.bounds.height, 0)
-        )
+        // console.debug('%c PaperCanvas paper.view.bounds.width:height = ', ccm.darkredAlert, 
+        //   roundTo(paper.view.bounds.width, 0)
+        //   + ' : ' +
+        //   roundTo(paper.view.bounds.height, 0)
+        // )
 
         // ** ================================================
 
@@ -639,8 +639,9 @@ const PaperCanvas = (props: any) => {
 
         // ** THREED PAPER.JS
         
-        // draw1()
         initThreeDPaperPlanView(planCanvas)
+        initPaperOrbitControls()
+        draw1()
         // ** 
         // console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaperPlanView(planCanvasRef)', ccm.darkorangeAlert, planCanvasRef.current)
         // console.debug(`%c PaperCanvas planCanvas`, ccm.darkgreenAlert, planCanvas)
@@ -697,32 +698,62 @@ const draw1 = () => {
   paper.view.draw()
 }
 
+// ** SIMPLE 2D PAPER ORBITCONTROLS FUNCTION
+const initPaperOrbitControls = () => {
+  // let myPath = new paper.Path()
+  // **
+  paper.view.onMouseDown = (event: any) => {
+    // // myPath.remove()
+    // // @ts-expect-error
+    // myPath.strokeColor = 'orange'
+    // myPath.strokeWidth = 3
+  }
+  // **
+  paper.view.onMouseDrag = (event: any) => {
+    // myPath.add(event.point)
+    // // myPath.remove()
+  }
+  // **
+  paper.view.onMouseUp = (event: any) => {
+    // // @ts-expect-error
+    // myPath.strokeColor = 'darkgreen'
+    // myPath.strokeWidth = 3
+    // // reset myPath
+    // myPath = new paper.Path()
+  }
+  // **
+  // // @ts-expect-error
+  // paper.view.draw()
+}
+
 // ** MAIN PAPER VIEW on a PaperCanvas
 function initThreeDPaperPlanView(planCanvas: any) {
 
   // ** let planView is parent container for planCanvas
   planView = document.getElementById('planView')
+  
   // ** let planCanvas is the main paper canvas
   // planCanvas = document.getElementById('planCanvas')
   // planCanvas.width = roundTo(planCanvas.parentNode.getBoundingClientRect().width, 0)
   // planCanvas.height = roundTo(planCanvas.parentNode.getBoundingClientRect().height, 0)
   // planCanvas.width = roundTo(planView.getBoundingClientRect().width, 0)
   // planCanvas.height = roundTo(planView.getBoundingClientRect().height, 0)
-  console.debug(
-    '%c PaperCanvas: initThreeDPaperPlanView: planCanvas width:height', 
-    ccm.blueAlert, 
-    planCanvas.width, 
-    planCanvas.height
-  )
-  // ** disable default context menu on planCanvas
-  planCanvas.oncontextmenu = function () {
-    return false
-  }
+  // console.debug(
+  //   '%c PaperCanvas: initThreeDPaperPlanView: planCanvas width:height', 
+  //   ccm.blueAlert, 
+  //   planCanvas.width, 
+  //   planCanvas.height
+  // )
+  // // ** disable default context menu on planCanvas
+  // planCanvas.oncontextmenu = function () {
+  //   return false
+  // }
 
   // ** ================================================
   
   // ** CURRENT SCREEN DIMENSIONS
-  screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
+  // screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
+  screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom
 
   // **
   focusPoint = new paper.Point(0, 0)
@@ -5427,7 +5458,7 @@ function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
       from: [x, 0],
       to: [x, height],
       strokeColor: new paper.Color(96, 96, 96, 1),
-      strokeWidth: 0.25,
+      strokeWidth: 0.50,
       strokeScaling: true,
     })
     xLines.push(pathLineX)
@@ -5440,7 +5471,7 @@ function drawGridNew(paperScope: paper.PaperScope, gridSize: number) {
       from: [0, y],
       to: [width, y],
       strokeColor: new paper.Color(96, 96, 96, 1),
-      strokeWidth: 0.25,
+      strokeWidth: 0.50,
       strokeScaling: true,
     })
     yLines.push(pathLineY)
@@ -5454,12 +5485,12 @@ function redrawTexts() {
     var t = Dimensions[e as any]
     // @ts-expect-error
     "object" == typeof t && (Dimensions[e].text.fontSize = screenScale / 1.5)
-  }),
-    Object.keys(Texts).forEach(function (e: any) {
-      var t = Texts[e as any]
-      // @ts-expect-error
-      "object" == typeof t && (Texts[e].fontSize = screenScale / 1.5)
-    })
+  })
+  Object.keys(Texts).forEach(function (e: any) {
+    var t = Texts[e as any]
+    // @ts-expect-error
+    "object" == typeof t && (Texts[e].fontSize = screenScale / 1.5)
+  })
 }
 function redrawGrid(): boolean {
   // **
@@ -5467,17 +5498,19 @@ function redrawGrid(): boolean {
     console.debug('redrawGrid: redrawing?', true)
     
     if (paper.view == null) {
-      // ...do we need this?
+      // ...do we need this? yes
       // redrawing = false
       // default: did not redrawGrid
       return false
 
     } else {
 
+      // dimensions of planView container of planCanvas
       const planView = document.getElementById('planView')
       const planViewWidth = planView.clientWidth
       const planViewHeight = planView.clientHeight
-      console.debug('redrawGrid: planView.width:height', planViewWidth, planViewHeight)
+      // console.debug('redrawGrid: planView.width:height', planViewWidth, planViewHeight)
+      // dimensions of planCanvas
       const planCanvas = document.getElementById('planCanvas')
       // @ts-expect-error
       planCanvas.width = planViewWidth
@@ -5485,15 +5518,13 @@ function redrawGrid(): boolean {
       planCanvas.height = planViewHeight
       const planCanvasWidth = planCanvas.clientWidth
       const planCanvasHeight = planCanvas.clientHeight
-      console.debug('redrawGrid: planCanvas.width:height', planCanvasWidth, planCanvasHeight)
+      // console.debug('redrawGrid: planCanvas.width:height', planCanvasWidth, planCanvasHeight)
 
       // console.debug('redrawGrid: screen.width:height', screen.width, screen.height)
       // screenScale = ((screen.width + screen.height) / 2) / paper.view.zoom / 75
       // screenScale = ((screen.width + screen.height) / 2)
       // console.debug('redrawGrid: screenScale', screenScale)
 
-      // dimensions of planView container of planCanvas
-      
 
       // ** [MM] SELECTED ITEM -- Testing
       console.debug('selectedItem?', selectedItem)
