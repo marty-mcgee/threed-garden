@@ -160,7 +160,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js'
 
 // ** DEBUG: this module
 const debug: boolean = false
-const DEBUG: boolean = false
+const DEBUG: boolean = true
 
 // const appVersion: string = require('package.json').version
 
@@ -5808,18 +5808,25 @@ export default function ThreeDHomeDesign({
   // ** USE PREFERENCES STATE
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
-  // console.debug('%c⚙️ ThreeD Home Design prefs', ccm.orangeAlert, prefs)
+  // console.debug('%c⚙️ prefs', ccm.orangeAlert, prefs)
   // ** INIT PREFERENCES STATE
   // const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesSetVar())
 
-  // ** USE CANVAS STATE
+  // ** USE CANVAS STATE (Paper + ThreeD)
+  // ** PAPER
+  const useCanvasStatePaperVar = useReactiveVar(canvasStatePaperVar) // YES !!
+  // console.debug('%c⚙️ useCanvasStatePaperVar', ccm.orangeAlert, useCanvasStatePaperVar)
+  // ** CHECK CANVAS STATE Paper
+  const [isCanvasPaperLoaded, setIsCanvasPaperLoaded] = useState(false)
+  const [isCanvasStatePaperLoaded, setIsCanvasStatePaperLoaded] = useState(isCanvasStatePaperSetVar())
+  // ** THREED
   const useCanvasStateThreeDVar = useReactiveVar(canvasStateThreeDVar) // YES !!
-  // console.debug('%c⚙️ ThreeD Home Design useCanvasStateThreeDVar', ccm.orangeAlert, useCanvasStateThreeDVar)
-  // ** INIT CANVAS STATE
-  // const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
-  // const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(isCanvasStateSetVar())
+  // console.debug('%c⚙️ useCanvasStateThreeDVar', ccm.orangeAlert, useCanvasStateThreeDVar)
+  // ** CHECK CANVAS STATE ThreeD
+  const [isCanvasThreeDLoaded, setIsCanvasThreeDLoaded] = useState(false)
+  const [isCanvasStateThreeDLoaded, setIsCanvasStateThreeDLoaded] = useState(isCanvasStateThreeDSetVar())
 
-  // ** INIT PAGE STATE
+  // ** CHECK PAGE LOADED STATE
   const [isPageLoaded, setIsPageLoaded] = useState(false)
 
   // ==========================================================
@@ -5900,12 +5907,14 @@ export default function ThreeDHomeDesign({
           // setIsPrefsLoaded(isPreferencesSetVar())
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
           if (preferencesDataVar().doAutoLoadData) {
-            // // const homeDesignsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-            // const homeDesignsFromDataSource = await projectStore.actions.loadFromDB(client)
             if (DEBUG) 
-              console.debug('%c homeDesigns loading...', ccm.orangeAlert)
-            // if (homeDesignsFromDataSource) {
-            //   console.debug('%c🥕 homeDesignsFromDataSource', ccm.redAlert)
+              console.debug('%c canvas states loading...', ccm.orangeAlert)
+            // // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            // const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
+            if (DEBUG) 
+              console.debug('%c projects loading...', ccm.orangeAlert)
+            // if (projectsFromDataSource) {
+            //   console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
             //   // ** TODO
             //   // ** do more tasks here ??
             // }

@@ -12,7 +12,9 @@ import {
   preferencesDataVar,
   preferencesStore,
   canvasStateStore,
-  isCanvasStateSetVar,
+  // isCanvasStatePaperSetVar,
+  // canvasStatePaperVar,
+  isCanvasStateThreeDSetVar,
   canvasStateThreeDVar,
 } from '#/lib/api/graphql/apollo'
 // ** ZUSTAND (X?) // for cameras, lights, canvas props
@@ -375,6 +377,7 @@ export const ThreeDCanvas = forwardRef((
   function setCanvasStateThreeDVar (state: any) {
     let newData = {...canvasStateThreeDVar()} // latest canvas state
     // console.debug('%c⚙️ setCanvasStateThreeDVar newData', ccm.yellow, newData)
+    // @ts-expect-error
     newData.state = state
     // newData.scene = state.scene
     // newData.camera = state.camera
