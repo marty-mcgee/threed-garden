@@ -1033,6 +1033,7 @@ export const isCanvasStatePaperSetVar = makeVar(false) // boolean: false | true
 // ** canvasStateThreeD(s)
 export const canvasStateThreeDVar = makeVar(canvasStateThreeDVarDefaults)
   // console.debug('canvasStateThreeDVar()', canvasStateThreeDVar())
+  // console.debug('canvasStateThreeDVar().state.scene', canvasStateThreeDVar().state.scene)
 export const isCanvasStateThreeDSetVar = makeVar(false) // boolean: false | true
   // console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
 
