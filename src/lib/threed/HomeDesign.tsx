@@ -3267,6 +3267,9 @@ function closeAllModals() {
 const ViewProperties = () => {
   // console.debug('PropertiesView loading...')
 
+  // ** HOOKS
+  const useCanvasStateThreeDVar: Object = useReactiveVar(canvasStateThreeDVar)
+
   return (
     <>
     <div 
@@ -3293,7 +3296,16 @@ const ViewProperties = () => {
           Preview
         </button>
         <button className='moreInfoBtn' 
-          onClick={(event) => addThreed(event, draggingThreedItem, canvasStateThreeDVar().state.scene)}
+          // @ts-expect-error
+          // onClick={(event) => addThreed(event, draggingThreedItem, canvasStateThreeDVar().state.scene)}
+          onClick={(event) => addThreed(event, draggingThreedItem, useCanvasStateThreeDVar.state.scene)}
+          // onClick={(event) => {
+          //   if (("state" in useCanvasStateThreeDVar)) {
+          //     if (("scene" in useCanvasStateThreeDVar.state)) {
+          //       addThreed(event, draggingThreedItem, useCanvasStateThreeDVar.state.scene)
+          //     }
+          //   }
+          // }}
         >
           Add To Canvas
         </button>
@@ -5273,7 +5285,7 @@ function initThreed(threedItem: any, scene: any) {
                     imageN.visible = false
                     
                     // scene.add(meshN)
-                    // canvasStateThreeDVar().scene.add(meshN)
+                    // @ts-expect-error
                     canvasStateThreeDVar().state.scene.add(meshN)
                     console.debug('meshN added to scene')
 
@@ -5283,7 +5295,7 @@ function initThreed(threedItem: any, scene: any) {
 
 
                   // scene.add(OBJa)
-                  // canvasStateThreeDVar().scene.add(OBJa)
+                  // @ts-expect-error
                   canvasStateThreeDVar().state.scene.add(OBJa)
                   console.debug('OBJa added to scene')
 
@@ -5467,7 +5479,9 @@ function redrawGrid(): boolean {
       const planViewHeight = planView.clientHeight
       console.debug('redrawGrid: planView.width:height', planViewWidth, planViewHeight)
       const planCanvas = document.getElementById('planCanvas')
+      // @ts-expect-error
       planCanvas.width = planViewWidth
+      // @ts-expect-error
       planCanvas.height = planViewHeight
       const planCanvasWidth = planCanvas.clientWidth
       const planCanvasHeight = planCanvas.clientHeight
@@ -5799,8 +5813,8 @@ export default function ThreeDHomeDesign({
   // const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesSetVar())
 
   // ** USE CANVAS STATE
-  // const canvasState = useReactiveVar(canvasStateThreeDVar) // YES !!
-  // console.debug('%c⚙️ ThreeD Home Design canvasState', ccm.orangeAlert, canvasState)
+  const useCanvasStateThreeDVar = useReactiveVar(canvasStateThreeDVar) // YES !!
+  // console.debug('%c⚙️ ThreeD Home Design useCanvasStateThreeDVar', ccm.orangeAlert, useCanvasStateThreeDVar)
   // ** INIT CANVAS STATE
   // const [isCanvasLoaded, setIsCanvasLoaded] = useState(false)
   // const [isCanvasStateLoaded, setIsCanvasStateLoaded] = useState(isCanvasStateSetVar())
@@ -6479,8 +6493,9 @@ export default function ThreeDHomeDesign({
 
       // ** [MM] CLOSER.. NOT EVEN CLOSE
       if (draggingThreedItem) {
+        // @ts-expect-error
         addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
-        // addThreed(e, draggingThreedItem, canvasState.state.scene)
+        // addThreed(e, draggingThreedItem, useCanvasStateThreeDVar.state.scene)
         void (draggingNewGuide && (draggingNewGuide = false))
       }
 
