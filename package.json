@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.17.0-beta.19",
+  "version": "0.17.0-beta.20",
   "description": "ThreeD Garden: 🥕 ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: Apollo GraphQL, WordPress, CSS: Tailwind, Radix-UI, Libraries: FarmBot React 3D, Open.AI",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
@@ -127,7 +127,30 @@
     "chroma-js": "3.1.2",
     "swr": "2.2.5",
 
-    "use-count-up": "3.0.1"
+    "use-count-up": "3.0.1",
+
+
+    "ai": "4.0.31",
+    "openai": "4.77.4",
+    "zod": "3.23.8",
+    "@ai-sdk/openai": "1.0.16",
+    
+    "@vercel/analytics": "1.4.1",
+    "@vercel/kv": "3.0.0",
+
+    "sonner": "1.7.1",
+    "react-markdown": "8.0.7",
+    "framer-motion": "11.3.30",
+    "geist": "1.3.1",
+    "nanoid": "5.0.7",
+    "react-intersection-observer": "9.10.3",
+    "react-syntax-highlighter": "15.5.0",
+    "react-textarea-autosize": "8.5.3",
+    "remark-gfm": "3.0.1",
+    "remark-math": "5.1.1",
+
+    "attr-accept": "2.2.4",
+    "react-dropzone": "14.2.9"
     
   },
 

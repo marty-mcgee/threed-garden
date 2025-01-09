@@ -61,7 +61,7 @@
         "src/app/ai/*"
       ],
       "@/components/*": [
-        "src/layout/ai/*"
+        "src/lib/ai/*"
       ],
       "@/lib/*": [
         "src/lib/threed/threed.ai/*"
