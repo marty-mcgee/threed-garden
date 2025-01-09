@@ -6,9 +6,9 @@
 
 🌱 [threedgarden.com](https://threedgarden.com)
 
-🏡 [Demo: 2D + 3D Advanced](https://threedgarden.com/home-design)
+🏡 [Demo: Advanced 3D + 2D](https://threedgarden.com/home-design)
 
-🥕 [Demo: 3D Basic](https://threedgarden.com/participate)
+🥕 [Demo: Basic 3D](https://threedgarden.com/participate)
 
 ## For Developers
 
