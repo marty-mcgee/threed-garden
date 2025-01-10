@@ -4210,7 +4210,7 @@ const ViewModals = (props: any) => {
               >
                 -X-
               </span>
-              <h2>ThreeD Home Design</h2>
+              <h2>ThreeD HD</h2>
             </div>
             <div className='modal-body'>
 
@@ -4225,7 +4225,7 @@ const ViewModals = (props: any) => {
               </div>
 
               <div id='tab1Content' className='tabcontent' style={{display: 'block'}}>
-                <h4>ThreeD Home Design Introduction</h4>
+                <h4>ThreeD HD Introduction</h4>
                 <p>Plan + Share Ideas for your Home Design in 2D + 3D</p>
                 <div style={{padding: '12px'}}>
                   <div>
@@ -4239,7 +4239,7 @@ const ViewModals = (props: any) => {
                       {/* <img src='images/homedesign/info.png' className='tooltip' /> */}
                       <span className='tooltiptext'>
                         <div>
-                          Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='https://threedgarden.com'>ThreeD Home Design</a> toolbar.<br/>
+                          Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='https://threedgarden.com'>ThreeD HD</a> toolbar.<br/>
                           More info about 
                           <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">
                             Local Web Storage
@@ -4333,7 +4333,7 @@ const ViewModals = (props: any) => {
               >
                 -X-
               </span>
-              <h2>ThreeD Home Design</h2>
+              <h2>ThreeD HD</h2>
             </div>
             <div className='modal-body'>
               <div id='model3dView'>
@@ -4383,7 +4383,7 @@ const ViewModals = (props: any) => {
               >
                 -X-
               </span>
-              <h2>ThreeD Home Design</h2>
+              <h2>ThreeD HD</h2>
             </div>
             <div className='modal-small-body'>
               <h4>Share Plan</h4>
@@ -4436,7 +4436,7 @@ const ViewModals = (props: any) => {
               >
                 -X-
               </span>
-              <h2>ThreeD Home Design</h2>
+              <h2>ThreeD HD</h2>
             </div>
             <div className='modal-small-body'>
               <h4>Loading Model Progress</h4>
@@ -4459,8 +4459,8 @@ const ViewModals = (props: any) => {
               src='favicon/favicon.png' 
               width='48px' 
               height='48px' 
-              title='ThreeD Home Design' 
-              alt='ThreeD Home Design' 
+              title='ThreeD HD' 
+              alt='ThreeD HD' 
             />
           </a>
         </li> */}
@@ -4468,7 +4468,7 @@ const ViewModals = (props: any) => {
           <a onClick={() => showModalAbout()} 
             style={{textAlign: 'center', paddingTop: '15px', paddingLeft: '18px', paddingRight: '24px', paddingBottom: '15px', textDecoration: 'none', fontSize: '21px',}}
           >
-            ThreeD Home Design
+            ThreeD HD
           </a>
         </li> */}
         
@@ -4572,8 +4572,8 @@ const ViewModals = (props: any) => {
           <div className='modal-header'>
             <span className='close'>-X-</span>
             <img src='favicon/favicon.png' height='48px' 
-              title='ThreeD Home Design' alt='ThreeD Home Design' />
-            <h2>ThreeD Home Design</h2>
+              title='ThreeD HD' alt='ThreeD HD' />
+            <h2>ThreeD HD</h2>
           </div>
           <div className='modal-body'>
             <div id='model3dView'>
@@ -4605,7 +4605,7 @@ const ViewModals = (props: any) => {
             </div>
           </div>
           <div className='modal-footer'>
-            <h4><a href='https://threedgarden.com'>ThreeD Home Design</a></h4>
+            <h4><a href='https://threedgarden.com'>ThreeD HD</a></h4>
           </div>
         </div>
       </div>
@@ -4614,15 +4614,15 @@ const ViewModals = (props: any) => {
         <div className='modal-small-content'>
           <div className='modal-small-header'>
             <img src='favicon/favicon.png' height='48px' 
-              title='ThreeD Home Design' alt='ThreeD Home Design' />
-            <h2>ThreeD Home Design</h2>
+              title='ThreeD HD' alt='ThreeD HD' />
+            <h2>ThreeD HD</h2>
           </div>
           <div className='modal-small-body'>
             <h4>Loading Model Progress</h4>
             <textarea id='modalLoadingDataInfo'></textarea>
           </div>
           <div className='modal-small-footer'>
-            <h4><a href='https://threedgarden.com'>ThreeD Home Design</a></h4>
+            <h4><a href='https://threedgarden.com'>ThreeD HD</a></h4>
           </div>
         </div>
       </div>
@@ -4632,8 +4632,8 @@ const ViewModals = (props: any) => {
           <div className='modal-small-header'>
             <span className='close'>-X-</span>
             <img src='favicon/favicon.png' height='48px' 
-              title='ThreeD Home Design' alt='ThreeD Home Design' />
-            <h2>ThreeD Home Design</h2>
+              title='ThreeD HD' alt='ThreeD HD' />
+            <h2>ThreeD HD</h2>
           </div>
           <div className='modal-small-body'>
             <h4>Share Plan</h4>
@@ -4663,7 +4663,7 @@ const ViewModals = (props: any) => {
             </div> */}
           </div>
           <div className='modal-small-footer'>
-            <h4><a href='https://threedgarden.com'>ThreeD Home Design</a></h4>
+            <h4><a href='https://threedgarden.com'>ThreeD HD</a></h4>
           </div>
         </div>
       </div>
@@ -5989,14 +5989,14 @@ export default function ThreeDHomeDesign({
       // ** DO THE DATA FETCH
       fetchData()
       if (DEBUG) 
-        console.debug('%c🫙 Home Design: fetching data ...', ccm.blueAlert)
+        console.debug('%c🫙 ThreeD HD: fetching data ...', ccm.blueAlert)
 
 
       // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
       const loadNounData = (_type: string = 'project', threeds: any = []) => {
         // load these threeds into r3f canvas
         if (DEBUG || debug) 
-          console.debug('%c🌱 ThreeD Home Design loadNounData()', ccm.yellowAlert, _type, threeds)
+          console.debug('%c🌱 ThreeD HD loadNounData()', ccm.yellowAlert, _type, threeds)
         if (_type === 'project') {
           projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
         }
@@ -6004,11 +6004,11 @@ export default function ThreeDHomeDesign({
       }
       
     } else if (isPageLoaded) {
-      console.debug('%c🦆 ThreeD Home Design => LOADED !!', ccm.redAlert, isPageLoaded)
+      console.debug('%c🦆 ThreeD HD => LOADED !!', ccm.redAlert, isPageLoaded)
     } else {
-      console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
-      console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
-      console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeD HD => APOLLO ReactiveVar: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeD HD => APOLLO ReactiveVar: canvasStatePaperVar()', ccm.blackAlert, canvasStatePaperVar())
+      console.debug('%c🦆 ThreeD HD => APOLLO ReactiveVar: canvasStateThreeDVar()', ccm.blackAlert, canvasStateThreeDVar())
     }
 
   }, []) // useEffect
@@ -6055,12 +6055,12 @@ export default function ThreeDHomeDesign({
   // ==========================================================
 
   // if (DEBUG || debug) 
-  //   console.debug('%c🌱 ThreeD Home Design mounting ...', ccm.darkgreenAlert)
+  //   console.debug('%c🌱 ThreeD HD mounting ...', ccm.darkgreenAlert)
 
     
   let project_title = 'NOT EVEN CLOSE'
   // if (DEBUG || debug) 
-  //   console.debug('%c🌱 ThreeD Home Design mounting ...', ccm.darkgreen, project_title)
+  //   console.debug('%c🌱 ThreeD HD mounting ...', ccm.darkgreen, project_title)
 
 
   // ** load old data.. no
@@ -6649,7 +6649,7 @@ export default function ThreeDHomeDesign({
     >
       
       {/* <Heading as='h4'>
-        🥕 Welcome to ThreeD Home Design
+        🥕 Welcome to ThreeD HD
       </Heading> */}
 
       {/* TESTING: DOM ELEMENT as React State Variables */}
@@ -6924,8 +6924,8 @@ export default function ThreeDHomeDesign({
                   {/* 
                   <div id='overlayLogo3dView' className='overlayLogo'>
                     <a href='https://threedgarden.com/home-design/'><img
-                        src='favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' /></a>&nbsp
-                    <a href='https://threedgarden.com/home-design/'>ThreeD Home Design</a>
+                        src='favicon/favicon.png' height='32px' title='ThreeD HD' alt='ThreeD HD' /></a>&nbsp
+                    <a href='https://threedgarden.com/home-design/'>ThreeD HD</a>
                   </div>
                   <div id='overlayMenu3dView'>
                     <button id='overlay3dviewRecenterBtn' onClick={() => recenter3dview()} className='smallButton'>Recenter</button>
@@ -7091,14 +7091,14 @@ export default function ThreeDHomeDesign({
             // style='float:leftpadding:0px margin-top:0px'
           >
             <img
-              src='/favicon/favicon.png' height='32px' title='ThreeD Home Design' alt='ThreeD Home Design' 
+              src='/favicon/favicon.png' height='32px' title='ThreeD HD' alt='ThreeD HD' 
             />
           </a>
           &nbsp
           <a href='https://threedgarden.com/demo/'
             // style='padding-left: 10px text-decoration: none font-size: 32px'
           >
-            ThreeD Home Design
+            ThreeD HD
           </a>
         </div> 
         */}
