@@ -21,6 +21,9 @@ import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
 import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
 
+// ** THREE Imports (for typing)
+import * as THREE from 'three'
+
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
 
@@ -92,21 +95,6 @@ function noun(this: INoun, _type: string = 'noun') {
       // defaults
       // {
       //   title: 'NOTHING YET, SIR',
-      //   // custom fields (to be overwritten from db)
-      //   doAutoLoadData: false, // true | false
-      //   doAutoRotate: false, // true | false
-      //   projectName: 'blank', // 'string'
-      //   environmentPreset: 'park', // park | forest | sunset | warehouse | studio ...
-      //   environmentBgBlur: 0.00, // 0.00 to 1.00 // Background Blur
-      //   // character prefs
-      //   doCharacterAnimation: true, // boolean: false | true
-      //   // world prefs
-      //   doWorldDebug: false, // boolean: false | true
-      //   doWorldTesting: false, // boolean: false | true
-      //   doWorldPhysics: false, // boolean: false | true
-      //   doWorldUnfollowCam: false, // boolean: false | true
-      //   showPanelFirst: true, // boolean: true | false
-      //   showPanelLast: true, // boolean: true | false
       // }
   // layers/levels
   this.layers = [
@@ -871,37 +859,24 @@ const canvasStatePaperVarDefaults: Object =
     ownerId: 1,
     version: '0.0.0',
     state: {
-      scene: null,
-      camera: null,
-      gl: null,
-      // advance: function advance(timestamp, runGlobalEffects)​​
-      // camera: Object { isObject3D: true, uuid: "11e47621-59c8-xxx", type: "PerspectiveCamera" }
-      // clock: Object { autoStart: true, startTime: 7005, oldTime: 17507 }
-      // controls: null
-      // events: Object { priority: 1, enabled: true, compute: compute(event, state, previous) }
-      // flat: false
-      // frameloop: "always"
-      // get: function getState()​​
-      // gl: Object { isWebGLRenderer: true, autoClear: true, autoClearColor: true }
-      // internal: Object { active: false, priority: 0, frames: 0 }
-      // invalidate: function invalidate(frames)
-      // legacy: false
-      // linear: false
-      // mouse: Object { x: 0.973346743776716, y: 0.24613951964073832 }
-      // onPointerMissed: function onPointerMissed(args)​​
-      // performance: Object { current: 1, min: 0.5, max: 1 }
-      // pointer: Object { x: 0.973346743776716, y: 0.24613951964073832 }
-      // previousRoot: undefined
-      // raycaster: Object { ray: {}, near: 0, far: Infinity }
-      // scene: Object { isObject3D: true, uuid: "bc359d14-2566-4839-b743-b302632761be", type: "Scene" }
-      // set: function setState(partial, replace)​​
-      // setDpr: function setDpr(dpr)​​
-      // setEvents: function setEvents(events)​​
-      // setFrameloop: function setFrameloop(frameloop)​​
-      // setSize: function setSize(width, height, updateStyle, top, left)​​
-      // size: Object { width: 994.25, height: 411.2166748046875, top: 89.5 }
-      // viewport: Object { initialDpr: 1, dpr: 1, width: 18.552624553963852 }
-      // xr: Object { connect: connect(), disconnect: disconnect() }
+      // ** PAPER Constructor
+      // ** -- The global paper object is simply a reference to the currently active PaperScope.
+      // PaperScope()
+      // ** PAPER Properties
+      version: '0.12.18' as string,
+      settings: null as Object,
+      project: null as Object,
+      projects: null as Object,
+      view: null as Object,
+      tool: null as Object,
+      tools: null as Object,
+      // ** PAPER Methods
+      // execute(code[, options])
+      // install(scope)
+      // setup(element)
+      // activate()
+      // ** PAPER Static Methods
+      // PaperScope.get(id) 
     },
     // set functions
     setCanvasStatePaperVar: () => {}, // function: set properties of "this"
@@ -916,11 +891,64 @@ const canvasStateThreeDVarDefaults: Object =
     ownerId: 1,
     version: '0.0.0',
     state: {
-      scene: null,
-      camera: null,
-      gl: null,
+      // ** THREE WebGL Renderer
+      gl: null as THREE.WebGLRenderer,
+      // ** THREE Scene
+      scene: null as THREE.Scene,
+      // ** THREE Camera: Perspective | Orthographic
+      camera: null as THREE.PerspectiveCamera,
+      // ** THREE Properties
+      // ** controls	A [makeDefault] *Controls	THREE.EventDispatcher or null
+      controls: null as THREE.EventDispatcher,
+      // ** raycaster	Default raycaster	THREE.Raycaster
+      raycaster: null as THREE.Raycaster,
+      // ** pointer	Contains updated, normalized, centric pointer coordinates	THREE.Vector2
+      pointer: null as THREE.Vector2,
+      // ** clock	Running system clock	THREE.Clock
+      clock: null as THREE.Clock,
+      // ** THREE Canvas size in pixels
+      size: { 
+        width: 0 as number, 
+        height: 0 as number, 
+        top: 0 as number, 
+        left: 0 as number, 
+        updateStyle: false as boolean 
+      },
+      // ** set	Allows you to set any state property	(state: SetState<RootState>) => void
+      // set: null as void,
+      // ** get	Allows you to retrieve any state property non-reactively	() => GetState<RootState>
+      // get: null as void,
+
+      // ** state property definitions
+      // gl	Renderer	THREE.WebGLRenderer
+      // scene	Scene	THREE.Scene
+      // camera	Camera	THREE.PerspectiveCamera
+      // controls	A [makeDefault] *Controls	THREE.EventDispatcher or null
+      // raycaster	Default raycaster	THREE.Raycaster
+      // pointer	Contains updated, normalized, centric pointer coordinates	THREE.Vector2
+      // clock	Running system clock	THREE.Clock
+      // linear	True when the colorspace is linear	boolean
+      // flat	True when no tonemapping is used	boolean
+      // legacy	Disables global color management via THREE.ColorManagement	boolean
+      // frameloop	Render mode: always, demand, never	always, demand, never
+      // performance	System regression	{ current: number, min: number, max: number, debounce: number, regress: () => void }
+      // size	Canvas size in pixels	{ width: number, height: number, top: number, left: number, updateStyle?: boolean }
+      // viewport	Canvas viewport size in three.js units. Note: This is different from gl.getViewport which returns the drawbuffer size	{ width: number, height: number, initialDpr: number, dpr: number, factor: number, distance: number, aspect: number, getCurrentViewport: (camera?: Camera, target?: THREE.Vector3, size?: Size) => Viewport }
+      // xr	XR interface, manages WebXR rendering	{ connect: () => void, disconnect: () => void }
+      // set	Allows you to set any state property	(state: SetState<RootState>) => void
+      // get	Allows you to retrieve any state property non-reactively	() => GetState<RootState>
+      // invalidate	Request a new render, given that frameloop === 'demand'	() => void
+      // advance	Advance one tick, given that frameloop === 'never'	(timestamp: number, runGlobalEffects?: boolean) => void
+      // setSize	Resize the canvas	(width: number, height: number, updateStyle?: boolean, top?: number, left?: number) => void
+      // setDpr	Set the pixel-ratio	(dpr: number) => void
+      // setFrameloop	Shortcut to set the current render mode	(frameloop?: 'always', 'demand', 'never') => void
+      // setEvents	Shortcut to setting the event layer	(events: Partial<EventManager<any>>) => void
+      // onPointerMissed	Response for pointer clicks that have missed a target	() => void
+      // events	Pointer-event handling	{ connected: TargetNode, handlers: Events, connect: (target: TargetNode) => void, disconnect: () => void }
+
+      // ** examples
       // advance: function advance(timestamp, runGlobalEffects)​​
-      // camera: Object { isObject3D: true, uuid: "11e47621-59c8-xxxx", type: "PerspectiveCamera" }
+      // camera: Object { isObject3D: true, uuid: "11e47621-59c8-xxx", type: "PerspectiveCamera" }
       // clock: Object { autoStart: true, startTime: 7005, oldTime: 17507 }
       // controls: null
       // events: Object { priority: 1, enabled: true, compute: compute(event, state, previous) }
@@ -932,13 +960,12 @@ const canvasStateThreeDVarDefaults: Object =
       // invalidate: function invalidate(frames)
       // legacy: false
       // linear: false
-      // mouse: Object { x: 0.973346743776716, y: 0.24613951964073832 }
       // onPointerMissed: function onPointerMissed(args)​​
       // performance: Object { current: 1, min: 0.5, max: 1 }
       // pointer: Object { x: 0.973346743776716, y: 0.24613951964073832 }
       // previousRoot: undefined
       // raycaster: Object { ray: {}, near: 0, far: Infinity }
-      // scene: Object { isObject3D: true, uuid: "bc359d14-2566-xxxx", type: "Scene" }
+      // scene: Object { isObject3D: true, uuid: "bc359d14-2566-4839-b743-b302632761be", type: "Scene" }
       // set: function setState(partial, replace)​​
       // setDpr: function setDpr(dpr)​​
       // setEvents: function setEvents(events)​​
