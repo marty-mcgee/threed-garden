@@ -31,7 +31,7 @@ import {
   // queries,
   // mutations,
   // reactive state vars:
-  isPreferencesSetVar,
+  isPreferencesDataVar,
   preferencesDataVar,
   isCanvasStatePaperSetVar,
   canvasStatePaperVar,
@@ -5833,7 +5833,7 @@ export default function ThreeDHomeDesign({
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ prefs', ccm.orangeAlert, prefs)
   // ** INIT PREFERENCES STATE
-  // const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesSetVar())
+  // const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesDataVar())
 
   // ** USE CANVAS STATE (Paper + ThreeD)
   // ** PAPER
@@ -5902,14 +5902,15 @@ export default function ThreeDHomeDesign({
 
     if (
       false &&
-      !isPageLoaded && !useReactiveVar(isPreferencesSetVar)
+      !isPageLoaded && !useReactiveVar(isPreferencesDataVar)
     ) {
     
       // ** GET PREFERENCES
       const fetchData = async () => {
         // try {
-          // ** GET PREFERENCES
-          if (!useReactiveVar(isPreferencesSetVar)) {
+          
+        // ** GET PREFERENCES
+          if (!useReactiveVar(isPreferencesDataVar)) {
             // **
             // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
             const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
@@ -5926,9 +5927,44 @@ export default function ThreeDHomeDesign({
           // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
           preferencesDataVar(loadPreferencesOne.data)
           // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
-          isPreferencesSetVar(true)
-          // setIsPrefsLoaded(isPreferencesSetVar())
-          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
+          isPreferencesDataVar(true)
+          // setIsPrefsLoaded(isPreferencesDataVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataVar()', ccm.redAlert, isPreferencesDataVar())
+          if (preferencesDataVar().doAutoLoadData) {
+            if (DEBUG) 
+              console.debug('%c canvas states loading...', ccm.orangeAlert)
+            // // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            // const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
+            if (DEBUG) 
+              console.debug('%c projects loading...', ccm.orangeAlert)
+            // if (projectsFromDataSource) {
+            //   console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
+            //   // ** TODO
+            //   // ** do more tasks here ??
+            // }
+          }
+
+          // ** GET CANVAS STATE: PAPER
+          if (!useReactiveVar(isCanvasStatePaperSetVar)) {
+            // **
+            // const canvasStatePaperFromDataSource = await canvasStateStore.actions.loadFromDataSource(client)
+            const canvasStatePaperFromDataSource = await canvasStateStore.actions.loadFromDB(client)
+            if (DEBUG) 
+              console.debug('%c canvasStatePaper loading...', ccm.greenAlert)
+            if (canvasStatePaperFromDataSource) {
+              if (DEBUG) 
+                console.debug('%c canvasStatePaperFromDataSource', ccm.greenAlert)
+            }
+          }
+
+          const loadCanvasStatePaperOne = await canvasStateStore.store.get('one')
+          // const loadCanvasStatePaperOne = await canvasStateStore.store.useStore('one')
+          // console.debug('%c🦆 APOLLO STORE: get one canvasStatePaper => loadCanvasStatePaperOne', ccm.redAlert, loadCanvasStatePaperOne)
+          canvasStatePaperVar(loadPreferencesOne.data)
+          // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+          isPreferencesDataVar(true)
+          // setIsPrefsLoaded(isPreferencesDataVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataVar()', ccm.redAlert, isPreferencesDataVar())
           if (preferencesDataVar().doAutoLoadData) {
             if (DEBUG) 
               console.debug('%c canvas states loading...', ccm.orangeAlert)
@@ -5970,6 +6006,8 @@ export default function ThreeDHomeDesign({
     } else if (isPageLoaded) {
       console.debug('%c🦆 ThreeD Home Design => LOADED !!', ccm.redAlert, isPageLoaded)
     } else {
+      console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
       console.debug('%c🦆 ThreeD Home Design => APOLLO STORE: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
     }
 
