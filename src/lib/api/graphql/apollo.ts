@@ -91,11 +91,10 @@ function noun(this: INoun, _type: string = 'noun') {
   this._type = _type.toLowerCase()
   this._name = _type.toUpperCase() + ' NAME (default)'
   // wp custom fields
-  this.data = {}
-      // defaults
-      // {
-      //   title: 'NOTHING YET, SIR',
-      // }
+  this.data = {
+    // defaults
+    title: 'NOTHING YET, SIR',
+  }
   // layers/levels
   this.layers = [
     {
@@ -859,6 +858,7 @@ const canvasStatePaperVarDefaults: Object =
     ownerId: 1,
     version: '0.0.0',
     state: {
+      // ** PAPER Scope: paperjs.org/reference/paperscope/
       // ** PAPER Constructor
       // ** -- The global paper object is simply a reference to the currently active PaperScope.
       // PaperScope()
@@ -876,7 +876,7 @@ const canvasStatePaperVarDefaults: Object =
       // setup(element)
       // activate()
       // ** PAPER Static Methods
-      // PaperScope.get(id) 
+      // PaperScope.get(id)
     },
     // set functions
     setCanvasStatePaperVar: () => {}, // function: set properties of "this"
@@ -1053,13 +1053,13 @@ export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
 
 // ** canvasStatePaper(s)
 export const canvasStatePaperVar = makeVar(canvasStatePaperVarDefaults)
-  // console.debug('canvasStatePaperVar()', canvasStatePaperVar())
+  console.debug('canvasStatePaperVar()', canvasStatePaperVar())
 export const isCanvasStatePaperSetVar = makeVar(false) // boolean: false | true
   // console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
   
 // ** canvasStateThreeD(s)
 export const canvasStateThreeDVar = makeVar(canvasStateThreeDVarDefaults)
-  // console.debug('canvasStateThreeDVar()', canvasStateThreeDVar())
+  console.debug('canvasStateThreeDVar()', canvasStateThreeDVar())
   // console.debug('canvasStateThreeDVar().state.scene', canvasStateThreeDVar().state.scene)
 export const isCanvasStateThreeDSetVar = makeVar(false) // boolean: false | true
   // console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
