@@ -5996,7 +5996,7 @@ export default function ThreeDHomeDesign({
       const loadNounData = (_type: string = 'project', threeds: any = []) => {
         // load these threeds into r3f canvas
         if (DEBUG || debug) 
-          console.debug('%c🌱 ThreeD HD loadNounData()', ccm.yellowAlert, _type, threeds)
+          console.debug('%c🌱 ThreeD HD: loadNounData()', ccm.yellowAlert, _type, threeds)
         if (_type === 'project') {
           projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
         }
@@ -6004,11 +6004,11 @@ export default function ThreeDHomeDesign({
       }
       
     } else if (isPageLoaded) {
-      console.debug('%c🦆 ThreeD HD => LOADED !!', ccm.redAlert, isPageLoaded)
+      console.debug('%c🦆 ThreeD HD: LOADED !!', ccm.redAlert, isPageLoaded)
     } else {
-      console.debug('%c🦆 ThreeD HD => APOLLO ReactiveVar: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
-      console.debug('%c🦆 ThreeD HD => APOLLO ReactiveVar: canvasStatePaperVar()', ccm.blackAlert, canvasStatePaperVar())
-      console.debug('%c🦆 ThreeD HD => APOLLO ReactiveVar: canvasStateThreeDVar()', ccm.blackAlert, canvasStateThreeDVar())
+      console.debug('%c🦆 ThreeD HD: APOLLO: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeD HD: APOLLO: canvasStatePaperVar()', ccm.blackAlert, canvasStatePaperVar())
+      console.debug('%c🦆 ThreeD HD: APOLLO: canvasStateThreeDVar()', ccm.blackAlert, canvasStateThreeDVar())
     }
 
   }, []) // useEffect
