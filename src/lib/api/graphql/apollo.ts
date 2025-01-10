@@ -847,7 +847,7 @@ const preferencesDataVarDefaults =
     showPanelFirst: true, // boolean: true | false
     showPanelLast: true, // boolean: true | false
     // set functions
-    setPreferencesDataVar: () => {}, // function: set properties of "this"
+    // setPreferencesDataVar: () => {}, // function: set properties of "this"
   }
 
 
@@ -879,7 +879,7 @@ const canvasStatePaperVarDefaults: Object =
       // PaperScope.get(id)
     },
     // set functions
-    setCanvasStatePaperVar: () => {}, // function: set properties of "this"
+    // setCanvasStatePaperVar: () => {}, // function: set properties of "this"
   }
 
 // ==============================================================
@@ -976,7 +976,7 @@ const canvasStateThreeDVarDefaults: Object =
       // xr: Object { connect: connect(), disconnect: disconnect() }
     },
     // set functions
-    setCanvasStateThreeDVar: () => {}, // function: set properties of "this"
+    // setCanvasStateThreeDVar: () => {}, // function: set properties of "this"
   }
 
 // ==============================================================
