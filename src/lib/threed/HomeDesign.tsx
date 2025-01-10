@@ -6006,9 +6006,9 @@ export default function ThreeDHomeDesign({
     } else if (isPageLoaded) {
       console.debug('%c🦆 ThreeD HD: LOADED !!', ccm.redAlert, isPageLoaded)
     } else {
-      console.debug('%c🦆 ThreeD HD: APOLLO: preferencesDataVar()', ccm.blackAlert, preferencesDataVar())
-      console.debug('%c🦆 ThreeD HD: APOLLO: canvasStatePaperVar()', ccm.blackAlert, canvasStatePaperVar())
-      console.debug('%c🦆 ThreeD HD: APOLLO: canvasStateThreeDVar()', ccm.blackAlert, canvasStateThreeDVar())
+      console.debug('%c🦆 ThreeD HD: APOLLO: preferencesDataVar()', ccm.greenAlert, preferencesDataVar())
+      console.debug('%c🦆 ThreeD HD: APOLLO: canvasStatePaperVar()', ccm.greenAlert, canvasStatePaperVar())
+      console.debug('%c🦆 ThreeD HD: APOLLO: canvasStateThreeDVar()', ccm.greenAlert, canvasStateThreeDVar())
     }
 
   }, []) // useEffect
