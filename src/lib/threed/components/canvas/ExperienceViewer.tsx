@@ -5,7 +5,7 @@
 // ** APOLLO Imports
 import { useReactiveVar } from '@apollo/client'
 import {
-  // isPreferencesSetVar,
+  // isPreferencesDataSetVar,
   preferencesDataVar,
   // preferencesStore,
   // projectStore,

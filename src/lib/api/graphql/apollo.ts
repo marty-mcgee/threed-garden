@@ -822,7 +822,7 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 // ==============================================================
 
 // ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
-// export const isPreferencesDataVar = makeVar(false) // boolean: false | true
+// export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
 const preferencesDataVarDefaults = 
   {
     // user prefs
@@ -1048,8 +1048,8 @@ export const stores = {
 // ** preferences(s)
 export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
   // console.debug('preferencesDataVar()', preferencesDataVar())
-export const isPreferencesDataVar = makeVar(false) // boolean: false | true
-  // console.debug('isPreferencesDataVar()', isPreferencesDataVar())
+export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
+  // console.debug('isPreferencesDataSetVar()', isPreferencesDataSetVar())
 
 // ** canvasStatePaper(s)
 export const canvasStatePaperVar = makeVar(canvasStatePaperVarDefaults)
@@ -1073,7 +1073,7 @@ export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
 // ** export REACTIVE VARS
 export const reactiveVars = {
   preferencesDataVar,
-  isPreferencesDataVar,
+  isPreferencesDataSetVar,
   canvasStatePaperVar,
   isCanvasStatePaperSetVar,
   canvasStateThreeDVar,

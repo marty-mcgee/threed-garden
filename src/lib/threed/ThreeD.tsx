@@ -36,7 +36,7 @@ import {
 //   // queries,
 //   // mutations,
 //   // reactive vars:
-//   isPreferencesSetVar,
+//   isPreferencesDataSetVar,
 //   preferencesDataVar,
 // } from '#/lib/api/graphql/apollo'
 
