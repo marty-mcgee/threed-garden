@@ -20,7 +20,7 @@ import {
 // import { stores, queries, mutations } from '#/lib/api/graphql/apollo'
 // import stores from '#/lib/api/graphql/apollo'
 import { useReactiveVar } from '@apollo/client'
-import { isPreferencesSetVar, preferencesDataVar } from '#/lib/api/graphql/apollo'
+import { isPreferencesDataSetVar, preferencesDataVar } from '#/lib/api/graphql/apollo'
 
 // ** RADIX-UI Imports
 import { 
@@ -287,7 +287,7 @@ export function ThreeDLevaControls() {
   )
 
   // ==========================================================
-  // isPreferencesSetVar() ??
+  // isPreferencesDataSetVar() ??
 
   // ==========================================================
   // ** doAutoLoadData

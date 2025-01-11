@@ -31,7 +31,7 @@ import {
   // queries,
   // mutations,
   // reactive state vars:
-  isPreferencesDataVar,
+  isPreferencesDataSetVar,
   preferencesDataVar,
   isCanvasStatePaperSetVar,
   canvasStatePaperVar,
@@ -5833,7 +5833,7 @@ export default function ThreeDHomeDesign({
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ prefs', ccm.orangeAlert, prefs)
   // ** INIT PREFERENCES STATE
-  // const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesDataVar())
+  // const [isPrefsLoaded, setIsPrefsLoaded] = useState(isPreferencesDataSetVar())
 
   // ** USE CANVAS STATE (Paper + ThreeD)
   // ** PAPER
@@ -5902,7 +5902,7 @@ export default function ThreeDHomeDesign({
 
     if (
       false &&
-      !isPageLoaded && !useReactiveVar(isPreferencesDataVar)
+      !isPageLoaded && !useReactiveVar(isPreferencesDataSetVar)
     ) {
     
       // ** GET PREFERENCES
@@ -5910,7 +5910,7 @@ export default function ThreeDHomeDesign({
         // try {
           
         // ** GET PREFERENCES
-          if (!useReactiveVar(isPreferencesDataVar)) {
+          if (!useReactiveVar(isPreferencesDataSetVar)) {
             // **
             // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
             const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
@@ -5927,9 +5927,9 @@ export default function ThreeDHomeDesign({
           // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
           preferencesDataVar(loadPreferencesOne.data)
           // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
-          isPreferencesDataVar(true)
-          // setIsPrefsLoaded(isPreferencesDataVar())
-          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataVar()', ccm.redAlert, isPreferencesDataVar())
+          isPreferencesDataSetVar(true)
+          // setIsPrefsLoaded(isPreferencesDataSetVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
           if (preferencesDataVar().doAutoLoadData) {
             if (DEBUG) 
               console.debug('%c canvas states loading...', ccm.orangeAlert)
@@ -5962,9 +5962,9 @@ export default function ThreeDHomeDesign({
           // console.debug('%c🦆 APOLLO STORE: get one canvasStatePaper => loadCanvasStatePaperOne', ccm.redAlert, loadCanvasStatePaperOne)
           canvasStatePaperVar(loadPreferencesOne.data)
           // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
-          isPreferencesDataVar(true)
-          // setIsPrefsLoaded(isPreferencesDataVar())
-          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataVar()', ccm.redAlert, isPreferencesDataVar())
+          isPreferencesDataSetVar(true)
+          // setIsPrefsLoaded(isPreferencesDataSetVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
           if (preferencesDataVar().doAutoLoadData) {
             if (DEBUG) 
               console.debug('%c canvas states loading...', ccm.orangeAlert)

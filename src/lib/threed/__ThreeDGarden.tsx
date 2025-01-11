@@ -46,7 +46,7 @@ import {
   // queries,
   // mutations,
   // reactive vars:
-  isPreferencesSetVar,
+  isPreferencesDataSetVar,
   preferencesDataVar,
 } from '#/lib/api/graphql/apollo'
 
@@ -258,7 +258,7 @@ const ThreeDGarden = (): JSX.Element => {
 
   // ** INIT PREFERENCES
   const [isPageLoaded, setIsPageLoaded] = useState(false)
-  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesSetVar))
+  const [isPrefsLoaded, setIsPrefsLoaded] = useState(useReactiveVar(isPreferencesDataSetVar))
 
   // ** refs moved to ThreeDCanvasViewer
   // const refThreeDCanvas1 = useRef<any>(null)
@@ -293,9 +293,9 @@ const ThreeDGarden = (): JSX.Element => {
           // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
           preferencesDataVar(loadPreferencesOne.data)
           // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
-          isPreferencesSetVar(true)
-          setIsPrefsLoaded(isPreferencesSetVar())
-          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesSetVar()', ccm.redAlert, isPreferencesSetVar())
+          isPreferencesDataSetVar(true)
+          setIsPrefsLoaded(isPreferencesDataSetVar())
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
           // if (preferencesDataVar().doAutoLoadData) {
           //   // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
           //   const projectsFromDataSource = await projectStore.actions.loadFromDB(client)

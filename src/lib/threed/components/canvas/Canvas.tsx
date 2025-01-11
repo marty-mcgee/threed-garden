@@ -8,7 +8,7 @@ import {
   useReactiveVar,
 } from '@apollo/client'
 import {
-  isPreferencesDataVar,
+  isPreferencesDataSetVar,
   preferencesDataVar,
   preferencesStore,
   canvasStateStore,
