@@ -641,7 +641,7 @@ const PaperCanvas = (props: any) => {
         
         initThreeDPaperPlanView(planCanvas)
         initPaperOrbitControls()
-        drawFreestyle()
+        // drawFreestyle()
         // ** 
         // console.debug('%c PaperCanvas THREED PAPER JS: initThreeDPaperPlanView(planCanvasRef)', ccm.darkorangeAlert, planCanvasRef.current)
         // console.debug(`%c PaperCanvas planCanvas`, ccm.darkgreenAlert, planCanvas)
@@ -6521,8 +6521,6 @@ export default function ThreeDHomeDesign({
         // console.debug('PAPERprojectToView', PAPERprojectToView)
         threedDragDiv.style.left = PAPERprojectToView.x + planView.offsetLeft - widthT / 2 + 'px'
         threedDragDiv.style.top = PAPERprojectToView.y + planView.offsetTop - heightOh / 2 + 'px'
-        // [MM]
-        // threedDragDiv.style.display = 'block'
       }
 
       // if (draggingNewGuide) {
@@ -6543,39 +6541,64 @@ export default function ThreeDHomeDesign({
     }
     // END: document.onmousemove = function (e: any) {}
 
+    paper.tool.onMouseUp = function (e: any) {
+      console.debug('PAPER threedTool', threedTool)
+      console.debug('PAPER tool', paper.tool)
 
-    // // ** HEY HEY HEY [MM] NEEDS ATTENTION [MM]
-    // // ** CAN WE DO THIS WITHIN A SUB "TOOL" MODE? Yes please.
-    // document.onmouseup = function (e: any) {
-    //   // ** MOVED TO threedTool.pointer
-    //   draggingThreedIcon = false
+      // ** RETURN
+      return
+    }
+    
+    // ** [MM] NEEDS ATTENTION [MM]
+    // ** CAN WE DO THIS WITHIN A SUB "TOOL" MODE? Yes please.
+    document.onmouseup = function (e: any) {
+      
+      // var PAPERscript = paper.PaperScript
+      // console.debug('PAPERscript', PAPERscript)
 
-    //   // **
-    //   if (verticalSliderDragging) {
-    //     verticalSliderDragging = false
-    //   }
-    //   if (horizontalSliderLeftDragging) {
-    //     horizontalSliderLeftDragging = false
-    //   }
-    //   if (horizontalSliderRightDragging) {
-    //     horizontalSliderRightDragging = false
-    //   }
+      // console.debug('PAPER threedTool', threedTool)
+      // console.debug('PAPER tool', paper.tool)
 
-    //   // ** [MM] CLOSER.. NOT EVEN CLOSE -- DON't DO THIS UNTIL YOU HAVE IT AS A threedTool.pointer
-    //   if (draggingThreedItem) {
-    //     // @ ts-expect-error
-    //     // addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
-    //     // addThreed(e, draggingThreedItem, useCanvasStateThreeDVar.state.scene)
-    //     void (draggingNewGuide && (draggingNewGuide = false))
-    //   }
+      // ** MOVE TO threedTool.pointer
+      draggingThreedIcon = false
 
-    //   // ** RETURN ???
-    //   // return (
-    //   //   null
-    //   // )
-    //   return
-    // }
-    // // END: document.onmouseup = function (e: any) {}
+      // **
+      if (verticalSliderDragging) {
+        verticalSliderDragging = false
+      }
+      if (horizontalSliderLeftDragging) {
+        horizontalSliderLeftDragging = false
+      }
+      if (horizontalSliderRightDragging) {
+        horizontalSliderRightDragging = false
+      }
+
+      // ** [MM] CLOSER...
+      // -- DON'T DO THIS UNTIL YOU HAVE IT AS A threedTool.pointer
+      if (draggingThreedItem) {
+        
+            var PAPERa = paper.view.viewToProject(
+              new paper.Point(
+                e.pageX - planView.offsetLeft,
+                e.pageY - planView.offsetTop
+              )
+            )
+            console.debug('PAPERa', PAPERa)
+            var PAPERprojectToView = paper.view.projectToView(PAPERa)
+            console.debug('PAPERprojectToView', PAPERprojectToView)
+            var PAPERb = paper.view.bounds
+            console.debug('PAPERb', PAPERb)
+
+        // @ts-expect-error
+        addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
+        // addThreed(e, draggingThreedItem, useCanvasStateThreeDVar.state.scene)
+        void (draggingNewGuide && (draggingNewGuide = false))
+      }
+
+      // ** RETURN
+      return
+    }
+    // END: document.onmouseup = function (e: any) {}
     
 
   }, []) // end load data useEffect (client)
