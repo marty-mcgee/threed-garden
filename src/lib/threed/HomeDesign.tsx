@@ -577,7 +577,7 @@ const PaperCanvas = (props: any) => {
     
       // console.debug('%c PaperCanvas planCanvasRef.current', ccm.darkorangeAlert, planCanvasRef.current)
 
-      if (planCanvasRef.current != null) {
+      if (planCanvasRef.current !== null) {
 
         // let
         // planCanvas = document.getElementById('planCanvas')
@@ -649,7 +649,7 @@ const PaperCanvas = (props: any) => {
         // ** THREED APOLLO STATE REACTIVE VAR
         isPaperCanvasLoadedVar(true)
 
-      } // planCanvasRef.current != null
+      } // planCanvasRef.current !== null
       // ** ================================================
 
     }
@@ -5841,13 +5841,13 @@ export default function ThreeDHomeDesign({
   // console.debug('%c⚙️ useCanvasStatePaperVar', ccm.orangeAlert, useCanvasStatePaperVar)
   // ** CHECK CANVAS STATE Paper
   const [isCanvasPaperLoaded, setIsCanvasPaperLoaded] = useState(false)
-  const [isCanvasStatePaperLoaded, setIsCanvasStatePaperLoaded] = useState(isCanvasStatePaperSetVar())
+  // const [isCanvasStatePaperLoaded, setIsCanvasStatePaperLoaded] = useState(isCanvasStatePaperSetVar())
   // ** THREED
   const useCanvasStateThreeDVar = useReactiveVar(canvasStateThreeDVar) // YES !!
   // console.debug('%c⚙️ useCanvasStateThreeDVar', ccm.orangeAlert, useCanvasStateThreeDVar)
   // ** CHECK CANVAS STATE ThreeD
   const [isCanvasThreeDLoaded, setIsCanvasThreeDLoaded] = useState(false)
-  const [isCanvasStateThreeDLoaded, setIsCanvasStateThreeDLoaded] = useState(isCanvasStateThreeDSetVar())
+  // const [isCanvasStateThreeDLoaded, setIsCanvasStateThreeDLoaded] = useState(isCanvasStateThreeDSetVar())
 
   // ** CHECK PAGE LOADED STATE
   const [isPageLoaded, setIsPageLoaded] = useState(false)
@@ -5901,8 +5901,8 @@ export default function ThreeDHomeDesign({
   useEffect(() => {
 
     if (
-      false &&
-      !isPageLoaded && !useReactiveVar(isPreferencesDataSetVar)
+      true &&
+      !isPageLoaded && !isPreferencesDataSetVar()
     ) {
     
       // ** GET PREFERENCES
@@ -5910,7 +5910,7 @@ export default function ThreeDHomeDesign({
         // try {
           
         // ** GET PREFERENCES
-          if (!useReactiveVar(isPreferencesDataSetVar)) {
+          if (!isPreferencesDataSetVar()) {
             // **
             // const preferencesFromDataSource = await preferencesStore.actions.loadFromDataSource(client)
             const preferencesFromDataSource = await preferencesStore.actions.loadFromDB(client)
@@ -5932,11 +5932,11 @@ export default function ThreeDHomeDesign({
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
           if (preferencesDataVar().doAutoLoadData) {
             if (DEBUG) 
-              console.debug('%c canvas states loading...', ccm.orangeAlert)
+              console.debug('%c projects loading...', ccm.orangeAlert)
             // // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
             // const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
             if (DEBUG) 
-              console.debug('%c projects loading...', ccm.orangeAlert)
+              console.debug('%c projects loaded!', ccm.orangeAlert)
             // if (projectsFromDataSource) {
             //   console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
             //   // ** TODO
@@ -5945,7 +5945,7 @@ export default function ThreeDHomeDesign({
           }
 
           // ** GET CANVAS STATE: PAPER
-          if (!useReactiveVar(isCanvasStatePaperSetVar)) {
+          if (false && !isCanvasStatePaperSetVar()) {
             // **
             // const canvasStatePaperFromDataSource = await canvasStateStore.actions.loadFromDataSource(client)
             const canvasStatePaperFromDataSource = await canvasStateStore.actions.loadFromDB(client)
@@ -5960,18 +5960,53 @@ export default function ThreeDHomeDesign({
           const loadCanvasStatePaperOne = await canvasStateStore.store.get('one')
           // const loadCanvasStatePaperOne = await canvasStateStore.store.useStore('one')
           // console.debug('%c🦆 APOLLO STORE: get one canvasStatePaper => loadCanvasStatePaperOne', ccm.redAlert, loadCanvasStatePaperOne)
-          canvasStatePaperVar(loadPreferencesOne.data)
-          // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
-          isPreferencesDataSetVar(true)
-          // setIsPrefsLoaded(isPreferencesDataSetVar())
+          canvasStatePaperVar(loadCanvasStatePaperOne.data)
+          // console.debug('%c🦆 APOLLO STORE: FETCH canvasStatePaperVar()', ccm.redAlert, canvasStatePaperVar())
+          isCanvasStatePaperSetVar(true)
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
-          if (preferencesDataVar().doAutoLoadData) {
+          // @ts-expect-error
+          if (canvasStatePaperVar().state.scene !== null) {
             if (DEBUG) 
-              console.debug('%c canvas states loading...', ccm.orangeAlert)
+              console.debug('%c canvas states paper loading...', ccm.orangeAlert)
             // // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
             // const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
+            // if (DEBUG) 
+            //   console.debug('%c canvas states paper loaded!', ccm.orangeAlert)
+            // if (projectsFromDataSource) {
+            //   console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
+            //   // ** TODO
+            //   // ** do more tasks here ??
+            // }
+          }
+
+          // ** GET CANVAS STATE: THREED
+          if (false && !isCanvasStateThreeDSetVar()) {
+            // **
+            // const canvasStateThreeDFromDataSource = await canvasStateStore.actions.loadFromDataSource(client)
+            const canvasStateThreeDFromDataSource = await canvasStateStore.actions.loadFromDB(client)
             if (DEBUG) 
-              console.debug('%c projects loading...', ccm.orangeAlert)
+              console.debug('%c canvasStateThreeD loading...', ccm.greenAlert)
+            if (canvasStateThreeDFromDataSource) {
+              if (DEBUG) 
+                console.debug('%c canvasStateThreeDFromDataSource', ccm.greenAlert)
+            }
+          }
+
+          const loadCanvasStateThreeDOne = await canvasStateStore.store.get('one')
+          // const loadCanvasStateThreeDOne = await canvasStateStore.store.useStore('one')
+          // console.debug('%c🦆 APOLLO STORE: get one canvasStateThreeD => loadCanvasStateThreeDOne', ccm.redAlert, loadCanvasStateThreeDOne)
+          canvasStateThreeDVar(loadCanvasStateThreeDOne.data)
+          // console.debug('%c🦆 APOLLO STORE: FETCH canvasStateThreeDVar()', ccm.redAlert, canvasStateThreeDVar())
+          isCanvasStateThreeDSetVar(true)
+          // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
+          // @ts-expect-error
+          if (canvasStateThreeDVar().state.scene !== null) {
+            if (DEBUG) 
+              console.debug('%c canvas states threed loading...', ccm.orangeAlert)
+            // // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
+            // const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
+            // if (DEBUG) 
+            //   console.debug('%c canvas states threed loaded!', ccm.orangeAlert)
             // if (projectsFromDataSource) {
             //   console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
             //   // ** TODO
