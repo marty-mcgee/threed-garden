@@ -3214,10 +3214,10 @@ function initThreeDPaperPlanView(planCanvas: any) {
 /* */
 
 // ==============================================================
-// ** 🟣 TYPES
+// ** 🟣 TYPES + INTERFACES
 // ==============================================================
 
-type TThreedItem = { 
+interface TThreedItem { 
   title: string, 
   license: string, 
   author: string,
@@ -3227,12 +3227,12 @@ type TThreedItem = {
   pivot?: number,
   useMask?: boolean,
 }
-type TThreedItemSize = {
+interface TThreedItemSize {
   x: number,
   y: number,
   z: number,
 }
-type TThreedItemScale = {
+interface TThreedItemScale {
   x: number,
   y: number,
   z: number,
@@ -5796,16 +5796,16 @@ export default function ThreeDHomeDesign({
 }): JSX.Element { 
 
   // ** get panel layout from cookies
-  const onLayout1 = (sizes: number[]) => {
-    // console.debug('onLayout1 sizes', sizes)
+  const onThreeDPanelGroup1 = (sizes: number[]) => {
+    // console.debug('onThreeDPanelGroup1 sizes', sizes)
     document.cookie = `react-resizable-panels:ThreeDPanelGroup1:layout=${JSON.stringify(sizes)}`
   }
-  const onLayout2 = (sizes: number[]) => {
-    // console.debug('onLayout2 sizes', sizes)
+  const onThreeDPanelGroup2 = (sizes: number[]) => {
+    // console.debug('onThreeDPanelGroup2 sizes', sizes)
     document.cookie = `react-resizable-panels:ThreeDPanelGroup2:layout=${JSON.stringify(sizes)}`
   }
-  const onLayout3 = (sizes: number[]) => {
-    // console.debug('onLayout3 sizes', sizes)
+  const onThreeDPanelGroup3 = (sizes: number[]) => {
+    // console.debug('onThreeDPanelGroup3 sizes', sizes)
     document.cookie = `react-resizable-panels:ThreeDPanelGroup3:layout=${JSON.stringify(sizes)}`
   }
   
@@ -6806,7 +6806,7 @@ export default function ThreeDHomeDesign({
       <PanelGroup 
         direction='horizontal'
         autoSaveId='ThreeDPanelGroup1'
-        onLayout={onLayout1}
+        onLayout={onThreeDPanelGroup1}
       >
         {/* VIEWS: OBJECT CATALOG */}
         {prefs.showPanelFirst && (
@@ -6828,7 +6828,7 @@ export default function ThreeDHomeDesign({
             <PanelGroup
               direction='vertical'
               autoSaveId='ThreeDPanelGroup2'
-              onLayout={onLayout2}
+              onLayout={onThreeDPanelGroup2}
             >
                       
               {/* THREED: CONTROL PANELS (NOUNS, API) */}
@@ -6912,7 +6912,7 @@ export default function ThreeDHomeDesign({
             <PanelGroup 
               direction='vertical'
               autoSaveId='ThreeDPanelGroup3'
-              onLayout={onLayout3}
+              onLayout={onThreeDPanelGroup3}
             >
               
               {/* PANEL: 3D FIBER CANVAS */}
