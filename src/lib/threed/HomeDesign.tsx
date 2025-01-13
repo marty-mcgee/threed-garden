@@ -5919,14 +5919,13 @@ export default function ThreeDHomeDesign({
             if (preferencesFromDataSource) {
               if (DEBUG) 
                 console.debug('%c preferencesFromDataSource', ccm.greenAlert)
+              const loadPreferencesOne = await preferencesStore.store.get('one')
+              // const loadPreferencesOne = await preferencesStore.store.useStore('one')
+              // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
+              preferencesDataVar(loadPreferencesOne.data)
+              // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
             }
           }
-
-          const loadPreferencesOne = await preferencesStore.store.get('one')
-          // const loadPreferencesOne = await preferencesStore.store.useStore('one')
-          // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
-          preferencesDataVar(loadPreferencesOne.data)
-          // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
           isPreferencesDataSetVar(true)
           // setIsPrefsLoaded(isPreferencesDataSetVar())
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
@@ -5954,30 +5953,22 @@ export default function ThreeDHomeDesign({
             if (canvasStatePaperFromDataSource) {
               if (DEBUG) 
                 console.debug('%c canvasStatePaperFromDataSource', ccm.greenAlert)
+              const loadCanvasStatePaperOne = await canvasStateStore.store.get('one')
+              // const loadCanvasStatePaperOne = await canvasStateStore.store.useStore('one')
+              // console.debug('%c🦆 APOLLO STORE: get one canvasStatePaper => loadCanvasStatePaperOne', ccm.redAlert, loadCanvasStatePaperOne)
+              if (loadCanvasStatePaperOne) {
+                canvasStatePaperVar(loadCanvasStatePaperOne.data)
+                // console.debug('%c🦆 APOLLO STORE: FETCH canvasStatePaperVar()', ccm.redAlert, canvasStatePaperVar())
+              }
             }
           }
-
-          const loadCanvasStatePaperOne = await canvasStateStore.store.get('one')
-          // const loadCanvasStatePaperOne = await canvasStateStore.store.useStore('one')
-          // console.debug('%c🦆 APOLLO STORE: get one canvasStatePaper => loadCanvasStatePaperOne', ccm.redAlert, loadCanvasStatePaperOne)
-          canvasStatePaperVar(loadCanvasStatePaperOne.data)
-          // console.debug('%c🦆 APOLLO STORE: FETCH canvasStatePaperVar()', ccm.redAlert, canvasStatePaperVar())
           isCanvasStatePaperSetVar(true)
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
-          // @ts-expect-error
-          if (canvasStatePaperVar().state.scene !== null) {
-            if (DEBUG) 
-              console.debug('%c canvas states paper loading...', ccm.orangeAlert)
-            // // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-            // const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
-            // if (DEBUG) 
-            //   console.debug('%c canvas states paper loaded!', ccm.orangeAlert)
-            // if (projectsFromDataSource) {
-            //   console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
-            //   // ** TODO
-            //   // ** do more tasks here ??
-            // }
-          }
+          // // @ts-expect-error
+          // if (canvasStatePaperVar().state?.scene !== null) {
+          //   if (DEBUG) 
+          //     console.debug('%c canvas states paper loading...', ccm.orangeAlert)
+          // }
 
           // ** GET CANVAS STATE: THREED
           if (false && !isCanvasStateThreeDSetVar()) {
@@ -5989,30 +5980,20 @@ export default function ThreeDHomeDesign({
             if (canvasStateThreeDFromDataSource) {
               if (DEBUG) 
                 console.debug('%c canvasStateThreeDFromDataSource', ccm.greenAlert)
+              const loadCanvasStateThreeDOne = await canvasStateStore.store.get('one')
+              // const loadCanvasStateThreeDOne = await canvasStateStore.store.useStore('one')
+              // console.debug('%c🦆 APOLLO STORE: get one canvasStateThreeD => loadCanvasStateThreeDOne', ccm.redAlert, loadCanvasStateThreeDOne)
+              canvasStateThreeDVar(loadCanvasStateThreeDOne.data)
+              // console.debug('%c🦆 APOLLO STORE: FETCH canvasStateThreeDVar()', ccm.redAlert, canvasStateThreeDVar())
             }
           }
-
-          const loadCanvasStateThreeDOne = await canvasStateStore.store.get('one')
-          // const loadCanvasStateThreeDOne = await canvasStateStore.store.useStore('one')
-          // console.debug('%c🦆 APOLLO STORE: get one canvasStateThreeD => loadCanvasStateThreeDOne', ccm.redAlert, loadCanvasStateThreeDOne)
-          canvasStateThreeDVar(loadCanvasStateThreeDOne.data)
-          // console.debug('%c🦆 APOLLO STORE: FETCH canvasStateThreeDVar()', ccm.redAlert, canvasStateThreeDVar())
           isCanvasStateThreeDSetVar(true)
           // console.debug('%c🦆 APOLLO STORE: FETCH isPreferencesDataSetVar()', ccm.redAlert, isPreferencesDataSetVar())
-          // @ts-expect-error
-          if (canvasStateThreeDVar().state.scene !== null) {
-            if (DEBUG) 
-              console.debug('%c canvas states threed loading...', ccm.orangeAlert)
-            // // const projectsFromDataSource = await projectStore.actions.loadFromDataSource(client)
-            // const projectsFromDataSource = await projectStore.actions.loadFromDB(client)
-            // if (DEBUG) 
-            //   console.debug('%c canvas states threed loaded!', ccm.orangeAlert)
-            // if (projectsFromDataSource) {
-            //   console.debug('%c🥕 projectsFromDataSource', ccm.redAlert)
-            //   // ** TODO
-            //   // ** do more tasks here ??
-            // }
-          }
+          // // @ts-expect-error
+          // if (canvasStateThreeDVar().state?.scene !== null) {
+          //   if (DEBUG) 
+          //     console.debug('%c canvas states threed loading...', ccm.orangeAlert)
+          // }
 
           // ** READY TO GO ???
           setIsPageLoaded(true)
@@ -6025,18 +6006,6 @@ export default function ThreeDHomeDesign({
       fetchData()
       if (DEBUG) 
         console.debug('%c🫙 ThreeD HD: fetching data ...', ccm.blueAlert)
-
-
-      // ** LOAD NOUN FROM WP API VIA APOLLO INTO R3F + LEVA (+ VALTIO)
-      const loadNounData = (_type: string = 'project', threeds: any = []) => {
-        // load these threeds into r3f canvas
-        if (DEBUG || debug) 
-          console.debug('%c🌱 ThreeD HD: loadNounData()', ccm.yellowAlert, _type, threeds)
-        if (_type === 'project') {
-          projectStore.actions.loadToCanvas(threeds, '_r3fCanvas1')
-        }
-        // return <Box>true</Box> // true
-      }
       
     } else if (isPageLoaded) {
       console.debug('%c🦆 ThreeD HD: LOADED !!', ccm.redAlert, isPageLoaded)
@@ -6827,7 +6796,7 @@ export default function ThreeDHomeDesign({
       {/* PAGE LAYOUT PANELS */}
       <PanelGroup 
         direction='horizontal'
-        // autoSaveId='ThreeDPanelGroup1'
+        autoSaveId='ThreeDPanelGroup1'
         // onLayout={onLayout}
       >
         {/* VIEWS: OBJECT CATALOG */}
@@ -6848,7 +6817,7 @@ export default function ThreeDHomeDesign({
           >
             <PanelGroup
               direction='vertical'
-              // autoSaveId='ThreeDPanelGroup2'
+              autoSaveId='ThreeDPanelGroup2'
               // onLayout={onLayout}
             >
                       
@@ -6929,7 +6898,7 @@ export default function ThreeDHomeDesign({
             {/* MAIN CANVASES (TOP + BOTTOM) */}
             <PanelGroup 
               direction='vertical'
-              // autoSaveId='ThreeDPanelGroup3'
+              autoSaveId='ThreeDPanelGroup3'
               // onLayout={onLayout}
             >
               
