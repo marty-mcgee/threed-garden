@@ -5787,7 +5787,9 @@ const CatalogItems = (props: any): JSX.Element => {
   )
 }
 
+/* */
 
+// ==============================================================
 // ** EXPORT JSX
 export default function ThreeDHomeDesign({
   panelLayout,
@@ -5795,6 +5797,8 @@ export default function ThreeDHomeDesign({
   panelLayout: number[][]
 }): JSX.Element { 
 
+  // ==========================================================
+  // ** PANEL LAYOUTS
   // ** get panel layout from cookies
   const onThreeDPanelGroup1 = (sizes: number[]) => {
     // console.debug('onThreeDPanelGroup1 sizes', sizes)
@@ -6603,8 +6607,8 @@ export default function ThreeDHomeDesign({
             console.debug('PAPERb', PAPERb)
 
         // @ts-expect-error
-        addThreed(e, draggingThreedItem, canvasStateThreeDVar().state.scene)
-        // addThreed(e, draggingThreedItem, useCanvasStateThreeDVar.state.scene)
+        addThreed(e, draggingThreedItem, canvasStateThreeDVar().state?.scene)
+        // addThreed(e, draggingThreedItem, useCanvasStateThreeDVar.state?.scene)
         void (draggingNewGuide && (draggingNewGuide = false))
       }
 
@@ -6617,57 +6621,35 @@ export default function ThreeDHomeDesign({
   }, []) // end load data useEffect (client)
 
   
-  // // ** MODALS
-  // const [showModalAbout, setShowModalAbout] = useState(false)
-  // const [showModal3dModel, setShowModal3dModel] = useState(false)
-  // const [showModalShare, setShowModalShare] = useState(false)
-  // const [showModalLoading, setShowModalLoading] = useState(false)
-  // function handleShowModalAbout() {
-  //   console.debug('handleShowModalAbout()')
-  //   setShowModalAbout(true)
-  //   console.debug('showModalAbout', showModalAbout)
-  //   // $('.supportEmail').text('support@companyjuice.com'),
-  //   //   $('#showModalAbout').show(),
-  //   //   hideMouseIndicators()
-  // }
-  // function handleShowModal3dModel() {
-  //   console.debug('handleShowModal3dModel()')
-  //   setShowModal3dModel(true)
-  //   console.debug('showModal3dModel', showModal3dModel)
-  // }
-  // function handleShowModalShare() {
-  //   console.debug('handleShowModalShare()')
-  //   setShowModalShare(true)
-  //   console.debug('showModalShare', showModalShare)
-  // }
-  // function handleShowModalLoading() {
-  //   console.debug('handleShowModalLoading()')
-  //   setShowModalLoading(true)
-  //   console.debug('showModalLoading', showModalLoading)
-  // }
+  // ** MODALS
+  const [showModalAbout, setShowModalAbout] = useState(false)
+  const [showModal3dModel, setShowModal3dModel] = useState(false)
+  const [showModalShare, setShowModalShare] = useState(false)
+  const [showModalLoading, setShowModalLoading] = useState(false)
+  function handleShowModalAbout() {
+    console.debug('handleShowModalAbout()')
+    setShowModalAbout(true)
+    console.debug('showModalAbout', showModalAbout)
+    // $('.supportEmail').text('support@companyjuice.com'),
+    //   $('#showModalAbout').show(),
+    //   hideMouseIndicators()
+  }
+  function handleShowModal3dModel() {
+    console.debug('handleShowModal3dModel()')
+    setShowModal3dModel(true)
+    console.debug('showModal3dModel', showModal3dModel)
+  }
+  function handleShowModalShare() {
+    console.debug('handleShowModalShare()')
+    setShowModalShare(true)
+    console.debug('showModalShare', showModalShare)
+  }
+  function handleShowModalLoading() {
+    console.debug('handleShowModalLoading()')
+    setShowModalLoading(true)
+    console.debug('showModalLoading', showModalLoading)
+  }
   // ** END MODALS
-
-
-  // ** BASIC JSX ACTION BUTTONS
-  // <div>
-  // <Button onClick={() => handleShowModalAbout()}>
-  //   Show Modal: About
-  // </Button>
-  // <Button onClick={() => handleShowModal3dModel()}>
-  //   Show Modal: 3D Model
-  // </Button>
-  // <Button onClick={() => handleShowModalShare()}>
-  //   Show Modal: Share
-  // </Button>
-  // <Button onClick={() => handleShowModalLoading()}>
-  //   Show Modal: Loading
-  // </Button>
-  // </div>
-
-
-
-
-  
 
 
   // ** RETURN JSX
@@ -6702,6 +6684,30 @@ export default function ThreeDHomeDesign({
         </Canvas> 
         */}
       </>
+
+      {/* BASIC JSX ACTION BUTTONS */}
+      <div 
+        style={{ 
+          // display: 'flex',
+          display: 'none',
+          flexDirection: 'row',
+          // marginLeft: '4px', 
+          // marginRight: '6px' 
+        }}
+      >
+        <Button onClick={() => handleShowModalAbout()}>
+          Show Modal: About
+        </Button>
+        <Button onClick={() => handleShowModal3dModel()}>
+          Show Modal: 3D Model
+        </Button>
+        <Button onClick={() => handleShowModalShare()}>
+          Show Modal: Share
+        </Button>
+        <Button onClick={() => handleShowModalLoading()}>
+          Show Modal: Loading
+        </Button>
+      </div>
 
       <div 
         style={{
