@@ -349,6 +349,29 @@ const ThreeDExperience = forwardRef((
         paused={pausedPhysics}
       >
 
+      {/* ** FLOORS ** */}
+      {/* solid steps (levels, safety) */}
+      {/* The Floor (Plane 0) */}
+      <group rotation={[0, 0, 0]} scale={100.0} position={[0, 0, 0]}>
+        <Floor color={'darkgreen'} opacity={0.6} />
+      </group>
+        {/* backup solid steps (levels[1+], safety) */}
+        {/* Sub-Floor[s] (Plane < 0) */}
+        {/* <SubFloor level={`${level[index]}`} /> */}
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+          <Floor color={'saddlebrown'} opacity={0.4} />
+        </group> */}
+        {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
+            DEEP BELOW SEA LEVEL */}
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
+          <Floor color={'darkblue'} opacity={0.2} />
+        </group> */}
+        {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
+            DEEP DEEP DEEP BELOW SEA LEVEL */}
+        {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
+          <Ground color={'black'} opacity={0.0} />
+        </group> */}
+
         {/* R3F BOUNDS */}
         <Bounds 
           fit={configBounds.fit} 
@@ -415,7 +438,7 @@ const ThreeDExperience = forwardRef((
 
             {/* CHARACTER MODEL */}
             { true && (
-            <group key='character0' position={[200, 0, 0]}>
+            <group key='character0' position={[800, 0, 0]}>
               {/* <CharacterControls
                 debug={prefs.doWorldDebug}
                 // debug={false}
@@ -536,29 +559,6 @@ const ThreeDExperience = forwardRef((
           </SelectToZoom>
         </Bounds>
         {/* END: R3F BOUNDS */}
-
-        {/* ** FLOORS ** */}
-        {/* solid steps (levels, safety) */}
-        {/* The Floor (Plane 0) */}
-        <group rotation={[0, 0, 0]} scale={100.0} position={[0, 0, 0]}>
-          <Floor color={'darkgreen'} opacity={0.6} />
-        </group>
-          {/* backup solid steps (levels[1+], safety) */}
-          {/* Sub-Floor[s] (Plane < 0) */}
-          {/* <SubFloor level={`${level[index]}`} /> */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-            <Floor color={'saddlebrown'} opacity={0.4} />
-          </group> */}
-          {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-              DEEP BELOW SEA LEVEL */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
-            <Floor color={'darkblue'} opacity={0.2} />
-          </group> */}
-          {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
-              DEEP DEEP DEEP BELOW SEA LEVEL */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
-            <Ground color={'black'} opacity={0.0} />
-          </group> */}
 
       </Physics>
     </group>
