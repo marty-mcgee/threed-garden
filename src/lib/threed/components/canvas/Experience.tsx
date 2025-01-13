@@ -352,8 +352,8 @@ const ThreeDExperience = forwardRef((
       {/* ** FLOORS ** */}
       {/* solid steps (levels, safety) */}
       {/* The Floor (Plane 0) */}
-      <group rotation={[0, 0, 0]} scale={100.0} position={[0, 0, 0]}>
-        <Floor color={'darkgreen'} opacity={0.6} />
+      <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+        <Floor color={'darkgreen'} opacity={0.4} />
       </group>
         {/* backup solid steps (levels[1+], safety) */}
         {/* Sub-Floor[s] (Plane < 0) */}
