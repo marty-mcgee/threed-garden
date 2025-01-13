@@ -5792,12 +5792,21 @@ const CatalogItems = (props: any): JSX.Element => {
 export default function ThreeDHomeDesign({
   panelLayout,
 }: {
-  panelLayout: number[]
+  panelLayout: number[][]
 }): JSX.Element { 
 
   // ** get panel layout from cookies
-  const onLayout = (sizes: number[]) => {
-    document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`
+  const onLayout1 = (sizes: number[]) => {
+    // console.debug('onLayout1 sizes', sizes)
+    document.cookie = `react-resizable-panels:ThreeDPanelGroup1:layout=${JSON.stringify(sizes)}`
+  }
+  const onLayout2 = (sizes: number[]) => {
+    // console.debug('onLayout2 sizes', sizes)
+    document.cookie = `react-resizable-panels:ThreeDPanelGroup2:layout=${JSON.stringify(sizes)}`
+  }
+  const onLayout3 = (sizes: number[]) => {
+    // console.debug('onLayout3 sizes', sizes)
+    document.cookie = `react-resizable-panels:ThreeDPanelGroup3:layout=${JSON.stringify(sizes)}`
   }
   
   // ==========================================================
@@ -6797,7 +6806,7 @@ export default function ThreeDHomeDesign({
       <PanelGroup 
         direction='horizontal'
         autoSaveId='ThreeDPanelGroup1'
-        // onLayout={onLayout}
+        onLayout={onLayout1}
       >
         {/* VIEWS: OBJECT CATALOG */}
         {prefs.showPanelFirst && (
@@ -6807,7 +6816,8 @@ export default function ThreeDHomeDesign({
             id='panelLeft'
             // className='Panel'
             order={1}
-            defaultSize={25}
+            // defaultSize={25}
+            defaultSize={panelLayout[0][0]}
             minSize={0}
             maxSize={100}
             // style={{
@@ -6818,7 +6828,7 @@ export default function ThreeDHomeDesign({
             <PanelGroup
               direction='vertical'
               autoSaveId='ThreeDPanelGroup2'
-              // onLayout={onLayout}
+              onLayout={onLayout2}
             >
                       
               {/* THREED: CONTROL PANELS (NOUNS, API) */}
@@ -6828,7 +6838,8 @@ export default function ThreeDHomeDesign({
                 id='viewProperties'
                 // className='Panel'
                 order={3}
-                defaultSize={50}
+                // defaultSize={50}
+                defaultSize={panelLayout[1][0]}
                 maxSize={100}
                 style={{
                   // border: '1px solid #1A1A1A',
@@ -6846,7 +6857,8 @@ export default function ThreeDHomeDesign({
                 id='catalogView'
                 // className='Panel'
                 order={4}
-                defaultSize={50}
+                // defaultSize={50}
+                defaultSize={panelLayout[1][1]}
                 maxSize={100}
                 style={{
                   // border: '1px solid #1A1A1A',
@@ -6887,7 +6899,8 @@ export default function ThreeDHomeDesign({
             id='panelRight'
             order={2}
             // className='Panel'
-            defaultSize={75}
+            // defaultSize={75}
+            defaultSize={panelLayout[0][1]}
             minSize={0}
             maxSize={100}
             style={{
@@ -6899,7 +6912,7 @@ export default function ThreeDHomeDesign({
             <PanelGroup 
               direction='vertical'
               autoSaveId='ThreeDPanelGroup3'
-              // onLayout={onLayout}
+              onLayout={onLayout3}
             >
               
               {/* PANEL: 3D FIBER CANVAS */}
@@ -6907,7 +6920,8 @@ export default function ThreeDHomeDesign({
                 id='panel3DCanvas'
                 order={5}
                 // className='Panel'
-                defaultSize={50}
+                // defaultSize={50}
+                defaultSize={panelLayout[2][0]}
                 minSize={0}
                 maxSize={100}
                 style={{
@@ -6970,7 +6984,8 @@ export default function ThreeDHomeDesign({
                 id='panel2DCanvas'
                 order={6}
                 // className='Panel'
-                defaultSize={50}
+                // defaultSize={50}
+                defaultSize={panelLayout[2][1]}
                 minSize={0}
                 maxSize={100}
                 style={{
