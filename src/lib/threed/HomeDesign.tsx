@@ -7052,7 +7052,7 @@ export default function ThreeDHomeDesign({
                       // flexGrow: '1',
                       width: 'calc(100% - 0px)', // !important
                       // height: 'calc(100% - 20px)',
-                      backgroundColor: 'rgba(8, 133, 22, 0.2)', // '#222222',
+                      backgroundColor: 'rgba(8, 133, 22, 0.10)', // '#222222',
                     }}
                   >
                     <PaperCanvas />
