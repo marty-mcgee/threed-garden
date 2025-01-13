@@ -34,11 +34,23 @@ import ThreeDHomeDesign from '~/src/lib/threed/HomeDesign'
 // ==============================================================
 
 function getPanelLayout() {
-  const layout = cookies().get('react-resizable-panels:layout')
-  if (layout) {
-    return JSON.parse(layout.value)
+  const layout1 = cookies().get('react-resizable-panels:ThreeDPanelGroup1:layout')
+  // console.debug('layout1', layout1)
+  const layout2 = cookies().get('react-resizable-panels:ThreeDPanelGroup2:layout')
+  // console.debug('layout2', layout2)
+  const layout3 = cookies().get('react-resizable-panels:ThreeDPanelGroup3:layout')
+  // console.debug('layout3', layout3)
+  let panelLayout = [[25, 75], [50, 50], [49, 51]] // default sizes
+  if (layout1) {
+    panelLayout[0] = JSON.parse(layout1.value)
   }
-  return [24, 76]
+  if (layout2) {
+    panelLayout[1] = JSON.parse(layout2.value)
+  }
+  if (layout3) {
+    panelLayout[2] = JSON.parse(layout3.value)
+  }
+  return panelLayout
 }
 
 // ==============================================================
