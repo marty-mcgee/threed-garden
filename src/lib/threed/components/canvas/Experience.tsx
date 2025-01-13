@@ -377,9 +377,9 @@ const ThreeDExperience = forwardRef((
             <Slopes />
           </group>
           {/* Rigid Body Objects */}
-          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
+          <group rotation={[0, 0, 0]} scale={100.0} position={[-4, 10.00, 0]}>
             <RigidObjects />
-          </group> */}
+          </group>
 
           {/* kinder steps (active objects) */}
           {/* Floating Platforms */}
