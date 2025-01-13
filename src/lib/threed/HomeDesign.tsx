@@ -6741,7 +6741,9 @@ export default function ThreeDHomeDesign({
           }}
         >
           {/* MAIN ACTIONS DROPDOWN MENU */}
-          <ThreeDDropdownMenu />
+          <ThreeDDropdownMenu
+          
+          />
 
           {/* PANEL SHOW/HIDE */}
           <Button
