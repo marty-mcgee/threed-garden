@@ -337,9 +337,9 @@ const ThreeDExperience = forwardRef((
     <group ref={refCanvas}>
 
       {/* EXAMPLES: BIRDS */}
-      {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 24, 0]}>
+      <group rotation={[0, 0, 0]} scale={100.0} position={[0, 2400, 0]}>
         <Birds />
-      </group> */}
+      </group>
 
       {/* THREED USING PHYSICS */}
       <Physics
