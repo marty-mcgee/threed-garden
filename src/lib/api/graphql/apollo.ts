@@ -9,6 +9,7 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 
 // ** GRAPHQL -- Schema Objects, Queries, Mutations, Fragments, Subscriptions
 // ** schema objects
+import Nouns from '#/lib/api/graphql/schema/nouns.graphql' // plural of noun
 import Users from '#/lib/api/graphql/schema/users.graphql' // plural of user
 import Preferences from '#/lib/api/graphql/schema/preferencess.graphql' // plural of preferences
 import CanvasStates from '#/lib/api/graphql/schema/canvasStates.graphql' // plural of canvasState
@@ -16,29 +17,43 @@ import Projects from '#/lib/api/graphql/schema/projects.graphql'
 import Plans from '#/lib/api/graphql/schema/plans.graphql'
 import Scenes from '#/lib/api/graphql/schema/scenes.graphql'
 import ThreeDs from '#/lib/api/graphql/schema/threeds.graphql'
+// import Files from '#/lib/api/graphql/scripts/files.graphql'
+// import Allotments from '#/lib/api/graphql/scripts/allotments.graphql'
+// import Beds from '#/lib/api/graphql/scripts/beds.graphql'
+// import Plants from '#/lib/api/graphql/scripts/plants.graphql'
+// import PlantingPlans from '#/lib/api/graphql/scripts/plantingPlans.graphql'
+// import Participants from '#/lib/api/graphql/scripts/participants.graphql'
 // ** scripts for objects
 // ** -- queries
-import GetUsers from '#/lib/api/graphql/scripts/getUsers.gql'
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
+import GetUsers from '#/lib/api/graphql/scripts/getUsers.gql'
 import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetCanvasStates from '#/lib/api/graphql/scripts/getCanvasStates.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
-import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
-import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
+import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
-import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
-import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
-import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
-import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
-import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
+// import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
+// import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
+// import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
+// import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
+// import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
+// import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
 // ** -- mutations
+import UpdateNouns from '#/lib/api/graphql/scripts/updateNouns.gql'
 import UpdateUsers from '#/lib/api/graphql/scripts/updateUsers.gql'
 import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
 import UpdateCanvasStates from '#/lib/api/graphql/scripts/updateCanvasStates.gql'
 import UpdateProjects from '#/lib/api/graphql/scripts/updateProjects.gql'
 import UpdatePlans from '#/lib/api/graphql/scripts/updatePlans.gql'
-import UpdateThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
+import UpdateScenes from '#/lib/api/graphql/scripts/updateScenes.gql'
+import UpdateThreeDs from '#/lib/api/graphql/scripts/updateThreeDs.gql'
+// import UpdateFiles from '#/lib/api/graphql/scripts/updateFiles.gql'
+// import UpdateAllotments from '#/lib/api/graphql/scripts/updateAllotments.gql'
+// import UpdateBeds from '#/lib/api/graphql/scripts/updateBeds.gql'
+// import UpdatePlants from '#/lib/api/graphql/scripts/updatePlants.gql'
+// import UpdatePlantingPlans from '#/lib/api/graphql/scripts/updatePlantingPlans.gql'
+// import UpdateParticipants from '#/lib/api/graphql/scripts/updateParticipants.gql'
 
 // ** THREE Imports (for typing only)
 import * as THREE from 'three'
@@ -1155,33 +1170,44 @@ export const reactiveVars = {
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 export const queries = {
   GetNouns,
+  GetUsers,
   GetPreferences,
   GetCanvasStates,
   GetProjects,
-  GetScenes,
-  GetParticipants,
   GetPlans,
+  GetScenes,
   GetThreeDs,
-  GetFiles,
-  GetAllotments,
-  GetBeds,
-  GetPlants,
-  GetPlantingPlans,
+  // GetFiles,
+  // GetAllotments,
+  // GetBeds,
+  // GetPlants,
+  // GetPlantingPlans,
+  // GetParticipants,
 }
 
 // :) [MM] THREED MILESTONE
 // export MUTATIONS
 export const mutations = {
-  // UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
+  // UpdateNouns: 'APOLLO: [MM] HEY HEY HEY: UpdateNouns',
+  UpdateNouns: Nouns,
+  // UpdateUsers: 'APOLLO: [MM] HEY HEY HEY UpdateUsers',
+  UpdateUsers: Users,
+  // UpdatePreferences: 'APOLLO: [MM] HEY HEY HEY UpdatePreferences',
   UpdatePreferences: Preferences,
-  // UpdateCanvasStates: 'HEY HEY HEY UpdateCanvasStates',
+  // UpdateCanvasStates: 'APOLLO: [MM] HEY HEY HEY UpdateCanvasStates',
   UpdateCanvasStates: CanvasStates,
-  // UpdateProjects: 'HEY HEY HEY UpdateProjects',
+  // UpdateProjects: 'APOLLO: [MM] HEY HEY HEY UpdateProjects',
   UpdateProjects: Projects,
-  // UpdatePlans: 'HEY HEY HEY UpdatePlans',
+  // UpdatePlans: 'APOLLO: [MM] HEY HEY HEY UpdatePlans',
   UpdatePlans: Plans,
-  // UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs',
+  // UpdateThreeDs: 'APOLLO: [MM] HEY HEY HEY UpdateThreeDs',
   UpdateThreeDs: ThreeDs,
+  // UpdateFiles,
+  // UpdateAllotments,
+  // UpdateBeds,
+  // UpdatePlants,
+  // UpdatePlantingPlans,
+  // UpdateParticipants,
 }
 
 // export DEFAULT
