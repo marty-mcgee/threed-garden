@@ -1,0 +1,23 @@
+type Project {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: String!
+  updatedAt: String!
+  # custom fields from api (wp)
+  title: String
+  owner: Number
+  version: String
+}
+
+type Query {
+  getProject(id: ID!): Project
+  getProjects: [Project] @rest(endpoint: "https://threed.design/pods/v1/projects")
+  listProjects: [Project]
+}
+
+type Mutation {
+  createProject(name: String!, description: String): Project
+  updateProject(id: ID!, name: String, description: String): Project
+  deleteProject(id: ID!): Project
+}

@@ -1,0 +1,32 @@
+# import { gql, useQuery } from '@apollo/client'
+
+# const GetUsers = gql`
+query GetUsers ($first: Int, $last: Int, $after: String, $before: String) {
+  users (first: $first, last: $last, after: $after, before: $before) {
+    nodes {
+      userId
+      title
+      content
+      status
+      link
+      modified
+      # custom fields
+      version
+      # owner
+      doAutoLoadData
+      doAutoRotate
+      projectName
+      environmentPreset
+      environmentBgBlur
+      doCharacterAnimation
+      doWorldDebug
+      doWorldTesting
+      doWorldPhysics
+      doWorldControl
+      doWorldUnfollowCam
+      showPanelFirst
+      showPanelLast
+    }
+  }
+}
+# `
