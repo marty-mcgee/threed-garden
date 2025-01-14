@@ -1,0 +1,23 @@
+type Allotment {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: String!
+  updatedAt: String!
+  # custom fields from api (wp)
+  title: String
+  owner: Number
+  version: String
+}
+
+type Query {
+  getAllotment(id: ID!): Allotment
+  getAllotments: [Allotment] @rest(endpoint: "https://threed.design/pods/v1/allotments")
+  listAllotments: [Allotment]
+}
+
+type Mutation {
+  createAllotment(name: String!, description: String): Allotment
+  updateAllotment(id: ID!, name: String, description: String): Allotment
+  deleteAllotment(id: ID!): Allotment
+}

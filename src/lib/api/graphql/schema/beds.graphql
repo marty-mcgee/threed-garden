@@ -1,0 +1,23 @@
+type Bed {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: String!
+  updatedAt: String!
+  # custom fields from api (wp)
+  title: String
+  owner: Number
+  version: String
+}
+
+type Query {
+  getBed(id: ID!): Bed
+  getBeds: [Bed] @rest(endpoint: "https://threed.design/pods/v1/beds")
+  listBeds: [Bed]
+}
+
+type Mutation {
+  createBed(name: String!, description: String): Bed
+  updateBed(id: ID!, name: String, description: String): Bed
+  deleteBed(id: ID!): Bed
+}

@@ -1,0 +1,23 @@
+type Threed {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: String!
+  updatedAt: String!
+  # custom fields from api (wp)
+  title: String
+  owner: Number
+  version: String
+}
+
+type Query {
+  getThreed(id: ID!): Threed
+  getThreeds: [Threed] @rest(endpoint: "https://threed.design/pods/v1/threeds")
+  listThreeds: [Threed]
+}
+
+type Mutation {
+  createThreed(name: String!, description: String): Threed
+  updateThreed(id: ID!, name: String, description: String): Threed
+  deleteThreed(id: ID!): Threed
+}

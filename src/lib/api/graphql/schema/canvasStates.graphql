@@ -1,0 +1,23 @@
+type CanvasState {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: String!
+  updatedAt: String!
+  # custom fields from api (wp)
+  title: String
+  owner: Number
+  version: String
+}
+
+type Query {
+  getCanvasState(id: ID!): CanvasState
+  getCanvasStates: [CanvasState] @rest(endpoint: "https://threed.design/pods/v1/canvas_states")
+  listCanvasStates: [CanvasState]
+}
+
+type Mutation {
+  createCanvasState(name: String!, description: String): CanvasState
+  updateCanvasState(id: ID!, name: String, description: String): CanvasState
+  deleteCanvasState(id: ID!): CanvasState
+}

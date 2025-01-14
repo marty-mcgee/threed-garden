@@ -1,8 +1,23 @@
 type Scene {
   id: ID!
   name: String!
+  description: String
+  createdAt: String!
+  updatedAt: String!
+  # custom fields from api (wp)
+  title: String
+  owner: Number
+  version: String
 }
 
 type Query {
+  getScene(id: ID!): Scene
   getScenes: [Scene] @rest(endpoint: "https://threed.design/pods/v1/scenes")
+  listScenes: [Scene]
+}
+
+type Mutation {
+  createScene(name: String!, description: String): Scene
+  updateScene(id: ID!, name: String, description: String): Scene
+  deleteScene(id: ID!): Scene
 }

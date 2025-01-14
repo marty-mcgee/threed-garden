@@ -1,12 +1,27 @@
 type User {
   id: ID!
   name: String!
-  username: String!
-  email: String!
-  phone: String!
-  website: String!
+  description: String
+  createdAt: String!
+  updatedAt: String!
+  # custom fields from api (wp)
+  title: String
+  username: String
+  email: String
+  phone: String
+  website: String
+  owner: Number
+  version: String
 }
 
 type Query {
+  getUser(id: ID!): User
   getUsers: [User] @rest(endpoint: "https://threed.design/pods/v1/users")
+  listUsers: [User]
+}
+
+type Mutation {
+  createUser(name: String!, description: String): User
+  updateUser(id: ID!, name: String, description: String): User
+  deleteUser(id: ID!): User
 }

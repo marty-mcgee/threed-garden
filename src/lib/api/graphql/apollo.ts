@@ -1,12 +1,24 @@
 // 'use client' // no! should be ssr friendly
+// 'use server' // yes! let nextjs manage this default
 // ==========================================================
 // RESOURCES
 
-// ** Apollo Client 3 -- Cache Store Imports
+// ** APOLLO Client 3 -- Cache Store Imports
 import { makeVar } from '@apollo/client'
 import create, { StoreApi } from '#/lib/api/graphql/createStore'
 
-// ** GraphQL Queries + Mutations (here, locally-specific data needs)
+// ** GRAPHQL -- Schema Objects, Queries, Mutations, Fragments, Subscriptions
+// ** schema objects
+import Users from '#/lib/api/graphql/schema/users.graphql' // plural of user
+import Preferences from '#/lib/api/graphql/schema/preferencess.graphql' // plural of preferences
+import CanvasStates from '#/lib/api/graphql/schema/canvasStates.graphql' // plural of canvasState
+import Projects from '#/lib/api/graphql/schema/projects.graphql'
+import Plans from '#/lib/api/graphql/schema/plans.graphql'
+import Scenes from '#/lib/api/graphql/schema/scenes.graphql'
+import ThreeDs from '#/lib/api/graphql/schema/threeds.graphql'
+// ** scripts for objects
+// ** -- queries
+import GetUsers from '#/lib/api/graphql/scripts/getUsers.gql'
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetCanvasStates from '#/lib/api/graphql/scripts/getCanvasStates.gql'
@@ -20,18 +32,26 @@ import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
 import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
+// ** -- mutations
+import UpdateUsers from '#/lib/api/graphql/scripts/updateUsers.gql'
+import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
+import UpdateCanvasStates from '#/lib/api/graphql/scripts/updateCanvasStates.gql'
+import UpdateProjects from '#/lib/api/graphql/scripts/updateProjects.gql'
+import UpdatePlans from '#/lib/api/graphql/scripts/updatePlans.gql'
+import UpdateThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 
-// ** THREE Imports (for typing)
+// ** THREE Imports (for typing only)
 import * as THREE from 'three'
 
 // ** UUID Imports
 import { v4 as newUUID } from 'uuid'
 
-// HELPER Imports
+// ** HELPER Imports
 import ccm from '#/lib/utils/console-colors'
 
 // ==========================================================
 // IMPORTS COMPLETE
+// console.debug(`%c====================================`, ccm.blue)
 // console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
 // console.debug(`%c====================================`, ccm.blue)
 
@@ -39,7 +59,6 @@ import ccm from '#/lib/utils/console-colors'
 const debug: boolean = false // false | true
 const DEBUG: boolean = false // 1 == 0 | 1 == 1
 
-// ==============================================================
 // ==============================================================
 // ==============================================================
 // ** Noun Types + Interfaces
@@ -750,17 +769,17 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
   // const doAutoLoadDataApollo = preferences.doAutoLoadData
   // const doAutoLoadDataApollo = this.store.get('doAutoLoadData')
   const doAutoLoadDataApollo: boolean = false
-  // console.debug('ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+  // console.debug('APOLLO: ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
   // const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
   // const doAutoRotateApollo = preferences.doAutoRotate
   // const doAutoRotateApollo = this.store.get('doAutoRotate')
   const doAutoRotateApollo: boolean = false
-  // console.debug('ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+  // console.debug('APOLLO: ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
   // const projectNameApollo = preferencesStore.store.useStore('projectName')
   // const projectNameApollo = preferences.projectName
   // const projectNameApollo = this.store.get('projectName')
   const projectNameApollo: string = ''
-  // console.debug('ThreeDLevaControls projectNameApollo', projectNameApollo)
+  // console.debug('APOLLO: ThreeDLevaControls projectNameApollo', projectNameApollo)
 
   this.store = create({
     doAutoLoadData: doAutoLoadDataApollo, // true | false,
@@ -822,6 +841,37 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 // ==============================================================
 
 // ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
+
+// export const isUserDataSetVar = makeVar(false) // boolean: false | true
+const userDataVarDefaults = 
+{
+  // user prefs
+  ownerId: 1,
+  version: '0.0.0',
+  // doAutoLoadData: false, // boolean: false | true
+  // doAutoRotate: false, // boolean: false | true
+  // // project prefs
+  // projectName: '', // string: 'client should never see this string'
+  // // scene prefs
+  // environmentPreset: 'park', // default (client should never see this)
+  // environmentBgBlur: 0.20, // default (our chosen maximum blur)
+  // // character prefs
+  // doCharacterAnimation: true, // boolean: false | true
+  // // world prefs
+  // doWorldDebug: false, // boolean: false | true
+  // doWorldTesting: false, // boolean: false | true
+  // doWorldPhysics: true, // boolean: false | true
+  // doWorldControl: false, // boolean: false | true
+  // doWorldUnfollowCam: false, // boolean: false | true
+  // // home design prefs
+  // showPanelFirst: true, // boolean: true | false
+  // showPanelLast: true, // boolean: true | false
+  // // set functions
+  // // setPreferencesDataVar: () => {}, // function: set properties of "this"
+}
+
+
+
 // export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
 const preferencesDataVarDefaults = 
   {
@@ -982,25 +1032,36 @@ const canvasStateThreeDVarDefaults: Object =
 // ==============================================================
 
 // ==============================================================
+// ** MUTATIONS
+  export const updatePreferences = UpdatePreferences
+  // console.debug('APOLLO: updatePreferences', updatePreferences)
+  console.debug('APOLLO: updatePreferences', '[MM]')
+
+// ==============================================================
+
+// ==============================================================
 // ** STORES
 
 // ** Construct Stores + Export as Group of Stores
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
-// export { preferencesStore }
+console.debug('APOLLO: nounStore', nounStore)
+export const userStore = new (nounStore as any)('user')
+console.debug('APOLLO: userStore', userStore)
 export const preferencesStore = new (nounStore as any)('preferences')
-  // console.debug('preferencesStore', preferencesStore)
-  // console.debug('preferencesStore.store.getState()', preferencesStore.store.getState())
-  // console.debug('preferencesStore.store.get(one) #1', preferencesStore.store.get('one').data)
+  console.debug('APOLLO: preferencesStore', preferencesStore)
+  // console.debug('APOLLO: preferencesStore.store.getState()', preferencesStore.store.getState())
+  // console.debug('APOLLO: preferencesStore.store.get(one) #1', preferencesStore.store.get('one').data)
   // const initialPreferences = async () => await preferencesStore.actions.loadFromDataSource()
-  // console.debug('preferencesStore.actions.loadFromDataSource()', initialPreferences())
-// const initialPreferences = async () => await preferencesStore.store.get('one').data
-  // console.debug('initialPreferences', initialPreferences())
-  // console.debug('preferencesStore.store.get(one) #2', preferencesStore.store.get('one').data)
-// EXTEND nounStore to become preferencesStoreCustom
-// export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
+  // console.debug('APOLLO: preferencesStore.actions.loadFromDataSource()', initialPreferences())
+    // const initialPreferences = async () => await preferencesStore.store.get('one').data
+      // console.debug('APOLLO: initialPreferences', initialPreferences())
+      // console.debug('APOLLO: preferencesStore.store.get(one) #2', preferencesStore.store.get('one').data)
+    // EXTEND nounStore to become preferencesStoreCustom
+    // export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
 export const canvasStateStore = new (nounStore as any)('canvasState')
-// regular nouns
+console.debug('APOLLO: canvasStateStore', canvasStateStore)
+// other regular nouns
 export const projectStore = new (nounStore as any)('project')
 export const sceneStore = new (nounStore as any)('scene')
 export const planStore = new (nounStore as any)('plan')
@@ -1011,6 +1072,7 @@ export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
 export const plantingPlanStore = new (nounStore as any)('plantingPlan')
 export const participantStore = new (nounStore as any)('participant')
+// ** MODAL STORES
 export { modalStore }
 // export const modalStore = new (modalStore as any)()
 export const modalAboutStore = new (modalStore as any)('modalAbout')
@@ -1022,6 +1084,7 @@ export const modalStoreNoun = new (nounStore as any)('modal')
 // ** export NOUN STORES
 export const stores = {
   nounStore,
+  userStore,
   preferencesStore,
   canvasStateStore,
   projectStore,
@@ -1045,30 +1108,36 @@ export const stores = {
 // ==============================================================
 // ** REACTIVE VARS
 
+// ** user(s)
+export const userDataVar = makeVar(userDataVarDefaults)
+// console.debug('APOLLO: userDataVar()', userDataVar())
+export const isUserDataSetVar = makeVar(false) // boolean: false | true
+// console.debug('APOLLO: isUserDataSetVar()', isUserDataSetVar())
+
 // ** preferences(s)
 export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
-  // console.debug('preferencesDataVar()', preferencesDataVar())
+  // console.debug('APOLLO: preferencesDataVar()', preferencesDataVar())
 export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
-  // console.debug('isPreferencesDataSetVar()', isPreferencesDataSetVar())
+  // console.debug('APOLLO: isPreferencesDataSetVar()', isPreferencesDataSetVar())
 
 // ** canvasStatePaper(s)
 export const canvasStatePaperVar = makeVar(canvasStatePaperVarDefaults)
-  console.debug('canvasStatePaperVar()', canvasStatePaperVar())
+  console.debug('APOLLO: canvasStatePaperVar()', canvasStatePaperVar())
 export const isCanvasStatePaperSetVar = makeVar(false) // boolean: false | true
-  // console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
+  // console.debug('APOLLO: isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
   
 // ** canvasStateThreeD(s)
 export const canvasStateThreeDVar = makeVar(canvasStateThreeDVarDefaults)
-  console.debug('canvasStateThreeDVar()', canvasStateThreeDVar())
-  // console.debug('canvasStateThreeDVar().state.scene', canvasStateThreeDVar().state.scene)
+  console.debug('APOLLO: canvasStateThreeDVar()', canvasStateThreeDVar())
+  // console.debug('APOLLO: canvasStateThreeDVar().state.scene', canvasStateThreeDVar().state.scene)
 export const isCanvasStateThreeDSetVar = makeVar(false) // boolean: false | true
-  // console.debug('isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
+  // console.debug('APOLLO: isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
 
 // ** loaded?(s)
 export const isPaperCanvasLoadedVar = makeVar(false) // boolean: false | true
-  // console.debug('isPaperCanvasLoadedVar()', isPaperCanvasLoadedVar())
+  // console.debug('APOLLO: isPaperCanvasLoadedVar()', isPaperCanvasLoadedVar())
 export const isThreeDCanvasLoadedVar = makeVar(false) // boolean: false | true
-  // console.debug('isThreeDCanvasLoadedVar()', isThreeDCanvasLoadedVar())
+  // console.debug('APOLLO: isThreeDCanvasLoadedVar()', isThreeDCanvasLoadedVar())
 
 // ** export REACTIVE VARS
 export const reactiveVars = {
@@ -1100,14 +1169,19 @@ export const queries = {
   GetPlantingPlans,
 }
 
+// :) [MM] THREED MILESTONE
 // export MUTATIONS
 export const mutations = {
-  // :) [MM] THREED MILESTONE
-  UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
-  UpdateCanvasStates: 'HEY HEY HEY UpdateCanvasStates',
-  UpdateProjects: 'HEY HEY HEY UpdateProjects',
-  UpdatePlans: 'HEY HEY HEY UpdatePlans',
-  UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs',
+  // UpdatePreferences: 'HEY HEY HEY UpdatePreferences',
+  UpdatePreferences: Preferences,
+  // UpdateCanvasStates: 'HEY HEY HEY UpdateCanvasStates',
+  UpdateCanvasStates: CanvasStates,
+  // UpdateProjects: 'HEY HEY HEY UpdateProjects',
+  UpdateProjects: Projects,
+  // UpdatePlans: 'HEY HEY HEY UpdatePlans',
+  UpdatePlans: Plans,
+  // UpdateThreeDs: 'HEY HEY HEY UpdateThreeDs',
+  UpdateThreeDs: ThreeDs,
 }
 
 // export DEFAULT
