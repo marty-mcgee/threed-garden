@@ -396,9 +396,9 @@ const ThreeDExperience = forwardRef((
             <RoughPlane />
           </group>
           {/* Slopes + Stairs */}
-          <group rotation={[0, 0, 0]} scale={100.0} position={[100, 0, 100]}>
+          {/* <group rotation={[0, 0, 0]} scale={100.0} position={[100, 0, 100]}>
             <Slopes />
-          </group>
+          </group> */}
           {/* Rigid Body Objects */}
           <group rotation={[0, 0, 0]} scale={100.0} position={[-4, 10.00, 0]}>
             <RigidObjects />
