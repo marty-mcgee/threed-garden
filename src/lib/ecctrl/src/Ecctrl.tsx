@@ -65,7 +65,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   debug = false,
   capsuleHalfHeight = 0.35,
   capsuleRadius = 0.3,
-  floatHeight = 0, // 0.3,
+  floatHeight = 1.000, // 0, // 0.3,
   characterInitDir = 0, // in rad
   // characterInitDir = Math.PI/2, // in rad
   // characterInitDir = Math.PI, // in rad
@@ -91,7 +91,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   // Follow light setups
   followLightPos = { x: 20, y: 30, z: 10 },
   // Base control setups
-  maxVelLimit = 2.5,
+  maxVelLimit = 102.5,
   turnVelMultiplier = 0.2,
   turnSpeed = 15,
   sprintMult = 2,
