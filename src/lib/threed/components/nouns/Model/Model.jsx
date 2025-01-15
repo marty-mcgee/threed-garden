@@ -72,8 +72,8 @@ import {
 // ==========================================
 // ** VARIABLES
 
-const debug = false // false | true // ts: boolean
-const DEBUG = false // false | true // ts: boolean
+const debug = true // false | true // ts: boolean
+const DEBUG = true // false | true // ts: boolean
 
 // ==========================================
 // ** ThreeD == Group of > Files of > Nodes of > 3DObjects
@@ -1048,10 +1048,10 @@ function ThreeDControls() {
 // **
 const ThreeDModels = ({ threeds }) => {
   // **
-  // if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkredAlert)
-  // if (debug || DEBUG) console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
-  // if (debug || DEBUG) console.debug('%c🌱 threeds ==========================', ccm.darkredAlert)
-  // if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkredAlert)
+  if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkredAlert)
+  if (debug || DEBUG) console.debug('%c🌱 threeds[i]', ccm.darkredAlert, threeds)
+  if (debug || DEBUG) console.debug('%c🌱 threeds ==========================', ccm.darkredAlert)
+  if (debug || DEBUG) console.debug(`%c======================================`, ccm.darkredAlert)
   // **
 
   // ** TESTING
