@@ -98,7 +98,7 @@ export default function RigidObjects() {
         </mesh>
       </RigidBody>
 
-      {/* Fun toy */}
+      {/* Fun toy using mass as m */}
       <RigidBody colliders={false} position={[15, 5, -10]}>
         <Text
           scale={0.5}
@@ -108,7 +108,7 @@ export default function RigidObjects() {
           position={[0, 1.5, 0]}
           rotation={[0, -Math.PI / 2, 0]}
         >
-          mass: 1.25
+          m: 1.25
         </Text>
         <CylinderCollider args={[0.03, 2.5]} position={[0, 0.25, 0]} />
         <BallCollider args={[0.25]} />
