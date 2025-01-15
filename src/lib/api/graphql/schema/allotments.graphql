@@ -12,7 +12,7 @@ type Allotment {
 
 type Query {
   getAllotment(id: ID!): Allotment
-  getAllotments: [Allotment] @rest(endpoint: "https://threed.design/pods/v1/allotments")
+  getAllotments: [Allotment] @rest(endpoint: "https://threed.design/wp-json/wp/v2/threed_allotment")
   listAllotments: [Allotment]
 }
 

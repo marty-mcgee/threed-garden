@@ -12,7 +12,7 @@ type Threed {
 
 type Query {
   getThreed(id: ID!): Threed
-  getThreeds: [Threed] @rest(endpoint: "https://threed.design/pods/v1/threeds")
+  getThreeds: [Threed] @rest(endpoint: "https://threed.design/wp-json/wp/v2/threed_threed")
   listThreeds: [Threed]
 }
 

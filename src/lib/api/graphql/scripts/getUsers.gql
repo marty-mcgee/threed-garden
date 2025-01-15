@@ -11,21 +11,22 @@ query GetUsers ($first: Int, $last: Int, $after: String, $before: String) {
       link
       modified
       # custom fields
+      owner
       version
-      # owner
-      doAutoLoadData
-      doAutoRotate
-      projectName
-      environmentPreset
-      environmentBgBlur
-      doCharacterAnimation
-      doWorldDebug
-      doWorldTesting
-      doWorldPhysics
-      doWorldControl
-      doWorldUnfollowCam
-      showPanelFirst
-      showPanelLast
+      state
+      userType
+      ## participants
+      character
+      userName
+      userPassword
+      nameFull
+      nameFirst
+      nameLast
+      email
+      phone
+      website
+      githubUserName
+      githubRepository
     }
   }
 }

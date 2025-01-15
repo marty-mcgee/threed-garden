@@ -16,7 +16,7 @@ type Noun {
 
 type Query {
   getNoun(id: ID!): Noun
-  getNouns: [Noun] @rest(endpoint: "https://threed.design/wp-json/wp/v2/nouns")
+  getNouns: [Noun] @rest(endpoint: "https://threed.design/wp-json/wp/v2/threed_noun")
   listNouns: [Noun]
 }
 
