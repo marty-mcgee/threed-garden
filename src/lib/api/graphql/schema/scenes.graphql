@@ -12,7 +12,7 @@ type Scene {
 
 type Query {
   getScene(id: ID!): Scene
-  getScenes: [Scene] @rest(endpoint: "https://threed.design/pods/v1/scenes")
+  getScenes: [Scene] @rest(endpoint: "https://threed.design/wp-json/wp/v2/threed_scene")
   listScenes: [Scene]
 }
 

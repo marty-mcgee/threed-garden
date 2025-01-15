@@ -9,10 +9,10 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 
 // ** GRAPHQL -- Schema Objects, Queries, Mutations, Fragments, Subscriptions
 // ** schema objects
-import Nouns from '#/lib/api/graphql/schema/nouns.graphql' // plural of noun
-import Users from '#/lib/api/graphql/schema/users.graphql' // plural of user
-import Preferences from '#/lib/api/graphql/schema/preferencess.graphql' // plural of preferences
-import CanvasStates from '#/lib/api/graphql/schema/canvasStates.graphql' // plural of canvasState
+import Nouns from '#/lib/api/graphql/schema/nouns.graphql'
+import Users from '#/lib/api/graphql/schema/users.graphql'
+import Preferences from '#/lib/api/graphql/schema/preferencess.graphql'
+import CanvasStates from '#/lib/api/graphql/schema/canvasStates.graphql'
 import Projects from '#/lib/api/graphql/schema/projects.graphql'
 import Plans from '#/lib/api/graphql/schema/plans.graphql'
 import Scenes from '#/lib/api/graphql/schema/scenes.graphql'
@@ -22,7 +22,6 @@ import ThreeDs from '#/lib/api/graphql/schema/threeds.graphql'
 // import Beds from '#/lib/api/graphql/scripts/beds.graphql'
 // import Plants from '#/lib/api/graphql/scripts/plants.graphql'
 // import PlantingPlans from '#/lib/api/graphql/scripts/plantingPlans.graphql'
-// import Participants from '#/lib/api/graphql/scripts/participants.graphql'
 // ** scripts for objects
 // ** -- queries
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
@@ -38,7 +37,6 @@ import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 // import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 // import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
 // import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
-// import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
 // ** -- mutations
 import UpdateNouns from '#/lib/api/graphql/scripts/updateNouns.gql'
 import UpdateUsers from '#/lib/api/graphql/scripts/updateUsers.gql'
@@ -53,7 +51,6 @@ import UpdateThreeDs from '#/lib/api/graphql/scripts/updateThreeDs.gql'
 // import UpdateBeds from '#/lib/api/graphql/scripts/updateBeds.gql'
 // import UpdatePlants from '#/lib/api/graphql/scripts/updatePlants.gql'
 // import UpdatePlantingPlans from '#/lib/api/graphql/scripts/updatePlantingPlans.gql'
-// import UpdateParticipants from '#/lib/api/graphql/scripts/updateParticipants.gql'
 
 // ** THREE Imports (for typing only)
 import * as THREE from 'three'
@@ -399,6 +396,9 @@ function nounStore(this: IStore, _type = 'noun') {
         // .gql
         let QUERY = null // default? GetProjects
         switch (this._type) {
+          case 'user':
+            QUERY = GetUsers
+            break
           case 'preferences':
             QUERY = GetPreferences
             break
@@ -411,33 +411,30 @@ function nounStore(this: IStore, _type = 'noun') {
           case 'project':
             QUERY = GetProjects
             break
-          case 'participants':
-            QUERY = GetParticipants
-            break
           case 'plan':
             QUERY = GetPlans
-            break
-          case 'threed':
-            QUERY = GetThreeDs
-            break
-          case 'file':
-            QUERY = GetFiles
             break
           case 'scene':
             QUERY = GetScenes
             break
-          case 'allotment':
-            QUERY = GetAllotments
+          case 'threed':
+            QUERY = GetThreeDs
             break
-          case 'bed':
-            QUERY = GetBeds
-            break
-          case 'plant':
-            QUERY = GetPlants
-            break
-          case 'plantingPlan':
-            QUERY = GetPlantingPlans
-            break
+          // case 'file':
+          //   QUERY = GetFiles
+          //   break
+          // case 'allotment':
+          //   QUERY = GetAllotments
+          //   break
+          // case 'bed':
+          //   QUERY = GetBeds
+          //   break
+          // case 'plant':
+          //   QUERY = GetPlants
+          //   break
+          // case 'plantingPlan':
+          //   QUERY = GetPlantingPlans
+          //   break
           // case 'bear':
           //   QUERY = GetBears
           //   break

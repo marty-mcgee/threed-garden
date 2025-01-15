@@ -16,7 +16,7 @@ type User {
 
 type Query {
   getUser(id: ID!): User
-  getUsers: [User] @rest(endpoint: "https://threed.design/pods/v1/users")
+  getUsers: [User] @rest(endpoint: "https://threed.design/wp-json/wp/v2/threed_user")
   listUsers: [User]
 }
 

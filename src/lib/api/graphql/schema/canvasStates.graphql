@@ -12,7 +12,7 @@ type CanvasState {
 
 type Query {
   getCanvasState(id: ID!): CanvasState
-  getCanvasStates: [CanvasState] @rest(endpoint: "https://threed.design/pods/v1/canvas_states")
+  getCanvasStates: [CanvasState] @rest(endpoint: "https://threed.design/wp-json/wp/v2/threed_canvas_state")
   listCanvasStates: [CanvasState]
 }
 
