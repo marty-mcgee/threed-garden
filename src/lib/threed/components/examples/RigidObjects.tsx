@@ -23,7 +23,7 @@ export default function RigidObjects() {
           position={[0, 1, 0]}
           rotation={[0, -Math.PI / 2, 0]}
         >
-          mass: 0.25
+          m: 0.25
         </Text>
         <mesh receiveShadow castShadow>
           <boxGeometry args={[0.5, 0.5, 0.5]} />
@@ -39,7 +39,7 @@ export default function RigidObjects() {
           position={[0, 1, 0]}
           rotation={[0, -Math.PI / 2, 0]}
         >
-          mass: 0.25
+          m: 0.25
         </Text>
         <mesh receiveShadow castShadow>
           <boxGeometry args={[0.5, 0.5, 0.5]} />
