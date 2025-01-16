@@ -418,7 +418,7 @@ const ThreeDExperience = forwardRef((
 
                 {/* baby steps */}
                 {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
-                <group rotation={[0, 0, 0]} scale={50.0} position={[0, 0, 0]}>
+                <group rotation={[0, 0, 0]} scale={50.0} position={[0, 6, 0]}>
                   <Steps />
                 </group>
 
