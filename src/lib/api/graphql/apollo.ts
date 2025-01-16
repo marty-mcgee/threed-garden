@@ -310,9 +310,9 @@ function nounStore(this: IStore, _type = 'noun') {
     },
 
     save: () => {
-      // saveToDisk
+      // saveToDisk (localStorage)
       this.actions.saveToDisk()
-      // saveToDB (coming soon !!!)
+      // saveToDB (mutations via graphql api)
       this.actions.saveToDB()
     },
 
