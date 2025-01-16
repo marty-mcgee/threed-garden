@@ -9,9 +9,9 @@
 // RESOURCES
 
 // ** REACT Imports
-import {
-  Suspense
-} from 'react'
+// import {
+//   Suspense
+// } from 'react'
 
 // ** NEXT Imports
 import type { NextPage } from 'next'
@@ -40,7 +40,12 @@ function getPanelLayout() {
   // console.debug('layoutGroup2', layoutGroup2)
   const layoutGroup3 = cookies().get('react-resizable-panels:ThreeDPanelGroup3:layout')
   // console.debug('layoutGroup3', layoutGroup3)
-  let panelLayoutGroups = [[25, 75], [50, 50], [49, 51]] // default sizes
+  // ** default sizes
+  let panelLayoutGroups = [
+    [25, 75], 
+    [50, 50], 
+    [49, 51]
+  ]
   if (layoutGroup1) {
     panelLayoutGroups[0] = JSON.parse(layoutGroup1.value)
   }
@@ -66,8 +71,10 @@ export default async function HomeDesignPage() {
 
   // ** RETURN JSX or React.ReactNode
   return (
-    <Suspense fallback={null}>
+    // {/* REACT SUSPENSE */}
+    // <Suspense fallback={null}>
+    // <Suspense fallback={<div>LOADING HEY HEY HEY ...</div>}>
       <ThreeDHomeDesign panelLayout={panelLayoutGroups} />
-    </Suspense>
+    // </Suspense>
   )
 }
