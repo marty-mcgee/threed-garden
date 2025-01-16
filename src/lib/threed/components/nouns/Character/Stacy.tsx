@@ -69,13 +69,17 @@ export default function CharacterModel(props: CharacterModelProps) {
 
   // Change animation when the index changes
   useEffect((): any => {
-    // Reset and fade in animation after an index has been changed
-    actions[names[index]].reset().fadeIn(0.5).play()
+    try {
+      // Reset and fade in animation after an index has been changed
+      actions[names[index]].reset().fadeIn(0.5).play()
 
-    // In the clean-up phase, fade it out
-    // (page route may have changed)
-    if (actions[names[index]]) {
-      return () => actions[names[index]].fadeOut(0.5)
+      // In the clean-up phase, fade it out
+      // (page route may have changed)
+      if (actions[names[index]]) {
+        return () => actions[names[index]].fadeOut(0.5)
+      }
+    } catch (err: any) {
+      console.debug('Stacy err', err)
     }
     return null
   }, [index, actions, names])

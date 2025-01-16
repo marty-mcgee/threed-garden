@@ -539,13 +539,13 @@ const ThreeDExperience = forwardRef((
             rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
             quaternion={[0,0,0,0]}
             scale={101.4} 
-            position={[0, 140, -1600]}
+            position={[400, 140, -1600]}
           >
             <Map />
           </group>
             
           {/* THREED MODELS as props.threeds */}
-          <group
+          {/* <group
             key='threed_models_children'
             // scale all threeds?
             scale={100.3}
@@ -556,7 +556,7 @@ const ThreeDExperience = forwardRef((
               // position={[-4, 0, 0]}
               // position={[0, -1, 0]}
             />
-          </group>
+          </group> */}
 
           </SelectToZoom>
         </Bounds>

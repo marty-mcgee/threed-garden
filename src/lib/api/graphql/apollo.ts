@@ -22,8 +22,12 @@ import ThreeDs from '#/lib/api/graphql/schema/threeds.graphql'
 // import Beds from '#/lib/api/graphql/scripts/beds.graphql'
 // import Plants from '#/lib/api/graphql/scripts/plants.graphql'
 // import PlantingPlans from '#/lib/api/graphql/scripts/plantingPlans.graphql'
+// ==============================================================
 // ** scripts for objects
-// ** -- queries
+// ==============================================================
+// ** -- QUERIES (Read/Get)
+// ==============================================================
+// ** get existing
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
 import GetUsers from '#/lib/api/graphql/scripts/getUsers.gql'
 import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
@@ -37,20 +41,54 @@ import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 // import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 // import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
 // import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
-// ** -- mutations
-import UpdateNouns from '#/lib/api/graphql/scripts/updateNouns.gql'
-import UpdateUsers from '#/lib/api/graphql/scripts/updateUsers.gql'
+// ==============================================================
+// ** -- MUTATIONS (Create/Post, Update/Patch, Delete)
+// ==============================================================
+// ** create new
+// import CreateNouns from '#/lib/api/graphql/scripts/createNouns.gql'
+// import CreateUsers from '#/lib/api/graphql/scripts/createUsers.gql'
+import CreatePreferences from '#/lib/api/graphql/scripts/createPreferences.gql'
+// import CreateCanvasStates from '#/lib/api/graphql/scripts/createCanvasStates.gql'
+// import CreateProjects from '#/lib/api/graphql/scripts/createProjects.gql'
+// import CreatePlans from '#/lib/api/graphql/scripts/createPlans.gql'
+// import CreateScenes from '#/lib/api/graphql/scripts/createScenes.gql'
+// import CreateThreeDs from '#/lib/api/graphql/scripts/createThreeDs.gql'
+// import CreateFiles from '#/lib/api/graphql/scripts/createFiles.gql'
+// import CreateAllotments from '#/lib/api/graphql/scripts/createAllotments.gql'
+// import CreateBeds from '#/lib/api/graphql/scripts/createBeds.gql'
+// import CreatePlants from '#/lib/api/graphql/scripts/createPlants.gql'
+// import CreatePlantingPlans from '#/lib/api/graphql/scripts/createPlantingPlans.gql'
+// ==============================================================
+// ** update existing
+// import UpdateNouns from '#/lib/api/graphql/scripts/updateNouns.gql'
+// import UpdateUsers from '#/lib/api/graphql/scripts/updateUsers.gql'
 import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
-import UpdateCanvasStates from '#/lib/api/graphql/scripts/updateCanvasStates.gql'
-import UpdateProjects from '#/lib/api/graphql/scripts/updateProjects.gql'
-import UpdatePlans from '#/lib/api/graphql/scripts/updatePlans.gql'
-import UpdateScenes from '#/lib/api/graphql/scripts/updateScenes.gql'
-import UpdateThreeDs from '#/lib/api/graphql/scripts/updateThreeDs.gql'
+// import UpdateCanvasStates from '#/lib/api/graphql/scripts/updateCanvasStates.gql'
+// import UpdateProjects from '#/lib/api/graphql/scripts/updateProjects.gql'
+// import UpdatePlans from '#/lib/api/graphql/scripts/updatePlans.gql'
+// import UpdateScenes from '#/lib/api/graphql/scripts/updateScenes.gql'
+// import UpdateThreeDs from '#/lib/api/graphql/scripts/updateThreeDs.gql'
 // import UpdateFiles from '#/lib/api/graphql/scripts/updateFiles.gql'
 // import UpdateAllotments from '#/lib/api/graphql/scripts/updateAllotments.gql'
 // import UpdateBeds from '#/lib/api/graphql/scripts/updateBeds.gql'
 // import UpdatePlants from '#/lib/api/graphql/scripts/updatePlants.gql'
 // import UpdatePlantingPlans from '#/lib/api/graphql/scripts/updatePlantingPlans.gql'
+// ==============================================================
+// ** delete existing
+// import DeleteNouns from '#/lib/api/graphql/scripts/deleteNouns.gql'
+// import DeleteUsers from '#/lib/api/graphql/scripts/deleteUsers.gql'
+// import DeletePreferences from '#/lib/api/graphql/scripts/deletePreferences.gql'
+// import DeleteCanvasStates from '#/lib/api/graphql/scripts/deleteCanvasStates.gql'
+// import DeleteProjects from '#/lib/api/graphql/scripts/deleteProjects.gql'
+// import DeletePlans from '#/lib/api/graphql/scripts/deletePlans.gql'
+// import DeleteScenes from '#/lib/api/graphql/scripts/deleteScenes.gql'
+// import DeleteThreeDs from '#/lib/api/graphql/scripts/deleteThreeDs.gql'
+// import DeleteFiles from '#/lib/api/graphql/scripts/deleteFiles.gql'
+// import DeleteAllotments from '#/lib/api/graphql/scripts/deleteAllotments.gql'
+// import DeleteBeds from '#/lib/api/graphql/scripts/deleteBeds.gql'
+// import DeletePlants from '#/lib/api/graphql/scripts/deletePlants.gql'
+// import DeletePlantingPlans from '#/lib/api/graphql/scripts/deletePlantingPlans.gql'
+// ==============================================================
 
 // ** THREE Imports (for typing only)
 import * as THREE from 'three'
@@ -61,17 +99,16 @@ import { v4 as newUUID } from 'uuid'
 // ** HELPER Imports
 import ccm from '#/lib/utils/console-colors'
 
-// ==========================================================
+// ==============================================================
 // IMPORTS COMPLETE
 // console.debug(`%c====================================`, ccm.blue)
 // console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
 // console.debug(`%c====================================`, ccm.blue)
 
-// ** TESTING
-const debug: boolean = false // false | true
-const DEBUG: boolean = false // 1 == 0 | 1 == 1
+// ** DEBUG: this module
+const debug: boolean = false
+const DEBUG: boolean = false
 
-// ==============================================================
 // ==============================================================
 // ** Noun Types + Interfaces
 
@@ -276,7 +313,7 @@ function nounStore(this: IStore, _type = 'noun') {
       // saveToDisk
       this.actions.saveToDisk()
       // saveToDB (coming soon !!!)
-      // this.actions.saveToDB()
+      this.actions.saveToDB()
     },
 
     // save data to browser local storage
@@ -375,9 +412,88 @@ function nounStore(this: IStore, _type = 'noun') {
     saveToDB: async (client: any) => {
       try {
         if (debug) console.debug(`%c🌩️ saveToDB [${this._type}] client`, ccm.orangeAlert, client)
+        
         // TODO: SAVE TO DB VIA GRAPHQL
+        // .gql
+        let MUTATION = null // default? no
+        switch (this._type) {
+          // case 'user':
+          //   MUTATION = UpdateUsers
+          //   break
+          case 'preferences':
+            MUTATION = UpdatePreferences
+            break
+          // case 'canvasState':
+          //   MUTATION = UpdateCanvasStates
+          //   break
+          // case 'noun':
+          //   MUTATION = UpdateNouns
+          //   break
+          // case 'project':
+          //   MUTATION = UpdateProjects
+          //   break
+          // case 'plan':
+          //   MUTATION = UpdatePlans
+          //   break
+          // case 'scene':
+          //   MUTATION = UpdateScenes
+          //   break
+          // case 'threed':
+          //   MUTATION = UpdateThreeDs
+          //   break
+          // case 'file':
+          //   MUTATION = UpdateFiles
+          //   break
+          // case 'allotment':
+          //   MUTATION = UpdateAllotments
+          //   break
+          // case 'bed':
+          //   MUTATION = UpdateBeds
+          //   break
+          // case 'plant':
+          //   MUTATION = UpdatePlants
+          //   break
+          // case 'plantingPlan':
+          //   MUTATION = UpdatePlantingPlans
+          //   break
+          // case 'bear':
+          //   MUTATION = UpdateBears
+          //   break
+        }
+
+        const parameters = {
+          id: 0,
+          title:`${this._type}: NUTHIN YET`,
+          content: "YO YO YO",
+          status: "draft",
+        }
+
+        // using mutation hook
+        // const {
+        //   data,
+        //   loading,
+        //   error,
+        //   fetchMore,
+        //   refetch,
+        //   networkStatus
+        // } = useMutation(MUTATION, { parameters }, { client })
+        // console.debug(`%c🌩️ saveToDB [${this._type}]: DATA RETURNED`, data, loading, error)
+
+        // using mutation directly
+        const mutation = await client.mutation({
+          mutation: MUTATION,
+          variables: { parameters },
+        })
+        console.debug(`%c🌩️ saveToDB [${this._type}]: MUTATION RETURNED`, ccm.blue, mutation)
+
+        const { data, loading, error } = mutation
+        console.debug(`%c🌩️ saveToDB [${this._type}]: DATA RETURNED`, data, loading, error)
+
+
 
         return true // OR false, if unsuccessful
+
+      // **
       } catch (ERROR) {
         if (debug) console.debug(`%c🌩️ saveToDB [${this._type}]: ERROR`, ccm.redAlert, ERROR)
         return false
@@ -386,15 +502,12 @@ function nounStore(this: IStore, _type = 'noun') {
 
     // get data from db via graphql query
     loadFromDB: async (client: any) => {
-      // try {
-        // const _this = this
-        // if (debug) console.clear()
-        // if (debug) console.debug(`%c=======================================================`, ccm.black)
-        if (debug) console.debug(`%c🌩️ loadFromDB this ${this._type}`, ccm.blueAlert, this)
-        // if (debug) console.debug(`%c=======================================================`, ccm.black)
+      // if (debug) console.clear()
+      if (debug) console.debug(`%c🌩️ loadFromDB this ${this._type}`, ccm.blueAlert, this)
 
+      // try {
         // .gql
-        let QUERY = null // default? GetProjects
+        let QUERY = null // default? GetPreferences
         switch (this._type) {
           case 'user':
             QUERY = GetUsers
@@ -1045,9 +1158,12 @@ const canvasStateThreeDVarDefaults: Object =
 
 // ==============================================================
 // ** MUTATIONS
+  export const createPreferences = CreatePreferences
+    // console.debug('APOLLO: createPreferences', createPreferences)
+    console.debug('APOLLO: createPreferences', '[MM]')
   export const updatePreferences = UpdatePreferences
-  // console.debug('APOLLO: updatePreferences', updatePreferences)
-  console.debug('APOLLO: updatePreferences', '[MM]')
+    // console.debug('APOLLO: updatePreferences', updatePreferences)
+    console.debug('APOLLO: updatePreferences', '[MM]')
 
 // ==============================================================
 
@@ -1057,9 +1173,9 @@ const canvasStateThreeDVarDefaults: Object =
 // ** Construct Stores + Export as Group of Stores
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
-console.debug('APOLLO: nounStore', nounStore)
+  console.debug('APOLLO: nounStore', nounStore)
 export const userStore = new (nounStore as any)('user')
-console.debug('APOLLO: userStore', userStore)
+  console.debug('APOLLO: userStore', userStore)
 export const preferencesStore = new (nounStore as any)('preferences')
   console.debug('APOLLO: preferencesStore', preferencesStore)
   // console.debug('APOLLO: preferencesStore.store.getState()', preferencesStore.store.getState())
@@ -1072,7 +1188,7 @@ export const preferencesStore = new (nounStore as any)('preferences')
     // EXTEND nounStore to become preferencesStoreCustom
     // export const preferencesStore = new (preferenceStoreCustom as any)('preferences')
 export const canvasStateStore = new (nounStore as any)('canvasState')
-console.debug('APOLLO: canvasStateStore', canvasStateStore)
+  console.debug('APOLLO: canvasStateStore', canvasStateStore)
 // other regular nouns
 export const projectStore = new (nounStore as any)('project')
 export const sceneStore = new (nounStore as any)('scene')
@@ -1122,9 +1238,9 @@ export const stores = {
 
 // ** user(s)
 export const userDataVar = makeVar(userDataVarDefaults)
-// console.debug('APOLLO: userDataVar()', userDataVar())
+  // console.debug('APOLLO: userDataVar()', userDataVar())
 export const isUserDataSetVar = makeVar(false) // boolean: false | true
-// console.debug('APOLLO: isUserDataSetVar()', isUserDataSetVar())
+  // console.debug('APOLLO: isUserDataSetVar()', isUserDataSetVar())
 
 // ** preferences(s)
 export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
