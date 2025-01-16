@@ -1,32 +1,53 @@
-# import { gql, useQuery } from '@apollo/client'
+# import { useMutation, gql } from '@apollo/client'
 
 # const UpdatePreferences = gql`
-mutation UpdatePreferences ($first: Int, $last: Int, $after: String, $before: String) {
-  updatePreferencess (first: $first, last: $last, after: $after, before: $before) {
-    nodes {
-      preferencesId
-      title
-      content
-      status
-      link
-      modified
-      # custom fields
-      version
-      # owner
-      doAutoLoadData
-      doAutoRotate
-      projectName
-      environmentPreset
-      environmentBgBlur
-      doCharacterAnimation
-      doWorldDebug
-      doWorldTesting
-      doWorldPhysics
-      doWorldControl
-      doWorldUnfollowCam
-      showPanelFirst
-      showPanelLast
-    }
+mutation UpdatePreferences ( 
+    $id: Number!
+    $title: String! 
+    $content: String!
+    $status: String!
+){
+  # updatePreferences(input: {id: "406", title: "HEYHEYHEY"}) {
+  updatePreferences(input: {
+    id: $id
+    title: $title
+    content: $content
+    status: $status
+  })
+  preferences {
+    id
+    title
+    content
+    status
+    modified
   }
 }
+# mutation UpdatePreferences ($first: Int, $last: Int, $after: String, $before: String) {
+#   updatePreferencess (first: $first, last: $last, after: $after, before: $before) {
+#     nodes {
+#       preferencesId
+#       title
+#       content
+#       status
+#       link
+#       modified
+#       # custom fields
+#       version
+#       # owner
+#       doAutoLoadData
+#       doAutoRotate
+#       projectName
+#       environmentPreset
+#       environmentBgBlur
+#       doCharacterAnimation
+#       doWorldDebug
+#       doWorldTesting
+#       doWorldPhysics
+#       doWorldControl
+#       doWorldUnfollowCam
+#       showPanelFirst
+#       showPanelLast
+#     }
+#   }
+# }
 # `

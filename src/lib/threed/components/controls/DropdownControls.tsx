@@ -10,8 +10,16 @@ import {
 } from 'react'
 
 // ** APOLLO Imports
-import { useReactiveVar } from '@apollo/client'
-import { isPreferencesDataSetVar, preferencesDataVar } from '#/lib/api/graphql/apollo'
+import { 
+  useReactiveVar, 
+  useMutation,
+} from '@apollo/client'
+import { 
+  isPreferencesDataSetVar, 
+  preferencesDataVar,
+  createPreferences,
+  updatePreferences,
+} from '#/lib/api/graphql/apollo'
 
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
@@ -33,7 +41,25 @@ export const ThreeDDropdownMenu = () => {
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeD Garden prefs', ccm.orangeAlert, prefs)
 
-  
+  const mutationCreatePreferences = () => {
+    const [formStatePreferences, setFormStatePreferences] = useState({
+      title: 'PREFERENCES: formStatePreferences',
+      content: 'HEY HEY HEY -- HEY HEY HEY',
+      status: 'draft',
+    })
+    // @ts-expect-error
+    const [ createPreferences ] = useMutation(createPreferences, {
+      variables: {
+        title: formStatePreferences.title,
+        content: formStatePreferences.content,
+        status: formStatePreferences.status,
+        doAutoLoadData: prefs.doAutoLoadData,
+        doAutoRotate: prefs.doAutoRotate,
+      }
+    })
+  }
+
+
   const [doShowControls, setDoShowControls] = useState(true)
   const [doAutoRotate, setDoAutoRotate] = useState(false)
   const [doAutoLoadData, setDoAutoLoadData] = useState(false)

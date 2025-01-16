@@ -1,0 +1,29 @@
+# import { useMutation, gql } from '@apollo/client'
+
+# const CreatePreferences = gql`
+mutation CreatePreferences ( 
+  # $id: Number!
+  $title: String! 
+  $content: String!
+  $status: String!
+){
+  createPreferences(input: {
+    # id: to be determined from api (wp)
+    # id: $id
+    # title: "TEST FROM GRAPHQL"
+    title: $title
+    # content: "HEY HEY HEY"
+    content: $content
+    # status: "draft"
+    status: $status
+  }) {
+    preferences {
+      id
+      title
+      content
+      status
+      modified
+    }
+  }
+}
+# `
