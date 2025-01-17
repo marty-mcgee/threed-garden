@@ -1000,18 +1000,26 @@ const userDataVarDefaults =
 // export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
 const preferencesDataVarDefaults = 
   {
+    // api defaults
+    id: 0,
+    title: 'HEY HEY HEY HEY HEY HEY',
+    content: '',
+    status: 'draft',
+
     // user prefs
     ownerId: 1,
     version: '0.0.0',
-    doAutoLoadData: false, // boolean: false | true
-    doAutoRotate: false, // boolean: false | true
+    
     // project prefs
-    projectName: '', // string: 'client should never see this string'
+    projectName: 'client should never see this string', // string: ''
     // scene prefs
     environmentPreset: 'park', // default (client should never see this)
     environmentBgBlur: 0.20, // default (our chosen maximum blur)
     // character prefs
+    characterTrailColor: '#003300', // hex color
     doCharacterAnimation: true, // boolean: false | true
+    doAutoLoadData: false, // boolean: false | true
+    doAutoRotate: false, // boolean: false | true
     // world prefs
     doWorldDebug: false, // boolean: false | true
     doWorldTesting: false, // boolean: false | true

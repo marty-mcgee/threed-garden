@@ -41,24 +41,69 @@ export const ThreeDDropdownMenu = () => {
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
   // console.debug('%c⚙️ ThreeD Garden prefs', ccm.orangeAlert, prefs)
 
-  const mutationCreatePreferences = () => {
+  // ** MUTATE PREFERENCES
+  // ** CREATE
+  // const mutationCreatePreferences = () => {
     const [formStatePreferences, setFormStatePreferences] = useState({
-      title: 'PREFERENCES: formStatePreferences',
+      title: 'PREFERENCES: defaultStatePreferences',
       content: 'HEY HEY HEY -- HEY HEY HEY',
       status: 'draft',
+      version: '0.17.0-beta.23',
     })
-    // @ts-expect-error
-    const [ createPreferences ] = useMutation(createPreferences, {
+    const [ doCreatePreferences ] = useMutation(createPreferences, {
+      // variables: {...formStatePreferences}
       variables: {
         title: formStatePreferences.title,
         content: formStatePreferences.content,
         status: formStatePreferences.status,
+        version: formStatePreferences.version,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
       }
     })
-  }
-
+  // }
+  // ** UPDATE
+  // const mutationUpdatePreferences = () => {
+    const [ doUpdatePreferences ] = useMutation(updatePreferences, {
+      // variables: {...prefs}
+      variables: {
+        title: prefs.title,
+        content: prefs.content,
+        status: prefs.status,
+        // link
+        // owner {
+        //   node {
+        //     userId
+        //     userPassword
+        //     userType
+        //     username
+        //     state
+        //     version
+        //   }
+        // }
+        version: prefs.version,
+        projectName: prefs.projectName,
+        doAutoLoadData: prefs.doAutoLoadData,
+        doAutoRotate: prefs.doAutoRotate,
+        doWorldPhysics: prefs.doWorldPhysics,
+        // characterTrailColor
+        // doAutoLoadData
+        // doAutoRotate
+        // doCharacterAnimation
+        // doWorldControl
+        // doWorldDebug
+        // doWorldPhysics
+        // doWorldTesting
+        // doWorldUnfollowCam
+        // environmentBgBlur
+        // environmentPreset
+        // preferencesId
+        // projectName
+        // showPanelFirst
+        // showPanelLast
+      }
+    })
+  // }
 
   const [doShowControls, setDoShowControls] = useState(true)
   const [doAutoRotate, setDoAutoRotate] = useState(false)

@@ -6,48 +6,74 @@ mutation UpdatePreferences (
     $title: String! 
     $content: String!
     $status: String!
+    $version: String!
+    $doAutoLoadData: Boolean
+    $doAutoRotate: Boolean
+    $projectName: String
+    $environmentPreset: String
+    $environmentBgBlur: Number
+    $characterTrailColor: String
+    $doCharacterAnimation: Boolean
+    $doWorldDebug: Boolean
+    $doWorldTesting: Boolean
+    $doWorldPhysics: Boolean
+    $doWorldControl: Boolean
+    $doWorldUnfollowCam: Boolean
+    $showPanelFirst: Boolean
+    $showPanelLast: Boolean
 ){
-  # updatePreferences(input: {id: "406", title: "HEYHEYHEY"}) {
   updatePreferences(input: {
     id: $id
     title: $title
     content: $content
     status: $status
-  })
-  preferences {
-    id
-    title
-    content
-    status
-    modified
+    version: $version
+    doAutoLoadData: $doAutoLoadData
+    doAutoRotate: $doAutoRotate
+    projectName: $projectName
+    environmentPreset: $environmentPreset
+    environmentBgBlur: $environmentBgBlur
+    characterTrailColor: $characterTrailColor
+    doCharacterAnimation: $doCharacterAnimation
+    doWorldDebug: $doWorldDebug
+    doWorldTesting: $doWorldTesting
+    doWorldPhysics: $doWorldPhysics
+    doWorldControl: $doWorldControl
+    doWorldUnfollowCam: $doWorldUnfollowCam
+    showPanelFirst: $showPanelFirst
+    showPanelLast: $showPanelLast
+  }) {
+    preferences {
+      preferencesId
+      title
+      content
+      status
+      link
+      modified
+      owner {
+        node {
+          userId
+          userType
+          username
+          state
+          version
+        }
+      }
+      version
+      doAutoLoadData
+      doAutoRotate
+      projectName
+      environmentPreset
+      environmentBgBlur
+      characterTrailColor
+      doCharacterAnimation
+      doWorldDebug
+      doWorldTesting
+      doWorldPhysics
+      doWorldControl
+      doWorldUnfollowCam
+      showPanelFirst
+      showPanelLast
+    }
   }
-}
-# mutation UpdatePreferences ($first: Int, $last: Int, $after: String, $before: String) {
-#   updatePreferencess (first: $first, last: $last, after: $after, before: $before) {
-#     nodes {
-#       preferencesId
-#       title
-#       content
-#       status
-#       link
-#       modified
-#       # custom fields
-#       version
-#       # owner
-#       doAutoLoadData
-#       doAutoRotate
-#       projectName
-#       environmentPreset
-#       environmentBgBlur
-#       doCharacterAnimation
-#       doWorldDebug
-#       doWorldTesting
-#       doWorldPhysics
-#       doWorldControl
-#       doWorldUnfollowCam
-#       showPanelFirst
-#       showPanelLast
-#     }
-#   }
-# }
-# `
+}# `
