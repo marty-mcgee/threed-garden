@@ -11,13 +11,22 @@ query GetPreferences ($first: Int, $last: Int, $after: String, $before: String) 
       link
       modified
       # custom fields
+      owner {
+        node {
+          userId
+          userType
+          username
+          state
+          version
+        }
+      }
       version
-      # owner
       doAutoLoadData
       doAutoRotate
       projectName
       environmentPreset
       environmentBgBlur
+      characterTrailColor
       doCharacterAnimation
       doWorldDebug
       doWorldTesting
