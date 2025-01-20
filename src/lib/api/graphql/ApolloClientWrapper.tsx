@@ -12,6 +12,9 @@ import {
   HttpLink,
   // getApolloContext
 } from '@apollo/client'
+import { 
+  setContext 
+} from '@apollo/client/link/context'
 import {
   ApolloNextAppProvider,
   InMemoryCache,
@@ -65,6 +68,19 @@ function makeClient() {
     // const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { cache: 'force-cache' }}})
   })
 
+  // ** AUTH
+  const authLink = setContext((_, { headers }) => {
+    // get the authentication token from local storage if it exists
+    const token = localStorage.getItem('token')
+    // return the headers to the context so httpLink can read them
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      }
+    }
+  })
+
   // **
   return new ApolloClient({
     // using the nextjs-support `InMemoryCache`, not the normal apollo `InMemoryCache`
@@ -73,15 +89,19 @@ function makeClient() {
     link:
       typeof window === 'undefined'
         ? ApolloLink.from([
-            // in a SSR environment, if you use multipart features like
-            // @defer, you need to decide how to handle these.
-            // This strips all interfaces with a `@defer` directive from your queries.
-            new SSRMultipartLink({
-              stripDefer: true,
-            }),
-            httpLink,
-          ])
-        : httpLink,
+          // in a SSR environment, if you use multipart features like
+          // @defer, you need to decide how to handle these.
+          // This strips all interfaces with a `@defer` directive from your queries.
+          new SSRMultipartLink({
+            stripDefer: true,
+          }),
+          // httpLink,
+          authLink.concat(httpLink),
+        ])
+      // : httpLink,
+      : authLink.concat(httpLink),
+    // Enable sending cookies over cross-origin requests
+    // credentials: 'include' // same-origin | never | include (cross-origin)
   })
 }
 
