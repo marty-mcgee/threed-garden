@@ -6,6 +6,7 @@ mutation CreatePreferences (
   $title: String! 
   $content: String!
   $status: String!
+  $version: String!
 ){
   createPreferences(input: {
     # id: to be determined from api (wp)
@@ -16,12 +17,15 @@ mutation CreatePreferences (
     content: $content
     # status: "draft"
     status: $status
+    # version: "0.0.0"
+    version: $version
   }) {
     preferences {
       id
       title
       content
       status
+      version
       modified
     }
   }
