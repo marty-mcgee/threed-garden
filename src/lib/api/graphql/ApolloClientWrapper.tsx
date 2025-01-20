@@ -66,20 +66,28 @@ function makeClient() {
     // via the `context` property on the options passed as a second argument
     // to an Apollo Client data fetching hook, e.g.:
     // const { data } = useSuspenseQuery(MY_QUERY, { context: { fetchOptions: { cache: 'force-cache' }}})
+    
+    headers: {
+      authorization: localStorage.getItem('token'),
+      // 'client-name': 'ThreeD Garden [web]',
+      // 'client-version': '0.0.0'
+    }
   })
 
   // ** AUTH
-  const authLink = setContext((_, { headers }) => {
-    // get the authentication token from local storage if it exists
-    const token = localStorage.getItem('token')
-    // return the headers to the context so httpLink can read them
-    return {
-      headers: {
-        ...headers,
-        authorization: token ? `Bearer ${token}` : "",
-      }
-    }
-  })
+  // const authLink = setContext((_, { headers }) => {
+  //   // get the authentication token from local storage if it exists
+  //   // const token = localStorage.getItem('token')
+  //   // const token = process.env.GRAPHQL_JWT_TOKEN // NO!
+  //   // return the headers to the context so httpLink can read them
+  //   return {
+  //     headers: {
+  //       ...headers,
+  //       // authorization: token ? `Bearer ${token}` : '',
+  //       authorization: token ? token : '',
+  //     }
+  //   }
+  // })
 
   // **
   return new ApolloClient({
@@ -95,13 +103,20 @@ function makeClient() {
           new SSRMultipartLink({
             stripDefer: true,
           }),
-          // httpLink,
-          authLink.concat(httpLink),
+          httpLink,
+          // authLink.concat(httpLink),
         ])
-      // : httpLink,
-      : authLink.concat(httpLink),
+      : httpLink,
+      // : authLink.concat(httpLink),
+
     // Enable sending cookies over cross-origin requests
-    // credentials: 'include' // same-origin | never | include (cross-origin)
+    credentials: 'include', // same-origin | never | include (cross-origin)
+
+    // headers: {
+    //   // authorization: localStorage.getItem('token'),
+    //   // 'client-name': 'ThreeD Garden [web]',
+    //   // 'client-version': '0.0.0'
+    // }
   })
 }
 
