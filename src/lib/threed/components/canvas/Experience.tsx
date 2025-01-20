@@ -569,7 +569,7 @@ const ThreeDExperience = forwardRef((
                   rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
                   quaternion={[0,0,0,0]}
                   scale={101.4} 
-                  position={[400, 140, -1600]}
+                  position={[400, 140, -2000]}
                 >
                   <Map />
                 </group>

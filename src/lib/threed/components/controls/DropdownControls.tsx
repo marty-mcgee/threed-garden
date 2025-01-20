@@ -35,7 +35,6 @@ import {
 // ** RADIX-UI DropdownMenu
 export const ThreeDDropdownMenu = () => {
 
-
   // ** USE PREFERENCES
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES !!
@@ -53,12 +52,38 @@ export const ThreeDDropdownMenu = () => {
     const [ doCreatePreferences ] = useMutation(createPreferences, {
       // variables: {...formStatePreferences}
       variables: {
+        // preferencesId 
         title: formStatePreferences.title,
         content: formStatePreferences.content,
         status: formStatePreferences.status,
-        version: formStatePreferences.version,
+        // link: tbd
+        // owner: tbd
+        // {
+        //   node {
+        //     userId
+        //     userPassword
+        //     userType
+        //     username
+        //     state
+        //     version
+        //   }
+        // }
+        // version: formStatePreferences.version,
+        version: prefs.version + '_' + 'heyheyhey',
+        projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
+        // characterTrailColor: prefs.characterTrailColor,
+        // doCharacterAnimation: prefs.doCharacterAnimation,
+        // doWorldControl: prefs.doWorldControl,
+        // doWorldDebug: prefs.doWorldDebug,
+        doWorldPhysics: prefs.doWorldPhysics,
+        // doWorldTesting: prefs.doWorldTesting,
+        // doWorldUnfollowCam: prefs.doWorldUnfollowCam,
+        // environmentBgBlur: prefs.environmentBgBlur,
+        // environmentPreset: prefs.environmentPreset,
+        showPanelFirst: prefs.showPanelFirst,
+        showPanelLast: prefs.showPanelLast,
       }
     })
   // }
@@ -67,6 +92,7 @@ export const ThreeDDropdownMenu = () => {
     const [ doUpdatePreferences ] = useMutation(updatePreferences, {
       // variables: {...prefs}
       variables: {
+        preferencesId: prefs.preferencesId,
         title: prefs.title,
         content: prefs.content,
         status: prefs.status,
@@ -81,26 +107,21 @@ export const ThreeDDropdownMenu = () => {
         //     version
         //   }
         // }
-        version: prefs.version,
+        version: prefs.version + '_' + 'yoyoyo',
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
+        // characterTrailColor: prefs.characterTrailColor,
+        // doCharacterAnimation: prefs.doCharacterAnimation,
+        // doWorldControl: prefs.doWorldControl,
+        // doWorldDebug: prefs.doWorldDebug,
         doWorldPhysics: prefs.doWorldPhysics,
-        // characterTrailColor
-        // doAutoLoadData
-        // doAutoRotate
-        // doCharacterAnimation
-        // doWorldControl
-        // doWorldDebug
-        // doWorldPhysics
-        // doWorldTesting
-        // doWorldUnfollowCam
-        // environmentBgBlur
-        // environmentPreset
-        // preferencesId
-        // projectName
-        // showPanelFirst
-        // showPanelLast
+        // doWorldTesting: prefs.doWorldTesting,
+        // doWorldUnfollowCam: prefs.doWorldUnfollowCam,
+        // environmentBgBlur: prefs.environmentBgBlur,
+        // environmentPreset: prefs.environmentPreset,
+        showPanelFirst: prefs.showPanelFirst,
+        showPanelLast: prefs.showPanelLast,
       }
     })
   // }
@@ -114,7 +135,7 @@ export const ThreeDDropdownMenu = () => {
   // type TToolMode = 'pointer' | 'walls' | 'floor' | 'roof' | 'dimension' | 'text' | 'background' | 'ground' | 'defaults'
   const [currentToolMode, setCurrentToolMode] = useState('pointer') // [MM] preferencesToolModeVar()
 
-
+  
 
   // const [{
   //   doAutoLoadData,
@@ -170,6 +191,7 @@ export const ThreeDDropdownMenu = () => {
     // console.debug('%c⚙️ doAutoLoadData newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ doAutoLoadData preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
   }, [doAutoLoadData])
 
   // **
@@ -193,6 +215,7 @@ export const ThreeDDropdownMenu = () => {
     // console.debug('%c⚙️ doAutoRotate newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ doAutoRotate preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
   }, [doAutoRotate])
 
   // **
@@ -256,6 +279,12 @@ export const ThreeDDropdownMenu = () => {
           className='DropdownMenuContent' 
           // sideOffset={5}
         >
+          <DropdownMenu.Item 
+            className='DropdownMenuItem'
+            onClick={() => doUpdatePreferences()}
+          >
+            Save State
+          </DropdownMenu.Item>
 
           {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}
 

@@ -970,6 +970,12 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 // export const isUserDataSetVar = makeVar(false) // boolean: false | true
 const userDataVarDefaults = 
 {
+  // api defaults
+  userId: 0,
+  title: 'HEY HEY HEY HEY HEY HEY',
+  content: '',
+  status: 'draft',
+
   // user prefs
   ownerId: 1,
   version: '0.0.0',
@@ -1001,12 +1007,11 @@ const userDataVarDefaults =
 const preferencesDataVarDefaults = 
   {
     // api defaults
-    id: 0,
+    preferencesId: 0,
     title: 'HEY HEY HEY HEY HEY HEY',
     content: '',
     status: 'draft',
 
-    // user prefs
     ownerId: 1,
     version: '0.0.0',
     
@@ -1037,9 +1042,15 @@ const preferencesDataVarDefaults =
 // export const isCanvasStateSetVar = makeVar(false) // boolean: false | true
 const canvasStatePaperVarDefaults: Object = 
   {
-    // user prefs
+    // api defaults
+    canvasStateId: 0,
+    title: 'HEY HEY HEY HEY HEY HEY',
+    content: '',
+    status: 'draft',
+
     ownerId: 1,
     version: '0.0.0',
+
     state: {
       // ** PAPER Scope: paperjs.org/reference/paperscope/
       // ** PAPER Constructor
@@ -1070,9 +1081,15 @@ const canvasStatePaperVarDefaults: Object =
 // export const isCanvasStateThreeDSetVar = makeVar(false) // boolean: false | true
 const canvasStateThreeDVarDefaults: Object = 
   {
-    // user prefs
+    // api defaults
+    canvasStateId: 0,
+    title: 'YO YO YO YO YO YO',
+    content: '',
+    status: 'draft',
+
     ownerId: 1,
     version: '0.0.0',
+
     state: {
       // ** THREE WebGL Renderer
       gl: null as THREE.WebGLRenderer,
