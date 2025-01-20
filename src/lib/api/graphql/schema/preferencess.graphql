@@ -1,27 +1,48 @@
 type Preferences {
-  id: ID!
-  name: String!
-  description: String
-  createdAt: String!
-  updatedAt: String!
-  # custom fields from api (wp)
-  title: String
-  username: String
-  email: String
-  phone: String
-  website: String
-  owner: Number
-  version: String
+  # id: ID!
+  # name: String!
+  # description: String
+  # createdAt: String!
+  # updatedAt: String!
+  # # custom fields from api (wp)
+  # title: String
+  # username: String
+  # email: String
+  # phone: String
+  # website: String
+  # owner: Number
+  # version: String
+
+
+  id: Float!
+  title: String! 
+  content: String!
+  status: String!
+  version: String!
+  doAutoLoadData: Boolean
+  doAutoRotate: Boolean
+  projectName: String
+  environmentPreset: String
+  environmentBgBlur: Float
+  characterTrailColor: String
+  doCharacterAnimation: Boolean
+  doWorldDebug: Boolean
+  doWorldTesting: Boolean
+  doWorldPhysics: Boolean
+  doWorldControl: Boolean
+  doWorldUnfollowCam: Boolean
+  showPanelFirst: Boolean
+  showPanelLast: Boolean
 }
 
-type Query {
-  getPreferences(id: ID!): Preferences
-  getPreferencess: [Preferences] @rest(endpoint: "https://threed.design/wp-json/wp/v2/threed_preferences")
-  listPreferencess: [Preferences]
-}
+# type Query {
+#   getPreferences(id: ID!): Preferences
+#   getPreferencess: [Preferences] @rest(endpoint: "https://threed.design/wp-json/wp/v2/threed_preferences")
+#   listPreferencess: [Preferences]
+# }
 
-type Mutation {
-  createPreferences(name: String!, description: String): Preferences
-  updatePreferences(id: ID!, name: String, description: String): Preferences
-  deletePreferences(id: ID!): Preferences
-}
+# type Mutation {
+#   createPreferences(name: String!, description: String): Preferences
+#   updatePreferences(id: ID!, name: String, description: String): Preferences
+#   deletePreferences(id: ID!): Preferences
+# }

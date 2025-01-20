@@ -8,15 +8,18 @@ import { makeVar } from '@apollo/client'
 import create, { StoreApi } from '#/lib/api/graphql/createStore'
 
 // ** GRAPHQL -- Schema Objects, Queries, Mutations, Fragments, Subscriptions
+// ==============================================================
+// ** -- TYPES (Schema)
+// ==============================================================
 // ** schema objects
-import Nouns from '#/lib/api/graphql/schema/nouns.graphql'
-import Users from '#/lib/api/graphql/schema/users.graphql'
+// import Nouns from '#/lib/api/graphql/schema/nouns.graphql'
+// import Users from '#/lib/api/graphql/schema/users.graphql'
 import Preferences from '#/lib/api/graphql/schema/preferencess.graphql'
-import CanvasStates from '#/lib/api/graphql/schema/canvasStates.graphql'
-import Projects from '#/lib/api/graphql/schema/projects.graphql'
-import Plans from '#/lib/api/graphql/schema/plans.graphql'
-import Scenes from '#/lib/api/graphql/schema/scenes.graphql'
-import ThreeDs from '#/lib/api/graphql/schema/threeds.graphql'
+// import CanvasStates from '#/lib/api/graphql/schema/canvasStates.graphql'
+// import Projects from '#/lib/api/graphql/schema/projects.graphql'
+// import Plans from '#/lib/api/graphql/schema/plans.graphql'
+// import Scenes from '#/lib/api/graphql/schema/scenes.graphql'
+// import ThreeDs from '#/lib/api/graphql/schema/threeds.graphql'
 // import Files from '#/lib/api/graphql/scripts/files.graphql'
 // import Allotments from '#/lib/api/graphql/scripts/allotments.graphql'
 // import Beds from '#/lib/api/graphql/scripts/beds.graphql'
@@ -1327,19 +1330,19 @@ export const queries = {
 // export MUTATIONS
 export const mutations = {
   // UpdateNouns: 'APOLLO: [MM] HEY HEY HEY: UpdateNouns',
-  UpdateNouns: Nouns,
+  // UpdateNouns: UpdateNouns,
   // UpdateUsers: 'APOLLO: [MM] HEY HEY HEY UpdateUsers',
-  UpdateUsers: Users,
+  // UpdateUsers: UpdateUsers,
   // UpdatePreferences: 'APOLLO: [MM] HEY HEY HEY UpdatePreferences',
-  UpdatePreferences: Preferences,
+  UpdatePreferences: UpdatePreferences,
   // UpdateCanvasStates: 'APOLLO: [MM] HEY HEY HEY UpdateCanvasStates',
-  UpdateCanvasStates: CanvasStates,
+  // UpdateCanvasStates: UpdateCanvasStates,
   // UpdateProjects: 'APOLLO: [MM] HEY HEY HEY UpdateProjects',
-  UpdateProjects: Projects,
+  // UpdateProjects: UpdateProjects,
   // UpdatePlans: 'APOLLO: [MM] HEY HEY HEY UpdatePlans',
-  UpdatePlans: Plans,
+  // UpdatePlans: UpdatePlans,
   // UpdateThreeDs: 'APOLLO: [MM] HEY HEY HEY UpdateThreeDs',
-  UpdateThreeDs: ThreeDs,
+  // UpdateThreeDs: UpdateThreeDs,
   // UpdateFiles,
   // UpdateAllotments,
   // UpdateBeds,

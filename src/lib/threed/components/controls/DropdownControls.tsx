@@ -69,7 +69,7 @@ export const ThreeDDropdownMenu = () => {
         //   }
         // }
         // version: formStatePreferences.version,
-        version: prefs.version + '_' + 'heyheyhey',
+        version: prefs.version,
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
@@ -107,7 +107,7 @@ export const ThreeDDropdownMenu = () => {
         //     version
         //   }
         // }
-        version: prefs.version + '_' + 'yoyoyo',
+        version: prefs.version,
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,

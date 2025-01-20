@@ -2,25 +2,25 @@
 
 # const UpdatePreferences = gql`
 mutation UpdatePreferences ( 
-    $id: Number!
+    $id: Float!
     $title: String! 
     $content: String!
     $status: String!
     $version: String!
-    $doAutoLoadData: Boolean
-    $doAutoRotate: Boolean
-    $projectName: String
-    $environmentPreset: String
-    $environmentBgBlur: Number
-    $characterTrailColor: String
-    $doCharacterAnimation: Boolean
-    $doWorldDebug: Boolean
-    $doWorldTesting: Boolean
-    $doWorldPhysics: Boolean
-    $doWorldControl: Boolean
-    $doWorldUnfollowCam: Boolean
-    $showPanelFirst: Boolean
-    $showPanelLast: Boolean
+    # $doAutoLoadData: Boolean
+    # $doAutoRotate: Boolean
+    # $projectName: String
+    # $environmentPreset: String
+    # $environmentBgBlur: Float
+    # $characterTrailColor: String
+    # $doCharacterAnimation: Boolean
+    # $doWorldDebug: Boolean
+    # $doWorldTesting: Boolean
+    # $doWorldPhysics: Boolean
+    # $doWorldControl: Boolean
+    # $doWorldUnfollowCam: Boolean
+    # $showPanelFirst: Boolean
+    # $showPanelLast: Boolean
 ){
   updatePreferences(input: {
     id: $id
@@ -28,20 +28,20 @@ mutation UpdatePreferences (
     content: $content
     status: $status
     version: $version
-    doAutoLoadData: $doAutoLoadData
-    doAutoRotate: $doAutoRotate
-    projectName: $projectName
-    environmentPreset: $environmentPreset
-    environmentBgBlur: $environmentBgBlur
-    characterTrailColor: $characterTrailColor
-    doCharacterAnimation: $doCharacterAnimation
-    doWorldDebug: $doWorldDebug
-    doWorldTesting: $doWorldTesting
-    doWorldPhysics: $doWorldPhysics
-    doWorldControl: $doWorldControl
-    doWorldUnfollowCam: $doWorldUnfollowCam
-    showPanelFirst: $showPanelFirst
-    showPanelLast: $showPanelLast
+    # doAutoLoadData: $doAutoLoadData
+    # doAutoRotate: $doAutoRotate
+    # projectName: $projectName
+    # environmentPreset: $environmentPreset
+    # environmentBgBlur: $environmentBgBlur
+    # characterTrailColor: $characterTrailColor
+    # doCharacterAnimation: $doCharacterAnimation
+    # doWorldDebug: $doWorldDebug
+    # doWorldTesting: $doWorldTesting
+    # doWorldPhysics: $doWorldPhysics
+    # doWorldControl: $doWorldControl
+    # doWorldUnfollowCam: $doWorldUnfollowCam
+    # showPanelFirst: $showPanelFirst
+    # showPanelLast: $showPanelLast
   }) {
     preferences {
       preferencesId
