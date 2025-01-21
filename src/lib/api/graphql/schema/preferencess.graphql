@@ -1,4 +1,4 @@
-type Preferences {
+export type Preferences {
   # id: ID!
   # name: String!
   # description: String
@@ -13,8 +13,8 @@ type Preferences {
   # owner: Number
   # version: String
 
-
-  id: Float!
+  # [MM] NEW 2025-01-20
+  id: ID!
   title: String! 
   content: String!
   status: String!
