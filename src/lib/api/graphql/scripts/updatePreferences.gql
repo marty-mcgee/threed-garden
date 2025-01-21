@@ -2,7 +2,7 @@
 
 # const UpdatePreferences = gql`
 mutation UpdatePreferences ( 
-    $id: Float!
+    $id: ID!
     $title: String! 
     $content: String!
     $status: String!
