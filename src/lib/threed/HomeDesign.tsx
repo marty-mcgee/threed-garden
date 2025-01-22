@@ -5936,7 +5936,7 @@ export default function ThreeDHomeDesign({
               // const loadPreferencesOne = await preferencesStore.store.useStore('one')
               // console.debug('%c🦆 APOLLO STORE: get one preferences => loadPreferencesOne', ccm.redAlert, loadPreferencesOne)
               preferencesDataVar(loadPreferencesOne.data)
-              // console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
+              console.debug('%c🦆 APOLLO STORE: FETCH preferencesDataVar()', ccm.redAlert, preferencesDataVar())
             }
           }
           isPreferencesDataSetVar(true)

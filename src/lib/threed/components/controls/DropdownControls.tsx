@@ -46,7 +46,7 @@ export const ThreeDDropdownMenu = () => {
     const [formStatePreferences, setFormStatePreferences] = useState({
       title: 'PREFERENCES: defaultStatePreferences',
       content: 'HEY HEY HEY -- HEY HEY HEY',
-      status: 'draft',
+      status: 'DRAFT',
       version: '0.17.0-beta.23',
     })
     const [ doCreatePreferences ] = useMutation(createPreferences, {
@@ -92,10 +92,11 @@ export const ThreeDDropdownMenu = () => {
     const [ doUpdatePreferences ] = useMutation(updatePreferences, {
       // variables: {...prefs}
       variables: {
+        id: prefs.id,
         preferencesId: prefs.preferencesId,
         title: prefs.title,
         content: prefs.content,
-        status: prefs.status,
+        status: 'PUBLISH', // prefs.status,
         // link
         // owner {
         //   node {
@@ -107,7 +108,7 @@ export const ThreeDDropdownMenu = () => {
         //     version
         //   }
         // }
-        version: prefs.version,
+        version: prefs.version + '_HEYHEYHEY',
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
