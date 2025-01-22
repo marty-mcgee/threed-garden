@@ -5,7 +5,7 @@ mutation UpdatePreferences (
     $id: ID!
     $title: String! 
     $content: String!
-    $status: String!
+    $status: PostStatusEnum!
     $version: String!
     # $doAutoLoadData: Boolean
     # $doAutoRotate: Boolean
@@ -44,6 +44,7 @@ mutation UpdatePreferences (
     # showPanelLast: $showPanelLast
   }) {
     preferences {
+      id
       preferencesId
       title
       content

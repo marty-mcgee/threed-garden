@@ -4,6 +4,7 @@
 query GetPreferences ($first: Int, $last: Int, $after: String, $before: String) {
   preferencess (first: $first, last: $last, after: $after, before: $before) {
     nodes {
+      id
       preferencesId
       title
       content

@@ -977,7 +977,7 @@ const userDataVarDefaults =
   userId: 0,
   title: 'HEY HEY HEY HEY HEY HEY',
   content: '',
-  status: 'draft',
+  status: 'DRAFT',
 
   // user prefs
   ownerId: 1,
@@ -1010,10 +1010,11 @@ const userDataVarDefaults =
 const preferencesDataVarDefaults = 
   {
     // api defaults
+    id: '0',
     preferencesId: 0,
     title: 'HEY HEY HEY HEY HEY HEY',
     content: '',
-    status: 'draft',
+    status: 'DRAFT',
 
     ownerId: 1,
     version: '0.0.0',
@@ -1049,7 +1050,7 @@ const canvasStatePaperVarDefaults: Object =
     canvasStateId: 0,
     title: 'HEY HEY HEY HEY HEY HEY',
     content: '',
-    status: 'draft',
+    status: 'DRAFT',
 
     ownerId: 1,
     version: '0.0.0',
@@ -1088,7 +1089,7 @@ const canvasStateThreeDVarDefaults: Object =
     canvasStateId: 0,
     title: 'YO YO YO YO YO YO',
     content: '',
-    status: 'draft',
+    status: 'DRAFT',
 
     ownerId: 1,
     version: '0.0.0',
@@ -1266,13 +1267,13 @@ export const stores = {
 
 // ** user(s)
 export const userDataVar = makeVar(userDataVarDefaults)
-  // console.debug('APOLLO: userDataVar()', userDataVar())
+  console.debug('APOLLO: userDataVar()', userDataVar())
 export const isUserDataSetVar = makeVar(false) // boolean: false | true
   // console.debug('APOLLO: isUserDataSetVar()', isUserDataSetVar())
 
 // ** preferences(s)
 export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
-  // console.debug('APOLLO: preferencesDataVar()', preferencesDataVar())
+  console.debug('APOLLO: preferencesDataVar()', preferencesDataVar())
 export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
   // console.debug('APOLLO: isPreferencesDataSetVar()', isPreferencesDataSetVar())
 

@@ -83,8 +83,8 @@ function makeClient() {
     return {
       headers: {
         ...headers,
-        // authorization: token ? `Bearer ${token}` : '',
-        Authorization: token ? token : '',
+        authorization: token ? `Bearer ${token}` : '',
+        // Authorization: token ? token : '',
       }
     }
   })
