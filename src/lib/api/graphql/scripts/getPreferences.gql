@@ -12,23 +12,19 @@ query GetPreferences ($first: Int, $last: Int, $after: String, $before: String) 
       link
       modified
       # custom fields
-      owner {
-        node {
-          userId
-          userType
-          username
-          state
-          version
-        }
-      }
+      # owner {
+      #   node {
+      #     userId
+      #     userType
+      #     username
+      #     state
+      #     version
+      #   }
+      # }
       version
+      projectName
       doAutoLoadData
       doAutoRotate
-      projectName
-      environmentPreset
-      environmentBgBlur
-      characterTrailColor
-      doCharacterAnimation
       doWorldDebug
       doWorldTesting
       doWorldPhysics
@@ -36,6 +32,10 @@ query GetPreferences ($first: Int, $last: Int, $after: String, $before: String) 
       doWorldUnfollowCam
       showPanelFirst
       showPanelLast
+      environmentPreset
+      environmentBgBlur
+      characterTrailColor
+      doCharacterAnimation
     }
   }
 }

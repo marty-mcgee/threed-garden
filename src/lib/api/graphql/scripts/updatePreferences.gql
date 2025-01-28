@@ -5,76 +5,79 @@ mutation UpdatePreferences (
     $id: ID!
     $title: String! 
     $content: String!
-    $status: PostStatusEnum!
+    # $status: PostStatusEnum!
     $version: String!
-    # $doAutoLoadData: Boolean
-    # $doAutoRotate: Boolean
+    $doAutoLoadData: Boolean
+    $doAutoRotate: Boolean
+    $doWorldDebug: Boolean
+    $doWorldTesting: Boolean
+    $doWorldPhysics: Boolean
+    $doWorldControl: Boolean
+    $doWorldUnfollowCam: Boolean
+    # $showPanelFirst: Boolean
+    # $showPanelLast: Boolean
     # $projectName: String
     # $environmentPreset: String
     # $environmentBgBlur: Float
     # $characterTrailColor: String
     # $doCharacterAnimation: Boolean
-    # $doWorldDebug: Boolean
-    # $doWorldTesting: Boolean
-    # $doWorldPhysics: Boolean
-    # $doWorldControl: Boolean
-    # $doWorldUnfollowCam: Boolean
-    # $showPanelFirst: Boolean
-    # $showPanelLast: Boolean
 ){
-  updatePreferences(input: {
+  updateThreeDPreferences(input: {
     id: $id
     title: $title
     content: $content
-    status: $status
+    # status: $status
     version: $version
-    # doAutoLoadData: $doAutoLoadData
-    # doAutoRotate: $doAutoRotate
+    doAutoLoadData: $doAutoLoadData
+    doAutoRotate: $doAutoRotate
+    doWorldDebug: $doWorldDebug
+    doWorldTesting: $doWorldTesting
+    doWorldPhysics: $doWorldPhysics
+    doWorldControl: $doWorldControl
+    doWorldUnfollowCam: $doWorldUnfollowCam
+    # showPanelFirst: $showPanelFirst
+    # showPanelLast: $showPanelLast
     # projectName: $projectName
     # environmentPreset: $environmentPreset
     # environmentBgBlur: $environmentBgBlur
     # characterTrailColor: $characterTrailColor
     # doCharacterAnimation: $doCharacterAnimation
-    # doWorldDebug: $doWorldDebug
-    # doWorldTesting: $doWorldTesting
-    # doWorldPhysics: $doWorldPhysics
-    # doWorldControl: $doWorldControl
-    # doWorldUnfollowCam: $doWorldUnfollowCam
-    # showPanelFirst: $showPanelFirst
-    # showPanelLast: $showPanelLast
   }) {
-    preferences {
-      id
-      preferencesId
-      title
-      content
-      status
-      link
-      modified
-      owner {
-        node {
-          userId
-          userType
-          username
-          state
-          version
-        }
-      }
-      version
-      doAutoLoadData
-      doAutoRotate
-      projectName
-      environmentPreset
-      environmentBgBlur
-      characterTrailColor
-      doCharacterAnimation
-      doWorldDebug
-      doWorldTesting
-      doWorldPhysics
-      doWorldControl
-      doWorldUnfollowCam
-      showPanelFirst
-      showPanelLast
-    }
+    success
+    message
+    updatedFields
+    # preferences {
+    #   id
+    #   preferencesId
+    #   title
+    #   content
+    #   status
+    #   link
+    #   modified
+    #   owner {
+    #     node {
+    #       userId
+    #       userType
+    #       username
+    #       state
+    #       version
+    #     }
+    #   }
+    #   version
+    #   doAutoLoadData
+    #   doAutoRotate
+    #   doWorldDebug
+    #   doWorldTesting
+    #   doWorldPhysics
+    #   doWorldControl
+    #   doWorldUnfollowCam
+    #   showPanelFirst
+    #   showPanelLast
+    #   projectName
+    #   environmentPreset
+    #   environmentBgBlur
+    #   characterTrailColor
+    #   doCharacterAnimation
+    # }
   }
 }# `

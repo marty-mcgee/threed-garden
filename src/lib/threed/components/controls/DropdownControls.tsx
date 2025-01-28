@@ -69,21 +69,21 @@ export const ThreeDDropdownMenu = () => {
         //   }
         // }
         // version: formStatePreferences.version,
-        version: prefs.version + '_HEYHEYHEY',
+        version: prefs.version + '_YOYOYO',
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
-        // characterTrailColor: prefs.characterTrailColor,
-        // doCharacterAnimation: prefs.doCharacterAnimation,
-        // doWorldControl: prefs.doWorldControl,
-        // doWorldDebug: prefs.doWorldDebug,
+        doWorldDebug: prefs.doWorldDebug,
+        doWorldTesting: prefs.doWorldTesting,
         doWorldPhysics: prefs.doWorldPhysics,
-        // doWorldTesting: prefs.doWorldTesting,
-        // doWorldUnfollowCam: prefs.doWorldUnfollowCam,
+        doWorldControl: prefs.doWorldControl,
+        doWorldUnfollowCam: prefs.doWorldUnfollowCam,
         // environmentBgBlur: prefs.environmentBgBlur,
         // environmentPreset: prefs.environmentPreset,
         showPanelFirst: prefs.showPanelFirst,
         showPanelLast: prefs.showPanelLast,
+        // characterTrailColor: prefs.characterTrailColor,
+        // doCharacterAnimation: prefs.doCharacterAnimation,
       }
     })
   // }
@@ -92,8 +92,8 @@ export const ThreeDDropdownMenu = () => {
     const [ doUpdatePreferences ] = useMutation(updatePreferences, {
       // variables: {...prefs}
       variables: {
-        id: prefs.id,
-        preferencesId: prefs.preferencesId,
+        id: prefs.preferencesId, // prefs.id,
+        // preferencesId: prefs.preferencesId,
         title: prefs.title,
         content: prefs.content,
         status: 'PUBLISH', // prefs.status,
@@ -108,21 +108,21 @@ export const ThreeDDropdownMenu = () => {
         //     version
         //   }
         // }
-        version: prefs.version + '_YOYOYO',
+        version: prefs.version + '_HEYHEYHEY',
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
-        // characterTrailColor: prefs.characterTrailColor,
-        // doCharacterAnimation: prefs.doCharacterAnimation,
-        // doWorldControl: prefs.doWorldControl,
-        // doWorldDebug: prefs.doWorldDebug,
+        doWorldDebug: prefs.doWorldDebug,
+        doWorldTesting: prefs.doWorldTesting,
         doWorldPhysics: prefs.doWorldPhysics,
-        // doWorldTesting: prefs.doWorldTesting,
-        // doWorldUnfollowCam: prefs.doWorldUnfollowCam,
+        doWorldControl: prefs.doWorldControl,
+        doWorldUnfollowCam: prefs.doWorldUnfollowCam,
         // environmentBgBlur: prefs.environmentBgBlur,
         // environmentPreset: prefs.environmentPreset,
         showPanelFirst: prefs.showPanelFirst,
         showPanelLast: prefs.showPanelLast,
+        // characterTrailColor: prefs.characterTrailColor,
+        // doCharacterAnimation: prefs.doCharacterAnimation,
       }
     })
   // }
