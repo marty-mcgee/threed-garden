@@ -13,7 +13,7 @@ import create, { StoreApi } from '#/lib/api/graphql/createStore'
 // ==============================================================
 // ** schema objects
 // import Nouns from '#/lib/api/graphql/schema/nouns.graphql'
-// import Users from '#/lib/api/graphql/schema/users.graphql'
+// import Participants from '#/lib/api/graphql/schema/participants.graphql'
 import Preferences from '#/lib/api/graphql/schema/preferencess.graphql'
 // import CanvasStates from '#/lib/api/graphql/schema/canvasStates.graphql'
 // import Projects from '#/lib/api/graphql/schema/projects.graphql'
@@ -32,7 +32,7 @@ import Preferences from '#/lib/api/graphql/schema/preferencess.graphql'
 // ==============================================================
 // ** get existing
 import GetNouns from '#/lib/api/graphql/scripts/getNouns.gql'
-import GetUsers from '#/lib/api/graphql/scripts/getUsers.gql'
+import GetParticipants from '#/lib/api/graphql/scripts/getParticipants.gql'
 import GetPreferences from '#/lib/api/graphql/scripts/getPreferences.gql'
 import GetCanvasStates from '#/lib/api/graphql/scripts/getCanvasStates.gql'
 import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
@@ -49,7 +49,7 @@ import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
 // ==============================================================
 // ** create new
 // import CreateNouns from '#/lib/api/graphql/scripts/createNouns.gql'
-// import CreateUsers from '#/lib/api/graphql/scripts/createUsers.gql'
+// import CreateParticipants from '#/lib/api/graphql/scripts/createParticipants.gql'
 import CreatePreferences from '#/lib/api/graphql/scripts/createPreferences.gql'
 // import CreateCanvasStates from '#/lib/api/graphql/scripts/createCanvasStates.gql'
 // import CreateProjects from '#/lib/api/graphql/scripts/createProjects.gql'
@@ -64,7 +64,7 @@ import CreatePreferences from '#/lib/api/graphql/scripts/createPreferences.gql'
 // ==============================================================
 // ** update existing
 // import UpdateNouns from '#/lib/api/graphql/scripts/updateNouns.gql'
-// import UpdateUsers from '#/lib/api/graphql/scripts/updateUsers.gql'
+// import UpdateParticipants from '#/lib/api/graphql/scripts/updateParticipants.gql'
 import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
 // import UpdateCanvasStates from '#/lib/api/graphql/scripts/updateCanvasStates.gql'
 // import UpdateProjects from '#/lib/api/graphql/scripts/updateProjects.gql'
@@ -79,7 +79,7 @@ import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
 // ==============================================================
 // ** delete existing
 // import DeleteNouns from '#/lib/api/graphql/scripts/deleteNouns.gql'
-// import DeleteUsers from '#/lib/api/graphql/scripts/deleteUsers.gql'
+// import DeleteParticipants from '#/lib/api/graphql/scripts/deleteParticipants.gql'
 // import DeletePreferences from '#/lib/api/graphql/scripts/deletePreferences.gql'
 // import DeleteCanvasStates from '#/lib/api/graphql/scripts/deleteCanvasStates.gql'
 // import DeleteProjects from '#/lib/api/graphql/scripts/deleteProjects.gql'
@@ -420,8 +420,8 @@ function nounStore(this: IStore, _type = 'noun') {
         // .gql
         let MUTATION = null // default? no
         switch (this._type) {
-          // case 'user':
-          //   MUTATION = UpdateUsers
+          // case 'participant':
+          //   MUTATION = UpdateParticipants
           //   break
           case 'preferences':
             MUTATION = UpdatePreferences
@@ -512,8 +512,8 @@ function nounStore(this: IStore, _type = 'noun') {
         // .gql
         let QUERY = null // default? GetPreferences
         switch (this._type) {
-          case 'user':
-            QUERY = GetUsers
+          case 'participant':
+            QUERY = GetParticipants
             break
           case 'preferences':
             QUERY = GetPreferences
@@ -970,16 +970,16 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 
 // ** CREATE REACTIVE VARS (APOLLO LOCAL STATE)
 
-// export const isUserDataSetVar = makeVar(false) // boolean: false | true
-const userDataVarDefaults = 
+// export const isParticipantDataSetVar = makeVar(false) // boolean: false | true
+const participantDataVarDefaults = 
 {
   // api defaults
-  userId: 0,
+  participantId: 0,
   title: 'HEY HEY HEY HEY HEY HEY',
   content: '',
   status: 'DRAFT',
 
-  // user prefs
+  // participant prefs
   ownerId: 1,
   version: '0.0.0',
   // doAutoLoadData: false, // boolean: false | true
@@ -1203,8 +1203,8 @@ const canvasStateThreeDVarDefaults: Object =
 export { nounStore }
 // export const nounStore = new (nounStore as any)('noun')
   console.debug('APOLLO: nounStore', nounStore)
-export const userStore = new (nounStore as any)('user')
-  console.debug('APOLLO: userStore', userStore)
+export const participantStore = new (nounStore as any)('participant')
+  console.debug('APOLLO: participantStore', participantStore)
 export const preferencesStore = new (nounStore as any)('preferences')
   console.debug('APOLLO: preferencesStore', preferencesStore)
   // console.debug('APOLLO: preferencesStore.store.getState()', preferencesStore.store.getState())
@@ -1228,7 +1228,6 @@ export const allotmentStore = new (nounStore as any)('allotment')
 export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
 export const plantingPlanStore = new (nounStore as any)('plantingPlan')
-export const participantStore = new (nounStore as any)('participant')
 // ** MODAL STORES
 export { modalStore }
 // export const modalStore = new (modalStore as any)()
@@ -1241,12 +1240,11 @@ export const modalStoreNoun = new (nounStore as any)('modal')
 // ** export NOUN STORES
 export const stores = {
   nounStore,
-  userStore,
+  participantStore,
   preferencesStore,
   canvasStateStore,
   projectStore,
   sceneStore,
-  participantStore,
   planStore,
   threedStore,
   fileStore,
@@ -1265,11 +1263,11 @@ export const stores = {
 // ==============================================================
 // ** REACTIVE VARS
 
-// ** user(s)
-export const userDataVar = makeVar(userDataVarDefaults)
-  console.debug('APOLLO: userDataVar()', userDataVar())
-export const isUserDataSetVar = makeVar(false) // boolean: false | true
-  // console.debug('APOLLO: isUserDataSetVar()', isUserDataSetVar())
+// ** participant(s)
+export const participantDataVar = makeVar(participantDataVarDefaults)
+  console.debug('APOLLO: participantDataVar()', participantDataVar())
+export const isParticipantDataSetVar = makeVar(false) // boolean: false | true
+  // console.debug('APOLLO: isParticipantDataSetVar()', isParticipantDataSetVar())
 
 // ** preferences(s)
 export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
@@ -1312,7 +1310,7 @@ export const reactiveVars = {
 // ** GraphQL Queries + Mutations (here, locally-specific data needs)
 export const queries = {
   GetNouns,
-  GetUsers,
+  GetParticipants,
   GetPreferences,
   GetCanvasStates,
   GetProjects,
@@ -1332,8 +1330,8 @@ export const queries = {
 export const mutations = {
   // UpdateNouns: 'APOLLO: [MM] HEY HEY HEY: UpdateNouns',
   // UpdateNouns: UpdateNouns,
-  // UpdateUsers: 'APOLLO: [MM] HEY HEY HEY UpdateUsers',
-  // UpdateUsers: UpdateUsers,
+  // UpdateParticipants: 'APOLLO: [MM] HEY HEY HEY UpdateParticipants',
+  // UpdateParticipants: UpdateParticipants,
   // UpdatePreferences: 'APOLLO: [MM] HEY HEY HEY UpdatePreferences',
   UpdatePreferences: UpdatePreferences,
   // UpdateCanvasStates: 'APOLLO: [MM] HEY HEY HEY UpdateCanvasStates',
