@@ -72,7 +72,7 @@ public/objects/**
 
 # wordpress api plugin
 !src/lib/threed/plugins/README.md
-src/lib/threed/plugins/*
+src/lib/threed/plugins/*/**
 src/lib/threed/plugins/threed-garden/assets
 
 # farmbot
