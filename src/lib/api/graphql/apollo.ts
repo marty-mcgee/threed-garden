@@ -1018,15 +1018,6 @@ const preferencesDataVarDefaults =
 
     ownerId: 1,
     version: '0.0.0',
-    
-    // project prefs
-    projectName: 'client should never see this string', // string: ''
-    // scene prefs
-    environmentPreset: 'park', // default (client should never see this)
-    environmentBgBlur: 0.20, // default (our chosen maximum blur)
-    // character prefs
-    characterTrailColor: '#003300', // hex color
-    doCharacterAnimation: true, // boolean: false | true
     doAutoLoadData: false, // boolean: false | true
     doAutoRotate: false, // boolean: false | true
     // world prefs
@@ -1038,6 +1029,16 @@ const preferencesDataVarDefaults =
     // home design prefs
     showPanelFirst: true, // boolean: true | false
     showPanelLast: true, // boolean: true | false
+    
+    // project prefs
+    projectName: 'client should never see this string', // string: ''
+    // scene prefs
+    environmentPreset: 'park', // default (client should never see this)
+    environmentBgBlur: 0.20, // default (our chosen maximum blur)
+    // character prefs
+    characterTrailColor: '#003300', // hex color
+    doCharacterAnimation: true, // boolean: false | true
+    
     // set functions
     // setPreferencesDataVar: () => {}, // function: set properties of "this"
   }
