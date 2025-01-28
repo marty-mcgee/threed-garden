@@ -1029,7 +1029,6 @@ const preferencesDataVarDefaults =
     // home design prefs
     showPanelFirst: true, // boolean: true | false
     showPanelLast: true, // boolean: true | false
-    
     // project prefs
     projectName: 'client should never see this string', // string: ''
     // scene prefs
