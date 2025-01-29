@@ -1,5 +1,3 @@
-
-
 // ** REACT Imports
 import { 
   useState,
@@ -21,9 +19,10 @@ import {
   updatePreferences,
 } from '#/lib/api/graphql/apollo'
 
-
+// ** THREED DROPDOWN MENU Imports
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 
+// ** ICON Imports
 import {
 	HamburgerMenuIcon,
 	DotFilledIcon,
@@ -47,7 +46,7 @@ export const ThreeDDropdownMenu = () => {
       title: 'PREFERENCES: defaultStatePreferences',
       content: 'HEY HEY HEY -- HEY HEY HEY',
       status: 'DRAFT',
-      version: '0.17.0-beta.23',
+      version: '0.17.1-alpha.0',
     })
     const [ doCreatePreferences ] = useMutation(createPreferences, {
       // variables: {...formStatePreferences}
@@ -56,18 +55,7 @@ export const ThreeDDropdownMenu = () => {
         title: formStatePreferences.title,
         content: formStatePreferences.content,
         status: formStatePreferences.status,
-        // link: tbd
-        // owner: tbd
-        // {
-        //   node {
-        //     userId
-        //     userPassword
-        //     userType
-        //     username
-        //     state
-        //     version
-        //   }
-        // }
+        // ** custom fields
         // version: formStatePreferences.version,
         version: prefs.version + '_YOYOYO',
         projectName: prefs.projectName,
@@ -97,17 +85,7 @@ export const ThreeDDropdownMenu = () => {
         title: prefs.title,
         content: prefs.content,
         status: 'PUBLISH', // prefs.status,
-        // link
-        // owner {
-        //   node {
-        //     userId
-        //     userPassword
-        //     userType
-        //     username
-        //     state
-        //     version
-        //   }
-        // }
+        // ** custom fields
         version: prefs.version + '_HEYHEYHEY',
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
@@ -261,9 +239,7 @@ export const ThreeDDropdownMenu = () => {
   //   }
   // }, [projectName])
 
-
-
-
+  // ** RETURN JSX
   return (
     <DropdownMenu.Root>
 
@@ -284,246 +260,246 @@ export const ThreeDDropdownMenu = () => {
             className='DropdownMenuItem'
             onClick={() => doUpdatePreferences()}
           >
-            Save State
+            Save Preferences
           </DropdownMenu.Item>
 
           {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}
 
-                      {/* <DropdownMenu.Item 
-                        className='DropdownMenuItem'
-                        // onClick={() => handleShowModalAbout()}
-                      >
-                        About <div className='RightSlot'>⌘+A</div>
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item 
-                        className='DropdownMenuItem'
-                        // onClick={() => handleShowModal3dModel()}
-                      >
-                        3D Model <div className='RightSlot'>⌘+N</div>
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item 
-                        className='DropdownMenuItem'
-                        // onClick={() => handleShowModalShare()}
-                      >
-                        Share <div className='RightSlot'>⌘+N</div>
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item 
-                        className='DropdownMenuItem'
-                        // onClick={() => handleShowModalLoading()}
-                      >
-                        Loading <div className='RightSlot'>⌘+N</div>
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item 
-                        className='DropdownMenuItem' 
-                        disabled
-                      >
-                        New Private Modal <div className='RightSlot'>⇧+⌘+N</div>
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Sub>
-                        <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
-                          Files
-                          <div className='RightSlot'>
-                            <ChevronRightIcon />
-                          </div>
-                        </DropdownMenu.SubTrigger>
-                        <DropdownMenu.Portal>
-                          <DropdownMenu.SubContent
-                            className='DropdownMenuSubContent'
-                            sideOffset={2}
-                            alignOffset={-5}
-                          >
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Save Page As… <div className='RightSlot'>⌘+S</div>
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Create Shortcut…
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Name Window…
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Separator className='DropdownMenu.Separator' />
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Developer Tools
-                            </DropdownMenu.Item>
-                          </DropdownMenu.SubContent>
-                        </DropdownMenu.Portal>
-                      </DropdownMenu.Sub>
-                      <DropdownMenu.Sub>
-                        <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
-                          Edits
-                          <div className='RightSlot'>
-                            <ChevronRightIcon />
-                          </div>
-                        </DropdownMenu.SubTrigger>
-                        <DropdownMenu.Portal>
-                          <DropdownMenu.SubContent
-                            className='DropdownMenuSubContent'
-                            sideOffset={2}
-                            alignOffset={-5}
-                          >
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Save Page As… <div className='RightSlot'>⌘+S</div>
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Create Shortcut…
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Name Window…
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Separator className='DropdownMenu.Separator' />
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Developer Tools
-                            </DropdownMenu.Item>
-                          </DropdownMenu.SubContent>
-                        </DropdownMenu.Portal>
-                      </DropdownMenu.Sub>
-                      <DropdownMenu.Sub>
-                        <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
-                          Plan Views
-                          <div className='RightSlot'>
-                            <ChevronRightIcon />
-                          </div>
-                        </DropdownMenu.SubTrigger>
-                        <DropdownMenu.Portal>
-                          <DropdownMenu.SubContent
-                            className='DropdownMenuSubContent'
-                            sideOffset={2}
-                            alignOffset={-5}
-                          >
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Save Page As… <div className='RightSlot'>⌘+S</div>
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Create Shortcut…
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Name Window…
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Separator className='DropdownMenu.Separator' />
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Developer Tools
-                            </DropdownMenu.Item>
-                          </DropdownMenu.SubContent>
-                        </DropdownMenu.Portal>
-                      </DropdownMenu.Sub>
-                      <DropdownMenu.Sub>
-                        <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
-                          3D Views
-                          <div className='RightSlot'>
-                            <ChevronRightIcon />
-                          </div>
-                        </DropdownMenu.SubTrigger>
-                        <DropdownMenu.Portal>
-                          <DropdownMenu.SubContent
-                            className='DropdownMenuSubContent'
-                            sideOffset={2}
-                            alignOffset={-5}
-                          >
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Save Page As… <div className='RightSlot'>⌘+S</div>
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Create Shortcut…
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Name Window…
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Separator className='DropdownMenu.Separator' />
-                            <DropdownMenu.Item className='DropdownMenuItem'>
-                              Developer Tools
-                            </DropdownMenu.Item>
-                          </DropdownMenu.SubContent>
-                        </DropdownMenu.Portal>
-                      </DropdownMenu.Sub> */}
+          {/* <DropdownMenu.Item 
+            className='DropdownMenuItem'
+            // onClick={() => handleShowModalAbout()}
+          >
+            About <div className='RightSlot'>⌘+A</div>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item 
+            className='DropdownMenuItem'
+            // onClick={() => handleShowModal3dModel()}
+          >
+            3D Model <div className='RightSlot'>⌘+N</div>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item 
+            className='DropdownMenuItem'
+            // onClick={() => handleShowModalShare()}
+          >
+            Share <div className='RightSlot'>⌘+N</div>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item 
+            className='DropdownMenuItem'
+            // onClick={() => handleShowModalLoading()}
+          >
+            Loading <div className='RightSlot'>⌘+N</div>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item 
+            className='DropdownMenuItem' 
+            disabled
+          >
+            New Private Modal <div className='RightSlot'>⇧+⌘+N</div>
+          </DropdownMenu.Item>
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
+              Files
+              <div className='RightSlot'>
+                <ChevronRightIcon />
+              </div>
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent
+                className='DropdownMenuSubContent'
+                sideOffset={2}
+                alignOffset={-5}
+              >
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Save Page As… <div className='RightSlot'>⌘+S</div>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Create Shortcut…
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Name Window…
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className='DropdownMenu.Separator' />
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Developer Tools
+                </DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
+              Edits
+              <div className='RightSlot'>
+                <ChevronRightIcon />
+              </div>
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent
+                className='DropdownMenuSubContent'
+                sideOffset={2}
+                alignOffset={-5}
+              >
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Save Page As… <div className='RightSlot'>⌘+S</div>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Create Shortcut…
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Name Window…
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className='DropdownMenu.Separator' />
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Developer Tools
+                </DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
+              Plan Views
+              <div className='RightSlot'>
+                <ChevronRightIcon />
+              </div>
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent
+                className='DropdownMenuSubContent'
+                sideOffset={2}
+                alignOffset={-5}
+              >
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Save Page As… <div className='RightSlot'>⌘+S</div>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Create Shortcut…
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Name Window…
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className='DropdownMenu.Separator' />
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Developer Tools
+                </DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger className='DropdownMenuSubTrigger'>
+              3D Views
+              <div className='RightSlot'>
+                <ChevronRightIcon />
+              </div>
+            </DropdownMenu.SubTrigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.SubContent
+                className='DropdownMenuSubContent'
+                sideOffset={2}
+                alignOffset={-5}
+              >
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Save Page As… <div className='RightSlot'>⌘+S</div>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Create Shortcut…
+                </DropdownMenu.Item>
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Name Window…
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className='DropdownMenu.Separator' />
+                <DropdownMenu.Item className='DropdownMenuItem'>
+                  Developer Tools
+                </DropdownMenu.Item>
+              </DropdownMenu.SubContent>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Sub> */}
 
           <DropdownMenu.Separator className='DropdownMenuSeparator' />
 
-                          <DropdownMenu.CheckboxItem
-                            className='DropdownMenuCheckboxItem'
-                            checked={doShowControls}
-                            onCheckedChange={setDoShowControls}
-                          >
-                            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                              <CheckIcon />
-                            </DropdownMenu.ItemIndicator>
-                            Show  Controls <div className='RightSlot'>⌘+B</div>
-                          </DropdownMenu.CheckboxItem>
-                          <DropdownMenu.CheckboxItem
-                            className='DropdownMenuCheckboxItem'
-                            checked={doAutoRotate}
-                            onCheckedChange={setDoAutoRotate}
-                          >
-                            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                              <CheckIcon />
-                            </DropdownMenu.ItemIndicator>
-                            Do Auto Rotate
-                          </DropdownMenu.CheckboxItem>
-                          <DropdownMenu.CheckboxItem
-                            className='DropdownMenuCheckboxItem'
-                            checked={doAutoLoadData}
-                            onCheckedChange={setDoAutoLoadData}
-                          >
-                            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                              <CheckIcon />
-                            </DropdownMenu.ItemIndicator>
-                            Do Auto Load Data
-                          </DropdownMenu.CheckboxItem>
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={doShowControls}
+            onCheckedChange={setDoShowControls}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Show  Controls <div className='RightSlot'>⌘+B</div>
+          </DropdownMenu.CheckboxItem>
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={doAutoRotate}
+            onCheckedChange={setDoAutoRotate}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do Auto Rotate
+          </DropdownMenu.CheckboxItem>
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={doAutoLoadData}
+            onCheckedChange={setDoAutoLoadData}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do Auto Load Data
+          </DropdownMenu.CheckboxItem>
 
           <DropdownMenu.Separator className='DropdownMenuSeparator' />
 
-                          <DropdownMenu.Label className='DropdownMenuLabel'>
-                            Tool Mode
-                          </DropdownMenu.Label>
-                          <DropdownMenu.RadioGroup value={currentToolMode} onValueChange={setCurrentToolMode}>
-                            <DropdownMenu.RadioItem
-                              className='DropdownMenuRadioItem'
-                              value='pointer'
-                            >
-                              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                                <DotFilledIcon />
-                              </DropdownMenu.ItemIndicator>
-                              Pointer
-                            </DropdownMenu.RadioItem>
-                            <DropdownMenu.RadioItem
-                              className='DropdownMenuRadioItem'
-                              value='crop'
-                            >
-                              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                                <DotFilledIcon />
-                              </DropdownMenu.ItemIndicator>
-                              Crop
-                            </DropdownMenu.RadioItem>
-                          </DropdownMenu.RadioGroup>
+          <DropdownMenu.Label className='DropdownMenuLabel'>
+            Tool Mode
+          </DropdownMenu.Label>
+          <DropdownMenu.RadioGroup value={currentToolMode} onValueChange={setCurrentToolMode}>
+            <DropdownMenu.RadioItem
+              className='DropdownMenuRadioItem'
+              value='pointer'
+            >
+              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+                <DotFilledIcon />
+              </DropdownMenu.ItemIndicator>
+              Pointer
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem
+              className='DropdownMenuRadioItem'
+              value='crop'
+            >
+              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+                <DotFilledIcon />
+              </DropdownMenu.ItemIndicator>
+              Crop
+            </DropdownMenu.RadioItem>
+          </DropdownMenu.RadioGroup>
 
           <DropdownMenu.Separator className='DropdownMenuSeparator' />
 
-                          <DropdownMenu.Label className='DropdownMenuLabel'>
-                            UI Layout
-                          </DropdownMenu.Label>
-                          <DropdownMenu.RadioGroup value={currentUILayout} onValueChange={setCurrentUILayout}>
-                            <DropdownMenu.RadioItem
-                              className='DropdownMenuRadioItem'
-                              value='default'
-                            >
-                              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                                <DotFilledIcon />
-                              </DropdownMenu.ItemIndicator>
-                              Default
-                            </DropdownMenu.RadioItem>
-                            <DropdownMenu.RadioItem
-                              className='DropdownMenuRadioItem'
-                              value='planView'
-                            >
-                              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                                <DotFilledIcon />
-                              </DropdownMenu.ItemIndicator>
-                              Plan View
-                            </DropdownMenu.RadioItem>
-                          </DropdownMenu.RadioGroup>
+          <DropdownMenu.Label className='DropdownMenuLabel'>
+            UI Layout
+          </DropdownMenu.Label>
+          <DropdownMenu.RadioGroup value={currentUILayout} onValueChange={setCurrentUILayout}>
+            <DropdownMenu.RadioItem
+              className='DropdownMenuRadioItem'
+              value='default'
+            >
+              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+                <DotFilledIcon />
+              </DropdownMenu.ItemIndicator>
+              Default
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem
+              className='DropdownMenuRadioItem'
+              value='planView'
+            >
+              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+                <DotFilledIcon />
+              </DropdownMenu.ItemIndicator>
+              Plan View
+            </DropdownMenu.RadioItem>
+          </DropdownMenu.RadioGroup>
 
           <DropdownMenu.Separator className='DropdownMenuSeparator' />
 
-                          {/* <DropdownMenu.Arrow className='DropdownMenuArrow' /> */}
+          {/* <DropdownMenu.Arrow className='DropdownMenuArrow' /> */}
 
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
