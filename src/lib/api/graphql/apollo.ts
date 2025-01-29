@@ -92,6 +92,11 @@ import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
 // import DeletePlants from '#/lib/api/graphql/scripts/deletePlants.gql'
 // import DeletePlantingPlans from '#/lib/api/graphql/scripts/deletePlantingPlans.gql'
 // ==============================================================
+// ** JWT AUTH + REFRESH
+import RegisterUser from '#/lib/api/graphql/scripts/registerUser.gql'
+import LoginUser from '#/lib/api/graphql/scripts/loginUser.gql'
+import RefreshJwtAuthToken from '#/lib/api/graphql/scripts/refreshJwtAuthToken.gql'
+// ==============================================================
 
 // ** THREE Imports (for typing only)
 import * as THREE from 'three'
@@ -982,26 +987,6 @@ const participantDataVarDefaults =
   // participant prefs
   ownerId: 1,
   version: '0.0.0',
-  // doAutoLoadData: false, // boolean: false | true
-  // doAutoRotate: false, // boolean: false | true
-  // // project prefs
-  // projectName: '', // string: 'client should never see this string'
-  // // scene prefs
-  // environmentPreset: 'park', // default (client should never see this)
-  // environmentBgBlur: 0.20, // default (our chosen maximum blur)
-  // // character prefs
-  // doCharacterAnimation: true, // boolean: false | true
-  // // world prefs
-  // doWorldDebug: false, // boolean: false | true
-  // doWorldTesting: false, // boolean: false | true
-  // doWorldPhysics: true, // boolean: false | true
-  // doWorldControl: false, // boolean: false | true
-  // doWorldUnfollowCam: false, // boolean: false | true
-  // // home design prefs
-  // showPanelFirst: true, // boolean: true | false
-  // showPanelLast: true, // boolean: true | false
-  // // set functions
-  // // setPreferencesDataVar: () => {}, // function: set properties of "this"
 }
 
 
@@ -1327,6 +1312,12 @@ export const queries = {
 
 // :) [MM] THREED MILESTONE
 // export MUTATIONS
+
+// ** JWT AUTH + REFRESH
+export const registerUser = RegisterUser
+export const loginUser = LoginUser
+export const refreshJwtAuthToken = RefreshJwtAuthToken
+
 export const mutations = {
   // UpdateNouns: 'APOLLO: [MM] HEY HEY HEY: UpdateNouns',
   // UpdateNouns: UpdateNouns,
@@ -1348,6 +1339,11 @@ export const mutations = {
   // UpdatePlants,
   // UpdatePlantingPlans,
   // UpdateParticipants,
+  
+  // ** JWT AUTH + REFRESH
+  // import RegisterUser from '#/lib/api/graphql/scripts/registerUser.gql'
+  // import LoginUser from '#/lib/api/graphql/scripts/loginUser.gql'
+  // import RefreshJwtAuthToken from '#/lib/api/graphql/scripts/refreshJwtAuthToken.gql'
 }
 
 // export DEFAULT

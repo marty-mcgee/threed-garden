@@ -1,0 +1,32 @@
+# import { useMutation, gql } from '@apollo/client'
+
+# const loginUser = gql`
+
+# GraphQL Type: LoginUserInput!
+mutation LoginUser ( 
+    $id: ID!
+    $username: String! 
+    $password: String! 
+    # $email: String!
+    # $status: PostStatusEnum!
+    # $version: String!
+    # $doAutoLoadData: Boolean
+){
+  login(
+    input: {
+        clientMutationId: $id
+        username: $username
+        password: $password
+        # email: $email
+    }) {
+    authToken
+    user {
+      id
+      name
+      # jwtAuthToken
+      # jwtRefreshToken
+    }
+  }
+}
+
+# `

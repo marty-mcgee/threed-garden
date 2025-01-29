@@ -1,0 +1,33 @@
+# import { useMutation, gql } from '@apollo/client'
+
+# const refreshJwtAuthToken = gql`
+
+# GraphQL Type: # GraphQL Type: RefreshJwtAuthTokenInput!
+mutation RefreshJwtAuthToken ( 
+    $id: ID!
+    $jwtRefreshToken: String! 
+    # $password: String! 
+    # $email: String!
+    # $status: PostStatusEnum!
+    # $version: String!
+    # $doAutoLoadData: Boolean
+){
+  login(
+    input: {
+        clientMutationId: $id
+        jwtRefreshToken: $jwtRefreshToken
+        # username: $username
+        # password: $password
+        # email: $email
+    }) {
+    authToken
+    # user {
+    #   id
+    #   name
+    #   # jwtAuthToken
+    #   # jwtRefreshToken
+    # }
+  }
+}
+
+# `
