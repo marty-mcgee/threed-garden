@@ -1,0 +1,29 @@
+# import { gql } from '@apollo/client'
+
+# const registerUser = gql`
+
+# GraphQL Type: RegisterUserInput!
+mutation RegisterUser ( 
+    $id: ID!
+    $username: String! 
+    $password: String! 
+    $email: String!
+    # $status: PostStatusEnum!
+    # $version: String!
+    # $doAutoLoadData: Boolean
+){
+  registerUser(
+    input: {
+        clientMutationId: $id
+        username: $username
+        password: $password
+        email: $email
+    }) {
+    user {
+      jwtAuthToken
+      jwtRefreshToken
+    }
+  }
+}
+
+# `

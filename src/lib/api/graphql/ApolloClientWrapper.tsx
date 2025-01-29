@@ -10,7 +10,8 @@
 import {
   ApolloLink,
   HttpLink,
-  // getApolloContext
+  // getApolloContext,
+  useMutation,
 } from '@apollo/client'
 import { 
   setContext 
@@ -21,6 +22,17 @@ import {
   ApolloClient,
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support'
+
+
+// ** THREED APOLLO Imports
+import {
+  // ** AUTH
+  registerUser,
+  loginUser,
+  refreshJwtAuthToken,
+  // **
+} from '#/lib/api/graphql/apollo'
+
 
 // ** HELPER Imports
 import ccm from '#/lib/utils/console-colors'
@@ -74,10 +86,31 @@ function makeClient() {
     // }
   })
 
+  // ** JWT TOKEN AUTH + REFRESH
+  const getCurrentToken = () => {
+
+    let currentToken: String = ''
+    try {
+
+      const getCurrentToken = useMutation(loginUser)
+      console.debug('DATA: getCurrentToken', getCurrentToken)
+
+
+
+
+
+      currentToken = localStorage.getItem('token')
+    }
+    catch (err) {
+      console.debug('ERROR: getCurrentToken', err)
+    }
+    return currentToken
+  }
+
   // ** AUTH
   const authLink = setContext((_, { headers }) => {
     // get the authentication token from local storage if it exists
-    const token = localStorage.getItem('token')
+    const token = getCurrentToken()
     // const token = process.env.GRAPHQL_JWT_TOKEN // NO!
     // return the headers to the context so httpLink can read them
     return {
