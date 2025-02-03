@@ -76,6 +76,7 @@ src/lib/threed/plugins/*/**
 src/lib/threed/plugins/threed-garden/assets
 
 # farmbot
+src/lib/farmbot/*.zip
 src/lib/farmbot/farmbot-3d-demo-react
 # src/lib/farmbot/threed-farmbot
 # src/lib/wp-threed

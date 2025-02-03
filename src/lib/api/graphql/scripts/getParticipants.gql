@@ -1,8 +1,8 @@
 # import { gql, useQuery } from '@apollo/client'
 
-# const GetUsers = gql`
+# const GetParticipants = gql`
 query GetParticipants ($first: Int, $last: Int, $after: String, $before: String) {
-  users (first: $first, last: $last, after: $after, before: $before) {
+  participants (first: $first, last: $last, after: $after, before: $before) {
     nodes {
       id
       participantId
@@ -12,7 +12,7 @@ query GetParticipants ($first: Int, $last: Int, $after: String, $before: String)
       link
       modified
       # custom fields
-      owner
+      owner # == user
       version
       state
       userType
