@@ -11,7 +11,6 @@ import {
   ApolloLink,
   HttpLink,
   // getApolloContext,
-  useMutation,
 } from '@apollo/client'
 import { 
   setContext 
@@ -22,17 +21,6 @@ import {
   ApolloClient,
   SSRMultipartLink,
 } from '@apollo/experimental-nextjs-app-support'
-
-
-// ** THREED APOLLO Imports
-import {
-  // ** AUTH
-  registerUser,
-  loginUser,
-  refreshJwtAuthToken,
-  // **
-} from '#/lib/api/graphql/apollo'
-
 
 // ** HELPER Imports
 import ccm from '#/lib/utils/console-colors'
@@ -92,14 +80,12 @@ function makeClient() {
     let currentToken: String = ''
     try {
 
-      const getCurrentToken = useMutation(loginUser)
-      console.debug('DATA: getCurrentToken', getCurrentToken)
-
-
-
-
+      // ** CANNOT USE HOOK HERE
+      // const getLoginUser = useMutation(loginUser)
+      // console.debug('DATA: getCurrentToken', getLoginUser)
 
       currentToken = localStorage.getItem('token')
+      // currentToken = process.env.GRAPHQL_JWT_TOKEN // NO!
     }
     catch (err) {
       console.debug('ERROR: getCurrentToken', err)
@@ -111,7 +97,6 @@ function makeClient() {
   const authLink = setContext((_, { headers }) => {
     // get the authentication token from local storage if it exists
     const token = getCurrentToken()
-    // const token = process.env.GRAPHQL_JWT_TOKEN // NO!
     // return the headers to the context so httpLink can read them
     return {
       headers: {
@@ -139,11 +124,11 @@ function makeClient() {
           httpLink,
           // authLink.concat(httpLink),
         ])
-      // : httpLink,
-      : authLink.concat(httpLink),
+      : httpLink,
+      // : authLink.concat(httpLink),
 
     // Enable sending cookies over cross-origin requests
-    credentials: 'include', // same-origin | never | include (cross-origin)
+    // credentials: 'include', // same-origin | never | include (cross-origin)
 
     // headers: {
     //   // authorization: localStorage.getItem('token'),
@@ -161,7 +146,8 @@ export function ApolloClientWrapper({ children }: { children: any }) {
   // console.debug('%c🦆 ApolloClientWrapper makeClient() => madeClient', ccm.greenAlert, madeClient) // ApolloClient
   // console.debug('%c🦆 ApolloClientWrapper madeClient.cache', ccm.greenAlert, madeClient.cache) // ApolloClient.cache
   // console.debug('%c🦆 ApolloClientWrapper madeClient.query', ccm.greenAlert, madeClient.query) // ApolloClient.query GetPreferences
-  // **
+
+  // ** RETURN JSX
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}

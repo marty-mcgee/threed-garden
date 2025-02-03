@@ -22,6 +22,8 @@ import {
   useBackgroundQuery,
   useReadQuery,
   useFragment,
+
+  useMutation,
 } from '@apollo/client'
 import {
   // stores,
@@ -30,6 +32,9 @@ import {
   projectStore,
   // queries,
   // mutations,
+  registerUser,
+  loginUser,
+  refreshJwtAuthToken,
   // reactive state vars:
   isPreferencesDataSetVar,
   preferencesDataVar,
@@ -5796,6 +5801,42 @@ export default function ThreeDHomeDesign({
 }: {
   panelLayout: number[][]
 }): JSX.Element { 
+
+  // ** CAN USE HOOK HERE 
+  // -- must use inside the provider's children, inside a component function
+  // -- so, move this to (page)?
+  let currentToken: String = ''
+  try {
+
+    // ** use mutation
+    const [
+      getLoginUser, 
+      // { data, loading, error }
+    ] = useMutation(loginUser, {
+      variables: {
+        id: 'uniqueClientMutationId', // clientMutationId: $id as ID!
+        username: 'juicemaster',
+        password: 'FooooBarrr@2023',
+      },
+    })
+    console.debug('DATA: getLoginUser', getLoginUser)
+
+    // if (loading) {
+    //   console.debug('ApolloClientWrapper LOADING: getLoginUser', loading)
+    //   // return 'ApolloClientWrapper Submitting...'
+    // }
+  
+    // if (error) {
+    //   console.debug('ApolloClientWrapper ERROR: getLoginUser', error)
+    //   // return `ApolloClientWrapper Submission error! ${error.message}`
+    // }
+
+    // currentToken = localStorage.getItem('token')
+    // currentToken = process.env.GRAPHQL_JWT_TOKEN // NO!
+  }
+  catch (err) {
+    console.debug('ERROR: getLoginUser', err)
+  }
 
   // ==========================================================
   // ** PANEL LAYOUTS
