@@ -1,0 +1,5 @@
+APOLLO_KEY=service:ThreeD-Garden:GeNiC5YG-WnDkMiOMoeJGQ \
+  rover subgraph publish ThreeD-Garden@current \
+  --schema ./products-schema.graphql \
+  --name your-subgraph-name \
+  --routing-url http://products.prod.svc.cluster.local:4001/graphql
