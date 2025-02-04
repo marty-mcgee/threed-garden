@@ -5816,7 +5816,7 @@ export default function ThreeDHomeDesign({
       variables: {
         id: 'uniqueClientMutationId', // clientMutationId: $id as ID!
         username: 'juicemaster',
-        password: 'FooooBarrr@2023',
+        password: 'secret',
       },
     })
     console.debug('DATA: getLoginUser', getLoginUser)
