@@ -93,6 +93,11 @@ src/lib/ecctrl/src-old
 # src/layout/ai
 src/lib/ai
 # src/lib/threed/threed.ai
+src/lib/openai
+src/app/api/chat
+src/app/chat
+src/lib/deepseek
+src/app/deepseek
 
 # threed.home-design
 src/lib/threed/assets/demo/**
