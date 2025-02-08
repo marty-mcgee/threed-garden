@@ -367,54 +367,54 @@ const ThreeDExperience = forwardRef((
           maxDuration={configBounds.maxDuration} 
           interpolateFunc={configBounds.interpolateFunc2}
         >
-          {/* R3F BOUNDS: SELECT TO ZOOM IN ON OBJECTS */}
-          <SelectToZoom>
+          {/* THREED USING PHYSICS */}
+          <Physics
+            debug={prefs.doWorldPhysics}
+            // debug={true}
+            // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
+            paused={pausedPhysics}
+          >
 
-            {/* THREED USING PHYSICS */}
-            <Physics
-              debug={prefs.doWorldPhysics}
-              // debug={true}
-              // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
-              paused={pausedPhysics}
-            >
+            {/* ** FLOORS ** */}
+            {/* solid steps (levels, safety) */}
+            {/* The Floor (Plane 0) */}
+            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+              <Floor color={'darkgreen'} opacity={0.4} />
+            </group>
+            {/* backup solid steps (levels[1+], safety) */}
+            {/* Sub-Floor[s] (Plane < 0) */}
+            {/* <SubFloor level={`${level[index]}`} /> */}
+            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+              <Floor color={'saddlebrown'} opacity={0.4} />
+            </group> */}
+            {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
+                DEEP BELOW SEA LEVEL */}
+            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
+              <Floor color={'darkblue'} opacity={0.2} />
+            </group> */}
+            {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
+                DEEP DEEP DEEP BELOW SEA LEVEL */}
+            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
+              <Ground color={'black'} opacity={0.0} />
+            </group> */}
 
-              {/* ** FLOORS ** */}
-              {/* solid steps (levels, safety) */}
-              {/* The Floor (Plane 0) */}
-              <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-                <Floor color={'darkgreen'} opacity={0.4} />
-              </group>
-              {/* backup solid steps (levels[1+], safety) */}
-              {/* Sub-Floor[s] (Plane < 0) */}
-              {/* <SubFloor level={`${level[index]}`} /> */}
-              {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-                <Floor color={'saddlebrown'} opacity={0.4} />
-              </group> */}
-              {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-                  DEEP BELOW SEA LEVEL */}
-              {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
-                <Floor color={'darkblue'} opacity={0.2} />
-              </group> */}
-              {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
-                  DEEP DEEP DEEP BELOW SEA LEVEL */}
-              {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
-                <Ground color={'black'} opacity={0.0} />
-              </group> */}
+            {/* REACT SUSPENSE */}
+            {/* <Suspense fallback={<Html>LOADING HEY HEY HEY ...</Html>}> */}
+            <Suspense fallback={
+              <Html center>
+                <Loader
+                  // containerStyles={...container} // Flex layout styles
+                  // innerStyles={...inner} // Inner container styles
+                  // barStyles={...bar} // Loading-bar styles
+                  // dataStyles={...data} // Text styles
+                  dataInterpolation={(p: number) => `THREED UI ${p.toFixed(0)}%`} // Text
+                  // initialState={(active = false) => active} // Initial black out state
+                />
+              </Html>
+            }>
 
-              {/* REACT SUSPENSE */}
-              {/* <Suspense fallback={<Html>LOADING HEY HEY HEY ...</Html>}> */}
-              <Suspense fallback={
-                <Html center>
-                  <Loader
-                    // containerStyles={...container} // Flex layout styles
-                    // innerStyles={...inner} // Inner container styles
-                    // barStyles={...bar} // Loading-bar styles
-                    // dataStyles={...data} // Text styles
-                    dataInterpolation={(p: number) => `THREED UI ${p.toFixed(0)}%`} // Text
-                    // initialState={(active = false) => active} // Initial black out state
-                  />
-                </Html>
-              }>
+              {/* R3F BOUNDS: SELECT TO ZOOM IN ON OBJECTS */}
+              <SelectToZoom>
 
                 {/* baby steps */}
                 {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
@@ -587,6 +587,9 @@ const ThreeDExperience = forwardRef((
                     // position={[0, -1, 0]}
                   />
                 </group> */}
+
+                </SelectToZoom>
+                {/* END: SELECT TO ZOOM */}
               
               </Suspense>
               {/* END: REACT SUSPENSE */}
@@ -594,7 +597,6 @@ const ThreeDExperience = forwardRef((
             </Physics>
             {/* END: PHYSICS RAPIER */}
 
-          </SelectToZoom>
         </Bounds>
         {/* END: R3F BOUNDS */}
       </group>
