@@ -1,8 +1,8 @@
 # 🥕 ThreeD Garden
 
-[🥕 ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: Apollo GraphQL, WordPress, CSS: Tailwind, Radix-UI, Libraries: FarmBot React 3D](https://github.com/marty-mcgee/threed-garden/)
+[🥕 ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: Apollo GraphQL, WordPress, CSS: Tailwind, Radix-UI, Libraries: FarmBot React 3D, AI: OpenAI, DeepThink](https://github.com/marty-mcgee/threed-garden/)
 
-## Live Demo (v0.17.0-x)
+## Live Demo (v0.17.1-x)
 
 🌱 [threedgarden.com](https://threedgarden.com)
 
