@@ -80,40 +80,9 @@ function getPanelLayout() {
 // export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element { 
 export default async function HomeDesignPage() {
 
-  // ** CANNOT USE HOOK HERE 
-  // -- must use inside the provider's children, inside a component function
-  // -- so, move this to (page)?
-  // let currentToken: String = ''
-  // try {
+  // ** CANNOT USE HOOKS HERE
 
-  //   // ** use mutation
-  //   const [getLoginUser, { data, loading, error }] = useMutation(loginUser, {
-  //     variables: {
-  //       clientMutationId: 'uniqueClientMutationId', // clientMutationId: $id
-  //       username: 'juicemaster',
-  //       password: 'FooooBarrr@2023',
-  //     },
-  //   })
-  //   console.debug('DATA: getLoginUser', getLoginUser, data)
-
-  //   if (loading) {
-  //     console.debug('ApolloClientWrapper LOADING: getLoginUser', loading)
-  //     // return 'ApolloClientWrapper Submitting...'
-  //   }
-  
-  //   if (error) {
-  //     console.debug('ApolloClientWrapper ERROR: getLoginUser', error)
-  //     // return `ApolloClientWrapper Submission error! ${error.message}`
-  //   }
-
-  //   // currentToken = localStorage.getItem('token')
-  //   // currentToken = process.env.GRAPHQL_JWT_TOKEN // NO!
-  // }
-  // catch (err) {
-  //   console.debug('ERROR: ApolloClientWrapper', err)
-  // }
-
-  // **
+  // ** CAN USE COOKIES HERE
   const panelLayoutGroups = getPanelLayout()
 
   // ** RETURN JSX or React.ReactNode

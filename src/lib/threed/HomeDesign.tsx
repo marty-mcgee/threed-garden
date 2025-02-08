@@ -5802,24 +5802,41 @@ export default function ThreeDHomeDesign({
   panelLayout: number[][]
 }): JSX.Element { 
 
-  // ** CAN USE HOOK HERE 
+  // ** CAN USE MUTATION HOOK HERE 
   // -- must use inside the provider's children, inside a component function
   // -- so, move this to (page)?
-  let currentToken: String = ''
+  const username: string = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_USERNAME
+  const password: string = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_PASSWORD
+  // console.debug('LOGIN: password:', password)
   try {
 
     // ** use mutation
-    const [
-      getLoginUser, 
-      // { data, loading, error }
-    ] = useMutation(loginUser, {
-      variables: {
-        id: 'uniqueClientMutationId', // clientMutationId: $id as ID!
-        username: process.env.WP_GRAPHQL_API_USERNAME,
-        password: process.env.WP_GRAPHQL_API_PASSWORD,
-      },
-    })
-    console.debug('DATA: getLoginUser', getLoginUser)
+    const [login, { data, loading, error }] = useMutation(loginUser)
+    // ** handle call mutation
+    const handleLogin = async () => {
+      try {
+        const response = await login({
+          variables: {
+            // id: 'uniqueClientMutationId', // clientMutationId
+            username: username,
+            password: password,
+          },
+        })
+        console.debug('LOGIN: successful:', response.data)
+        // ** set Apollo ReactiveVar for User to this response.data
+
+        // ** set localStorage.token to this response.data.login.authToken
+        const currentToken = response.data.login.authToken
+        localStorage.setItem('token', currentToken)
+
+      } catch (err) {
+        console.error('LOGIN: error:', err)
+      }
+    }
+    // ** call mutation onMount
+    useEffect(() => {
+      handleLogin()
+    }, [])
 
     // if (loading) {
     //   console.debug('ApolloClientWrapper LOADING: getLoginUser', loading)
@@ -5835,7 +5852,7 @@ export default function ThreeDHomeDesign({
     // currentToken = process.env.GRAPHQL_JWT_TOKEN // NO!
   }
   catch (err) {
-    console.debug('ERROR: getLoginUser', err)
+    console.debug('LOGIN: ERROR: getLoginUser', err)
   }
 
   // ==========================================================

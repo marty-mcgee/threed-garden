@@ -983,7 +983,7 @@ function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
 const userDataVarDefaults = {
   // api defaults
   userId: 0,
-  title: 'JUICE MASTER',
+  title: 'USER DATA VAR: DEFAULT',
   content: 'juicy mastery',
   status: 'DRAFT',
   username: 'juicemaster',
@@ -994,7 +994,7 @@ const userDataVarDefaults = {
 const participantDataVarDefaults = {
   // api defaults
   participantId: 0,
-  title: 'HEY HEY HEY HEY HEY HEY',
+  title: 'PARTICIPANT DATA VAR: DEFAULT',
   content: '',
   status: 'DRAFT',
 
@@ -1008,7 +1008,7 @@ const preferencesDataVarDefaults = {
   // api defaults
   id: '0',
   preferencesId: 0,
-  title: 'HEY HEY HEY HEY HEY HEY',
+  title: 'PREFERENCES DATA VAR: DEFAULT',
   content: '',
   status: 'DRAFT',
 
@@ -1044,7 +1044,7 @@ const preferencesDataVarDefaults = {
 const canvasStatePaperVarDefaults: Object = {
   // api defaults
   canvasStateId: 0,
-  title: 'HEY HEY HEY HEY HEY HEY',
+  title: 'CANVAS STATE PAPER VAR: DEFAULT',
   content: '',
   status: 'DRAFT',
 
@@ -1082,7 +1082,7 @@ const canvasStatePaperVarDefaults: Object = {
 const canvasStateThreeDVarDefaults: Object = {
   // api defaults
   canvasStateId: 0,
-  title: 'YO YO YO YO YO YO',
+  title: 'CANVAS STATE THREED VAR: DEFAULT',
   content: '',
   status: 'DRAFT',
 
@@ -1184,10 +1184,10 @@ const canvasStateThreeDVarDefaults: Object = {
 // ** MUTATIONS
 export const createPreferences = CreatePreferences
   // console.debug('APOLLO: createPreferences', createPreferences)
-  console.debug('APOLLO: createPreferences', '[MM]')
+  console.debug('APOLLO: createPreferences', '[MM] TODO')
 export const updatePreferences = UpdatePreferences
   // console.debug('APOLLO: updatePreferences', updatePreferences)
-  console.debug('APOLLO: updatePreferences', '[MM]')
+  console.debug('APOLLO: updatePreferences', '[MM] TODO')
 
 // ==============================================================
 

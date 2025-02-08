@@ -4,29 +4,23 @@
 
 # GraphQL Type: LoginUserInput!
 mutation LoginUser ( 
-    $id: ID! # == clientMutationId
+    # $id: ID! # == clientMutationId
     $username: String! 
-    $password: String! 
-    # $email: String!
-    # $status: PostStatusEnum!
-    # $version: String!
-    # $doAutoLoadData: Boolean
+    $password: String!
 ){
   login(
     input: {
-        clientMutationId: $id
+        # clientMutationId: $id
         username: $username
         password: $password
-        # email: $email
     }) {
     authToken
+    refreshToken
+    clientMutationId
     user {
       id
       name
-      # jwtAuthToken
-      # jwtRefreshToken
     }
   }
 }
-
 # `
