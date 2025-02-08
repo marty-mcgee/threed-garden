@@ -5815,8 +5815,8 @@ export default function ThreeDHomeDesign({
     ] = useMutation(loginUser, {
       variables: {
         id: 'uniqueClientMutationId', // clientMutationId: $id as ID!
-        username: 'juicemaster',
-        password: 'secret',
+        username: process.env.WP_GRAPHQL_API_USERNAME,
+        password: process.env.WP_GRAPHQL_API_PASSWORD,
       },
     })
     console.debug('DATA: getLoginUser', getLoginUser)
