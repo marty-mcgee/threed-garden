@@ -354,9 +354,11 @@ const ThreeDExperience = forwardRef((
       <group ref={refCanvas}>
 
         {/* EXAMPLES: BIRDS */}
-        <group rotation={[0, 0, 0]} scale={100.0} position={[0, 2400, 0]}>
-          <Birds />
-        </group>
+        { false && (
+          <group rotation={[0, 0, 0]} scale={100.0} position={[0, 2400, 0]}>
+            <Birds />
+          </group>
+        )}
         
         {/* R3F BOUNDS */}
         <Bounds 
