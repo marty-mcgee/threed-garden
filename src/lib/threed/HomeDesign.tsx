@@ -106,7 +106,7 @@ const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/
 // ** ThreeD Toolbar
 import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
 // ** ThreeD Leva Controls
-import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
+// import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 // ** ThreeD using Apollo + React to View Control + Info Panels 
 // ** (Apollo Store/ReactiveVar/State Access)
 import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
@@ -6865,7 +6865,7 @@ export default function ThreeDHomeDesign({
         <ThreeDToolbar />
                 
         {/* THREED: CONTROLS: LEVA GUI */}
-        <ThreeDLevaControls />
+        {/* <ThreeDLevaControls /> */}
                 
       </div>
 

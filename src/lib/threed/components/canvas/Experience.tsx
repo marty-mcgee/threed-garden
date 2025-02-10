@@ -51,7 +51,7 @@ import {
 import { Physics } from '@react-three/rapier'
 
 // ** LEVA Imports
-import { useControls } from 'leva'
+// import { useControls } from 'leva'
 
 // ** THREED NOUN Imports
 // import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene' // A THREED:SCENE IS A THREED:NOUN[i]
@@ -158,7 +158,7 @@ const ThreeDExperience = forwardRef((
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
 
   // ** using react-three-drei
-  const { active, progress, errors, item, loaded, total } = useProgress()
+  // const { active, progress, errors, item, loaded, total } = useProgress()
 
 
   // ** Delay physics activate
@@ -169,44 +169,50 @@ const ThreeDExperience = forwardRef((
     }, 500)
     return () => clearTimeout(timeout)
   }, [])
+  
+  let doWorldDebug: boolean = prefs.doWorldDebug // false | true
+  let doWorldTesting: boolean = prefs.doWorldTesting // false | true
+  let doWorldPhysics: boolean = prefs.doWorldPhysics // false | true
+  let doWorldControl: boolean = prefs.doWorldControl // false | true
+  let doWorldUnfollowCam: boolean = prefs.doWorldUnfollowCam // false | true
 
   // ** World Preferences
-  const [{
-    doWorldDebug,
-    doWorldTesting,
-    doWorldPhysics,
-    doWorldControl, // disableControl
-    doWorldUnfollowCam,
-  }, setWorldPreferencesLeva] = useControls(
-    'World Preferences',
-    () => ({
-      doWorldDebug: {
-        label: 'World Debugger?',
-        value: prefs.doWorldDebug,
-      },
-      doWorldTesting: {
-        label: 'ThreeD Testing?',
-        value: prefs.doWorldTesting,
-      },
-      doWorldPhysics: {
-        label: 'Physics Debugger?',
-        value: prefs.doWorldPhysics,
-      },
-      doWorldControl: {
-        label: 'Character Control?',
-        value: prefs.doWorldControl,
-      },
-      doWorldUnfollowCam: {
-        label: 'Unfollow Character?',
-        value: prefs.doWorldUnfollowCam,
-      },
-    }),
-    {
-      color: 'darkgreen',
-      collapsed: false,
-      order: 10,
-    },
-  )
+  // const [{
+  //   doWorldDebug,
+  //   doWorldTesting,
+  //   doWorldPhysics,
+  //   doWorldControl, // disableControl
+  //   doWorldUnfollowCam,
+  // }, setWorldPreferencesLeva] = useControls(
+  //   'World Preferences',
+  //   () => ({
+  //     doWorldDebug: {
+  //       label: 'World Debugger?',
+  //       value: prefs.doWorldDebug,
+  //     },
+  //     doWorldTesting: {
+  //       label: 'ThreeD Testing?',
+  //       value: prefs.doWorldTesting,
+  //     },
+  //     doWorldPhysics: {
+  //       label: 'Physics Debugger?',
+  //       value: prefs.doWorldPhysics,
+  //     },
+  //     doWorldControl: {
+  //       label: 'Character Control?',
+  //       value: prefs.doWorldControl,
+  //     },
+  //     doWorldUnfollowCam: {
+  //       label: 'Unfollow Character?',
+  //       value: prefs.doWorldUnfollowCam,
+  //     },
+  //   }),
+  //   {
+  //     color: 'darkgreen',
+  //     collapsed: false,
+  //     order: 10,
+  //   },
+  // )
 
   // ==========================================================
   // ** doWorldDebug
@@ -222,12 +228,12 @@ const ThreeDExperience = forwardRef((
   }, [doWorldDebug])
 
   // **
-  useEffect(() => {
-    // if (prefs.doWorldDebug != undefined) {
-      setWorldPreferencesLeva({ doWorldDebug: prefs.doWorldDebug })
-    // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldDebug', ccm.greenAlert, prefs.doWorldDebug)
-  }, [prefs.doWorldDebug])
+  // useEffect(() => {
+  //   // if (prefs.doWorldDebug != undefined) {
+  //     setWorldPreferencesLeva({ doWorldDebug: prefs.doWorldDebug })
+  //   // }
+  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldDebug', ccm.greenAlert, prefs.doWorldDebug)
+  // }, [prefs.doWorldDebug])
 
 
 // ==========================================================
@@ -244,12 +250,12 @@ const ThreeDExperience = forwardRef((
   }, [doWorldTesting])
 
   // **
-  useEffect(() => {
-    // if (prefs.doWorldTesting != undefined) {
-      setWorldPreferencesLeva({ doWorldTesting: prefs.doWorldTesting })
-    // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldTesting', ccm.greenAlert, prefs.doWorldTesting)
-  }, [prefs.doWorldTesting])
+  // useEffect(() => {
+  //   // if (prefs.doWorldTesting != undefined) {
+  //     setWorldPreferencesLeva({ doWorldTesting: prefs.doWorldTesting })
+  //   // }
+  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldTesting', ccm.greenAlert, prefs.doWorldTesting)
+  // }, [prefs.doWorldTesting])
 
 
 // ==========================================================
@@ -266,12 +272,12 @@ const ThreeDExperience = forwardRef((
   }, [doWorldPhysics])
 
   // **
-  useEffect(() => {
-    // if (prefs.doWorldPhysics != undefined) {
-      setWorldPreferencesLeva({ doWorldPhysics: prefs.doWorldPhysics })
-    // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldPhysics', ccm.greenAlert, prefs.doWorldPhysics)
-  }, [prefs.doWorldPhysics])
+  // useEffect(() => {
+  //   // if (prefs.doWorldPhysics != undefined) {
+  //     setWorldPreferencesLeva({ doWorldPhysics: prefs.doWorldPhysics })
+  //   // }
+  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldPhysics', ccm.greenAlert, prefs.doWorldPhysics)
+  // }, [prefs.doWorldPhysics])
 
 
   // ==========================================================
@@ -288,12 +294,12 @@ const ThreeDExperience = forwardRef((
     }, [doWorldControl])
   
     // **
-    useEffect(() => {
-      // if (prefs.doWorldControl != undefined) {
-        setWorldPreferencesLeva({ doWorldControl: prefs.doWorldControl })
-      // }
-      if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldControl', ccm.greenAlert, prefs.doWorldControl)
-    }, [prefs.doWorldControl])
+    // useEffect(() => {
+    //   // if (prefs.doWorldControl != undefined) {
+    //     setWorldPreferencesLeva({ doWorldControl: prefs.doWorldControl })
+    //   // }
+    //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldControl', ccm.greenAlert, prefs.doWorldControl)
+    // }, [prefs.doWorldControl])
 
 
 // ==========================================================
@@ -310,12 +316,12 @@ const ThreeDExperience = forwardRef((
   }, [doWorldUnfollowCam])
 
   // **
-  useEffect(() => {
-    // if (prefs.doWorldUnfollowCam != undefined) {
-      setWorldPreferencesLeva({ doWorldUnfollowCam: prefs.doWorldUnfollowCam })
-    // }
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldUnfollowCam', ccm.greenAlert, prefs.doWorldUnfollowCam)
-  }, [prefs.doWorldUnfollowCam])
+  // useEffect(() => {
+  //   // if (prefs.doWorldUnfollowCam != undefined) {
+  //     setWorldPreferencesLeva({ doWorldUnfollowCam: prefs.doWorldUnfollowCam })
+  //   // }
+  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldUnfollowCam', ccm.greenAlert, prefs.doWorldUnfollowCam)
+  // }, [prefs.doWorldUnfollowCam])
 
 
   // ==========================================================
