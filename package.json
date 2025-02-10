@@ -52,7 +52,7 @@
     "@casl/react": "3.1.0",
     
     "@apollo/client": "3.11.10",
-    "@apollo/experimental-nextjs-app-support": "0.11.7",
+    "@apollo/experimental-nextjs-app-support": "0.11.8",
     "@apollo/react-hooks": "4.0.0",
     "graphql": "16.9.0",
     "graphql-tag": "2.12.6",
