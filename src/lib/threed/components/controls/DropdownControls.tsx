@@ -105,9 +105,9 @@ export const ThreeDDropdownMenu = () => {
     })
   // }
 
-  const [doShowControls, setDoShowControls] = useState(true)
-  const [doAutoRotate, setDoAutoRotate] = useState(false)
-  const [doAutoLoadData, setDoAutoLoadData] = useState(false)
+  // const [doWorldControls, setDoWorldControls] = useState(true)
+  // const [doAutoRotate, setDoAutoRotate] = useState(false)
+  // const [doAutoLoadData, setDoAutoLoadData] = useState(false)
 
   // type TUILayout = '3dView' | 'planView' | 'default'
   const [currentUILayout, setCurrentUILayout] = useState('default') // [MM] preferencesUILayoutVar()
@@ -163,15 +163,26 @@ export const ThreeDDropdownMenu = () => {
   // ** doAutoLoadData
 
   // **
-  useEffect(() => {
+  const handleDoAutoLoadData = () => {
     let newData = {...preferencesDataVar()} // latest prefs
     // console.debug('%c⚙️ doAutoLoadData newData', ccm.green, newData)
-    newData.doAutoLoadData = doAutoLoadData
+    newData.doAutoLoadData = !prefs.doAutoLoadData
     // console.debug('%c⚙️ doAutoLoadData newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ doAutoLoadData preferencesDataVar', ccm.darkgreen, preferencesDataVar())
     // doUpdatePreferences()
-  }, [doAutoLoadData])
+  }
+
+  // **
+  // useEffect(() => {
+  //   let newData = {...preferencesDataVar()} // latest prefs
+  //   // console.debug('%c⚙️ doAutoLoadData newData', ccm.green, newData)
+  //   newData.doAutoLoadData = doAutoLoadData
+  //   // console.debug('%c⚙️ doAutoLoadData newData UPDATED', ccm.green, newData)
+  //   preferencesDataVar(newData)
+  //   // console.debug('%c⚙️ doAutoLoadData preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  //   // doUpdatePreferences()
+  // }, [doAutoLoadData])
 
   // **
   // useEffect(() => {
@@ -187,15 +198,24 @@ export const ThreeDDropdownMenu = () => {
   // ** doAutoRotate
 
   // **
-  useEffect(() => {
+  const handleDoAutoRotate = () => {
     let newData = {...preferencesDataVar()} // latest prefs
     // console.debug('%c⚙️ doAutoRotate newData', ccm.green, newData)
-    newData.doAutoRotate = doAutoRotate
+    newData.doAutoRotate = !prefs.doAutoRotate
     // console.debug('%c⚙️ doAutoRotate newData UPDATED', ccm.green, newData)
     preferencesDataVar(newData)
     // console.debug('%c⚙️ doAutoRotate preferencesDataVar', ccm.darkgreen, preferencesDataVar())
     // doUpdatePreferences()
-  }, [doAutoRotate])
+  }
+  // useEffect(() => {
+  //   let newData = {...preferencesDataVar()} // latest prefs
+  //   // console.debug('%c⚙️ doAutoRotate newData', ccm.green, newData)
+  //   newData.doAutoRotate = doAutoRotate
+  //   // console.debug('%c⚙️ doAutoRotate newData UPDATED', ccm.green, newData)
+  //   preferencesDataVar(newData)
+  //   // console.debug('%c⚙️ doAutoRotate preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  //   // doUpdatePreferences()
+  // }, [doAutoRotate])
 
   // **
   // useEffect(() => {
@@ -260,7 +280,7 @@ export const ThreeDDropdownMenu = () => {
             className='DropdownMenuItem'
             onClick={() => doUpdatePreferences()}
           >
-            Save Preferences
+            Save Session State
           </DropdownMenu.Item>
 
           {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}
@@ -414,20 +434,23 @@ export const ThreeDDropdownMenu = () => {
 
           <DropdownMenu.Separator className='DropdownMenuSeparator' />
 
-          <DropdownMenu.CheckboxItem
+          {/* <DropdownMenu.CheckboxItem
             className='DropdownMenuCheckboxItem'
-            checked={doShowControls}
-            onCheckedChange={setDoShowControls}
+            // checked={doShowControls}
+            checked={prefs.doWorldControls}
+            onCheckedChange={setDoShowControls} // TODO: SET to Apollo Reactive Var property
           >
             <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
               <CheckIcon />
             </DropdownMenu.ItemIndicator>
             Show  Controls <div className='RightSlot'>⌘+B</div>
-          </DropdownMenu.CheckboxItem>
+          </DropdownMenu.CheckboxItem> */}
           <DropdownMenu.CheckboxItem
             className='DropdownMenuCheckboxItem'
-            checked={doAutoRotate}
-            onCheckedChange={setDoAutoRotate}
+            // checked={doAutoRotate}
+            checked={prefs.doAutoRotate}
+            // onCheckedChange={setDoAutoRotate} // TODO: SET to Apollo Reactive Var property
+            onCheckedChange={handleDoAutoRotate}
           >
             <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
               <CheckIcon />
@@ -436,8 +459,10 @@ export const ThreeDDropdownMenu = () => {
           </DropdownMenu.CheckboxItem>
           <DropdownMenu.CheckboxItem
             className='DropdownMenuCheckboxItem'
-            checked={doAutoLoadData}
-            onCheckedChange={setDoAutoLoadData}
+            // checked={doAutoLoadData}
+            checked={prefs.doAutoLoadData}
+            // onCheckedChange={setDoAutoLoadData} // TODO: SET to Apollo Reactive Var property
+            onCheckedChange={handleDoAutoLoadData}
           >
             <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
               <CheckIcon />
