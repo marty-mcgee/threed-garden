@@ -42,5 +42,6 @@ const CustomLink = ({
     </Link>
   )
 }
+CustomLink.displayName = 'CustomLink'
 
 export default CustomLink

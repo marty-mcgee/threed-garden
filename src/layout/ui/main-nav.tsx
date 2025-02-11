@@ -1,6 +1,6 @@
 // 'use client'
 // 'use server'
-// ^^ does this file require client or server pragma ???
+// ^^ default pragma 'use client'
 
 // ** REACT Imports
 import React from 'react'
@@ -10,7 +10,6 @@ import React from 'react'
 import Image from 'next/image'
 
 // ** CUSTOM NAVIGATION
-import { cn } from '#//lib/utils/tailwind-utils'
 import CustomLink from './custom-link'
 import {
   NavigationMenu,
@@ -36,8 +35,8 @@ export default function MainNav() {
     <div
       style={{
         display: 'inline-flex',
-        marginLeft: '2px',
-        marginTop: '-4px',
+        marginLeft: 4,
+        marginTop: -8,
       }}
     >
       <div
@@ -52,16 +51,17 @@ export default function MainNav() {
             src='/favicon/favicon.png' 
             // priority={true} 
             alt='ThreeD App Home'
-            width={30}
-            height={30}
+            width={24}
+            height={24}
           />
         {/* </CustomLink> */}
         <CustomLink href='/#threedgarden' 
           style={{
             color: '#DDDDDD',
             textDecoration: 'none',
-            marginLeft: '4px',
-            marginBottom: '2px',
+            marginLeft: 4,
+            // marginTop: -2,
+            // marginBottom: 2,
           }}
         >
           ThreeD Garden
@@ -70,33 +70,16 @@ export default function MainNav() {
       
       <div
         style={{
-          flexGrow: '1'
+          flexGrow: '1',
+          // marginTop: 0,
         }}
       >
         <NavigationMenu
-          style={{
-            zIndex: '99998 !important',
-          }}
+          // style={{
+          //   zIndex: '99998 !important',
+          // }}
         >
           <NavigationMenuList>
-        
-            {/* <NavigationMenuItem>
-              <NavigationMenuLink
-                href='/home'
-                className={navigationMenuTriggerStyle()}
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#444444',
-                  textDecoration: 'none',
-                  // borderWidth: 0,
-                  // margin: 0,
-                  // padding: 0,
-                  // fontSize: 12,
-                }}
-              >
-                |
-              </NavigationMenuLink>
-            </NavigationMenuItem> */}
         
             {/* <NavigationMenuItem>
               <NavigationMenuLink
@@ -112,25 +95,7 @@ export default function MainNav() {
                   // fontSize: 12,
                 }}
               >
-                Demo: Basic
-              </NavigationMenuLink>
-            </NavigationMenuItem> */}
-        
-            {/* <NavigationMenuItem>
-              <NavigationMenuLink
-                href='/page'
-                className={navigationMenuTriggerStyle()}
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#444444',
-                  textDecoration: 'none',
-                  // borderWidth: 0,
-                  // margin: 0,
-                  // padding: 0,
-                  // fontSize: 12,
-                }}
-              >
-                |
+                🟣 Demo: Basic
               </NavigationMenuLink>
             </NavigationMenuItem> */}
         
@@ -143,12 +108,30 @@ export default function MainNav() {
                   color: '#DDDDDD',
                   textDecoration: 'none',
                   // borderWidth: 0,
-                  // margin: 0,
+                  // marginTop: 0,
                   // padding: 0,
                   // fontSize: 12,
                 }}
               >
-                Demo
+                🟢 DEMO
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+        
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                href='/chat'
+                className={navigationMenuTriggerStyle()}
+                style={{
+                  backgroundColor: '#222222', 
+                  color: '#888888',
+                  textDecoration: 'none',
+                  // borderWidth: 0,
+                  // marginTop: 0,
+                  // padding: 0,
+                  // fontSize: 12,
+                }}
+              >
+                🟣 CHAT
               </NavigationMenuLink>
             </NavigationMenuItem>
 
@@ -314,54 +297,3 @@ export default function MainNav() {
     </div>
   )
 }
-
-const ListItem = React.forwardRef<
-  React.ElementRef<'a'>,
-  React.ComponentPropsWithoutRef<'a'>
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li
-      className='
-        p-2
-      '
-    >
-      {/* <NavigationMenuLink> */}
-        <div
-          className='
-            p-1
-            text-sm 
-            font-medium 
-            leading-none
-          '
-        >
-          <a
-            ref={ref}
-            style={{
-              color: '#DDDDDD',
-            }}
-            className={cn(
-              // 'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
-              className
-            )}
-            {...props}
-          >
-            {title}
-          </a>
-        </div>
-        <div
-          className='
-            p-2
-            text-sm 
-            leading-snug 
-            line-clamp-2 
-            text-muted-foreground
-          '
-        >
-          {children}
-        </div>
-        
-      {/* </NavigationMenuLink> */}
-    </li>
-  )
-})
-ListItem.displayName = 'ListItem'
