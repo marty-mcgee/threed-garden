@@ -30,7 +30,7 @@ import {
 	ChevronRightIcon,
 } from '@radix-ui/react-icons'
 
-
+// ==========================================================
 // ** RADIX-UI DropdownMenu
 export const ThreeDDropdownMenu = () => {
 
@@ -66,12 +66,12 @@ export const ThreeDDropdownMenu = () => {
         doWorldPhysics: prefs.doWorldPhysics,
         doWorldControl: prefs.doWorldControl,
         doWorldUnfollowCam: prefs.doWorldUnfollowCam,
-        // environmentBgBlur: prefs.environmentBgBlur,
-        // environmentPreset: prefs.environmentPreset,
+        environmentBgBlur: prefs.environmentBgBlur,
+        environmentPreset: prefs.environmentPreset,
         showPanelFirst: prefs.showPanelFirst,
         showPanelLast: prefs.showPanelLast,
-        // characterTrailColor: prefs.characterTrailColor,
-        // doCharacterAnimation: prefs.doCharacterAnimation,
+        characterTrailColor: prefs.characterTrailColor,
+        doCharacterAnimation: prefs.doCharacterAnimation,
       }
     })
   // }
@@ -95,73 +95,18 @@ export const ThreeDDropdownMenu = () => {
         doWorldPhysics: prefs.doWorldPhysics,
         doWorldControl: prefs.doWorldControl,
         doWorldUnfollowCam: prefs.doWorldUnfollowCam,
-        // environmentBgBlur: prefs.environmentBgBlur,
-        // environmentPreset: prefs.environmentPreset,
+        environmentBgBlur: prefs.environmentBgBlur,
+        environmentPreset: prefs.environmentPreset,
         showPanelFirst: prefs.showPanelFirst,
         showPanelLast: prefs.showPanelLast,
-        // characterTrailColor: prefs.characterTrailColor,
-        // doCharacterAnimation: prefs.doCharacterAnimation,
+        characterTrailColor: prefs.characterTrailColor,
+        doCharacterAnimation: prefs.doCharacterAnimation,
       }
     })
   // }
 
-  // const [doWorldControls, setDoWorldControls] = useState(true)
-  // const [doAutoRotate, setDoAutoRotate] = useState(false)
-  // const [doAutoLoadData, setDoAutoLoadData] = useState(false)
-
-  // type TUILayout = '3dView' | 'planView' | 'default'
-  const [currentUILayout, setCurrentUILayout] = useState('default') // [MM] preferencesUILayoutVar()
-  // type TToolMode = 'pointer' | 'walls' | 'floor' | 'roof' | 'dimension' | 'text' | 'background' | 'ground' | 'defaults'
-  const [currentToolMode, setCurrentToolMode] = useState('pointer') // [MM] preferencesToolModeVar()
-
-  
-
-  // const [{
-  //   doAutoLoadData,
-  //   doAutoRotate,
-  // }, setUserPreferences] = useControls(
-  //   'User Preferences',
-  //   () => ({
-  //     doAutoLoadData: {
-  //       label: 'Auto Load Data?',
-  //       value: prefs.doAutoLoadData,
-  //     },
-  //     doAutoRotate: {
-  //       label: 'Auto Rotate?',
-  //       value: prefs.doAutoRotate,
-  //     },
-  //   }),
-  //   {
-  //     color: 'darkgreen',
-  //     collapsed: false,
-  //     order: 0,
-  //   },
-  // )
-
-  // const [{
-  //   projectName,
-  //   // refMonitor,
-  // }, setProjectPreferences] = useControls(
-  //   'Project Preferences',
-  //   () => ({
-  //     projectName: {
-  //       label: 'Project Name',
-  //       value: prefs.projectName,
-  //     },
-  //   }),
-  //   {
-  //     color: 'darkgreen',
-  //     collapsed: false,
-  //     order: -1,
-  //   },
-  // )
-
   // ==========================================================
-  // isPreferencesDataSetVar() ??
-
-  // ==========================================================
-  // ** doAutoLoadData
-
+  // ** doAutoLoadData: Boolean
   // **
   const handleDoAutoLoadData = () => {
     let newData = {...preferencesDataVar()} // latest prefs
@@ -173,30 +118,8 @@ export const ThreeDDropdownMenu = () => {
     // doUpdatePreferences()
   }
 
-  // **
-  // useEffect(() => {
-  //   let newData = {...preferencesDataVar()} // latest prefs
-  //   // console.debug('%c⚙️ doAutoLoadData newData', ccm.green, newData)
-  //   newData.doAutoLoadData = doAutoLoadData
-  //   // console.debug('%c⚙️ doAutoLoadData newData UPDATED', ccm.green, newData)
-  //   preferencesDataVar(newData)
-  //   // console.debug('%c⚙️ doAutoLoadData preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  //   // doUpdatePreferences()
-  // }, [doAutoLoadData])
-
-  // **
-  // useEffect(() => {
-  //   // if (prefs.doAutoLoadData != undefined) {
-  //     setUserPreferences({ doAutoLoadData: prefs.doAutoLoadData })
-  //   // }
-  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doAutoLoadData', ccm.greenAlert, prefs.doAutoLoadData)
-  // }, [prefs.doAutoLoadData])
-
   // ==========================================================
-
-  // ==========================================================
-  // ** doAutoRotate
-
+  // ** doAutoRotate: Boolean
   // **
   const handleDoAutoRotate = () => {
     let newData = {...preferencesDataVar()} // latest prefs
@@ -207,58 +130,172 @@ export const ThreeDDropdownMenu = () => {
     // console.debug('%c⚙️ doAutoRotate preferencesDataVar', ccm.darkgreen, preferencesDataVar())
     // doUpdatePreferences()
   }
-  // useEffect(() => {
-  //   let newData = {...preferencesDataVar()} // latest prefs
-  //   // console.debug('%c⚙️ doAutoRotate newData', ccm.green, newData)
-  //   newData.doAutoRotate = doAutoRotate
-  //   // console.debug('%c⚙️ doAutoRotate newData UPDATED', ccm.green, newData)
-  //   preferencesDataVar(newData)
-  //   // console.debug('%c⚙️ doAutoRotate preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-  //   // doUpdatePreferences()
-  // }, [doAutoRotate])
-
+  // ==========================================================
+  // ** doWorldDebug: Boolean
   // **
-  // useEffect(() => {
-  //   // if (prefs.doAutoRotate != undefined) {
-  //     setUserPreferences({ doAutoRotate: prefs.doAutoRotate })
-  //   // }
-  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doAutoRotate', ccm.greenAlert, prefs.doAutoRotate)
-  // }, [prefs.doAutoRotate])
+  const handleDoWorldDebug = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ doWorldDebug newData', ccm.green, newData)
+    newData.doWorldDebug = !prefs.doWorldDebug
+    // console.debug('%c⚙️ doWorldDebug newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ doWorldDebug preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
 
   // ==========================================================
+  // ** doWorldTesting: Boolean
+  // **
+  const handleDoWorldTesting = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ doWorldTesting newData', ccm.green, newData)
+    newData.doWorldTesting = !prefs.doWorldTesting
+    // console.debug('%c⚙️ doWorldTesting newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ doWorldTesting preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
 
   // ==========================================================
-  // ** projectName
-  // useEffect(() => {
-  //   // set({ Id: projectName})
-  //   // if (prefs.projectName != undefined) {
-  //     setControlPanel({ title: prefs.projectName})
-  //     setProjectPreferences({ projectName: prefs.projectName })
-  //   // }
-  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.projectName', ccm.greenAlert, prefs.projectName)
-  // }, [prefs.projectName])
-  // // **
-  // useEffect(() => {
-  //   try {
+  // ** doWorldPhysics: Boolean
+  // **
+  const handleDoWorldPhysics = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ doWorldPhysics newData', ccm.green, newData)
+    newData.doWorldPhysics = !prefs.doWorldPhysics
+    // console.debug('%c⚙️ doWorldPhysics newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ doWorldPhysics preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
 
-  //     let newData = {...preferencesDataVar()} // latest prefs
-  //     newData.projectName = projectName
-  //     // console.debug('%c⚙️ projectName newData', ccm.redAlert, projectName)
-  //     preferencesDataVar(newData)
-  //     // console.debug('%c⚙️ projectName preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+  // ==========================================================
+  // ** doWorldControl: Boolean
+  // **
+  const handleDoWorldControl = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ doWorldControl newData', ccm.green, newData)
+    newData.doWorldControl = !prefs.doWorldControl
+    // console.debug('%c⚙️ doWorldControl newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ doWorldControl preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
 
-  //     if (projectName != undefined) {
-  //       setControlPanel({ title: projectName})
-  //     }
-  //     else {
-  //       console.debug('%c⚙️ ERROR: projectName: UNDEFINED', ccm.redAlert, projectName)
-  //     }
+  // ==========================================================
+  // ** doWorldUnfollowCam: Boolean
+  // **
+  const handleDoWorldUnfollowCam = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ doWorldUnfollowCam newData', ccm.green, newData)
+    newData.doWorldUnfollowCam = !prefs.doWorldUnfollowCam
+    // console.debug('%c⚙️ doWorldUnfollowCam newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ doWorldUnfollowCam preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
 
-  //   } catch (ERR) {
-  //     console.debug('%c⚙️ ERROR: setControlPanel title: projectName', ccm.redAlert, projectName)
-  //   }
-  // }, [projectName])
+  // ==========================================================
+  // ** showPanelFirst: Boolean
+  // **
+  const handleShowPanelFirst = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ showPanelFirst newData', ccm.green, newData)
+    newData.showPanelFirst = !prefs.showPanelFirst
+    // console.debug('%c⚙️ showPanelFirst newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ showPanelFirst preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
 
+  // ==========================================================
+  // ** showPanelLast: Boolean
+  // **
+  const handleShowPanelLast = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ showPanelLast newData', ccm.green, newData)
+    newData.showPanelLast = !prefs.showPanelLast
+    // console.debug('%c⚙️ showPanelLast newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ showPanelLast preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
+  
+  // ==========================================================
+  // ** projectName: String
+  // **
+  const handleProjectName = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ projectName newData', ccm.green, newData)
+    newData.projectName = prefs.projectName
+    // console.debug('%c⚙️ projectName newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ projectName preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
+
+  // ==========================================================
+  // ** environmentPreset: String
+  // **
+  const handleEnvironmentPreset = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ environmentPreset newData', ccm.green, newData)
+    newData.environmentPreset = prefs.environmentPreset
+    // console.debug('%c⚙️ environmentPreset newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ environmentPreset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
+
+  // ==========================================================
+  // ** environmentBgBlur: Float
+  // **
+  const handleEnvironmentBgBlur = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ environmentBgBlur newData', ccm.green, newData)
+    newData.environmentBgBlur = prefs.environmentBgBlur
+    // console.debug('%c⚙️ environmentBgBlur newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ environmentBgBlur preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
+
+  // ==========================================================
+  // ** characterTrailColor: String
+  // **
+  const handleCharacterTrailColor = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ characterTrailColor newData', ccm.green, newData)
+    newData.characterTrailColor = prefs.characterTrailColor
+    // console.debug('%c⚙️ characterTrailColor newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ characterTrailColor preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
+
+  // ==========================================================
+  // ** doCharacterAnimation: Boolean
+  // **
+  const handleDoCharacterAnimation = () => {
+    let newData = {...preferencesDataVar()} // latest prefs
+    // console.debug('%c⚙️ doCharacterAnimation newData', ccm.green, newData)
+    newData.doCharacterAnimation = !prefs.doCharacterAnimation
+    // console.debug('%c⚙️ doCharacterAnimation newData UPDATED', ccm.green, newData)
+    preferencesDataVar(newData)
+    // console.debug('%c⚙️ doCharacterAnimation preferencesDataVar', ccm.darkgreen, preferencesDataVar())
+    // doUpdatePreferences()
+  }
+
+  // ==========================================================
+  // ** react state vars
+  // **
+  // type TUILayout = '3dView' | 'planView' | 'default'
+  const [currentUILayout, setCurrentUILayout] = useState('default') // [MM] preferencesUILayoutVar()
+  // type TToolMode = 'pointer' | 'walls' | 'floor' | 'roof' | 'dimension' | 'text' | 'background' | 'ground' | 'defaults'
+  const [currentToolMode, setCurrentToolMode] = useState('pointer') // [MM] preferencesToolModeVar()
+  
+
+  // ==========================================================
   // ** RETURN JSX
   return (
     <DropdownMenu.Root>
@@ -268,7 +305,6 @@ export const ThreeDDropdownMenu = () => {
           <HamburgerMenuIcon />
         </button>
       </DropdownMenu.Trigger>
-
 
       <DropdownMenu.Portal>
 
@@ -282,6 +318,159 @@ export const ThreeDDropdownMenu = () => {
           >
             Save Session State
           </DropdownMenu.Item>
+
+          <DropdownMenu.Separator className='DropdownMenuSeparator' />
+
+          {/* <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            // checked={doShowControls}
+            checked={prefs.doWorldControls}
+            onCheckedChange={setDoShowControls} // TODO: SET to Apollo Reactive Var property
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Show  Controls <div className='RightSlot'>⌘+B</div>
+          </DropdownMenu.CheckboxItem> */}
+
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={prefs.doAutoRotate}
+            onCheckedChange={handleDoAutoRotate}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do Auto Rotate
+          </DropdownMenu.CheckboxItem>
+
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={prefs.doAutoLoadData}
+            onCheckedChange={handleDoAutoLoadData}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do Auto Load Data
+          </DropdownMenu.CheckboxItem>
+
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={prefs.doWorldDebug}
+            onCheckedChange={handleDoWorldDebug}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do World Debug
+          </DropdownMenu.CheckboxItem>
+
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={prefs.doWorldTesting}
+            onCheckedChange={handleDoWorldTesting}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do World Testing
+          </DropdownMenu.CheckboxItem>
+
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={prefs.doWorldPhysics}
+            onCheckedChange={handleDoWorldPhysics}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do World Physics
+          </DropdownMenu.CheckboxItem>
+
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={prefs.doWorldControl}
+            onCheckedChange={handleDoWorldControl}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do World Control
+          </DropdownMenu.CheckboxItem>
+
+          <DropdownMenu.CheckboxItem
+            className='DropdownMenuCheckboxItem'
+            checked={prefs.doWorldUnfollowCam}
+            onCheckedChange={handleDoWorldUnfollowCam}
+          >
+            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+              <CheckIcon />
+            </DropdownMenu.ItemIndicator>
+            Do World Unfollow Cam
+          </DropdownMenu.CheckboxItem>
+
+          <DropdownMenu.Separator className='DropdownMenuSeparator' />
+
+          <DropdownMenu.Label className='DropdownMenuLabel'>
+            Tool Mode
+          </DropdownMenu.Label>
+          <DropdownMenu.RadioGroup 
+            value={currentToolMode} 
+            onValueChange={setCurrentToolMode}
+          >
+            <DropdownMenu.RadioItem
+              className='DropdownMenuRadioItem'
+              value='pointer'
+            >
+              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+                <DotFilledIcon />
+              </DropdownMenu.ItemIndicator>
+              Pointer
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem
+              className='DropdownMenuRadioItem'
+              value='crop'
+            >
+              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+                <DotFilledIcon />
+              </DropdownMenu.ItemIndicator>
+              Crop
+            </DropdownMenu.RadioItem>
+          </DropdownMenu.RadioGroup>
+
+          <DropdownMenu.Separator className='DropdownMenuSeparator' />
+
+          <DropdownMenu.Label className='DropdownMenuLabel'>
+            UI Layout
+          </DropdownMenu.Label>
+          <DropdownMenu.RadioGroup 
+            value={currentUILayout} 
+            onValueChange={setCurrentUILayout}
+          >
+            <DropdownMenu.RadioItem
+              className='DropdownMenuRadioItem'
+              value='default'
+            >
+              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+                <DotFilledIcon />
+              </DropdownMenu.ItemIndicator>
+              Default
+            </DropdownMenu.RadioItem>
+            <DropdownMenu.RadioItem
+              className='DropdownMenuRadioItem'
+              value='planView'
+            >
+              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
+                <DotFilledIcon />
+              </DropdownMenu.ItemIndicator>
+              Plan View
+            </DropdownMenu.RadioItem>
+          </DropdownMenu.RadioGroup>
+
+          <DropdownMenu.Separator className='DropdownMenuSeparator' />
+
+          {/* <DropdownMenu.Arrow className='DropdownMenuArrow' /> */}
 
           {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}
 
@@ -431,100 +620,6 @@ export const ThreeDDropdownMenu = () => {
               </DropdownMenu.SubContent>
             </DropdownMenu.Portal>
           </DropdownMenu.Sub> */}
-
-          <DropdownMenu.Separator className='DropdownMenuSeparator' />
-
-          {/* <DropdownMenu.CheckboxItem
-            className='DropdownMenuCheckboxItem'
-            // checked={doShowControls}
-            checked={prefs.doWorldControls}
-            onCheckedChange={setDoShowControls} // TODO: SET to Apollo Reactive Var property
-          >
-            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-              <CheckIcon />
-            </DropdownMenu.ItemIndicator>
-            Show  Controls <div className='RightSlot'>⌘+B</div>
-          </DropdownMenu.CheckboxItem> */}
-          <DropdownMenu.CheckboxItem
-            className='DropdownMenuCheckboxItem'
-            // checked={doAutoRotate}
-            checked={prefs.doAutoRotate}
-            // onCheckedChange={setDoAutoRotate} // TODO: SET to Apollo Reactive Var property
-            onCheckedChange={handleDoAutoRotate}
-          >
-            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-              <CheckIcon />
-            </DropdownMenu.ItemIndicator>
-            Do Auto Rotate
-          </DropdownMenu.CheckboxItem>
-          <DropdownMenu.CheckboxItem
-            className='DropdownMenuCheckboxItem'
-            // checked={doAutoLoadData}
-            checked={prefs.doAutoLoadData}
-            // onCheckedChange={setDoAutoLoadData} // TODO: SET to Apollo Reactive Var property
-            onCheckedChange={handleDoAutoLoadData}
-          >
-            <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-              <CheckIcon />
-            </DropdownMenu.ItemIndicator>
-            Do Auto Load Data
-          </DropdownMenu.CheckboxItem>
-
-          <DropdownMenu.Separator className='DropdownMenuSeparator' />
-
-          <DropdownMenu.Label className='DropdownMenuLabel'>
-            Tool Mode
-          </DropdownMenu.Label>
-          <DropdownMenu.RadioGroup value={currentToolMode} onValueChange={setCurrentToolMode}>
-            <DropdownMenu.RadioItem
-              className='DropdownMenuRadioItem'
-              value='pointer'
-            >
-              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                <DotFilledIcon />
-              </DropdownMenu.ItemIndicator>
-              Pointer
-            </DropdownMenu.RadioItem>
-            <DropdownMenu.RadioItem
-              className='DropdownMenuRadioItem'
-              value='crop'
-            >
-              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                <DotFilledIcon />
-              </DropdownMenu.ItemIndicator>
-              Crop
-            </DropdownMenu.RadioItem>
-          </DropdownMenu.RadioGroup>
-
-          <DropdownMenu.Separator className='DropdownMenuSeparator' />
-
-          <DropdownMenu.Label className='DropdownMenuLabel'>
-            UI Layout
-          </DropdownMenu.Label>
-          <DropdownMenu.RadioGroup value={currentUILayout} onValueChange={setCurrentUILayout}>
-            <DropdownMenu.RadioItem
-              className='DropdownMenuRadioItem'
-              value='default'
-            >
-              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                <DotFilledIcon />
-              </DropdownMenu.ItemIndicator>
-              Default
-            </DropdownMenu.RadioItem>
-            <DropdownMenu.RadioItem
-              className='DropdownMenuRadioItem'
-              value='planView'
-            >
-              <DropdownMenu.ItemIndicator className='DropdownMenuItemIndicator'>
-                <DotFilledIcon />
-              </DropdownMenu.ItemIndicator>
-              Plan View
-            </DropdownMenu.RadioItem>
-          </DropdownMenu.RadioGroup>
-
-          <DropdownMenu.Separator className='DropdownMenuSeparator' />
-
-          {/* <DropdownMenu.Arrow className='DropdownMenuArrow' /> */}
 
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
