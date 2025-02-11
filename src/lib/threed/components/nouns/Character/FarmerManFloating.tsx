@@ -155,9 +155,9 @@ type GLTFActions = Record<ActionName, THREE.AnimationAction>
 // **
 
 // export this type?
-type CharacterModelProps = JSX.IntrinsicElements['group']
+type CharacterModelProps = JSX.IntrinsicElements
 
-// export default function Model(props: JSX.IntrinsicElements['group']) {
+// export default function Model(props: JSX.IntrinsicElements) {
 export default function CharacterModel(props: CharacterModelProps) {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE

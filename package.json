@@ -1,7 +1,7 @@
 {
   "name": "threed-garden",
-  "version": "0.17.1-alpha.2",
-  "description": "ThreeD Garden: 🥕 ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: Apollo GraphQL, WordPress, CSS: Tailwind, Radix-UI, Libraries: FarmBot React 3D, AI: OpenAI, DeepThink",
+  "version": "0.17.1-alpha.3",
+  "description": "🥕 ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS, APIs: Apollo GraphQL, WordPress, CSS: Tailwind, Radix-UI, Libraries: FarmBot React 3D, AI: OpenAI, DeepThink",
   "author": "Marty McGee <mcgee.marty@gmail.com> (https://github.com/marty-mcgee)",
   "license": "MIT",
   "repository": {
@@ -37,11 +37,11 @@
   },
   "dependencies": {
     
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "use-count-up": "3.0.1",
 
-    "next": "14.2.23",
+    "next": "15.1.7",
     "@next/third-parties": "14.2.23",
     "next-themes": "0.3.0",
 
@@ -65,8 +65,10 @@
     "three-mesh-ui": "6.5.4",
     "three-stdlib": "2.32.2",
 
-    "@react-three/drei": "9.120.4",
-    "@react-three/fiber": "8.17.14",
+    "@react-spring/three": "9.7.5",
+
+    "@react-three/drei": "9.121.4",
+    "@react-three/fiber": "9.0.0-rc.7",
     "@react-three/rapier": "1.5.0",
     "r3f-perf": "7.2.3",
     

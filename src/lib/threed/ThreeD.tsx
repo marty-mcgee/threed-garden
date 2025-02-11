@@ -61,7 +61,7 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 // const ThreeDControlPanels = dynamic(() => import('#/lib/threed/components/controls/ControlPanels'), { ssr: false })
 
 // ** ThreeD Toolbar
-import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
+import ThreeDToolbar from '#/lib/threed/components/controls/Toolbar'
 
 // ** ThreeD Modal Imports
 // import ThreeDModals from '#/lib/threed/components/modals/Modals'
@@ -72,7 +72,7 @@ import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsCities'
 
 // ** ThreeD Joystick Imports
-import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
+// import { EcctrlJoystick } from '#/lib/ecctrl/src/EcctrlJoystick'
 
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
@@ -204,26 +204,26 @@ const ThreeDGarden = (): JSX.Element => {
   
   // **
 
-  const EcctrlJoystickControls = () => {
-    // const [isTouchScreen, setIsTouchScreen] = useState(false)
-    // useEffect(() => {
-    //   // Check if using a touch control device, show/hide joystick
-    //   if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
-    //     setIsTouchScreen(true)
-    //   } else {
-    //     setIsTouchScreen(false)
-    //   }
-    // }, [])
-    // ** always|never a touch screen
-    const [isTouchScreen, setIsTouchScreen] = useState(false)
-    return (
-      <>
-      { isTouchScreen && 
-        <EcctrlJoystick buttonNumber={5} />
-      }
-      </>
-    )
-  }
+  // const EcctrlJoystickControls = () => {
+  //   // const [isTouchScreen, setIsTouchScreen] = useState(false)
+  //   // useEffect(() => {
+  //   //   // Check if using a touch control device, show/hide joystick
+  //   //   if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
+  //   //     setIsTouchScreen(true)
+  //   //   } else {
+  //   //     setIsTouchScreen(false)
+  //   //   }
+  //   // }, [])
+  //   // ** always|never a touch screen
+  //   const [isTouchScreen, setIsTouchScreen] = useState(false)
+  //   return (
+  //     <>
+  //     { isTouchScreen && 
+  //       <EcctrlJoystick buttonNumber={5} />
+  //     }
+  //     </>
+  //   )
+  // }
 
   // ==========================================================
   // ** RETURN JSX
@@ -239,7 +239,7 @@ const ThreeDGarden = (): JSX.Element => {
       />
 
       {/* THREED: CONTROLS: LEVA GUI + CUSTOMIZED */}
-      <ThreeDLevaControls />
+      {/* <ThreeDLevaControls /> */}
       
       {/* THREED: CONTROL PANELS */}
       <ThreeDControlPanels />

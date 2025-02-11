@@ -96,7 +96,7 @@ export type GantryWheelPlateFull = GLTF & {
   };
 }
 
-export const GantryWheelPlate = (model: GantryWheelPlateFull) => (props: JSX.IntrinsicElements["group"]) => {
+export const GantryWheelPlate = (model: GantryWheelPlateFull) => (props: JSX.IntrinsicElements) => {
   const { nodes, materials } = model;
   return <group {...props}>
     <mesh geometry={nodes.Gantry_Wheel_Plate.geometry} material={materials.PaletteMaterial001} position={[0.002, 0.05, 0]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} />

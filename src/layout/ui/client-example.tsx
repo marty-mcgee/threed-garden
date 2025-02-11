@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 
 import { Button } from '#/layout/ui/button'
-import { Input } from '#/layout/ui/input'
+import { Input } from '~/src/layout/ui/input-old'
 import SessionData from '#/layout/ui/session-data'
 import CustomLink from '#/layout/ui/custom-link'
 

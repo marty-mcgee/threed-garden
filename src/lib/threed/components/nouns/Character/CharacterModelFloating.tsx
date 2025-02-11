@@ -20,7 +20,7 @@ import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
 const texture = '/textures/3.jpg'
 
-export type CharacterModelProps = JSX.IntrinsicElements['group']
+export type CharacterModelProps = JSX.IntrinsicElements
 
 export default function CharacterModel(props: CharacterModelProps) {
   const group = useRef<THREE.Group>()

@@ -86,7 +86,7 @@ type GLTFActions = Record<ActionName, THREE.AnimationAction>
 //   )
 // }
 
-export default function Model(props: JSX.IntrinsicElements['group']) {
+export default function Model(props: JSX.IntrinsicElements) {
   // const instances = useContext(context)
   const group = useRef<THREE.Group>()
   const { nodes, materials, animations } = useGLTF(file)

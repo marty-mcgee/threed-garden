@@ -1,7 +1,7 @@
 // ==============================================================
 // Home Design Page (main landing page for 2D-3D Demo)
 
-// 'use server'
+'use server'
 // 'use client'
 // ^^ this is now a server component. default pragma 'use server'
 
@@ -47,10 +47,13 @@ import ThreeDHomeDesign from '~/src/lib/threed/HomeDesign'
 // ==============================================================
 
 function getPanelLayout() {
+  // @ts-expect-error
   const layoutGroup1 = cookies().get('react-resizable-panels:ThreeDPanelGroup1:layout')
   // console.debug('layoutGroup1', layoutGroup1)
+  // @ts-expect-error
   const layoutGroup2 = cookies().get('react-resizable-panels:ThreeDPanelGroup2:layout')
   // console.debug('layoutGroup2', layoutGroup2)
+  // @ts-expect-error
   const layoutGroup3 = cookies().get('react-resizable-panels:ThreeDPanelGroup3:layout')
   // console.debug('layoutGroup3', layoutGroup3)
   // ** default sizes

@@ -55,12 +55,12 @@ import { ASSETS, GARDENS, PLANTS } from "./constants-threed"
 
 import { PrivateOverlay, PublicOverlay, ToolTip } from "./config_overlays"
 
-import { Sky } from "./sky"
+// import { Sky } from "./sky"
 import { Solar } from "./solar"
-import { Sun, sunPosition } from "./sun"
-import { LabEnvironment } from "./lab-threed"
+// import { Sun, sunPosition } from "./sun"
+// import { LabEnvironment } from "./lab-threed"
 import { ZoomBeacons } from "./zoom_beacons-threed"
-import { VectorXyz, getCamera, getFocusFromUrlParams } from "./zoom_beacons_constants-threed"
+// import { VectorXyz, getCamera, getFocusFromUrlParams } from "./zoom_beacons_constants-threed"
 
 // ** HELPER Imports
 // ** UUID Generator
@@ -209,7 +209,7 @@ const Model = (props: ModelProps) => {
           </Text>
         : 
           <Image 
-            // @ts-expect-error
+            // @ ts-expect-error
             url={plant.icon} 
             scale={(plant.size/200)} 
             name={"" + i}
@@ -284,7 +284,7 @@ const Model = (props: ModelProps) => {
       {Object.values(PLANTS).map((plant, i) =>
         <Image 
           key={'Image_' + i + '_' + newUUID()} 
-          // @ts-expect-error
+          // @ ts-expect-error
           url={plant.icon} 
         />
       )}

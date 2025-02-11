@@ -143,7 +143,7 @@ export type CrossSlideFull = GLTF & {
 }
 
 export const CrossSlide = (model: CrossSlideFull) =>
-  (props: JSX.IntrinsicElements["group"]) => {
+  (props: JSX.IntrinsicElements) => {
     const { nodes, materials } = model;
     return <group {...props}>
       <mesh geometry={nodes.Cable_Carrier_Spacer_Block.geometry} material={materials.PaletteMaterial001} position={[0.03, 0.005, 0.061]} rotation={[-Math.PI / 2, 0, Math.PI]} />

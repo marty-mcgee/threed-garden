@@ -31,15 +31,15 @@ const BeaconPulse = () => {
   })
 
   return (
-    <animated.mesh scale={scale}>
+    // <animated.mesh scale={scale}>
       <Sphere args={[beaconSize, 12, 12]}
         renderOrder={1}>
-        <animated.meshPhongMaterial
+        {/* <animated.meshPhongMaterial
           color={beaconColor}
           opacity={opacity}
-          transparent />
+          transparent /> */}
       </Sphere>
-    </animated.mesh>
+    // </animated.mesh>
   )
 }
 
