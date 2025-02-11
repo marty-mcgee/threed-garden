@@ -6,7 +6,7 @@
 // ** DEFAULT APP ROOT LAYOUT
 
 // ** NEXT Imports
-import dynamic from 'next/dynamic'
+// import dynamic from 'next/dynamic'
 
 // ** CSS Imports
 import '#/layout/styles/styles-tailwind-globals.css'

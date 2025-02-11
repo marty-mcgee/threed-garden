@@ -104,7 +104,7 @@ import paper from 'paper'
 // import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 const ThreeDCanvasViewer = dynamic(() => import('#/lib/threed/components/canvas/CanvasViewer'), { ssr: false })
 // ** ThreeD Toolbar
-import ThreeDToolbar from '#//lib/threed/components/controls/Toolbar'
+import ThreeDToolbar from '#/lib/threed/components/controls/Toolbar'
 // ** ThreeD Leva Controls
 // import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'
 // ** ThreeD using Apollo + React to View Control + Info Panels 

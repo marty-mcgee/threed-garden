@@ -296,7 +296,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   );
 }
 
-export type CharacterModelProps = JSX.IntrinsicElements["group"];
+export type CharacterModelProps = JSX.IntrinsicElements;
 
 // Change the character src to yours
 useGLTF.preload('/objects/glb/CharacterModelFloating.glb');

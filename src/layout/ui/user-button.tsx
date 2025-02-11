@@ -11,7 +11,7 @@ import { Button } from '#/layout/ui/button'
 // ** AUTH GUARD
 // import { SessionProvider } from 'next-auth/react'
 // import { useSession } from 'next-auth/react'
-import { auth } from '#//lib/auth/auth'
+import { auth } from '#/lib/auth/auth'
 import { SignIn, SignOut } from '#/layout/ui/auth-components'
 
 import {

@@ -57,7 +57,7 @@ export type SoilSensorFull = GLTF & {
   };
 }
 
-export const SoilSensor = (model: SoilSensorFull) => (props: JSX.IntrinsicElements["group"]) => {
+export const SoilSensor = (model: SoilSensorFull) => (props: JSX.IntrinsicElements) => {
   const { nodes, materials } = model;
   return <group {...props} dispose={null}>
     <mesh geometry={nodes.Soil_Sensor.geometry} material={materials.PaletteMaterial001} position={[0, 0, -0.015]} />
