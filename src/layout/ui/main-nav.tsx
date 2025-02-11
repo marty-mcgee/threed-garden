@@ -80,7 +80,7 @@ export default function MainNav() {
         >
           <NavigationMenuList>
         
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink
                 href='/home'
                 className={navigationMenuTriggerStyle()}
@@ -96,9 +96,9 @@ export default function MainNav() {
               >
                 |
               </NavigationMenuLink>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
         
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink
                 href='/participate'
                 className={navigationMenuTriggerStyle()}
@@ -114,9 +114,9 @@ export default function MainNav() {
               >
                 Demo: Basic
               </NavigationMenuLink>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
         
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink
                 href='/page'
                 className={navigationMenuTriggerStyle()}
@@ -132,14 +132,14 @@ export default function MainNav() {
               >
                 |
               </NavigationMenuLink>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
         
             <NavigationMenuItem>
               <NavigationMenuLink
                 href='/home-design'
                 className={navigationMenuTriggerStyle()}
                 style={{
-                  // backgroundColor: '#222222', 
+                  backgroundColor: '#222222', 
                   color: '#DDDDDD',
                   textDecoration: 'none',
                   // borderWidth: 0,
@@ -148,7 +148,7 @@ export default function MainNav() {
                   // fontSize: 12,
                 }}
               >
-                Demo: Advanced
+                Demo
               </NavigationMenuLink>
             </NavigationMenuItem>
 
