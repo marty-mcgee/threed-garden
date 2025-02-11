@@ -27,11 +27,11 @@
 // } from 'react'
 
 // ** NEXT Imports
-import type { NextPage } from 'next'
-import type { TNextPageWithProps } from '#/lib/types/TAppProps'
+// import type { NextPage } from 'next'
+// import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import dynamic from 'next/dynamic'
 // import Image from 'next/image'
-import { cookies } from 'next/headers'
+// import { cookies } from 'next/headers'
 
 // ** AUTH Imports
 // import { useSession } from 'next-auth/react'
@@ -47,30 +47,35 @@ import ThreeDHomeDesign from '~/src/lib/threed/HomeDesign'
 // ==============================================================
 
 function getPanelLayout() {
-  // @ts-expect-error
-  const layoutGroup1 = cookies().get('react-resizable-panels:ThreeDPanelGroup1:layout')
-  // console.debug('layoutGroup1', layoutGroup1)
-  // @ts-expect-error
-  const layoutGroup2 = cookies().get('react-resizable-panels:ThreeDPanelGroup2:layout')
-  // console.debug('layoutGroup2', layoutGroup2)
-  // @ts-expect-error
-  const layoutGroup3 = cookies().get('react-resizable-panels:ThreeDPanelGroup3:layout')
-  // console.debug('layoutGroup3', layoutGroup3)
+  
   // ** default sizes
   let panelLayoutGroups = [
     [25, 75], 
     [50, 50], 
     [49, 51]
   ]
-  if (layoutGroup1) {
-    panelLayoutGroups[0] = JSON.parse(layoutGroup1.value)
-  }
-  if (layoutGroup2) {
-    panelLayoutGroups[1] = JSON.parse(layoutGroup2.value)
-  }
-  if (layoutGroup3) {
-    panelLayoutGroups[2] = JSON.parse(layoutGroup3.value)
-  }
+  
+  
+  // // @ts-expect-error
+  // const layoutGroup1 = cookies().get('react-resizable-panels:ThreeDPanelGroup1:layout')
+  // // console.debug('layoutGroup1', layoutGroup1)
+  // // @ts-expect-error
+  // const layoutGroup2 = cookies().get('react-resizable-panels:ThreeDPanelGroup2:layout')
+  // // console.debug('layoutGroup2', layoutGroup2)
+  // // @ts-expect-error
+  // const layoutGroup3 = cookies().get('react-resizable-panels:ThreeDPanelGroup3:layout')
+  // // console.debug('layoutGroup3', layoutGroup3)
+  // if (layoutGroup1) {
+  //   panelLayoutGroups[0] = JSON.parse(layoutGroup1.value)
+  // }
+  // if (layoutGroup2) {
+  //   panelLayoutGroups[1] = JSON.parse(layoutGroup2.value)
+  // }
+  // if (layoutGroup3) {
+  //   panelLayoutGroups[2] = JSON.parse(layoutGroup3.value)
+  // }
+
+
   return panelLayoutGroups
 }
 
