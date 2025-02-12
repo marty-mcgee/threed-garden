@@ -38,7 +38,7 @@ export function Instances({ children, ...props }) {
   )
 }
 
-export function Model(props: JSX.IntrinsicElements) {
+export function Model(props: any) {
   const instances = useContext(context)
   return (
     <group {...props} dispose={null}>

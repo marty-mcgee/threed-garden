@@ -8,6 +8,8 @@
 import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 
 // ** React Imports
+// React.* is auto-available in nextjs
+// import type { ReactNode } from 'react'
 // import { useEffect } from 'react'
 
 // ** RADIX-UI Imports
@@ -26,7 +28,8 @@ import {
 // const HomePage = (props) => {
 // const HomePage: FC<TPageProps> = (props) => {
 // const HomePage: NextPage<TPageProps> = (props) => {
-const HomePage: TNextPageWithProps = (): JSX.Element => {
+// const HomePage: TNextPageWithProps = (): React.ReactNode => {
+const HomePage: TNextPageWithProps = (): React.ReactNode => {
   //
   return (
     <Container

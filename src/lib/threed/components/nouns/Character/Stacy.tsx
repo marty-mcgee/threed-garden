@@ -42,7 +42,7 @@ type ActionName =
 type GLTFActions = Record<ActionName, THREE.AnimationAction>
 
 // export this type?
-type CharacterModelProps = JSX.IntrinsicElements
+type CharacterModelProps = any
 
 export default function CharacterModel(props: CharacterModelProps) {
   // Fetch model and a separate texture
@@ -88,7 +88,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
   return (
     <group 
-      // @ts-expect-error
+      // @ ts-expect-error
       ref={ref} 
       {...props} 
       dispose={null}

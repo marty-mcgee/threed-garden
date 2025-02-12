@@ -35,7 +35,8 @@ import type { TPage } from '#/lib/types/interfaces'
 // )
 
 // const Page: TNextPageWithProps<{ pages: IPage[] }> = ({ pages }) => {
-const Page: TNextPageWithProps = (pages: any): JSX.Element => {
+// const Page: TNextPageWithProps = (pages: any): React.ReactNode => {
+const Page: TNextPageWithProps = (pages: any): React.ReactNode => {
   const word = 'ThreeD Garden'
   // const userAgent = middleware
   return (

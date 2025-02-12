@@ -42,7 +42,7 @@
     "use-count-up": "3.0.1",
 
     "next": "15.1.7",
-    "@next/third-parties": "14.2.23",
+    "@next/third-parties": "15.1.7",
     "next-themes": "0.3.0",
 
     "next-auth": "5.0.0-beta.25",
@@ -65,9 +65,7 @@
     "three-mesh-ui": "6.5.4",
     "three-stdlib": "2.32.2",
 
-    "@react-spring/three": "9.7.5",
-
-    "@react-three/drei": "9.121.4",
+    "@react-three/drei": "10.0.0-rc.2",
     "@react-three/fiber": "9.0.0-rc.7",
     "@react-three/rapier": "1.5.0",
     "r3f-perf": "7.2.3",
@@ -134,28 +132,29 @@
 
   "devDependencies": {
 
-    "typescript": "5.6.3",
-    "@types/chroma-js": "2.4.4",
+    "typescript": "5.7.3",
+    "@types/chroma-js": "3.1.1",
     "@types/cors": "2.8.17",
-    "@types/lodash": "4.17.12",
-    "@types/node": "22.7.9",
+    "@types/lodash": "4.17.15",
+    "@types/node": "22.13.1",
     "@types/noisejs": "0.0.31",
     "@types/pretty-time": "1.1.5",
-    "@types/react": "18.3.12",
-    "@types/react-dom": "18.3.1",
+    "@types/react": "19.0.8",
+    "@types/react-dom": "19.0.3",
     "@types/three": "0.165.0",
     "@types/uuid": "10.0.0",
 
-    "eslint": "9.13.0",
-    "@typescript-eslint/eslint-plugin": "8.11.0",
-    "@typescript-eslint/parser": "8.11.0",
-    "eslint-config-next": "15.0.2",
+    "eslint": "9.20.1",
+    "@typescript-eslint/eslint-plugin": "8.24.0",
+    "@typescript-eslint/parser": "8.24.0",
     "eslint-import-resolver-alias": "1.1.2",
-    "eslint-import-resolver-typescript": "3.6.3",
+    "eslint-import-resolver-typescript": "3.7.0",
     "eslint-plugin-import": "2.31.0",
-    "eslint-plugin-jsx-a11y": "6.10.1",
-    "eslint-plugin-react": "7.37.2",
-    "eslint-plugin-react-hooks": "5.0.0",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.4",
+    "eslint-plugin-react-hooks": "5.1.0",
+    "@next/eslint-plugin-next": "15.1.7",
+    "eslint-config-next": "15.1.7",
     
     "buffer": "6.0.3",
     "path": "0.12.7",

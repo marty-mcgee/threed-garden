@@ -52,7 +52,7 @@ const Button: ElementType = styled(MuiButton)(({ theme }) => ({
 // COMPONENTS
 
 // Modal: Share
-const ModalShare: FunctionComponent = (): JSX.Element => {
+const ModalShare: FunctionComponent = (): React.ReactNode => {
   // console.debug("ModalShare called")
 
   // useEffect(() => {

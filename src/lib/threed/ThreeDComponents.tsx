@@ -37,7 +37,7 @@ import ThreeDControlPanels from '#/lib/threed/components/controls/ControlPanels'
 import ThreeDToolbar from '#/lib/threed/components/controls/Toolbar'
 
 // ** return : JSX
-export default function ThreeDComponents(): JSX.Element {
+export default function ThreeDComponents(): React.ReactNode {
   // ** THREED COMPONENTS
   // console.debug('THREED COMPONENT[S]: ALL')
 

@@ -1,3 +1,12 @@
+// <link
+// href="/styles/what-you-can-grow.scss.css"
+// rel="stylesheet"
+// type="text/css"
+// media="all"
+// />
+
+// **
+// export default FarmbotSVG
 const FarmbotSVG = `
     <svg
       version="1.1"
@@ -899,11 +908,3 @@ const FarmbotSVG = `
     </style>
 `
 export default FarmbotSVG
-
-
-    // <link
-    // href="/styles/what-you-can-grow.scss.css"
-    // rel="stylesheet"
-    // type="text/css"
-    // media="all"
-    // />

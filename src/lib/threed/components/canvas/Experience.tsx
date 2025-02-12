@@ -107,7 +107,7 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
-import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
+// import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
 
 // HELPER Imports
 // ** UUID Generator
@@ -461,11 +461,11 @@ const ThreeDExperience = forwardRef((
                 </group> */}
 
                 {/* THREED FARMBOT */}
-                <group rotation={[-Math.PI/2, 0, 0]} scale={0.160} position={[-400, 50, -300]}>
+                {/* <group rotation={[-Math.PI/2, 0, 0]} scale={0.160} position={[-400, 50, -300]}>
                   <ThreeDFarmBotGarden 
                     // key={'ThreeDFarmBotGarden_' + newUUID()} 
                   />
-                </group>
+                </group> */}
                 {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
                   <ThreeDFarmBotMain />
                 </group> */}

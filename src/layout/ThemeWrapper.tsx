@@ -26,7 +26,7 @@ import { ThemeProvider } from 'next-themes'
 const ThemeWrapper = ({ children }: { children: ReactNode}) => {
   // **
   const _id: string = 'ThreeDAppThemeWrapper'
-  // const ref: any = useRef<any>() // for client components only
+  // const ref: any = useRef<any>(null) // for client components only
   
   return (
     <ThemeProvider // next-themes (not radix-ui, but radix-ui supports next-themes)

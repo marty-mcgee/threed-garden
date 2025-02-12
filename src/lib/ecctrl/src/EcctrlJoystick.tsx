@@ -127,13 +127,13 @@ const JoystickComponents = (props: EcctrlJoystickProps) => {
 
   return (
     <Suspense fallback="null">
-      <animated.group position-x={springs.basePositionX} position-y={springs.basePositionY}>
+      <group position-x={springs.basePositionX} position-y={springs.basePositionY}>
         <mesh geometry={joystickBaseGeo} material={joystickBaseMaterial} rotation={[-Math.PI / 2, 0, 0]} {...props.joystickBaseProps} />
-      </animated.group>
-      <animated.group rotation-x={springs.topRotationX} rotation-y={springs.topRotationY}>
+      </group>
+      <group rotation-x={springs.topRotationX} rotation-y={springs.topRotationY}>
         <mesh geometry={joystickStickGeo} material={joystickStickMaterial} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 1.5]} {...props.joystickStickProps} />
         <mesh geometry={joystickHandleGeo} material={joystickHandleMaterial} position={[0, 0, 4]} {...props.joystickHandleProps} />
-      </animated.group>
+      </group>
     </Suspense>
   )
 }
@@ -265,7 +265,7 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: EcctrlJoystickProps) =
     <Suspense fallback={null}>
       {/* Button 1 */}
       {buttonNumber > 0 &&
-        <animated.group
+        <group
           scale-x={springs.buttonTop1BaseScaleXAndZ}
           scale-y={springs.buttonTop1BaseScaleY}
           scale-z={springs.buttonTop1BaseScaleXAndZ}
@@ -273,10 +273,10 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: EcctrlJoystickProps) =
           position={props.buttonGroup1Position || (buttonNumber === 1 ? [0, 0, 0] : [2, 1, 0])}>
           <mesh geometry={buttonLargeBaseGeo} material={buttonBaseMaterial} {...props.buttonLargeBaseProps} onPointerDown={() => onPointerDown(1)} />
           <mesh geometry={buttonTop1Geo} material={buttonTop1Material} position={[0, -0.3, 0]} {...props.buttonTop1Props} />
-        </animated.group>}
+        </group>}
       {/* Button 2 */}
       {buttonNumber > 1 &&
-        <animated.group
+        <group
           scale-x={springs.buttonTop2BaseScaleXAndZ}
           scale-y={springs.buttonTop2BaseScaleY}
           scale-z={springs.buttonTop2BaseScaleXAndZ}
@@ -284,10 +284,10 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: EcctrlJoystickProps) =
           position={props.buttonGroup2Position || [0.5, -1.3, 0]}>
           <mesh geometry={buttonLargeBaseGeo} material={buttonBaseMaterial} {...props.buttonLargeBaseProps} onPointerDown={() => onPointerDown(2)} />
           <mesh geometry={buttonTop2Geo} material={buttonTop2Material} position={[0, -0.3, 0]} {...props.buttonTop2Props} />
-        </animated.group>}
+        </group>}
       {/* Button 3 */}
       {buttonNumber > 2 &&
-        <animated.group
+        <group
           scale-x={springs.buttonTop3BaseScaleXAndZ}
           scale-y={springs.buttonTop3BaseScaleY}
           scale-z={springs.buttonTop3BaseScaleXAndZ}
@@ -295,10 +295,10 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: EcctrlJoystickProps) =
           position={props.buttonGroup3Position || [-1, 1, 0]}>
           <mesh geometry={buttonSmallBaseGeo} material={buttonBaseMaterial} {...props.buttonSmallBaseProps} onPointerDown={() => onPointerDown(3)} />
           <mesh geometry={buttonTop3Geo} material={buttonTop3Material} position={[0, -0.3, 0]} {...props.buttonTop3Props} />
-        </animated.group>}
+        </group>}
       {/* Button 4 */}
       {buttonNumber > 3 &&
-        <animated.group
+        <group
           scale-x={springs.buttonTop4BaseScaleXAndZ}
           scale-y={springs.buttonTop4BaseScaleY}
           scale-z={springs.buttonTop4BaseScaleXAndZ}
@@ -306,10 +306,10 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: EcctrlJoystickProps) =
           position={props.buttonGroup4Position || [-2, -1.3, 0]}>
           <mesh geometry={buttonSmallBaseGeo} material={buttonBaseMaterial} {...props.buttonSmallBaseProps} onPointerDown={() => onPointerDown(4)} />
           <mesh geometry={buttonTop4Geo} material={buttonTop4Material} position={[0, -0.3, 0]} {...props.buttonTop4Props} />
-        </animated.group>}
+        </group>}
       {/* Button 5 */}
       {buttonNumber > 4 &&
-        <animated.group
+        <group
           scale-x={springs.buttonTop5BaseScaleXAndZ}
           scale-y={springs.buttonTop5BaseScaleY}
           scale-z={springs.buttonTop5BaseScaleXAndZ}
@@ -317,7 +317,7 @@ const ButtonComponents = ({ buttonNumber = 1, ...props }: EcctrlJoystickProps) =
           position={props.buttonGroup5Position || [0.4, 2.9, 0]}>
           <mesh geometry={buttonSmallBaseGeo} material={buttonBaseMaterial} {...props.buttonSmallBaseProps} onPointerDown={() => onPointerDown(5)} />
           <mesh geometry={buttonTop5Geo} material={buttonTop5Material} position={[0, -0.3, 0]} {...props.buttonTop5Props} />
-        </animated.group>}
+        </group>}
     </Suspense>
   )
 }

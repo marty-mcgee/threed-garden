@@ -52,7 +52,7 @@ const Button: ElementType = styled(MuiButton)(({ theme }) => ({
 // COMPONENTS
 
 // Modal: Model3d
-const ModalModel3d: FunctionComponent = (): JSX.Element => {
+const ModalModel3d: FunctionComponent = (): React.ReactNode => {
   // console.debug("ModalModel3d called")
 
   // useEffect(() => {

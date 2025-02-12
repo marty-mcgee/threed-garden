@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { Html, useGLTF } from '@react-three/drei'
 
 export default function Watch(props: any) {
-  const ref: any = useRef()
+  const ref: any = useRef(null)
   // @ ts-expect-error
   // @ts-ignore
   const { nodes, materials } = useGLTF('objects/examples/watch-v1.glb')

@@ -15,7 +15,7 @@ import {
 // ==========================================================
 // ** CATALOG VIEW
 // **
-const CatalogView: FC = (): JSX.Element => {
+const CatalogView: FC = (): React.ReactNode => {
   // console.debug("CatalogView")
   useEffect(() => {
     console.debug('CatalogView onMount')
@@ -40,7 +40,7 @@ const CatalogView: FC = (): JSX.Element => {
 // ==========================================================
 // ** PROPERTIES VIEW
 // **
-const PropertiesView: FC = (): JSX.Element => {
+const PropertiesView: FC = (): React.ReactNode => {
   // console.debug("PropertiesView")
   useEffect(() => {
     console.debug('PropertiesView onMount')
@@ -1281,7 +1281,7 @@ const PropertiesView: FC = (): JSX.Element => {
 // ==========================================================
 // ** PLAN VIEW
 // **
-const PlanView: FC = (): JSX.Element => {
+const PlanView: FC = (): React.ReactNode => {
   // console.debug("PlanView")
   useEffect(() => {
     console.debug('PlanView onMount')
@@ -1341,7 +1341,7 @@ const PlanView: FC = (): JSX.Element => {
 // ==========================================================
 // ** THEBOTTOM VIEW
 // **
-const TheBottom: FC = (): JSX.Element => {
+const TheBottom: FC = (): React.ReactNode => {
   const word = `[MM] TheBottom @ ${new Date().toISOString()}`
 
   // console.debug("MyComponent")

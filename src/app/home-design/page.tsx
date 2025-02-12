@@ -83,9 +83,9 @@ function getPanelLayout() {
 // ** EXPORT JSX as NEXT PAGE
 // const HomeDesignPage = (props) => {
 // const HomeDesignPage: NextPage<TPageProps> = (props) => {
-// const HomeDesignPage: NextPage = (): JSX.Element => {
-// const HomeDesignPage: TNextPageWithProps = (): JSX.Element => {
-// export default function HomeDesignPage<TNextPageWithProps> (): JSX.Element { 
+// const HomeDesignPage: NextPage = (): React.ReactNode => {
+// const HomeDesignPage: TNextPageWithProps = (): React.ReactNode => {
+// export default function HomeDesignPage<TNextPageWithProps> (): React.ReactNode { 
 export default async function HomeDesignPage() {
 
   // ** CANNOT USE HOOKS HERE
