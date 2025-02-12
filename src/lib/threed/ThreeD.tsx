@@ -196,10 +196,10 @@ if (debug || DEBUG) {
 
 // ==========================================================
 
-// const ThreeDGarden = ({ session }: { session: Session | null }): JSX.Element => {
-// const ThreeDGarden = ({...props}): JSX.Element => {
-// const ThreeDGarden = ({threedData}): JSX.Element => {
-const ThreeDGarden = (): JSX.Element => {
+// const ThreeDGarden = ({ session }: { session: Session | null }): React.ReactNode => {
+// const ThreeDGarden = ({...props}): React.ReactNode => {
+// const ThreeDGarden = ({threedData}): React.ReactNode => {
+const ThreeDGarden = (): React.ReactNode => {
 // const ThreeDGarden = (): React.ReactNode => {
   
   // **

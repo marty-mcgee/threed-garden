@@ -52,7 +52,7 @@ const Button: ElementType = styled(MuiButton)(({ theme }) => ({
 // COMPONENTS
 
 // Modal: Loading
-const ModalLoading: FunctionComponent = (): JSX.Element => {
+const ModalLoading: FunctionComponent = (): React.ReactNode => {
   // console.debug("ModalLoading called")
 
   // useEffect(() => {

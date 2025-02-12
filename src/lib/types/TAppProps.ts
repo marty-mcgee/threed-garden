@@ -8,7 +8,7 @@ import type { NextPage } from 'next'
 
 type TPageAuth = {
   role: string
-  loading: JSX.Element
+  loading: React.ReactNode
   unauthorized: string
 };
 

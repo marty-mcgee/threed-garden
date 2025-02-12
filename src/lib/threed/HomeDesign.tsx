@@ -293,7 +293,7 @@ horizontalSliderLeftDragging: boolean,
 horizontalSliderRight: HTMLElement,
 horizontalSliderRightDragging: boolean,
 // **
-threedDragDiv: HTMLElement, // JSX.Element = <div></div>,
+threedDragDiv: HTMLElement, // React.ReactNode = <div></div>,
 draggingThreedIcon: boolean = false,
 draggingThreedItem: TThreedItem, // Object = {},
 draggingThreedAngle: number = 0,
@@ -5745,7 +5745,7 @@ function redrawGrid(): boolean {
 
 // ==============================================================
 // ** 🟣 CATALOG ITEMS
-const CatalogItems = (props: any): JSX.Element => {
+const CatalogItems = (props: any): React.ReactNode => {
   // console.debug('threedItemsJSON', threedItemsJSON)
   const [catalogItems, setCatalogItems] = useState(threedItemsJSON)
 
@@ -5800,7 +5800,7 @@ export default function ThreeDHomeDesign({
   panelLayout,
 }: {
   panelLayout: number[][]
-}): JSX.Element { 
+}): React.ReactNode { 
 
   // ** CAN USE MUTATION HOOK HERE 
   // -- must use inside the provider's children, inside a component function
@@ -5932,7 +5932,7 @@ export default function ThreeDHomeDesign({
   // ==========================================================
   // ** TESTING: THREE CANVAS[ES] as React State Variables
   // // ** get scene + camera from child component ThreeDCanvasViewer refCanvas
-  // // const scene = useRef()
+  // // const scene = useRef(null)
   // const getThreeState = useThree((state) => state.get)
   // // getThreeState() // Get fresh state from anywhere you want
   // console.debug('getThreeState()', getThreeState())

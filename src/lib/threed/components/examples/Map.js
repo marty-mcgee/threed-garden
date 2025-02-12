@@ -16,7 +16,7 @@ import {
 } from '#/lib/ecctrl/src/stores/useGame'
 
 export default function Map(props) {
-  const circleRef = useRef()
+  const circleRef = useRef(null)
   const date = useRef(0)
   const { nodes, materials } = useGLTF('./objects/glb/fantasy_game_inn.glb')
 

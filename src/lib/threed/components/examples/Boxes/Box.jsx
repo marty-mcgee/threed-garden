@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { Box as NativeBox } from '@react-three/drei'
 
 export default function Box(props) {
-  const mesh = useRef()
+  const mesh = useRef(null)
 
   const [hovered, setHover] = useState(false)
   const [active, setActive] = useState(false)

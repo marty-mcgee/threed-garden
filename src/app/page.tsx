@@ -73,9 +73,9 @@ if (debug) {
 // ==============================================================
 
 // export default function Page<NextPage>() {
-// const AppPage: NextPage<TPageProps> = (): JSX.Element => {
-// const AppPage: NextPage = (): JSX.Element => {
-// const AppPage: TNextPageWithProps = async (props: any): Promise<JSX.Element> => {
+// const AppPage: NextPage<TPageProps> = (): React.ReactNode => {
+// const AppPage: NextPage = (): React.ReactNode => {
+// const AppPage: TNextPageWithProps = async (props: any): Promise<React.ReactNode> => {
 // const AppPage: NextPage = (props) => {
 // const AppPage = ({children}: {children: any}) => {
 const AppPage = () => {

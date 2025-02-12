@@ -20,10 +20,10 @@ import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
 const texture = '/textures/3.jpg'
 
-export type CharacterModelProps = JSX.IntrinsicElements
+export type CharacterModelProps = any
 
 export default function CharacterModel(props: CharacterModelProps) {
-  const group = useRef<THREE.Group>()
+  const group = useRef<THREE.Group>(null)
   // @ts-expect-error: ignore a compile error, like this type mismatch
   const { nodes, animations } = useGLTF(theCharacterModelFile) as GLTF & {
     nodes: any
@@ -39,10 +39,10 @@ export default function CharacterModel(props: CharacterModelProps) {
   /**
    * Prepare hands ref for attack action
    */
-  const rightHandRef = useRef<THREE.Mesh>()
-  const rightHandColliderRef = useRef<RapierCollider>()
-  const leftHandRef = useRef<THREE.Mesh>()
-  const leftHandColliderRef = useRef<RapierCollider>()
+  const rightHandRef = useRef<THREE.Mesh>(null)
+  const rightHandColliderRef = useRef<RapierCollider>(null)
+  const leftHandRef = useRef<THREE.Mesh>(null)
+  const leftHandColliderRef = useRef<RapierCollider>(null)
   const rightHandPos = useMemo(() => new THREE.Vector3(), [])
   const leftHandPos = useMemo(() => new THREE.Vector3(), [])
   const bodyPos = useMemo(() => new THREE.Vector3(), [])

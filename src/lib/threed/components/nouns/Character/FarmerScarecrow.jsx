@@ -8,7 +8,7 @@ const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/
 
 export default function Model(props) {
   // **
-  const group = useRef()
+  const group = useRef(null)
   const { nodes, materials, animations } = useGLTF(file)
   const { actions } = useAnimations(animations, group)
   console.debug('=====================================')

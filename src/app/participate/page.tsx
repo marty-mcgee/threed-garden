@@ -27,9 +27,10 @@ const ThreeDComponents = dynamic(() => import('#/lib/threed/ThreeDComponents'), 
 // ** HELPER Imports
 // import ccm from '#/lib/utils/console-colors'
 
-const ParticipatePage: TNextPageWithProps = (): JSX.Element => {
+// const ParticipatePage: TNextPageWithProps = (): React.ReactNode => {
+const ParticipatePage: TNextPageWithProps = (pages: any): React.ReactNode => {
 // const ParticipatePage: TNextPageWithProps = async () => {
-// const ParticipatePage: TNextPageWithProps = async ({ children }: React.PropsWithChildren): Promise<JSX.Element> => {
+// const ParticipatePage: TNextPageWithProps = async ({ children }: React.PropsWithChildren): Promise<React.ReactNode> => {
   // **
   // const session = await auth()
   const { data: session, status } = useSession()

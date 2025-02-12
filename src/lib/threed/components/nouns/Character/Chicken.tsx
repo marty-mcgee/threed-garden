@@ -118,9 +118,8 @@ type GLTFActions = Record<ActionName, THREE.AnimationAction>
 // **
 
 // export this type?
-type CharacterModelProps = JSX.IntrinsicElements
+type CharacterModelProps = any
 
-// export default function Model(props: JSX.IntrinsicElements) {
 export default function CharacterModel(props: CharacterModelProps) {
 
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
@@ -130,7 +129,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   // ** TESTING instances of character model
   // const instances = useContext(context)
 
-  const group = useRef<THREE.Group>()
+  const group = useRef<THREE.Group>(null)
 
   // @ts-expect-error: ignore a compile error, like this type mismatch
   // const { nodes, animations } = useGLTF(theCharacterModelFile) as GLTF & {
@@ -154,10 +153,10 @@ export default function CharacterModel(props: CharacterModelProps) {
   /**
    * Prepare Hands+Body Refs+Memos for actions[action4]
    */
-  const rightHandRef = useRef<THREE.Mesh>()
-  const rightHandColliderRef = useRef<RapierCollider>()
-  const leftHandRef = useRef<THREE.Mesh>()
-  const leftHandColliderRef = useRef<RapierCollider>()
+  const rightHandRef = useRef<THREE.Mesh>(null)
+  const rightHandColliderRef = useRef<RapierCollider>(null)
+  const leftHandRef = useRef<THREE.Mesh>(null)
+  const leftHandColliderRef = useRef<RapierCollider>(null)
   const rightHandPos = useMemo(() => new THREE.Vector3(), [])
   const leftHandPos = useMemo(() => new THREE.Vector3(), [])
   const bodyPosition = useMemo(() => new THREE.Vector3(), [])

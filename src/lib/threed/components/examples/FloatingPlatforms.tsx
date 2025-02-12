@@ -16,9 +16,9 @@ import type { RayColliderHit } from '@dimforge/rapier3d-compat'
 export default function FloatingPlatforms() {
   // Preset
   // couldn't find the correct type
-  const floatingPlateRef = useRef<any>()
-  const floatingPlateRef2 = useRef<any>()
-  const floatingMovingPlateRef = useRef<any>()
+  const floatingPlateRef = useRef<any>(null)
+  const floatingPlateRef2 = useRef<any>(null)
+  const floatingMovingPlateRef = useRef<any>(null)
   const { rapier, world } = useRapier()
 
   /**

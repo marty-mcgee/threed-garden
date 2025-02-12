@@ -2646,10 +2646,10 @@ const MyComponent = () => {
   return <div>Component body here...</div>
 }
 
-const ThreeDGarden = (): JSX.Element => {
+const ThreeDGarden = (): React.ReactNode => {
   const word = 'HEY HEY HEY'
-  const title = useRef()
-  const root = useRef()
+  const title = useRef(null)
+  const root = useRef(null)
   // const scene = new THREE.Scene()
   useEffect(() => {
     bootManager()

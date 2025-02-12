@@ -1,5 +1,5 @@
 // import { Environment, OrbitControls } from "@react-three/drei";
-import { Canvas, GroupProps, MeshProps, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { ColorRepresentation, Mesh } from "three";
 // import "./styles.css";
@@ -21,7 +21,7 @@ type ThingyProps = {
   speed?: number;
   color?: ColorRepresentation;
   name: string;
-} & MeshProps;
+};
 
 const Thingy = ({
   name,
@@ -60,9 +60,21 @@ const Thingy = ({
 const Three = () => (
   <Canvas>
     {/* <Environment preset="sunset" /> */}
-    <Thingy name="One" position={[-3, 0, 0]} speed={0.5} color="#ffafcc" />
-    <Thingy name="Two" position={[0, 0, 0]} speed={-0.3} color="#e9edc9" />
-    <Thingy name="Three" position={[3, 0, 0]} speed={0.2} color="#ffb703" />
+    <Thingy name="One"
+      // position={[-3, 0, 0]} 
+      speed={0.5} 
+      color="#ffafcc" 
+    />
+    {/* <Thingy name="Two" 
+      // position={[0, 0, 0]} 
+      speed={-0.3} 
+      color="#e9edc9" 
+    /> */}
+    {/* <Thingy name="Three" 
+      // position={[3, 0, 0]} 
+      speed={0.2} 
+      color="#ffb703" 
+    /> */}
   </Canvas>
 );
 

@@ -99,7 +99,7 @@ const Button = styled(MuiButton)(({ theme }) => ({
 }))
 
 // ** Main ThreeDToolbar
-const ThreeDToolbar: FC = (): JSX.Element => {
+const ThreeDToolbar = (): React.ReactNode => {
   // **
   // console.debug("ThreeDToolbar props.data", data)
 

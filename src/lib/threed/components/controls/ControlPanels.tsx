@@ -125,14 +125,14 @@ const Debug = () => {
 
 // const Controls = () => {
 //   const { camera, gl, invalidate } = useThree()
-//   const ref = useRef()
+//   const ref = useRef(null)
 //   useFrame(() => ref.current.update())
 //   useEffect(() => void ref.current.addEventListener('change', invalidate), [])
 //   return <orbitControls ref={ref} enableDamping args={[camera, gl.domElement]} />
 // }
 
 function DebugView() {
-  // const control = useRef()
+  // const control = useRef(null)
 
   return (
     <>
@@ -205,7 +205,7 @@ export const ThreeDControlPanels = (
   //   projectName: string,
   //   setProjectName: Function
   // }
-): JSX.Element => {
+): React.ReactNode => {
 
   // ==========================================================
   // Tabs
@@ -467,7 +467,7 @@ export const ThreeDControlPanels = (
 // ==========================================================
 // Preferences
 
-const PreferencesInfoPanel = (): JSX.Element => {
+const PreferencesInfoPanel = (): React.ReactNode => {
   // **
   const prefs = useReactiveVar(preferencesDataVar)
   // **
@@ -497,7 +497,7 @@ const PreferencesInfoPanel = (): JSX.Element => {
   )
 }
 
-const PreferencesControlPanel = (): JSX.Element => {
+const PreferencesControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -529,7 +529,7 @@ const PreferencesControlPanel = (): JSX.Element => {
 // ==========================================================
 // Project
 
-const ProjectInfoPanel = (): JSX.Element => {
+const ProjectInfoPanel = (): React.ReactNode => {
   // **
   const prefs = useReactiveVar(preferencesDataVar)
   // **
@@ -557,7 +557,7 @@ const ProjectInfoPanel = (): JSX.Element => {
   )
 }
 
-const ProjectControlPanel = (): JSX.Element => {
+const ProjectControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -610,7 +610,7 @@ const ProjectControlPanel = (): JSX.Element => {
 // ==========================================================
 // Participant
 
-const ParticipantInfoPanel = (): JSX.Element => {
+const ParticipantInfoPanel = (): React.ReactNode => {
   const participantCount = participantStore.store.useStore('count')
   const participants = participantStore.store.useStore('all')
   const participant = participantStore.store.useStore('one')
@@ -630,7 +630,7 @@ const ParticipantInfoPanel = (): JSX.Element => {
   )
 }
 
-const ParticipantControlPanel = (): JSX.Element => {
+const ParticipantControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -665,7 +665,7 @@ const ParticipantControlPanel = (): JSX.Element => {
 // ==========================================================
 // Plan
 
-const PlanInfoPanel = (): JSX.Element => {
+const PlanInfoPanel = (): React.ReactNode => {
   const planCount = planStore.store.useStore('count')
   const plans = planStore.store.useStore('all')
   const plan = planStore.store.useStore('one')
@@ -685,7 +685,7 @@ const PlanInfoPanel = (): JSX.Element => {
   )
 }
 
-const PlanControlPanel = (): JSX.Element => {
+const PlanControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -720,7 +720,7 @@ const PlanControlPanel = (): JSX.Element => {
 // ==========================================================
 // ThreeD
 
-const ThreeDInfoPanel = (): JSX.Element => {
+const ThreeDInfoPanel = (): React.ReactNode => {
   const threedCount = threedStore.store.useStore('count')
   const threeds = threedStore.store.useStore('all')
   const threed = threedStore.store.useStore('one')
@@ -740,7 +740,7 @@ const ThreeDInfoPanel = (): JSX.Element => {
   )
 }
 
-const ThreeDControlPanel = (): JSX.Element => {
+const ThreeDControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -775,7 +775,7 @@ const ThreeDControlPanel = (): JSX.Element => {
 // ==========================================================
 // File
 
-const FileInfoPanel = (): JSX.Element => {
+const FileInfoPanel = (): React.ReactNode => {
   const fileCount = fileStore.store.useStore('count')
   const files = fileStore.store.useStore('all')
   const file = fileStore.store.useStore('one')
@@ -795,7 +795,7 @@ const FileInfoPanel = (): JSX.Element => {
   )
 }
 
-const FileControlPanel = (): JSX.Element => {
+const FileControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -833,7 +833,7 @@ const FileControlPanel = (): JSX.Element => {
 // ==========================================================
 // Scene
 
-const SceneInfoPanel = (): JSX.Element => {
+const SceneInfoPanel = (): React.ReactNode => {
   const sceneCount = sceneStore.store.useStore('count')
   // const sceneCountDB = sceneStore.store.useStore('countDB')
   const scenes = sceneStore.store.useStore('all')
@@ -852,7 +852,7 @@ const SceneInfoPanel = (): JSX.Element => {
   )
 }
 
-const SceneControlPanel = (): JSX.Element => {
+const SceneControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -887,7 +887,7 @@ const SceneControlPanel = (): JSX.Element => {
 // ==========================================================
 // Allotment
 
-const AllotmentInfoPanel = (): JSX.Element => {
+const AllotmentInfoPanel = (): React.ReactNode => {
   const allotmentCount = allotmentStore.store.useStore('count')
   const allotments = allotmentStore.store.useStore('all')
   const allotment = allotmentStore.store.useStore('one')
@@ -907,7 +907,7 @@ const AllotmentInfoPanel = (): JSX.Element => {
   )
 }
 
-const AllotmentControlPanel = (): JSX.Element => {
+const AllotmentControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -942,7 +942,7 @@ const AllotmentControlPanel = (): JSX.Element => {
 // ==========================================================
 // Bed
 
-const BedInfoPanel = (): JSX.Element => {
+const BedInfoPanel = (): React.ReactNode => {
   const bedCount = bedStore.store.useStore('count')
   const beds = bedStore.store.useStore('all')
   const bed = bedStore.store.useStore('one')
@@ -962,7 +962,7 @@ const BedInfoPanel = (): JSX.Element => {
   )
 }
 
-const BedControlPanel = (): JSX.Element => {
+const BedControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -997,7 +997,7 @@ const BedControlPanel = (): JSX.Element => {
 // ==========================================================
 // Plant
 
-const PlantInfoPanel = (): JSX.Element => {
+const PlantInfoPanel = (): React.ReactNode => {
   const plantCount = plantStore.store.useStore('count')
   const plants = plantStore.store.useStore('all')
   const plant = plantStore.store.useStore('one')
@@ -1017,7 +1017,7 @@ const PlantInfoPanel = (): JSX.Element => {
   )
 }
 
-const PlantControlPanel = (): JSX.Element => {
+const PlantControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 
@@ -1052,7 +1052,7 @@ const PlantControlPanel = (): JSX.Element => {
 // ==========================================================
 // PlantingPlan
 
-const PlantingPlanInfoPanel = (): JSX.Element => {
+const PlantingPlanInfoPanel = (): React.ReactNode => {
   const plantingPlanCount = plantingPlanStore.store.useStore('count')
   const plantingPlans = plantingPlanStore.store.useStore('all')
   const plantingPlan = plantingPlanStore.store.useStore('one')
@@ -1072,7 +1072,7 @@ const PlantingPlanInfoPanel = (): JSX.Element => {
   )
 }
 
-const PlantingPlanControlPanel = (): JSX.Element => {
+const PlantingPlanControlPanel = (): React.ReactNode => {
 
   const client = useApolloClient()
 

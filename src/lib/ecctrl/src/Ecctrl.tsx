@@ -150,8 +150,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   // Other rigibody props from parent
   ...props
 }: EcctrlProps, ref) => {
-  const characterRef = ref as RefObject<RapierRigidBody> || useRef<RapierRigidBody>()
-  const characterModelRef = useRef<THREE.Group>();
+  const characterRef = ref as RefObject<RapierRigidBody> || useRef<RapierRigidBody>(null)
+  const characterModelRef = useRef<THREE.Group>(null);
   const characterModelIndicator: THREE.Object3D = useMemo(() => new THREE.Object3D(), [])
   const defaultControllerKeys = { 
     forward: 12, 
@@ -632,7 +632,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   let actualSlopeAngle: number = null;
   const actualSlopeNormalVec: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const floorNormal: THREE.Vector3 = useMemo(() => new THREE.Vector3(0, 1, 0), []);
-  const slopeRayOriginRef = useRef<THREE.Mesh>();
+  const slopeRayOriginRef = useRef<THREE.Mesh>(null);
   const slopeRayorigin: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const slopeRayCast = new rapier.Ray(slopeRayorigin, slopeRayDir);
   let slopeRayHit: RayColliderHit | null = null;
@@ -645,7 +645,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   const crossVector: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const pointToPoint: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const getMoveToPoint = useGame((state) => state.getMoveToPoint);
-  const bodySensorRef = useRef<Collider>();
+  const bodySensorRef = useRef<Collider>(null);
   const handleOnIntersectionEnter = () => {
     isBodyHitWall = true
   }

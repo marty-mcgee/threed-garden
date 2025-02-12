@@ -55,7 +55,7 @@ const Button: ElementType = styled(MuiButton)(({ theme }) => ({
 // COMPONENTS
 
 // Modal: About
-const ModalAbout: FunctionComponent = (): JSX.Element => {
+const ModalAbout: FunctionComponent = (): React.ReactNode => {
   // console.debug("ModalAbout called")
 
   // tabs (use React State)

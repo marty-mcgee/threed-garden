@@ -137,7 +137,7 @@ const getFarmbotToken = () => {
   return MY_THREED_TOKEN
 }
 
-const FarmbotComponent = (): JSX.Element => {
+const FarmbotComponent = (): React.ReactNode => {
   // **
   const word: string = '[MM] FarmbotComponent'
   // **
