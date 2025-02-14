@@ -122,7 +122,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** DEBUGGING
 // **
 const debug: boolean = false
-const DEBUG: boolean = false
+const DEBUG: boolean = true
 
 // ** BOUNDS
 // This function component wraps children in a group with a click handler
@@ -131,12 +131,22 @@ const SelectToZoom = ({ children }: { children: any }) => {
   const api = useBounds()
   return (
     <group 
-      onClick={(e) => (e.stopPropagation(), e.delta <= 2 && api.refresh(e.object).fit())} 
-      // onPointerMissed={(e) => e.button === 0 && api.refresh().fit()}
+      onClick={(e) => handleSelectToZoom(e, api)}
+      onPointerMissed={(e) => handleOnPointerMissed(e, api)}
     >
       {children}
     </group>
   )
+}
+const handleSelectToZoom = (e: any, api: any): void => {
+  e.stopPropagation()
+  // e.delta <= 2 && 
+  api.refresh(e.object).fit()
+}
+const handleOnPointerMissed = (e: any, api: any): void => {
+  // // e.stopPropagation()
+  // e.button === 0 && 
+  // api.refresh().fit()
 }
 
 // ** RETURN ThreeDExperience
@@ -157,174 +167,18 @@ const ThreeDExperience = forwardRef((
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
 
-  // ** using react-three-drei
+  // ** PROGRESS LOADER using react-three-drei
   // const { active, progress, errors, item, loaded, total } = useProgress()
 
-
-  // ** Delay physics activate
+  // ** PHYSICS delay physics activation
   const [pausedPhysics, setPausedPhysics] = useState(prefs.doWorldPhysics)
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
-    }, 500)
+    }, 1000)
     return () => clearTimeout(timeout)
   }, [])
-  
-  let doWorldDebug: boolean = prefs.doWorldDebug // false | true
-  let doWorldTesting: boolean = prefs.doWorldTesting // false | true
-  let doWorldPhysics: boolean = prefs.doWorldPhysics // false | true
-  let doWorldControl: boolean = prefs.doWorldControl // false | true
-  let doWorldUnfollowCam: boolean = prefs.doWorldUnfollowCam // false | true
 
-  // ** World Preferences
-  // const [{
-  //   doWorldDebug,
-  //   doWorldTesting,
-  //   doWorldPhysics,
-  //   doWorldControl, // disableControl
-  //   doWorldUnfollowCam,
-  // }, setWorldPreferencesLeva] = useControls(
-  //   'World Preferences',
-  //   () => ({
-  //     doWorldDebug: {
-  //       label: 'World Debugger?',
-  //       value: prefs.doWorldDebug,
-  //     },
-  //     doWorldTesting: {
-  //       label: 'ThreeD Testing?',
-  //       value: prefs.doWorldTesting,
-  //     },
-  //     doWorldPhysics: {
-  //       label: 'Physics Debugger?',
-  //       value: prefs.doWorldPhysics,
-  //     },
-  //     doWorldControl: {
-  //       label: 'Character Control?',
-  //       value: prefs.doWorldControl,
-  //     },
-  //     doWorldUnfollowCam: {
-  //       label: 'Unfollow Character?',
-  //       value: prefs.doWorldUnfollowCam,
-  //     },
-  //   }),
-  //   {
-  //     color: 'darkgreen',
-  //     collapsed: false,
-  //     order: 10,
-  //   },
-  // )
-
-  // ==========================================================
-  // ** doWorldDebug
-  // **
-  useEffect(() => {
-    let newData = {...prefs}
-    // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.doWorldDebug = doWorldDebug
-    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
-    preferencesDataVar(newData)
-    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldDebug', ccm.yellowAlert, prefs.doWorldDebug)
-  }, [doWorldDebug])
-
-  // **
-  // useEffect(() => {
-  //   // if (prefs.doWorldDebug != undefined) {
-  //     setWorldPreferencesLeva({ doWorldDebug: prefs.doWorldDebug })
-  //   // }
-  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldDebug', ccm.greenAlert, prefs.doWorldDebug)
-  // }, [prefs.doWorldDebug])
-
-
-// ==========================================================
-  // ** doWorldTesting
-  // **
-  useEffect(() => {
-    let newData = {...prefs}
-    // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.doWorldTesting = doWorldTesting
-    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
-    preferencesDataVar(newData)
-    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldTesting', ccm.yellowAlert, prefs.doWorldTesting)
-  }, [doWorldTesting])
-
-  // **
-  // useEffect(() => {
-  //   // if (prefs.doWorldTesting != undefined) {
-  //     setWorldPreferencesLeva({ doWorldTesting: prefs.doWorldTesting })
-  //   // }
-  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldTesting', ccm.greenAlert, prefs.doWorldTesting)
-  // }, [prefs.doWorldTesting])
-
-
-// ==========================================================
-  // ** doWorldPhysics
-  // **
-  useEffect(() => {
-    let newData = {...prefs}
-    // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.doWorldPhysics = doWorldPhysics
-    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
-    preferencesDataVar(newData)
-    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldPhysics', ccm.yellowAlert, prefs.doWorldPhysics)
-  }, [doWorldPhysics])
-
-  // **
-  // useEffect(() => {
-  //   // if (prefs.doWorldPhysics != undefined) {
-  //     setWorldPreferencesLeva({ doWorldPhysics: prefs.doWorldPhysics })
-  //   // }
-  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldPhysics', ccm.greenAlert, prefs.doWorldPhysics)
-  // }, [prefs.doWorldPhysics])
-
-
-  // ==========================================================
-    // ** doWorldControl
-    // **
-    useEffect(() => {
-      let newData = {...prefs}
-      // if (debug) console.debug('%c preset newData', ccm.green, newData)
-      newData.doWorldControl = doWorldControl
-      // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
-      preferencesDataVar(newData)
-      // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-      if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldControl', ccm.yellowAlert, prefs.doWorldControl)
-    }, [doWorldControl])
-  
-    // **
-    // useEffect(() => {
-    //   // if (prefs.doWorldControl != undefined) {
-    //     setWorldPreferencesLeva({ doWorldControl: prefs.doWorldControl })
-    //   // }
-    //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldControl', ccm.greenAlert, prefs.doWorldControl)
-    // }, [prefs.doWorldControl])
-
-
-// ==========================================================
-  // ** doWorldUnfollowCam
-  // **
-  useEffect(() => {
-    let newData = {...prefs}
-    // if (debug) console.debug('%c preset newData', ccm.green, newData)
-    newData.doWorldUnfollowCam = doWorldUnfollowCam
-    // if (debug) console.debug('%c preset newData UPDATED', ccm.green, newData)
-    preferencesDataVar(newData)
-    // if (debug) console.debug('%c preset preferencesDataVar', ccm.darkgreen, preferencesDataVar())
-    if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldUnfollowCam', ccm.yellowAlert, prefs.doWorldUnfollowCam)
-  }, [doWorldUnfollowCam])
-
-  // **
-  // useEffect(() => {
-  //   // if (prefs.doWorldUnfollowCam != undefined) {
-  //     setWorldPreferencesLeva({ doWorldUnfollowCam: prefs.doWorldUnfollowCam })
-  //   // }
-  //   if (debug) console.debug('%c⚙️ READ FROM MASTER REACTIVE VAR: prefs.doWorldUnfollowCam', ccm.greenAlert, prefs.doWorldUnfollowCam)
-  // }, [prefs.doWorldUnfollowCam])
-
-
-  // ==========================================================
   // ** KEYBOARD control presets
   const keyboardMap = [
     { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -355,9 +209,20 @@ const ThreeDExperience = forwardRef((
   // ** RETURN JSX
   return (
     // {/* REACT SUSPENSE */}
-    // <Suspense fallback={<Html>LOADING HEY HEY HEY ...</Html>}>
     <Suspense fallback={null}>
-      <group ref={refCanvas}>
+        
+    {/* R3F BOUNDS */}
+    <Bounds 
+      fit={configBounds.fit} 
+      clip={configBounds.clip}
+      observe={configBounds.observe}
+      margin={configBounds.margin}
+      maxDuration={configBounds.maxDuration} 
+      interpolateFunc={configBounds.interpolateFunc2}
+    >
+      <group 
+        ref={refCanvas}
+      >
 
         {/* EXAMPLES: BIRDS */}
         { false && (
@@ -365,16 +230,6 @@ const ThreeDExperience = forwardRef((
             <Birds />
           </group>
         )}
-        
-        {/* R3F BOUNDS */}
-        <Bounds 
-          fit={configBounds.fit} 
-          clip={configBounds.clip}
-          observe={configBounds.observe}
-          margin={configBounds.margin}
-          maxDuration={configBounds.maxDuration} 
-          interpolateFunc={configBounds.interpolateFunc2}
-        >
           {/* THREED USING PHYSICS */}
           <Physics
             debug={prefs.doWorldPhysics}
@@ -426,7 +281,7 @@ const ThreeDExperience = forwardRef((
 
                 {/* baby steps */}
                 {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
-                <group rotation={[0, 0, 0]} scale={50.0} position={[0, 6, 0]}>
+                <group rotation={[0, 0, 0]} scale={1.0} position={[0, 6, 0]}>
                   <Steps />
                 </group>
 
@@ -440,7 +295,7 @@ const ThreeDExperience = forwardRef((
                   <Slopes />
                 </group> */}
                 {/* Rigid Body Objects */}
-                <group rotation={[0, 0, 0]} scale={100.0} position={[-4, 10.00, 0]}>
+                <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
                   <RigidObjects />
                 </group>
 
@@ -477,7 +332,7 @@ const ThreeDExperience = forwardRef((
                 <KeyboardControls map={keyboardMap}>
 
                   {/* CHARACTER MODEL */}
-                  { true && (
+                  { false && (
                   <group key='character0' position={[800, 0, 0]}>
                     {/* <CharacterControls
                       debug={prefs.doWorldDebug}
@@ -501,7 +356,7 @@ const ThreeDExperience = forwardRef((
                       {/* <CharacterModel /> */}
                       {/* <CharacterModelFloating /> */}
                       {/* <CharacterModelStacy /> */}
-                      <CharacterModelStacy scale={102} />
+                      <CharacterModelStacy scale={1.2} />
                       {/* <CharacterModelChicken scale={2.0} /> */}
                     {/* </CharacterControls> */}
                   </group>
@@ -512,15 +367,22 @@ const ThreeDExperience = forwardRef((
                   { true && (
                   <group key='character1' position={[0, 0, 0]}>
                     <CharacterControls
-                      debug={prefs.doWorldDebug}
                       // debug={false}
-                      animated={prefs.doCharacterAnimation}
+                      // debug={true}
+                      debug={prefs.doWorldDebug}
                       // animated={false}
-                      disableControl={prefs.doWorldControl}
+                      animated={true}
+                      // animated={prefs.doCharacterAnimation}
                       // disableControl={false}
-                      // disableFollowCam={prefs.doWorldUnfollowCam}
+                      // disableControl={true}
+                      disableControl={prefs.doWorldControl}
+                      // disableFollowCam={false}
                       disableFollowCam={true}
+                      // disableFollowCam={prefs.doWorldUnfollowCam}
+                      // followLight={false}
                       followLight={true}
+                      // followLight={prefs.doWorldFollowLight}
+                      // **
                       // springK={2}
                       // dampingC={0.2}
                       // autoBalanceSpringK={1.2}
@@ -530,7 +392,7 @@ const ThreeDExperience = forwardRef((
                       // mode='FixedCamera'
                       // mode='CameraBasedMovement'
                     >
-                      <CharacterModelFarmerWomanFloating scale={1} />
+                      <CharacterModelFarmerWomanFloating scale={1.0} />
                       {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
                     </CharacterControls>
                   </group>
@@ -538,7 +400,7 @@ const ThreeDExperience = forwardRef((
                   {/* END: CHARACTER MODEL */}
 
                   {/* CHARACTER MODEL */}
-                  { true && (
+                  { false && (
                   <group key='character2' position={[-200, 0, 0]}>
                     {/* <CharacterControls
                       debug={prefs.doWorldDebug}
@@ -573,14 +435,15 @@ const ThreeDExperience = forwardRef((
                 {/* BEGIN: RIGID OBJECTS */}
 
                 {/* // import Map from './Map' */}
-                <group 
-                  rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
-                  quaternion={[0,0,0,0]}
-                  scale={101.4} 
-                  position={[400, 140, -2000]}
+                {/* <group 
+                  // rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
+                  rotation={[(Math.PI/2) + 0, (-Math.PI/1), (Math.PI/1) + 0]}
+                  // quaternion={[0,0,0,0]}
+                  scale={8.0} 
+                  position={[80, 140, -1200]}
                 >
                   <Map />
-                </group>
+                </group> */}
                   
                 {/* THREED MODELS as props.threeds */}
                 {/* <group
@@ -596,19 +459,19 @@ const ThreeDExperience = forwardRef((
                   />
                 </group> */}
 
-                </SelectToZoom>
-                {/* END: SELECT TO ZOOM */}
-              
-              </Suspense>
-              {/* END: REACT SUSPENSE */}
+              </SelectToZoom>
+              {/* END: SELECT TO ZOOM */}
+            
+            </Suspense>
+            {/* END: REACT SUSPENSE */}
 
-            </Physics>
-            {/* END: PHYSICS RAPIER */}
+          </Physics>
+          {/* END: PHYSICS RAPIER */}
 
-        </Bounds>
-        {/* END: R3F BOUNDS */}
       </group>
       {/* END: CANVAS GROUP REF */}
+        </Bounds>
+        {/* END: R3F BOUNDS */}
     </Suspense>
     // {/* END: REACT SUSPENSE */}
   )
