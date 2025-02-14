@@ -35,6 +35,7 @@ export default function Map(props: any) {
             <mesh
               castShadow
               receiveShadow
+              // @ts-expect-error
               geometry={nodes.TheInn_bakeInn_0.geometry}
               onPointerMove={({ point }) => {
                 circleRef.current.position.z = point.z
