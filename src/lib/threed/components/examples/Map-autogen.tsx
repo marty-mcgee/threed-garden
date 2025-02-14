@@ -51,7 +51,10 @@ export default function Map(props: any) {
                   setMoveToPoint(point)
                 }
               }}>
-              <meshStandardMaterial map={materials.bakeInn.map} />
+              <meshStandardMaterial 
+                // @ts-expect-error
+                map={materials.bakeInn.map} 
+              />
             </mesh>
           </group>
         </group>
