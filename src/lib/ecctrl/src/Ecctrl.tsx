@@ -62,10 +62,10 @@ const getMovingDirection = (
 
 const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   children,
-  debug = false,
-  capsuleHalfHeight = 0.35,
-  capsuleRadius = 0.3,
-  floatHeight = 2.000, // 0, // 0.3,
+  debug = false, // true is buggy
+  capsuleRadius = 1,
+  capsuleHalfHeight = 0, // 10,
+  floatHeight = capsuleHalfHeight, // 2.000, // 0, // 0.3,
   characterInitDir = 0, // in rad
   // characterInitDir = Math.PI/2, // in rad
   // characterInitDir = Math.PI, // in rad
@@ -1251,7 +1251,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
           velocityDiff.subVectors(movingObjectVelocity, currentVel);
           if (velocityDiff.length() > 30) movingObjectVelocity.multiplyScalar(1 / velocityDiff.length());
 
-          // Apply opposite drage force to the stading rigid body, body type 0
+          // Apply opposite drag force to the stading rigid body, body type 0
           // Character moving and unmoving should provide different drag force to the platform
           if (rayHitObjectBodyType === 0) {
             if (
@@ -1487,13 +1487,26 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
 
   return (
     <RigidBody
-      colliders={false}
+      // colliders={false}
+      // colliders="trimesh"
+      // type="dynamic"
+      // type="kinematicPosition"
       ref={characterRef}
-      position={props.position || [0, 0.5, 0]}
-      friction={props.friction || -0.5}
-      onContactForce={(e) => bodyContactForce.set(e.totalForce.x, e.totalForce.y, e.totalForce.z)}
-      onCollisionExit={() => bodyContactForce.set(0, 0, 0)}
-      userData={{ canJump: false }}
+      position={props.position || [0, 0.1, 0]}
+      friction={props.friction || 0.5}
+      onContactForce={
+        (e) => {
+          bodyContactForce.set(e.totalForce.x, e.totalForce.y, e.totalForce.z)
+        }
+      }
+      onCollisionExit={
+        () => bodyContactForce.set(0, 0, 0)
+      }
+      userData={
+        { 
+          canJump: false 
+        }
+      }
       {...props}
     >
       <CapsuleCollider

@@ -519,8 +519,8 @@ export default function CharacterModel(props: CharacterModelProps) {
 
     return () => {
       
-      // if (action) {
-      if (action && typeof action === 'function') {
+      if (action) {
+      // if (action && typeof action === 'function') {
         // Fade out previous action
         // @ts-expect-error
         action.fadeOut(0.2)

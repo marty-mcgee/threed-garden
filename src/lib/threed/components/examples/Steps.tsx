@@ -8,33 +8,33 @@ export default function Steps() {
   return (
     <group>
       {/* Small steps */}
-      <RigidBody type='fixed' position={[0, 0.0, 5]}>
+      <RigidBody type='fixed' position={[0, 0.0, 250]}>
         <mesh receiveShadow>
-          <boxGeometry args={[4, 0.2, 0.2]} />
+          <boxGeometry args={[200, 10, 10]} />
           <meshStandardMaterial color={'saddlebrown'} />
         </mesh>
       </RigidBody>
-      <RigidBody type='fixed' position={[0, 0.0, 6]}>
+      <RigidBody type='fixed' position={[0, 0.0, 300]}>
         <mesh receiveShadow>
-          <boxGeometry args={[4, 0.2, 0.2]} />
+          <boxGeometry args={[200, 10, 10]} />
           <meshStandardMaterial color={'saddlebrown'} />
         </mesh>
       </RigidBody>
-      <RigidBody type='fixed' position={[0, 0.0, 7]}>
+      <RigidBody type='fixed' position={[0, 0.0, 350]}>
         <mesh receiveShadow>
-          <boxGeometry args={[4, 0.2, 0.2]} />
+          <boxGeometry args={[200, 10, 10]} />
           <meshStandardMaterial color={'saddlebrown'} />
         </mesh>
       </RigidBody>
-      <RigidBody type='fixed' position={[0, 0.0, 8]}>
+      <RigidBody type='fixed' position={[0, 0.0, 400]}>
         <mesh receiveShadow>
-          <boxGeometry args={[4, 0.2, 0.2]} />
+          <boxGeometry args={[200, 10, 10]} />
           <meshStandardMaterial color={'saddlebrown'} />
         </mesh>
       </RigidBody>
-      <RigidBody type='fixed' position={[0, 0.0, 11]}>
+      <RigidBody type='fixed' position={[0, 0.0, 550]}>
         <mesh receiveShadow>
-          <boxGeometry args={[4, 0.2, 4]} />
+          <boxGeometry args={[200, 10, 200]} />
           <meshStandardMaterial color={'saddlebrown'} />
         </mesh>
       </RigidBody>
