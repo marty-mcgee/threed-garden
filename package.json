@@ -61,7 +61,7 @@
     "scheduler": "0.23.2",
     "valtio": "2.1.2",
 
-    "three": "0.169.0",
+    "three": "0.173.0",
     "three-mesh-ui": "6.5.4",
     "three-stdlib": "2.32.2",
 
