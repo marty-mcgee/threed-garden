@@ -14,7 +14,7 @@ export default function RigidObjects() {
   return (
     <group>
       {/* Rigid body boxes */}
-      <RigidBody position={[15, 2, 2]}>
+      <RigidBody position={[1550, 200, 200]}>
         <Text
           scale={0.2}
           color='black'
@@ -23,14 +23,14 @@ export default function RigidObjects() {
           position={[0, 1, 0]}
           rotation={[0, -Math.PI / 2, 0]}
         >
-          m: 0.25
+          m: 0.5
         </Text>
         <mesh receiveShadow castShadow>
-          <boxGeometry args={[0.5, 0.5, 0.5]} />
+          <boxGeometry args={[50, 50, 50]} />
           <meshStandardMaterial color={'brown'} />
         </mesh>
       </RigidBody>
-      <RigidBody position={[15.1, 2, 2]}>
+      <RigidBody position={[1450, 200, 200]}>
         <Text
           scale={0.2}
           color='black'
@@ -39,14 +39,14 @@ export default function RigidObjects() {
           position={[0, 1, 0]}
           rotation={[0, -Math.PI / 2, 0]}
         >
-          m: 0.25
+          m: 0.5
         </Text>
         <mesh receiveShadow castShadow>
-          <boxGeometry args={[0.5, 0.5, 0.5]} />
+          <boxGeometry args={[50, 50, 50]} />
           <meshStandardMaterial color={'brown'} />
         </mesh>
       </RigidBody>
-      <RigidBody position={[15, 2, 0]} colliders={false}>
+      <RigidBody position={[1500, 200, 0]} colliders={false}>
         <Text
           scale={0.2}
           color='black'
@@ -57,13 +57,13 @@ export default function RigidObjects() {
         >
           mass: 1
         </Text>
-        <CuboidCollider args={[0.5, 0.5, 0.5]} />
+        <CuboidCollider args={[50, 50, 50]} />
         <mesh receiveShadow castShadow>
-          <boxGeometry args={[1, 1, 1]} />
+          <boxGeometry args={[100, 100, 100]} />
           <meshStandardMaterial color={'brown'} />
         </mesh>
       </RigidBody>
-      <RigidBody position={[15, 2, -2]} colliders={false}>
+      <RigidBody position={[1500, 200, -200]} colliders={false}>
         <Text
           scale={0.2}
           color='black'
@@ -72,15 +72,15 @@ export default function RigidObjects() {
           position={[0, 1.5, 0]}
           rotation={[0, -Math.PI / 2, 0]}
         >
-          mass: 3
+          mass: 1.5
         </Text>
-        <CuboidCollider args={[1.5 / 2, 1.5 / 2, 1.5 / 2]} />
+        <CuboidCollider args={[150 / 2, 150 / 2, 150 / 2]} />
         <mesh receiveShadow castShadow>
-          <boxGeometry args={[1.5, 1.5, 1.5]} />
+          <boxGeometry args={[150, 150, 150]} />
           <meshStandardMaterial color={'brown'} />
         </mesh>
       </RigidBody>
-      <RigidBody position={[15, 2, -5]} colliders={false}>
+      <RigidBody position={[1500, 200, -500]} colliders={false}>
         <Text
           scale={0.2}
           color='black'
@@ -89,17 +89,17 @@ export default function RigidObjects() {
           position={[0, 2, 0]}
           rotation={[0, -Math.PI / 2, 0]}
         >
-          mass: 8
+          mass: 2
         </Text>
-        <CuboidCollider args={[1, 1, 1]} />
+        <CuboidCollider args={[100, 100, 100]} />
         <mesh receiveShadow castShadow>
-          <boxGeometry args={[2, 2, 2]} />
+          <boxGeometry args={[200, 200, 200]} />
           <meshStandardMaterial color={'brown'} />
         </mesh>
       </RigidBody>
 
       {/* Fun toy using mass as m */}
-      <RigidBody colliders={false} position={[1500, 0, -1000]}>
+      <RigidBody position={[1500, 0, -1000]} colliders={false}>
         <Text
           scale={2}
           color='black'
@@ -108,7 +108,7 @@ export default function RigidObjects() {
           position={[0, 10, 0]}
           rotation={[0, -Math.PI / 2, 0]}
         >
-          mass: 2
+          mass: 2.5
         </Text>
         <CylinderCollider args={[3, 250]} position={[0, 0, 0]} />
         <BallCollider args={[250]} />
