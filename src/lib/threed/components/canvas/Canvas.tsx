@@ -563,7 +563,7 @@ export const ThreeDCanvas = forwardRef((
             enableOrbit={true}
             enableGizmoCube={true}
             enableAxesHelper={true}
-            enableGridHelper={true}
+            enableGridHelper={false}
             enableGridHelper2={false}
             enablePerf={true}
 

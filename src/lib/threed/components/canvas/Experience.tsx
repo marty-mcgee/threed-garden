@@ -14,38 +14,39 @@ import { preferencesDataVar } from '#/lib/api/graphql/apollo'
 import { 
   useEffect, 
   useState, 
+  useRef,
   forwardRef, 
   Suspense 
 } from 'react'
 
-// THREE JS * ALL
-// import * as THREE from 'three'
+// ** THREE JS Imports
+import * as THREE from 'three'
 
 // ** REACT THREE Imports
 import { 
   KeyboardControls, 
-  Grid,
+  // Grid,
   Bounds, 
   useBounds,
-  Loader, useProgress,
+  Loader, 
+  // useProgress,
   Html,
-  Text,
-  Center,
+  // Text,
+  // Center,
+  TransformControls,
+
+  //   PerspectiveCamera,
+  //   // Environment, Stage,
+  //   // KeyboardControls,
+  //   // OrbitControls, TransformControls, PivotControls,
+  //   // GizmoHelper, GizmoViewcube, GizmoViewport,
+  //   // ContactShadows, BakeShadows,
+  //   // softShadows, // softShadows()
+  //   Preload,
+  //   Loader, useProgress,
+  //   Html, Center,
+  //   // useGLTF, useFBX,
 } from '@react-three/drei'
-// // ** R3F HELPERS Imports
-// import {
-//   PerspectiveCamera,
-//   // Environment, Stage,
-//   // KeyboardControls,
-//   // OrbitControls, TransformControls, PivotControls,
-//   // GizmoHelper, GizmoViewcube, GizmoViewport,
-//   // ContactShadows, BakeShadows,
-//   // softShadows, // softShadows()
-//   Preload,
-//   Loader, useProgress,
-//   Html, Center,
-//   // useGLTF, useFBX,
-// } from '@react-three/drei'
 
 // ** PHYSICS LIBRARY
 import { Physics } from '@react-three/rapier'
@@ -107,7 +108,7 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
-// import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
+import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
 
 // HELPER Imports
 // ** UUID Generator
@@ -129,21 +130,26 @@ const DEBUG: boolean = true
 // Clicking any object will refresh and fit bounds
 const SelectToZoom = ({ children }: { children: any }) => {
   const api = useBounds()
+  // console.debug('SelectToZoom: api', api)
+  const ref = useRef<THREE.Group>(null)
   return (
     <group 
+      ref={ref}
       onClick={(e) => handleSelectToZoom(e, api)}
-      onPointerMissed={(e) => handleOnPointerMissed(e, api)}
+      // onPointerMissed={(e) => handleOnPointerMissed(e, api)}
     >
       {children}
     </group>
   )
 }
 const handleSelectToZoom = (e: any, api: any): void => {
+  console.debug('handleSelectToZoom', e, api)
   e.stopPropagation()
-  // e.delta <= 2 && 
+  e.delta <= 2 && 
   api.refresh(e.object).fit()
 }
 const handleOnPointerMissed = (e: any, api: any): void => {
+  console.debug('handleOnPointerMissed', e, api)
   // // e.stopPropagation()
   // e.button === 0 && 
   // api.refresh().fit()
@@ -197,8 +203,8 @@ const ThreeDExperience = forwardRef((
   const configBounds = {
     fit: false,
     clip: false,
-    observe: false,
-    margin: 1.2,
+    observe: true,
+    margin: 1.0,
     maxDuration: 1,
     interpolateFunc0: (t: number) => 1 - Math.exp(-5 * t) + 0.007 * t, // Matches the default Bounds behavior
     interpolateFunc1: (t: number) => -t * t * t + 2 * t * t,           // Start smoothly, finish linearly
@@ -210,16 +216,7 @@ const ThreeDExperience = forwardRef((
   return (
     // {/* REACT SUSPENSE */}
     <Suspense fallback={null}>
-        
-    {/* R3F BOUNDS */}
-    <Bounds 
-      fit={configBounds.fit} 
-      clip={configBounds.clip}
-      observe={configBounds.observe}
-      margin={configBounds.margin}
-      maxDuration={configBounds.maxDuration} 
-      interpolateFunc={configBounds.interpolateFunc2}
-    >
+
       <group 
         ref={refCanvas}
       >
@@ -230,51 +227,62 @@ const ThreeDExperience = forwardRef((
             <Birds />
           </group>
         )}
-          {/* THREED USING PHYSICS */}
-          <Physics
-            debug={prefs.doWorldPhysics}
-            // debug={true}
-            // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
-            paused={pausedPhysics}
-          >
 
-            {/* ** FLOORS ** */}
-            {/* solid steps (levels, safety) */}
-            {/* The Floor (Plane 0) */}
-            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
-              <Floor color={'darkgreen'} opacity={0.4} />
-            </group>
-            {/* backup solid steps (levels[1+], safety) */}
-            {/* Sub-Floor[s] (Plane < 0) */}
-            {/* <SubFloor level={`${level[index]}`} /> */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
-              <Floor color={'saddlebrown'} opacity={0.4} />
-            </group> */}
-            {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-                DEEP BELOW SEA LEVEL */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
-              <Floor color={'darkblue'} opacity={0.2} />
-            </group> */}
-            {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
-                DEEP DEEP DEEP BELOW SEA LEVEL */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
-              <Ground color={'black'} opacity={0.0} />
-            </group> */}
+        {/* THREED USING PHYSICS */}
+        <Physics
+          debug={prefs.doWorldPhysics}
+          // debug={true}
+          // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120 etc
+          paused={pausedPhysics}
+        >
 
-            {/* REACT SUSPENSE */}
-            {/* <Suspense fallback={<Html>LOADING HEY HEY HEY ...</Html>}> */}
-            <Suspense fallback={
-              <Html center>
-                <Loader
-                  // containerStyles={...container} // Flex layout styles
-                  // innerStyles={...inner} // Inner container styles
-                  // barStyles={...bar} // Loading-bar styles
-                  // dataStyles={...data} // Text styles
-                  dataInterpolation={(p: number) => `THREED UI ${p.toFixed(0)}%`} // Text
-                  // initialState={(active = false) => active} // Initial black out state
-                />
-              </Html>
-            }>
+          {/* ** FLOORS ** */}
+          {/* solid steps (levels, safety) */}
+          {/* The Floor (Plane 0) */}
+          <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+            <Floor color={'darkgreen'} opacity={0.4} />
+          </group>
+          {/* backup solid steps (levels[1+], safety) */}
+          {/* Sub-Floor[s] (Plane < 0) */}
+          {/* <SubFloor level={`${level[index]}`} /> */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -128, 0]}>
+            <Floor color={'saddlebrown'} opacity={0.4} />
+          </group> */}
+          {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
+              DEEP BELOW SEA LEVEL */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
+            <Floor color={'darkblue'} opacity={0.2} />
+          </group> */}
+          {/* DEFAULT GROUND BOUNDARY (PREVENTS INFINITE FALL BACKUP):
+              DEEP DEEP DEEP BELOW SEA LEVEL */}
+          {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
+            <Ground color={'black'} opacity={0.0} />
+          </group> */}
+
+          {/* REACT SUSPENSE */}
+          {/* <Suspense fallback={<Html>LOADING HEY HEY HEY ...</Html>}> */}
+          <Suspense fallback={
+            <Html center>
+              <Loader
+                // containerStyles={...container} // Flex layout styles
+                // innerStyles={...inner} // Inner container styles
+                // barStyles={...bar} // Loading-bar styles
+                // dataStyles={...data} // Text styles
+                dataInterpolation={(p: number) => `THREED UI ${p.toFixed(0)}%`} // Text
+                // initialState={(active = false) => active} // Initial black out state
+              />
+            </Html>
+          }>
+
+            {/* R3F BOUNDS */}
+            <Bounds 
+              fit={configBounds.fit} 
+              clip={configBounds.clip}
+              observe={configBounds.observe}
+              margin={configBounds.margin}
+              // maxDuration={configBounds.maxDuration} 
+              // interpolateFunc={configBounds.interpolateFunc2}
+            >
 
               {/* R3F BOUNDS: SELECT TO ZOOM IN ON OBJECTS */}
               <SelectToZoom>
@@ -285,15 +293,25 @@ const ThreeDExperience = forwardRef((
                   <Steps />
                 </group>
 
+              {/* </SelectToZoom> */}
+              {/* END: SELECT TO ZOOM */}
+
                 {/* toddler steps (advanced degrees) */}
                 {/* Rough Plane */}
-                <group rotation={[0, 0, 0]} scale={100.0} position={[800, -30, 1000]}>
-                  <RoughPlane />
+                <group rotation={[0, 0, 0]} scale={100.0} position={[800, -30, 1000]}
+                  // onClick={handleClick}
+                >
+                  {/* <TransformControls mode="translate"> */}
+                    {/* <mesh /> */}
+                    <RoughPlane />
+                  {/* </TransformControls> */}
                 </group>
+
                 {/* Slopes + Stairs */}
                 {/* <group rotation={[0, 0, 0]} scale={100.0} position={[100, 0, 100]}>
                   <Slopes />
                 </group> */}
+
                 {/* Rigid Body Objects */}
                 <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
                   <RigidObjects />
@@ -316,11 +334,11 @@ const ThreeDExperience = forwardRef((
                 </group> */}
 
                 {/* THREED FARMBOT */}
-                {/* <group rotation={[-Math.PI/2, 0, 0]} scale={0.160} position={[-400, 50, -300]}>
+                <group rotation={[-Math.PI/2, 0, 0]} scale={0.160} position={[-400, 50, -300]}>
                   <ThreeDFarmBotGarden 
                     // key={'ThreeDFarmBotGarden_' + newUUID()} 
                   />
-                </group> */}
+                </group>
                 {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
                   <ThreeDFarmBotMain />
                 </group> */}
@@ -435,7 +453,7 @@ const ThreeDExperience = forwardRef((
                 {/* BEGIN: RIGID OBJECTS */}
 
                 {/* // import Map from './Map' */}
-                {/* <group 
+                <group 
                   // rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
                   rotation={[(Math.PI/2) + 0, (-Math.PI/1), (Math.PI/1) + 0]}
                   // quaternion={[0,0,0,0]}
@@ -443,7 +461,7 @@ const ThreeDExperience = forwardRef((
                   position={[80, 140, -1200]}
                 >
                   <Map />
-                </group> */}
+                </group>
                   
                 {/* THREED MODELS as props.threeds */}
                 {/* <group
@@ -461,17 +479,19 @@ const ThreeDExperience = forwardRef((
 
               </SelectToZoom>
               {/* END: SELECT TO ZOOM */}
-            
-            </Suspense>
-            {/* END: REACT SUSPENSE */}
+              
+            </Bounds>
+            {/* END: R3F BOUNDS */}
+          
+          </Suspense>
+          {/* END: REACT SUSPENSE */}
 
-          </Physics>
-          {/* END: PHYSICS RAPIER */}
+        </Physics>
+        {/* END: PHYSICS RAPIER */}
 
       </group>
       {/* END: CANVAS GROUP REF */}
-        </Bounds>
-        {/* END: R3F BOUNDS */}
+
     </Suspense>
     // {/* END: REACT SUSPENSE */}
   )
