@@ -89,12 +89,9 @@ import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chick
 import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
 
 // ** THREED OBJECTS
-// import Lights from '#/lib/threed/components/canvas/Lights'
-// import Camera from '#/lib/threed/components/canvas/Camera'
 import Floor from '#/lib/threed/components/canvas/Floor'
 import Ground from '#/lib/threed/components/canvas/Ground'
-
-// ** THREED OBJECT INTERACTIVE EXAMPLES
+// ** THREED OBJECTS: INTERACTIVE EXAMPLES
 import Steps from '#/lib/threed/components/examples/Steps'
 import Slopes from '#/lib/threed/components/examples/Slopes'
 import RoughPlane from '#/lib/threed/components/examples/RoughPlane'
