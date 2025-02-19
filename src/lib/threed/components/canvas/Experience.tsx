@@ -128,10 +128,10 @@ const DEBUG: boolean = true
 const SelectToZoom = ({ children }: { children: any }) => {
   const api = useBounds()
   // console.debug('SelectToZoom: api', api)
-  const ref = useRef<THREE.Group>(null)
+  // const ref = useRef<THREE.Group>(null)
   return (
     <group 
-      ref={ref}
+      // ref={ref}
       onClick={(e) => handleSelectToZoom(e, api)}
       // onPointerMissed={(e) => handleOnPointerMissed(e, api)}
     >
@@ -140,16 +140,16 @@ const SelectToZoom = ({ children }: { children: any }) => {
   )
 }
 const handleSelectToZoom = (e: any, api: any): void => {
-  console.debug('handleSelectToZoom', e, api)
+  // console.debug('handleSelectToZoom', e, api)
   e.stopPropagation()
   e.delta <= 2 && 
   api.refresh(e.object).fit()
 }
 const handleOnPointerMissed = (e: any, api: any): void => {
-  console.debug('handleOnPointerMissed', e, api)
-  // // e.stopPropagation()
-  // e.button === 0 && 
-  // api.refresh().fit()
+  // console.debug('handleOnPointerMissed', e, api)
+  // e.stopPropagation()
+  e.button === 0 && 
+  api.refresh().fit()
 }
 
 // ** RETURN ThreeDExperience
@@ -284,51 +284,49 @@ const ThreeDExperience = forwardRef((
               {/* R3F BOUNDS: SELECT TO ZOOM IN ON OBJECTS */}
               <SelectToZoom>
 
-                {/* baby steps */}
                 {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
                 <group rotation={[0, 0, 0]} scale={1.0} position={[0, 6, 0]}>
                   <Steps />
                 </group>
 
-              {/* </SelectToZoom> */}
-              {/* END: SELECT TO ZOOM */}
-
-                {/* toddler steps (advanced degrees) */}
                 {/* Rough Plane */}
                 <group rotation={[0, 0, 0]} scale={100.0} position={[800, -30, 1000]}
                   // onClick={handleClick}
                 >
-                  {/* <TransformControls mode="translate"> */}
-                    {/* <mesh /> */}
-                    <RoughPlane />
-                  {/* </TransformControls> */}
+                  <RoughPlane />
                 </group>
 
                 {/* Slopes + Stairs */}
-                {/* <group rotation={[0, 0, 0]} scale={100.0} position={[100, 0, 100]}>
+                {/* 
+                <group rotation={[0, 0, 0]} scale={100.0} position={[100, 0, 100]}>
                   <Slopes />
-                </group> */}
+                </group>
+                */}
 
                 {/* Rigid Body Objects */}
                 <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
                   <RigidObjects />
                 </group>
 
-                {/* kinder steps (active objects) */}
                 {/* Floating Platforms */}
-                {/* <group rotation={[0, 0, 0]} scale={1.0}>
+                {/* 
+                <group rotation={[0, 0, 0]} scale={1.0}>
                   <FloatingPlatforms />
-                </group> */}
+                </group>
+                */}
 
-                {/* elementary steps (random active objects) */}
                 {/* Dynamic Platforms */}
-                {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2.01, 0]}>
+                {/* 
+                <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2.01, 0]}>
                   <DynamicPlatforms />
-                </group> */}
+                </group>
+                */}
                 {/* Shot Cubes */}
-                {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
+                {/* 
+                <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
                   <ShotCube />
-                </group> */}
+                </group>
+                */}
 
                 {/* THREED FARMBOT */}
                 <group rotation={[-Math.PI/2, 0, 0]} scale={0.160} position={[-400, 50, -300]}>
@@ -336,9 +334,11 @@ const ThreeDExperience = forwardRef((
                     // key={'ThreeDFarmBotGarden_' + newUUID()} 
                   />
                 </group>
-                {/* <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
+                {/* 
+                <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
                   <ThreeDFarmBotMain />
-                </group> */}
+                </group>
+                */}
 
                 {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
                 {/* CHARACTER MODELS */}
@@ -447,9 +447,7 @@ const ThreeDExperience = forwardRef((
                 {/* </Suspense> */}
                 {/* END: CHARACTER MODELS */}
 
-                {/* BEGIN: RIGID OBJECTS */}
-
-                {/* // import Map from './Map' */}
+                {/* EXAMPLE MAP: TAVERN */}
                 <group 
                   // rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
                   rotation={[(Math.PI/2) + 0, (-Math.PI/1), (Math.PI/1) + 0]}
@@ -461,7 +459,8 @@ const ThreeDExperience = forwardRef((
                 </group>
                   
                 {/* THREED MODELS as props.threeds */}
-                {/* <group
+                {/* 
+                <group
                   key='threed_models_children'
                   // scale all threeds?
                   scale={100.3}
@@ -472,7 +471,8 @@ const ThreeDExperience = forwardRef((
                     // position={[-4, 0, 0]}
                     // position={[0, -1, 0]}
                   />
-                </group> */}
+                </group>
+                */}
 
               </SelectToZoom>
               {/* END: SELECT TO ZOOM */}
