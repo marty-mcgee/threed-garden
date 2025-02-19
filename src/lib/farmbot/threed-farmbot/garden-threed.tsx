@@ -209,7 +209,7 @@ const Model = (props: ModelProps) => {
           </Text>
         : 
           <Image 
-            // @ts-expect-error
+            // @ ts-expect-error
             url={plant.icon} 
             scale={(plant.size/200)} 
             name={"" + i}
@@ -284,7 +284,7 @@ const Model = (props: ModelProps) => {
       {Object.values(PLANTS).map((plant, i) =>
         <Image 
           key={'Image_' + i + '_' + newUUID()} 
-          // @ts-expect-error
+          // @ ts-expect-error
           url={plant.icon} 
         />
       )}
