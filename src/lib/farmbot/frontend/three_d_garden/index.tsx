@@ -1,5 +1,5 @@
-import { Canvas } from "@react-three/fiber";
-import React from "react";
+// import { Canvas } from "@react-three/fiber";
+// import React from "react";
 import { Config } from "./config";
 import { GardenModel } from "./garden_model";
 import { noop } from "lodash";
@@ -14,9 +14,10 @@ export interface ThreeDGardenProps {
 }
 
 export const ThreeDGarden = (props: ThreeDGardenProps) => {
-  return <div className={"three-d-garden"}>
-    <div className={"garden-bed-3d-model"}>
-      <Canvas shadows={true}>
+  return (
+  // <div className={"three-d-garden"}>
+    // <div className={"garden-bed-3d-model"}>
+      // <Canvas shadows={true}>
         <GardenModel
           config={props.config}
           activeFocus={""}
@@ -24,7 +25,8 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
           mapPoints={props.mapPoints}
           weeds={props.weeds}
           addPlantProps={props.addPlantProps} />
-      </Canvas>
-    </div>
-  </div>;
+      // </Canvas>
+    // </div>
+  // </div>
+  );
 };
