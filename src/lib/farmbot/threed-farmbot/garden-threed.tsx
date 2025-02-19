@@ -1,4 +1,3 @@
-// @ ts-nocheck /* OR @ ts-expect-error */
 // 'use client'
 // ==========================================================
 // RESOURCES
