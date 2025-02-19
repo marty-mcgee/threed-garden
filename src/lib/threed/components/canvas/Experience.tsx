@@ -106,6 +106,7 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
 import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
+import { ThreeDGarden as ThreeDFarmBotGarden2 } from '#/lib/farmbot/frontend/three_d_garden/index'
 
 // HELPER Imports
 // ** UUID Generator
@@ -328,12 +329,17 @@ const ThreeDExperience = forwardRef((
                 </group>
                 */}
 
-                {/* THREED FARMBOT */}
+                {/* THREED FARMBOTS */}
                 <group rotation={[-Math.PI/2, 0, 0]} scale={0.160} position={[-400, 50, -300]}>
                   <ThreeDFarmBotGarden 
-                    // key={'ThreeDFarmBotGarden_' + newUUID()} 
+                    key={'ThreeDFarmBotGarden_' + newUUID()} 
                   />
                 </group>
+                {/* <group rotation={[0, 0, 0]} scale={1.000} position={[-4000, 50, -3000]}>
+                  <ThreeDFarmBotGarden2 
+                    key={'ThreeDFarmBotGarden_2' + newUUID()} 
+                  />
+                </group> */}
                 {/* 
                 <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
                   <ThreeDFarmBotMain />
@@ -386,16 +392,16 @@ const ThreeDExperience = forwardRef((
                       // debug={true}
                       debug={prefs.doWorldDebug}
                       // animated={false}
-                      animated={true}
-                      // animated={prefs.doCharacterAnimation}
+                      // animated={true}
+                      animated={prefs.doCharacterAnimation}
                       // disableControl={false}
                       // disableControl={true}
                       disableControl={prefs.doWorldControl}
                       // disableFollowCam={false}
-                      disableFollowCam={true}
-                      // disableFollowCam={prefs.doWorldUnfollowCam}
-                      // followLight={false}
-                      followLight={true}
+                      // disableFollowCam={true}
+                      disableFollowCam={prefs.doWorldUnfollowCam}
+                      followLight={false}
+                      // followLight={true}
                       // followLight={prefs.doWorldFollowLight}
                       // **
                       // springK={2}
