@@ -185,7 +185,7 @@ export const FOCI = (config: Config): Focus[] => [
           are magnetically held in place during operation, but can be
           automatically dismounted in a toolbay when not in use.</p>
 
-        <p>Once a tool has been mounted, FarmBot can power it up and communicate
+        {/* <p>Once a tool has been mounted, FarmBot can power it up and communicate
           with it using the 12 gold-plated pogo pins inside the UTM. The stock
           connections include ground, 5v, 24v, as well as analog and digital I/O.
           Meanwhile, the remaining electrical connections are available for
@@ -196,7 +196,7 @@ export const FOCI = (config: Config): Focus[] => [
         <p>Because FarmBot is 100% open-source, you can download our
           CAD models to start designing your own compatible creations.
           Tools can be 3D printed and wired up with common electrical hardware in
-          just an afternoon.</p>
+          just an afternoon.</p> */}
       </div>,
       position: [
         0,
@@ -245,12 +245,12 @@ export const FOCI = (config: Config): Focus[] => [
           FarmBot is powered by the workhorses of the DIY movement:
           the Raspberry Pi and a custom designed Arduino we call the <i>Farmduino</i>.
         </p>
-        <p>
+        {/* <p>
           This custom circuit board includes Trinamic TMC2130 stepper drivers
           with built-in quiet mode, an STM32 co-processor for monitoring the
           rotary encoders, five 24v peripheral outputs, and an H-bridge for
           reversible DC motor control at the UTM.
-        </p>
+        </p> */}
       </div>,
       position: [
         0,
@@ -478,6 +478,8 @@ export default function ThreeDCamera(
     target: [0, 0, 0],
   }
   const camera = getCamera(config, activeFocus, initCamera)
+  // const camera = Camera
+  // const camera = 
 
   // ** SPRING
   const isXL = true // config.sizePreset == "Gen XL"
