@@ -117,12 +117,13 @@ import ccm from '#/lib/utils/console-colors'
 // console.debug(`%c🥕 ThreeDGarden<FC,R3F>: Apollo {stores}`, ccm.blue)
 // console.debug(`%c====================================`, ccm.blue)
 
+// ==========================================================
 // ** DEBUG: this module
 const debug: boolean = false
 const DEBUG: boolean = false
 
 // ==============================================================
-// ** Noun Types + Interfaces
+// ** NOUN Types + Interfaces
 
 // {one}
 interface INoun {
@@ -1020,9 +1021,9 @@ const preferencesDataVarDefaults = {
   // world prefs
   doWorldDebug: false, // boolean: false | true
   doWorldTesting: false, // boolean: false | true
-  doWorldPhysics: true, // boolean: false | true
+  doWorldPhysics: false, // boolean: false | true
   doWorldControl: false, // boolean: false | true
-  doWorldUnfollowCam: false, // boolean: false | true
+  doWorldUnfollowCam: true, // boolean: false | true
   // home design prefs
   showPanelFirst: true, // boolean: true | false
   showPanelLast: true, // boolean: true | false
@@ -1184,10 +1185,10 @@ const canvasStateThreeDVarDefaults: Object = {
 // ** MUTATIONS
 export const createPreferences = CreatePreferences
   // console.debug('APOLLO: createPreferences', createPreferences)
-  console.debug('APOLLO: createPreferences', '[MM] TODO')
+  // console.debug('APOLLO: createPreferences', '[MM] TODO')
 export const updatePreferences = UpdatePreferences
   // console.debug('APOLLO: updatePreferences', updatePreferences)
-  console.debug('APOLLO: updatePreferences', '[MM] TODO')
+  // console.debug('APOLLO: updatePreferences', '[MM] TODO')
 
 // ==============================================================
 
@@ -1263,31 +1264,31 @@ export const stores = {
 
 // ** user(s)
 export const userDataVar = makeVar(userDataVarDefaults)
-  console.debug('APOLLO: userDataVar()', userDataVar())
+  // console.debug('APOLLO: userDataVar()', userDataVar())
 export const isUserDataSetVar = makeVar(false) // boolean: false | true
   // console.debug('APOLLO: isUserDataSetVar()', isUserDataSetVar())
 
 // ** participant(s)
 export const participantDataVar = makeVar(participantDataVarDefaults)
-  console.debug('APOLLO: participantDataVar()', participantDataVar())
+  // console.debug('APOLLO: participantDataVar()', participantDataVar())
 export const isParticipantDataSetVar = makeVar(false) // boolean: false | true
   // console.debug('APOLLO: isParticipantDataSetVar()', isParticipantDataSetVar())
 
 // ** preferences(s)
 export const preferencesDataVar = makeVar(preferencesDataVarDefaults)
-  console.debug('APOLLO: preferencesDataVar()', preferencesDataVar())
+  // console.debug('APOLLO: preferencesDataVar()', preferencesDataVar())
 export const isPreferencesDataSetVar = makeVar(false) // boolean: false | true
   // console.debug('APOLLO: isPreferencesDataSetVar()', isPreferencesDataSetVar())
 
 // ** canvasStatePaper(s)
 export const canvasStatePaperVar = makeVar(canvasStatePaperVarDefaults)
-  console.debug('APOLLO: canvasStatePaperVar()', canvasStatePaperVar())
+  // console.debug('APOLLO: canvasStatePaperVar()', canvasStatePaperVar())
 export const isCanvasStatePaperSetVar = makeVar(false) // boolean: false | true
   // console.debug('APOLLO: isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())
   
 // ** canvasStateThreeD(s)
 export const canvasStateThreeDVar = makeVar(canvasStateThreeDVarDefaults)
-  console.debug('APOLLO: canvasStateThreeDVar()', canvasStateThreeDVar())
+  // console.debug('APOLLO: canvasStateThreeDVar()', canvasStateThreeDVar())
   // console.debug('APOLLO: canvasStateThreeDVar().state.scene', canvasStateThreeDVar().state.scene)
 export const isCanvasStateThreeDSetVar = makeVar(false) // boolean: false | true
   // console.debug('APOLLO: isCanvasStatePaperSetVar()', isCanvasStatePaperSetVar())

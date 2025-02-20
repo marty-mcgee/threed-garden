@@ -99,7 +99,7 @@ import {
 import ThreeDExperienceViewer from '#/lib/threed/components/canvas/ExperienceViewer'
 // import { threedIO } from '#/lib/threed/threed.io/threedIO'
 // import tunnel from 'tunnel-rat'
-import tunnel from '#/lib/threed/threed.io/tunnelrat'
+// import tunnel from '#/lib/threed/threed.io/tunnelrat'
 // import { threedAI } from '#/lib/threed/threed.ai/threedAI'
 
 // ** HELPER Components
@@ -128,8 +128,8 @@ const DEBUG = false // false | true // ts: boolean
 
 // ** TUNNEL: THREEDIO
 // const t = tunnel()
-const threedIO = tunnel()
-const threedOI = tunnel()
+// const threedIO = tunnel()
+// const threedOI = tunnel()
 
 
 // Model interactive 'modes' using TransformControls
@@ -200,12 +200,12 @@ export function ThreeDLoaderMesh() {
 //   // setCameraPosition: (cameraPosition: number[]) => set({ cameraPosition })
 // }))
 // ** ZUSTAND-X : CAMERA STORE
-const storeCameraZ = createStore('threedCamera')(({
-  position: [-1, 1, -1],
-  // setPosition: (position: number[]) => set({ position }),
-  // cameraPosition: [-16, 4, -16],
-  // setCameraPosition: (cameraPosition: number[]) => set({ cameraPosition })
-}))
+// const storeCameraZ = createStore('threedCamera')(({
+//   position: [-1, 1, -1],
+//   // setPosition: (position: number[]) => set({ position }),
+//   // cameraPosition: [-16, 4, -16],
+//   // setCameraPosition: (cameraPosition: number[]) => set({ cameraPosition })
+// }))
 // // Note that the zustand(x) store is accessible through:
 // // hook store
 // storeCameraZ.useStore
@@ -470,7 +470,7 @@ export const ThreeDCanvas = forwardRef((
           // minHeight: '400px',
         }}
 
-        shadows={true} // boolean || string 'basic' | 'percentage' | 'soft' | 'variance'
+        shadows={'soft'} // boolean || string 'basic' | 'percentage' | 'soft' | 'variance'
         dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         // frameloop={'demand'} // render mode: 'always' | 'demand' | 'never'
         

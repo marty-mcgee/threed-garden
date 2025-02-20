@@ -48,7 +48,7 @@ import {
 import { a, useSpring } from '@react-spring/three'
 
 // ** LEVA Imports
-import { useControls } from 'leva'
+// import { useControls } from 'leva'
 
 // ** PHYSICS Imports
 import {
@@ -148,6 +148,38 @@ type GLTFResult = GLTF & {
   }
 }
 
+// type ActionName = 'Take 001'
+// type ActionName =
+//   | 'pockets'
+//   | 'rope'
+//   | 'swingdance'
+//   | 'jump'
+//   | 'react'
+//   | 'shrug'
+//   | 'wave'
+//   | 'golf'
+//   | 'idle'
+//   // { [key: string]: any }
+//   // string
+// type GLTFActions = Record<ActionName, THREE.AnimationAction>
+
+type ActionName =
+  | 'CharacterArmature|Death'
+  | 'CharacterArmature|Duck'
+  | 'CharacterArmature|HitReact'
+  | 'CharacterArmature|Idle'
+  | 'CharacterArmature|Jump'
+  | 'CharacterArmature|Jump_Idle'
+  | 'CharacterArmature|Jump_Land'
+  | 'CharacterArmature|No'
+  | 'CharacterArmature|Punch'
+  | 'CharacterArmature|Run'
+  | 'CharacterArmature|Walk'
+  | 'CharacterArmature|Wave'
+  | 'CharacterArmature|Weapon'
+  | 'CharacterArmature|Yes'
+type GLTFActions = Record<ActionName, THREE.AnimationAction>
+
 // **
 // ** ANIMATIONS ****************************************
 // **
@@ -182,21 +214,6 @@ const animationSetNew = {
 // }
 const animationSet = animationSetNew
 // console.debug('animationSet', animationSet)
-
-// type ActionName = 'Take 001'
-type ActionName =
-  | 'pockets'
-  | 'rope'
-  | 'swingdance'
-  | 'jump'
-  | 'react'
-  | 'shrug'
-  | 'wave'
-  | 'golf'
-  | 'idle'
-  // { [key: string]: any }
-  // string
-type GLTFActions = Record<ActionName, THREE.AnimationAction>
 // **
 
 // **
