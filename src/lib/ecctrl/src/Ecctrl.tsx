@@ -63,7 +63,7 @@ const getMovingDirection = (
 const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   children,
   debug = false, // true is buggy
-  capsuleRadius = 1,
+  capsuleRadius = 10,
   capsuleHalfHeight = 0, // 10,
   floatHeight = capsuleHalfHeight, // 2.000, // 0, // 0.3,
   characterInitDir = 0, // in rad

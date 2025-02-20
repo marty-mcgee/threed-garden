@@ -72,6 +72,7 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 // import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
 
 // ** THREED CHARACTER CONTROL Imports
+// import Ecctrl, { EcctrlAnimation } from 'ecctrl'
 // import CharacterControls from '#/lib/ecctrl/src-old/Ecctrl'
 // import CharacterControls from '#/lib/ecctrl/src-old/CharacterControls'
 import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
@@ -122,6 +123,31 @@ import ccm from '#/lib/utils/console-colors'
 // **
 const debug: boolean = false
 const DEBUG: boolean = true
+
+/**
+ * Character Model URL (default)
+ */
+const CHARACTER_MODEL_URL = new URL(
+  '/public/objects/SK_Chr_Farmer_Female_01.glb',
+  import.meta.url,
+).href
+
+/**
+ * Character animation set preset
+ */
+const animationSet = {
+  idle: "CharacterArmature|Idle",
+  walk: "CharacterArmature|Walk",
+  run: "CharacterArmature|Run",
+  jump: "CharacterArmature|Jump",
+  jumpIdle: "CharacterArmature|Jump_Idle",
+  jumpLand: "CharacterArmature|Jump_Land",
+  fall: "CharacterArmature|Duck", // This is for falling from high sky
+  action1: "CharacterArmature|Wave",
+  action2: "CharacterArmature|Death",
+  action3: "CharacterArmature|HitReact",
+  action4: "CharacterArmature|Punch",
+}
 
 // ** BOUNDS
 // This function component wraps children in a group with a click handler
@@ -400,8 +426,8 @@ const ThreeDExperience = forwardRef((
                       // disableFollowCam={false}
                       // disableFollowCam={true}
                       disableFollowCam={prefs.doWorldUnfollowCam}
-                      followLight={false}
-                      // followLight={true}
+                      // followLight={false}
+                      followLight={true}
                       // followLight={prefs.doWorldFollowLight}
                       // **
                       // springK={2}

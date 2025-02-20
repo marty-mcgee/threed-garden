@@ -20,8 +20,7 @@ export default function Map(props: any) {
   const { nodes, materials } = useGLTF(theMapModelFile)
 
   return (
-    // <RigidBody type="fixed" colliders="trimesh" ccd>
-    <RigidBody type="fixed" ccd>
+    <RigidBody type="fixed" colliders="trimesh" ccd>
       <group 
         {...props} 
         dispose={null}

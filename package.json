@@ -56,10 +56,10 @@
     "@apollo/react-hooks": "4.0.0",
     "graphql": "16.9.0",
     "graphql-tag": "2.12.6",
-    "zustand": "4.5.2",
-    "zustand-x": "3.0.4",
-    "scheduler": "0.23.2",
-    "valtio": "2.1.2",
+    "zustand": "5.0.3",
+    "zustand-x": "6.1.0",
+    "scheduler": "0.25.0",
+    "valtio": "2.1.3",
 
     "three": "0.173.0",
     "three-mesh-ui": "6.5.4",
@@ -72,7 +72,7 @@
     
     "paper": "0.12.18",
 
-    "leva": "0.9.35",
+    "leva": "0.10.0",
     
     "react-resizable-panels": "2.1.7", 
     

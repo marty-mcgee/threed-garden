@@ -31,6 +31,10 @@ import {
 } from '@radix-ui/react-icons'
 
 // ==========================================================
+// ** get app version from package.json
+const appVersion: string = require('package.json').version
+
+// ==========================================================
 // ** RADIX-UI DropdownMenu
 export const ThreeDDropdownMenu = () => {
 
@@ -57,7 +61,7 @@ export const ThreeDDropdownMenu = () => {
         status: formStatePreferences.status,
         // ** custom fields
         // version: formStatePreferences.version,
-        version: prefs.version + '_YOYOYO',
+        version: appVersion + '_' + (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3),
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
@@ -86,7 +90,7 @@ export const ThreeDDropdownMenu = () => {
         content: prefs.content,
         status: 'PUBLISH', // prefs.status,
         // ** custom fields
-        version: prefs.version + '_HEYHEYHEY',
+        version: appVersion + '_' + (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3),
         projectName: prefs.projectName,
         doAutoLoadData: prefs.doAutoLoadData,
         doAutoRotate: prefs.doAutoRotate,
