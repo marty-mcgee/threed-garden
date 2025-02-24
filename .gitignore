@@ -56,8 +56,8 @@ public/assets/**
 public/demo
 public/demo/objects
 public/objects/**
-!public/objects/glb
-!public/objects/glb/**
+!public/objects/examples
+!public/objects/examples/**
 !public/objects/animations
 !public/objects/animations/**
 # !public/objects/threeds

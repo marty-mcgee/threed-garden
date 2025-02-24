@@ -39,6 +39,7 @@ import {
   View as ThreeDViewImpl,
   // PerspectiveCamera,
   Grid,
+  Bvh,
 } from '@react-three/drei'
 // ** React Spring
 import { 
@@ -265,6 +266,8 @@ const ThreeDExperienceViewer = forwardRef((
   return (
     <>
 
+      <Bvh firstHitOnly>
+
       {/* THREED IO */}
       {/* <Html ref={localRef} {...props} /> */}
       {/* 
@@ -418,6 +421,8 @@ const ThreeDExperienceViewer = forwardRef((
         </ThreeDViewImpl>
       </ThreedIO> 
       */}
+
+      </Bvh>
     </>
   )
 }
