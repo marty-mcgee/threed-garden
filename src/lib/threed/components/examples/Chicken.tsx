@@ -8,7 +8,7 @@ import React, { useRef, useMemo, useContext, createContext } from 'react'
 import { useGLTF, Merged } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
-const fileGLB = './objects/glb/Chicken.glb'
+const fileGLB = './objects/examples/Chicken.glb'
 
 type GLTFResult = GLTF & {
   nodes: {

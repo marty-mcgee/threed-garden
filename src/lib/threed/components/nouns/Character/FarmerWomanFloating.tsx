@@ -83,10 +83,8 @@ const debug: boolean = false
 const DEBUG: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
-// const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
 const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Female_01.glb'
-// const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
-const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_B.png'
+const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
 
 
 // ** TYPES for this GLTF
@@ -148,8 +146,8 @@ type GLTFResult = GLTF & {
   }
 }
 
+// ** EXAMPLE: Stacy
 // type ActionName = 'Take 001'
-// type ActionName =
 //   | 'pockets'
 //   | 'rope'
 //   | 'swingdance'
@@ -159,25 +157,12 @@ type GLTFResult = GLTF & {
 //   | 'wave'
 //   | 'golf'
 //   | 'idle'
-//   // { [key: string]: any }
-//   // string
 // type GLTFActions = Record<ActionName, THREE.AnimationAction>
 
-type ActionName =
-  | 'CharacterArmature|Death'
-  | 'CharacterArmature|Duck'
-  | 'CharacterArmature|HitReact'
-  | 'CharacterArmature|Idle'
-  | 'CharacterArmature|Jump'
-  | 'CharacterArmature|Jump_Idle'
-  | 'CharacterArmature|Jump_Land'
-  | 'CharacterArmature|No'
-  | 'CharacterArmature|Punch'
-  | 'CharacterArmature|Run'
-  | 'CharacterArmature|Walk'
-  | 'CharacterArmature|Wave'
-  | 'CharacterArmature|Weapon'
-  | 'CharacterArmature|Yes'
+// type ActionName = 'Root|Take 001|BaseLayer'
+type ActionName = 'Take 001'
+  | 'Idle'
+  | 'Walking'
 type GLTFActions = Record<ActionName, THREE.AnimationAction>
 
 // **
@@ -187,7 +172,7 @@ type GLTFActions = Record<ActionName, THREE.AnimationAction>
 
 // Rename your character animations here
 const animationSetNew = {
-  idle:     'Breathing Idle',
+  idle:     'Idle',
   walk:     'Walking',
   run:      'Running',
   jump:     'Crouch To Stand',

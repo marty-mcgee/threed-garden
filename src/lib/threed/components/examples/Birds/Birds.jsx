@@ -26,7 +26,7 @@ export default function Birds() {
           rotation: [0, x > 0 ? Math.PI : 0, 0],
           speed,
           factor,
-          url: `./objects/glb/${bird}.glb`,
+          url: `./objects/examples/${bird}.glb`,
         }
       }),
     []

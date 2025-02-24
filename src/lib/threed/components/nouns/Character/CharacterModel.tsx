@@ -17,7 +17,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   // Change the character src to yours
   const group = useRef<THREE.Group>(null);
   // @ts-expect-error
-  const { nodes, animations } = useGLTF('/objects/glb/CharacterModelFloating.glb') as GLTF & {
+  const { nodes, animations } = useGLTF('/objects/examples/CharacterModelFloating.glb') as GLTF & {
     nodes: any;
   };
   const { actions } = useAnimations(animations, group);
@@ -299,4 +299,4 @@ export default function CharacterModel(props: CharacterModelProps) {
 export type CharacterModelProps = any;
 
 // Change the character src to yours
-useGLTF.preload('/objects/glb/CharacterModelFloating.glb');
+useGLTF.preload('/objects/examples/CharacterModelFloating.glb');

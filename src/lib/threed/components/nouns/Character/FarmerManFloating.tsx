@@ -68,7 +68,7 @@ const debug: boolean = false
 const DEBUG: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
-// const theCharacterModelFile = '/objects/glb/CharacterModelFloating.glb'
+// const theCharacterModelFile = '/objects/examples/CharacterModelFloating.glb'
 const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.glb'
 // const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
 const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_B.png'

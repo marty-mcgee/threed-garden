@@ -88,6 +88,8 @@ import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Cha
 // import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chicken'
 import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
+import ModelWithAnimations from '#/lib/threed/components/nouns/Character/ModelWithMultipleAnimations'
+import ModelWithAnimationsFBXLoader from '#/lib/threed/components/nouns/Character/ModelWithMultipleAnimations2'
 
 // ** THREED OBJECTS
 import Floor from '#/lib/threed/components/canvas/Floor'
@@ -127,10 +129,10 @@ const DEBUG: boolean = true
 /**
  * Character Model URL (default)
  */
-const CHARACTER_MODEL_URL = new URL(
-  '/public/objects/SK_Chr_Farmer_Female_01.glb',
-  import.meta.url,
-).href
+// const CHARACTER_MODEL_URL = new URL(
+//   '/public/objects/SK_Chr_Farmer_Female_01.glb',
+//   import.meta.url,
+// ).href
 
 /**
  * Character animation set preset
@@ -439,7 +441,9 @@ const ThreeDExperience = forwardRef((
                       // mode='FixedCamera'
                       // mode='CameraBasedMovement'
                     >
-                      <CharacterModelFarmerWomanFloating scale={1.0} />
+                      {/* <ModelWithAnimations /> */}
+                      <ModelWithAnimationsFBXLoader />
+                      {/* <CharacterModelFarmerWomanFloating scale={1.0} /> */}
                       {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
                     </CharacterControls>
                   </group>
