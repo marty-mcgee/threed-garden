@@ -27,14 +27,14 @@ type AnimationActions = {
 const ModelWithMultipleAnimations: FC = () => {
   // Define the animation file names (or paths)
   const animationFiles = {
-    idle: './Idle.fbx',
-    walk: '/Walking.fbx',
-    run: './Running.fbx',
-    all: './Animations.fbx',
+    idle: './characters/animations/Idle.fbx',
+    walk: './characters/animations/Walking.fbx',
+    run:  './characters/animations/Running.fbx',
+    all:  './characters/animations/Animations.fbx',
   }
 
   // Load the model file (fbx)
-  const modelFile = './SK_Chr_Farmer_Female_01.fbx'
+  const modelFile = './characters/models/SK_Chr_Farmer_Female_01.fbx'
   // const modelFile = './SK_Chr_Farmer_Male_01.fbx'
 
   // const model = useFBX('./SK_Chr_Farmer_Female_01.fbx')
