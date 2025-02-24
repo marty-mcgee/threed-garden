@@ -7,21 +7,30 @@ import { PresentationControls } from '@react-three/drei'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-const ThreeDModels = (props) => {
-
-  let jsx
-
-  for (let Model; Model = 1; Model++) {
-    jsx += <ThreeDModel threedid={1} />
-  }
-
-  return <>{jsx}</>
-  // return {children}
-}
 // ** ThreeD -- Group of Model[s] -||-
 // const Model = (props) => {
 // function ThreeD({ state, threedId, threed, ...props }) {
-const ThreeD = ({ threedid, state, threed, type, position, rotation, scale, children }) => {
+const ThreeD = (
+  { 
+    threedid, 
+    state, 
+    threed, 
+    type, 
+    position, 
+    rotation, 
+    scale, 
+    children,
+  }: {
+    threedid: any, 
+    state: any, 
+    threed: any, 
+    type: any, 
+    position: any, 
+    rotation: any, 
+    scale: any, 
+    children: any, 
+  }
+) => {
   // return <></> // <div>ThreeD</div>
   return (
     <>
