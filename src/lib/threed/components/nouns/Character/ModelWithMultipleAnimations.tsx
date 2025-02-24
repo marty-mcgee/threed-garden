@@ -5,12 +5,12 @@ import * as THREE from 'three'
 
 const ModelWithAnimation = () => {
   // const model = useFBX('./SK_Chr_Farmer_Male_01.fbx')
-  const model = useFBX('./SK_Chr_Farmer_Female_01.fbx')
-  // const animations = useFBX('./Idle.fbx')
-  // const animations = useFBX('./Walking.fbx')
-  const idleAnimation = useFBX('./Idle.fbx')
-  const walkAnimation = useFBX('./Walking.fbx')
-  const runAnimation = useFBX('./Running.fbx')
+  const model = useFBX('./characters/models/SK_Chr_Farmer_Female_01.fbx')
+  // const animations = useFBX('./characters/animations/Idle.fbx')
+  // const animations = useFBX('./characters/animations/Walking.fbx')
+  const idleAnimation = useFBX('./characters/animations/Idle.fbx')
+  const walkAnimation = useFBX('./characters/animations/Walking.fbx')
+  const runAnimation = useFBX('./characters/animations/Running.fbx')
   const mixer = useRef<any>(null)
   const [actions, setActions] = useState({})
 
