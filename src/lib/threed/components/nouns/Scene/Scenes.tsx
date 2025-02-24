@@ -1,4 +1,4 @@
-import Scene from '#/lib/threed/components/nouns/Scene'
+import Scene from '#/lib/threed/components/nouns/Scene/Scene'
 
 const Scenes = () => {
   // hey hey hey

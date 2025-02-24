@@ -1,9 +1,15 @@
 // ** RESOURCES
-import { useState, useRef } from 'react'
-import { useThree, useFrame } from '@react-three/fiber'
-import { ContactShadows, useCursor, useGLTF, useFBX, useOBJ } from '@react-three/drei'
+// import { useState, useRef } from 'react'
+// import { useThree, useFrame } from '@react-three/fiber'
+import { 
+  ContactShadows, 
+  // useCursor, 
+  // useGLTF, 
+  // useFBX, 
+  // useOBJ, 
+} from '@react-three/drei'
 
-import ThreeD from '#/lib/threed/components/nouns/ThreeD'
+// import ThreeD from '#/lib/threed/components/nouns/ThreeD'
 // import Demo from '#/lib/threed/components/nouns/Scene/FarmDemo'
 // <Demo />
 
@@ -65,7 +71,7 @@ const defaults = {
 // ==============================================================
 // ** COMPONENTS
 
-const ThreeDScene = (props) => {
+const ThreeDScene = (props: any) => {
   // **
   // deconstruct arguments from props
   // const { ref, state, threed, name, file, doReturnOne, doReturnEach, doReturnAll } = props
@@ -109,8 +115,8 @@ const ThreeDScene = (props) => {
   return (
     <>
       <group
-        position={THREEDSCENE.group.group_position}
-        rotation={THREEDSCENE.group.group_rotation}
+        // position={THREEDSCENE.group.group_position}
+        // rotation={THREEDSCENE.group.group_rotation}
         scale={THREEDSCENE.group.group_scale}>
 
         {/* <ThreeD
@@ -119,7 +125,7 @@ const ThreeDScene = (props) => {
           threed={THREEDSCENE}
         /> */}
 
-        {children}
+        {props.children}
 
         <ContactShadows
           rotation-x={Math.PI / 2}
