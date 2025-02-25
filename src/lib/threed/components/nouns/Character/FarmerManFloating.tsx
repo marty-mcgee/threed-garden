@@ -49,7 +49,7 @@ import {
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 // ** ECCRTL ZUSTAND STATE
-import { useGame, type AnimationSet } from '#/lib/ecctrl/src/stores/useGame'
+import { useGame, type AnimationSet } from '~/src/lib/ecctrl/src-old/stores/useGame'
 
 // ** GLTF to JSX
 // import * as THREE from 'three'
