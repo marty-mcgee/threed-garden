@@ -446,7 +446,7 @@ const ThreeDExperience = forwardRef((
                       disableFollowCam={prefs.doWorldUnfollowCam}
                       
                       // followLight={false}
-                      followLight={true}
+                      // followLight={true}
                       // followLight={prefs.doWorldFollowLight}
                       
                       // **
@@ -507,7 +507,7 @@ const ThreeDExperience = forwardRef((
                   rotation={[(Math.PI/2) + 0, (-Math.PI/1), (Math.PI/1) + 0]}
                   // quaternion={[0,0,0,0]}
                   scale={8.0} 
-                  position={[80, 140, -1200]}
+                  position={[80, 140, -1600]}
                 >
                   <Map />
                 </group>
