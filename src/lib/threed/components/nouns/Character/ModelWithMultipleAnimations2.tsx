@@ -77,6 +77,10 @@ const ModelWithMultipleAnimations: FC = () => {
     loader.load(
       modelFile,
       (fbx) => {
+        // Scale the model
+        // fbx.scale.set(10.00, 10.00, 10.00);
+        // fbx.scale.set(1.00, 1.00, 1.00);
+        // fbx.scale.set(0.01, 0.01, 0.01);
         setModel(fbx)
         // setAnimations({
         //   walk: fbx.animations.filter((clip) => clip.name === 'walk'),

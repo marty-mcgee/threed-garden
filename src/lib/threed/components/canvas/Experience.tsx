@@ -75,7 +75,9 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 // import Ecctrl, { EcctrlAnimation } from 'ecctrl'
 // import CharacterControls from '#/lib/ecctrl/src-old/Ecctrl'
 // import CharacterControls from '#/lib/ecctrl/src-old/CharacterControls'
-import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
+// import CharacterControls from '~/src/lib/ecctrl/src-old/Ecctrl'
+// import CharacterControls from 'ecctrl'
+import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
 import CharacterModelDemon from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -414,23 +416,39 @@ const ThreeDExperience = forwardRef((
                   
                   {/* CHARACTER MODEL */}
                   { true && (
-                  <group key='character1' position={[0, 0, 0]}>
+                  <group 
+                    key='character1' 
+                    position={[0, 0, 0]}
+                    // scale={[0.1, 0.1, 0.1]}
+                    scale={[1.0, 1.0, 1.0]}
+                  >
                     <CharacterControls
+                      
+                      // scale={[10, 10, 10]}
+                      scale={[1.0, 1.0, 1.0]}
+                      // scale={[0.01, 0.01, 0.01]}
+                      // scale={[0.001, 0.001, 0.001]}
+                      
                       // debug={false}
                       // debug={true}
                       debug={prefs.doWorldDebug}
+                      
                       // animated={false}
                       // animated={true}
                       animated={prefs.doCharacterAnimation}
+                      
                       // disableControl={false}
                       // disableControl={true}
                       disableControl={prefs.doWorldControl}
+                      
                       // disableFollowCam={false}
                       // disableFollowCam={true}
                       disableFollowCam={prefs.doWorldUnfollowCam}
+                      
                       // followLight={false}
                       followLight={true}
                       // followLight={prefs.doWorldFollowLight}
+                      
                       // **
                       // springK={2}
                       // dampingC={0.2}

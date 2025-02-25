@@ -69,6 +69,8 @@
     "@react-three/fiber": "9.0.0-rc.9",
     "@react-three/rapier": "1.5.0",
     "r3f-perf": "7.2.3",
+
+    "ecctrl": "1.0.92",
     
     "paper": "0.12.18",
 
