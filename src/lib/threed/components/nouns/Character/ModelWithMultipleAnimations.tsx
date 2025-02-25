@@ -14,15 +14,6 @@ const ModelWithAnimation = () => {
   const mixer = useRef<any>(null)
   const [actions, setActions] = useState({})
 
-  // useEffect(() => {
-  //   if (model && animations) {
-  //     mixer.current = new THREE.AnimationMixer(model)
-  //     animations.animations.forEach((clip) => {
-  //       const action = mixer.current.clipAction(clip)
-  //       action.play()
-  //     })
-  //   }
-  // }, [model, animations])
   useEffect(() => {
     if (model && walkAnimation && runAnimation && idleAnimation) {
       // Create an AnimationMixer for the model
