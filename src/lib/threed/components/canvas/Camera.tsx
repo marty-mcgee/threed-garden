@@ -42,9 +42,6 @@ export default function ThreeDCamera(
 ) {
 
   const initCamera: { position: VectorXyz, target: VectorXyz } = {
-    // position: isXL ? [7500, -3500, 3200]
-    // position: [5000, -2500, 3200], // Small screens
-    // position: [2200, -3500, 2000], // Large screens
     position: [-640, 320, 640],
     target: [0, 0, 0],
   }
