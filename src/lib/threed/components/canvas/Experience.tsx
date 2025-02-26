@@ -73,7 +73,8 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 
 // ** THREED CHARACTER CONTROL Imports
 // import CharacterControls from 'ecctrl'
-import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
+// import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
+import CharacterControls from '#/lib/ecctrl/src/EcctrlCustom'
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
 import CharacterModelDemon from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -423,10 +424,11 @@ const ThreeDExperience = forwardRef((
                 { true && (
                 <group 
                   key='character1' 
-                  position={[0, 10, 0]}
+                  position={[0, 100, 0]}
                   // scale={[0.01, 0.01, 0.01]}
                   // scale={[0.1, 0.1, 0.1]}
                   // scale={[10.0, 10.0, 10.0]}
+                  // scale={[100.0, 100.0, 100.0]}
                 >
                   <CharacterControls
                     
@@ -452,7 +454,7 @@ const ThreeDExperience = forwardRef((
                     // disableFollowCam={true}
                     disableFollowCam={prefs.doWorldUnfollowCam}
                     
-                    // followLight={false}
+                    followLight={false}
                     // followLight={true}
                     // followLight={prefs.doWorldFollowLight}
                     
@@ -466,10 +468,18 @@ const ThreeDExperience = forwardRef((
                     // mode='FixedCamera'
                     // mode='CameraBasedMovement'
                   >
-                    {/* <ModelWithAnimations /> */}
-                    <ModelWithAnimationsFBXLoader />
-                    {/* <CharacterModelFarmerWomanFloating scale={1.0} /> */}
-                    {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
+                    <group 
+                      key='character1controls' 
+                      position={[0, -86, 0]}
+                      // scale={[0.01, 0.01, 0.01]}
+                      // scale={[0.1, 0.1, 0.1]}
+                      // scale={[10.0, 10.0, 10.0]}
+                    >
+                      {/* <ModelWithAnimations /> */}
+                      <ModelWithAnimationsFBXLoader />
+                      {/* <CharacterModelFarmerWomanFloating scale={1.0} /> */}
+                      {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
+                    </group>
                   </CharacterControls>
                 </group>
                 )}
