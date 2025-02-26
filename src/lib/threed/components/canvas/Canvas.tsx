@@ -529,6 +529,8 @@ export const ThreeDCanvas = forwardRef((
           </Html>
         }>
 
+          {/* <Preload all /> */}
+
 
           {/* FORWARD REF ??? */}
           {/* <ThreeForwardRef ref={refCanvas} /> */}

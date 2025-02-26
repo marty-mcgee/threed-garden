@@ -36,8 +36,8 @@ export const FOCI = (config: Config): Focus[] => [
           garden veggies at the same time. Crops we've had success with include
           Bok Choy, Lettuces, Radish, Beets, Chard, Arugula, Broccoli, and much
           more.
-          <p>
-          </p>
+        </p>
+        <p>
           By placing vining and other indeterminate crops near the ends
           of the bed and training them outwards, you can easily double or
           triple the area your plants can utilize while still being maintained
@@ -49,7 +49,7 @@ export const FOCI = (config: Config): Focus[] => [
         config.bedWidthOuter * .8,
         300,
       ],
-      scale: config.sizePreset == "Genesis XL" ? 6000 : 3000,
+      scale: config.sizePreset == "Genesis XL" ? 550 : 550,
     },
     position: [
       threeSpace(config.bedLengthOuter / 2, config.bedLengthOuter),
@@ -84,7 +84,7 @@ export const FOCI = (config: Config): Focus[] => [
     },
   },
   {
-    label: "Included tools",
+    label: "Included Tools",
     info: {
       description: <div className={"description-wrapper"}>
         <p>
@@ -172,7 +172,7 @@ export const FOCI = (config: Config): Focus[] => [
         75,
         0,
       ],
-      scale: 400,
+      scale: 550,
     },
     position: [
       threeSpace(config.x, config.bedLengthOuter) + config.bedXOffset,
@@ -292,7 +292,7 @@ export const FOCI = (config: Config): Focus[] => [
         -300,
         0,
       ],
-      scale: 1000,
+      scale: 550,
     },
     position: [
       threeSpace(config.bedLengthOuter + 700, config.bedLengthOuter),
@@ -327,7 +327,7 @@ export const FOCI = (config: Config): Focus[] => [
     },
   },
   {
-    label: "Planter bed",
+    label: "Planter Bed",
     info: {
       description: <div className={"description-wrapper"}>
         <p>
@@ -343,7 +343,7 @@ export const FOCI = (config: Config): Focus[] => [
         -config.bedWidthOuter / 2,
         config.sizePreset == "Genesis XL" ? 1000 : 800,
       ],
-      scale: 1500,
+      scale: 550,
     },
     position: [
       threeSpace(config.bedLengthOuter + 50, config.bedLengthOuter),
