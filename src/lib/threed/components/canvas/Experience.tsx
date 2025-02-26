@@ -72,10 +72,6 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 // import Shoe from '#/lib/threed/components/examples/Shoes/Shoe'
 
 // ** THREED CHARACTER CONTROL Imports
-// import Ecctrl, { EcctrlAnimation } from 'ecctrl'
-// import CharacterControls from '#/lib/ecctrl/src-old/Ecctrl'
-// import CharacterControls from '#/lib/ecctrl/src-old/CharacterControls'
-// import CharacterControls from '#/lib/ecctrl/src-old/Ecctrl'
 // import CharacterControls from 'ecctrl'
 import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
 // ** THREED CHARACTER MODEL Imports
@@ -513,7 +509,7 @@ const ThreeDExperience = forwardRef((
                 </group>
                   
                 {/* THREED MODELS as props.threeds */}
-                {/* 
+                {/* testing... */}
                 <group
                   key='threed_models_children'
                   // scale all threeds?
@@ -526,7 +522,7 @@ const ThreeDExperience = forwardRef((
                     // position={[0, -1, 0]}
                   />
                 </group>
-                */}
+                {/* ...testing */}
 
               </SelectToZoom>
               {/* END: SELECT TO ZOOM */}
