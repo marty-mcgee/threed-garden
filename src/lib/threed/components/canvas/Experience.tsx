@@ -75,9 +75,9 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 // import Ecctrl, { EcctrlAnimation } from 'ecctrl'
 // import CharacterControls from '#/lib/ecctrl/src-old/Ecctrl'
 // import CharacterControls from '#/lib/ecctrl/src-old/CharacterControls'
-// import CharacterControls from '~/src/lib/ecctrl/src-old/Ecctrl'
+// import CharacterControls from '#/lib/ecctrl/src-old/Ecctrl'
 // import CharacterControls from 'ecctrl'
-import CharacterControls from '~/src/lib/ecctrl/src/Ecctrl'
+import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
 import CharacterModelDemon from '#/lib/threed/components/nouns/Character/CharacterModelDemon'

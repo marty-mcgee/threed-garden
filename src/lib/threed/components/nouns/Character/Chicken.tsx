@@ -54,9 +54,9 @@ import {
 } from '@react-three/rapier'
 
 // ** ECCRTL CHARACTER ANIMATION
-import { EcctrlAnimation } from '~/src/lib/ecctrl/src-old/EcctrlAnimation'
+import { EcctrlAnimation } from '#/lib/ecctrl/src/EcctrlAnimation'
 // ** ECCRTL ZUSTAND STATE
-import { useGame } from '~/src/lib/ecctrl/src-old/stores/useGame'
+import { useGame } from '#/lib/ecctrl/src/stores/useGame'
 
 // ** HELPER Imports
 // import { Perf } from 'r3f-perf'

@@ -9,8 +9,8 @@
 import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
-import SessionData from '~/src/layout/ui/session-data'
-// import CustomLink from '~/src/layout/ui/custom-link'
+import SessionData from '#/layout/ui/session-data'
+// import CustomLink from '#/layout/ui/custom-link'
 
 // ** Next
 // import type { NextPage, NextPageContext } from 'next'
