@@ -434,6 +434,7 @@ export const ThreeDCanvas = forwardRef((
   // ==========================================================
   // ** RETURN JSX
   return (
+    // <Suspense fallback={<Spinner />}>
     <>
 
       {/* TUNNELING R3F with tunnelrat IO
