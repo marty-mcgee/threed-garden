@@ -51,7 +51,7 @@ import {
 import ThreeDCanvasViewer from '#/lib/threed/components/canvas/CanvasViewer'
 
 // ** ThreeD Controls Imports
-// import ThreeDControls from '~/src/lib/threed/Controls'
+// import ThreeDControls from '#/lib/threed/Controls'
 
 // ** ThreeD Leva Controls
 import { ThreeDLevaControls, ThreeDLevaComponent } from '#/lib/threed/components/controls/LevaControls'

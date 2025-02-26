@@ -63,7 +63,7 @@ import {
 import { 
   useGame, 
   type AnimationSet,
-} from '~/src/lib/ecctrl/src-old/stores/useGame'
+} from '#/lib/ecctrl/src/stores/useGame'
 
 // ** THREED ANIMATIONS for Characters/Players
 import { 

@@ -41,7 +41,7 @@
 // import CustomLink from '#/layout/ui/custom-link'
 
 // ** THREED Imports
-import ThreeDHomeDesign from '~/src/lib/threed/HomeDesign'
+import ThreeDHomeDesign from '#/lib/threed/HomeDesign'
 // const ThreeDHomeDesign = dynamic(() => import('#/lib/threed/HomeDesign'), { ssr: false })
 
 // ==============================================================

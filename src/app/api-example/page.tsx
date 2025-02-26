@@ -1,5 +1,5 @@
 'use client'
-import CustomLink from '~/src/layout/ui/custom-link'
+import CustomLink from '#/layout/ui/custom-link'
 import { useEffect, useState } from 'react'
 
 export default function Page() {
