@@ -193,6 +193,8 @@ const ThreeDExperience = forwardRef((
   refCanvas: any
 ) => {
 
+  console.debug(`%c EXPERIENCE: props.threeds`, ccm.redAlert, threeds)
+
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
@@ -260,6 +262,28 @@ const ThreeDExperience = forwardRef((
           paused={pausedPhysics}
         >
 
+        {/* REACT SUSPENSE */}
+        {/* <Suspense fallback={<Html>LOADING HEY HEY HEY ...</Html>}> */}
+        <Suspense fallback={
+          <Html center>
+            <Loader
+              // containerStyles={...container} // Flex layout styles
+              // innerStyles={...inner} // Inner container styles
+              // barStyles={...bar} // Loading-bar styles
+              // dataStyles={...data} // Text styles
+              dataInterpolation={(p: number) => `THREED UI ${p.toFixed(0)}%`} // Text
+              // initialState={(active = false) => active} // Initial black out state
+            />
+          </Html>
+        }>
+
+          {/* EXAMPLES: BIRDS */}
+          { true && (
+            <group rotation={[0, 0, 0]} scale={100.0} position={[0, 2400, 0]}>
+              <Birds />
+            </group>
+          )}
+
           {/* ** FLOORS ** */}
           {/* solid steps (levels, safety) */}
           {/* The Floor (Plane 0) */}
@@ -282,21 +306,6 @@ const ThreeDExperience = forwardRef((
           {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -1024, 0]}>
             <Ground color={'black'} opacity={0.0} />
           </group> */}
-
-          {/* REACT SUSPENSE */}
-          {/* <Suspense fallback={<Html>LOADING HEY HEY HEY ...</Html>}> */}
-          <Suspense fallback={
-            <Html center>
-              <Loader
-                // containerStyles={...container} // Flex layout styles
-                // innerStyles={...inner} // Inner container styles
-                // barStyles={...bar} // Loading-bar styles
-                // dataStyles={...data} // Text styles
-                dataInterpolation={(p: number) => `THREED UI ${p.toFixed(0)}%`} // Text
-                // initialState={(active = false) => active} // Initial black out state
-              />
-            </Html>
-          }>
 
             {/* R3F BOUNDS */}
             <Bounds 
@@ -510,18 +519,20 @@ const ThreeDExperience = forwardRef((
                   
                 {/* THREED MODELS as props.threeds */}
                 {/* testing... */}
-                <group
-                  key='threed_models_children'
-                  // scale all threeds?
-                  scale={100.3}
-                >
-                  <ThreeDModels
-                    threeds={threeds} // threeds={{}}
-                    // master position for all threeds?
-                    // position={[-4, 0, 0]}
-                    // position={[0, -1, 0]}
-                  />
-                </group>
+                { threeds.length > 0 && (
+                  <group
+                    key='threed_models_children'
+                    // scale all threeds?
+                    // scale={100.3}
+                  >
+                    <ThreeDModels
+                      threeds={threeds} // threeds={[]}
+                      // master position for all threeds?
+                      // position={[-4, 0, 0]}
+                      // position={[0, -1, 0]}
+                    />
+                  </group>
+                )}
                 {/* ...testing */}
 
               </SelectToZoom>
