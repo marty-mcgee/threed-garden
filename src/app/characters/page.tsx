@@ -1,16 +1,16 @@
 'use client'
 
-import "./App.css";
-import { Canvas } from "@react-three/fiber";
-import { Physics, RigidBody } from "@react-three/rapier";
-import { KeyboardControls } from "@react-three/drei";
-import { Suspense } from "react";
-import Ecctrl, { EcctrlAnimation } from "ecctrl";
-import CharacterModel from "./components/CharacterModel2.tsx";
-import SceneModel from "./components/Scene.tsx";
-import { CHARACTER_MODEL_URL } from "./Constants.ts";
+import "./App.css"
+import { Canvas } from "@react-three/fiber"
+import { Physics, RigidBody } from "@react-three/rapier"
+import { KeyboardControls } from "@react-three/drei"
+import { Suspense } from "react"
+import Ecctrl, { EcctrlAnimation } from "ecctrl"
+import CharacterModel from "./components/CharacterModel"
+import SceneModel from "./components/Scene"
+import { CHARACTER_MODEL_URL } from "./Constants"
 
-function App() {
+export default function CharacterDemoApp() {
   /**
    * Character animation set preset
    */
@@ -26,7 +26,7 @@ function App() {
     action2: "CharacterArmature|Death",
     action3: "CharacterArmature|HitReact",
     action4: "CharacterArmature|Punch",
-  };
+  }
 
   /**
    * Keyboard control preset
@@ -42,7 +42,7 @@ function App() {
     { name: "action2", keys: ["2"] },
     { name: "action3", keys: ["3"] },
     { name: "action4", keys: ["KeyF"] },
-  ];
+  ]
 
   return (
     <div id='root'>
@@ -85,7 +85,5 @@ function App() {
         </Suspense>
       </Canvas>
     </div>
-  );
+  )
 }
-
-export default App;
