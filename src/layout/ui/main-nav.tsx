@@ -88,7 +88,7 @@ export default function MainNav() {
                 className={navigationMenuTriggerStyle()}
                 style={{
                   backgroundColor: '#222222', 
-                  color: '#DDDDDD',
+                  color: '#888888',
                   textDecoration: 'none',
                   // borderWidth: 0,
                   // marginTop: 0,
@@ -105,8 +105,8 @@ export default function MainNav() {
                 href='/participate'
                 className={navigationMenuTriggerStyle()}
                 style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD',
+                  backgroundColor: '#222222', 
+                  color: '#888888',
                   textDecoration: 'none',
                   // borderWidth: 0,
                   // margin: 0,
@@ -123,8 +123,8 @@ export default function MainNav() {
                 href='/characters'
                 className={navigationMenuTriggerStyle()}
                 style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD',
+                  backgroundColor: '#222222', 
+                  color: '#888888',
                   textDecoration: 'none',
                   // borderWidth: 0,
                   // margin: 0,
