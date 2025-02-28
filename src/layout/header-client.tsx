@@ -31,6 +31,7 @@ export default function Header() {
       id='ThreeDAppHeader'
       style={{
         display: 'flex',
+        height: '36px',
       }}
     >
       <div
