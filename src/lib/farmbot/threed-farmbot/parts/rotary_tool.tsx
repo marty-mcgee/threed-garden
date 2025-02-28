@@ -57,7 +57,7 @@ export type RotaryToolFull = GLTF & {
   };
 }
 
-export const RotaryTool = (model: RotaryToolFull) => (props: JSX.IntrinsicElements) => {
+export const RotaryTool = (model: RotaryToolFull) => (props: any) => {
   const { nodes, materials } = model;
   return <group {...props}>
     <mesh geometry={nodes.M25_x_6mm_Screw.geometry} material={materials.PaletteMaterial001} position={[0.011, -0.002, -0.049]} rotation={[2.967, 0, 0]} />

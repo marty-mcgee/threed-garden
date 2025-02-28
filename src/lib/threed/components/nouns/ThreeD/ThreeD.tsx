@@ -64,7 +64,9 @@ const ThreeD = (
 
   <PresentationControls
     // global
+    // @ ts-expect-error -- mass
     config={{ mass: 2, tension: 500 }}
+    // @ts-expect-error -- mass
     snap={{ mass: 4, tension: 1500 }}
     rotation={[0, 0.3, 0]}
     polar={[-Math.PI / 3, Math.PI / 3]}

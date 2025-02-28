@@ -13,7 +13,7 @@ export type VacuumPumpCoverFull = GLTF & {
 }
 
 export const VacuumPumpCover = (model: VacuumPumpCoverFull) =>
-  (props: JSX.IntrinsicElements) => {
+  (props: any) => {
     const { nodes, materials } = model;
     return <group {...props} dispose={null}>
       <mesh geometry={nodes.M5_x_10mm_Screw.geometry}

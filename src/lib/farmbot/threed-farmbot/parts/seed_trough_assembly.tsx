@@ -14,7 +14,7 @@ export type SeedTroughAssemblyFull = GLTF & {
   };
 }
 
-export const SeedTroughAssembly = (model: SeedTroughAssemblyFull) => (props: JSX.IntrinsicElements) => {
+export const SeedTroughAssembly = (model: SeedTroughAssemblyFull) => (props: any) => {
   const { nodes, materials } = model;
   return <group {...props} dispose={null}>
     <group position={[-0.003, -0.02, 0.027]}>
