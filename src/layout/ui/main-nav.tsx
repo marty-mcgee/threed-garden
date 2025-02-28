@@ -43,7 +43,8 @@ export default function MainNav() {
         style={{
           display: 'inline-flex',
           // flexGrow: '0',
-          alignItems: 'center'
+          alignItems: 'center',
+          marginRight: -16,
         }}
       >
         {/* <CustomLink href='/#home'> */}
@@ -81,24 +82,6 @@ export default function MainNav() {
         >
           <NavigationMenuList>
         
-            {/* <NavigationMenuItem>
-              <NavigationMenuLink
-                href='/participate'
-                className={navigationMenuTriggerStyle()}
-                style={{
-                  // backgroundColor: '#222222', 
-                  color: '#DDDDDD',
-                  textDecoration: 'none',
-                  // borderWidth: 0,
-                  // margin: 0,
-                  // padding: 0,
-                  // fontSize: 12,
-                }}
-              >
-                🟣 Demo: Basic
-              </NavigationMenuLink>
-            </NavigationMenuItem> */}
-        
             <NavigationMenuItem>
               <NavigationMenuLink
                 href='/home-design'
@@ -113,7 +96,43 @@ export default function MainNav() {
                   // fontSize: 12,
                 }}
               >
-                🟢 DEMO
+                🟢 DEMO: FULL
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                href='/participate'
+                className={navigationMenuTriggerStyle()}
+                style={{
+                  // backgroundColor: '#222222', 
+                  color: '#DDDDDD',
+                  textDecoration: 'none',
+                  // borderWidth: 0,
+                  // margin: 0,
+                  // padding: 0,
+                  // fontSize: 12,
+                }}
+              >
+                🟣 DEMO: BASIC
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                href='/characters'
+                className={navigationMenuTriggerStyle()}
+                style={{
+                  // backgroundColor: '#222222', 
+                  color: '#DDDDDD',
+                  textDecoration: 'none',
+                  // borderWidth: 0,
+                  // margin: 0,
+                  // padding: 0,
+                  // fontSize: 12,
+                }}
+              >
+                🔵 DEMO: CHARACTERS
               </NavigationMenuLink>
             </NavigationMenuItem>
         
@@ -131,7 +150,7 @@ export default function MainNav() {
                   // fontSize: 12,
                 }}
               >
-                🟣 CHAT
+                🟠 CHAT
               </NavigationMenuLink>
             </NavigationMenuItem>
 
