@@ -6,9 +6,9 @@
 // } from 'react'
 
 // ** RADIX-UI Imports
-import {
-  Flex,
-} from '@radix-ui/themes'
+// import {
+//   Flex,
+// } from '@radix-ui/themes'
 
 // // ** PANELS Imports
 // import { 
@@ -54,13 +54,16 @@ export default function ThreeDComponents(): React.ReactNode {
     style={{ 
       display: 'flex', 
       flexDirection: 'column',
-      height: '100%',
-      minHeight: '40vh',
-      // maxHeight: '60vh',
-      // minWidth: '50vw',
-      // maxWidth: '90vw',
-      width: '100%',
+      // height: '100%',
+      // minHeight: '40vh',
+      // // maxHeight: '60vh',
+      // // minWidth: '50vw',
+      // // maxWidth: '90vw',
+      // width: '100%',
       flexGrow: '0',
+      width: '100vw',
+      height: 'calc(100vh - 64px)',
+      overflow: 'hidden',
     }}
   >
     {/* <PanelGroup

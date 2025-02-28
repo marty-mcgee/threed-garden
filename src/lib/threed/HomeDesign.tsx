@@ -6720,8 +6720,11 @@ export default function ThreeDHomeDesign({
         display: 'flex',
         flexDirection: 'column',
         // flexGrow: '1',
-        height: '92vh',
-        width: '99.9%',
+        // height: '92vh',
+        // width: '99.9%',
+        width: '100vw',
+        height: 'calc(100vh - 64px)',
+        overflow: 'hidden',
       }}
     >
       

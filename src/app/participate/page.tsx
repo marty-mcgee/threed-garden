@@ -21,7 +21,7 @@ import type { TNextPageWithProps } from '#/lib/types/TAppProps'
 // import { Suspense } from 'react'
 
 // ** THREED Components Imports
-// import ThreeDComponents from '#/lib/threed/threed'
+// import ThreeDComponents from '#/lib/threed/ThreeDComponents'
 const ThreeDComponents = dynamic(() => import('#/lib/threed/ThreeDComponents'), { ssr: false })
 
 // ** HELPER Imports

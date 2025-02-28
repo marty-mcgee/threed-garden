@@ -7,7 +7,7 @@
 */
 
 #root {
-  width: 99.6vw;
-  height: 94vh;
+  width: 100vw;
+  height: calc(100vh - 64px);
   overflow: hidden;
 }
