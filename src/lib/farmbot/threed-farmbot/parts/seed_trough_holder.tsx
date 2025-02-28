@@ -12,7 +12,7 @@ export type SeedTroughHolderFull = GLTF & {
   };
 }
 
-export const SeedTroughHolder = (model: SeedTroughHolderFull) => (props: JSX.IntrinsicElements) => {
+export const SeedTroughHolder = (model: SeedTroughHolderFull) => (props: any) => {
   const { nodes, materials } = model;
   return <group {...props} dispose={null}>
     <mesh geometry={nodes.Seed_Trough_Holder_Mount_Plate.geometry} material={materials['0.603922_0.647059_0.686275_0.000000_0.000000']} position={[-0.002, 0.023, 0]} />

@@ -32,7 +32,7 @@ export function Instances({ children, ...props }) {
   )
   return (
     <Merged meshes={instances} {...props}>
-      {/* @ts-expect-error */}
+      {/* @ ts-expect-error */}
       {(instances) => <context.Provider value={instances} children={children} />}
     </Merged>
   )
