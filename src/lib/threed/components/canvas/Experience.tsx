@@ -451,8 +451,8 @@ const ThreeDExperience = forwardRef((
                     mode={'FixedCamera'}
                     // mode='CameraBasedMovement'
                     
-                    // disableControl={false}
-                    disableControl={true}
+                    disableControl={false}
+                    // disableControl={true}
                     // disableControl={prefs.doWorldControl}
                     
                     // disableFollowCam={false}
@@ -460,7 +460,7 @@ const ThreeDExperience = forwardRef((
                     // disableFollowCam={prefs.doWorldUnfollowCam}
                     
                     // followLight={false}
-                    followLight={true}
+                    // followLight={true}
                     // followLight={prefs.doWorldFollowLight}
                     
                     // ** MICRO-CONTROLS
