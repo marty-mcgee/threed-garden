@@ -12,8 +12,8 @@ import MainNav from '#/layout/ui/main-nav'
 // import UserButtonNextAuth from '#/layout/ui/user-button'
 // const UserButtonNextAuth = dynamic(() => import('#/layout/ui/user-button'), { ssr: false })
 // const UserButtonNextAuth = dynamic(() => import('#/layout/ui/user-button'), { })
-// import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
-// import { LayoutDashboard } from 'lucide-react'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import { LayoutDashboard } from 'lucide-react'
 
 // // ** RADIX-UI Imports
 // import {

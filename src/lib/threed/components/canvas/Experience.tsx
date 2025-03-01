@@ -87,8 +87,8 @@ import CharacterModelFarmerWomanFloating from '#/lib/threed/components/nouns/Cha
 // import CharacterModelFarmerGirlFloating from '#/lib/threed/components/nouns/Character/FarmerGirlFloating'
 import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chicken'
 import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
-import ModelWithAnimations from '#/lib/threed/components/nouns/Character/ModelWithMultipleAnimations'
-import ModelWithAnimationsFBXLoader from '#/lib/threed/components/nouns/Character/ModelWithMultipleAnimations2'
+import ModelWithAnimations from '#/lib/threed/components/nouns/Character/ModelWithAnimations'
+import ModelWithAnimationsFBXLoader from '#/lib/threed/components/nouns/Character/ModelWithAnimationsFBXLoader'
 
 // ** THREED OBJECTS
 import Floor from '#/lib/threed/components/canvas/Floor'
@@ -431,6 +431,8 @@ const ThreeDExperience = forwardRef((
                   // scale={[100.0, 100.0, 100.0]}
                 >
                   <CharacterControls
+
+                    // ** OPTIONS: PROPS
                     
                     // scale={[100, 100, 100]}
                     // scale={[1.0, 1.0, 1.0]}
@@ -438,35 +440,36 @@ const ThreeDExperience = forwardRef((
                     // scale={[0.01, 0.01, 0.01]}
                     // scale={[0.001, 0.001, 0.001]}
                     
-                    // debug={false}
+                    debug={false}
                     // debug={true}
-                    debug={prefs.doWorldDebug}
+                    // debug={prefs.doWorldDebug}
                     
                     // animated={false}
-                    // animated={true}
-                    animated={prefs.doCharacterAnimation}
+                    animated={true}
+                    // animated={prefs.doCharacterAnimation}
+                    
+                    mode={'FixedCamera'}
+                    // mode='CameraBasedMovement'
                     
                     // disableControl={false}
-                    // disableControl={true}
-                    disableControl={prefs.doWorldControl}
+                    disableControl={true}
+                    // disableControl={prefs.doWorldControl}
                     
                     // disableFollowCam={false}
-                    // disableFollowCam={true}
-                    disableFollowCam={prefs.doWorldUnfollowCam}
+                    disableFollowCam={true}
+                    // disableFollowCam={prefs.doWorldUnfollowCam}
                     
-                    followLight={false}
-                    // followLight={true}
+                    // followLight={false}
+                    followLight={true}
                     // followLight={prefs.doWorldFollowLight}
                     
-                    // **
+                    // ** MICRO-CONTROLS
                     // springK={2}
                     // dampingC={0.2}
                     // autoBalanceSpringK={1.2}
                     // autoBalanceDampingC={0.04}
                     // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
                     // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-                    // mode='FixedCamera'
-                    // mode='CameraBasedMovement'
                   >
                     <group 
                       key='character1controls' 

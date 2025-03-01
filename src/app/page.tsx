@@ -9,7 +9,7 @@
 import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
-import SessionData from '#/layout/ui/session-data'
+// import SessionData from '#/layout/ui/session-data'
 // import CustomLink from '#/layout/ui/custom-link'
 
 // ** Next
@@ -22,25 +22,25 @@ import SessionData from '#/layout/ui/session-data'
 // import type { ReactNode } from 'react'
 import { 
   useEffect,
-  Suspense,
+  // Suspense,
 } from 'react'
 
 // ** RADIX-UI Imports
 import {
-  Flex,
-  Grid,
-  Container,
-  Button, 
+  // Flex,
+  // Grid,
+  // Container,
+  // Button, 
   Heading,
-  Text,
+  // Text,
 } from '@radix-ui/themes'
 // ** PANELS Imports
-import { 
-  Panel, 
-  PanelGroup,
-  // PanelResizeHandle,
-} from 'react-resizable-panels'
-import PanelResizeHandle from '#/layout/ui/resize-handle'
+// import { 
+//   Panel, 
+//   PanelGroup,
+//   // PanelResizeHandle,
+// } from 'react-resizable-panels'
+// import PanelResizeHandle from '#/layout/ui/resize-handle'
 
 // ** STYLE Imports
 // import '#/layout/styles/styles-radix-ui-themes.css'
@@ -52,8 +52,8 @@ import PanelResizeHandle from '#/layout/ui/resize-handle'
 // import Footer from '#/layout/footer'
 
 // ** COMPONENT Imports
-import Logo from '#/layout/ui/logo'
-import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
+// import Logo from '#/layout/ui/logo'
+// import FarmbotDemoSVG from '#/lib/farmbot/FarmbotDemoSVG'
 
 // ** HELPER Imports
 import Spinner from '#/layout/ui/spinner'
@@ -107,65 +107,46 @@ const AppPage = () => {
   return (
   
   <>
-  <Suspense fallback={<Spinner />}>
-    <Flex
-      direction='row'
+    <div
       style={{
-        // height: '99%',
-        // width: '99%',
-        // paddingLeft: '8px',
-        // paddingRight: '8px',
+        // display: 'flex',
+        // flexDirection: 'row',
+        textAlign: 'center',
       }}
     >
-      {/* <Flex
-        // direction='row'
-        style={{
-          // border: '4px solid darkblue',
-        }}
-      >
-        <Header 
-          key='ThreeDAppHeader'
-        />
-      </Flex> */}
-
-      <Flex
-        // direction='row'
+      <div
         className='PanelContent'
         style={{
-          // border: '4px solid darkblue',
+          // display: 'flex',
+          // flexDirection: 'row',
           textAlign: 'center',
+          // border: '4px solid darkblue',
         }}
       >
         <Heading as='h1'>
           🌱 Welcome to ThreeD Garden
         </Heading>
-      </Flex>
+      </div>
 
-      <Flex 
-        // direction='column'
+      <div 
         className='PanelContent'
         style={{
+          // display: 'flex',
+          // flexDirection: 'column',
           // border: '1px solid darkgray',
         }}
       >
-        {/* <Heading as='h2'>
+        <Heading 
+          as='h2'
+          style={{
+            textAlign: 'center',
+          }}
+        >
           🥕 ThreeD: Next.js: app (router): page .tsx
-        </Heading> */}
-        <FarmbotDemoSVG />
-      </Flex>
-
-      {/* <Flex
-        // direction='row'
-        style={{
-          // border: '4px solid darkblue',
-        }}
-      >
-        <Footer 
-          key='ThreeDAppFooter'
-        />
-      </Flex> */}
-    </Flex>
-  </Suspense>
+        </Heading>
+        {/* <FarmbotDemoSVG /> */}
+      </div>
+    </div>
   </>
   )
 }

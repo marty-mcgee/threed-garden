@@ -35,10 +35,10 @@ import Footer from '#/layout/footer'
 import { GoogleAnalytics } from '@next/third-parties/google'
 
 // ** HELPER Imports
-// import ccm from '#/lib/utils/console-colors'
+import ccm from '#/lib/utils/console-colors'
 
 // const appVersion: string = 'v0.17.0'
-// const appVersion: string = require('package.json').version
+const appVersion: string = require('package.json').version
 
 // ==============================================================
 
@@ -53,7 +53,7 @@ export const metadata = {
 // basic React Provider context node with props.children
 export default function RootLayout({ children }: { children: any }) {
 
-  // console.debug('%c🌱 RootLayout: appVersion', ccm.darkgreenAlert, appVersion)
+  console.debug('%c🌱 RootLayout: appVersion', ccm.darkgreenAlert, appVersion)
 
   const gaId = 'G-B6H82RQ83V' // 'G-XXXXXXXXXX'
   
