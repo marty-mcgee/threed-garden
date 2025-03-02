@@ -260,7 +260,7 @@ const ThreeDExperience = forwardRef((
         debug={prefs.doWorldPhysics}
         // debug={true}
         // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120
-        timeStep={'vary'}
+        // timeStep={'vary'}
         paused={pausedPhysics}
       >
 
@@ -424,7 +424,7 @@ const ThreeDExperience = forwardRef((
                 { true && (
                 <group 
                   key='character1' 
-                  position={[0, 100, 0]}
+                  position={[0, 200, 0]}
                   // scale={[0.01, 0.01, 0.01]}
                   // scale={[0.1, 0.1, 0.1]}
                   // scale={[10.0, 10.0, 10.0]}
@@ -432,7 +432,7 @@ const ThreeDExperience = forwardRef((
                 >
                   <CharacterControls
 
-                    // ** OPTIONS: PROPS
+                    // ** PROPS
                     
                     // scale={[100, 100, 100]}
                     // scale={[1.0, 1.0, 1.0]}
@@ -440,16 +440,18 @@ const ThreeDExperience = forwardRef((
                     // scale={[0.01, 0.01, 0.01]}
                     // scale={[0.001, 0.001, 0.001]}
                     
-                    debug={false}
+                    // debug={false}
                     // debug={true}
-                    // debug={prefs.doWorldDebug}
+                    debug={prefs.doWorldDebug}
                     
                     // animated={false}
                     animated={true}
                     // animated={prefs.doCharacterAnimation}
                     
-                    mode={'FixedCamera'}
+                    // mode={'FixedCamera'}
                     // mode='CameraBasedMovement'
+
+                    gravityScale={20}
                     
                     disableControl={false}
                     // disableControl={true}
@@ -460,7 +462,7 @@ const ThreeDExperience = forwardRef((
                     // disableFollowCam={prefs.doWorldUnfollowCam}
                     
                     // followLight={false}
-                    // followLight={true}
+                    followLight={true}
                     // followLight={prefs.doWorldFollowLight}
                     
                     // ** MICRO-CONTROLS
@@ -473,7 +475,7 @@ const ThreeDExperience = forwardRef((
                   >
                     <group 
                       key='character1controls' 
-                      position={[0, -86, 0]}
+                      position={[0, -56, 0]}
                       // scale={[0.01, 0.01, 0.01]}
                       // scale={[0.1, 0.1, 0.1]}
                       // scale={[10.0, 10.0, 10.0]}

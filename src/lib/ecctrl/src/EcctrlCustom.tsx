@@ -50,7 +50,7 @@ const getMovingDirection = (forward: boolean,
 const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   children,
   debug = false,
-  capsuleHalfHeight = 64, // 0.35,
+  capsuleHalfHeight = 32, // 0.35,
   capsuleRadius = 24, // 0.3,
   floatHeight = 0.0, // 0.3,
   characterInitDir = 0, // in rad
@@ -77,7 +77,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   // Follow light setups
   followLightPos = { x: 20, y: 30, z: 10 },
   // Base control setups
-  maxVelLimit = 250, // 2.5,
+  maxVelLimit = 2.500, // 2.5,
   turnVelMultiplier = 0.2,
   turnSpeed = 15,
   sprintMult = 2,
@@ -85,10 +85,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   jumpForceToGroundMult = 50.0, // 5,
   slopJumpMult = 2.5, // 0.25,
   sprintJumpMult = 2.5, // 1.2,
-  airDragMultiplier = 200.0, // 0.2,
-  dragDampingC = 150.0, // 0.15,
-  accDeltaTime = 16, // 8,
-  rejectVelMult = 400.0, // 4,
+  airDragMultiplier = 20.0, // 0.2,
+  dragDampingC = 15.0, // 0.15,
+  accDeltaTime = 8, // 8,
+  rejectVelMult = 40.0, // 4,
   moveImpulsePointY = 0.5,
   camFollowMult = 110.0, // 11,
   camLerpMult = 250.0, // 25,

@@ -46,7 +46,12 @@ import ThreeDHomeDesign from '#/lib/threed/HomeDesign'
 
 // ==============================================================
 
-function getPanelLayout() {
+export async function getCookie(name: string) {
+  const c = await cookies()
+  return c.get(name)
+}
+
+async function getPanelLayout() {
   
   // ** default sizes
   let panelLayoutGroups = [
@@ -55,27 +60,22 @@ function getPanelLayout() {
     [49, 51]
   ]
   
-  
-  // @ts-expect-error
-  const layoutGroup1 = cookies().get('react-resizable-panels:ThreeDPanelGroup1:layout')
+  const layoutGroup1 = await getCookie('react-resizable-panels:ThreeDPanelGroup1:layout')
   // console.debug('layoutGroup1', layoutGroup1)
-  // @ts-expect-error
-  const layoutGroup2 = cookies().get('react-resizable-panels:ThreeDPanelGroup2:layout')
+  const layoutGroup2 = await getCookie('react-resizable-panels:ThreeDPanelGroup2:layout')
   // console.debug('layoutGroup2', layoutGroup2)
-  // @ts-expect-error
-  const layoutGroup3 = cookies().get('react-resizable-panels:ThreeDPanelGroup3:layout')
+  const layoutGroup3 = await getCookie('react-resizable-panels:ThreeDPanelGroup3:layout')
   // console.debug('layoutGroup3', layoutGroup3)
-  if (layoutGroup1) {
+  if (layoutGroup1?.value) {
     panelLayoutGroups[0] = JSON.parse(layoutGroup1.value)
   }
-  if (layoutGroup2) {
+  if (layoutGroup2?.value) {
     panelLayoutGroups[1] = JSON.parse(layoutGroup2.value)
   }
-  if (layoutGroup3) {
+  if (layoutGroup3?.value) {
     panelLayoutGroups[2] = JSON.parse(layoutGroup3.value)
   }
-
-
+  
   return panelLayoutGroups
 }
 
@@ -91,7 +91,7 @@ export default async function HomeDesignPage() {
   // ** CANNOT USE HOOKS HERE
 
   // ** CAN USE COOKIES HERE
-  const panelLayoutGroups = getPanelLayout()
+  const panelLayoutGroups = await getPanelLayout()
 
   // ** RETURN JSX or React.ReactNode
   return (
