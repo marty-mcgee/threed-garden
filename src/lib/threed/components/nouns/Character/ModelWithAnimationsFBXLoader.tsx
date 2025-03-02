@@ -78,9 +78,9 @@ const ModelWithMultipleAnimations: FC = () => {
       modelFile,
       (fbx) => {
         // Scale the model
-        // fbx.scale.set(10.00, 10.00, 10.00);
-        // fbx.scale.set(1.00, 1.00, 1.00);
-        // fbx.scale.set(0.01, 0.01, 0.01);
+        // fbx.scale.set(10.00, 10.00, 10.00)
+        // fbx.scale.set(1.00, 1.00, 1.00)
+        // fbx.scale.set(0.01, 0.01, 0.01)
         setModel(fbx)
         // setAnimations({
         //   walk: fbx.animations.filter((clip) => clip.name === 'walk'),
@@ -218,7 +218,7 @@ const ModelWithMultipleAnimations: FC = () => {
   return (
     <>
       {/* Display error message if an error occurs */}
-      {error && (
+      {false && error && (
         <Html>
           <div style={{ color: 'red', position: 'absolute', top: '10px', left: '10px' }}>
             Error: {error}
