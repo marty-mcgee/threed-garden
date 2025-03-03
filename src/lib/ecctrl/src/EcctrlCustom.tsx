@@ -50,6 +50,7 @@ const getMovingDirection = (forward: boolean,
 const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   children,
   debug = false,
+  gravityScale = 20, // [MM] added important (missing) prop
   capsuleHalfHeight = 32, // 0.35,
   capsuleRadius = 24, // 0.3,
   floatHeight = 0.0, // 0.3,

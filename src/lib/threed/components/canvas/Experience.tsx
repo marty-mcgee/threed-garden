@@ -255,33 +255,21 @@ const ThreeDExperience = forwardRef((
       </Html>
     }>
 
-      {/* THREED USING PHYSICS */}
-      <Physics
-        debug={prefs.doWorldPhysics}
-        // debug={true}
-        // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120
-        // timeStep={'vary'}
-        paused={pausedPhysics}
-      >
+      {/* <group 
+        ref={refCanvas}
+      > */}
 
-        <group 
-          ref={refCanvas}
+        {/* THREED USING PHYSICS */}
+        <Physics
+          debug={prefs.doWorldPhysics}
+          // gravity={[0, -9.81, 0]} // default [0, -9.81, 0] 
+          // interpolation={false} 
+          // colliders={'trimesh'}
+          // debug={true}
+          // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120
+          // timeStep={'vary'}
+          paused={pausedPhysics}
         >
-
-        {/* REACT SUSPENSE */}
-        {/* <Suspense fallback={<Html>LOADING HEY HEY HEY ...</Html>}> */}
-        {/* <Suspense fallback={
-          <Html center>
-            <Loader
-              // containerStyles={...container} // Flex layout styles
-              // innerStyles={...inner} // Inner container styles
-              // barStyles={...bar} // Loading-bar styles
-              // dataStyles={...data} // Text styles
-              dataInterpolation={(p: number) => `THREED UI ${p.toFixed(0)}%`} // Text
-              // initialState={(active = false) => active} // Initial black out state
-            />
-          </Html>
-        }> */}
 
           {/* EXAMPLES: BIRDS */}
           { true && (
@@ -382,10 +370,7 @@ const ThreeDExperience = forwardRef((
               </group>
               */}
 
-              {/* [MM] HEY HEY HEY : FALL FROM SKY.......................... */}
-              {/* CHARACTER MODELS */}
-              {/* <Suspense fallback={null}> */}
-
+              {/* THREED CHARACTER MODELS */}
               <KeyboardControls map={keyboardMap}>
 
                 {/* CHARACTER MODEL */}
@@ -451,7 +436,7 @@ const ThreeDExperience = forwardRef((
                     // mode={'FixedCamera'}
                     // mode='CameraBasedMovement'
 
-                    gravityScale={20}
+                    // gravityScale={20}
                     
                     disableControl={false}
                     // disableControl={true}
@@ -461,8 +446,8 @@ const ThreeDExperience = forwardRef((
                     disableFollowCam={true}
                     // disableFollowCam={prefs.doWorldUnfollowCam}
                     
-                    // followLight={false}
-                    followLight={true}
+                    followLight={false}
+                    // followLight={true}
                     // followLight={prefs.doWorldFollowLight}
                     
                     // ** MICRO-CONTROLS
@@ -557,15 +542,12 @@ const ThreeDExperience = forwardRef((
             
           </Bounds>
           {/* END: R3F BOUNDS */}
-          
-          {/* </Suspense> */}
-          {/* END: REACT SUSPENSE */}
 
-        </group>
-        {/* END: CANVAS GROUP REF */}
+        </Physics>
+        {/* END: PHYSICS RAPIER */}
 
-      </Physics>
-      {/* END: PHYSICS RAPIER */}
+      {/* </group> */}
+      {/* END: CANVAS GROUP REF */}
 
     </Suspense>
     // {/* END: REACT SUSPENSE */}
