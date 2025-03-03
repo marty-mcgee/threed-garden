@@ -45,9 +45,9 @@ const UpdateForm = () => {
 export default function ClientExample() {
   const { data: session, status } = useSession()
   return (
-    <div className='space-y-2'>
+    <div className='space-y-2 p-2'>
       <h1 className='text-3xl font-bold'>🌱 Client Side Rendering Usage {session?.user?.name}</h1>
-      <h2>threed:next14:app:client-example:page</h2>
+      <h2>threed:next15:app:client-example:page</h2>
       <p>
         This page fetches session data client side using the{' '}
         <CustomLink href='https://nextjs.authjs.dev/react#usesession'>

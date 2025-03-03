@@ -42,7 +42,7 @@ import {
 // import Text from '@mui/material/Text'
 
 // ** HELPER Imports
-import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
+// import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
 // import Cubes from './Cubes' // for PerfHeadless
 import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
@@ -53,75 +53,75 @@ import ccm from '#/lib/utils/console-colors'
 // Debugging (Perf: Monitor Reports)
 // https://codesandbox.io/p/sandbox/perlin-cubes-r3f-perf-headless-forked-zq734s
 // **
-const DebugHeadless = () => {
+// const DebugHeadless = () => {
 
-  // @ ts-expect-error
-  const [log, getReport] = usePerf((s) => [s.log, s.getReport])
-  // console.log(getReport())
+//   // @ ts-expect-error
+//   const [log, getReport] = usePerf((s) => [s.log, s.getReport])
+//   // console.log(getReport())
 
-  return (
-    <div>
-      <div><b>LOG Realtime:</b></div>
-      <code>
-        {log &&
-          Object.entries(log).map(([key, val]) => (
-            <div key={key}>
-              {/* @ts-expect-error */}
-              {key}: {parseFloat(val).toFixed(3)}
-            </div>
-          ))}
-      </code>
-      <br/>
-      <div><b>REPORT: Data gathered for {parseFloat(getReport().sessionTime).toFixed(2)}s</b></div>
-      <code>
-        averages:
-        {Object.entries(getReport().log).map(([key, val]) => (
-          <div key={key}>
-            {/* @ts-expect-error */}
-            {key}: {parseFloat(val).toFixed(3)}
-          </div>
-        ))}
-      </code>
-    </div>
-  )
-}
+//   return (
+//     <div>
+//       <div><b>LOG Realtime:</b></div>
+//       <code>
+//         {log &&
+//           Object.entries(log).map(([key, val]) => (
+//             <div key={key}>
+//               {/* @ts-expect-error */}
+//               {key}: {parseFloat(val).toFixed(3)}
+//             </div>
+//           ))}
+//       </code>
+//       <br/>
+//       <div><b>REPORT: Data gathered for {parseFloat(getReport().sessionTime).toFixed(2)}s</b></div>
+//       <code>
+//         averages:
+//         {Object.entries(getReport().log).map(([key, val]) => (
+//           <div key={key}>
+//             {/* @ts-expect-error */}
+//             {key}: {parseFloat(val).toFixed(3)}
+//           </div>
+//         ))}
+//       </code>
+//     </div>
+//   )
+// }
 
-const Debug = () => {
-  // const { width } = useThree((s) => s.size)
-  return (
-    /* This is it -> */
-    <PerfHeadless 
-      // logsPerSecond?: 10, // Refresh rate of the logs
-      // antialias?: true, // Take a bit more performances but render the text with antialiasing
-      // overClock?: false, // Disable the limitation of the monitor refresh rate for the fps
-      // deepAnalyze?: false, // More detailed informations about gl programs
-      // showGraph?: true // show the graphs
-      // minimal?: false // condensed version with the most important informations (gpu/memory/fps/custom data)
-      // customData?: {
-      //   value: 0, // initial value,
-      //   name: '', // name to show
-      //   round: 2, // precision of the float
-      //   info: '', // additional information about the data (fps/ms for instance)
-      // }
-      // matrixUpdate?: false // count the number of time matrixWorldUpdate is called per frame
-      // chart?: {
-      //   hz: 60, // graphs refresh frequency parameter
-      //   length: 120, // number of values shown on the monitor
-      // }
-      // colorBlind?: false // Color blind colors for accessibility
-      // className?: '' // override CSS class
-      // style?: {} // override style
-      // position?: 'top-right'|'top-left'|'bottom-right'|'bottom-left' // quickly set the position, default is top-right
-      // minimal={width < 712} 
-      // showGraph={true} // show the graphs
-      // logsPerSecond={1} // Refresh rate of the logs
-      // chart={{
-      //   hz: 1, // graphs refresh frequency parameter
-      //   length: 12, // number of values shown on the monitor
-      // }}
-    />
-  )
-}
+// const Debug = () => {
+//   // const { width } = useThree((s) => s.size)
+//   return (
+//     /* This is it -> */
+//     <PerfHeadless 
+//       // logsPerSecond?: 10, // Refresh rate of the logs
+//       // antialias?: true, // Take a bit more performances but render the text with antialiasing
+//       // overClock?: false, // Disable the limitation of the monitor refresh rate for the fps
+//       // deepAnalyze?: false, // More detailed informations about gl programs
+//       // showGraph?: true // show the graphs
+//       // minimal?: false // condensed version with the most important informations (gpu/memory/fps/custom data)
+//       // customData?: {
+//       //   value: 0, // initial value,
+//       //   name: '', // name to show
+//       //   round: 2, // precision of the float
+//       //   info: '', // additional information about the data (fps/ms for instance)
+//       // }
+//       // matrixUpdate?: false // count the number of time matrixWorldUpdate is called per frame
+//       // chart?: {
+//       //   hz: 60, // graphs refresh frequency parameter
+//       //   length: 120, // number of values shown on the monitor
+//       // }
+//       // colorBlind?: false // Color blind colors for accessibility
+//       // className?: '' // override CSS class
+//       // style?: {} // override style
+//       // position?: 'top-right'|'top-left'|'bottom-right'|'bottom-left' // quickly set the position, default is top-right
+//       // minimal={width < 712} 
+//       // showGraph={true} // show the graphs
+//       // logsPerSecond={1} // Refresh rate of the logs
+//       // chart={{
+//       //   hz: 1, // graphs refresh frequency parameter
+//       //   length: 12, // number of values shown on the monitor
+//       // }}
+//     />
+//   )
+// }
 
 // const Controls = () => {
 //   const { camera, gl, invalidate } = useThree()
@@ -136,7 +136,7 @@ function DebugView() {
 
   return (
     <>
-      <DebugHeadless />
+      {/* <DebugHeadless /> */}
       {/* <Canvas
         linear={false}
         concurrent
@@ -288,7 +288,7 @@ export const ThreeDControlPanels = (
             }}
           >
             {/* <DebugView /> */}
-            <DebugHeadless />
+            {/* <DebugHeadless /> */}
             {/* <Debug /> */}
             {/* <Perf
               position='bottom-left'

@@ -471,7 +471,7 @@ export const ThreeDCanvas = forwardRef((
           // minHeight: '400px',
         }}
 
-        shadows={'soft'} // boolean || string 'basic' | 'percentage' | 'soft' | 'variance'
+        shadows={'basic'} // boolean || string 'basic' | 'percentage' | 'soft' | 'variance'
         dpr={[1, 2]} // dpr = target pixel ratio (need ???)
         // frameloop={'demand'} // render mode: 'always' | 'demand' | 'never'
         
