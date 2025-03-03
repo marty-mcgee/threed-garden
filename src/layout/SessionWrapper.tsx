@@ -8,7 +8,7 @@ import { SessionProvider } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
 
 // ** CLERK AUTH -- External User Authentication
-// import { ClerkProvider } from '@clerk/nextjs'
+import { ClerkProvider } from '@clerk/nextjs'
 // ** CLERK AUTH -- HOOKS
 // import { useAuth } from '@clerk/nextjs'
 
@@ -52,13 +52,13 @@ export default function SessionWrapper({ children }: { children: any }) {
   
   return (
     <>
-    {/* <ClerkProvider> */}
+    <ClerkProvider>
       <SessionProvider 
         session={sessionThreeD}
       >
         {children}
       </SessionProvider>
-    {/* </ClerkProvider> */}
+    </ClerkProvider>
     </>
   )
 }

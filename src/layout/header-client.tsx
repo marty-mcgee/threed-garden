@@ -15,13 +15,13 @@ import MainNav from '#/layout/ui/main-nav'
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 import { LayoutDashboard } from 'lucide-react'
 
-// // ** RADIX-UI Imports
-// import {
-//   Grid,
-//   Flex,
-//   Container,
-//   Button,
-// } from '@radix-ui/themes'
+// ** RADIX-UI Imports
+import {
+  // Grid,
+  // Flex,
+  // Container,
+  Button,
+} from '@radix-ui/themes'
 
 // ** RETURN JSX
 export default function Header() {
@@ -34,14 +34,15 @@ export default function Header() {
         height: '36px',
       }}
     >
+      {/* MAIN NAV */}
       <div
         style={{
           flexGrow: 1,
         }}
       >
-        {/* HEY HEY HEY */}
         <MainNav />
       </div>
+      {/* USER AUTH */}
       <div
         style={{
           flexGrow: 0,
@@ -49,10 +50,10 @@ export default function Header() {
           // marginRight: 8,
         }}
       >
-        {/* YO YO YO */}
+        {/* NEXT-AUTH */}
         {/* <UserButtonNextAuth /> */}
 
-        {/* 
+        {/* CLERK-JS AUTH */}
         <SignedOut>
           <SignInButton mode='modal'>
             <Button 
@@ -62,7 +63,8 @@ export default function Header() {
                 border-black 
                 bg-black 
                 px-2 
-                py-0.5 
+                py-0.5
+                m-1
                 text-xs 
                 text-white 
                 transition-colors 
@@ -75,17 +77,18 @@ export default function Header() {
           </SignInButton>
         </SignedOut>
         <SignedIn>
-          <UserButton>
-            <UserButton.MenuItems>
-              <UserButton.Link
-                label='Dashboard'
-                labelIcon={<LayoutDashboard className='h-6 w-6' />}
-                href='/'
-              />
-            </UserButton.MenuItems>
-          </UserButton>
-        </SignedIn>
-        */}
+          <div className='m-1'>
+            <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label='Dashboard'
+                  labelIcon={<LayoutDashboard className='h-6 w-6' />}
+                  href='/'
+                />
+              </UserButton.MenuItems>
+            </UserButton>
+          </div>
+        </SignedIn>       
 
       </div>
     </div>
