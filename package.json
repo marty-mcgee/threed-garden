@@ -134,9 +134,7 @@
     "@ai-sdk/deepseek": "0.1.12",
     "openai": "4.86.1",
     "deepthink": "1.1.5",
-    "axios": "1.8.1",
-
-    "deepseek-react": "1.1.0"
+    "axios": "1.8.1"
     
   },
 
