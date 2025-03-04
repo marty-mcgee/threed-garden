@@ -1,0 +1,844 @@
+// @ ts-nocheck /* OR @ts-ignore OR @ts-expect-error */
+// 'use client'
+// ==========================================================
+// RESOURCES
+
+// ** APOLLO Imports
+import { useReactiveVar } from '@apollo/client'
+import { preferencesDataVar } from '#/lib/api/graphql/apollo'
+
+// ** REACT Imports
+import {
+  Suspense,
+  useEffect,
+  useRef,
+  useMemo,
+  useState,
+} from 'react'
+
+// ** THREE Imports
+import * as THREE from 'three'
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+
+// ** REACT-THREE Imports
+import { useFrame } from '@react-three/fiber'
+import {
+  useTexture,
+  Trail,
+  Html,
+} from '@react-three/drei'
+
+// ** PHYSICS Imports
+import {
+  BallCollider,
+  RapierCollider,
+  vec3,
+} from '@react-three/rapier'
+
+// ** ECCRTL ZUSTAND STATE
+import { 
+  useGame, 
+  type AnimationSet,
+} from '#/lib/ecctrl/src/stores/useGame'
+
+// ** HELPER Imports
+// import { Perf } from 'r3f-perf'
+// import Spinner from '#/layout/ui/spinner'
+// ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
+import ccm from '#/lib/utils/console-colors'
+
+// ** DEBUG
+const debug: boolean = false
+const DEBUG: boolean = false
+
+// ** FILES for CharacterModel: Settings/Locations
+const modelFile = './characters/models/SK_Chr_Farmer_Female_01.fbx'
+const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/_Textures/PolygonFarm_Texture_01_A.png'
+
+// ** ANIMATIONS
+const animationFiles = {
+  idle: './characters/animations/Idle.fbx',
+  walk: './characters/animations/Walking.fbx',
+  run:  './characters/animations/Running.fbx',
+  all:  './characters/animations/Animations.fbx',
+}
+
+// ** TYPES for this GLTF
+// **
+// type GLTFResult = GLTF & {
+//   nodes: {
+//     SK_Chr_Farmer_Female_01: THREE.SkinnedMesh
+//     Pelvis: THREE.Bone
+//     spine_01: THREE.Bone
+//     spine_02: THREE.Bone
+//     spine_03: THREE.Bone
+//     neck_01: THREE.Bone
+//     head: THREE.Bone
+//     clavicle_l: THREE.Bone
+//     UpperArm_L: THREE.Bone
+//     lowerarm_l: THREE.Bone
+//     Hand_L: THREE.Bone
+//     thumb_01_l: THREE.Bone
+//     thumb_02_l: THREE.Bone
+//     thumb_03_l: THREE.Bone
+//     indexFinger_01_l: THREE.Bone
+//     indexFinger_02_l: THREE.Bone
+//     indexFinger_03_l: THREE.Bone
+//     indexFinger_04_l: THREE.Bone
+//     finger_01_l: THREE.Bone
+//     finger_02_l: THREE.Bone
+//     finger_03_l: THREE.Bone
+//     finger_04_l: THREE.Bone
+//     clavicle_r: THREE.Bone
+//     UpperArm_R: THREE.Bone
+//     lowerarm_r: THREE.Bone
+//     Hand_R: THREE.Bone
+//     thumb_01_r: THREE.Bone
+//     thumb_02_r: THREE.Bone
+//     thumb_03_r: THREE.Bone
+//     indexFinger_01_r: THREE.Bone
+//     indexFinger_02_r: THREE.Bone
+//     indexFinger_03_r: THREE.Bone
+//     indexFinger_04_r: THREE.Bone
+//     finger_01_r: THREE.Bone
+//     finger_02_r: THREE.Bone
+//     finger_03_r: THREE.Bone
+//     finger_04_r: THREE.Bone
+//     Thigh_R: THREE.Bone
+//     calf_r: THREE.Bone
+//     Foot_R: THREE.Bone
+//     ball_r: THREE.Bone
+//     toes_r: THREE.Bone
+//     Thigh_L: THREE.Bone
+//     calf_l: THREE.Bone
+//     Foot_L: THREE.Bone
+//     ball_l: THREE.Bone
+//     toes_l: THREE.Bone
+//     // actions?
+//     // mixamorigHips: THREE.Bone
+//   }
+//   materials: {
+//     lambert2: THREE.MeshStandardMaterial
+//   }
+// }
+
+// ** EXAMPLE: Stacy
+// type ActionName = 'Take 001'
+//   | 'pockets'
+//   | 'rope'
+//   | 'swingdance'
+//   | 'jump'
+//   | 'react'
+//   | 'shrug'
+//   | 'wave'
+//   | 'golf'
+//   | 'idle'
+// type GLTFActions = Record<ActionName, THREE.AnimationAction>
+
+// type ActionName = 'Root|Take 001|BaseLayer'
+type ActionName = 'Take 001'
+  | 'Idle'
+  | 'Walking'
+type GLTFActions = Record<ActionName, THREE.AnimationAction>
+
+// **
+// ** ANIMATIONS ****************************************
+// **
+// const animations = ThreeDAnimations
+
+// Rename your character animations here
+const animationSetNew = {
+  idle:     'Idle',
+  walk:     'Walking',
+  run:      'Running',
+  jump:     'Crouch To Stand',
+  jumpIdle: 'Crouching',
+  jumpLand: 'Standing To Crouched',
+  fall:     'Idle',
+  action1:  'Planting A Plant',
+  action2:  'Talking',
+  action3:  'Pointing Gesture',
+  action4:  'Pointing',
+}
+// const animationSet = {
+//   idle: 'Idle',
+//   walk: 'Walk',
+//   run: 'Run',
+//   jump: 'Jump_Start',
+//   jumpIdle: 'Jump_Idle',
+//   jumpLand: 'Jump_Land',
+//   fall: 'Climbing', // This is for falling from high sky
+//   action1: 'Wave',
+//   action2: 'Dance',
+//   action3: 'Cheer',
+//   action4: 'Attack(1h)',
+// }
+const animationSet = animationSetNew
+// console.debug('animationSet', animationSet)
+// **
+
+// **
+// ** TESTING -- Instances Of <CharacterModel>
+// const context = createContext()
+// export function Instances({ children, ...props }) {
+//   const { nodes } = useGLTF(file) as GLTFResult
+//   const instances = useMemo(
+//     () => ({
+//       SKChrFarmer: nodes.SK_Chr_Farmer_Female_01,
+//     }),
+//     [nodes]
+//   )
+//   return (
+//     <Merged meshes={instances} {...props}>
+//       {(instances) => <context.Provider value={instances} children={children} />}
+//     </Merged>
+//   )
+// }
+// **
+
+// export this type?
+type CharacterModelProps = any
+
+// export default function Model(props: any) {
+export default function CharacterModel(props: CharacterModelProps) {
+
+  // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
+  const prefs = useReactiveVar(preferencesDataVar)
+  // console.debug(`%c CHARACTER MODEL: APOLLO prefs`, ccm.orangeAlert, prefs)
+
+  // ** TESTING instances of character model
+  // const instances = useContext(context)
+
+  // ** SET REF for this model group
+  const group = useRef<THREE.Group>(null)
+
+  // State to store active model (fbx) -- set using THREE.FBXLoader
+  const [model, setModel] = useState<THREE.Group | null>(null)
+
+  // State to store loaded animations
+  const [animations, setAnimations] = useState<{
+    walk: THREE.AnimationClip[] | null
+    run: THREE.AnimationClip[] | null
+    idle: THREE.AnimationClip[] | null
+  }>({
+    walk: null,
+    run: null,
+    idle: null,
+  })
+
+  // State to store animation actions
+  const [actions, setActions] = useState<AnimationActions>({
+    walk: null,
+    run: null,
+    idle: null,
+  })
+
+  // State to track the current animation
+  const [currentAnimation, setCurrentAnimation] = useState<keyof AnimationActions>('idle')
+
+  // State to track loading + errors
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const mixer = useRef<THREE.AnimationMixer | null>(null)
+
+  // Load the model and animations asynchronously
+  useEffect(() => {
+    const loader = new FBXLoader()
+
+    // Load the model + animations
+    loader.load(
+      modelFile,
+      (fbx) => {
+        // Scale the model
+        // fbx.scale.set(10.00, 10.00, 10.00)
+        // fbx.scale.set(1.00, 1.00, 1.00)
+        // fbx.scale.set(0.01, 0.01, 0.01)
+        setModel(fbx)
+        // setAnimations({
+        //   walk: fbx.animations.filter((clip) => clip.name === 'walk'),
+        //   run: fbx.animations.filter((clip) => clip.name === 'run'),
+        //   idle: fbx.animations.filter((clip) => clip.name === 'idle'),
+        // })
+        // setLoading(false)
+      },
+      undefined,
+      (error) => {
+        console.error('Failed to load model:', error)
+        setError('Failed to load model.')
+        setLoading(false) // Stop loading on error
+      }
+    )
+
+    // Load animations
+    const loadAnimation = (path: string, key: keyof typeof animations) => {
+      loader.load(
+        path,
+        (fbx) => {
+          setAnimations((prev) => ({ ...prev, [key]: fbx.animations }))
+        },
+        undefined,
+        (error) => {
+          console.error(`Failed to load animation from ${path}:`, error)
+          setError(`Failed to load animation: ${key}`)
+          setLoading(false) // Stop loading on error
+        }
+      )
+    }
+
+    loadAnimation(animationFiles.walk, 'walk')
+    loadAnimation(animationFiles.run, 'run')
+    loadAnimation(animationFiles.idle, 'idle')
+  }, [])
+
+  // Map animations to actions once they are loaded
+  useEffect(() => {
+    if (model && animations.walk && animations.run && animations.idle) {
+      try {
+        mixer.current = new THREE.AnimationMixer(model)
+
+        const actionMap: AnimationActions = {
+          walk: null,
+          run: null,
+          idle: null,
+        }
+
+        // Map each animation to an action
+        if (animations.walk.length > 0) {
+          actionMap.walk = mixer.current.clipAction(animations.walk[0])
+        } else {
+          console.warn('No animations found in walk.fbx.')
+        }
+        if (animations.run.length > 0) {
+          actionMap.run = mixer.current.clipAction(animations.run[0])
+        } else {
+          console.warn('No animations found in run.fbx.')
+        }
+        if (animations.idle.length > 0) {
+          actionMap.idle = mixer.current.clipAction(animations.idle[0])
+        } else {
+          console.warn('No animations found in idle.fbx.')
+        }
+
+        // Store the actions in state
+        setActions(actionMap)
+
+        // Play the default animation (e.g., idle)
+        if (actionMap.idle) {
+          actionMap.idle.play()
+        } else {
+          setError('No idle animation found.')
+        }
+      } catch (error) {
+        console.error('Error initializing animations:', error)
+        setError('Failed to initialize animations.')
+      }
+    }
+  }, [model, animations])
+
+  // Update the mixer on every frame
+  useFrame((state, delta) => {
+    if (mixer.current) {
+      mixer.current.update(delta)
+    }
+  })
+
+  // Function to cycle through animations
+  const cycleAnimation = () => {
+    try {
+      const animationOrder: (keyof AnimationActions)[] = ['idle', 'walk', 'run']
+      const currentIndex = animationOrder.indexOf(currentAnimation)
+      const nextAnimation = animationOrder[(currentIndex + 1) % animationOrder.length]
+
+      // Stop the current animation
+      if (actions[currentAnimation]) {
+        actions[currentAnimation]!.stop()
+      }
+
+      // Play the next animation
+      if (actions[nextAnimation]) {
+        actions[nextAnimation]!.play()
+        setCurrentAnimation(nextAnimation)
+      } else {
+        console.warn(`Animation "${nextAnimation}" not found.`)
+      }
+    } catch (error) {
+      console.error('Error cycling animations:', error)
+      setError('Failed to cycle animations.')
+    }
+  }
+
+  // Handle right-click event
+  const handleRightClick = () => {
+    cycleAnimation() // Cycle to the next animation
+  }
+
+  // Prevent the browser's context menu from appearing on right-click
+  useEffect(() => {
+    const preventContextMenu = (event: MouseEvent) => {
+      if (event.button === 2) { // Right-click
+        event.preventDefault()
+      }
+    }
+
+    document.addEventListener('contextmenu', preventContextMenu)
+
+    return () => {
+      document.removeEventListener('contextmenu', preventContextMenu)
+    }
+  }, [])
+
+  // gradientMapTexture for MeshToonMaterial
+  const gradientMapTexture = useTexture(texture) // '/textures/3.jpg'
+  gradientMapTexture.minFilter = THREE.NearestFilter
+  gradientMapTexture.magFilter = THREE.NearestFilter
+  gradientMapTexture.generateMipmaps = false
+
+  /**
+   * Prepare Hands+Body Refs+Memos for actions[action4]
+   */
+  const rightHandRef = useRef<THREE.Mesh>(null)
+  const rightHandColliderRef = useRef<RapierCollider>(null)
+  const leftHandRef = useRef<THREE.Mesh>(null)
+  const leftHandColliderRef = useRef<RapierCollider>(null)
+  const rightHandPos = useMemo(() => new THREE.Vector3(), [])
+  const leftHandPos = useMemo(() => new THREE.Vector3(), [])
+  const bodyPosition = useMemo(() => new THREE.Vector3(), [])
+  const bodyRotation = useMemo(() => new THREE.Quaternion(), [])
+  let rightHand: THREE.Object3D = null
+  let leftHand: THREE.Object3D = null
+  let mugModel: THREE.Object3D = null
+
+  /**
+   * Prepare punch effect sprite
+   */
+  const [punchEffectProps, setPunchEffectProp] = useState({
+    visible: false,
+    scale: [1, 1, 1],
+    play: false,
+    position: [-0.2, -0.2, 0.5],
+    startFrame: 0,
+  })
+
+  /**
+   * Character Preferences
+   */
+  // const [{
+  //   characterMainColor,
+  //   characterOutlineColor,
+  //   characterTrailColor,
+  // }, setCharacterPreferencesLeva] = useControls(
+  //   'Character Preferences',
+  //   () => ({
+  //     doCharacterAnimation: {
+  //       label: 'Animate Character?',
+  //       value: prefs.doCharacterAnimation,
+  //     },
+  //     characterMainColor: {
+  //       label: 'Main Color',
+  //       value: prefs.characterMainColor,
+  //     },
+  //     characterOutlineColor: {
+  //       label: 'Outline Color',
+  //       value: prefs.characterOutlineColor,
+  //     },
+  //     characterTrailColor: {
+  //       label: 'Trail Color',
+  //       value: prefs.characterTrailColor,
+  //     },
+  //   }),
+  //   {
+  //     color: 'darkgreen',
+  //     collapsed: false,
+  //     order: 10,
+  //   },
+  // )
+
+  /**
+   * Prepare replacing materials
+   */
+  // const meshToonMaterial = useMemo(
+  //   () =>
+  //     new THREE.MeshToonMaterial({
+  //       color: prefs.characterMainColor,
+  //       gradientMap: gradientMapTexture,
+  //       transparent: true,
+  //     }),
+  //   [prefs.characterMainColor]
+  // )
+  // const outlineMaterial = useMemo(
+  //   () =>
+  //     new THREE.MeshBasicMaterial({
+  //       color: prefs.characterOutlineColor,
+  //       transparent: true,
+  //     }),
+  //   [prefs.characterOutlineColor]
+  // )
+  // const trailMaterial = useMemo(
+  //   () =>
+  //     new THREE.MeshToonMaterial({
+  //       color: prefs.characterTrailColor,
+  //       gradientMap: gradientMapTexture,
+  //       transparent: true,
+  //     }),
+  //   [prefs.characterTrailColor]
+  // )
+
+  // **
+  // ** Character animations setup
+  // **
+  const curAnimation = useGame((state) => state.curAnimation)
+  const resetAnimation = useGame((state) => state.reset)
+  const initializeAnimationSet = useGame(
+    (state) => state.initializeAnimationSet
+  )
+
+  // ** ANIMATIONS
+  useEffect(() => {
+    // Initialize animation set
+    initializeAnimationSet(animationSetNew)
+  }, [])
+
+  useEffect(() => {
+    group.current.traverse((obj) => {
+      // Prepare both hands bone object
+      if (obj instanceof THREE.Bone) {
+        if (obj.name === 'handSlotRight') rightHand = obj
+        if (obj.name === 'handSlotLeft') leftHand = obj
+      }
+      // Prepare mug model for cheer action
+      // if (obj.name === 'mug') {
+      //   mugModel = obj
+      //   mugModel.visible = false
+      // }
+    })
+  })
+
+  // if ('areyouready?' == 'youareready.') {
+  useFrame(() => {
+
+    // const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
+    // const wordX: string = group.current.getWorldPosition(bodyPosition).x.toString()
+    // const wordY: string = group.current.getWorldPosition(bodyPosition).y.toString()
+    // const wordZ: string = group.current.getWorldPosition(bodyPosition).z.toString()
+    // if (debugAnimation) {
+    //   if (debug) console.debug(`%c FarmerWomanFloating: useFrame :(`, ccm.darkredAlert, wordX, wordY, wordZ)
+    // }
+
+    // [MM] END HEY HEY HEY
+
+    if (curAnimation === animationSet.action4) {
+      
+      if (rightHand) {
+        rightHand.getWorldPosition(rightHandPos)
+        group.current.getWorldPosition(bodyPosition)
+        group.current.getWorldQuaternion(bodyRotation)
+      }
+      if (leftHand) {
+        leftHand.getWorldPosition(leftHandPos)
+        group.current.getWorldPosition(bodyPosition)
+        group.current.getWorldQuaternion(bodyRotation)
+      }
+
+      // Apply hands position to hand colliders
+      if (rightHandColliderRef.current) {
+        // check if parent group autobalance is on or off
+        if (group.current.parent.quaternion.y === 0 && group.current.parent.quaternion.w === 1) {
+          rightHandRef.current.position.copy(rightHandPos).sub(bodyPosition).applyQuaternion(bodyRotation.conjugate())
+        } else {
+          rightHandRef.current.position.copy(rightHandPos).sub(bodyPosition)
+        }
+        rightHandColliderRef.current.setTranslationWrtParent(
+          rightHandRef.current.position
+        )
+      }
+
+      // Apply hands position to hand colliders
+      if (leftHandColliderRef.current) {
+        // check if parent group autobalance is on or off
+        if (group.current.parent.quaternion.y === 0 && group.current.parent.quaternion.w === 1) {
+          leftHandRef.current.position.copy(leftHandPos).sub(bodyPosition).applyQuaternion(bodyRotation.conjugate())
+        } else {
+          leftHandRef.current.position.copy(leftHandPos).sub(bodyPosition)
+        }
+        leftHandColliderRef.current.setTranslationWrtParent(
+          leftHandRef.current.position
+        )
+      }
+
+    }
+  })
+  
+  // [MM] HEY HEY HEY
+  // ** PLAY ANIMATION
+  useEffect(() => {
+
+    // const word: string = `[MM] HEY HEY HEY @ ${new Date().toISOString()}`
+
+    // Play animation
+    // @ ts-expect-error // TODO: ???
+    const action = actions[curAnimation ? curAnimation : animationSet.jumpIdle]
+    // const action = false
+
+    // For jump and jump land animation, only play once and clamp when finish
+    if (
+      curAnimation === animationSet.jump ||
+      curAnimation === animationSet.jumpLand ||
+      curAnimation === animationSet.action1 ||
+      curAnimation === animationSet.action2 ||
+      curAnimation === animationSet.action3 ||
+      curAnimation === animationSet.action4
+    ) {
+
+      if (action && typeof action === 'function') {
+        (action as any)
+          // // @ts-expect-error
+          .reset()
+          .fadeIn(0.2)
+          .setLoop(THREE.LoopOnce, undefined as number) // [MM] POTENTIAL BUG POINT
+          .play()
+        // action.clampWhenFinished = true
+        
+        // // Only show mug during cheer action
+        // if (curAnimation === animationSet.action3) {
+        //   mugModel.visible = true
+        // } else {
+        //   mugModel.visible = false
+        // }
+
+        // FINALIZE ACTION of ANIMATION in THREE MIXER
+        // When any action is clamped and animation finished resetting
+        (action as any)._mixer.addEventListener('finished', () => resetAnimation())
+      }
+
+    } else if (action && typeof action !== 'function') {
+        
+      action.reset().fadeIn(0.2).play()
+      // mugModel.visible = false
+
+    // ** NO ACTION TO HANDLE: TODO
+    } else {
+        // ** TODO
+        if (debug)
+          console.debug(`%c FarmerWomanFloating: no action :|`, ccm.redAlert)
+    }
+    // [MM] END HEY HEY HEY
+
+
+    return () => {
+      
+      if (action) {
+      // if (action && typeof action === 'function') {
+        // Fade out previous action
+        // @ ts-expect-error
+        action.fadeOut(0.2)
+
+        // Clean up mixer listener, and empty the _listeners array
+        (action as any)._mixer.removeEventListener('finished', () =>
+          resetAnimation()
+        )
+        (action as any)._mixer._listeners = []
+      }
+
+      // Move hand collider back to initial position after action
+      if (curAnimation === animationSet.action4) {
+        if (rightHandColliderRef.current) {
+          rightHandColliderRef.current.setTranslationWrtParent(vec3({ x: 0, y: 0, z: 0 }))
+        }
+        if (leftHandColliderRef.current) {
+          leftHandColliderRef.current.setTranslationWrtParent(vec3({ x: 0, y: 0, z: 0 }))
+        }
+      }
+    }
+  }, [curAnimation])
+
+  return (
+    <>
+    {/* <Suspense fallback={<capsuleGeometry args={[0.4, 0.8]} />}> */}
+
+      {/* Default capsule model */}
+      {/* <mesh castShadow>
+        <capsuleGeometry args={[0.3, 0.7]} />
+        <meshStandardMaterial color='mediumpurple' />
+      </mesh>
+      <mesh castShadow position={[0, 0.2, 0.2]}>
+        <boxGeometry args={[0.5, 0.2, 0.3]} />
+        <meshStandardMaterial color='mediumpurple' />
+      </mesh> */}
+
+      {/* Head collider */}
+      {/* <BallCollider args={[0.5]} position={[0, 0.45, 0]} /> */}
+
+      {/* Right hand collider */}
+      <mesh ref={rightHandRef} />
+      <BallCollider
+        args={[0.1]}
+        ref={rightHandColliderRef}
+        onCollisionEnter={(e) => {
+          if (curAnimation === animationSet.action4) {
+            // Play punch effect
+            setPunchEffectProp((prev) => ({
+              ...prev,
+              visible: true,
+              play: true,
+            }))
+          }
+        }}
+      />
+
+      {/* Left hand collider */}
+      <mesh ref={leftHandRef} />
+      <BallCollider
+        args={[0.1]}
+        ref={leftHandColliderRef}
+        onCollisionEnter={(e) => {
+          if (curAnimation === animationSet.action4) {
+            // Play punch effect
+            setPunchEffectProp((prev) => ({
+              ...prev,
+              visible: true,
+              play: true,
+            }))
+          }
+        }}
+      />
+
+    {/* ANIMATED CHARACTER */}
+    {/* <EcctrlAnimation
+      characterURL={file} // Must have property
+      animationSet={animationSet} // Must have property
+    > */}
+      {/* ANIMATED CHARACTER Model Group */}
+      <group
+        // // ref={group}
+        // // @ts-expect-error
+        // ref={ref}
+        // {...props}
+        // dispose={null}
+        // // scale={1.0}
+        // // scale={0.016}
+        // // position={[0, -0.64, 0]}
+        // name='ThreeD_Animated_Character'
+        ref={group}
+        dispose={null}
+        scale={1.0} // default | get from props
+        name='ThreeD_Animated_Character'
+        {...props}
+      >
+
+        {/* CUSTOM ANIMATION 'PUNCH EFFECT' */}
+        {/* <SpriteAnimator
+          visible={punchEffectProps.visible}
+          scale={punchEffectProps.scale as any}
+          position={punchEffectProps.position as any}
+          startFrame={punchEffectProps.startFrame}
+          loop={true}
+          onLoopEnd={() => {
+            setPunchEffectProp((prev) => ({
+              ...prev,
+              visible: false,
+              play: false,
+            }))
+          }}
+          play={punchEffectProps.play}
+          numberOfFrames={7}
+          alphaTest={0.01}
+          textureImageURL={'/images/animations/punchEffect.png'}
+        /> */}
+
+        <group name='RootNode'>
+          {/* model */}
+          <skinnedMesh
+            name='SK_Chr_Farmer_Female_01'
+            geometry={nodes.SK_Chr_Farmer_Female_01.geometry}
+            material={materials.lambert2}
+            skeleton={nodes.SK_Chr_Farmer_Female_01.skeleton}
+            castShadow
+            receiveShadow
+            onPointerOver={() => setHovered(true)}
+            onPointerOut={() => setHovered(false)}
+            onClick={() => setIndex((index + 1) % names.length)}
+            rotation={[-Math.PI / 2, 0, 0]}
+            scale={1}
+          >
+            {/* texture map */}
+            <meshStandardMaterial 
+              map={gradientMapTexture} 
+              map-flipY={false}
+              // @ts-expect-error
+              skinning
+            />
+          </skinnedMesh>
+          {/* <skinnedMesh
+            name='outline'
+            geometry={nodes.outline.geometry}
+            material={outlineMaterial}
+            skeleton={nodes.outline.skeleton}
+          />
+          <skinnedMesh
+            name='PrototypePete'
+            geometry={nodes.PrototypePete.geometry}
+            material={meshToonMaterial}
+            skeleton={nodes.PrototypePete.skeleton}
+            receiveShadow
+            castShadow
+          /> */}
+
+          <Trail
+            width={1.5}
+            // color={prefs.characterTrailColor}
+            color={'violet'}
+            length={3}
+            decay={2}
+            attenuation={(width) => width}
+          >
+            <primitive object={nodes.Root} />
+          </Trail>
+
+          <group name='Root'>
+            <group name='Pelvis_$AssimpFbx$_Translation' position={[0, 87.628, 0]}>
+              <group name='Pelvis_$AssimpFbx$_PreRotation' rotation={[-0.179, 0.022, 0.006]}>
+                <group name='Pelvis_$AssimpFbx$_PostRotation' rotation={[0.255, 1.548, 1.345]}>
+                  <primitive object={nodes.Pelvis} />
+                </group>
+              </group>
+            </group>
+            <group name='ik_foot_root_$AssimpFbx$_PreRotation' rotation={[-Math.PI / 2, 0, 0]}>
+              <group name='ik_foot_root'>
+                <group
+                  name='ik_foot_l'
+                  position={[11.444, 3.687, 5.569]}
+                  rotation={[0, -1.571, 0]}
+                />
+                <group
+                  name='ik_foot_r'
+                  position={[-11.444, 3.687, 5.569]}
+                  rotation={[Math.PI, -1.571, 0]}
+                />
+              </group>
+            </group>
+            <group name='ik_hand_root_$AssimpFbx$_PreRotation' rotation={[-Math.PI / 2, 0, 0]}>
+              <group name='ik_hand_root'>
+                <group
+                  name='ik_hand_gun'
+                  position={[-79.963, 3.417, 136.094]}
+                  rotation={[Math.PI / 2, 0, 0]}>
+                  <group name='ik_hand_l' position={[159.926, 0, 0]} rotation={[-Math.PI, 0, 0]} />
+                  <group name='ik_hand_r' />
+                </group>
+              </group>
+            </group>
+          </group>
+
+        </group>
+
+      {/* END CharacterModel group */}
+      </group>
+
+    {/* </EcctrlAnimation> */}
+    {/* </Suspense> */}
+    </>
+  )
+}
+
+useGLTF.preload(file)

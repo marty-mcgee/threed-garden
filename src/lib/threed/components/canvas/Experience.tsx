@@ -466,9 +466,9 @@ const ThreeDExperience = forwardRef((
                       // scale={[10.0, 10.0, 10.0]}
                     >
                       {/* <ModelWithAnimations /> */}
-                      <ModelWithAnimationsFBXLoader />
-                      {/* <CharacterModelFarmerWomanFloating scale={1.0} /> */}
-                      {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
+                      {/* <ModelWithAnimationsFBXLoader /> */}
+                      {/* <CharacterModelFarmerWomanFloating scale={1.016} /> */}
+                      <CharacterModelFarmerManFloating scale={1.016} />
                     </group>
                   </CharacterControls>
                 </group>

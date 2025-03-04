@@ -9,8 +9,18 @@ import React from 'react'
 // ** NEXT Imports
 import Image from 'next/image'
 
+// ** RADIX-UI Imports
+// import {
+//   Container,
+//   Grid,
+//   Flex,
+//   Text,
+//   Button,
+// } from '@radix-ui/themes'
+
 // ** CUSTOM NAVIGATION
 import CustomLink from './custom-link'
+import ListItem from './list-item'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -20,15 +30,157 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from './navigation-menu'
+// ** THREED DROPDOWN MENU Imports
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 
-// ** RADIX-UI Imports
-// import {
-//   Container,
-//   Grid,
-//   Flex,
-//   Text,
-//   Button,
-// } from '@radix-ui/themes'
+
+
+
+function MainNavDropdownMenuDemo() {
+  // ==========================================================
+    // ** RETURN JSX
+    return (
+      <DropdownMenu.Root>
+  
+        <DropdownMenu.Trigger asChild>
+          <button 
+            // className='MenuButton' 
+            // className={navigationMenuTriggerStyle()}
+            style={{
+              backgroundColor: '#222222', 
+              color: '#888888',
+              textDecoration: 'none',
+              borderWidth: 0,
+              // marginTop: 0,
+              // padding: 0,
+              fontSize: 12,
+            }}
+            aria-label='DEMOS'
+          >
+            🟢 DEMOS
+          </button>
+          {/* <NavigationMenuItem>
+            <NavigationMenuLink
+              href='/home-design'
+              className={navigationMenuTriggerStyle()}
+              style={{
+                backgroundColor: '#222222', 
+                color: '#888888',
+                textDecoration: 'none',
+                // borderWidth: 0,
+                // marginTop: 0,
+                // padding: 0,
+                // fontSize: 12,
+              }}
+            >
+              🟢 DEMO: FULL
+            </NavigationMenuLink>
+          </NavigationMenuItem> */}
+        </DropdownMenu.Trigger>
+  
+        <DropdownMenu.Portal>
+  
+          <DropdownMenu.Content 
+            className='DropdownMenuContent' 
+            // sideOffset={5}
+          >
+            <DropdownMenu.Item 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <a href='/home-design' title='Home Design Page'>
+              🟢 DEMO: FULL
+              </a>
+            </DropdownMenu.Item>
+            
+            <DropdownMenu.Item 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <a href='/participate' title='Home Design Page'>
+              🟣 DEMO: BASIC
+              </a>
+            </DropdownMenu.Item>
+            
+            <DropdownMenu.Item 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <a href='/characters' title='Home Design Page'>
+              🔵 DEMO: CHARACTERS
+              </a>
+            </DropdownMenu.Item>
+  
+            {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}
+  
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    )
+}
+
+function MainNavDropdownMenuChat() {
+  // ==========================================================
+    // ** RETURN JSX
+    return (
+      <DropdownMenu.Root>
+  
+        <DropdownMenu.Trigger asChild>
+          <button 
+            // className='MenuButton' 
+            // className={navigationMenuTriggerStyle()}
+            style={{
+              backgroundColor: '#222222', 
+              color: '#888888',
+              textDecoration: 'none',
+              borderWidth: 0,
+              // marginTop: 0,
+              // padding: 0,
+              fontSize: 12,
+            }}
+            aria-label='CHATS'
+          >
+            {/* <HamburgerMenuIcon /> */}
+            🔵 CHATS
+          </button>
+        </DropdownMenu.Trigger>
+  
+        <DropdownMenu.Portal>
+  
+          <DropdownMenu.Content 
+            className='DropdownMenuContent' 
+            // sideOffset={5}
+          >
+            <DropdownMenu.Item 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <a href='/chat/openai' title='Home Design Page'>
+              🟠 CHAT: OpenAI
+              </a>
+            </DropdownMenu.Item>
+            
+            <DropdownMenu.Item 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <a href='/chat/deepseek' title='Home Design Page'>
+              🔵 CHAT: DeepSeek
+              </a>
+            </DropdownMenu.Item>
+  
+            {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}
+  
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    )
+}
+
+
+
+
+
 
 export default function MainNav() {
   return (
@@ -82,7 +234,7 @@ export default function MainNav() {
         >
           <NavigationMenuList>
         
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink
                 href='/home-design'
                 className={navigationMenuTriggerStyle()}
@@ -98,9 +250,9 @@ export default function MainNav() {
               >
                 🟢 DEMO: FULL
               </NavigationMenuLink>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
             
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink
                 href='/participate'
                 className={navigationMenuTriggerStyle()}
@@ -116,9 +268,9 @@ export default function MainNav() {
               >
                 🟣 DEMO: BASIC
               </NavigationMenuLink>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
             
-            <NavigationMenuItem>
+            {/* <NavigationMenuItem>
               <NavigationMenuLink
                 href='/characters'
                 className={navigationMenuTriggerStyle()}
@@ -134,9 +286,28 @@ export default function MainNav() {
               >
                 🔵 DEMO: CHARACTERS
               </NavigationMenuLink>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
         
             <NavigationMenuItem>
+              <NavigationMenuLink
+                href='/home-design'
+                className={navigationMenuTriggerStyle()}
+                style={{
+                  backgroundColor: '#222222', 
+                  color: '#888888',
+                  textDecoration: 'none',
+                  // borderWidth: 0,
+                  // marginTop: 0,
+                  // padding: 0,
+                  // fontSize: 12,
+                }}
+              >
+                {/* 🟢 DEMO: DROPDOWN */}
+                <MainNavDropdownMenuDemo />
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+        
+            {/* <NavigationMenuItem>
               <NavigationMenuLink
                 href='/chat'
                 className={navigationMenuTriggerStyle()}
@@ -152,10 +323,30 @@ export default function MainNav() {
               >
                 🟠 CHAT
               </NavigationMenuLink>
+            </NavigationMenuItem> */}
+        
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                href='/chat'
+                className={navigationMenuTriggerStyle()}
+                style={{
+                  backgroundColor: '#222222', 
+                  color: '#888888',
+                  textDecoration: 'none',
+                  // borderWidth: 0,
+                  // marginTop: 0,
+                  // padding: 0,
+                  // fontSize: 12,
+                }}
+              >
+                {/* 🟠 CHAT: DROPDOWN */}
+                <MainNavDropdownMenuChat />
+              </NavigationMenuLink>
             </NavigationMenuItem>
 
             
-            {/* <NavigationMenuItem>
+            {/* 
+            <NavigationMenuItem>
               <NavigationMenuTrigger 
                 style={{
                   backgroundColor: '#222222',

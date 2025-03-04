@@ -7,7 +7,7 @@ const DEEPTHINK_API_KEY = process.env.DEEPTHINK_API_KEY
 
 const openai = new OpenAI({
   // baseURL: 'https://api.deepseek.com',
-  apiKey: process.env.OPEN_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
 })
 

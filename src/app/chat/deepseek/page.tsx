@@ -1,0 +1,50 @@
+'use client'
+
+import React from 'react'
+import { NextPage } from 'next'
+import DeepSeekComponent from '#/lib/deepseek/components/DeepSeekComponent'
+import deepSeekService from '#/lib/deepseek/services/deepSeekService'
+
+interface AnalyzePageProps {
+  initialAnalysisResult?: any // Replace 'any' with the actual type of your analysis result
+}
+
+// import { GetServerSideProps } from 'next'
+import { useEffect, useState } from 'react'
+
+const AnalyzePage: NextPage<AnalyzePageProps> = () => {
+  const initialText = "This is some initial text to analyze."
+  const [analysisResult, setAnalysisResult] = useState(null)
+
+  useEffect(() => {
+    const fetchAnalysis = async () => {
+      try {
+        const result = await deepSeekService.analyzeText(initialText)
+        setAnalysisResult(result)
+      } catch (error) {
+        console.error('Error fetching analysis:', error)
+      }
+    }
+
+    fetchAnalysis()
+  }, [])
+
+  return (
+    <div>
+      <h1>DeepSeek Analysis</h1>
+      <p>This page uses client-side rendering to fetch data.</p>
+      
+      {/* Pass the initialText as a prop to DeepSeekComponent */}
+      <DeepSeekComponent initialText={initialText} />
+      
+      {analysisResult && (
+        <div>
+          <h3>Analysis Result:</h3>
+          <pre>{JSON.stringify(analysisResult, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default AnalyzePage
