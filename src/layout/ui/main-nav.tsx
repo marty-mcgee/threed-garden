@@ -144,7 +144,7 @@ function MainNavDropdownMenuChat() {
             aria-label='CHATS'
           >
             {/* <HamburgerMenuIcon /> */}
-            🔵 CHATS
+            🟣 CHATS
           </button>
         </DropdownMenu.Trigger>
   
@@ -158,9 +158,21 @@ function MainNavDropdownMenuChat() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/chat/openai' title='Home Design Page'
-              className='DropdownMenuItem'>
-              🟠 CHAT: OpenAI
+              <a 
+                href='/chat/openai' 
+                title='OpenAI Chat Page'
+                className='DropdownMenuItem'
+                // style={{
+                //   backgroundColor: '#222222', 
+                //   color: '#888888',
+                //   textDecoration: 'none',
+                //   borderWidth: 0,
+                //   // marginTop: 0,
+                //   // padding: 0,
+                //   fontSize: 12,
+                // }}
+              >
+                🟠 CHAT: OpenAI
               </a>
             </DropdownMenu.Item>
             
@@ -168,9 +180,21 @@ function MainNavDropdownMenuChat() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/chat/deepseek' title='Home Design Page'
-              className='DropdownMenuItem'>
-              🔵 CHAT: DeepSeek
+              <a 
+                href='/chat/deepseek' 
+                title='DeepSeek Chat Page'
+                className='DropdownMenuItem'
+                // style={{
+                //   backgroundColor: '#222222', 
+                //   color: '#888888',
+                //   textDecoration: 'none',
+                //   borderWidth: 0,
+                //   // marginTop: 0,
+                //   // padding: 0,
+                //   fontSize: 12,
+                // }}
+              >
+                🔵 CHAT: DeepSeek
               </a>
             </DropdownMenu.Item>
   
