@@ -50,7 +50,7 @@ const getMovingDirection = (forward: boolean,
 const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   children,
   debug = false,
-  gravityScale = 20, // [MM] added important (missing) prop
+  // gravityScale = -9.81, // 20, // [MM] added important (missing) prop
   capsuleHalfHeight = 32, // 0.35,
   capsuleRadius = 24, // 0.3,
   floatHeight = 0.0, // 0.3,
@@ -534,7 +534,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   // can jump setup
   let canJump: boolean = false;
   let isFalling: boolean = false;
-  const initialGravityScale: number = useMemo(() => props.gravityScale ?? 1, [])
+  // const initialGravityScale: number = useMemo(() => props.gravityScale ?? 1, [0,-9.81,0])
 
   // on moving object state
   let massRatio: number = 1;
@@ -1401,6 +1401,11 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
       }
     }
 
+
+
+
+
+
     /**
      * Detect character falling state
      */
@@ -1415,21 +1420,41 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
         if (characterRef.current.gravityScale() !== 0) {
           characterRef.current.setGravityScale(0, true)
         }
-      } else {
-        if (!isFalling && characterRef.current.gravityScale() !== initialGravityScale) {
-          // Apply initial gravity after landed
-          characterRef.current.setGravityScale(initialGravityScale, true)
-        } else if (isFalling && characterRef.current.gravityScale() !== fallingGravityScale) {
-          // Apply larger gravity when falling (if initialGravityScale === fallingGravityScale, won't trigger this)
-          characterRef.current.setGravityScale(fallingGravityScale, true)
-        }
+      } 
+      
+      
+      else {
+        // if (!isFalling && characterRef.current.gravityScale() !== initialGravityScale) {
+        //   // Apply initial gravity after landed
+        //   characterRef.current.setGravityScale(initialGravityScale, true)
+        // } 
+        
+        // else if (isFalling && characterRef.current.gravityScale() !== fallingGravityScale) {
+        //   // Apply larger gravity when falling (if initialGravityScale === fallingGravityScale, won't trigger this)
+        //   characterRef.current.setGravityScale(fallingGravityScale, true)
+        // }
       }
     }
+
+
+
+
+
 
     /**
      * Apply auto balance force to the character
      */
-    if (autoBalance && characterRef.current) autoBalanceCharacter();
+    if (
+      autoBalance && 
+      characterRef.current
+    ) {
+      autoBalanceCharacter();
+    }
+
+
+
+
+
 
     /**
      * Point to move feature
@@ -1438,6 +1463,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
       functionKeyDown = (forward || backward || leftward || rightward || joystickDis > 0 || gamepadKeys.forward || gamepadKeys.backward || gamepadKeys.leftward || gamepadKeys.rightward || jump || button1Pressed)
       pointToMove(delta, slopeAngle, movingObjectVelocity, functionKeyDown)
     }
+
+
+
+
+
+
+
 
     /**
      * Fixed camera feature
