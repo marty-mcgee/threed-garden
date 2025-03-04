@@ -88,7 +88,8 @@ function MainNavDropdownMenuDemo() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/home-design' title='Home Design Page'>
+              <a href='/home-design' title='Home Design Page'
+              className='DropdownMenuItem'>
               🟢 DEMO: FULL
               </a>
             </DropdownMenu.Item>
@@ -97,7 +98,8 @@ function MainNavDropdownMenuDemo() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/participate' title='Home Design Page'>
+              <a href='/participate' title='Home Design Page'
+              className='DropdownMenuItem'>
               🟣 DEMO: BASIC
               </a>
             </DropdownMenu.Item>
@@ -106,7 +108,8 @@ function MainNavDropdownMenuDemo() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/characters' title='Home Design Page'>
+              <a href='/characters' title='Home Design Page'
+              className='DropdownMenuItem'>
               🔵 DEMO: CHARACTERS
               </a>
             </DropdownMenu.Item>
@@ -155,7 +158,8 @@ function MainNavDropdownMenuChat() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/chat/openai' title='Home Design Page'>
+              <a href='/chat/openai' title='Home Design Page'
+              className='DropdownMenuItem'>
               🟠 CHAT: OpenAI
               </a>
             </DropdownMenu.Item>
@@ -164,7 +168,8 @@ function MainNavDropdownMenuChat() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/chat/deepseek' title='Home Design Page'>
+              <a href='/chat/deepseek' title='Home Design Page'
+              className='DropdownMenuItem'>
               🔵 CHAT: DeepSeek
               </a>
             </DropdownMenu.Item>
