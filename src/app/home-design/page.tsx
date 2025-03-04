@@ -1,7 +1,7 @@
 // ==============================================================
 // Home Design Page (main landing page for 2D-3D Demo)
 
-'use server'
+// 'use server'
 // 'use client'
 // ^^ this is now a server component. default pragma 'use server'
 
@@ -46,7 +46,7 @@ import ThreeDHomeDesign from '#/lib/threed/HomeDesign'
 
 // ==============================================================
 
-export async function getCookie(name: string) {
+async function getCookie(name: string) {
   const c = await cookies()
   return c.get(name)
 }
