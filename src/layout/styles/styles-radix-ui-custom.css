@@ -501,7 +501,7 @@ input {
 .DropdownMenuCheckboxItem[data-highlighted],
 .DropdownMenuRadioItem[data-highlighted],
 .DropdownMenuSubTrigger[data-highlighted] {
-	/* background-color: var(--violet-9); */
+	background-color: var(--violet-2);
 	color: var(--violet-1);
 }
 
