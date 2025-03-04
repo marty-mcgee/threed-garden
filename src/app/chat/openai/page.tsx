@@ -41,7 +41,6 @@ export default function Home() {
     >
       <div className='max-w-xl mx-auto bg-white p-6 rounded shadow'>
         <h1 className='text-2xl font-bold mb-4'>Chatbot with GPT-4.0</h1>
-        <h2 className='text-2xl font-bold mb-4'>Provider: OpenAI</h2>
         <div className='space-y-4'>
           {messages.map((msg, index) => (
             <div

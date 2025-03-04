@@ -130,8 +130,13 @@
     "swr": "2.3.2",
 
 
+    "ai": "4.1.50",
+    "@ai-sdk/deepseek": "0.1.12",
     "openai": "4.86.1",
-    "deepthink": "1.1.5"
+    "deepthink": "1.1.5",
+    "axios": "1.8.1",
+
+    "deepseek-react": "1.1.0"
     
   },
 
