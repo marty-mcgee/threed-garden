@@ -13,7 +13,9 @@ interface AnalyzePageProps {
 import { useEffect, useState } from 'react'
 
 const AnalyzePage: NextPage<AnalyzePageProps> = () => {
-  const initialText = "This is some initial text to analyze."
+  // const customURL = 'https://github.com/marty-mcgee/threed-garden'
+  const customURL = 'https://npmjs.com/package/threed-garden'
+  const initialText = `Please tell me about 'ThreeD Garden' at ${customURL}`
   const [analysisResult, setAnalysisResult] = useState(null)
 
   useEffect(() => {
