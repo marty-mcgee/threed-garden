@@ -245,201 +245,6 @@ h3
 ** REALLY REALLY FINAL CUSTOM CSS 
 */
 
-#ThreeDApp {
-  /* padding: 4px 0; */
-  /* margin: 0; */
-  /* font-family: sans-serif; */
-  /* height: 100vh; */
-  /* width: 100vw; */
-  /* border: 2px solid darkred; */
-}
-
-html,
-body,
-#root {
-  /* width: 100%;
-  height: 100%; */
-  /* margin: 0; */
-  /* padding: 0; */
-  /* overflow: hidden; */
-  /* background-color: #111111; */
-}
-
-body {
-  /* position: fixed; */
-  /* overflow: hidden; */
-  /* color: #3D3D3D; */
-}
-
-/*
-.footer {
-  margin-top: 2rem;
-}
-*/
-
-/* JOYSTICK */ 
-* {
-  /* box-sizing: border-box; */
-}
-.controlKeys {
-  /* position: absolute; */
-  /* width: 18rem; */
-  /* left: 50%; */
-  /* margin-left: -9rem; */
-  /* bottom: 10%; */
-  /* user-select: none;
-  -moz-user-select: none;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  -ms-user-select: none; */
-}
-
-/* .title {
-  font-size: 0.8rem;
-  color: darkgray;
-  position: absolute;
-  width: 100%;
-  bottom: 2%;
-  text-align: center;
-}
-
-.title > a {
-  color: rgb(79, 189, 249);
-} */
-
-/* @media (max-width: 768px) {
-  .controlKeys {
-    display: none;
-  }
-  .title {
-    display: none;
-  }
-} */
-
-/* @media (max-height: 450px) {
-  .controlKeys {
-    display: none;
-  }
-  .title {
-    display: none;
-  }
-} */
-
-
-/* Set min-height to avoid page reflow while session loading */
-/* .signedInStatus {
-  display: block;
-  min-height: 4rem;
-  width: 100%;
-}
-
-.loading,
-.loaded {
-  position: relative;
-  top: 0;
-  opacity: 1;
-  overflow: hidden;
-  border-radius: 0 0 0.6rem 0.6rem;
-  padding: 0.6rem 1rem;
-  margin: 0;
-  background-color: rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease-in;
-}
-
-.loading {
-  top: -2rem;
-  opacity: 0;
-}
-
-.signedInText,
-.notSignedInText {
-  position: absolute;
-  padding-top: 0.8rem;
-  left: 1rem;
-  right: 6.5rem;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  display: inherit;
-  z-index: 1;
-  line-height: 1.3rem;
-}
-
-.signedInText {
-  padding-top: 0rem;
-  left: 4.6rem;
-}
-
-.avatar {
-  border-radius: 2rem;
-  float: left;
-  height: 2.8rem;
-  width: 2.8rem;
-  background-color: white;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-.button,
-.buttonPrimary {
-  float: right;
-  margin-right: -0.4rem;
-  font-weight: 500;
-  border-radius: 0.3rem;
-  cursor: pointer;
-  font-size: 1rem;
-  line-height: 1.4rem;
-  padding: 0.7rem 0.8rem;
-  position: relative;
-  z-index: 10;
-  background-color: transparent;
-  color: #555;
-}
-
-.buttonPrimary {
-  background-color: #346df1;
-  border-color: #346df1;
-  color: #fff;
-  text-decoration: none;
-  padding: 0.7rem 1.4rem;
-}
-
-.buttonPrimary:hover {
-  box-shadow: inset 0 0 5rem rgba(0, 0, 0, 0.2);
-}
-
-.navItems {
-  margin-bottom: 2rem;
-  padding: 0;
-  list-style: none;
-}
-
-.navItem {
-  display: inline-block;
-  margin-right: 1rem;
-  background-color: black;
-} */
-
-
-/*
-.navItems {
-  margin-bottom: 1rem;
-  padding: 0;
-  list-style: none;
-}
-
-.navItem {
-  display: inline-block;
-  margin-right: 1rem;
-} */
-
-
-/* #datgui { 
-  position: absolute; 
-  top: 10px; 
-  right: 128px 
-} */
-
 @import "@radix-ui/colors/black-alpha.css";
 @import "@radix-ui/colors/green.css";
 @import "@radix-ui/colors/mauve.css";
@@ -669,6 +474,7 @@ input {
 	font-size: 13px;
 	line-height: 1;
   text-decoration: none;
+  /* background-color: var(--violet-11); */
 	color: var(--violet-11);
 	border-radius: 3px;
 	display: flex;
@@ -681,7 +487,7 @@ input {
 	outline: none;
 }
 .DropdownMenuSubTrigger[data-state="open"] {
-	background-color: var(--violet-4);
+	/* background-color: var(--violet-4); */
 	color: var(--violet-11);
 }
 .DropdownMenuItem[data-disabled],
@@ -695,7 +501,7 @@ input {
 .DropdownMenuCheckboxItem[data-highlighted],
 .DropdownMenuRadioItem[data-highlighted],
 .DropdownMenuSubTrigger[data-highlighted] {
-	background-color: var(--violet-9);
+	/* background-color: var(--violet-9); */
 	color: var(--violet-1);
 }
 
