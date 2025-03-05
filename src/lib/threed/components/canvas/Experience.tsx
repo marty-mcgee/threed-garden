@@ -323,7 +323,7 @@ const ThreeDExperience = forwardRef((
 
               {/* Slopes + Stairs */}
               {/* 
-              <group rotation={[0, 0, 0]} scale={10.0} position={[100, 0, 100]}>
+              <group rotation={[0, 0, 0]} scale={10.0} position={[10, 0, 10]}>
                 <Slopes />
               </group>
               */}

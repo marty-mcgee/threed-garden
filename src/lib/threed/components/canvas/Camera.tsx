@@ -42,7 +42,8 @@ export default function ThreeDCamera(
 ) {
 
   const initCamera: { position: VectorXyz, target: VectorXyz } = {
-    position: [-640, 320, 640],
+    // position: [-640, 320, 640],
+    position: [-64, 32, 64],
     target: [0, 0, 0],
   }
   const camera = getCamera(config, activeFocus, initCamera)
@@ -58,8 +59,8 @@ export default function ThreeDCamera(
         makeDefault={true} 
         name={"camera"}
         fov={64} 
-        near={0.10} 
-        far={80000}
+        near={0.010} 
+        far={8000}
         position={camera.position}
         // rotation={[0, 0, 0]}
         // up={[0, 0, 0]}
