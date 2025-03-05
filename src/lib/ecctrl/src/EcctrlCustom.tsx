@@ -50,7 +50,7 @@ const getMovingDirection = (forward: boolean,
 const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   children,
   debug = false,
-  gravityScale = -98.1, // -9.81, // 20, // [MM] added important (missing) prop
+  gravityScale = 1, // -98.1, // -9.81, // 20, // [MM] added important (missing) prop
   capsuleHalfHeight = 32, // 0.35,
   capsuleRadius = 24, // 0.3,
   floatHeight = 0.0, // 0.3,
@@ -130,6 +130,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   // Other rigibody props from parent
   ...props
 }: EcctrlProps, ref) => {
+  
+  const initialGravityScale: number = 0; // -98.1 // -9.81 // 1?
+  // useMemo(() => gravityScale ?? 0, 1)
+
   const characterRef = useRef<CustomEcctrlRigidBody>(null)
   // const characterRef = ref as RefObject<RapierRigidBody> || useRef<RapierRigidBody>(null)
   const characterModelRef = useRef<THREE.Group>(null);
@@ -534,7 +538,6 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   // can jump setup
   let canJump: boolean = false;
   let isFalling: boolean = false;
-  const initialGravityScale: number = 1; // -98.1 // useMemo(() => props.gravityScale ?? 1, [0,-98.1,0])
 
   // on moving object state
   let massRatio: number = 1;

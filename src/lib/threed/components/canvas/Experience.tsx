@@ -73,8 +73,8 @@ import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED
 
 // ** THREED CHARACTER CONTROL Imports
 // import CharacterControls from 'ecctrl'
-// import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
-import CharacterControls from '#/lib/ecctrl/src/EcctrlCustom'
+import CharacterControls from '#/lib/ecctrl/src/Ecctrl'
+// import CharacterControls from '#/lib/ecctrl/src/EcctrlCustom' // testing, not functional
 // ** THREED CHARACTER MODEL Imports
 import CharacterModel from '#/lib/threed/components/nouns/Character/CharacterModel'
 import CharacterModelDemon from '#/lib/threed/components/nouns/Character/CharacterModelDemon'
@@ -262,18 +262,18 @@ const ThreeDExperience = forwardRef((
         {/* THREED USING PHYSICS */}
         <Physics
           debug={prefs.doWorldPhysics}
-          // gravity={[0, -98.1, 0]} // default [0, -9.81, 0] 
+          gravity={[0, -9.81, 0]} // default [0, -9.81, 0] 
           // interpolation={false} 
           // colliders={'trimesh'}
           // debug={true}
-          // timeStep={1/120} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120
+          timeStep={1/60} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120
           // timeStep={'vary'}
           paused={pausedPhysics}
         >
 
           {/* EXAMPLES: BIRDS */}
           { true && (
-            <group rotation={[0, 0, 0]} scale={100.0} position={[0, 2400, 0]}>
+            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2400, 0]}>
               <Birds />
             </group>
           )}
@@ -310,12 +310,12 @@ const ThreeDExperience = forwardRef((
             <SelectToZoom>
 
               {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
-              <group rotation={[0, 0, 0]} scale={1.0} position={[0, 6, 0]}>
+              <group rotation={[0, 0, 0]} scale={0.10} position={[0, 6, 0]}>
                 <Steps />
               </group>
 
               {/* Rough Plane */}
-              <group rotation={[0, 0, 0]} scale={100.0} position={[800, -30, 1000]}
+              <group rotation={[0, 0, 0]} scale={10.0} position={[800, -30, 1000]}
                 // onClick={handleClick}
               >
                 <RoughPlane />
@@ -323,13 +323,13 @@ const ThreeDExperience = forwardRef((
 
               {/* Slopes + Stairs */}
               {/* 
-              <group rotation={[0, 0, 0]} scale={100.0} position={[100, 0, 100]}>
+              <group rotation={[0, 0, 0]} scale={10.0} position={[100, 0, 100]}>
                 <Slopes />
               </group>
               */}
 
               {/* Rigid Body Objects */}
-              <group rotation={[0, 0, 0]} scale={1.0} position={[-4, 10.00, 0]}>
+              <group rotation={[0, 0, 0]} scale={0.10} position={[-4, 10.00, 0]}>
                 <RigidObjects />
               </group>
 
@@ -354,16 +354,11 @@ const ThreeDExperience = forwardRef((
               */}
 
               {/* THREED FARMBOTS */}
-              <group rotation={[-Math.PI/2, 0, 0]} scale={0.160} position={[-400, 50, -300]}>
+              <group rotation={[-Math.PI/2, 0, 0]} scale={0.0160} position={[-40, 5, -30]}>
                 <ThreeDFarmBotGarden 
                   key={'ThreeDFarmBotGarden_' + newUUID()} 
                 />
               </group>
-              {/* <group rotation={[0, 0, 0]} scale={1.000} position={[-4000, 50, -3000]}>
-                <ThreeDFarmBotGarden2 
-                  key={'ThreeDFarmBotGarden_2' + newUUID()} 
-                />
-              </group> */}
               {/* 
               <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
                 <ThreeDFarmBotMain />
@@ -409,7 +404,7 @@ const ThreeDExperience = forwardRef((
                 { true && (
                 <group 
                   key='character1' 
-                  position={[0, 200, 0]}
+                  // position={[0, 200, 0]}
                   // scale={[0.01, 0.01, 0.01]}
                   // scale={[0.1, 0.1, 0.1]}
                   // scale={[10.0, 10.0, 10.0]}
@@ -460,7 +455,7 @@ const ThreeDExperience = forwardRef((
                   >
                     <group 
                       key='character1controls' 
-                      position={[0, -56, 0]}
+                      // position={[0, -56, 0]}
                       // scale={[0.01, 0.01, 0.01]}
                       // scale={[0.1, 0.1, 0.1]}
                       // scale={[10.0, 10.0, 10.0]}
@@ -513,8 +508,8 @@ const ThreeDExperience = forwardRef((
                 // rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
                 rotation={[(Math.PI/2) + 0, (-Math.PI/1), (Math.PI/1) + 0]}
                 // quaternion={[0,0,0,0]}
-                scale={8.0} 
-                position={[80, 140, -1600]}
+                scale={0.80} 
+                position={[8, 14, -160]}
               >
                 <Map />
               </group>

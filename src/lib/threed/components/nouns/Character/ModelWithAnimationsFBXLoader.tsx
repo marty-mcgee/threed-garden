@@ -81,6 +81,7 @@ const ModelWithMultipleAnimations: FC = () => {
         // Scale the model
         // fbx.scale.set(10.00, 10.00, 10.00)
         // fbx.scale.set(1.00, 1.00, 1.00)
+        fbx.scale.set(0.10, 0.10, 0.10)
         // fbx.scale.set(0.01, 0.01, 0.01)
         setModel(fbx)
         // setAnimations({
