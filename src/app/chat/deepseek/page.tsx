@@ -1,6 +1,7 @@
 // 'use client'
 
-import React from 'react'
+// import React from 'react'
+// import { useEffect, useState } from 'react'
 import { NextPage } from 'next'
 import DeepSeekComponent from '#/lib/deepseek/components/DeepSeekComponent'
 // import deepSeekService from '#/lib/deepseek/services/deepSeekService'
@@ -8,9 +9,6 @@ import DeepSeekComponent from '#/lib/deepseek/components/DeepSeekComponent'
 interface ChatDeepSeekPageProps {
   initialAnalysisResult?: any // Replace 'any' with the actual type of your analysis result
 }
-
-// import { GetServerSideProps } from 'next'
-// import { useEffect, useState } from 'react'
 
 const ChatDeepSeekPage: NextPage<ChatDeepSeekPageProps> = () => {
   // // const customURL = 'https://github.com/marty-mcgee/threed-garden'
