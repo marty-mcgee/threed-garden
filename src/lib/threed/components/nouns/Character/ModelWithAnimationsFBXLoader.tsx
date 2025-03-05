@@ -11,6 +11,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { 
   // useFBX,
   Html,
+  Text,
 } from '@react-three/drei'
 import { 
   useFrame,
