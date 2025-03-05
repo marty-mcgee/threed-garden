@@ -217,8 +217,8 @@ const ModelWithMultipleAnimations: FC = () => {
 
   return (
     <>
-      {/* Display error message if an error occurs */}
-      {false && error && (
+      {/* EXAMPLE: Display error message if an error occurs */}
+      {error && (
         <Html>
           <div style={{ color: 'red', position: 'absolute', top: '10px', left: '10px' }}>
             Error: {error}
