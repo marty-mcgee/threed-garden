@@ -262,7 +262,7 @@ const ThreeDExperience = forwardRef((
         {/* THREED USING PHYSICS */}
         <Physics
           debug={prefs.doWorldPhysics}
-          // gravity={[0, -9.81, 0]} // default [0, -9.81, 0] 
+          gravity={[0, -98.1, 0]} // default [0, -9.81, 0] 
           // interpolation={false} 
           // colliders={'trimesh'}
           // debug={true}
@@ -451,10 +451,10 @@ const ThreeDExperience = forwardRef((
                     // followLight={prefs.doWorldFollowLight}
                     
                     // ** MICRO-CONTROLS
-                    // springK={2}
-                    // dampingC={0.2}
-                    // autoBalanceSpringK={1.2}
-                    // autoBalanceDampingC={0.04}
+                    springK={2}
+                    dampingC={0.2}
+                    autoBalanceSpringK={1.2}
+                    autoBalanceDampingC={0.04}
                     // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
                     // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
                   >
@@ -466,9 +466,9 @@ const ThreeDExperience = forwardRef((
                       // scale={[10.0, 10.0, 10.0]}
                     >
                       {/* <ModelWithAnimations /> */}
-                      {/* <ModelWithAnimationsFBXLoader /> */}
+                      <ModelWithAnimationsFBXLoader />
                       {/* <CharacterModelFarmerWomanFloating scale={1.016} /> */}
-                      <CharacterModelFarmerManFloating scale={1.016} />
+                      {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
                     </group>
                   </CharacterControls>
                 </group>
