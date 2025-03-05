@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export default function Home() {
+export default function ChatHomePage() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
 
