@@ -1,19 +1,19 @@
 'use client'
 
 import React, { useState } from 'react'
-import deepThinkService from '#/lib/deepseek/services/deepSeekService' // Adjust the path as needed
+import deepSeekService from '#/lib/deepseek/services/deepSeekService' // Adjust the path as needed
 
-interface DeepThinkComponentProps {
+interface DeepSeekComponentProps {
   initialText?: string
 }
 
-const DeepThinkComponent: React.FC<DeepThinkComponentProps> = ({ initialText = '' }) => {
+const DeepSeekComponent: React.FC<DeepSeekComponentProps> = ({ initialText = '' }) => {
   const [inputText, setInputText] = useState(initialText)
   const [analysisResult, setAnalysisResult] = useState(null)
 
   const handleAnalyze = async () => {
     try {
-      const result = await deepThinkService.analyzeText(inputText)
+      const result = await deepSeekService.analyzeText(inputText)
       setAnalysisResult(result)
     } catch (error) {
       console.error('Error:', error)
@@ -38,4 +38,4 @@ const DeepThinkComponent: React.FC<DeepThinkComponentProps> = ({ initialText = '
   )
 }
 
-export default DeepThinkComponent
+export default DeepSeekComponent
