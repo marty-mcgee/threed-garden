@@ -30,7 +30,7 @@ const ModelWithMultipleAnimations: FC = () => {
     idle: './characters/animations/Idle.fbx',
     walk: './characters/animations/Walking.fbx',
     run:  './characters/animations/Running.fbx',
-    all:  './characters/animations/Animations.fbx',
+    // all:  './characters/animations/Animations.fbx',
   }
 
   // Load the model file (fbx)
@@ -44,20 +44,20 @@ const ModelWithMultipleAnimations: FC = () => {
 
   // State to store loaded animations
   const [animations, setAnimations] = useState<{
-    walk: THREE.AnimationClip[] | null
-    run: THREE.AnimationClip[] | null
     idle: THREE.AnimationClip[] | null
+    walk: THREE.AnimationClip[] | null
+    run:  THREE.AnimationClip[] | null
   }>({
-    walk: null,
-    run: null,
     idle: null,
+    walk: null,
+    run:  null,
   })
 
   // State to store animation actions
   const [actions, setActions] = useState<AnimationActions>({
-    walk: null,
-    run: null,
     idle: null,
+    walk: null,
+    run:  null,
   })
 
   // State to track the current animation
@@ -113,21 +113,26 @@ const ModelWithMultipleAnimations: FC = () => {
       )
     }
 
-    loadAnimation(animationFiles.walk, 'walk')
-    loadAnimation(animationFiles.run, 'run')
     loadAnimation(animationFiles.idle, 'idle')
+    loadAnimation(animationFiles.walk, 'walk')
+    loadAnimation(animationFiles.run,  'run')
+    setLoading(false)
   }, [])
 
   // Map animations to actions once they are loaded
   useEffect(() => {
-    if (model && animations.walk && animations.run && animations.idle) {
+    if ( model
+      && animations.idle
+      && animations.walk
+      && animations.run
+    ) {
       try {
         mixer.current = new THREE.AnimationMixer(model)
 
         const actionMap: AnimationActions = {
-          walk: null,
-          run: null,
           idle: null,
+          walk: null,
+          run:  null,
         }
 
         // Map each animation to an action
