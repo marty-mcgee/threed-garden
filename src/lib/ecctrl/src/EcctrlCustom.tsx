@@ -50,7 +50,7 @@ const getMovingDirection = (forward: boolean,
 const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   children,
   debug = false,
-  // gravityScale = -9.81, // 20, // [MM] added important (missing) prop
+  gravityScale = -98.1, // -9.81, // 20, // [MM] added important (missing) prop
   capsuleHalfHeight = 32, // 0.35,
   capsuleRadius = 24, // 0.3,
   floatHeight = 0.0, // 0.3,
@@ -534,7 +534,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   // can jump setup
   let canJump: boolean = false;
   let isFalling: boolean = false;
-  // const initialGravityScale: number = useMemo(() => props.gravityScale ?? 1, [0,-9.81,0])
+  const initialGravityScale: number = 1; // -98.1 // useMemo(() => props.gravityScale ?? 1, [0,-98.1,0])
 
   // on moving object state
   let massRatio: number = 1;
@@ -1424,15 +1424,15 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
       
       
       else {
-        // if (!isFalling && characterRef.current.gravityScale() !== initialGravityScale) {
-        //   // Apply initial gravity after landed
-        //   characterRef.current.setGravityScale(initialGravityScale, true)
-        // } 
+        if (!isFalling && characterRef.current.gravityScale() !== initialGravityScale) {
+          // Apply initial gravity after landed
+          characterRef.current.setGravityScale(initialGravityScale, true)
+        } 
         
-        // else if (isFalling && characterRef.current.gravityScale() !== fallingGravityScale) {
-        //   // Apply larger gravity when falling (if initialGravityScale === fallingGravityScale, won't trigger this)
-        //   characterRef.current.setGravityScale(fallingGravityScale, true)
-        // }
+        else if (isFalling && characterRef.current.gravityScale() !== fallingGravityScale) {
+          // Apply larger gravity when falling (if initialGravityScale === fallingGravityScale, won't trigger this)
+          characterRef.current.setGravityScale(fallingGravityScale, true)
+        }
       }
     }
 
@@ -1455,7 +1455,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
 
 
 
-
+    
     /**
      * Point to move feature
      */
@@ -1582,6 +1582,7 @@ export interface CustomEcctrlRigidBody extends RapierRigidBody {
 export interface EcctrlProps extends RigidBodyProps {
   children?: ReactNode;
   debug?: boolean;
+  gravityScale?: number;
   capsuleHalfHeight?: number;
   capsuleRadius?: number;
   floatHeight?: number;
