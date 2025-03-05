@@ -5,14 +5,14 @@ import { NextPage } from 'next'
 import DeepSeekComponent from '#/lib/deepseek/components/DeepSeekComponent'
 // import deepSeekService from '#/lib/deepseek/services/deepSeekService'
 
-interface AnalyzePageProps {
+interface ChatDeepSeekPageProps {
   initialAnalysisResult?: any // Replace 'any' with the actual type of your analysis result
 }
 
 // import { GetServerSideProps } from 'next'
 // import { useEffect, useState } from 'react'
 
-const AnalyzePage: NextPage<AnalyzePageProps> = () => {
+const ChatDeepSeekPage: NextPage<ChatDeepSeekPageProps> = () => {
   // // const customURL = 'https://github.com/marty-mcgee/threed-garden'
   const customURL = 'https://npmjs.com/package/threed-garden'
   const initialText = `Please tell me about 'ThreeD Garden' at ${customURL}`
@@ -34,7 +34,7 @@ const AnalyzePage: NextPage<AnalyzePageProps> = () => {
 
   return (
     <div>
-      <h1>DeepSeek Analysis</h1>
+      <h1>DeepSeek Chat</h1>
       <p>This page uses client-side rendering to fetch data.</p>
       
       {/* Pass the initialText as a prop to DeepSeekComponent */}
@@ -50,4 +50,4 @@ const AnalyzePage: NextPage<AnalyzePageProps> = () => {
   )
 }
 
-export default AnalyzePage
+export default ChatDeepSeekPage
