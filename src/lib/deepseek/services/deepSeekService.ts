@@ -7,7 +7,7 @@ const DEEPSEEK_BASE_URL = 'https://api.deepseek.com'
 // const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/search'
 // const DEEPSEEK_BASE_URL = 'https://api.deepseek.com/chat'
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions'
-const DEEPSEEK_API_KEY = 'sk-69966a0b79b349998f9abd5513854326' // process.env.DEEPSEEK_API_KEY
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY
 
 // const openai = new OpenAI({
 //   baseURL: DEEPSEEK_BASE_URL,
