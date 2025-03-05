@@ -315,7 +315,7 @@ const ThreeDExperience = forwardRef((
               </group>
 
               {/* Rough Plane */}
-              <group rotation={[0, 0, 0]} scale={10.0} position={[800, -30, 1000]}
+              <group rotation={[0, 0, 0]} scale={10.0} position={[80, -3, 100]}
                 // onClick={handleClick}
               >
                 <RoughPlane />
@@ -367,38 +367,6 @@ const ThreeDExperience = forwardRef((
 
               {/* THREED CHARACTER MODELS */}
               <KeyboardControls map={keyboardMap}>
-
-                {/* CHARACTER MODEL */}
-                { false && (
-                <group key='character0' position={[800, 0, 0]}>
-                  {/* <CharacterControls
-                    debug={prefs.doWorldDebug}
-                    // debug={false}
-                    animated={prefs.doCharacterAnimation}
-                    // animated={false}
-                    disableControl={prefs.doWorldControl}
-                    // disableControl={false}
-                    // disableFollowCam={prefs.doWorldUnfollowCam}
-                    disableFollowCam={true}
-                    followLight={true}
-                    // springK={2}
-                    // dampingC={0.2}
-                    // autoBalanceSpringK={1.2}
-                    // autoBalanceDampingC={0.04}
-                    // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-                    // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-                    // mode='FixedCamera'
-                    // mode='CameraBasedMovement'
-                  > */}
-                    {/* <CharacterModel /> */}
-                    {/* <CharacterModelFloating /> */}
-                    {/* <CharacterModelStacy /> */}
-                    <CharacterModelStacy scale={1.2} />
-                    {/* <CharacterModelChicken scale={2.0} /> */}
-                  {/* </CharacterControls> */}
-                </group>
-                )}
-                {/* END: CHARACTER MODEL */}
                 
                 {/* CHARACTER MODEL */}
                 { true && (
@@ -466,6 +434,18 @@ const ThreeDExperience = forwardRef((
                       {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
                     </group>
                   </CharacterControls>
+                </group>
+                )}
+                {/* END: CHARACTER MODEL */}
+
+                {/* CHARACTER MODEL */}
+                { false && (
+                <group key='character0' position={[80, 0, 0]}>
+                    {/* <CharacterModel /> */}
+                    {/* <CharacterModelFloating /> */}
+                    {/* <CharacterModelStacy /> */}
+                    <CharacterModelStacy scale={0.12} />
+                    {/* <CharacterModelChicken scale={0.20} /> */}
                 </group>
                 )}
                 {/* END: CHARACTER MODEL */}
