@@ -3,7 +3,7 @@ import OpenAI from 'openai'
 
 // const DEEPTHINK_API_URL = 'https://api.deepseek.com/v1/deepthink'
 const DEEPTHINK_API_URL = 'https://api.deepseek.com/chat/completions'
-const DEEPTHINK_API_KEY = process.env.DEEPTHINK_API_KEY
+const DEEPTHINK_API_KEY = process.env.NEXT_PUBLIC_DEEPTHINK_API_KEY
 
 const openai = new OpenAI({
   // baseURL: 'https://api.deepseek.com',
@@ -22,7 +22,7 @@ export async function POST(req: any) {
     })
     // async analyzeText(text: string) {
     //   const completion = await openai.chat.completions.create({
-    //     messages: [{ role: "system", content: text }],
+    //     messages: [{ role: "user", content: text }],
     //     model: "gpt-4",
     //   })
   
