@@ -1,35 +1,36 @@
-'use client'
+// 'use client'
 
 import React from 'react'
 import { NextPage } from 'next'
 import DeepSeekComponent from '#/lib/deepseek/components/DeepSeekComponent'
-import deepSeekService from '#/lib/deepseek/services/deepSeekService'
+// import deepSeekService from '#/lib/deepseek/services/deepSeekService'
 
 interface AnalyzePageProps {
   initialAnalysisResult?: any // Replace 'any' with the actual type of your analysis result
 }
 
 // import { GetServerSideProps } from 'next'
-import { useEffect, useState } from 'react'
+// import { useEffect, useState } from 'react'
 
 const AnalyzePage: NextPage<AnalyzePageProps> = () => {
-  // const customURL = 'https://github.com/marty-mcgee/threed-garden'
+  // // const customURL = 'https://github.com/marty-mcgee/threed-garden'
   const customURL = 'https://npmjs.com/package/threed-garden'
   const initialText = `Please tell me about 'ThreeD Garden' at ${customURL}`
-  const [analysisResult, setAnalysisResult] = useState(null)
+  // const [analysisResult, setAnalysisResult] = useState(null)
 
-  useEffect(() => {
-    const fetchAnalysis = async () => {
-      try {
-        const result = await deepSeekService.analyzeText(initialText)
-        setAnalysisResult(result)
-      } catch (error) {
-        console.error('Error fetching analysis:', error)
-      }
-    }
+  // ** for testing only
+  // useEffect(() => {
+  //   const fetchAnalysis = async () => {
+  //     try {
+  //       const result = await deepSeekService.analyzeText(initialText)
+  //       setAnalysisResult(result)
+  //     } catch (error) {
+  //       console.error('Error fetching analysis:', error)
+  //     }
+  //   }
 
-    fetchAnalysis()
-  }, [])
+  //   fetchAnalysis()
+  // }, [])
 
   return (
     <div>
@@ -39,12 +40,12 @@ const AnalyzePage: NextPage<AnalyzePageProps> = () => {
       {/* Pass the initialText as a prop to DeepSeekComponent */}
       <DeepSeekComponent initialText={initialText} />
       
-      {analysisResult && (
+      {/* {analysisResult && (
         <div>
           <h3>Analysis Result:</h3>
           <pre>{JSON.stringify(analysisResult, null, 2)}</pre>
         </div>
-      )}
+      )} */}
     </div>
   )
 }
