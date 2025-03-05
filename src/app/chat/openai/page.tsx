@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-export default function Home() {
+export default function ChatOpenAIPage() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
 
