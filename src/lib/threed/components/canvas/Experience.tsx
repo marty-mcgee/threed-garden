@@ -230,12 +230,12 @@ const ThreeDExperience = forwardRef((
   const configBounds = {
     fit: false,
     clip: false,
-    observe: true,
+    observe: false,
     margin: 1.0,
     maxDuration: 1,
-    interpolateFunc0: (t: number) => 1 - Math.exp(-5 * t) + 0.007 * t, // Matches the default Bounds behavior
-    interpolateFunc1: (t: number) => -t * t * t + 2 * t * t,           // Start smoothly, finish linearly
-    interpolateFunc2: (t: number) => -t * t * t + t * t + t,           // Start linearly, finish smoothly
+    interpolateFunc0: (t: number) => 1 - Math.exp(-5 * t) + 0.007 * t, // Matches default behavior
+    interpolateFunc1: (t: number) => -t * t * t + 2 * t * t, // Start smooth, finish linear
+    interpolateFunc2: (t: number) => -t * t * t + t * t + t, // Start linear, finish smooth
   }
 
   // ==========================================================
@@ -262,7 +262,7 @@ const ThreeDExperience = forwardRef((
         {/* THREED USING PHYSICS */}
         <Physics
           debug={prefs.doWorldPhysics}
-          gravity={[0, -98.1, 0]} // default [0, -9.81, 0] 
+          // gravity={[0, -98.1, 0]} // default [0, -9.81, 0] 
           // interpolation={false} 
           // colliders={'trimesh'}
           // debug={true}
@@ -284,8 +284,8 @@ const ThreeDExperience = forwardRef((
             clip={configBounds.clip}
             observe={configBounds.observe}
             margin={configBounds.margin}
-            // maxDuration={configBounds.maxDuration} 
-            // interpolateFunc={configBounds.interpolateFunc2}
+            maxDuration={configBounds.maxDuration} 
+            interpolateFunc={configBounds.interpolateFunc2}
           >
 
             {/* ** FLOORS ** */}
