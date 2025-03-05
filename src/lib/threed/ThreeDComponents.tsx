@@ -87,7 +87,7 @@ export default function ThreeDComponents(): React.ReactNode {
           // border: '1px solid green',
         }}
       > */}
-        <ThreeDToolbar />
+        {/* <ThreeDToolbar /> */}
       {/* </Panel> */}
 
       {/* <PanelResizeHandle /> */}
