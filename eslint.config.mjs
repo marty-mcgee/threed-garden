@@ -8,8 +8,9 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.config({
     extends: ['next'],
-    rules: { // 'off' | ['error', { 'ignore': ['args'] }]
+    rules: { // options: 'off' | ['error', { 'ignore': ['args'] }]
       '@next/next/no-assign-module-variable': 'off',
+      // '@next/next/no-img-element': 'off', 
       '@next/next/no-page-custom-font': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',

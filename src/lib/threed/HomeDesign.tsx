@@ -5779,7 +5779,7 @@ const CatalogItems = (props: any): React.ReactNode => {
             className='threedItem disableSelection' 
             onMouseDown={(event) => beginDrag(event, object)}
           >
-            <Image 
+            <img // Image 
               src={threedItemsURL + 'objects/' + object.title + '.png'}
               className='threedThumb' 
               alt={object.title}
