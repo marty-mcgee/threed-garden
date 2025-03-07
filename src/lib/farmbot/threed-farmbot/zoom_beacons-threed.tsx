@@ -1,5 +1,3 @@
-// @ ts-nocheck /* OR @ ts-expect-error */
-
 import { Sphere, Html, Line } from "@react-three/drei"
 import React from "react"
 import { Config } from "./config-threed"
@@ -20,7 +18,6 @@ const BeaconPulse = () => {
   const { scale, opacity } = useSpring({
     from: { scale: 1, opacity: 0.75 },
     to: async (next) => {
-      // eslint-disable-next-line no-constant-condition
       while (true) {
         await next({ scale: 2.5, opacity: 0 })
         await new Promise(resolve => setTimeout(resolve, 2000))

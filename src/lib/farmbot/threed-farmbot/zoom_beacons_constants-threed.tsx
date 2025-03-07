@@ -1,6 +1,3 @@
-// @ ts-nocheck /* OR @ ts-expect-error */
-
-/* eslint-disable react-refresh/only-export-components */
 import { findIndex } from "lodash"
 import { Config } from "./config-threed"
 import { threeSpace, zDir, zZero } from "./helpers"

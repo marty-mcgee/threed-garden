@@ -8,6 +8,8 @@ import {
   useEffect,
 } from 'react'
 
+import Image from 'next/image'
+
 // ==========================================================
 // ** Provide Different ThreeD|TwoD Views
 // **
@@ -71,7 +73,7 @@ const PropertiesView: FC = (): React.ReactNode => {
                 onMouseDown='beginDrag(event, modalModel3dFurnitureId);'
                 className='disableSelection'
               >
-                <img
+                <Image
                   id='model3dLargeThumb'
                   className='disableSelection'
                   style={{ pointerEvents: 'none' }}
@@ -1304,9 +1306,9 @@ const PlanView: FC = (): React.ReactNode => {
           href='https://threedgarden.com'
           style={{ float: 'left', padding: '0px', marginTop: '0px' }}
         >
-          <img
+          <Image
             src='/favicon/favicon.png'
-            height='77px'
+            height='77'
             title='ThreeD Garden'
             alt='ThreeD Garden'
           />
@@ -1435,7 +1437,7 @@ const TheBottom: FC = (): React.ReactNode => {
   )
 }
 
-export default {
+export default Views = {
   CatalogView,
   PropertiesView,
   PlanView,

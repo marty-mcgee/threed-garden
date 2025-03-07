@@ -3372,7 +3372,7 @@ const ViewProperties = () => {
                   className='disableSelection'
                   style={{ textAlign: 'center' }}
                 >
-                  <img // Image
+                  <Image
                     id='model3dLargeThumb'
                     alt='model3dLargeThumb'
                     width={100}
@@ -4271,10 +4271,10 @@ const ViewModals = (props: any) => {
                             </td>
                             <td>
                               <div>
-                                <img 
+                                {/* <Image 
                                   id='localStoragePlanImage' 
                                   // onClick={() => loadFromLocalStorage()}
-                                />
+                                /> */}
                               </div>
                             </td>
                           </tr>
@@ -4306,9 +4306,9 @@ const ViewModals = (props: any) => {
                           </td>
                           <td>
                             <div>
-                              <img id='featuredPlanImage' 
+                              {/* <img id='featuredPlanImage' 
                                 // onClick={() => loadExamplePlan()} 
-                              />
+                              /> */}
                             </div>
                           </td>
                         </tr>
@@ -4576,7 +4576,7 @@ const ViewModals = (props: any) => {
         <div className='modal-content'>
           <div className='modal-header'>
             <span className='close'>-X-</span>
-            <img src='favicon/favicon.png' height='48px' 
+            <Image src='favicon/favicon.png' height='48' 
               title='ThreeD HD' alt='ThreeD HD' />
             <h2>ThreeD HD</h2>
           </div>
@@ -4618,7 +4618,7 @@ const ViewModals = (props: any) => {
       <div id='modalLoading' className='modal-small'>
         <div className='modal-small-content'>
           <div className='modal-small-header'>
-            <img src='favicon/favicon.png' height='48px' 
+            <Image src='favicon/favicon.png' height='48' 
               title='ThreeD HD' alt='ThreeD HD' />
             <h2>ThreeD HD</h2>
           </div>
@@ -4636,7 +4636,7 @@ const ViewModals = (props: any) => {
         <div className='modal-small-content'>
           <div className='modal-small-header'>
             <span className='close'>-X-</span>
-            <img src='favicon/favicon.png' height='48px' 
+            <Image src='favicon/favicon.png' height='48' 
               title='ThreeD HD' alt='ThreeD HD' />
             <h2>ThreeD HD</h2>
           </div>
@@ -5779,7 +5779,7 @@ const CatalogItems = (props: any): React.ReactNode => {
             className='threedItem disableSelection' 
             onMouseDown={(event) => beginDrag(event, object)}
           >
-            <img 
+            <Image 
               src={threedItemsURL + 'objects/' + object.title + '.png'}
               className='threedThumb' 
               alt={object.title}
@@ -6865,11 +6865,11 @@ export default function ThreeDHomeDesign({
         </div>
 
         {/* THREED: TOOLBAR (ACTIONS) */}
-        <ThreeDToolbar />
-                
+        {/* <ThreeDToolbar /> */}
+        
         {/* THREED: CONTROLS: LEVA GUI */}
         {/* <ThreeDLevaControls /> */}
-                
+        
       </div>
 
       {/* PAGE LAYOUT PANELS */}

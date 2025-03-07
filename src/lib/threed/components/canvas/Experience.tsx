@@ -530,4 +530,7 @@ const ThreeDExperience = forwardRef((
 }
 ) // end forwardRef
 
+// module properties
+ThreeDExperience.displayName = 'ThreeD-Experience'
+
 export default ThreeDExperience
