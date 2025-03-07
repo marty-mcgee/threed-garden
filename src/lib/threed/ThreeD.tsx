@@ -67,7 +67,7 @@ import ThreeDToolbar from '#/lib/threed/components/controls/Toolbar'
 // import ThreeDModals from '#/lib/threed/components/modals/Modals'
 
 // ** ThreeD View Imports
-import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
+// import ThreeDViews from '#/lib/threed/components/views/ViewsFurniture'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsPools'
 // import ThreeDViews from '#/lib/threed/components/views/ViewsCities'
 

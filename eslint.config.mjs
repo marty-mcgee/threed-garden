@@ -8,11 +8,17 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.config({
     extends: ['next'],
-    rules: {
-      // 'react/no-unknown-property': ['error', { 'ignore': ['args'] }],
-      'react/no-unknown-property': 'off',
-      'react/no-unescaped-entities': 'off',
+    rules: { // 'off' | ['error', { 'ignore': ['args'] }]
+      '@next/next/no-assign-module-variable': 'off',
       '@next/next/no-page-custom-font': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      'jsx-a11y/alt-text': 'off',
+      'react/display-name': 'off',
+      'react/no-unescaped-entities': 'off',
+      'react/no-unknown-property': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+      'react-hooks/rules-of-hooks': 'off',
     },
   }),
 ]

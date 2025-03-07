@@ -352,6 +352,9 @@ export const ThreeDCanvasViewer = () => {
 // }
 
 // ** ======================================================================
+
+// module properties
+ThreeDCanvasViewer.displayName = 'ThreeD-CanvasViewer'
+
 // export { CollapsibleDemo }
 export default ThreeDCanvasViewer
-// ** ======================================================================

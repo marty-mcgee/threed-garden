@@ -21,8 +21,7 @@ type GLTFResult = GLTF & {
 
 const context = createContext(null)
 
-// @ts-expect-error
-export function Instances({ children, ...props }) {
+export function Instances(props: any) {
   const { nodes } = useGLTF(fileGLB) as GLTFResult
   const instances = useMemo(
     () => ({
@@ -32,8 +31,7 @@ export function Instances({ children, ...props }) {
   )
   return (
     <Merged meshes={instances} {...props}>
-      {/* @ ts-expect-error */}
-      {(instances) => <context.Provider value={instances} children={children} />}
+      {(instances) => <context.Provider value={instances}>{props.children}</context.Provider>}
     </Merged>
   )
 }

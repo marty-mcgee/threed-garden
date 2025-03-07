@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as nodeBuffer from 'buffer'
 import * as nodeProcess from 'process'
 import * as util from 'util'

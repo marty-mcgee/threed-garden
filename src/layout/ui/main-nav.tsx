@@ -8,6 +8,7 @@ import React from 'react'
 
 // ** NEXT Imports
 import Image from 'next/image'
+import Link from 'next/link'
 
 // ** RADIX-UI Imports
 // import {
@@ -88,30 +89,39 @@ function MainNavDropdownMenuDemo() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/home-design' title='Home Design Page'
-              className='DropdownMenuItem'>
-              🟢 DEMO: FULL
-              </a>
+              <Link 
+                href='/home-design' 
+                title='Home Design Page'
+                className='DropdownMenuItem'
+              >
+                🟢 DEMO: FULL
+              </Link>
             </DropdownMenu.Item>
             
             <DropdownMenu.Item 
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/participate' title='Home Design Page'
-              className='DropdownMenuItem'>
-              🟣 DEMO: BASIC
-              </a>
+              <Link 
+                href='/participate' 
+                title='Home Design Page'
+                className='DropdownMenuItem'
+              >
+                🟣 DEMO: BASIC
+              </Link>
             </DropdownMenu.Item>
             
             <DropdownMenu.Item 
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a href='/characters' title='Home Design Page'
-              className='DropdownMenuItem'>
-              🔵 DEMO: CHARACTERS
-              </a>
+              <Link 
+                href='/characters' 
+                title='Home Design Page'
+                className='DropdownMenuItem'
+              >
+                🔵 DEMO: CHARACTERS
+              </Link>
             </DropdownMenu.Item>
   
             {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}
@@ -158,7 +168,7 @@ function MainNavDropdownMenuChat() {
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a 
+              <Link 
                 href='/chat/openai' 
                 title='OpenAI Chat Page'
                 className='DropdownMenuItem'
@@ -173,14 +183,14 @@ function MainNavDropdownMenuChat() {
                 // }}
               >
                 🟠 CHAT: OpenAI
-              </a>
+              </Link>
             </DropdownMenu.Item>
             
             <DropdownMenu.Item 
               className='DropdownMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              <a 
+              <Link 
                 href='/chat/deepseek' 
                 title='DeepSeek Chat Page'
                 className='DropdownMenuItem'
@@ -195,7 +205,7 @@ function MainNavDropdownMenuChat() {
                 // }}
               >
                 🔵 CHAT: DeepSeek
-              </a>
+              </Link>
             </DropdownMenu.Item>
   
             {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}

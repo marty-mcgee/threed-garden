@@ -438,7 +438,6 @@ export const Garden = () => {
 
   React.useEffect(() => {
     setConfig(modifyConfigsFromUrlParams(config))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // intentionally empty dependency array
 
   const common = {

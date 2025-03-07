@@ -364,7 +364,6 @@ export const ThreeDCanvas = forwardRef((
   useEffect(() => {
     setConfig(modifyConfigsFromUrlParams(config))
     setActiveFocus(getFocusFromUrlParams())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // intentionally empty dependency array
 
   const common = {
@@ -585,5 +584,8 @@ export const ThreeDCanvas = forwardRef((
   )
 }
 ) // forwardRef end
+
+// module properties
+ThreeDCanvas.displayName = 'ThreeD-Canvas'
 
 export default ThreeDCanvas
