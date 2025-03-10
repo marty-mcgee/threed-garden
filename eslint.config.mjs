@@ -8,9 +8,10 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.config({
     extends: ['next'],
-    rules: { // options: 'off' | ['error', { 'ignore': ['args'] }]
+    rules: { 
+      // options: 'off' | ['error', { 'ignore': ['args'] }]
+      // '@next/next/no-img-element': 'off',
       '@next/next/no-assign-module-variable': 'off',
-      // '@next/next/no-img-element': 'off', 
       '@next/next/no-page-custom-font': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
@@ -20,6 +21,16 @@ const eslintConfig = [
       'react/no-unknown-property': 'off',
       'react-hooks/exhaustive-deps': 'off',
       'react-hooks/rules-of-hooks': 'off',
+
+      // farmbot frontend: custom/temp rules
+      // '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/quotes': 'off',
+      '@next/next/no-img-element': 'off',
+      // 'no-null/no-null': 'off',
+      // 'import/no-default-export': 'off',
+      // 'complexity': 'off',
+
     },
   }),
 ]
