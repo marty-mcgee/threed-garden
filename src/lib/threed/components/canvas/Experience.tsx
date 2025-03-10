@@ -289,65 +289,92 @@ const ThreeDExperience = forwardRef((
           >
 
             {/* ** FLOORS ** */}
-            {/* solid steps (levels, safety) */}
             {/* The Floor (Plane 0) */}
-            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 0, 0]}>
+            <group 
+              scale={1.0} 
+              position={[0, 0, 0]}
+              rotation={[0, 0, 0]} 
+            >
               <Floor color={'darkgreen'} opacity={0.8} />
             </group>
-            {/* backup solid steps (levels[1+], safety) */}
-            {/* Sub-Floor[s] (Plane < 0) */}
+            {/* SUB FLOORS[s] (Plane < 0) */}
             {/* <SubFloor level={`${level[index]}`} /> */}
-            <group rotation={[0, 0, 0]} scale={1.0} position={[0, -400, 0]}>
+            <group 
+              scale={1.0} 
+              position={[0, -400, 0]}
+              rotation={[0, 0, 0]}
+            >
               <Floor color={'saddlebrown'} opacity={0.2 } />
             </group>
             {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-                DEEP BELOW SEA LEVEL */}
-            {/* <group rotation={[0, 0, 0]} scale={1.0} position={[0, -256, 0]}>
+                DEEP BELOW SEA LEVEL
+            <group 
+              scale={1.0} 
+              position={[0, -256, 0]}
+              rotation={[0, 0, 0]} 
+            >
               <Floor color={'darkblue'} opacity={0.2} />
-            </group> */}
+            </group>
+            */}
+            {/* ** END FLOORS ** */}
 
-            {/* R3F BOUNDS: SELECT TO ZOOM IN ON OBJECTS */}
+            {/* R3F BOUNDS: 
+                SELECT TO ZOOM IN ON OBJECTS 
+            */}
             <SelectToZoom>
 
-              {/* Steps -- aka: four-by-fours, 4"x4"[s], posts, logs */}
-              <group rotation={[0, 0, 0]} scale={0.10} position={[0, 6, 0]}>
+              {/* STEPS -- aka: four-by-fours, 4"x4"[s], posts, logs */}
+              <group 
+                scale={0.10} 
+                position={[0, 6, 0]}
+                rotation={[0, 0, 0]}
+              >
                 <Steps />
               </group>
 
-              {/* Rough Plane */}
-              <group rotation={[0, 0, 0]} scale={10.0} position={[80, -3, 100]}
+              {/* ROUGH PLANE */}
+              <group 
+                scale={10.0} 
+                position={[80, -3, 100]}
+                rotation={[0, 0, 0]} 
                 // onClick={handleClick}
               >
                 <RoughPlane />
               </group>
 
-              {/* Slopes + Stairs */}
+              {/* SLOPES + STAIRS */}
               {/* 
-              <group rotation={[0, 0, 0]} scale={10.0} position={[10, 0, 10]}>
+              <group 
+                scale={10.0} 
+                position={[10, 0, 10]}
+                rotation={[0, 0, 0]} 
+              >
                 <Slopes />
               </group>
               */}
 
-              {/* Rigid Body Objects */}
-              <group rotation={[0, 0, 0]} scale={0.10} position={[-4, 10.00, 0]}>
+              {/* RIGID BODY OBJECTS (basic rapier components) */}
+              <group 
+                scale={0.10} 
+                position={[-4, 10.00, 0]}
+                rotation={[0, 0, 0]}
+              >
                 <RigidObjects />
               </group>
 
-              {/* Floating Platforms */}
-              {/* 
+              {/* FLOATING PLATFORMS
               <group rotation={[0, 0, 0]} scale={1.0}>
                 <FloatingPlatforms />
               </group>
               */}
 
-              {/* Dynamic Platforms */}
-              {/* 
+              {/* DYNAMIC PLATFORMS
               <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2.01, 0]}>
                 <DynamicPlatforms />
               </group>
               */}
-              {/* Shot Cubes */}
-              {/* 
+
+              {/* INTERACTIVE "SHOT CUBES"
               <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
                 <ShotCube />
               </group>
@@ -372,7 +399,7 @@ const ThreeDExperience = forwardRef((
                   // scale={1.3}
                 >
                   <ThreeDModels
-                    threeds={threeds} // threeds={[]}
+                    threeds={threeds}
                     // master position for all threeds?
                     // position={[-4, 0, 0]}
                     // position={[0, -1, 0]}
@@ -382,13 +409,23 @@ const ThreeDExperience = forwardRef((
               {/* ...testing */}
 
               {/* THREED FARMBOTS */}
-              <group rotation={[-Math.PI/2, 0, 0]} scale={0.0160} position={[-40, 5, -30]}>
+              <group 
+                key="farmbot1"
+                scale={0.0160} 
+                position={[-40, 5, -30]}
+                rotation={[-Math.PI/2, 0, 0]}
+              >
                 <ThreeDFarmBotGarden 
                   key={'ThreeDFarmBotGarden_' + newUUID()} 
                 />
               </group>
               {/* 
-              <group rotation={[-Math.PI/2, 0, -Math.PI/2]} scale={0.002} position={[-5.4, 0.4, -0.6]}>
+              <group 
+                key="farmbot0"
+                scale={0.002} 
+                position={[-5.4, 0.4, -0.6]}
+                rotation={[-Math.PI/2, 0, -Math.PI/2]}
+              >
                 <ThreeDFarmBotMain />
               </group>
               */}
