@@ -5802,12 +5802,11 @@ export default function ThreeDHomeDesign({
   panelLayout: number[][]
 }): React.ReactNode { 
 
-  // ** CAN USE MUTATION HOOK HERE 
-  // -- must use inside the provider's children, inside a component function
-  // -- so, move this to (page)?
+  // ** CAN USE MUTATION HOOKS HERE
+
   const username: string = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_USERNAME
   const password: string = process.env.NEXT_PUBLIC_WP_GRAPHQL_API_PASSWORD
-  // console.debug('LOGIN: password:', password)
+
   try {
 
     // ** use mutation
