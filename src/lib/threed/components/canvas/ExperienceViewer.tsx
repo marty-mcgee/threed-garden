@@ -274,6 +274,9 @@ const ThreeDExperienceViewer = forwardRef((
       <ThreedIO>
         <ThreeDViewImpl track={localRef}> */}
 
+          {/* BACKGROUND COLOR? */}
+          <color attach="background" args={['#1e2243']} />
+
           {/* LIGHTS, CAMERA, ACTION */}
 
           {/* THREED LIGHTS */}

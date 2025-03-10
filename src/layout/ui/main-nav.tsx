@@ -104,7 +104,7 @@ function MainNavDropdownMenuDemo() {
             >
               <Link 
                 href='/participate' 
-                title='Home Design Page'
+                title='Participate Page'
                 className='DropdownMenuItem'
               >
                 🟣 DEMO: BASIC
@@ -117,10 +117,23 @@ function MainNavDropdownMenuDemo() {
             >
               <Link 
                 href='/characters' 
-                title='Home Design Page'
+                title='Characters Page'
                 className='DropdownMenuItem'
               >
                 🔵 DEMO: CHARACTERS
+              </Link>
+            </DropdownMenu.Item>
+            
+            <DropdownMenu.Item 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/terrains' 
+                title='Terrains Page'
+                className='DropdownMenuItem'
+              >
+                🟤 DEMO: TERRAINS
               </Link>
             </DropdownMenu.Item>
   

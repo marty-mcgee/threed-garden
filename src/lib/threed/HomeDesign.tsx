@@ -7060,12 +7060,6 @@ export default function ThreeDHomeDesign({
                 maxSize={100}
                 style={{
                   display: 'inline-block',
-                  // display: 'flex',
-                  // display: 'inline-flex',
-                  // flexGrow: '0',
-                  // overflow: 'auto', // no
-                  // height: '100%',
-                  // width: '100%',
                   // border: '1px solid #1A1A1A',
                   backgroundColor: '#222222', // 'rgba(68, 22, 147, 1.0)', 
                 }}
@@ -7074,13 +7068,7 @@ export default function ThreeDHomeDesign({
                 <div
                   id='paperView'
                   style={{
-                    // display: 'inline-block',
                     display: 'flex',
-                    // display: 'inline-flex',
-                    // flexGrow: '0',
-                    // width: '100%',
-                    // width: 'calc(100% - 20px)',
-                    // height: '100%',
                     height: 'calc(100% - 20px)', // !important
                     // backgroundColor: 'darkorange', // '#222222',
                     // backgroundColor: 'rgba(116, 70, 6, 1.0)', // '#636363',
@@ -7117,9 +7105,6 @@ export default function ThreeDHomeDesign({
                     id='planView'
                     style={{
                       display: 'inline-block',
-                      // display: 'flex',
-                      // display: 'inline-flex',
-                      // flexGrow: '1',
                       width: 'calc(100% - 0px)', // !important
                       // height: 'calc(100% - 20px)',
                       backgroundColor: 'rgba(8, 133, 22, 0.10)', // '#222222',
