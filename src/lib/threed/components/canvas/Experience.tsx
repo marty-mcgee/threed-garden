@@ -108,7 +108,7 @@ import Birds from '#/lib/threed/components/examples/Birds/Birds'
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // import ThreeDFarmBotMain from '#/lib/farmbot/threed-farmbot/main-threed'
 import ThreeDFarmBotGarden from '#/lib/farmbot/threed-farmbot/garden-threed'
-// import { ThreeDGarden as ThreeDFarmBotGarden2 } from '#/lib/farmbot/frontend/three_d_garden/index'
+// import { ThreeDGarden as ThreeDFarmBotGarden } from '#/lib/farmbot/frontend/three_d_garden'
 
 // HELPER Imports
 // ** UUID Generator
