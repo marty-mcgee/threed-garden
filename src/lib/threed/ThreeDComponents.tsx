@@ -49,17 +49,9 @@ export default function ThreeDComponents(): React.ReactNode {
   <>
   <div 
     id='threedComponents'
-    // display={'inline-flex'}
-    // direction={'column'}
     style={{ 
       display: 'flex', 
       flexDirection: 'column',
-      // height: '100%',
-      // minHeight: '40vh',
-      // // maxHeight: '60vh',
-      // // minWidth: '50vw',
-      // // maxWidth: '90vw',
-      // width: '100%',
       flexGrow: '0',
       width: '100vw',
       height: 'calc(100vh - 64px)',
