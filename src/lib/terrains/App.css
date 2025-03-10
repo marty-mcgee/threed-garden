@@ -1,7 +1,8 @@
+/* 
 canvas {
   cursor: grab;
 }
-
 canvas:active {
   cursor: grabbing;
-}
+} 
+*/
