@@ -4,24 +4,20 @@ import { useAnimations, useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import * as THREE from 'three'
 
-type GLTFResult = GLTF & {
-  nodes: {
-    Object_0: THREE.SkinnedMesh
-    Root: THREE.Bone
-  }
-  materials: {
-    Demon_Main: THREE.MeshStandardMaterial
-    Black: THREE.MeshStandardMaterial
-    Eye_White: THREE.MeshStandardMaterial
-    Eye_Black: THREE.MeshStandardMaterial
-  }
-}
+// type GLTFResult = GLTF & {
+//   nodes: {
+//     Object_0: THREE.SkinnedMesh
+//   }
+//   material: {
+//     Material_0_COLOR_0: THREE.MeshStandardMaterial
+//   }
+// }
 
 export default function Bird(
   { speed, factor, url, ...props }:
   { speed: any, factor: any, url: any }
 ) {
-  const { nodes, animations } = useGLTF(url) as GLTFResult
+  const { nodes, animations } = useGLTF(url) as any // as GLTFResult
   const { ref, mixer } = useAnimations(animations)
 
   useEffect(
