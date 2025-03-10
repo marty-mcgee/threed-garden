@@ -136,6 +136,19 @@ function MainNavDropdownMenuDemo() {
                 🟤 DEMO: TERRAINS
               </Link>
             </DropdownMenu.Item>
+            
+            <DropdownMenu.Item 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/farmbots' 
+                title='FarmBots Page'
+                className='DropdownMenuItem'
+              >
+                ⚫ DEMO: FARMBOTS
+              </Link>
+            </DropdownMenu.Item>
   
             {/* <DropdownMenu.Separator className='DropdownMenuSeparator' /> */}
   
@@ -195,7 +208,7 @@ function MainNavDropdownMenuChat() {
                 //   fontSize: 12,
                 // }}
               >
-                🟠 CHAT: OpenAI
+                🔵 CHAT: OpenAI
               </Link>
             </DropdownMenu.Item>
             
