@@ -271,13 +271,6 @@ const ThreeDExperience = forwardRef((
           paused={pausedPhysics}
         >
 
-          {/* EXAMPLES: BIRDS */}
-          { true && (
-            <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2400, 0]}>
-              <Birds />
-            </group>
-          )}
-
           {/* R3F BOUNDS */}
           <Bounds 
             fit={configBounds.fit} 
@@ -379,6 +372,17 @@ const ThreeDExperience = forwardRef((
                 <ShotCube />
               </group>
               */}
+
+              {/* EXAMPLE: BIRDS */}
+              { true && (
+                <group 
+                  scale={2.4} 
+                  position={[0, 128, 0]}
+                  rotation={[0, 0, 0]} 
+                >
+                  <Birds />
+                </group>
+              )}
 
               {/* EXAMPLE MAP: TAVERN */}
               <group
