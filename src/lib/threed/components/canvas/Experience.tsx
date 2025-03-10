@@ -353,6 +353,34 @@ const ThreeDExperience = forwardRef((
               </group>
               */}
 
+              {/* EXAMPLE MAP: TAVERN */}
+              <group
+                scale={0.80} 
+                position={[8, 14, -160]}
+                rotation={[(Math.PI/2) + 0, (-Math.PI/1), (Math.PI/1) + 0]}
+                // quaternion={[0,0,0,0]}
+              >
+                <Map />
+              </group>
+                
+              {/* testing... */}
+              {/* THREED MODELS as props.threeds */}
+              { threeds.length > 0 && (
+                <group
+                  key='threed_models_children'
+                  // scale all threeds?
+                  // scale={1.3}
+                >
+                  <ThreeDModels
+                    threeds={threeds} // threeds={[]}
+                    // master position for all threeds?
+                    // position={[-4, 0, 0]}
+                    // position={[0, -1, 0]}
+                  />
+                </group>
+              )}
+              {/* ...testing */}
+
               {/* THREED FARMBOTS */}
               <group rotation={[-Math.PI/2, 0, 0]} scale={0.0160} position={[-40, 5, -30]}>
                 <ThreeDFarmBotGarden 
@@ -368,7 +396,7 @@ const ThreeDExperience = forwardRef((
               {/* THREED CHARACTER MODELS */}
               <KeyboardControls map={keyboardMap}>
                 
-                {/* CHARACTER MODEL */}
+                {/* CHARACTER MODEL: MAIN FARMER */}
                 { true && (
                 <group 
                   key='character1' 
@@ -377,6 +405,8 @@ const ThreeDExperience = forwardRef((
                   // scale={[0.1, 0.1, 0.1]}
                   // scale={[10.0, 10.0, 10.0]}
                   // scale={[100.0, 100.0, 100.0]}
+                  // rotation={[(Math.PI/2) + 0, (-Math.PI/1), (Math.PI/1) + 0]}
+                  // quaternion={[0,0,0,0]}
                 >
                   <CharacterControls
 
@@ -438,42 +468,26 @@ const ThreeDExperience = forwardRef((
                 )}
                 {/* END: CHARACTER MODEL */}
 
-                {/* CHARACTER MODEL */}
+                {/* EXAMPLE: CHARACTER MODEL: ANIMATION STACY */}
                 { false && (
-                <group key='character0' position={[80, 0, 0]}>
-                    {/* <CharacterModel /> */}
-                    {/* <CharacterModelFloating /> */}
-                    {/* <CharacterModelStacy /> */}
-                    <CharacterModelStacy scale={0.12} />
-                    {/* <CharacterModelChicken scale={0.20} /> */}
+                <group 
+                  key='character2' 
+                  position={[80, 0, 0]}
+                >
+                  {/* <CharacterModel /> */}
+                  {/* <CharacterModelFloating /> */}
+                  <CharacterModelStacy scale={0.12} />
                 </group>
                 )}
                 {/* END: CHARACTER MODEL */}
 
-                {/* CHARACTER MODEL */}
+                {/* EXAMPLE: CHARACTER MODEL: CHICKEN */}
                 { false && (
-                <group key='character2' position={[-200, 0, 0]}>
-                  {/* <CharacterControls
-                    debug={prefs.doWorldDebug}
-                    // debug={false}
-                    animated={prefs.doCharacterAnimation}
-                    // animated={false}
-                    disableControl={prefs.doWorldControl}
-                    // disableControl={false}
-                    // disableFollowCam={prefs.doWorldUnfollowCam}
-                    disableFollowCam={true}
-                    followLight={true}
-                    // springK={2}
-                    // dampingC={0.2}
-                    // autoBalanceSpringK={1.2}
-                    // autoBalanceDampingC={0.04}
-                    // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-                    // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
-                    // mode='FixedCamera'
-                    // mode='CameraBasedMovement'
-                  > */}
-                    <CharacterModelChicken scale={160} />
-                  {/* </CharacterControls> */}
+                <group 
+                  key='character3' 
+                  position={[-200, 0, 0]}
+                >
+                  <CharacterModelChicken scale={160} />
                 </group>
                 )}
                 {/* END: CHARACTER MODEL */}
@@ -482,35 +496,6 @@ const ThreeDExperience = forwardRef((
 
               {/* </Suspense> */}
               {/* END: CHARACTER MODELS */}
-
-              {/* EXAMPLE MAP: TAVERN */}
-              <group 
-                // rotation={[(Math.PI/2) + 0, (-Math.PI/2), (Math.PI/2) + 0]}
-                rotation={[(Math.PI/2) + 0, (-Math.PI/1), (Math.PI/1) + 0]}
-                // quaternion={[0,0,0,0]}
-                scale={0.80} 
-                position={[8, 14, -160]}
-              >
-                <Map />
-              </group>
-                
-              {/* THREED MODELS as props.threeds */}
-              {/* testing... */}
-              { threeds.length > 0 && (
-                <group
-                  key='threed_models_children'
-                  // scale all threeds?
-                  // scale={100.3}
-                >
-                  <ThreeDModels
-                    threeds={threeds} // threeds={[]}
-                    // master position for all threeds?
-                    // position={[-4, 0, 0]}
-                    // position={[0, -1, 0]}
-                  />
-                </group>
-              )}
-              {/* ...testing */}
 
             </SelectToZoom>
             {/* END: SELECT TO ZOOM */}
