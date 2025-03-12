@@ -88,6 +88,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** INTERFACES + TYPES
 
 interface IViewerProps {
+  children: any,
   enableOrbit: boolean, 
   enableGizmoCube: boolean,
   enableAxesHelper: boolean,
@@ -236,7 +237,7 @@ export function ThreeDEnvironment() {
 // ** RETURN ThreeDExperienceViewer
 const ThreeDExperienceViewer = forwardRef((
   { 
-    // children, 
+    children, 
     enableOrbit, 
     enableGizmoCube,
     enableAxesHelper,
@@ -250,7 +251,8 @@ const ThreeDExperienceViewer = forwardRef((
     setConfig,
     activeFocus,
     setActiveFocus,
-  }: IViewerProps, 
+  }: IViewerProps,
+  // }, 
   refCanvas // the forwarded ref
 ) => {
 
