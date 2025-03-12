@@ -141,17 +141,17 @@ const ModelWithMultipleAnimations: FC = () => {
         if (animations.walk.length > 0) {
           actionMap.walk = mixer.current.clipAction(animations.walk[0])
         } else {
-          console.warn('No animations found in walk.fbx.')
+          console.warn('No animations found in walk.fbx')
         }
         if (animations.run.length > 0) {
           actionMap.run = mixer.current.clipAction(animations.run[0])
         } else {
-          console.warn('No animations found in run.fbx.')
+          console.warn('No animations found in run.fbx')
         }
         if (animations.idle.length > 0) {
           actionMap.idle = mixer.current.clipAction(animations.idle[0])
         } else {
-          console.warn('No animations found in idle.fbx.')
+          console.warn('No animations found in idle.fbx')
         }
 
         // Store the actions in state
@@ -161,7 +161,7 @@ const ModelWithMultipleAnimations: FC = () => {
         if (actionMap.idle) {
           actionMap.idle.play()
         } else {
-          setError('No idle animation found.')
+          setError('No idle animation found')
         }
       } catch (error) {
         console.error('Error initializing animations:', error)
