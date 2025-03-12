@@ -27,7 +27,10 @@ const loaderFBX = new FBXLoader()
 // import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
-
+  
+// **
+// ** PROPERTIES ****************************************
+// **
 
 // ** DEBUG: this module
 const debug: boolean = false
@@ -44,7 +47,7 @@ const animationFiles = [
   'Driving',
   'Entering Car',
   'Exiting Car',
-  'Idle',
+  'Idle', // default action/animation
   'Left Turn',
   'Moonwalk',
   // 'Planting A Plant',
@@ -59,50 +62,55 @@ const animationFiles = [
   'Walking Backwards',
   'Walking',
 ]
-// const animationFilesFarming = [
-//   'farming/box idle',
-//   'farming/box idle',
-//   'farming/box turn (2)',
-//   'farming/box turn',
-//   'farming/box walk arc',
-//   'farming/cow milking',
-//   'farming/dig and plant seeds',
-//   'farming/holding idle',
-//   'farming/holding turn left',
-//   'farming/holding turn right',
-//   'farming/holding walk',
-//   'farming/kneeling idle',
-//   'farming/pick fruit (2)',
-//   'farming/pick fruit (3)',
-//   'farming/pick fruit',
-//   'farming/plant a plant',
-//   'farming/plant tree',
-//   'farming/pull plant (2)',
-//   'farming/pull plant',
-//   'farming/watering',
-//   'farming/wheelbarrow dump',
-//   'farming/wheelbarrow idle',
-//   'farming/wheelbarrow walk (2)',
-//   'farming/wheelbarrow walk turn (2)',
-//   'farming/wheelbarrow walk turn',
-//   'farming/wheelbarrow walk',
-// ]
-// animationFiles.push(...animationFilesFarming)
-export const names = animationFiles
+// ** ADD-ON ANIMATIONS (SUB-DIRECTORIES)
+const animationFilesFarming = [
+  'farming/box idle',
+  'farming/box idle',
+  'farming/box turn (2)',
+  'farming/box turn',
+  'farming/box walk arc',
+  'farming/cow milking',
+  'farming/dig and plant seeds',
+  'farming/holding idle',
+  'farming/holding turn left',
+  'farming/holding turn right',
+  'farming/holding walk',
+  'farming/kneeling idle',
+  'farming/pick fruit (2)',
+  'farming/pick fruit (3)',
+  'farming/pick fruit',
+  'farming/plant a plant',
+  'farming/plant tree',
+  'farming/pull plant (2)',
+  'farming/pull plant',
+  'farming/watering',
+  'farming/wheelbarrow dump',
+  'farming/wheelbarrow idle',
+  'farming/wheelbarrow walk (2)',
+  'farming/wheelbarrow walk turn (2)',
+  'farming/wheelbarrow walk turn',
+  'farming/wheelbarrow walk',
+]
+animationFiles.push(...animationFilesFarming)
+// export const names = animationFiles
 
+// ** THREED ANIMATIONS [][]
 // let animations: Object[] = []
 // let name: String = 'Idle'
 let animations: any = []
+animations[0] = animationFiles
+console.debug('MARTY animations: ', animations)
 
+// ** THREED PLAYER
 let player = {
   action: 'Idle',
   actionTime: Date.now(),
-  // animations: new Array(),
-  // mixer: {
-  //   clipAction: new Function(),
-  //   stopAllAction: new Function(),
-  // }
-  mixer: new THREE.AnimationMixer(new THREE.Object3D()),
+  animations: new Array(), // animationFiles, animationObjects (FBX)
+  mixer: {
+    clipAction: new Function(),
+    stopAllAction: new Function(),
+  },
+  // mixer: new THREE.AnimationMixer(new THREE.Object3D()),
 }
 
 /**
