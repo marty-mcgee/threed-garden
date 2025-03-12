@@ -268,7 +268,7 @@ const ThreeDExperienceViewer = forwardRef((
   return (
     <>
 
-      <Bvh firstHitOnly>
+      {/* <Bvh firstHitOnly> */}
 
       {/* THREED IO */}
       {/* <Html ref={localRef} {...props} /> */}
@@ -427,7 +427,7 @@ const ThreeDExperienceViewer = forwardRef((
       </ThreedIO> 
       */}
 
-      </Bvh>
+      {/* </Bvh> */}
     </>
   )
 }
