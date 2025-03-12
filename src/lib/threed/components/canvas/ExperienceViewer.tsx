@@ -79,7 +79,7 @@ import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
 // ** UUID Imports
 // import { v4 as newUUID } from 'uuid'
 // ** Performance Monitor
-// import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
+import { Perf, PerfHeadless, usePerf } from 'r3f-perf'
 // ** COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 // console.debug('%c ccm', ccm)
@@ -415,12 +415,12 @@ const ThreeDExperienceViewer = forwardRef((
             </>
           )}
           
-          {/* {enablePerf && (
+          {enablePerf && (
             <Perf
               position='bottom-right'
               minimal
             />
-          )} */}
+          )}
 
       {/* 
         </ThreeDViewImpl>
