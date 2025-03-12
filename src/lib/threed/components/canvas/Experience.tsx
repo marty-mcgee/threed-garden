@@ -500,9 +500,9 @@ const ThreeDExperience = forwardRef((
                       // scale={[0.1, 0.1, 0.1]}
                       // scale={[10.0, 10.0, 10.0]}
                     >
+                      <ThreeDCharacter />
                       {/* <ModelWithAnimations /> */}
                       {/* <ModelWithAnimationsFBXLoader /> */}
-                      <ThreeDCharacter />
                       {/* <CharacterModelFarmerWomanFloating scale={1.016} /> */}
                       {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
                     </group>
