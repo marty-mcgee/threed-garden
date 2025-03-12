@@ -66,10 +66,9 @@ import {
 } from '#/lib/ecctrl/src/stores/useGame'
 
 // ** THREED ANIMATIONS for Characters/Players
-import { 
+import names, { 
   ThreeDPlayer, 
   ThreeDAnimations, 
-  names,
 } from '#/lib/threed/components/nouns/Character/Animations'
 
 // ** HELPER Imports
