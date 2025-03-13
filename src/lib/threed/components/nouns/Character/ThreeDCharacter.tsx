@@ -2,14 +2,22 @@ import { useRef, useEffect, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { useGame } from '#/lib/ecctrl/src/stores/useGame'
+import { useGame, type AnimationSet } from '#/lib/ecctrl/src/stores/useGame'
 import { BallCollider, RapierCollider, vec3 } from '@react-three/rapier'
 
+// ** AnimationActions should match AnimationSet?
 type AnimationActions = {
   idle: THREE.AnimationAction | null
   walk: THREE.AnimationAction | null
   run: THREE.AnimationAction | null
   jump: THREE.AnimationAction | null
+  jumpLand: THREE.AnimationAction | null
+  jumpIdle: THREE.AnimationAction | null
+  fall: THREE.AnimationAction | null
+  action1: THREE.AnimationAction | null
+  action2: THREE.AnimationAction | null
+  action3: THREE.AnimationAction | null
+  action4: THREE.AnimationAction | null
   punch: THREE.AnimationAction | null
   wave: THREE.AnimationAction | null
 }
@@ -29,6 +37,13 @@ export default function CharacterModel(props: any) {
     walk: THREE.AnimationClip[] | null
     run: THREE.AnimationClip[] | null
     jump: THREE.AnimationClip[] | null
+    jumpLand: THREE.AnimationClip[] | null
+    jumpIdle: THREE.AnimationClip[] | null
+    fall: THREE.AnimationClip[] | null
+    action1: THREE.AnimationClip[] | null
+    action2: THREE.AnimationClip[] | null
+    action3: THREE.AnimationClip[] | null
+    action4: THREE.AnimationClip[] | null
     punch: THREE.AnimationClip[] | null
     wave: THREE.AnimationClip[] | null
   }>({
@@ -36,6 +51,13 @@ export default function CharacterModel(props: any) {
     walk: null,
     run: null,
     jump: null,
+    jumpLand: null,
+    jumpIdle: null,
+    fall: null,
+    action1: null,
+    action2: null,
+    action3: null,
+    action4: null,
     punch: null,
     wave: null,
   })
@@ -45,6 +67,13 @@ export default function CharacterModel(props: any) {
     walk: null,
     run: null,
     jump: null,
+    jumpLand: null,
+    jumpIdle: null,
+    fall: null,
+    action1: null,
+    action2: null,
+    action3: null,
+    action4: null,
     punch: null,
     wave: null,
   })
@@ -59,11 +88,16 @@ export default function CharacterModel(props: any) {
     walk: 'walk',
     run: 'run',
     jump: 'jump',
+    jumpIdle: 'jump',
+    jumpLand: 'idle',
+    fall: 'idle',
     action1: 'wave',
     action2: 'punch',
     action3: 'wave',
     action4: 'punch',
-  }
+    punch: 'punch',
+    wave: 'wave',
+  } as AnimationSet
 
   // Load the FBX model and animations
   useEffect(() => {
@@ -96,12 +130,19 @@ export default function CharacterModel(props: any) {
       )
     }
 
-    loadAnimation('objects/animations/Idle.fbx', 'idle')
-    loadAnimation('objects/animations/Walking.fbx', 'walk')
-    loadAnimation('objects/animations/Running.fbx', 'run')
-    loadAnimation('objects/animations/Moonwalk.fbx', 'jump')
-    loadAnimation('objects/animations/Pointing Gesture.fbx', 'punch')
-    loadAnimation('objects/animations/Talking.fbx', 'wave')
+    loadAnimation(animationFileDir + 'Idle.fbx', 'idle')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'walk')
+    loadAnimation(animationFileDir + 'Running.fbx', 'run')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'jump')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'jumpLand')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'jumpIdle')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'fall')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'action1')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'action2')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'action3')
+    loadAnimation(animationFileDir + 'Walking.fbx', 'action4')
+    loadAnimation(animationFileDir + 'Pointing Gesture.fbx', 'punch')
+    loadAnimation(animationFileDir + 'Talking.fbx', 'wave')
   }, [])
 
   // Initialize animation actions once model and animations are loaded
@@ -111,6 +152,13 @@ export default function CharacterModel(props: any) {
       && animations.walk 
       && animations.run 
       && animations.jump 
+      && animations.jumpIdle
+      && animations.jumpLand
+      && animations.fall
+      && animations.action1 
+      && animations.action2
+      && animations.action3
+      && animations.action4
       && animations.punch 
       && animations.wave
     ) {
@@ -121,6 +169,13 @@ export default function CharacterModel(props: any) {
         walk: mixer.current.clipAction(animations.walk[0]),
         run: mixer.current.clipAction(animations.run[0]),
         jump: mixer.current.clipAction(animations.jump[0]),
+        jumpIdle: mixer.current.clipAction(animations.jump[0]),
+        jumpLand: mixer.current.clipAction(animations.jump[0]),
+        fall: mixer.current.clipAction(animations.jump[0]),
+        action1: mixer.current.clipAction(animations.jump[0]),
+        action2: mixer.current.clipAction(animations.jump[0]),
+        action3: mixer.current.clipAction(animations.jump[0]),
+        action4: mixer.current.clipAction(animations.jump[0]),
         punch: mixer.current.clipAction(animations.punch[0]),
         wave: mixer.current.clipAction(animations.wave[0]),
       }
@@ -135,6 +190,11 @@ export default function CharacterModel(props: any) {
     }
   }, [model, animations])
 
+  // Log current animation
+  useEffect(() => {
+    console.debug('Current Animation:', curAnimation)
+  }, [curAnimation])
+
   // Update the animation mixer on every frame
   useFrame((state, delta) => {
     if (mixer.current) {
@@ -146,6 +206,13 @@ export default function CharacterModel(props: any) {
   useEffect(() => {
     if (actions[curAnimation as keyof AnimationActions]) {
       const action = actions[curAnimation as keyof AnimationActions]!
+
+      // Stop all other actions
+      Object.values(actions).forEach((a) => {
+        if (a && a !== action) {
+          a.stop()
+        }
+      })
 
       if (
         curAnimation === animationSet.jump ||
