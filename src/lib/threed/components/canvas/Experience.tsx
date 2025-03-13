@@ -55,10 +55,10 @@ import { Physics } from '@react-three/rapier'
 // import { useControls } from 'leva'
 
 // ** THREED NOUN Imports
-// import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene' // A THREED:SCENE IS A THREED:NOUN[i]
-// import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan' // A THREED:PLAN IS A THREED:NOUN[i]
-// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD' // A THREED:THREED IS A THREED:NOUN[i]
-import ThreeDModels from '#/lib/threed/components/nouns/Model/Model' // A THREED:MODEL IS A THREED:NOUN[i]
+// import ThreeDScenes from '#/lib/threed/components/nouns/Scene/Scene'
+// import ThreeDPlans from '#/lib/threed/components/nouns/Plan/Plan'
+// import ThreeDThreeDs from '#/lib/threed/components/nouns/ThreeD/ThreeD'
+import ThreeDModels from '#/lib/threed/components/nouns/Model/Model'
 
 // ** THREED NOUN EXAMPLES Imports
 // import TransformModel from '#/lib/threed/components/examples/TransformModel/App'
