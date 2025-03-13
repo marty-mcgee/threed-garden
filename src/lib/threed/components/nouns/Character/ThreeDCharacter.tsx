@@ -61,6 +61,8 @@ export default function CharacterModel(props: any) {
     jump: 'jump',
     action1: 'wave',
     action2: 'punch',
+    action3: 'wave',
+    action4: 'punch',
   }
 
   // Load the FBX model and animations
