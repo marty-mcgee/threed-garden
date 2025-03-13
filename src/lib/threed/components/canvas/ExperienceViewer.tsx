@@ -72,7 +72,6 @@ import {
 import ThreeDLights from '#/lib/threed/components/canvas/Lights'
 import ThreeDCamera from '#/lib/threed/components/canvas/Camera'
 import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
-// import ThreeDExperienceNew from '#/lib/ecctrl-new/example/Experience'
 
 // ** HELPER Components
 // import Spinner from '#/layout/ui/spinner'
@@ -88,7 +87,7 @@ import ccm from '#/lib/utils/console-colors'
 // ** INTERFACES + TYPES
 
 interface IViewerProps {
-  children: any,
+  // children: any,
   enableOrbit: boolean, 
   enableGizmoCube: boolean,
   enableAxesHelper: boolean,
@@ -237,7 +236,7 @@ export function ThreeDEnvironment() {
 // ** RETURN ThreeDExperienceViewer
 const ThreeDExperienceViewer = forwardRef((
   { 
-    children, 
+    // children, 
     enableOrbit, 
     enableGizmoCube,
     enableAxesHelper,

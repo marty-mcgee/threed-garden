@@ -21,11 +21,11 @@ const nextConfig = {
   reactStrictMode: true, // true: causes components to load TWICE in dev only, not active (moot) in production // Recommended true for the `pages` directory, default in `app`.
   
   // ** TESTING ONLY
+  // !! WARNING !!
+  // Dangerously allow production builds to successfully complete?
+  // even if your project has type errors.
   typescript: {
-    // !! WARNING !!
-    // Dangerously allow production builds to successfully complete?
-    // even if your project has type errors.
-    ignoreBuildErrors: true,
+    // ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
