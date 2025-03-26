@@ -28,7 +28,8 @@ const nextConfig = {
     // ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    // ignoreDuringBuilds: true,
+    ignoreDuringBuilds: ['/src/lib/farmbot']
   },
 
   // ** TESTING ONLY
