@@ -138,17 +138,17 @@ const DEBUG: boolean = true
  * Character animation set preset
  */
 const animationSet = {
-  idle: "CharacterArmature|Idle",
-  walk: "CharacterArmature|Walk",
-  run: "CharacterArmature|Run",
-  jump: "CharacterArmature|Jump",
+  idle:     "CharacterArmature|Idle",
+  walk:     "CharacterArmature|Walk",
+  run:      "CharacterArmature|Run",
+  jump:     "CharacterArmature|Jump",
   jumpIdle: "CharacterArmature|Jump_Idle",
   jumpLand: "CharacterArmature|Jump_Land",
-  fall: "CharacterArmature|Duck", // This is for falling from high sky
-  action1: "CharacterArmature|Wave",
-  action2: "CharacterArmature|Death",
-  action3: "CharacterArmature|HitReact",
-  action4: "CharacterArmature|Punch",
+  fall:     "CharacterArmature|Duck",
+  action1:  "CharacterArmature|Wave",
+  action2:  "CharacterArmature|Death",
+  action3:  "CharacterArmature|HitReact",
+  action4:  "CharacterArmature|Punch",
 }
 
 // ** BOUNDS
@@ -486,10 +486,18 @@ const ThreeDExperience = forwardRef((
                     // followLight={prefs.doWorldFollowLight}
                     
                     // ** MICRO-CONTROLS
-                    springK={2}
-                    dampingC={0.2}
-                    autoBalanceSpringK={1.2}
-                    autoBalanceDampingC={0.04}
+                    // model 10x scale props...
+                    capsuleHalfHeight={1.5} // Adjust based on your model's height
+                    capsuleRadius={0.5}     // Adjust based on your model's width
+                    floatHeight={1.0}       // Adjust based on desired floating height
+                    rayLength={5.0}         // Adjust ray length for ground detection
+                    maxVelLimit={5.0}       // Increase max velocity for larger scale
+                    jumpVel={8.0}           // Adjust jump strength
+                    // original props...
+                    springK={2.0}           // Adjust spring stiffness for floating
+                    dampingC={0.2}          // 
+                    // autoBalanceSpringK={1.2}
+                    // autoBalanceDampingC={0.04}
                     // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
                     // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
                   >
