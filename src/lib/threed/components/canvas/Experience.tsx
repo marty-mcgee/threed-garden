@@ -489,10 +489,10 @@ const ThreeDExperience = forwardRef((
                     // model 10x scale props...
                     capsuleHalfHeight={3.0} // Adjust based on your model's height
                     capsuleRadius={1.0}     // Adjust based on your model's width
-                    floatHeight={1.2}       // Adjust based on desired floating height
-                    rayLength={5.0}         // Adjust ray length for ground detection
-                    maxVelLimit={5.0}       // Increase max velocity for larger scale
-                    jumpVel={8.0}           // Adjust jump strength
+                    floatHeight={1.0}       // Adjust based on desired floating height
+                    rayLength={10.0}         // Adjust ray length for ground detection
+                    maxVelLimit={10.0}       // Increase max velocity for larger scale
+                    jumpVel={16.0}           // Adjust jump strength
                     // original props...
                     springK={2.4}           // Adjust spring stiffness for floating
                     // dampingC={0.2}          // 
