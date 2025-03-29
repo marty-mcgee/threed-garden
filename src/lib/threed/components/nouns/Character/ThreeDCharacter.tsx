@@ -107,7 +107,9 @@ export default function CharacterModel(props: any) {
     loader.load(
       modelFile,
       (fbx) => {
-        fbx.scale.set(0.1, 0.1, 0.1) // Adjust scale as needed
+        // fbx.scale.set(0.1, 0.1, 0.1)     // Adjust scale as needed
+        fbx.scale.set(0.05, 0.05, 0.05)     // Adjust scale as needed
+        // fbx.scale.set(0.01, 0.01, 0.01)  // Adjust scale as needed
         setModel(fbx)
       },
       undefined,
