@@ -200,7 +200,10 @@ const ThreeDExperience = forwardRef((
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-
+  const capsuleHalfHeight: number = 6.0   // Adjust your model's height
+  const capsuleRadius: number = 3.0       // Adjust your model's width
+  const floatHeight: number = 0.0         // Adjust floating height above ground
+  
   // ** PROGRESS LOADER using react-three-drei
   // const { active, progress, errors, item, loaded, total } = useProgress()
 
@@ -262,12 +265,12 @@ const ThreeDExperience = forwardRef((
 
         {/* THREED USING PHYSICS */}
         <Physics
-          debug={prefs.doWorldPhysics}
-          gravity={[0, -9.81, 0]} // default [0, -9.81, 0] 
+          debug={true}
+          // debug={prefs.doWorldPhysics}
+          // gravity={[0, -9.81, 0]} // default [0, -9.81, 0] 
           // interpolation={false} 
           // colliders={'trimesh'}
-          // debug={true}
-          timeStep={1/60} // 'vary' does not work well, try (default) 1/60 | 1/30 | 1/15 | 1/120
+          timeStep={'vary'} // 'vary' | (default) 1/60 | 1/30 | 1/15 | 1/120
           // timeStep={'vary'}
           paused={pausedPhysics}
         >
@@ -486,34 +489,69 @@ const ThreeDExperience = forwardRef((
                     // followLight={prefs.doWorldFollowLight}
                     
                     // ** MICRO-CONTROLS
-                    // model 10x scale props...
-                    capsuleHalfHeight={3.0} // Adjust based on your model's height
-                    capsuleRadius={1.0}     // Adjust based on your model's width
-                    floatHeight={1.0}       // Adjust based on desired floating height
-                    rayLength={10.0}         // Adjust ray length for ground detection
-                    maxVelLimit={10.0}       // Increase max velocity for larger scale
-                    jumpVel={16.0}           // Adjust jump strength
-                    // original props...
-                    springK={2.4}           // Adjust spring stiffness for floating
-                    // dampingC={0.2}          // 
-                    autoBalanceSpringK={2.4}
-                    // autoBalanceDampingC={0.04}
-                    // // autoBalanceSpringOnY={0.7} // CAN CAUSE HECK!!! if dispose={null}
-                    // // autoBalanceDampingOnY={0.05} // CAN CAUSE HECK!!! if dispose={null}
+                    // custom model (10x scale) props...
+                    capsuleHalfHeight={capsuleHalfHeight}   // TODO: set from prefs
+                    capsuleRadius={capsuleRadius}           // TODO: set from prefs
+                    floatHeight={floatHeight}               // TODO: set from prefs
+
+                    // Movement (Gentler to prevent tipping)
+                    maxVelLimit={25.0}            // Increase max velocity for larger scale
+                    turnVelMultiplier={0.1}
+                    turnSpeed={10}
+                    sprintMult={2.0}
+                    jumpVel={40.0}                // Adjust jump strength
+                    jumpForceToGroundMult={5}
+                    slopJumpMult={0.25}
+                    sprintJumpMult={1.2}
+                    airDragMultiplier={0.2}
+                    dragDampingC={8.0}            // Higher: faster stopping. Acts like friction.  Higher values kill velocity faster
+                    accDeltaTime={3}              // Lower: snappier response. Smaller values reduce "input lag" when stopping
+                    rejectVelMult={20.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes)
+                    moveImpulsePointY={0.5}
+                    
+                    // Camera & Control
+                    camFollowMult={11}                // Cam follow speed (may need increase)
+                    camLerpMult={25}                  // Cam smoothing
+                    fallingGravityScale={2.5}
+                    fallingMaxVel={-20}
+                    wakeUpDelay={200}
+                    
+                    // Floating Ray setups
+                    rayOriginOffset={{ x: 0, y: -capsuleHalfHeight, z: 0 }}
+                    rayHitForgiveness={0.1}
+                    rayLength={capsuleRadius + 2}     // Adjust ray length for ground detection
+                    rayDir={{ x: 0, y: -1, z: 0 }}
+                    floatingDis={capsuleRadius + floatHeight}
+                    springK={12.0}                    // Default: 1.2 (firmer ground contact)
+                    dampingC={0.8}                    // Default: 0.08 (less oscillation)
+                    
+                    // Slope Ray setups
+                    showSlopeRayOrigin={false}
+                    slopeMaxAngle={1}                 // radians
+                    slopeRayOriginOffest={capsuleRadius - 0.03}
+                    slopeRayLength={capsuleRadius + 3}
+                    slopeRayDir={{ x: 0, y: -1, z: 0 }}
+                    slopeUpExtraForce={0.1}
+                    slopeDownExtraForce={0.2}
+
+                    // Auto-Balance Force (Critical for stability)
+                    autoBalance={true}
+                    autoBalanceSpringK={800.8}       // Default: 0.3 (stronger upright force)
+                    autoBalanceDampingC={100.05}     // Default: 0.03 (smoother corrections)
+                    autoBalanceSpringOnY={800.8}     // Default: 0.5 (stronger Y-axis balance)
+                    autoBalanceDampingOnY={100.05}   // Default: 0.015 (damping on Y-axis)
+                    
+                    // EXAMPLE IMPROVEMENTS: Lock Rotations (Optional)
+                    // lockX={true}                  // Prevent falling sideways?
+                    // lockZ={true}                  // Prevent leaning forward/backward?
                   >
-                    <group 
-                      key='character1controls' 
-                      // position={[0, -56, 0]}
-                      // scale={[0.01, 0.01, 0.01]}
-                      // scale={[0.1, 0.1, 0.1]}
-                      // scale={[10.0, 10.0, 10.0]}
-                    >
-                      <ThreeDCharacter />
-                      {/* <ModelWithAnimations /> */}
-                      {/* <ModelWithAnimationsFBXLoader /> */}
-                      {/* <CharacterModelFarmerWomanFloating scale={1.016} /> */}
-                      {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
-                    </group>
+                    <ThreeDCharacter 
+                      position={[0, -9, 0]}
+                    />
+                    {/* <ModelWithAnimations /> */}
+                    {/* <ModelWithAnimationsFBXLoader /> */}
+                    {/* <CharacterModelFarmerWomanFloating scale={1.016} /> */}
+                    {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
                   </CharacterControls>
                 </group>
                 )}

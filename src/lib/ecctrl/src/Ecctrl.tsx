@@ -96,13 +96,13 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
   fallingMaxVel = -20,
   wakeUpDelay = 200,
   // Floating Ray setups
-  rayOriginOffest = { x: 0, y: -capsuleHalfHeight, z: 0 },
+  rayOriginOffset = { x: 0, y: -capsuleHalfHeight, z: 0 },
   rayHitForgiveness = 0.1,
   rayLength = capsuleRadius + 2,
   rayDir = { x: 0, y: -1, z: 0 },
   floatingDis = capsuleRadius + floatHeight,
-  springK = 1.2, // 1.2,
-  dampingC = 0.08, // 0.08,
+  springK = 1.2,
+  dampingC = 0.08,
   // Slope Ray setups
   showSlopeRayOrigin = false,
   slopeMaxAngle = 1, // in rad
@@ -309,7 +309,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
     floatingRayDebug = useControls(
       "Floating Ray",
       {
-        rayOriginOffest: {
+        rayOriginOffset: {
           x: 0,
           y: -capsuleHalfHeight,
           z: 0,
@@ -349,7 +349,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
       { collapsed: true }
     );
     // Apply debug values
-    rayOriginOffest = floatingRayDebug.rayOriginOffest;
+    rayOriginOffset = floatingRayDebug.rayOriginOffset;
     rayHitForgiveness = floatingRayDebug.rayHitForgiveness;
     rayLength = floatingRayDebug.rayLength;
     rayDir = floatingRayDebug.rayDir;
@@ -1047,6 +1047,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
       (characterRef.current.userData as userDataType).slopeAngle = slopeAngle;
       (characterRef.current.userData as userDataType).characterRotated = characterRotated;
       (characterRef.current.userData as userDataType).isOnMovingObject = isOnMovingObject;
+      // debugging
+      // console.debug("Position:", currentPos);
+      // console.debug("Velocity:", currentVel);
     }
 
     /**
@@ -1174,7 +1177,7 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
     /**
      * Ray casting detect if on ground
      */
-    rayOrigin.addVectors(currentPos, rayOriginOffest as THREE.Vector3);
+    rayOrigin.addVectors(currentPos, rayOriginOffset as THREE.Vector3);
     rayHit = world.castRay(
       rayCast,
       rayLength,
@@ -1520,9 +1523,9 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
         {/* This mesh is used for positioning the slope ray origin */}
         <mesh
           position={[
-            rayOriginOffest.x,
-            rayOriginOffest.y,
-            rayOriginOffest.z + slopeRayOriginOffest,
+            rayOriginOffset.x,
+            rayOriginOffset.y,
+            rayOriginOffset.z + slopeRayOriginOffest,
           ]}
           ref={slopeRayOriginRef}
           visible={showSlopeRayOrigin}
@@ -1595,7 +1598,7 @@ export interface EcctrlProps extends RigidBodyProps {
   fallingMaxVel?: number;
   wakeUpDelay?: number;
   // Floating Ray setups
-  rayOriginOffest?: { x: number; y: number; z: number };
+  rayOriginOffset?: { x: number; y: number; z: number };
   rayHitForgiveness?: number;
   rayLength?: number;
   rayDir?: { x: number; y: number; z: number };
