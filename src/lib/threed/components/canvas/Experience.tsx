@@ -495,26 +495,19 @@ const ThreeDExperience = forwardRef((
                     floatHeight={floatHeight}               // TODO: set from prefs
 
                     // Movement (Gentler to prevent tipping)
-                    maxVelLimit={25.0}            // Increase max velocity for larger scale
-                    turnVelMultiplier={0.1}
+                    maxVelLimit={2.0}            // Increase max velocity for larger scale
+                    rejectVelMult={2.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes)
+                    turnVelMultiplier={1.0}
                     turnSpeed={10}
                     sprintMult={2.0}
                     jumpVel={40.0}                // Adjust jump strength
-                    jumpForceToGroundMult={5}
+                    jumpForceToGroundMult={5.0}
                     slopJumpMult={0.25}
                     sprintJumpMult={1.2}
                     airDragMultiplier={0.2}
                     dragDampingC={8.0}            // Higher: faster stopping. Acts like friction.  Higher values kill velocity faster
                     accDeltaTime={3}              // Lower: snappier response. Smaller values reduce "input lag" when stopping
-                    rejectVelMult={20.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes)
                     moveImpulsePointY={0.5}
-                    
-                    // Camera & Control
-                    camFollowMult={11}                // Cam follow speed (may need increase)
-                    camLerpMult={25}                  // Cam smoothing
-                    fallingGravityScale={2.5}
-                    fallingMaxVel={-20}
-                    wakeUpDelay={200}
                     
                     // Floating Ray setups
                     rayOriginOffset={{ x: 0, y: -capsuleHalfHeight, z: 0 }}
@@ -522,8 +515,8 @@ const ThreeDExperience = forwardRef((
                     rayLength={capsuleRadius + 2}     // Adjust ray length for ground detection
                     rayDir={{ x: 0, y: -1, z: 0 }}
                     floatingDis={capsuleRadius + floatHeight}
-                    springK={12.0}                    // Default: 1.2 (firmer ground contact)
-                    dampingC={0.8}                    // Default: 0.08 (less oscillation)
+                    springK={1.20}                    // Default: 1.2 (firmer ground contact)
+                    dampingC={0.08}                    // Default: 0.08 (less oscillation)
                     
                     // Slope Ray setups
                     showSlopeRayOrigin={false}
@@ -537,9 +530,16 @@ const ThreeDExperience = forwardRef((
                     // Auto-Balance Force (Critical for stability)
                     autoBalance={true}
                     autoBalanceSpringK={800.8}       // Default: 0.3 (stronger upright force)
-                    autoBalanceDampingC={100.05}     // Default: 0.03 (smoother corrections)
+                    autoBalanceDampingC={200.05}     // Default: 0.03 (smoother corrections)
                     autoBalanceSpringOnY={800.8}     // Default: 0.5 (stronger Y-axis balance)
-                    autoBalanceDampingOnY={100.05}   // Default: 0.015 (damping on Y-axis)
+                    autoBalanceDampingOnY={200.05}   // Default: 0.015 (damping on Y-axis)
+                    
+                    // Camera & Control
+                    camFollowMult={11}                // Cam follow speed (may need increase)
+                    camLerpMult={25}                  // Cam smoothing
+                    fallingGravityScale={2.5}
+                    fallingMaxVel={-20}
+                    wakeUpDelay={200}
                     
                     // EXAMPLE IMPROVEMENTS: Lock Rotations (Optional)
                     // lockX={true}                  // Prevent falling sideways?
