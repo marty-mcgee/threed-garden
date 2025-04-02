@@ -495,12 +495,12 @@ const ThreeDExperience = forwardRef((
                     floatHeight={floatHeight}               // TODO: set from prefs
 
                     // Movement (Gentler to prevent tipping)
-                    maxVelLimit={2.0}            // Increase max velocity for larger scale
-                    rejectVelMult={2.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes)
+                    maxVelLimit={4.0}            // Increase max velocity for larger scale
+                    rejectVelMult={3.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes) -- CANNOT BE GREATER THAN maxVelLimit
                     turnVelMultiplier={1.0}
                     turnSpeed={10}
                     sprintMult={2.0}
-                    jumpVel={40.0}                // Adjust jump strength
+                    jumpVel={2.0}                // Adjust jump strength
                     jumpForceToGroundMult={5.0}
                     slopJumpMult={0.25}
                     sprintJumpMult={1.2}
