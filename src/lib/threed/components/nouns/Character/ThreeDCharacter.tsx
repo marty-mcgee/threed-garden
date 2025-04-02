@@ -107,8 +107,8 @@ export default function CharacterModel(props: any) {
     loader.load(
       modelFile,
       (fbx) => {
-        fbx.scale.set(0.1, 0.1, 0.1)     // Adjust scale as needed
-        // fbx.scale.set(0.05, 0.05, 0.05)     // Adjust scale as needed
+        fbx.scale.set(0.1, 0.1, 0.1)        // Adjust scale as needed
+        // fbx.scale.set(0.05, 0.05, 0.05)  // Adjust scale as needed
         // fbx.scale.set(0.01, 0.01, 0.01)  // Adjust scale as needed
         setModel(fbx)
       },
@@ -245,8 +245,8 @@ export default function CharacterModel(props: any) {
       {model && (
         <primitive object={model} />
       )}
-      <BallCollider args={[0.5]} position={[0, 0.45, 0]} />
-      <BallCollider args={[0.1]} position={[0.5, 0, 0]} />
+      {/* <BallCollider args={[0.5]} position={[0, 0.45, 0]} /> */}
+      {/* <BallCollider args={[0.1]} position={[0.5, 0, 0]} /> */}
     </group>
   )
 }
