@@ -1035,6 +1035,35 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
     }
   }, [])
 
+  // **
+  // ** USE EFFECT -- for DEBUGGING
+  // **
+  useEffect(() => {
+
+    // Character current position/velocity
+    if (characterRef.current) {
+      // currentPos.copy(characterRef.current.translation() as THREE.Vector3);
+      // currentVel.copy(characterRef.current.linvel() as THREE.Vector3);
+      // // Assign userData properties
+      // (characterRef.current.userData as userDataType).canJump = canJump;
+      // (characterRef.current.userData as userDataType).slopeAngle = slopeAngle;
+      // (characterRef.current.userData as userDataType).characterRotated = characterRotated;
+      // (characterRef.current.userData as userDataType).isOnMovingObject = isOnMovingObject;
+      // ** [MM] DEBUGGING
+      // console.debug("Position:", currentPos);
+      console.debug("Position:", characterRef.current.translation());
+      // console.debug("Velocity:", currentVel);
+      console.debug("Velocity:", characterRef.current.linvel());
+      console.debug("userData:", characterRef.current.userData);
+    }
+
+  }, [])
+
+  // **
+  // ** USE FRAME 
+  // ** -- only use this hook once
+  // ** -- this is a lot of code to execute each frame (30 per second)
+  // **
   useFrame((state, delta) => {
     if (delta > 1) delta %= 1;
 
@@ -1042,14 +1071,20 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
     if (characterRef.current) {
       currentPos.copy(characterRef.current.translation() as THREE.Vector3);
       currentVel.copy(characterRef.current.linvel() as THREE.Vector3);
-      // Assign userDate properties
+      // Assign userData properties
       (characterRef.current.userData as userDataType).canJump = canJump;
       (characterRef.current.userData as userDataType).slopeAngle = slopeAngle;
       (characterRef.current.userData as userDataType).characterRotated = characterRotated;
       (characterRef.current.userData as userDataType).isOnMovingObject = isOnMovingObject;
-      // debugging
+      // ** [MM] DEBUGGING
       // console.debug("Position:", currentPos);
       // console.debug("Velocity:", currentVel);
+      // console.debug("userData:", characterRef.current.userData);
+      
+      // ** [MM] EMERGENCY SPEED CAP/CLAMP
+      if (currentVel.length() > 10) {
+        characterRef.current.setLinvel(currentVel.normalize().multiplyScalar(5), true);
+      }
     }
 
     /**
@@ -1125,7 +1160,14 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
     /**
      * Getting all the useful keys from useKeyboardControls
      */
-    const { forward, backward, leftward, rightward, jump, run } = isInsideKeyboardControls ? getKeys() : presetKeys;
+    const { 
+      forward, 
+      backward, 
+      leftward, 
+      rightward, 
+      jump, 
+      run 
+    } = isInsideKeyboardControls ? getKeys() : presetKeys;
 
     // Getting moving directions (IIFE)
     modelEuler.y = ((movingDirection) => movingDirection === null ? modelEuler.y : movingDirection)
@@ -1337,7 +1379,10 @@ const Ecctrl: ForwardRefRenderFunction<CustomEcctrlRigidBody, EcctrlProps> = ({
         actualSlopeAngle = actualSlopeNormalVec?.angleTo(floorNormal);
       }
     }
-    if (slopeRayHit && rayHit && slopeRayHit.timeOfImpact < floatingDis + 0.5) {
+    if ( slopeRayHit 
+      && rayHit 
+      && slopeRayHit.timeOfImpact < floatingDis + 0.5
+    ) {
       if (canJump) {
         // Round the slope angle to 2 decimal places
         slopeAngle = Number(

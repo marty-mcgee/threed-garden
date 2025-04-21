@@ -1,12 +1,30 @@
 // ==============================================================
 // TITLE: Index Page (Forwarding Page)
 
-'use client'
+// 'use client' // NO
 
 // ==============================================================
 // RESOURCES
 
-import { useSession } from 'next-auth/react'
+// ** THREED: GET + SET DATA from API
+// import getData from '#/lib/api/graphql/getData'
+import ClientPreferences from '#/app/preferences/ClientPreferences'
+
+// ** APOLLO
+// import { getClient } from '@/lib/apolloClient';
+// import { getClient } from '@apollo/client-integration-nextjs/rsc'
+// import { getClient } from '@apollo/client'
+// import { preferencesStore } from '#/lib/api/graphql/apollo'
+// import { gql } from '@apollo/client'
+// import {
+//   PreloadQuery
+// } from '@apollo/client-integration-nextjs'
+import {
+  queries, // GetPreferences,
+} from '#/lib/api/graphql/apollo'
+
+
+// import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
 // import SessionData from '#/layout/ui/session-data'
@@ -22,7 +40,7 @@ import { useSession } from 'next-auth/react'
 // import type { ReactNode } from 'react'
 import { 
   useEffect,
-  // Suspense,
+  Suspense,
 } from 'react'
 
 // ** RADIX-UI Imports
@@ -78,13 +96,21 @@ if (debug) {
 // const AppPage: TNextPageWithProps = async (props: any): Promise<React.ReactNode> => {
 // const AppPage: NextPage = (props) => {
 // const AppPage = ({children}: {children: any}) => {
-const AppPage = () => {
+export default async function AppPage() {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
-  // ** Hooks
+  let QUERY = null
+      QUERY = queries.GetPreferences
+
+  // ** Hooks YES !!!
+
+  // ** GET + SET DATA from API
+  // const data = getData()
+
+  // ** AUTH (not here on server)
   // const auth = useAuth()
-  const session = useSession()
+  // const session = useSession()
   // const session = await auth()
   // const session = {
   //   user: {
@@ -93,15 +119,15 @@ const AppPage = () => {
   //   expires: 'someday'
   // }
 
-  useEffect(() => {
-    if (session) {
-      if ('user' in session) {
-        console.debug('NEXT-AUTH session.user', session)
-      }
-      // console.debug('NEXT-AUTH session', session)
-    }
-    return // nothing
-  }, [session]) // [session] ??
+  // useEffect(() => {
+  //   if (session) {
+  //     if ('user' in session) {
+  //       console.debug('NEXT-AUTH session.user', session)
+  //     }
+  //     // console.debug('NEXT-AUTH session', session)
+  //   }
+  //   return // nothing
+  // }, [session]) // [session] ??
 
   // ** Return JSX
   return (
@@ -142,13 +168,32 @@ const AppPage = () => {
             textAlign: 'center',
           }}
         >
-          🥕 ThreeD: Next.js: app (router): page .tsx
+          ThreeD: Next.js: app (router): page .tsx
         </Heading>
         {/* <FarmbotDemoSVG /> */}
+      </div>
+      <div>
+        <h1>🥕 Preferences</h1>
+        {/* <PreloadQuery
+          query={QUERY}
+          variables={{
+            foo: 1,
+          }}
+        > */}
+          <Suspense 
+            fallback={
+              // <>loading</>
+              <><Spinner/></>
+            }
+          >
+            <>Client: Query: GetPreferences</>
+            <ClientPreferences />
+          </Suspense>
+        {/* </PreloadQuery> */}
       </div>
     </div>
   </>
   )
 }
 
-export default AppPage
+// export default AppPage

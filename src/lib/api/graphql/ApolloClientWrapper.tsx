@@ -20,7 +20,7 @@ import {
   InMemoryCache,
   ApolloClient,
   SSRMultipartLink,
-} from '@apollo/experimental-nextjs-app-support'
+} from '@apollo/client-integration-nextjs'
 
 // ** HELPER Imports
 import ccm from '#/lib/utils/console-colors'
@@ -141,15 +141,20 @@ function makeClient() {
 // component to wrap the app
 // export function ApolloClientWrapper({ children }: React.PropsWithChildren) {
 export function ApolloClientWrapper({ children }: { children: any }) {
+
   // ** makeClient()
-  // const madeClient = makeClient()
-  // console.debug('%c🦆 ApolloClientWrapper makeClient() => madeClient', ccm.greenAlert, madeClient) // ApolloClient
-  // console.debug('%c🦆 ApolloClientWrapper madeClient.cache', ccm.greenAlert, madeClient.cache) // ApolloClient.cache
-  // console.debug('%c🦆 ApolloClientWrapper madeClient.query', ccm.greenAlert, madeClient.query) // ApolloClient.query GetPreferences
+  const madeClient = makeClient
+  console.debug('%c🦆 ApolloClientWrapper: madeClient', ccm.greenAlert, madeClient())
+  console.debug('%c🦆 ApolloClientWrapper: madeClient.cache', ccm.greenAlert, madeClient().cache)
+  // console.debug('%c🦆 ApolloClientWrapper: madeClient.query', ccm.greenAlert, madeClient.query)
 
   // ** RETURN JSX
   return (
-    <ApolloNextAppProvider makeClient={makeClient}>
+    <ApolloNextAppProvider 
+      makeClient={makeClient}
+      // [MM] custom code
+      // madeClient={madeClient}
+    >
       {children}
     </ApolloNextAppProvider>
   )

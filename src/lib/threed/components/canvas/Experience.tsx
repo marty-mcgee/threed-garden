@@ -200,8 +200,8 @@ const ThreeDExperience = forwardRef((
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-  const capsuleHalfHeight: number = 6.0   // Adjust your model's height
-  const capsuleRadius: number = 3.0       // Adjust your model's width
+  const capsuleHalfHeight: number = 5.8   // Adjust your model's height
+  const capsuleRadius: number = 3.2       // Adjust your model's width
   const floatHeight: number = 0.0         // Adjust floating height above ground
   
   // ** PROGRESS LOADER using react-three-drei
@@ -270,7 +270,7 @@ const ThreeDExperience = forwardRef((
           // gravity={[0, -9.81, 0]} // default [0, -9.81, 0] 
           // interpolation={false} 
           // colliders={'trimesh'}
-          timeStep={'vary'} // 'vary' | (default) 1/60 | 1/30 | 1/15 | 1/120
+          timeStep={1/60} // (default) 1/60 | 1/30 | 1/15 | 1/120 | 'vary' | 
           // timeStep={'vary'}
           paused={pausedPhysics}
         >
@@ -495,8 +495,8 @@ const ThreeDExperience = forwardRef((
                     floatHeight={floatHeight}               // TODO: set from prefs
 
                     // Movement (Gentler to prevent tipping)
-                    maxVelLimit={4.0}            // Increase max velocity for larger scale
-                    rejectVelMult={3.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes) -- CANNOT BE GREATER THAN maxVelLimit
+                    maxVelLimit={5.0}            // Increase max velocity for larger scale
+                    rejectVelMult={100.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes): BUG -- The character's velocity isn't being properly clamped
                     turnVelMultiplier={1.0}
                     turnSpeed={10}
                     sprintMult={2.0}
@@ -514,8 +514,10 @@ const ThreeDExperience = forwardRef((
                     rayHitForgiveness={0.1}
                     rayLength={capsuleRadius + 2}     // Adjust ray length for ground detection
                     rayDir={{ x: 0, y: -1, z: 0 }}
-                    floatingDis={capsuleRadius + floatHeight}
-                    springK={1.20}                    // Default: 1.2 (firmer ground contact)
+                    // floatingDis={capsuleRadius + floatHeight}
+                    // floatingDis={capsuleHalfHeight / 2}
+                    floatingDis={0.0000000000}
+                    springK={3.60}                    // Default: 1.2 (firmer ground contact)
                     dampingC={0.08}                    // Default: 0.08 (less oscillation)
                     
                     // Slope Ray setups
@@ -529,9 +531,9 @@ const ThreeDExperience = forwardRef((
 
                     // Auto-Balance Force (Critical for stability)
                     autoBalance={true}
-                    autoBalanceSpringK={800.8}       // Default: 0.3 (stronger upright force)
+                    autoBalanceSpringK={8000.8}       // Default: 0.3 (stronger upright force)
                     autoBalanceDampingC={200.05}     // Default: 0.03 (smoother corrections)
-                    autoBalanceSpringOnY={800.8}     // Default: 0.5 (stronger Y-axis balance)
+                    autoBalanceSpringOnY={8000.8}     // Default: 0.5 (stronger Y-axis balance)
                     autoBalanceDampingOnY={200.05}   // Default: 0.015 (damping on Y-axis)
                     
                     // Camera & Control

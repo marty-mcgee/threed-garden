@@ -159,6 +159,7 @@ interface IStore extends StoreApi<any> {
 }
 
 interface IStorePreferences extends IStore {
+  store: INoun
   actions: any
 }
 
@@ -174,7 +175,7 @@ function noun(this: INoun, _type: string = 'noun') {
   // wp custom fields
   this.data = {
     // defaults
-    title: 'NOTHING YET, SIR',
+    title: 'NOUN TITLE: NOTHING YET, SIR',
   }
   // layers/levels
   this.layers = [
@@ -891,90 +892,90 @@ function modalStore(this: IStore, _type = 'modal') {
 // ** Preferences Store -- Constructor Function
 // -- returns new (preferencesStore as any)
 
-function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
-  // store params
-  this._type = _type.toLowerCase()
-  this._plural = _type // + 's'
-  this._storageItem = 'threed_' + this._type
-  this._storageItemHistory = 'threed_' + this._type + 'History'
+// function preferenceStoreCustom(this: IStorePreferences, _type = 'preferences') {
+//   // store params
+//   this._type = _type.toLowerCase()
+//   this._plural = _type // + 's'
+//   this._storageItem = 'threed_' + this._type
+//   this._storageItemHistory = 'threed_' + this._type + 'History'
 
-  // ==============================================================
-  // ** Preferences Store .store
+//   // ==============================================================
+//   // ** Preferences Store .store
 
-  // **
-  // const preferences = useReactiveVar(preferencesDataVar)
-  // const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
-  // const doAutoLoadDataApollo = preferences.doAutoLoadData
-  // const doAutoLoadDataApollo = this.store.get('doAutoLoadData')
-  const doAutoLoadDataApollo: boolean = false
-  // console.debug('APOLLO: ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
-  // const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
-  // const doAutoRotateApollo = preferences.doAutoRotate
-  // const doAutoRotateApollo = this.store.get('doAutoRotate')
-  const doAutoRotateApollo: boolean = false
-  // console.debug('APOLLO: ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
-  // const projectNameApollo = preferencesStore.store.useStore('projectName')
-  // const projectNameApollo = preferences.projectName
-  // const projectNameApollo = this.store.get('projectName')
-  const projectNameApollo: string = ''
-  // console.debug('APOLLO: ThreeDLevaControls projectNameApollo', projectNameApollo)
+//   // **
+//   // const preferences = useReactiveVar(preferencesDataVar)
+//   // const doAutoLoadDataApollo = preferencesStore.store.useStore('doAutoLoadData')
+//   // const doAutoLoadDataApollo = preferences.doAutoLoadData
+//   // const doAutoLoadDataApollo = this.store.get('doAutoLoadData')
+//   const doAutoLoadDataApollo: boolean = false
+//   // console.debug('APOLLO: ThreeDLevaControls doAutoLoadDataApollo', doAutoLoadDataApollo)
+//   // const doAutoRotateApollo = preferencesStore.store.useStore('doAutoRotate')
+//   // const doAutoRotateApollo = preferences.doAutoRotate
+//   // const doAutoRotateApollo = this.store.get('doAutoRotate')
+//   const doAutoRotateApollo: boolean = false
+//   // console.debug('APOLLO: ThreeDLevaControls doAutoRotateApollo', doAutoRotateApollo)
+//   // const projectNameApollo = preferencesStore.store.useStore('projectName')
+//   // const projectNameApollo = preferences.projectName
+//   // const projectNameApollo = this.store.get('projectName')
+//   const projectNameApollo: string = ''
+//   // console.debug('APOLLO: ThreeDLevaControls projectNameApollo', projectNameApollo)
 
-  this.store = create({
-    doAutoLoadData: doAutoLoadDataApollo, // true | false,
-    doAutoRotate: doAutoRotateApollo, // true | false,
-    projectName: projectNameApollo, // string | 'APOLLO PREFERENCES STORE: projectName'
-  })
+//   this.store = create({
+//     doAutoLoadData: doAutoLoadDataApollo, // true | false,
+//     doAutoRotate: doAutoRotateApollo, // true | false,
+//     projectName: projectNameApollo, // string | 'APOLLO PREFERENCES STORE: projectName'
+//   })
 
-  // ==============================================================
-  // ** Preferences Store .actions
+//   // ==============================================================
+//   // ** Preferences Store .actions
 
-  this.actions = {
-    setDoAutoLoadData: (e: boolean = false) => {
-      // this.store.update('doAutoLoadData', !this.store.get('doAutoLoadData'))
-      this.store.update('doAutoLoadData', e)
-      localStorage.setItem(
-        this._storageItem,
-        JSON.stringify({
-          subject: 'doAutoLoadData',
-          payload: this.store.get('doAutoLoadData'),
-        })
-      )
-      return this.store.get('doAutoLoadData')
-    },
-    setDoAutoRotate: (e: boolean = false) => {
-      // this.store.update('doAutoRotate', !this.store.get('doAutoRotate'))
-      this.store.update('doAutoRotate', e)
-      localStorage.setItem(
-        this._storageItem,
-        JSON.stringify({
-          subject: 'doAutoRotate',
-          payload: this.store.get('doAutoRotate'),
-        })
-      )
-      return this.store.get('doAutoRotate')
-    },
-    setProjectName: (e: string = 'nope') => {
-      this.store.update('projectName', e)
-      localStorage.setItem(
-        this._storageItem,
-        JSON.stringify({
-          subject: 'projectName',
-          payload: this.store.get('projectName'),
-        })
-      )
-      // const doModifyProjectName = client.cache.modify({
-      //   id: client.cache.identify(preferencesStore),
-      //   fields: {
-      //     name(projectName) {
-      //       return projectName.toUpperCase()
-      //     },
-      //   },
-      //   /* broadcast: false // Include this to prevent automatic query refresh */
-      // })
-      return this.store.get('projectName')
-    },
-  } // preferencesActions
-} // preferencesStore
+//   this.actions = {
+//     setDoAutoLoadData: (e: boolean = false) => {
+//       // this.store.update('doAutoLoadData', !this.store.get('doAutoLoadData'))
+//       this.store.update('doAutoLoadData', e)
+//       localStorage.setItem(
+//         this._storageItem,
+//         JSON.stringify({
+//           subject: 'doAutoLoadData',
+//           payload: this.store.get('doAutoLoadData'),
+//         })
+//       )
+//       return this.store.get('doAutoLoadData')
+//     },
+//     setDoAutoRotate: (e: boolean = false) => {
+//       // this.store.update('doAutoRotate', !this.store.get('doAutoRotate'))
+//       this.store.update('doAutoRotate', e)
+//       localStorage.setItem(
+//         this._storageItem,
+//         JSON.stringify({
+//           subject: 'doAutoRotate',
+//           payload: this.store.get('doAutoRotate'),
+//         })
+//       )
+//       return this.store.get('doAutoRotate')
+//     },
+//     setProjectName: (e: string = 'nope') => {
+//       this.store.update('projectName', e)
+//       localStorage.setItem(
+//         this._storageItem,
+//         JSON.stringify({
+//           subject: 'projectName',
+//           payload: this.store.get('projectName'),
+//         })
+//       )
+//       // const doModifyProjectName = client.cache.modify({
+//       //   id: client.cache.identify(preferencesStore),
+//       //   fields: {
+//       //     name(projectName) {
+//       //       return projectName.toUpperCase()
+//       //     },
+//       //   },
+//       //   /* broadcast: false // Include this to prevent automatic query refresh */
+//       // })
+//       return this.store.get('projectName')
+//     },
+//   } // preferencesActions
+// } // preferencesStoreCustom
 
 // ==============================================================
 
@@ -1217,8 +1218,8 @@ export const preferencesStore = new (nounStore as any)('preferences')
 export const canvasStateStore = new (nounStore as any)('canvasState')
   // console.debug('APOLLO: canvasStateStore', canvasStateStore)
 // other regular nouns
-export const projectStore = new (nounStore as any)('project')
 export const sceneStore = new (nounStore as any)('scene')
+export const projectStore = new (nounStore as any)('project')
 export const planStore = new (nounStore as any)('plan')
 export const threedStore = new (nounStore as any)('threed')
 export const fileStore = new (nounStore as any)('file')

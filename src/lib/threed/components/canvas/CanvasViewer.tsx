@@ -38,16 +38,16 @@ import {
 // ** THREED r3f Canvas Imports
 import { ThreeDCanvas } from '#/lib/threed/components/canvas/Canvas'
 
+// ==========================================================
+
 // ** HELPER Components
 // import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-// ==========================================================
-
-// DEBUG PREFERENCES FOR THIS MODULE
+// ** DEBUG PREFERENCES FOR THIS MODULE
 const debug: boolean = false
-const DEBUG: boolean = false
+const DEBUG: boolean = true
 
 // ==========================================================
 
@@ -94,17 +94,18 @@ export const ThreeDCanvasViewer = () => {
   // ** ⚙️ PREFERENCES STATE
   // const prefs = preferencesDataVar() // NO
   const prefs = useReactiveVar(preferencesDataVar) // YES
-  // console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert, prefs)
+  console.debug('%c⚙️ ThreeDGarden prefs', ccm.orangeAlert, prefs)
 
   // ** CANVAS DOM REFERENCES (REACT)
   const refThreeDCanvas1 = useRef<any>(null)
   const refThreeDCanvas2 = useRef<any>(null)
   const refThreeDCanvas3 = useRef<any>(null)
 
-  // ** GET DATA (NOT HERE !!!)
+  // // ** projectStore GET DATA (NOT HERE !!!)
   // let project = projectStore.store.get('one')
+  // console.debug('%c⚙️ ThreeDGarden project', ccm.redAlert, project)
   // if (prefs.doAutoLoadData) {
-  //   // if (debug || DEBUG) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
+  //   if (debug || DEBUG) console.debug('%c🥕 TRYING... ThreeDCanvasViewer {project} ', ccm.orange)
   //   try {
   //     // const project = projectStore.store.get('one')
   //     // const project = projectStore.store.useStore('one') // causes an error, but may still be the way to go
@@ -112,7 +113,7 @@ export const ThreeDCanvasViewer = () => {
   //     if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project)
   //     // if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project} ', ccm.orange, project())
   //     if (project) {
-  //       let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
+  //       // let project_title = project?.data?.title ? project.data.title : 'NOTHING YET, SIR: NOPE NOPE NOPE'
   //       // if (debug || DEBUG) console.debug('%c🥕 ThreeDCanvasViewer {project}.project_title ', ccm.orange, project_title)
   //       if (project.data.plans) {
   //         let nodesToLoad: [] = []
