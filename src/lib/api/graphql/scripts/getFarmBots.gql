@@ -1,11 +1,11 @@
 # import { gql, useQuery } from '@apollo/client'
 
-# const GetParticipants = gql`
-query GetParticipants ($first: Int, $last: Int, $after: String, $before: String) {
-  participants (first: $first, last: $last, after: $after, before: $before) {
+# const GetFarmBots = gql`
+query GetFarmBots ($first: Int, $last: Int, $after: String, $before: String) {
+  farmbots (first: $first, last: $last, after: $after, before: $before) {
     nodes {
       id
-      participantId
+      farmbotId
       title
       content
       status

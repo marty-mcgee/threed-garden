@@ -143,9 +143,9 @@ function makeClient() {
 export function ApolloClientWrapper({ children }: { children: any }) {
 
   // ** makeClient()
-  const madeClient = makeClient
-  console.debug('%c🦆 ApolloClientWrapper: madeClient', ccm.greenAlert, madeClient())
-  console.debug('%c🦆 ApolloClientWrapper: madeClient.cache', ccm.greenAlert, madeClient().cache)
+  // const madeClient = makeClient
+  // console.debug('%c🦆 ApolloClientWrapper: madeClient', ccm.greenAlert, madeClient())
+  // console.debug('%c🦆 ApolloClientWrapper: madeClient.cache', ccm.greenAlert, madeClient().cache)
   // console.debug('%c🦆 ApolloClientWrapper: madeClient.query', ccm.greenAlert, madeClient.query)
 
   // ** RETURN JSX

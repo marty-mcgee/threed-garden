@@ -1,6 +1,6 @@
 export default function PolicyPage() {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" style={{ margin: '16px' }}>
       <section>
         <h2 className="text-xl font-bold">Terms of Service</h2>
         <p>

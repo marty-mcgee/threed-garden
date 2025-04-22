@@ -1,30 +1,12 @@
 // ==============================================================
 // TITLE: Index Page (Forwarding Page)
 
-// 'use client' // NO
+'use client'
 
 // ==============================================================
 // RESOURCES
 
-// ** THREED: GET + SET DATA from API
-// import getData from '#/lib/api/graphql/getData'
-import ClientPreferences from '~/src/app/nouns/preferences/Preferences'
-
-// ** APOLLO
-// import { getClient } from '@/lib/apolloClient';
-// import { getClient } from '@apollo/client-integration-nextjs/rsc'
-// import { getClient } from '@apollo/client'
-// import { preferencesStore } from '#/lib/api/graphql/apollo'
-// import { gql } from '@apollo/client'
-// import {
-//   PreloadQuery
-// } from '@apollo/client-integration-nextjs'
-import {
-  queries, // GetPreferences,
-} from '#/lib/api/graphql/apollo'
-
-
-// import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 // import { auth } from '#/lib/auth/auth'
 // import { useAuth } from '#/lib/auth/hooks/useAuth'
 // import SessionData from '#/layout/ui/session-data'
@@ -33,14 +15,14 @@ import {
 // ** Next
 // import type { NextPage, NextPageContext } from 'next'
 // import type { TNextPageWithProps } from '#/lib/types/TAppProps'
-import Link from 'next/link'
+// import Link from 'next/link'
 // import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
 // import type { ReactNode } from 'react'
 import { 
   useEffect,
-  Suspense,
+  // Suspense,
 } from 'react'
 
 // ** RADIX-UI Imports
@@ -96,21 +78,13 @@ if (debug) {
 // const AppPage: TNextPageWithProps = async (props: any): Promise<React.ReactNode> => {
 // const AppPage: NextPage = (props) => {
 // const AppPage = ({children}: {children: any}) => {
-export default async function AppPage() {
+const AppPage = () => {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
-  let QUERY = null
-      QUERY = queries.GetPreferences
-
-  // ** Hooks YES !!!
-
-  // ** GET + SET DATA from API
-  // const data = getData()
-
-  // ** AUTH (not here on server)
+  // ** Hooks
   // const auth = useAuth()
-  // const session = useSession()
+  const session = useSession()
   // const session = await auth()
   // const session = {
   //   user: {
@@ -119,15 +93,15 @@ export default async function AppPage() {
   //   expires: 'someday'
   // }
 
-  // useEffect(() => {
-  //   if (session) {
-  //     if ('user' in session) {
-  //       console.debug('NEXT-AUTH session.user', session)
-  //     }
-  //     // console.debug('NEXT-AUTH session', session)
-  //   }
-  //   return // nothing
-  // }, [session]) // [session] ??
+  useEffect(() => {
+    if (session) {
+      if ('user' in session) {
+        console.debug('NEXT-AUTH session.user', session)
+      }
+      // console.debug('NEXT-AUTH session', session)
+    }
+    return // nothing
+  }, [session]) // [session] ??
 
   // ** Return JSX
   return (
@@ -168,26 +142,13 @@ export default async function AppPage() {
             textAlign: 'center',
           }}
         >
-          ThreeD: Next.js: app (router): page .tsx
+          🥕 ThreeD: Next.js: app (router): page .tsx
         </Heading>
         {/* <FarmbotDemoSVG /> */}
-      </div>
-      <div>
-        <h1>🥕 Noun Pages</h1>
-        <ul>
-          <li key='page-Users'><Link href='/nouns/users'>Users</Link></li>
-          <li key='page-Participants'><Link href='/nouns/participants'>Participants</Link></li>
-          <li key='page-Preferences'><Link href='/nouns/preferences'>Preferences</Link></li>
-          <li key='page-Projects'><Link href='/nouns/projects'>Projects</Link></li>
-          <li key='page-Plans'><Link href='/nouns/plans'>Plans</Link></li>
-          <li key='page-ThreeDs'><Link href='/nouns/threeds'>ThreeDs</Link></li>
-          <li key='page-Files'><Link href='/nouns/files'>Files</Link></li>
-          <li key='page-FarmBots'><Link href='/nouns/farmbots'>FarmBots</Link></li>
-        </ul>
       </div>
     </div>
   </>
   )
 }
 
-// export default AppPage
+export default AppPage

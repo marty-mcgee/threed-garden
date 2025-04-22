@@ -1,5 +1,5 @@
 // ==============================================================
-// TITLE: Index Page (Forwarding Page)
+// TITLE: Preferences Page
 
 // 'use client' // NO
 
@@ -8,7 +8,7 @@
 
 // ** THREED: GET + SET DATA from API
 // import getData from '#/lib/api/graphql/getData'
-import ClientPreferences from '~/src/app/nouns/preferences/Preferences'
+import Preferences from '~/src/app/nouns/preferences/Preferences'
 
 // ** APOLLO
 // import { getClient } from '@/lib/apolloClient';
@@ -33,7 +33,7 @@ import {
 // ** Next
 // import type { NextPage, NextPageContext } from 'next'
 // import type { TNextPageWithProps } from '#/lib/types/TAppProps'
-import Link from 'next/link'
+// import Link from 'next/link'
 // import { useRouter, usePathname } from 'next/navigation'
 
 // ** React
@@ -82,11 +82,11 @@ import ccm from '#/lib/utils/console-colors'
 // ** DEBUGGING + TESTING
 const debug: boolean = false
 
-if (debug) {
-  // console.debug('%c=======================================', ccm.black)
-  console.debug('%c🥕 ThreeDGarden<ThreeD>: {page.tsx}', ccm.greenAlert)
-  // console.debug('%c=======================================', ccm.black)
-}
+// if (debug) {
+//   // console.debug('%c=======================================', ccm.black)
+//   console.debug('%c🥕 ThreeDGarden<ThreeD>: {page.tsx}', ccm.greenAlert)
+//   // console.debug('%c=======================================', ccm.black)
+// }
 
 // ==============================================================
 
@@ -150,40 +150,24 @@ export default async function AppPage() {
         }}
       >
         <Heading as='h1'>
-          🌱 Welcome to ThreeD Garden
+          🥕 Preferences
         </Heading>
-      </div>
-
-      <div 
-        className='PanelContent'
-        style={{
-          // display: 'flex',
-          // flexDirection: 'column',
-          // border: '1px solid darkgray',
-        }}
-      >
-        <Heading 
-          as='h2'
-          style={{
-            textAlign: 'center',
+        {/* <PreloadQuery
+          query={QUERY}
+          variables={{
+            foo: 1,
           }}
-        >
-          ThreeD: Next.js: app (router): page .tsx
-        </Heading>
-        {/* <FarmbotDemoSVG /> */}
-      </div>
-      <div>
-        <h1>🥕 Noun Pages</h1>
-        <ul>
-          <li key='page-Users'><Link href='/nouns/users'>Users</Link></li>
-          <li key='page-Participants'><Link href='/nouns/participants'>Participants</Link></li>
-          <li key='page-Preferences'><Link href='/nouns/preferences'>Preferences</Link></li>
-          <li key='page-Projects'><Link href='/nouns/projects'>Projects</Link></li>
-          <li key='page-Plans'><Link href='/nouns/plans'>Plans</Link></li>
-          <li key='page-ThreeDs'><Link href='/nouns/threeds'>ThreeDs</Link></li>
-          <li key='page-Files'><Link href='/nouns/files'>Files</Link></li>
-          <li key='page-FarmBots'><Link href='/nouns/farmbots'>FarmBots</Link></li>
-        </ul>
+        > */}
+          <Suspense 
+            fallback={
+              // <>loading</>
+              <><Spinner/></>
+            }
+          >
+            <>Client: Query: GetPreferences</>
+            <Preferences />
+          </Suspense>
+        {/* </PreloadQuery> */}
       </div>
     </div>
   </>
