@@ -4,135 +4,147 @@
 query GetProjects ($first: Int, $last: Int, $after: String, $before: String) {
   projects (first: $first, last: $last, after: $after, before: $before) {
     nodes {
+      id
       projectId
       title
       content
+      status
       link
-      version
       modified
+      # custom fields
+      # owner {
+      #   node {
+      #     userId
+      #     userType
+      #     username
+      #     state
+      #     version
+      #   }
+      # }
+      version
       # ** RELATIONSHIPS
-      preferences {
-        node {
-          preferencesId
-          title
-          content
-          link
-          modified
-          # custom fields
-          version
-          # owner
-          doAutoLoadData
-          doAutoRotate
-          projectName
-          environmentPreset
-          environmentBgBlur
-          doCharacterAnimation
-          doWorldDebug
-          doWorldTesting
-          doWorldPhysics
-          doWorldControl
-          doWorldUnfollowCam
-          showPanelFirst
-          showPanelLast
-        }
-      }
-      scenes {
-        nodes {
-          sceneId
-          title
-          content
-          link
-          version
-          modified
-          # custom fields
-          sceneBgColor
-          sceneBgImage {
-            node {
-              title
-              mediaType
-              mediaItemUrl
-              mediaItemId
-              mediaDetails {
-                file
-              }
-            }
-          }
-          scenePlaneWidthX
-          scenePlaneHeightY
-          scenePlaneLengthZ
-          scenePlaneTextureRepeatX
-          scenePlaneTextureRepeatY
-          scenePlaneTextureRepeatZ
-          sceneBgImagePz {
-            node {
-              title
-              mediaType
-              mediaItemUrl
-              mediaItemId
-              mediaDetails {
-                file
-              }
-            }
-          }
-          sceneBgImagePy {
-            node {
-              title
-              mediaType
-              mediaItemUrl
-              mediaItemId
-              mediaDetails {
-                file
-              }
-            }
-          }
-          sceneBgImagePx {
-            node {
-              title
-              mediaType
-              mediaItemUrl
-              mediaItemId
-              mediaDetails {
-                file
-              }
-            }
-          }
-          sceneBgImageNz {
-            node {
-              title
-              mediaType
-              mediaItemUrl
-              mediaItemId
-              mediaDetails {
-                file
-              }
-            }
-          }
-          sceneBgImageNy {
-            node {
-              title
-              mediaType
-              mediaItemUrl
-              mediaItemId
-              mediaDetails {
-                file
-              }
-            }
-          }
-          sceneBgImageNx {
-            node {
-              sourceUrl
-              link
-              title
-              mediaType
-              mediaItemUrl
-              mediaItemId
-              mediaDetails {
-                file
-              }
-            }
-          }
-        }
-      }
+      # preferences {
+      #   node {
+      #     preferencesId
+      #     title
+      #     content
+      #     link
+      #     modified
+      #     # custom fields
+      #     version
+      #     # owner
+      #     doAutoLoadData
+      #     doAutoRotate
+      #     projectName
+      #     environmentPreset
+      #     environmentBgBlur
+      #     doCharacterAnimation
+      #     doWorldDebug
+      #     doWorldTesting
+      #     doWorldPhysics
+      #     doWorldControl
+      #     doWorldUnfollowCam
+      #     showPanelFirst
+      #     showPanelLast
+      #   }
+      # }
+      # scenes {
+      #   nodes {
+      #     sceneId
+      #     title
+      #     content
+      #     link
+      #     version
+      #     modified
+      #     # custom fields
+      #     sceneBgColor
+      #     sceneBgImage {
+      #       node {
+      #         title
+      #         mediaType
+      #         mediaItemUrl
+      #         mediaItemId
+      #         mediaDetails {
+      #           file
+      #         }
+      #       }
+      #     }
+      #     scenePlaneWidthX
+      #     scenePlaneHeightY
+      #     scenePlaneLengthZ
+      #     scenePlaneTextureRepeatX
+      #     scenePlaneTextureRepeatY
+      #     scenePlaneTextureRepeatZ
+      #     sceneBgImagePz {
+      #       node {
+      #         title
+      #         mediaType
+      #         mediaItemUrl
+      #         mediaItemId
+      #         mediaDetails {
+      #           file
+      #         }
+      #       }
+      #     }
+      #     sceneBgImagePy {
+      #       node {
+      #         title
+      #         mediaType
+      #         mediaItemUrl
+      #         mediaItemId
+      #         mediaDetails {
+      #           file
+      #         }
+      #       }
+      #     }
+      #     sceneBgImagePx {
+      #       node {
+      #         title
+      #         mediaType
+      #         mediaItemUrl
+      #         mediaItemId
+      #         mediaDetails {
+      #           file
+      #         }
+      #       }
+      #     }
+      #     sceneBgImageNz {
+      #       node {
+      #         title
+      #         mediaType
+      #         mediaItemUrl
+      #         mediaItemId
+      #         mediaDetails {
+      #           file
+      #         }
+      #       }
+      #     }
+      #     sceneBgImageNy {
+      #       node {
+      #         title
+      #         mediaType
+      #         mediaItemUrl
+      #         mediaItemId
+      #         mediaDetails {
+      #           file
+      #         }
+      #       }
+      #     }
+      #     sceneBgImageNx {
+      #       node {
+      #         sourceUrl
+      #         link
+      #         title
+      #         mediaType
+      #         mediaItemUrl
+      #         mediaItemId
+      #         mediaDetails {
+      #           file
+      #         }
+      #       }
+      #     }
+      #   }
+      # }
       plans {
         nodes {
           planId

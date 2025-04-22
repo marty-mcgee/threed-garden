@@ -1,45 +1,22 @@
+# import { gql, useQuery } from '@apollo/client'
+
+# const GetThreeDs = gql`
 query GetThreeDs ($first: Int, $last: Int, $after: String, $before: String) {
   threeds (first: $first, last: $last, after: $after, before: $before) {
-    pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
-    }
-    edges {
-      cursor
-      node {
-        content
-        contentTypeName
-        # databaseId
-        # date
-        # dateGmt
-        # desiredSlug
-        # enclosure
-        # guid
-        id
-        # isContentNode
-        # isPreview
-        # isRestricted
-        # isTermNode
-        link
-        # modified
-        # modifiedGmt
-        # previewRevisionDatabaseId
-        # previewRevisionId
-        slug
-        status
-        # template {
-        #   templateName
-        # }
-        title
-        uri
-        # custom fields
-        threedId
-      }
+    nodes {
+      id
+      threedId
+      title
+      content
+      status
+      link
+      modified
+      # custom fields
+      # owner # == user
+      version
+      # state
+      # userType
     }
   }
-  # files {
-  #   nodes
-  # }
 }
+# `

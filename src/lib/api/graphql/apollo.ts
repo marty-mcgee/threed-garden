@@ -25,6 +25,7 @@ import Preferences from '#/lib/api/graphql/schema/preferencess.graphql'
 // import Beds from '#/lib/api/graphql/scripts/beds.graphql'
 // import Plants from '#/lib/api/graphql/scripts/plants.graphql'
 // import PlantingPlans from '#/lib/api/graphql/scripts/plantingPlans.graphql'
+// import FarmBots from '#/lib/api/graphql/scripts/farmbots.graphql'
 // ==============================================================
 // ** scripts for objects
 // ==============================================================
@@ -40,11 +41,12 @@ import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
-// import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
+import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
 // import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 // import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
 // import GetPlants from '#/lib/api/graphql/scripts/getPlants.gql'
 // import GetPlantingPlans from '#/lib/api/graphql/scripts/getPlantingPlans.gql'
+import GetFarmBots from '#/lib/api/graphql/scripts/getFarmBots.gql'
 // ==============================================================
 // ** -- MUTATIONS (Create/Post, Update/Patch, Delete)
 // ==============================================================
@@ -63,6 +65,7 @@ import CreatePreferences from '#/lib/api/graphql/scripts/createPreferences.gql'
 // import CreateBeds from '#/lib/api/graphql/scripts/createBeds.gql'
 // import CreatePlants from '#/lib/api/graphql/scripts/createPlants.gql'
 // import CreatePlantingPlans from '#/lib/api/graphql/scripts/createPlantingPlans.gql'
+// import CreateFarmBots from '#/lib/api/graphql/scripts/createFarmBots.gql'
 // ==============================================================
 // ** update existing
 // import UpdateNouns from '#/lib/api/graphql/scripts/updateNouns.gql'
@@ -79,6 +82,7 @@ import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
 // import UpdateBeds from '#/lib/api/graphql/scripts/updateBeds.gql'
 // import UpdatePlants from '#/lib/api/graphql/scripts/updatePlants.gql'
 // import UpdatePlantingPlans from '#/lib/api/graphql/scripts/updatePlantingPlans.gql'
+// import UpdateFarmBots from '#/lib/api/graphql/scripts/updateFarmBots.gql'
 // ==============================================================
 // ** delete existing
 // import DeleteNouns from '#/lib/api/graphql/scripts/deleteNouns.gql'
@@ -95,6 +99,7 @@ import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
 // import DeleteBeds from '#/lib/api/graphql/scripts/deleteBeds.gql'
 // import DeletePlants from '#/lib/api/graphql/scripts/deletePlants.gql'
 // import DeletePlantingPlans from '#/lib/api/graphql/scripts/deletePlantingPlans.gql'
+// import DeleteFarmBots from '#/lib/api/graphql/scripts/deleteFarmBots.gql'
 // ==============================================================
 // ** JWT AUTH + REFRESH
 import RegisterUser from '#/lib/api/graphql/scripts/registerUser.gql'
@@ -547,9 +552,9 @@ function nounStore(this: IStore, _type = 'noun') {
           case 'threed':
             QUERY = GetThreeDs
             break
-          // case 'file':
-          //   QUERY = GetFiles
-          //   break
+          case 'file':
+            QUERY = GetFiles
+            break
           // case 'allotment':
           //   QUERY = GetAllotments
           //   break
@@ -565,6 +570,9 @@ function nounStore(this: IStore, _type = 'noun') {
           // case 'bear':
           //   QUERY = GetBears
           //   break
+          case 'farmbot':
+            QUERY = GetFarmBots
+            break
         }
 
         const parameters = {
@@ -1227,6 +1235,7 @@ export const allotmentStore = new (nounStore as any)('allotment')
 export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
 export const plantingPlanStore = new (nounStore as any)('plantingPlan')
+export const farmbotStore = new (nounStore as any)('farmbot')
 // ** MODAL STORES
 export { modalStore }
 // export const modalStore = new (modalStore as any)()
@@ -1252,6 +1261,7 @@ export const stores = {
   bedStore,
   plantStore,
   plantingPlanStore,
+  farmbotStore,
   modalStore,
   modalAboutStore,
   modalModel3dStore,
@@ -1321,11 +1331,12 @@ export const queries = {
   GetPlans,
   GetScenes,
   GetThreeDs,
-  // GetFiles,
+  GetFiles,
   // GetAllotments,
   // GetBeds,
   // GetPlants,
   // GetPlantingPlans,
+  GetFarmBots,
 }
 
 // :) [MM] THREED MILESTONE
@@ -1350,6 +1361,7 @@ export const mutations = {
   // UpdateBeds: UpdateBeds,
   // UpdatePlants: UpdatePlants,
   // UpdatePlantingPlans: UpdatePlantingPlans,
+  // UpdateFarmBots: UpdateFarmBots,
 }
 
 // export DEFAULT

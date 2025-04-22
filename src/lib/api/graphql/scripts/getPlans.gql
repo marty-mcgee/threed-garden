@@ -3,47 +3,20 @@
 # const GetPlans = gql`
 query GetPlans ($first: Int, $last: Int, $after: String, $before: String) {
   plans (first: $first, last: $last, after: $after, before: $before) {
-    pageInfo {
-      endCursor
-      hasNextPage
-      hasPreviousPage
-      startCursor
-    }
-    edges {
-      cursor
-      node {
-        content
-        contentTypeName
-        # databaseId
-        # date
-        # dateGmt
-        # desiredSlug
-        # enclosure
-        # guid
-        id
-        # isContentNode
-        # isPreview
-        # isRestricted
-        # isTermNode
-        link
-        # modified
-        # modifiedGmt
-        # previewRevisionDatabaseId
-        # previewRevisionId
-        slug
-        status
-        # template {
-        #   templateName
-        # }
-        title
-        uri
-        # custom fields
-        planId
-      }
+    nodes {
+      id
+      planId
+      title
+      content
+      status
+      link
+      modified
+      # custom fields
+      # owner # == user
+      version
+      # state
+      # userType
     }
   }
-  # files {
-  #   nodes
-  # }
 }
 # `

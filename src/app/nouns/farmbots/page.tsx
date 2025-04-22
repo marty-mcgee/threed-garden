@@ -1,18 +1,22 @@
 // ==============================================================
-// Terrains Page (main landing page for Terrains Demo)
+// FarmBots Page (main landing page for FarmBots Demo)
 
-// 'use server'
-// 'use client'
+// 'use server' // YES, but SSR (handled by Next)
+// 'use client' // NO
 // ^^ this is now a server component. default pragma 'use server'
 
 // ==============================================================
 // RESOURCES
 
+// ** THREED: GET + SET DATA from API
+// import getData from '#/lib/api/graphql/getData'
+import FarmBots from '~/src/app/nouns/farmbots/FarmBots'
+
 // // ** APOLLO Imports
-// import {
-//   useMutation,
-// } from '@apollo/client'
-// // ** THREED APOLLO Imports
+import {
+  queries, // GetFarmBots,
+} from '#/lib/api/graphql/apollo'
+// ** THREED APOLLO Imports
 // import {
 //   // ** AUTH
 //   registerUser,
@@ -21,10 +25,29 @@
 //   // **
 // } from '#/lib/api/graphql/apollo'
 
-// ** REACT Imports
-// import {
-//   Suspense
-// } from 'react'
+// ** React
+// import type { ReactNode } from 'react'
+import { 
+  useEffect,
+  Suspense,
+} from 'react'
+
+// ** RADIX-UI Imports
+import {
+  // Flex,
+  // Grid,
+  // Container,
+  // Button, 
+  Heading,
+  // Text,
+} from '@radix-ui/themes'
+// ** PANELS Imports
+// import { 
+//   Panel, 
+//   PanelGroup,
+//   // PanelResizeHandle,
+// } from 'react-resizable-panels'
+// import PanelResizeHandle from '#/layout/ui/resize-handle'
 
 // ** NEXT Imports
 // import type { NextPage } from 'next'
@@ -49,6 +72,21 @@ import { cookies } from 'next/headers'
 
 // ** FARMBOTS Imports
 // import { ThreeDGarden as ThreeDGardenFarmBots } from '#/lib/farmbot/frontend/three_d_garden'
+
+// ** HELPER Imports
+import Spinner from '#/layout/ui/spinner'
+import ccm from '#/lib/utils/console-colors'
+
+// ==============================================================
+
+// ** DEBUGGING + TESTING
+const debug: boolean = false
+
+// if (debug) {
+//   // console.debug('%c=======================================', ccm.black)
+//   console.debug('%c🥕 ThreeDGarden<ThreeD>: {page.tsx}', ccm.greenAlert)
+//   // console.debug('%c=======================================', ccm.black)
+// }
 
 // ==============================================================
 
@@ -92,8 +130,11 @@ async function getPanelLayout() {
 // const FarmBotsPage: NextPage = (): React.ReactNode => {
 // const FarmBotsPage: TNextPageWithProps = (): React.ReactNode => {
 // export default function FarmBotsPage<TNextPageWithProps> (): React.ReactNode { 
-async function FarmBotsPage<NextPage> () {
+export default async function FarmBotsPage<NextPage> () {
 // const FarmBotsPage: TNextPageWithProps = (pages: any): React.ReactNode => {
+
+  let QUERY = null
+      QUERY = queries.GetFarmBots
 
   // ** CANNOT USE HOOKS HERE
 
@@ -102,9 +143,6 @@ async function FarmBotsPage<NextPage> () {
 
   // ** RETURN JSX or React.ReactNode
   return (
-    <>
-      <h1>UNDER CONSTRUCTION</h1>
-    </>
     // {/* REACT SUSPENSE */}
     // <Suspense fallback={null}>
     // <Suspense fallback={<div>LOADING HEY HEY HEY ...</div>}>
@@ -118,8 +156,48 @@ async function FarmBotsPage<NextPage> () {
       //   weeds={[]}      
       // />
     
-      // </Suspense>
+    // </Suspense>
+
+    <>
+      <div
+        style={{
+          // display: 'flex',
+          // flexDirection: 'row',
+          textAlign: 'center',
+        }}
+      >
+        <div
+          className='PanelContent'
+          style={{
+            // display: 'flex',
+            // flexDirection: 'row',
+            textAlign: 'center',
+            // border: '4px solid darkblue',
+          }}
+        >
+          <Heading as='h1'>
+            🥕 FarmBots
+          </Heading>
+          {/* <PreloadQuery
+            query={QUERY}
+            variables={{
+              foo: 1,
+            }}
+          > */}
+            <Suspense 
+              fallback={
+                // <>loading</>
+                <><Spinner/></>
+              }
+            >
+              <>Client: Query: GetFarmBots</>
+              <FarmBots />
+            </Suspense>
+          {/* </PreloadQuery> */}
+        </div>
+      </div>
+    </>
   )
 }
 
-export default FarmBotsPage
+// export default FarmBotsPage

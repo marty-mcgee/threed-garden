@@ -1,16 +1,33 @@
 # import { gql, useQuery } from '@apollo/client'
 
 # const GetUsers = gql`
-query GetUsers ($first: Int, $last: Int, $after: String, $before: String) {
-  users (first: $first, last: $last, after: $after, before: $before) {
+# query GetUsers ($first: Int, $last: Int, $after: String, $before: String) {
+#   users (first: $first, last: $last, after: $after, before: $before) {
+#     nodes {
+#       id
+#       userId
+#       title
+#       content
+#       status
+#       link
+#       modified
+#     }
+#   }
+# }
+query GetUsers {
+  users {
     nodes {
       id
-      userId
-      title
-      content
-      status
-      link
-      modified
+      databaseId
+      username
+      name
+      email
+      roles {
+        nodes {
+          name
+        }
+      }
+      registeredDate
     }
   }
 }

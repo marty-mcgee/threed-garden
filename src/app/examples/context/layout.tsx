@@ -1,7 +1,7 @@
 import { fetchCategories } from '#/lib/data/getCategories';
 import { Boundary } from '#/layout/ui/playground/Boundary';
 import { TabGroup } from '#/layout/ui/playground/TabGroup';
-import { CounterProvider } from '#/app/context/CounterContext';
+import { CounterProvider } from '~/src/app/examples/context/CounterContext';
 import React from 'react';
 import ContextClickCounter from './ContextClickCounter';
 
