@@ -53,7 +53,7 @@ export const metadata = {
 // basic React Provider context node with props.children
 export default function RootLayout({ children }: { children: any }) {
 
-  console.debug('%c🌱 RootLayout: appVersion', ccm.darkgreenAlert, appVersion)
+  // console.debug('%c🌱 RootLayout: appVersion', ccm.darkgreenAlert, appVersion)
 
   const gaId = 'G-B6H82RQ83V' // 'G-XXXXXXXXXX'
   
