@@ -26,8 +26,8 @@ import SessionWrapper from '#/layout/SessionWrapper'
 
 // ** LAYOUT Components (Header, Main, Footer)
 // import Header from '#/layout/header'
-// const Header = dynamic(() => import('#/layout/header'), { ssr: false })
 import Header from '#/layout/header-client'
+// const Header = dynamic(() => import('#/layout/header'), { ssr: false })
 import Footer from '#/layout/footer'
 // const Footer = dynamic(() => import('#/layout/footer'), { ssr: false })
 
@@ -63,17 +63,11 @@ export default function RootLayout({ children }: { children: any }) {
       <body className={`${inter.className} antialiased`}>
         <ApolloClientWrapper>
           <SessionWrapper>
-            <Header 
-              key='ThreeDAppHeader'
-            />
-            <div
-              id='ThreeDAppMain'
-            >
+            <Header key='ThreeDAppHeader' />
+            <main id='ThreeDAppMain'>
               {children}
-            </div>
-            <Footer 
-              key='ThreeDAppFooter'
-            />
+            </main>
+            <Footer key='ThreeDAppFooter' />
           </SessionWrapper>
         </ApolloClientWrapper>
       </body>

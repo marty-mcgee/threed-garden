@@ -20,6 +20,7 @@ import Preferences from '#/lib/api/graphql/schema/preferencess.graphql'
 // import Plans from '#/lib/api/graphql/schema/plans.graphql'
 // import Scenes from '#/lib/api/graphql/schema/scenes.graphql'
 // import ThreeDs from '#/lib/api/graphql/schema/threeds.graphql'
+// import Characters from '#/lib/api/graphql/scripts/characters.graphql'
 // import Files from '#/lib/api/graphql/scripts/files.graphql'
 // import Allotments from '#/lib/api/graphql/scripts/allotments.graphql'
 // import Beds from '#/lib/api/graphql/scripts/beds.graphql'
@@ -41,6 +42,7 @@ import GetProjects from '#/lib/api/graphql/scripts/getProjects.gql'
 import GetPlans from '#/lib/api/graphql/scripts/getPlans.gql'
 import GetScenes from '#/lib/api/graphql/scripts/getScenes.gql'
 import GetThreeDs from '#/lib/api/graphql/scripts/getThreeDs.gql'
+import GetCharacters from '#/lib/api/graphql/scripts/getCharacters.gql'
 import GetFiles from '#/lib/api/graphql/scripts/getFiles.gql'
 // import GetAllotments from '#/lib/api/graphql/scripts/getAllotments.gql'
 // import GetBeds from '#/lib/api/graphql/scripts/getBeds.gql'
@@ -60,6 +62,7 @@ import CreatePreferences from '#/lib/api/graphql/scripts/createPreferences.gql'
 // import CreatePlans from '#/lib/api/graphql/scripts/createPlans.gql'
 // import CreateScenes from '#/lib/api/graphql/scripts/createScenes.gql'
 // import CreateThreeDs from '#/lib/api/graphql/scripts/createThreeDs.gql'
+// import CreateCharacters from '#/lib/api/graphql/scripts/createCharacters.gql'
 // import CreateFiles from '#/lib/api/graphql/scripts/createFiles.gql'
 // import CreateAllotments from '#/lib/api/graphql/scripts/createAllotments.gql'
 // import CreateBeds from '#/lib/api/graphql/scripts/createBeds.gql'
@@ -77,6 +80,7 @@ import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
 // import UpdatePlans from '#/lib/api/graphql/scripts/updatePlans.gql'
 // import UpdateScenes from '#/lib/api/graphql/scripts/updateScenes.gql'
 // import UpdateThreeDs from '#/lib/api/graphql/scripts/updateThreeDs.gql'
+// import UpdateCharacters from '#/lib/api/graphql/scripts/updateCharacters.gql'
 // import UpdateFiles from '#/lib/api/graphql/scripts/updateFiles.gql'
 // import UpdateAllotments from '#/lib/api/graphql/scripts/updateAllotments.gql'
 // import UpdateBeds from '#/lib/api/graphql/scripts/updateBeds.gql'
@@ -94,6 +98,7 @@ import UpdatePreferences from '#/lib/api/graphql/scripts/updatePreferences.gql'
 // import DeletePlans from '#/lib/api/graphql/scripts/deletePlans.gql'
 // import DeleteScenes from '#/lib/api/graphql/scripts/deleteScenes.gql'
 // import DeleteThreeDs from '#/lib/api/graphql/scripts/deleteThreeDs.gql'
+// import DeleteCharacters from '#/lib/api/graphql/scripts/deleteCharacters.gql'
 // import DeleteFiles from '#/lib/api/graphql/scripts/deleteFiles.gql'
 // import DeleteAllotments from '#/lib/api/graphql/scripts/deleteAllotments.gql'
 // import DeleteBeds from '#/lib/api/graphql/scripts/deleteBeds.gql'
@@ -1235,6 +1240,7 @@ export const allotmentStore = new (nounStore as any)('allotment')
 export const bedStore = new (nounStore as any)('bed')
 export const plantStore = new (nounStore as any)('plant')
 export const plantingPlanStore = new (nounStore as any)('plantingPlan')
+export const characterStore = new (nounStore as any)('character')
 export const farmbotStore = new (nounStore as any)('farmbot')
 // ** MODAL STORES
 export { modalStore }
@@ -1261,6 +1267,7 @@ export const stores = {
   bedStore,
   plantStore,
   plantingPlanStore,
+  characterStore,
   farmbotStore,
   modalStore,
   modalAboutStore,
@@ -1336,6 +1343,7 @@ export const queries = {
   // GetBeds,
   // GetPlants,
   // GetPlantingPlans,
+  GetCharacters,
   GetFarmBots,
 }
 

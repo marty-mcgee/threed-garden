@@ -22,6 +22,7 @@ type GLTFResult = GLTF & {
 const context = createContext(null)
 
 export function Instances(props: any) {
+  // @ts-expect-error
   const { nodes } = useGLTF(fileGLB) as GLTFResult
   const instances = useMemo(
     () => ({

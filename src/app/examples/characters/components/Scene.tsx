@@ -19,6 +19,7 @@ type GLTFResult = GLTF & {
 
 // @ ts-expect-error -- props: JSX.IntrinsicElements['group']
 export default function SceneModel(props: any) {
+  // @ts-expect-error
   const { nodes, materials } = useGLTF(SCENE_MODEL_URL) as GLTFResult
   return (
     <group {...props} dispose={null}>
