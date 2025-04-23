@@ -1,5 +1,5 @@
 // ==============================================================
-// FarmBots Page (main landing page for FarmBots Demo)
+// FarmBots Page
 
 // 'use server' // YES, but SSR (handled by Next)
 // 'use client' // NO

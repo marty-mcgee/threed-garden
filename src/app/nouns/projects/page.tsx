@@ -11,7 +11,7 @@
 import Projects from '~/src/app/nouns/projects/Projects'
 
 // ** APOLLO
-// import { getClient } from '@/lib/apolloClient';
+// import { getClient } from '@/lib/apolloClient'
 // import { getClient } from '@apollo/client-integration-nextjs/rsc'
 // import { getClient } from '@apollo/client'
 // import { preferencesStore } from '#/lib/api/graphql/apollo'

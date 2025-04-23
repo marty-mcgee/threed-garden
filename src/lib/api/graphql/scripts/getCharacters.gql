@@ -1,0 +1,22 @@
+# import { gql, useQuery } from '@apollo/client'
+
+# const GetCharacters = gql`
+query GetCharacters ($first: Int, $last: Int, $after: String, $before: String) {
+  threeds (first: $first, last: $last, after: $after, before: $before) {
+    nodes {
+      id
+      threedId
+      title
+      content
+      status
+      link
+      modified
+      # custom fields
+      # owner # == user
+      version
+      # state
+      # userType
+    }
+  }
+}
+# `

@@ -11,7 +11,7 @@
 import Plans from '~/src/app/nouns/plans/Plans'
 
 // ** APOLLO
-// import { getClient } from '@/lib/apolloClient';
+// import { getClient } from '@/lib/apolloClient'
 // import { getClient } from '@apollo/client-integration-nextjs/rsc'
 // import { getClient } from '@apollo/client'
 // import { preferencesStore } from '#/lib/api/graphql/apollo'

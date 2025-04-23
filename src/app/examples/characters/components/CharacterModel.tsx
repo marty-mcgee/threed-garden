@@ -45,6 +45,7 @@ type GLTFActions = Record<ActionName, THREE.AnimationAction>
 // @ts-expect-error
 export default function CharacterModel(props: JSX.IntrinsicElements['group']) {
   const group = useRef<THREE.Group>(null)
+  // @ts-expect-error
   const { nodes, materials, animations } = useGLTF(CHARACTER_MODEL_URL) as GLTFResult
   for (const material in materials) {
     // @ts-expect-error
