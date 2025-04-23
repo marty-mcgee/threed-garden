@@ -181,6 +181,7 @@ export default async function AppPage() {
           <li key='page-Projects'><Link href='/nouns/projects'>Projects</Link></li>
           <li key='page-Plans'><Link href='/nouns/plans'>Plans</Link></li>
           <li key='page-ThreeDs'><Link href='/nouns/threeds'>ThreeDs</Link></li>
+          <li key='page-Characters'><Link href='/nouns/characters'>Characters</Link></li>
           <li key='page-Files'><Link href='/nouns/files'>Files</Link></li>
           <li key='page-FarmBots'><Link href='/nouns/farmbots'>FarmBots</Link></li>
         </ul>

@@ -2,20 +2,27 @@
 
 # const GetCharacters = gql`
 query GetCharacters ($first: Int, $last: Int, $after: String, $before: String) {
-  threeds (first: $first, last: $last, after: $after, before: $before) {
+  characters (first: $first, last: $last, after: $after, before: $before) {
     nodes {
       id
-      threedId
+      characterId
       title
       content
       status
       link
       modified
-      # custom fields
+      # CUSTOM FIELDS
       # owner # == user
       version
       # state
       # userType
+      # RELATIONSHIPS
+      threed
+      name_full
+      name_first
+      name_last
+      website
+      occupation
     }
   }
 }
