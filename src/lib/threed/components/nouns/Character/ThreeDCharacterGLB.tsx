@@ -31,7 +31,7 @@ export default function CharacterModel(props: any) {
   // const modelFile = './characters/models/SK_Chr_Farmer_Female_01.fbx'
   const modelFile = 'https://MMMMMMMMMMMMMMMMMMMMMMMMM.glb' // vehicle?, character?, 3d gltf/glb file
 
-  const animationFileDir = 'objects/animations/'
+  const animationFileDir = '/assets/objects/animations/'
 
   const group = useRef<THREE.Group>(null)
 
