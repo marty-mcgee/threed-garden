@@ -15,14 +15,25 @@ query GetCharacters ($first: Int, $last: Int, $after: String, $before: String) {
       # owner # == user
       version
       # state
-      # userType
-      # RELATIONSHIPS
-      threed
-      name_full
-      name_first
-      name_last
+      nameFull
+      nameFirst
+      nameLast
       website
       occupation
+      # RELATIONSHIPS
+      threed {
+        nodes {
+          id
+          title
+          modelFiles {
+            nodes {
+              id
+              title
+              url
+            }
+          }
+        }
+      }
     }
   }
 }
