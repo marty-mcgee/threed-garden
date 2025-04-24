@@ -33,6 +33,10 @@
     margin-bottom: 0;
   }
 
+  a {
+    color: #AAAAAA;
+  }
+
   /* 
   button {
     background-color: 'darkgreen';
