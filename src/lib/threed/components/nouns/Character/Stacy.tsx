@@ -46,8 +46,8 @@ type CharacterModelProps = any
 
 export default function CharacterModel(props: CharacterModelProps) {
   // Fetch model and a separate texture
-  const { nodes, animations } = useGLTF('/objects/examples/stacy.glb')
-  const texture = useTexture('/objects/examples/stacy.jpg')
+  const { nodes, animations } = useGLTF('/assets/objects/examples/stacy.glb')
+  const texture = useTexture('/assets/objects/examples/stacy.jpg')
 
   // Extract animation actions
   const { ref, actions, names } = useAnimations(animations)
@@ -131,4 +131,4 @@ export default function CharacterModel(props: CharacterModelProps) {
   )
 }
 
-useGLTF.preload('/objects/examples/stacy.glb')
+useGLTF.preload('/assets/objects/examples/stacy.glb')

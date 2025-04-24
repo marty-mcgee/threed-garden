@@ -3,10 +3,10 @@
 import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 
-useGLTF.preload('objects/examples/shoe.gltf')
+useGLTF.preload('assets/objects/examples/shoe.gltf')
 
 export default function Shoe({ color, ...props }) {
-  const { nodes, materials } = useGLTF('objects/examples/shoe.gltf')
+  const { nodes, materials } = useGLTF('assets/objects/examples/shoe.gltf')
   // The following is a read-out of the models contents, all of its
   // meshes, groups and so on.
   return (

@@ -253,15 +253,17 @@ export const ElectronicsBox = (props: BoxTopBaseProps) => {
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
     BUTTONS.concat(LEDS).map(item => {
-      const current = item.ref?.current
-      const { on, off } = item.color
-      if (current) {
-        if (item.blink) {
-          current.material.color.set(t % 2 < 1 ? on : off)
-        } else {
-          current.material.color.set(item.on ? on : off)
-        }
-      }
+      // [MM] troubleshooting -- causes error 'current.material.color.set is not a function'
+      // [MM] probably because of other error '404 looking for /.glb'
+      // const current = item.ref?.current
+      // const { on, off } = item.color
+      // if (current) {
+      //   if (item.blink) {
+      //     current.material.color.set(t % 2 < 1 ? on : off)
+      //   } else {
+      //     current.material.color.set(item.on ? on : off)
+      //   }
+      // }
     })
   })
 
