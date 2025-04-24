@@ -202,7 +202,6 @@ export default async function AppPage() {
             
             <li
               className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
             >
               ________________________
             </li>
@@ -255,7 +254,6 @@ export default async function AppPage() {
             
             <li
               className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
             >
               ________________________
             </li>
@@ -285,7 +283,6 @@ export default async function AppPage() {
             
             <li
               className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
             >
               ________________________
             </li>
@@ -362,7 +359,6 @@ export default async function AppPage() {
             
             <li
               className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
             >
               ________________________
             </li>
@@ -413,7 +409,6 @@ export default async function AppPage() {
             
             <li
               className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
             >
               ________________________
             </li>
@@ -440,7 +435,6 @@ export default async function AppPage() {
             
             <li
               className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
             >
               ________________________
             </li>
@@ -451,7 +445,6 @@ export default async function AppPage() {
             
             <li
               className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
             >
               ________________________
             </li>
