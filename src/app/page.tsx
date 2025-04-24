@@ -193,20 +193,57 @@ export default async function AppPage() {
             🥕 Nouns
           </Heading>
           <ul
+            // className='LinkMenu'
             style={{
               listStyleType: 'none',
               marginLeft: '-32px',
             }}
           >
-            <li key='page-Users'><Link href='/nouns/users'>Users</Link></li>
-            <li key='page-Participants'><Link href='/nouns/participants'>Participants</Link></li>
-            <li key='page-Preferences'><Link href='/nouns/preferences'>Preferences</Link></li>
-            <li key='page-Projects'><Link href='/nouns/projects'>Projects</Link></li>
-            <li key='page-Plans'><Link href='/nouns/plans'>Plans</Link></li>
-            <li key='page-ThreeDs'><Link href='/nouns/threeds'>ThreeDs</Link></li>
-            <li key='page-Characters'><Link href='/nouns/characters'>Characters</Link></li>
-            <li key='page-Files'><Link href='/nouns/files'>Files</Link></li>
-            <li key='page-FarmBots'><Link href='/nouns/farmbots'>FarmBots</Link></li>
+            <li 
+              key='page-Users'
+            >
+              <Link href='/nouns/users'>Users</Link>
+            </li>
+            <li 
+              key='page-Participants'
+            >
+              <Link href='/nouns/participants'>Participants</Link>
+            </li>
+            <li 
+              key='page-Preferences'
+            >
+              <Link href='/nouns/preferences'>Preferences</Link>
+            </li>
+            <li 
+              key='page-Projects'
+            >
+              <Link href='/nouns/projects'>Projects</Link>
+            </li>
+            <li 
+              key='page-Plans'
+            >
+              <Link href='/nouns/plans'>Plans</Link>
+            </li>
+            <li 
+              key='page-ThreeDs'
+            >
+              <Link href='/nouns/threeds'>ThreeDs</Link>
+            </li>
+            <li 
+              key='page-Characters'
+            >
+              <Link href='/nouns/characters'>Characters</Link>
+            </li>
+            <li 
+              key='page-Files'
+            >
+              <Link href='/nouns/files'>Files</Link>
+            </li>
+            <li 
+              key='page-FarmBots'
+            >
+              <Link href='/nouns/farmbots'>FarmBots</Link>
+            </li>
           </ul>
         </div>
         <div
@@ -220,13 +257,132 @@ export default async function AppPage() {
             🥬 Examples
           </Heading>
           <ul
+            // className='LinkMenu'
             style={{
               listStyleType: 'none',
               marginLeft: '-32px',
             }}
           >
-            <li key='page-Example-Characters'>
+            {/* <li key='page-Example-Characters'>
               <Link href='/examples/characters'>Character Demo</Link>
+            </li> */}
+            <li 
+              key='page-Example-Home-Design'
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/home-design' 
+                title='Home Design Page'
+                className='DropdownMenuItem'
+              >
+                🟢 DEMO: FULL
+              </Link>
+            </li>
+            
+            <li 
+              key='page-Example-Participate'
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/participate' 
+                title='Participate Page'
+                className='DropdownMenuItem'
+              >
+                🟣 DEMO: BASIC
+              </Link>
+            </li>
+            
+            <li 
+              key='page-Example-Characters'
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/examples/characters' 
+                title='Characters Page'
+                className='DropdownMenuItem'
+              >
+                🔵 DEMO: CHARACTERS
+              </Link>
+            </li>
+            
+            <li 
+              key='page-Example-Terrains'
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/examples/terrains' 
+                title='Terrains Page'
+                className='DropdownMenuItem'
+              >
+                🟤 DEMO: TERRAINS
+              </Link>
+            </li>
+            
+            <li 
+              key='page-Example-FarmBots'
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/examples/farmbots' 
+                title='FarmBots Page'
+                className='DropdownMenuItem'
+              >
+                ⚫ DEMO: FARMBOTS
+              </Link>
+            </li>
+            <li
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              ________________________ ________________________
+            </li>
+            <li
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/chat/openai' 
+                title='ThreeD: OpenAI Chat Page'
+                className='DropdownMenuItem'
+                // style={{
+                //   backgroundColor: '#222222', 
+                //   color: '#888888',
+                //   textDecoration: 'none',
+                //   borderWidth: 0,
+                //   // marginTop: 0,
+                //   // padding: 0,
+                //   fontSize: 12,
+                // }}
+              >
+                🔵 CHAT: OpenAI
+              </Link>
+            </li>
+            
+            <li 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/chat/deepseek' 
+                title='ThreeD: DeepSeek Chat Page'
+                className='DropdownMenuItem'
+                // style={{
+                //   backgroundColor: '#222222', 
+                //   color: '#888888',
+                //   textDecoration: 'none',
+                //   borderWidth: 0,
+                //   // marginTop: 0,
+                //   // padding: 0,
+                //   fontSize: 12,
+                // }}
+              >
+                🔵 CHAT: DeepSeek
+              </Link>
             </li>
           </ul>
         </div>
@@ -241,6 +397,7 @@ export default async function AppPage() {
             🍅 Resources
           </Heading>
           <ul
+            // className='LinkMenu'
             style={{
               listStyleType: 'none',
               marginLeft: '-32px',
