@@ -193,12 +193,20 @@ export default async function AppPage() {
             🥕 Nouns
           </Heading>
           <ul
-            // className='LinkMenu'
+            className='ListMenu'
             style={{
               listStyleType: 'none',
               marginLeft: '-32px',
             }}
           >
+            
+            <li
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              ________________________
+            </li>
+            
             <li 
               key='page-Users'
             >
@@ -244,6 +252,14 @@ export default async function AppPage() {
             >
               <Link href='/nouns/farmbots'>FarmBots</Link>
             </li>
+            
+            <li
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              ________________________
+            </li>
+            
           </ul>
         </div>
         <div
@@ -257,7 +273,7 @@ export default async function AppPage() {
             🥬 Examples
           </Heading>
           <ul
-            // className='LinkMenu'
+            className='ListMenu'
             style={{
               listStyleType: 'none',
               marginLeft: '-32px',
@@ -266,15 +282,23 @@ export default async function AppPage() {
             {/* <li key='page-Example-Characters'>
               <Link href='/examples/characters'>Character Demo</Link>
             </li> */}
+            
+            <li
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              ________________________
+            </li>
+            
             <li 
               key='page-Example-Home-Design'
-              className='DropdownMenuItem'
+              className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
                 href='/home-design' 
                 title='Home Design Page'
-                className='DropdownMenuItem'
+                className='ListMenuItem'
               >
                 🟢 DEMO: FULL
               </Link>
@@ -282,13 +306,13 @@ export default async function AppPage() {
             
             <li 
               key='page-Example-Participate'
-              className='DropdownMenuItem'
+              className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
                 href='/participate' 
                 title='Participate Page'
-                className='DropdownMenuItem'
+                className='ListMenuItem'
               >
                 🟣 DEMO: BASIC
               </Link>
@@ -296,13 +320,13 @@ export default async function AppPage() {
             
             <li 
               key='page-Example-Characters'
-              className='DropdownMenuItem'
+              className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
                 href='/examples/characters' 
                 title='Characters Page'
-                className='DropdownMenuItem'
+                className='ListMenuItem'
               >
                 🔵 DEMO: CHARACTERS
               </Link>
@@ -310,13 +334,13 @@ export default async function AppPage() {
             
             <li 
               key='page-Example-Terrains'
-              className='DropdownMenuItem'
+              className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
                 href='/examples/terrains' 
                 title='Terrains Page'
-                className='DropdownMenuItem'
+                className='ListMenuItem'
               >
                 🟤 DEMO: TERRAINS
               </Link>
@@ -324,31 +348,33 @@ export default async function AppPage() {
             
             <li 
               key='page-Example-FarmBots'
-              className='DropdownMenuItem'
+              className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
                 href='/examples/farmbots' 
                 title='FarmBots Page'
-                className='DropdownMenuItem'
+                className='ListMenuItem'
               >
                 ⚫ DEMO: FARMBOTS
               </Link>
             </li>
+            
             <li
-              className='DropdownMenuItem'
+              className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
-              ________________________ ________________________
+              ________________________
             </li>
+
             <li
-              className='DropdownMenuItem'
+              className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
                 href='/chat/openai' 
                 title='ThreeD: OpenAI Chat Page'
-                className='DropdownMenuItem'
+                className='ListMenuItem'
                 // style={{
                 //   backgroundColor: '#222222', 
                 //   color: '#888888',
@@ -364,13 +390,13 @@ export default async function AppPage() {
             </li>
             
             <li 
-              className='DropdownMenuItem'
+              className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
                 href='/chat/deepseek' 
                 title='ThreeD: DeepSeek Chat Page'
-                className='DropdownMenuItem'
+                className='ListMenuItem'
                 // style={{
                 //   backgroundColor: '#222222', 
                 //   color: '#888888',
@@ -384,6 +410,14 @@ export default async function AppPage() {
                 🔵 CHAT: DeepSeek
               </Link>
             </li>
+            
+            <li
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              ________________________
+            </li>
+            
           </ul>
         </div>
         <div
@@ -397,15 +431,31 @@ export default async function AppPage() {
             🍅 Resources
           </Heading>
           <ul
-            // className='LinkMenu'
+            className='ListMenu'
             style={{
               listStyleType: 'none',
               marginLeft: '-32px',
             }}
           >
+            
+            <li
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              ________________________
+            </li>
+          
             <li key='page-Example-Characters'>
               <Link href='https://my.farm.bot' target='_blank'>FarmBot UI</Link>
             </li>
+            
+            <li
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              ________________________
+            </li>
+            
           </ul>
         </div>
       </div>
