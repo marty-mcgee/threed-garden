@@ -10,14 +10,14 @@ import {
   characterStore,
 } from '#/lib/api/graphql/apollo'
 
-const GET_CHARACTERS = gql`
-  query GetCharacters {
-    characters {
-      id
-      title
-    }
-  }
-`
+// const GET_CHARACTERS = gql`
+//   query GetCharacters {
+//     characters {
+//       id
+//       title
+//     }
+//   }
+// `
 
 // const GET_CHARACTER_IMAGE = gql`
 //   query Character($title: String!) {

@@ -28,7 +28,9 @@ type AnimationActions = {
 export default function CharacterModel(props: any) {
 
   // const modelFile = './characters/models/CharacterModel.fbx'
-  const modelFile = './characters/models/SK_Chr_Farmer_Female_01.fbx'
+  // const modelFile = './characters/models/SK_Chr_Farmer_Female_01.fbx'
+  const modelFile = '.glb' // vehicle?, character?, 3d gltf/glb file
+
   const animationFileDir = 'objects/animations/'
 
   const group = useRef<THREE.Group>(null)

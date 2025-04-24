@@ -89,7 +89,9 @@ import CharacterModelChicken from '#/lib/threed/components/nouns/Character/Chick
 import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
 import ModelWithAnimations from '#/lib/threed/components/nouns/Character/ModelWithAnimations'
 import ModelWithAnimationsFBXLoader from '#/lib/threed/components/nouns/Character/ModelWithAnimationsFBXLoader'
-import ThreeDCharacter from '#/lib/threed/components/nouns/Character/ThreeDCharacter'
+// import ThreeDCharacter from '~/src/lib/threed/components/nouns/Character/ThreeDCharacter'
+// import ThreeDCharacter from '~/src/lib/threed/components/nouns/Character/ThreeDCharacterFBX'
+import ThreeDCharacter from '~/src/lib/threed/components/nouns/Character/ThreeDCharacterGLB'
 
 // ** THREED OBJECTS
 import Floor from '#/lib/threed/components/canvas/Floor'

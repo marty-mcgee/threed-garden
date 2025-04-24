@@ -163,28 +163,79 @@ export default async function AppPage() {
         }}
       >
         <Heading 
-          as='h2'
+          as='h4'
           style={{
             textAlign: 'center',
           }}
         >
           ThreeD: Next.js: app (router): page .tsx
         </Heading>
+        <div>
+          ________________<br/><br/>
+        </div>
         {/* <FarmbotDemoSVG /> */}
       </div>
-      <div>
-        <h1>🥕 Noun Pages</h1>
-        <ul>
-          <li key='page-Users'><Link href='/nouns/users'>Users</Link></li>
-          <li key='page-Participants'><Link href='/nouns/participants'>Participants</Link></li>
-          <li key='page-Preferences'><Link href='/nouns/preferences'>Preferences</Link></li>
-          <li key='page-Projects'><Link href='/nouns/projects'>Projects</Link></li>
-          <li key='page-Plans'><Link href='/nouns/plans'>Plans</Link></li>
-          <li key='page-ThreeDs'><Link href='/nouns/threeds'>ThreeDs</Link></li>
-          <li key='page-Characters'><Link href='/nouns/characters'>Characters</Link></li>
-          <li key='page-Files'><Link href='/nouns/files'>Files</Link></li>
-          <li key='page-FarmBots'><Link href='/nouns/farmbots'>FarmBots</Link></li>
-        </ul>
+      <div
+        style={{
+          display: 'flex',
+          // flexDirection: 'row',
+          width: '100%',
+        }}
+      >
+        <div
+          style={{
+            // display: 'flex',
+            // flexDirection: 'column',
+            width: '33%',
+          }}
+        >
+          <Heading as='h3'>
+            🥕 Noun Pages
+          </Heading>
+          <ul
+            style={{
+              listStyleType: 'none',
+            }}
+          >
+            <li key='page-Users'><Link href='/nouns/users'>Users</Link></li>
+            <li key='page-Participants'><Link href='/nouns/participants'>Participants</Link></li>
+            <li key='page-Preferences'><Link href='/nouns/preferences'>Preferences</Link></li>
+            <li key='page-Projects'><Link href='/nouns/projects'>Projects</Link></li>
+            <li key='page-Plans'><Link href='/nouns/plans'>Plans</Link></li>
+            <li key='page-ThreeDs'><Link href='/nouns/threeds'>ThreeDs</Link></li>
+            <li key='page-Characters'><Link href='/nouns/characters'>Characters</Link></li>
+            <li key='page-Files'><Link href='/nouns/files'>Files</Link></li>
+            <li key='page-FarmBots'><Link href='/nouns/farmbots'>FarmBots</Link></li>
+          </ul>
+        </div>
+        <div
+          style={{
+            // display: 'flex',
+            // flexDirection: 'column',
+            width: '34%',
+          }}
+        >
+          <Heading as='h3'>
+            🥬 Example Pages
+          </Heading>
+          <ul
+            style={{
+              listStyleType: 'none',
+            }}
+          >
+            <li key='page-Example-Characters'>
+              <Link href='/examples/characters'>Character Demo</Link>
+            </li>
+            {/* <li key='page-Participants'><Link href='/nouns/participants'>Participants</Link></li>
+            <li key='page-Preferences'><Link href='/nouns/preferences'>Preferences</Link></li>
+            <li key='page-Projects'><Link href='/nouns/projects'>Projects</Link></li>
+            <li key='page-Plans'><Link href='/nouns/plans'>Plans</Link></li>
+            <li key='page-ThreeDs'><Link href='/nouns/threeds'>ThreeDs</Link></li>
+            <li key='page-Characters'><Link href='/nouns/characters'>Characters</Link></li>
+            <li key='page-Files'><Link href='/nouns/files'>Files</Link></li>
+            <li key='page-FarmBots'><Link href='/nouns/farmbots'>FarmBots</Link></li> */}
+          </ul>
+        </div>
       </div>
     </div>
   </>
