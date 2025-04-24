@@ -160,7 +160,7 @@ export const ThreeDAnimations = () => {
 
   for (const animationFile of animationFiles) {
     // let animationFileEx = `/public/assets/objects/animations/Idle.fbx`
-    const animationFileLoc = `objects/animations/${animationFile}.fbx`
+    const animationFileLoc = `/assets/objects/animations/${animationFile}.fbx`
     loaderFBX.load(animationFileLoc, function(object) {
       // console.debug("%c object", ccm.darkred, object)
       animations.push(object.animations[0])
