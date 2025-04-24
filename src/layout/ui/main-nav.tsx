@@ -116,7 +116,7 @@ function MainNavDropdownMenuDemo() {
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
-                href='/characters' 
+                href='/examples/characters' 
                 title='Characters Page'
                 className='DropdownMenuItem'
               >
@@ -129,7 +129,7 @@ function MainNavDropdownMenuDemo() {
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
-                href='/terrains' 
+                href='/examples/terrains' 
                 title='Terrains Page'
                 className='DropdownMenuItem'
               >
@@ -142,7 +142,7 @@ function MainNavDropdownMenuDemo() {
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
-                href='/farmbots' 
+                href='/examples/farmbots' 
                 title='FarmBots Page'
                 className='DropdownMenuItem'
               >

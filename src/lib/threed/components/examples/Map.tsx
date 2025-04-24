@@ -14,7 +14,7 @@ Credits: "Fantasy Game Inn" (https://skfb.ly/JDD6) by sirsaugsage is licensed un
 import { useGLTF } from '@react-three/drei'
 import { RigidBody } from '@react-three/rapier'
 
-const theMapModelFile = './objects/examples/fantasy_game_inn.glb'
+const theMapModelFile = './assets/objects/examples/fantasy_game_inn.glb'
 
 export default function Map(props: any) {
   const { nodes, materials } = useGLTF(theMapModelFile)

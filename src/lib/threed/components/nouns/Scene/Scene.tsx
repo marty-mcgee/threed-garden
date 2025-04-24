@@ -45,12 +45,12 @@ const defaults = {
   fileTypeDefault: 'ext', // ext[ension],
 
   // set a default file to load for Model (for testing)
-  // fileUrlDefault: '/objects/examples/compressed.glb' | '/objects/examples/compressed-v002.glb' |
+  // fileUrlDefault: '/assets/objects/examples/compressed.glb' | '/assets/objects/examples/compressed-v002.glb' |
   fileUrlDefault:
   'https://threed.design/wp-content/uploads/2022/09/idahomeadow_01-scaled-1.jpg',
-  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
+  // '/assets/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',
-  // '/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
+  // '/assets/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Male_01.fbx',
   // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Bed_01.fbx',

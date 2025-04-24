@@ -68,7 +68,7 @@ const debug: boolean = false
 const DEBUG: boolean = false
 
 // ** FILES for CharacterModel: Settings/Locations
-// const theCharacterModelFile = '/objects/examples/CharacterModelFloating.glb'
+// const theCharacterModelFile = '/assets/objects/examples/CharacterModelFloating.glb'
 // const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/Hen_HP.glb'
 const file = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/Chicken-Red-Hen.glb'
 const texture = 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/fauna/textures/Hen&Chicken_A.png'
