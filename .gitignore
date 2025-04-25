@@ -49,26 +49,15 @@ public/workbox-*
 # __test scripts
 src/app/__*
 
-## assets
+# public assets
 
-public/assets
-public/assets/**
-public/demo
-public/demo/objects
-public/objects/**
-!public/assets/objects/examples
-!public/assets/objects/examples/**
+public/assets/*
 !public/assets/animations
-!public/assets/animations/**
-# !public/assets/objects/threeds
-# public/assets/objects/threeds/*
-# !public/assets/objects/threeds/characters
-# !public/assets/objects/threeds/synty
-# public/assets/objects/threeds/synty/_old
-# public/assets/objects/threeds/synty/simple/*
-# !public/assets/objects/threeds/synty/polygon/*
+!public/assets/characters
+!public/assets/environments
+!public/assets/images
 
-## libraries
+### libraries
 
 # wordpress api plugin
 !src/lib/threed/plugins/README.md
