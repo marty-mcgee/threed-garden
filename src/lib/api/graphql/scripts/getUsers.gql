@@ -19,15 +19,15 @@ query GetUsers {
     nodes {
       id
       databaseId
-      username
       name
+      username
       email
+      registeredDate
       roles {
         nodes {
           name
         }
       }
-      registeredDate
     }
   }
 }

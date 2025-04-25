@@ -27,9 +27,10 @@ type AnimationActions = {
 
 export default function CharacterModel(props: any) {
 
-  // const modelFile = './characters/models/CharacterModel.fbx'
-  const modelFile = './characters/models/SK_Chr_Farmer_Female_01.fbx'
-  const animationFileDir = '/assets/objects/animations/'
+  // const modelFile = '/assets/characters/CharacterModel.fbx'
+  const modelFile = '/assets/characters/SK_Chr_Farmer_Female_01.fbx'
+  // const modelFile = 'https://s3.amazonaws.com/threedpublic/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Female_01.fbx'
+  const animationFileDir = '/assets/animations/'
 
   const group = useRef<THREE.Group>(null)
 
