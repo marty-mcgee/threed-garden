@@ -199,13 +199,6 @@ export default async function AppPage() {
               marginLeft: '-32px',
             }}
           >
-            
-            <li
-              className='ListMenuItem'
-            >
-              ________________________
-            </li>
-            
             <li 
               key='page-Users'
             >
@@ -251,13 +244,6 @@ export default async function AppPage() {
             >
               <Link href='/nouns/farmbots'>FarmBots</Link>
             </li>
-            
-            <li
-              className='ListMenuItem'
-            >
-              ________________________
-            </li>
-            
           </ul>
         </div>
         <div
@@ -280,13 +266,6 @@ export default async function AppPage() {
             {/* <li key='page-Example-Characters'>
               <Link href='/examples/characters'>Character Demo</Link>
             </li> */}
-            
-            <li
-              className='ListMenuItem'
-            >
-              ________________________
-            </li>
-            
             <li 
               key='page-Example-Home-Design'
               className='ListMenuItem'
@@ -297,10 +276,9 @@ export default async function AppPage() {
                 title='Home Design Page'
                 className='ListMenuItem'
               >
-                🟢 DEMO: FULL
+                DEMO: FULL
               </Link>
             </li>
-            
             <li 
               key='page-Example-Participate'
               className='ListMenuItem'
@@ -311,10 +289,9 @@ export default async function AppPage() {
                 title='Participate Page'
                 className='ListMenuItem'
               >
-                🟣 DEMO: BASIC
+                DEMO: BASIC
               </Link>
             </li>
-            
             <li 
               key='page-Example-Characters'
               className='ListMenuItem'
@@ -325,10 +302,9 @@ export default async function AppPage() {
                 title='Characters Page'
                 className='ListMenuItem'
               >
-                🔵 DEMO: CHARACTERS
+                DEMO: CHARACTERS
               </Link>
             </li>
-            
             <li 
               key='page-Example-Terrains'
               className='ListMenuItem'
@@ -339,10 +315,9 @@ export default async function AppPage() {
                 title='Terrains Page'
                 className='ListMenuItem'
               >
-                🟤 DEMO: TERRAINS
+                DEMO: TERRAINS
               </Link>
             </li>
-            
             <li 
               key='page-Example-FarmBots'
               className='ListMenuItem'
@@ -353,16 +328,9 @@ export default async function AppPage() {
                 title='FarmBots Page'
                 className='ListMenuItem'
               >
-                ⚫ DEMO: FARMBOTS
+                DEMO: FARMBOTS
               </Link>
             </li>
-            
-            <li
-              className='ListMenuItem'
-            >
-              ________________________
-            </li>
-
             <li
               className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
@@ -381,10 +349,9 @@ export default async function AppPage() {
                 //   fontSize: 12,
                 // }}
               >
-                🔵 CHAT: OpenAI
+                CHAT: OpenAI
               </Link>
             </li>
-            
             <li 
               className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
@@ -403,16 +370,9 @@ export default async function AppPage() {
                 //   fontSize: 12,
                 // }}
               >
-                🔵 CHAT: DeepSeek
+                CHAT: DeepSeek
               </Link>
             </li>
-            
-            <li
-              className='ListMenuItem'
-            >
-              ________________________
-            </li>
-            
           </ul>
         </div>
         <div
@@ -432,23 +392,9 @@ export default async function AppPage() {
               marginLeft: '-32px',
             }}
           >
-            
-            <li
-              className='ListMenuItem'
-            >
-              ________________________
-            </li>
-          
             <li key='page-Example-Characters'>
               <Link href='https://my.farm.bot' target='_blank'>FarmBot UI</Link>
             </li>
-            
-            <li
-              className='ListMenuItem'
-            >
-              ________________________
-            </li>
-            
           </ul>
         </div>
       </div>

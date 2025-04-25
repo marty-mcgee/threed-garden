@@ -58,8 +58,8 @@ public/demo/objects
 public/objects/**
 !public/assets/objects/examples
 !public/assets/objects/examples/**
-!public/assets/objects/animations
-!public/assets/objects/animations/**
+!public/assets/animations
+!public/assets/animations/**
 # !public/assets/objects/threeds
 # public/assets/objects/threeds/*
 # !public/assets/objects/threeds/characters
