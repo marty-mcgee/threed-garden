@@ -324,13 +324,20 @@ export default async function AppPage() {
               // onClick={() => doUpdatePreferences()}
             >
               <Link 
-                href='/examples/farmbots' 
+                // href='/examples/farmbots' 
+                href='https://software.farm.bot/v15/docs/getting-started.html'
+                target='_blank'
                 title='FarmBots Page'
                 className='ListMenuItem'
               >
                 DEMO: FARMBOTS
               </Link>
             </li> */}
+            <li
+              className='ListMenuItem'
+            >
+              ________________
+            </li>
             <li
               className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
@@ -392,8 +399,32 @@ export default async function AppPage() {
               marginLeft: '-32px',
             }}
           >
-            <li key='page-Example-Characters'>
-              <Link href='https://my.farm.bot' target='_blank'>FarmBot UI</Link>
+            <li 
+              key='page-Example-FarmBots-UI'
+            >
+              <Link 
+                href='https://my.farm.bot' 
+                target='_blank'
+                title='FarmBot User Interface'
+                className='ListMenuItem'
+              >
+                FarmBot UI
+              </Link>
+            </li>
+            <li 
+              key='page-Example-FarmBots-DOCS'
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                // href='/examples/farmbots'
+                href='https://software.farm.bot/v15/docs/getting-started.html'
+                target='_blank'
+                title='FarmBot Documentation'
+                className='ListMenuItem'
+              >
+                FarmBot Docs
+              </Link>
             </li>
           </ul>
         </div>
