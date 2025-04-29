@@ -318,7 +318,7 @@ export default async function AppPage() {
                 DEMO: TERRAINS
               </Link>
             </li>
-            <li 
+            {/* <li 
               key='page-Example-FarmBots'
               className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
@@ -330,7 +330,7 @@ export default async function AppPage() {
               >
                 DEMO: FARMBOTS
               </Link>
-            </li>
+            </li> */}
             <li
               className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}
