@@ -56,6 +56,9 @@ public/assets/*
 !public/assets/characters
 !public/assets/environments
 !public/assets/images
+!public/assets/mercedes
+public/assets/mercedes/*.zip
+public/assets/mercedes/**/*.zip
 
 ### libraries
 
