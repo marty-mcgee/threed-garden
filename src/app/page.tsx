@@ -199,6 +199,11 @@ export default async function AppPage() {
               marginLeft: '-32px',
             }}
           >
+          <li
+            className='ListMenuItem'
+          >
+            ________________
+          </li>
             <li 
               key='page-Users'
             >
@@ -244,6 +249,11 @@ export default async function AppPage() {
             >
               <Link href='/nouns/farmbots'>FarmBots</Link>
             </li>
+            <li
+              className='ListMenuItem'
+            >
+              ________________
+            </li>
           </ul>
         </div>
         <div
@@ -263,9 +273,11 @@ export default async function AppPage() {
               marginLeft: '-32px',
             }}
           >
-            {/* <li key='page-Example-Characters'>
-              <Link href='/examples/characters'>Character Demo</Link>
-            </li> */}
+            <li
+              className='ListMenuItem'
+            >
+              ________________
+            </li>
             <li 
               key='page-Example-Home-Design'
               className='ListMenuItem'
@@ -380,6 +392,11 @@ export default async function AppPage() {
                 CHAT: DeepSeek
               </Link>
             </li>
+            <li
+              className='ListMenuItem'
+            >
+              ________________
+            </li>
           </ul>
         </div>
         <div
@@ -399,6 +416,11 @@ export default async function AppPage() {
               marginLeft: '-32px',
             }}
           >
+            <li
+              className='ListMenuItem'
+            >
+              ________________
+            </li>
             <li 
               key='page-Example-FarmBots-UI'
             >
@@ -425,6 +447,11 @@ export default async function AppPage() {
               >
                 FarmBot Docs
               </Link>
+            </li>
+            <li
+              className='ListMenuItem'
+            >
+              ________________
             </li>
           </ul>
         </div>
