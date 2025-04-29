@@ -182,9 +182,9 @@ const Model = ({
   // fileUrlDefault: '/assets/examples/compressed.glb' | '/assets/examples/compressed-v002.glb' |
   const fileUrlDefault =
     // ''
-    // '/assets/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
+    // '/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
     // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb'
-    // '/assets/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
+    // '/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
     // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.fbx'
     // '/assets/examples/coffee-transformed.glb'
     // 'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/FBX/SM_Prop_Carrot_01.fbx'
