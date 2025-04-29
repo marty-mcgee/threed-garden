@@ -1,0 +1,11 @@
+Model Information:
+* title:	Mercedes Benz C Class W203 2007
+* source:	https://sketchfab.com/3d-models/mercedes-benz-c-class-w203-2007-84d44702c1994928be42b5f38846e13d
+* author:	szymonpasterczyk734 (https://sketchfab.com/szymonpasterczyk734)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Mercedes Benz C Class W203 2007" (https://sketchfab.com/3d-models/mercedes-benz-c-class-w203-2007-84d44702c1994928be42b5f38846e13d) by szymonpasterczyk734 (https://sketchfab.com/szymonpasterczyk734) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

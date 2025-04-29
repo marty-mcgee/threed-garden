@@ -564,7 +564,7 @@ const ThreeDExperience = forwardRef((
                 { true && (
                 <group 
                   key='character2' 
-                  position={[80, 0, 0]}
+                  position={[80, 0, -110]}
                 >
                   <ThreeDMercedes scale={1.0} />
                 </group>

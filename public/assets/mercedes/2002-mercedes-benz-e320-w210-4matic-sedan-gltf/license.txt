@@ -1,0 +1,11 @@
+Model Information:
+* title:	2002 Mercedes-Benz E320 W210 4Matic Sedan
+* source:	https://sketchfab.com/3d-models/2002-mercedes-benz-e320-w210-4matic-sedan-5ddd3b440cf0496782948d765b8ef0c4
+* author:	Ddiaz Design (https://sketchfab.com/ddiaz-design)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2002 Mercedes-Benz E320 W210 4Matic Sedan" (https://sketchfab.com/3d-models/2002-mercedes-benz-e320-w210-4matic-sedan-5ddd3b440cf0496782948d765b8ef0c4) by Ddiaz Design (https://sketchfab.com/ddiaz-design) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
