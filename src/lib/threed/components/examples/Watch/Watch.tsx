@@ -6,7 +6,7 @@ export default function Watch(props: any) {
   const ref: any = useRef(null)
   // @ ts-expect-error
   // @ts-ignore
-  const { nodes, materials } = useGLTF('assets/objects/examples/watch-v1.glb')
+  const { nodes, materials } = useGLTF('assets/examples/watch-v1.glb')
   useFrame((state) => {
     const t = state.clock.getElapsedTime()
     ref.current.rotation.x = -Math.PI / 1.75 + Math.cos(t / 4) / 8

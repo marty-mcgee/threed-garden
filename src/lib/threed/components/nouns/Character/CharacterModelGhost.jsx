@@ -9,7 +9,7 @@ Title: Ghost w/ Tophat
 import { useGLTF } from '@react-three/drei'
 
 export default function CharacterModel(props) {
-  const { nodes, materials } = useGLTF('./assets/objects/examples/ghost_w_tophat.glb')
+  const { nodes, materials } = useGLTF('./assets/examples/ghost_w_tophat.glb')
   return (
     <group {...props} dispose={null}>
       <group scale={0.0034} position={[0, -0.55, 0]}>
@@ -49,4 +49,4 @@ export default function CharacterModel(props) {
   )
 }
 
-useGLTF.preload('./assets/objects/examples/ghost_w_tophat.glb')
+useGLTF.preload('./assets/examples/ghost_w_tophat.glb')

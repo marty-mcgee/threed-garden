@@ -17,7 +17,7 @@ export default function Model({ name, state, modes, ...props }) {
 
   // Fetching the GLTF, nodes is a collection of all the meshes
   // It's cached/memoized, it only gets loaded and parsed once
-  const { nodes } = useGLTF('assets/objects/examples/compressed.glb')
+  const { nodes } = useGLTF('assets/examples/compressed.glb')
 
   // Feed hover state into useCursor, which sets document.body.style.cursor to pointer|auto
   const [isHovered, setIsHovered] = useState(false)

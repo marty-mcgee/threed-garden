@@ -3,7 +3,7 @@ import { useGLTF } from '@react-three/drei'
 export default function Cup(props) {
   // @ ts-expect-error
   // @ts-ignore
-  const { nodes, materials } = useGLTF('assets/objects/examples/coffee-transformed.glb')
+  const { nodes, materials } = useGLTF('assets/examples/coffee-transformed.glb')
   console.debug('nodes, materials', nodes, materials)
 
   return (

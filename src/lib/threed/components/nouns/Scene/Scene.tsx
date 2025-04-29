@@ -45,7 +45,7 @@ const defaults = {
   fileTypeDefault: 'ext', // ext[ension],
 
   // set a default file to load for Model (for testing)
-  // fileUrlDefault: '/assets/objects/examples/compressed.glb' | '/assets/objects/examples/compressed-v002.glb' |
+  // fileUrlDefault: '/assets/examples/compressed.glb' | '/assets/examples/compressed-v002.glb' |
   fileUrlDefault:
   'https://threed.design/wp-content/uploads/2022/09/idahomeadow_01-scaled-1.jpg',
   // '/assets/objects/threeds/synty/polygon/farm/Demo/Polygon_Farm_Demo_FBX.glb',

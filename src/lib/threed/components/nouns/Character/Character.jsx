@@ -50,7 +50,7 @@ const defaults = {
   fileTypeDefault: 'fbx', // ext[ension],
 
   // set a default file to load for Model (for testing)
-  // fileUrlDefault: '/assets/objects/examples/compressed.glb' | '/assets/objects/examples/compressed-v002.glb' |
+  // fileUrlDefault: '/assets/examples/compressed.glb' | '/assets/examples/compressed-v002.glb' |
   fileUrlDefault: [
   'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Scarecrow_01.fbx',
   'https://threedpublic.s3.us-west-2.amazonaws.com/assets/threeds/synty/polygon/farm/Characters/SK_Chr_Farmer_Female_01.fbx',
