@@ -17,7 +17,7 @@ import { BallCollider, RapierCollider, vec3 } from '@react-three/rapier'
 import { useFrame } from '@react-three/fiber'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
-const theCharacterModelFile = '/assets/objects/examples/CharacterModelFloating.glb'
+const theCharacterModelFile = '/assets/examples/CharacterModelFloating.glb'
 const texture = '/textures/3.jpg'
 
 export type CharacterModelProps = any

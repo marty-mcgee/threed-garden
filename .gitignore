@@ -55,6 +55,7 @@ public/assets/*
 !public/assets/animations
 !public/assets/characters
 !public/assets/environments
+!public/assets/examples
 !public/assets/images
 !public/assets/mercedes
 public/assets/mercedes/*.zip
