@@ -90,6 +90,7 @@ import CharacterModelStacy from '#/lib/threed/components/nouns/Character/Stacy'
 import ModelWithAnimations from '#/lib/threed/components/nouns/Character/ModelWithAnimations'
 import ModelWithAnimationsFBXLoader from '#/lib/threed/components/nouns/Character/ModelWithAnimationsFBXLoader'
 import ThreeDCharacter from '~/src/lib/threed/components/nouns/Character/ThreeDCharacter'
+import ThreeDMercedes from '~/src/lib/threed/components/nouns/Character/ThreeDMercedes'
 
 // ** THREED OBJECTS
 import Floor from '#/lib/threed/components/canvas/Floor'
@@ -555,6 +556,17 @@ const ThreeDExperience = forwardRef((
                     {/* <CharacterModelFarmerWomanFloating scale={1.016} /> */}
                     {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
                   </CharacterControls>
+                </group>
+                )}
+                {/* END: CHARACTER MODEL */}
+
+                {/* EXAMPLE: CHARACTER MODEL: ANIMATION STACY */}
+                { true && (
+                <group 
+                  key='character2' 
+                  position={[80, 0, 0]}
+                >
+                  <ThreeDMercedes scale={1.0} />
                 </group>
                 )}
                 {/* END: CHARACTER MODEL */}
