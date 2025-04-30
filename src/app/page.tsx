@@ -330,21 +330,6 @@ export default async function AppPage() {
                 DEMO: TERRAINS
               </Link>
             </li>
-            {/* <li 
-              key='page-Example-FarmBots'
-              className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
-            >
-              <Link 
-                // href='/examples/farmbots' 
-                href='https://software.farm.bot/v15/docs/getting-started.html'
-                target='_blank'
-                title='FarmBots Page'
-                className='ListMenuItem'
-              >
-                DEMO: FARMBOTS
-              </Link>
-            </li> */}
             <li
               className='ListMenuItem'
             >
@@ -358,15 +343,6 @@ export default async function AppPage() {
                 href='/chat/openai' 
                 title='ThreeD: OpenAI Chat Page'
                 className='ListMenuItem'
-                // style={{
-                //   backgroundColor: '#222222', 
-                //   color: '#888888',
-                //   textDecoration: 'none',
-                //   borderWidth: 0,
-                //   // marginTop: 0,
-                //   // padding: 0,
-                //   fontSize: 12,
-                // }}
               >
                 CHAT: OpenAI
               </Link>
@@ -379,15 +355,6 @@ export default async function AppPage() {
                 href='/chat/deepseek' 
                 title='ThreeD: DeepSeek Chat Page'
                 className='ListMenuItem'
-                // style={{
-                //   backgroundColor: '#222222', 
-                //   color: '#888888',
-                //   textDecoration: 'none',
-                //   borderWidth: 0,
-                //   // marginTop: 0,
-                //   // padding: 0,
-                //   fontSize: 12,
-                // }}
               >
                 CHAT: DeepSeek
               </Link>
