@@ -286,8 +286,8 @@ const ThreeDExperience = forwardRef((
             interpolateFunc={configBounds.interpolateFunc2}
           >
 
-            {/* ** FLOORS ** */}
-            {/* The Floor (Plane 0) */}
+            {/* ** FLOORS (PLANES +/- 0 GROUND) */}
+            {/* ** The Floor (Plane 0) */}
             <group 
               scale={1.0} 
               position={[0, 0, 0]}
@@ -295,8 +295,7 @@ const ThreeDExperience = forwardRef((
             >
               <Floor color={'darkgreen'} opacity={0.8} />
             </group>
-            {/* SUB FLOORS[s] (Plane < 0) */}
-            {/* <SubFloor level={`${level[index]}`} /> */}
+            {/* ** The Basement Floor (Plane -1) */}
             <group 
               scale={1.0} 
               position={[0, -400, 0]}
@@ -304,16 +303,8 @@ const ThreeDExperience = forwardRef((
             >
               <Floor color={'saddlebrown'} opacity={0.2 } />
             </group>
-            {/* HELPFUL FLOOR/PLANE/GRID (PREVENTS INFINITE FALL):
-                DEEP BELOW SEA LEVEL
-            <group 
-              scale={1.0} 
-              position={[0, -256, 0]}
-              rotation={[0, 0, 0]} 
-            >
-              <Floor color={'darkblue'} opacity={0.2} />
-            </group>
-            */}
+            {/* ** SUB FLOORS[s] (Plane < 0) */}
+            {/* <SubFloor level={`${level[index]}`} /> */}
             {/* ** END FLOORS ** */}
 
             {/* R3F BOUNDS: 
@@ -404,14 +395,14 @@ const ThreeDExperience = forwardRef((
               { threeds.length > 0 && (
                 <group
                   key='threed_models_children'
+                  // master position for all threeds?
+                  // position={[-4, 0, 0]}
+                  // position={[0, -1, 0]}
                   // scale all threeds?
                   // scale={1.3}
                 >
                   <ThreeDModels
                     threeds={threeds}
-                    // master position for all threeds?
-                    // position={[-4, 0, 0]}
-                    // position={[0, -1, 0]}
                   />
                 </group>
               )}
@@ -422,7 +413,7 @@ const ThreeDExperience = forwardRef((
                 key="farmbot1"
                 scale={0.0160} 
                 position={[-40, 5, -30]}
-                rotation={[-Math.PI/2, 0, 0]}
+                rotation={[-Math.PI/2, 0, -Math.PI]}
               >
                 <ThreeDFarmBotGarden 
                   key={'ThreeDFarmBotGarden_' + newUUID()} 
@@ -496,8 +487,8 @@ const ThreeDExperience = forwardRef((
                     floatHeight={floatHeight}               // TODO: set from prefs
 
                     // Movement (Gentler to prevent tipping)
-                    maxVelLimit={5.0}            // Increase max velocity for larger scale
-                    rejectVelMult={100.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes): BUG -- The character's velocity isn't being properly clamped
+                    maxVelLimit={1.0}            // Increase max velocity for larger scale
+                    rejectVelMult={4000.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes): BUG -- The character's velocity isn't being properly clamped
                     turnVelMultiplier={1.0}
                     turnSpeed={10}
                     sprintMult={2.0}
@@ -505,9 +496,9 @@ const ThreeDExperience = forwardRef((
                     jumpForceToGroundMult={5.0}
                     slopJumpMult={0.25}
                     sprintJumpMult={1.2}
-                    airDragMultiplier={0.2}
-                    dragDampingC={8.0}            // Higher: faster stopping. Acts like friction.  Higher values kill velocity faster
-                    accDeltaTime={3}              // Lower: snappier response. Smaller values reduce "input lag" when stopping
+                    airDragMultiplier={20}
+                    dragDampingC={200.0}            // Higher: faster stopping. Acts like friction.  Higher values kill velocity faster
+                    accDeltaTime={1}              // Lower: snappier response. Smaller values reduce "input lag" when stopping
                     moveImpulsePointY={0.5}
                     
                     // Floating Ray setups
@@ -516,10 +507,10 @@ const ThreeDExperience = forwardRef((
                     rayLength={capsuleRadius + 2}     // Adjust ray length for ground detection
                     rayDir={{ x: 0, y: -1, z: 0 }}
                     // floatingDis={capsuleRadius + floatHeight}
-                    // floatingDis={capsuleHalfHeight / 2}
-                    floatingDis={0.0000000000}
-                    springK={3.60}                    // Default: 1.2 (firmer ground contact)
-                    dampingC={0.08}                    // Default: 0.08 (less oscillation)
+                    floatingDis={capsuleHalfHeight / 2}
+                    // floatingDis={0.0000000000}
+                    springK={400.60}                    // Default: 1.2 (firmer ground contact)
+                    dampingC={40}                    // Default: 0.08 (less oscillation)
                     
                     // Slope Ray setups
                     showSlopeRayOrigin={false}
@@ -532,16 +523,16 @@ const ThreeDExperience = forwardRef((
 
                     // Auto-Balance Force (Critical for stability)
                     autoBalance={true}
-                    autoBalanceSpringK={8000.8}       // Default: 0.3 (stronger upright force)
-                    autoBalanceDampingC={200.05}     // Default: 0.03 (smoother corrections)
-                    autoBalanceSpringOnY={8000.8}     // Default: 0.5 (stronger Y-axis balance)
-                    autoBalanceDampingOnY={200.05}   // Default: 0.015 (damping on Y-axis)
+                    autoBalanceSpringK={6000.0}       // Default: 0.3 (stronger upright force)
+                    autoBalanceDampingC={40.00}     // Default: 0.03 (smoother corrections)
+                    autoBalanceSpringOnY={6000.0}     // Default: 0.5 (stronger Y-axis balance)
+                    autoBalanceDampingOnY={20.00}   // Default: 0.015 (damping on Y-axis)
                     
                     // Camera & Control
                     camFollowMult={11}                // Cam follow speed (may need increase)
                     camLerpMult={25}                  // Cam smoothing
                     fallingGravityScale={2.5}
-                    fallingMaxVel={-20}
+                    fallingMaxVel={-40}
                     wakeUpDelay={200}
                     
                     // EXAMPLE IMPROVEMENTS: Lock Rotations (Optional)
