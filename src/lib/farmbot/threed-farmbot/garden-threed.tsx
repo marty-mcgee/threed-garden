@@ -259,16 +259,42 @@ const Model = (props: ModelProps) => {
     
     {/* {config.stats && <Stats />} */}
 
-    {/* THREED FARMBOT */}
+    {/* CAMERAS, CONTROLS, HELPERS */}
+
+    {/* 
+    <animated.group scale={props.activeFocus ? 1 : scale}>
+      <Camera makeDefault={true} name={"camera"}
+        fov={40} near={10} far={75000}
+        position={camera.position}
+        rotation={[0, 0, 0]}
+        up={[0, 0, 1]} />
+    </animated.group> 
+    */}
+
+    {/* <OrbitControls maxPolarAngle={Math.PI / 2}
+      enableZoom={config.zoom} enablePan={config.pan} dampingFactor={0.2}
+      target={camera.target}
+      minDistance={500} maxDistance={12000} />
+    
+    <axesHelper args={[5000]} visible={config.threeAxes} />
+    
+    {config.viewCube && <GizmoHelper>
+      <GizmoViewcube />
+    </GizmoHelper>} */}
+
+    {/* END: CAMERAS, CONTROLS, HELPERS */}
+
+
+    {/* THREED FARMBOT: PHYSICAL OBJECTS */}
     <RigidBody type='fixed' position={[0, 0.0, 5]}>
       <ThreeDBed config={config} activeFocus={props.activeFocus} />
     </RigidBody>
     <RigidBody type='fixed' position={[0, 0.0, 5]}>
       <ThreeDBot config={config} activeFocus={props.activeFocus} />
     </RigidBody>
-    <RigidBody type='fixed' position={[0, 0.0, 5]}>
+    {/* <RigidBody type='fixed' position={[0, 0.0, 5]}>
       <Solar config={config} activeFocus={props.activeFocus} />
-    </RigidBody>
+    </RigidBody> */}
     {/* <RigidBody type='fixed' position={[0, 0.0, 5]}>
       <LabEnvironment config={config} activeFocus={props.activeFocus} />
     </RigidBody> */}
@@ -321,7 +347,7 @@ const Model = (props: ModelProps) => {
     </group>
     {/* END: 2D PLANTS (FARMBOT AVIF) */}
 
-    {/* 3D TEXT LABEL */}
+    {/* 3D TEXT LABEL(S) */}
     <Text 
       visible={true} // {config.labels}
       font={ASSETS.fonts.inknut}
@@ -340,7 +366,7 @@ const Model = (props: ModelProps) => {
     >
       {config.label}
     </Text>
-    {/* END: 3D TEXT LABEL */}
+    {/* END: 3D TEXT LABEL(S) */}
 
     {/* THREED ZOOM BEACONS */}
     <ZoomBeacons
@@ -350,23 +376,37 @@ const Model = (props: ModelProps) => {
     />
     {/* END: THREED ZOOM BEACONS */}
     
-    {/* ADDITIONS */}
+    {/* ** LIGHTS */}
+    {/* 
+    <ambientLight intensity={1} /> 
+    */}
 
-    {/* <Sun config={config} /> */}
-    {/* <ambientLight intensity={1} /> */}
+    {/* ** LIGHT + ENERGY ADDITIONS */}
+    {/* 
+    <Sun config={config} /> 
+    */}
+    {/* 
+    <Solar config={config} activeFocus={props.activeFocus} /> 
+    */}
+    
+    {/* ** ADDITIONS */}
 
-    {/* <Solar config={config} activeFocus={props.activeFocus} /> */}
-    {/* <LabEnvironment config={config} activeFocus={props.activeFocus} /> */}
+    {/* 
+    <LabEnvironment config={config} activeFocus={props.activeFocus} /> 
+    */}
 
-    {/* <Sky distance={450000}
+    {/* 
+    <Sky distance={450000}
       sunPosition={sunPosition(config)}
       mieCoefficient={0.01}
       mieDirectionalG={0.9}
       rayleigh={3}
       turbidity={5} 
-    /> */}
+    /> 
+    */}
 
-    {/* <Clouds name={"clouds"} visible={config.clouds} renderOrder={2}
+    {/* 
+    <Clouds name={"clouds"} visible={config.clouds} renderOrder={2}
       texture={ASSETS.textures.cloud}
     >
       <Cloud position={[0, 0, 5000]}
@@ -382,13 +422,17 @@ const Model = (props: ModelProps) => {
         opacity={(seasonProperties[config.plants] || seasonProperties.Summer).cloudOpacity}
         fade={5000} 
       />
-    </Clouds> */}
+    </Clouds> 
+    */}
 
-    {/* <Sphere args={[30000, 8, 16]}>
+    {/* 
+    <Sphere args={[30000, 8, 16]}>
       <meshBasicMaterial color={"#59d8ff"} side={BackSide} />
-    </Sphere> */}
+    </Sphere> 
+    */}
 
-    {/* <Detailed distances={detailLevels(config)}>
+    {/* 
+    <Detailed distances={detailLevels(config)}>
       <Ground>
         <meshPhongMaterial
           map={config.lab ? concreteTexture : grassTexture}
@@ -400,32 +444,10 @@ const Model = (props: ModelProps) => {
           color={config.lab ? "gray" : "darkgreen"}
           shininess={0} />
       </Ground>
-    </Detailed> */}
+    </Detailed> 
+    */}
 
     {/* END: ADDITIONS */}
-
-    {/* HELPERS */}
-
-    {/* <animated.group scale={props.activeFocus ? 1 : scale}>
-      <Camera makeDefault={true} name={"camera"}
-        fov={40} near={10} far={75000}
-        position={camera.position}
-        rotation={[0, 0, 0]}
-        up={[0, 0, 1]} />
-    </animated.group> */}
-
-    {/* <OrbitControls maxPolarAngle={Math.PI / 2}
-      enableZoom={config.zoom} enablePan={config.pan} dampingFactor={0.2}
-      target={camera.target}
-      minDistance={500} maxDistance={12000} />
-    
-    <axesHelper args={[5000]} visible={config.threeAxes} />
-    
-    {config.viewCube && <GizmoHelper>
-      <GizmoViewcube />
-    </GizmoHelper>} */}
-
-    {/* END: HELPERS */}
     
   </group>
   )
