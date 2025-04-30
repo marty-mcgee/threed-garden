@@ -13,8 +13,8 @@ import {
 } from "@react-three/fiber"
 import {
   // Stats,
-  // GizmoHelper, GizmoViewcube,
   // OrbitControls, 
+  // GizmoHelper, GizmoViewcube,
   PerspectiveCamera,
   OrthographicCamera,
   Circle, Billboard, 
