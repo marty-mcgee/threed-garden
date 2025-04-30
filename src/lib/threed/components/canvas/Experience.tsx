@@ -293,7 +293,7 @@ const ThreeDExperience = forwardRef((
               position={[0, 0, 0]}
               rotation={[0, 0, 0]} 
             >
-              <Floor color={'darkgreen'} opacity={0.8} />
+              <Floor color={'darkgreen'} opacity={0.80} />
             </group>
             {/* ** The Basement Floor (Plane -1) */}
             <group 
@@ -301,7 +301,7 @@ const ThreeDExperience = forwardRef((
               position={[0, -400, 0]}
               rotation={[0, 0, 0]}
             >
-              <Floor color={'saddlebrown'} opacity={0.2 } />
+              <Floor color={'saddlebrown'} opacity={0.20} />
             </group>
             {/* ** SUB FLOORS[s] (Plane < 0) */}
             {/* <SubFloor level={`${level[index]}`} /> */}
