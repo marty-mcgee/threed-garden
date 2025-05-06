@@ -99,7 +99,7 @@ export default function RigidObjects() {
       </RigidBody>
 
       {/* Fun toy using mass as m */}
-      <RigidBody position={[1500, 0, -1000]} colliders={false}>
+      {/* <RigidBody position={[1500, 0, -1000]} colliders={false}>
         <Text
           scale={2}
           color='black'
@@ -116,7 +116,7 @@ export default function RigidObjects() {
           <cylinderGeometry args={[250, 20, 50]} />
           <meshStandardMaterial color={'brown'} />
         </mesh>
-      </RigidBody>
+      </RigidBody> */}
     </group>
   )
 }

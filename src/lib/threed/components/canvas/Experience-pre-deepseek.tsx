@@ -201,7 +201,6 @@ const ThreeDExperience = forwardRef((
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-  // ** TESTING...
   const capsuleHalfHeight: number = 5.8   // Adjust your model's height
   const capsuleRadius: number = 3.2       // Adjust your model's width
   const floatHeight: number = 0.0         // Adjust floating height above ground
@@ -214,7 +213,7 @@ const ThreeDExperience = forwardRef((
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
-    }, 2000)
+    }, 1000)
     return () => clearTimeout(timeout)
   }, [])
 
@@ -315,8 +314,8 @@ const ThreeDExperience = forwardRef((
 
               {/* STEPS -- aka: four-by-fours, 4"x4"[s], posts, logs */}
               <group 
-                scale={0.010} 
-                position={[0, 0.1, 0]}
+                scale={0.10} 
+                position={[0, 1, 0]}
                 rotation={[0, 0, 0]}
               >
                 <Steps />
@@ -324,8 +323,8 @@ const ThreeDExperience = forwardRef((
 
               {/* ROUGH PLANE */}
               <group 
-                scale={1.0} 
-                position={[8, -0.3, 10]}
+                scale={10.0} 
+                position={[80, -3, 100]}
                 rotation={[0, 0, 0]} 
                 // onClick={handleClick}
               >
@@ -335,7 +334,7 @@ const ThreeDExperience = forwardRef((
               {/* SLOPES + STAIRS */}
               {/* 
               <group 
-                scale={0.0} 
+                scale={10.0} 
                 position={[10, 0, 10]}
                 rotation={[0, 0, 0]} 
               >
@@ -345,8 +344,8 @@ const ThreeDExperience = forwardRef((
 
               {/* RIGID BODY OBJECTS (basic rapier components) */}
               <group 
-                scale={0.010} 
-                position={[-0.4, 2.20, 0]}
+                scale={0.10} 
+                position={[-4, 10.00, 0]}
                 rotation={[0, 0, 0]}
               >
                 <RigidObjects />
@@ -373,8 +372,8 @@ const ThreeDExperience = forwardRef((
               {/* EXAMPLE: BIRDS */}
               { true && (
                 <group 
-                  scale={0.24} 
-                  position={[0, 12, 0]}
+                  scale={2.4} 
+                  position={[0, 128, 0]}
                   rotation={[0, 0, 0]} 
                 >
                   <Birds />
@@ -383,8 +382,8 @@ const ThreeDExperience = forwardRef((
 
               {/* EXAMPLE MAP: TAVERN */}
               <group
-                scale={0.080} 
-                position={[0.8, 0.8, -16]}
+                scale={0.80} 
+                position={[8, 14, -160]}
                 rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
                 // quaternion={[0,0,0,0]}
               >
@@ -412,8 +411,8 @@ const ThreeDExperience = forwardRef((
               {/* THREED FARMBOTS */}
               <group 
                 key="farmbot1"
-                scale={0.00160} 
-                position={[-4, 0.5, -3]}
+                scale={0.0160} 
+                position={[-40, 5, -30]}
                 rotation={[-Math.PI/2, 0, -Math.PI]}
               >
                 <ThreeDFarmBotGarden 
@@ -439,7 +438,6 @@ const ThreeDExperience = forwardRef((
                 <group 
                   key='character1' 
                   // position={[0, 200, 0]}
-                  position={[0, -0.5, 0]}
                   // scale={[0.01, 0.01, 0.01]}
                   // scale={[0.1, 0.1, 0.1]}
                   // scale={[10.0, 10.0, 10.0]}
@@ -450,18 +448,12 @@ const ThreeDExperience = forwardRef((
                   <CharacterControls
 
                     // ** PROPS
-
-                    // position={[0, 0, 0]}
-
-
                     
                     // scale={[100, 100, 100]}
                     // scale={[1.0, 1.0, 1.0]}
                     // scale={[0.1, 0.1, 0.1]}
                     // scale={[0.01, 0.01, 0.01]}
                     // scale={[0.001, 0.001, 0.001]}
-
-                    
                     
                     // debug={false}
                     // debug={true}
@@ -488,67 +480,72 @@ const ThreeDExperience = forwardRef((
                     // followLight={true}
                     // followLight={prefs.doWorldFollowLight}
                     
+                    // ** MICRO-CONTROLS
+                    // custom model (10x scale) props...
+                    capsuleHalfHeight={capsuleHalfHeight}   // TODO: set from prefs
+                    capsuleRadius={capsuleRadius}           // TODO: set from prefs
+                    floatHeight={floatHeight}               // TODO: set from prefs
 
+                    // Movement (Gentler to prevent tipping)
+                    maxVelLimit={1.0}            // Increase max velocity for larger scale
+                    rejectVelMult={4000.0}          // Counteracts sliding. Helps counteract unwanted sliding (especially on slopes): BUG -- The character's velocity isn't being properly clamped
+                    turnVelMultiplier={1.0}
+                    turnSpeed={10}
+                    sprintMult={2.0}
+                    jumpVel={2.0}                // Adjust jump strength
+                    jumpForceToGroundMult={5.0}
+                    slopJumpMult={0.25}
+                    sprintJumpMult={1.2}
+                    airDragMultiplier={20}
+                    dragDampingC={200.0}            // Higher: faster stopping. Acts like friction.  Higher values kill velocity faster
+                    accDeltaTime={1}              // Lower: snappier response. Smaller values reduce "input lag" when stopping
+                    moveImpulsePointY={0.5}
+                    
+                    // Floating Ray setups
+                    rayOriginOffset={{ x: 0, y: -capsuleHalfHeight, z: 0 }}
+                    rayHitForgiveness={0.1}
+                    rayLength={capsuleRadius + 2}     // Adjust ray length for ground detection
+                    rayDir={{ x: 0, y: -1, z: 0 }}
+                    // floatingDis={capsuleRadius + floatHeight}
+                    floatingDis={capsuleHalfHeight / 2}
+                    // floatingDis={0.0000000000}
+                    springK={8000.00}                    // Default: 1.2 (firmer ground contact)
+                    dampingC={40}                    // Default: 0.08 (less oscillation)
+                    
+                    // Slope Ray setups
+                    showSlopeRayOrigin={false}
+                    slopeMaxAngle={1}                 // radians
+                    slopeRayOriginOffest={capsuleRadius - 0.03}
+                    slopeRayLength={capsuleRadius + 3}
+                    slopeRayDir={{ x: 0, y: -1, z: 0 }}
+                    slopeUpExtraForce={0.1}
+                    slopeDownExtraForce={0.2}
 
-                    // ** CURRENT ERROR(S)
-                    // THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values
-
-
-                    // // ** MICRO-CONTROLS
-                    // // custom model props...
-                    // // capsuleHalfHeight={capsuleHalfHeight}   // TODO: set from prefs
-                    // // capsuleRadius={capsuleRadius}           // TODO: set from prefs
-                    // // floatHeight={floatHeight}               // TODO: set from prefs
-
-                    // // Core Physics (calculated for 0.1 scale model)
-                    // capsuleHalfHeight={0.4}       // Model height ~0.8 units (scaled to 0.1 = 8 units real size)
-                    // capsuleRadius={0.2}           // Model width ~0.4 units
-                    // floatHeight={0.05}            // 5cm float (scaled down)
-                    floatHeight={0.005}            // 5cm float (scaled down)
+                    // Auto-Balance Force (Critical for stability)
+                    autoBalance={true}
+                    autoBalanceSpringK={6000.0}       // Default: 0.3 (stronger upright force)
+                    autoBalanceDampingC={40.00}     // Default: 0.03 (smoother corrections)
+                    autoBalanceSpringOnY={6000.0}     // Default: 0.5 (stronger Y-axis balance)
+                    autoBalanceDampingOnY={20.00}   // Default: 0.015 (damping on Y-axis)
                     
-                    // // Movement (human-like physics at this scale)
-                    // maxVelLimit={2.5}             // 2.5 m/s max speed (scaled to model)
-                    // turnVelMultiplier={0.25}      // Balanced turning
-                    // turnSpeed={12}                // Moderate rotation speed
-                    // sprintMult={1.8}              // 80% speed boost when sprinting
-                    // jumpVel={4}                   // 4 m/s jump velocity
-                    // jumpForceToGroundMult={5}     // Reasonable ground reaction
-                    // slopJumpMult={0.25}           // Standard slope jump effect
-                    // sprintJumpMult={1.2}          // 20% jump boost when sprinting
-                    // airDragMultiplier={0.15}      // Slight air control
-                    // dragDampingC={0.2}            // Good stopping friction
-                    // accDeltaTime={8}              // Responsive acceleration
-                    // moveImpulsePointY={0.5}       // Center of mass position
+                    // Camera & Control
+                    camFollowMult={11}                // Cam follow speed (may need increase)
+                    camLerpMult={25}                  // Cam smoothing
+                    fallingGravityScale={2.5}
+                    fallingMaxVel={-40}
+                    wakeUpDelay={200}
                     
-                    // // Floating Ray (stability system)
-                    // rayOriginOffset={{ x: 0, y: -0.4, z: 0 }}  // Just below capsule
-                    // rayHitForgiveness={0.05}       // Small forgiveness margin
-                    // rayLength={0.5}                // Slightly longer than capsule
-                    // floatingDis={0.05}             // Target hover distance
-                    // springK={30}                   // Firm but not extreme spring
-                    // dampingC={0.8}                 // Strong enough damping
-                    
-                    // // Slope Handling
-                    // slopeMaxAngle={0.5}            // ~30 degree max slope (radians)
-                    // slopeRayOriginOffest={0.18}     // Slightly inset from edge
-                    // slopeRayLength={0.5}           // Matching main ray
-                    // slopeUpExtraForce={0.1}        // Gentle slope assist
-                    // slopeDownExtraForce={0.15}     // Slightly stronger downhill
-                    
-                    // // Auto-Balance
-                    // autoBalanceSpringK={3}         // Moderate upright force
-                    // autoBalanceDampingC={0.15}     // Smooth corrections
-                    // autoBalanceSpringOnY={2}       // Slightly softer Y-axis
-                    // autoBalanceDampingOnY={0.1}    // Less Y damping
-                    
-                    // // Camera
-                    // camFollowMult={8}              // Smooth follow
-                    // camLerpMult={15}               // Nice camera lerp
-                    // fallingGravityScale={2}        // Realistic fall speed
-                    // fallingMaxVel={-15}            // Terminal velocity
+                    // EXAMPLE IMPROVEMENTS: Lock Rotations (Optional)
+                    // lockX={true}                  // Prevent falling sideways?
+                    // lockZ={true}                  // Prevent leaning forward/backward?
                   >
-                    {/* <ThreeDCharacter position={[0, 0, 0]} /> */}
-                    <ThreeDCharacter position={[0, -0.6, 0]} />
+                    <ThreeDCharacter 
+                      position={[0, -9, 0]}
+                    />
+                    {/* <ModelWithAnimations /> */}
+                    {/* <ModelWithAnimationsFBXLoader /> */}
+                    {/* <CharacterModelFarmerWomanFloating scale={1.016} /> */}
+                    {/* <CharacterModelFarmerManFloating scale={1.016} /> */}
                   </CharacterControls>
                 </group>
                 )}
@@ -558,9 +555,9 @@ const ThreeDExperience = forwardRef((
                 { true && (
                 <group 
                   key='character2' 
-                  position={[8, 0, -11]}
+                  position={[80, 0, -110]}
                 >
-                  <ThreeDMercedes scale={0.10} />
+                  <ThreeDMercedes scale={1.0} />
                 </group>
                 )}
                 {/* END: CHARACTER MODEL */}
