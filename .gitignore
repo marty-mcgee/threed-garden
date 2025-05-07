@@ -56,6 +56,10 @@ public/assets/*
 !public/assets/characters
 !public/assets/environments
 !public/assets/examples
+!public/assets/farmbot
+# !public/assets/farmbot/3D
+public/assets/farmbot/3D-new
+public/assets/farmbot/3D-old
 !public/assets/images
 !public/assets/mercedes
 public/assets/mercedes/*.zip
