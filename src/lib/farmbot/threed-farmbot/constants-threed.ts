@@ -104,7 +104,7 @@ import person2 from "~/public/assets/farmbot/3D/people/person_2.avif"
 import person2Flipped from "~/public/assets/farmbot/3D/people/person_2_flipped.avif"
 
 
-import gear from "~/public/images/misc/gear.svg"
+import gear from "~/public/assets/farmbot/images/misc/gear.svg"
 
 
 import { StaticImageData } from 'next/image'
