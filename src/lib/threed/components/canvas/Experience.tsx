@@ -294,16 +294,16 @@ const ThreeDExperience = forwardRef((
               position={[0, 0, 0]}
               rotation={[0, 0, 0]} 
             >
-              <Floor color={'darkgreen'} opacity={0.80} />
+              <Floor color={'darkgreen'} opacity={1.00} />
             </group>
             {/* ** The Basement Floor (Plane -1) */}
-            <group 
+            {/* <group 
               scale={1.0} 
               position={[0, -400, 0]}
               rotation={[0, 0, 0]}
             >
-              <Floor color={'saddlebrown'} opacity={0.20} />
-            </group>
+              <Floor color={'saddlebrown'} opacity={1.00} />
+            </group> */}
             {/* ** SUB FLOORS[s] (Plane < 0) */}
             {/* <SubFloor level={`${level[index]}`} /> */}
             {/* ** END FLOORS ** */}
@@ -461,7 +461,7 @@ const ThreeDExperience = forwardRef((
                     // scale={[0.01, 0.01, 0.01]}
                     // scale={[0.001, 0.001, 0.001]}
 
-                    
+
                     
                     // debug={false}
                     // debug={true}
@@ -504,7 +504,8 @@ const ThreeDExperience = forwardRef((
                     // capsuleHalfHeight={0.4}       // Model height ~0.8 units (scaled to 0.1 = 8 units real size)
                     // capsuleRadius={0.2}           // Model width ~0.4 units
                     // floatHeight={0.05}            // 5cm float (scaled down)
-                    floatHeight={0.005}            // 5cm float (scaled down)
+                    floatHeight={0.00}               // 0cm float (scaled down)
+                    // floatHeight={-0.25}           // -25cm float (scaled down)
                     
                     // // Movement (human-like physics at this scale)
                     // maxVelLimit={2.5}             // 2.5 m/s max speed (scaled to model)
@@ -558,7 +559,7 @@ const ThreeDExperience = forwardRef((
                 { true && (
                 <group 
                   key='character2' 
-                  position={[8, 0, -11]}
+                  position={[9, 0.5, -10]}
                 >
                   <ThreeDMercedes scale={0.10} />
                 </group>
