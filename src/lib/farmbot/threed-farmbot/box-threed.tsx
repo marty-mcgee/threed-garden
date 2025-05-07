@@ -20,16 +20,16 @@ import { debounce, some } from "lodash"
 import "./styles/box.css"
 import { BindingTargetDropdown } from "./stub_components"
 // @ts-expect-error
-import box from "/public/assets/farmbot/3D/models/box.glb"
+import box from "/assets/farmbot/3D/models/box.glb"
 // @ts-expect-error
-import btn from "/public/assets/farmbot/3D/models/push_button.glb"
+import btn from "/assets/farmbot/3D/models/push_button.glb"
 // @ts-expect-error
-import led from "/public/assets/farmbot/3D/models/led_indicator.glb"
+import led from "/assets/farmbot/3D/models/led_indicator.glb"
 
 import * as THREE from "three"
 
-// const DRACO_LIB_DIR = "../farmbot-3d-demo-react/public/assets/farmbot/3D/lib/"
-// const DRACO_LIB_DIR = "../public/assets/farmbot/3D/lib/"
+// const DRACO_LIB_DIR = "../farmbot-3d-demo-react/assets/farmbot/3D/lib/"
+// const DRACO_LIB_DIR = "../assets/farmbot/3D/lib/"
 const DRACO_LIB_DIR = "/3D/lib/"
 // const DRACO_LIB_DIR = "/draco/"
 
