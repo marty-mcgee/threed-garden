@@ -29,8 +29,8 @@ import led from "~/public/assets/farmbot/3D/models/led_indicator.glb"
 import * as THREE from "three"
 
 // const DRACO_LIB_DIR = "../farmbot-3d-demo-react~/public/assets/farmbot/3D/lib/"
-// const DRACO_LIB_DIR = "..~/public/assets/farmbot/3D/lib/"
-const DRACO_LIB_DIR = "/3D/lib/"
+const DRACO_LIB_DIR = "~/public/assets/farmbot/3D/lib/"
+// const DRACO_LIB_DIR = "/3D/lib/"
 // const DRACO_LIB_DIR = "/draco/"
 
 const MODELS = {

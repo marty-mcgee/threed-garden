@@ -879,7 +879,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   toolsGroup[0].rotation = 0
   
   // ** 
-  rotateIcon = new paper.Raster('images/homedesign/rotate.png')
+  rotateIcon = new paper.Raster('assets/images/homedesign/rotate.png')
   rotateIcon.data.type = 'rotateThreedTool'
   rotateIcon.onMouseEnter = function (e: any) {
     planView.style.cursor = 'move'
@@ -892,7 +892,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   toolsGroup[0].addChild(rotateIcon)
   
   // **
-  resizeIcon = new paper.Raster('images/homedesign/expand.png')
+  resizeIcon = new paper.Raster('assets/images/homedesign/expand.png')
   resizeIcon.data.type = 'stretchThreedXZTool'
   resizeIcon.onMouseEnter = function (e: any) {
     planView.style.cursor = 'move'
@@ -905,7 +905,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   toolsGroup[0].addChild(resizeIcon)
 
   // **
-  elevateIcon = new paper.Raster('images/homedesign/elevation.png')
+  elevateIcon = new paper.Raster('assets/images/homedesign/elevation.png')
   elevateIcon.data.type = 'elevateThreedTool'
   elevateIcon.onMouseEnter = function (e: any) {
     planView.style.cursor = 'row-resize'
@@ -918,7 +918,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
   toolsGroup[0].addChild(elevateIcon)
 
   // **
-  heightIcon = new paper.Raster('images/homedesign/height.png')
+  heightIcon = new paper.Raster('assets/images/homedesign/height.png')
   heightIcon.data.type = 'stretchThreedYTool'
   heightIcon.onMouseEnter = function (e: any) {
     planView.style.cursor = 'ns-resize'
@@ -1072,7 +1072,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
                   (o.selected = true),
                   (selectedItem = o),
                   o.segments.forEach(function (e: any) {
-                    var t = new paper.Raster('images/homedesign/movePointIcon.png')
+                    var t = new paper.Raster('assets/images/homedesign/movePointIcon.png')
                       ; (t.data.type = 'movePointIconWalls'),
                         (t.data.id = e.index),
                         (t.data.level = project.activeLayer.data.id),
@@ -1100,7 +1100,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
                   (a.selected = true),
                   (selectedItem = a),
                   a.segments.forEach(function (e: any) {
-                    var t = new paper.Raster('images/homedesign/movePointIcon.png')
+                    var t = new paper.Raster('assets/images/homedesign/movePointIcon.png')
                       ; (t.data.type = 'movePointIconRoofs'),
                         (t.data.id = e.index),
                         (t.data.level = project.activeLayer.data.id),
@@ -1154,7 +1154,7 @@ function initThreeDPaperPlanView(planCanvas: any) {
                   ; (n.selected = true),
                     (selectedItem = n),
                     n.segments.forEach(function (e: any) {
-                      var t = new paper.Raster('images/homedesign/movePointIcon.png')
+                      var t = new paper.Raster('assets/images/homedesign/movePointIcon.png')
                         ; (t.data.type = 'movePointIconFloors'),
                           (t.data.id = e.index),
                           (t.data.level = project.activeLayer.data.id),
@@ -3379,7 +3379,7 @@ const ViewProperties = () => {
                     height={100}
                     className='disableSelection' 
                     style={{ pointerEvents: 'none' }} 
-                    src='/images/homedesign/thumbPlaceHolder.png'
+                    src='/assets/images/homedesign/thumbPlaceHolder.png'
                   />
                 </div>
               </td>
@@ -4241,7 +4241,7 @@ const ViewModals = (props: any) => {
                       // onChange={() => handleSaveEditsLocalStorageOption()}
                     />
                     <span className='tooltip'>
-                      {/* <img src='images/homedesign/info.png' className='tooltip' /> */}
+                      {/* <img src='assets/images/homedesign/info.png' className='tooltip' /> */}
                       <span className='tooltiptext'>
                         <div>
                           Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the 'File-Save' option in the main <a href='https://threedgarden.com'>ThreeD HD</a> toolbar.<br/>
@@ -4531,40 +4531,40 @@ const ViewModals = (props: any) => {
         {/* <li>
           <a id='pointerTool' onClick={() => setThreedTool('pointer')} className='toolButton activeTool'
             title='Pointer Select' alt='Pointer Select'>
-            <img src='images/homedesign/pointericonWhite.png' height='42px'>
+            <img src='assets/images/homedesign/pointericonWhite.png' height='42px'>
           </a>
         </li> */}
         {/* <!-- <li>
           <a onClick={() => setThreedTool('hand')}>
-            <img src='images/homedesign/handicon.png' width='50px'>
+            <img src='assets/images/homedesign/handicon.png' width='50px'>
           </a>
         </li> --> */}
         {/* <li>
           <a id='addWallTool' onClick={() => setThreedTool('walls')} className='toolButton' title='Add Wall' alt='Add Wall'>
-            <img src='images/homedesign/newWallWhite2.png' height='42px'>
+            <img src='assets/images/homedesign/newWallWhite2.png' height='42px'>
           </a>
         </li> */}
         {/* <li>
           <a id='addFloorTool' onClick={() => setThreedTool('floor')} className='toolButton' title='Add Floor'
             alt='Add Floor'>
-            <img src='images/homedesign/newFloorWhite2.png' height='42px'>
+            <img src='assets/images/homedesign/newFloorWhite2.png' height='42px'>
           </a>
         </li> */}
         {/* <li>
           <a id='addRoofTool' onClick={() => setThreedTool('roof')} className='toolButton' title='Add Roof' alt='Add Roof'>
-            <img src='images/homedesign/newRoofWhite2.png' height='42px'>
+            <img src='assets/images/homedesign/newRoofWhite2.png' height='42px'>
           </a>
         </li> */}
         {/* <li>
           <a id='addRulerTool' onClick={() => setThreedTool('dimension')} className='toolButton' title='Add Dimension'
             alt='Add Dimension'>
-            <img src='images/homedesign/newRulerWhite2.png' height='42px'>
+            <img src='assets/images/homedesign/newRulerWhite2.png' height='42px'>
           </a>
         </li> */}
         {/* <li>
           <a id='addTextTool' onClick={() => setThreedTool('text')} className='toolButton' title='Add Text Annotation'
             alt='Add Text Annotation'>
-            <img src='images/homedesign/newTextWhite.png' height='42px'>
+            <img src='assets/images/homedesign/newTextWhite.png' height='42px'>
           </a>
         </li> */}
       {/* </ul> */}
@@ -5133,7 +5133,7 @@ function addThreed(event: any, threedItem: any, scene: any) {
 
     draggingThreedIcon = false
     threedDragDiv.style.display = 'none'
-    threedDragDiv.style.background = 'url("images/homedesign/thumbPlaceHolder.png")'
+    threedDragDiv.style.background = 'url("assets/images/homedesign/thumbPlaceHolder.png")'
     draggingThreedRectangle.visible = false
     // draggingThreedRectangle.position.x = 0 // NO !!!
     // draggingThreedRectangle.position.y = 0 // NO !!!
@@ -7165,9 +7165,9 @@ export default function ThreeDHomeDesign({
         <div id='horizontalSliderRight'></div>
 
         {/*
-        <img id='fullscreenPlanViewBtn' src='images/homedesign/fullscreen.png' width='30' height='30'
+        <img id='fullscreenPlanViewBtn' src='assets/images/homedesign/fullscreen.png' width='30' height='30'
           onClick={() => openFullscreen('planView')} />
-        <img id='fullscreen3dViewBtn' src='images/homedesign/fullscreen.png' width='30' height='30'
+        <img id='fullscreen3dViewBtn' src='assets/images/homedesign/fullscreen.png' width='30' height='30'
           onClick={() => openFullscreen('view3d')} />
         */}
 
