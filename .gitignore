@@ -1,4 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ================================================
 
 # dependencies
 /node_modules
@@ -49,6 +50,10 @@ public/workbox-*
 # __test scripts
 src/app/__*
 
+# ================================================
+# THREED .gitignore
+# ================================================
+
 # public assets
 
 public/assets/*
@@ -64,6 +69,8 @@ public/assets/farmbot/3D-old
 !public/assets/mercedes
 public/assets/mercedes/*.zip
 public/assets/mercedes/**/*.zip
+
+# ================================================
 
 ### libraries
 
@@ -101,3 +108,5 @@ src/lib/ecctrl/src-old
 src/lib/threed/assets/demo/**
 src/lib/threed/assets/media/**
 src/lib/threed/assets/threeds/**
+
+# ================================================

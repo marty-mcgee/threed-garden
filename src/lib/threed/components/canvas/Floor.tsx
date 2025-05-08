@@ -47,10 +47,10 @@ export default function Floor(
   // ** HOOKS
 
   // ** TEXTURES
-  const grassTexture = useTexture(ASSETS.textures.grass + "?=grass");
-  grassTexture.wrapS = RepeatWrapping;
-  grassTexture.wrapT = RepeatWrapping;
-  grassTexture.repeat.set(24, 24);
+  // const grassTexture = useTexture(ASSETS.textures.grass + "?=grass");
+  // grassTexture.wrapS = RepeatWrapping;
+  // grassTexture.wrapT = RepeatWrapping;
+  // grassTexture.repeat.set(24, 24);
 
 
   return (
