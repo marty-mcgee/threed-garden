@@ -81,6 +81,7 @@ export function Model(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF(
     '/assets/mercedes/2002_mercedes-benz_e320_w210_4matic_sedan.glb'
   ) as GLTFResult
+  return (
     <group {...props} dispose={null}>
       <group name="FINAL_MODEL_02fbx" scale={0.01}>
         <mesh
