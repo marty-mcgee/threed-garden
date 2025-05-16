@@ -1,4 +1,4 @@
-import { type IProduct } from '#/lib/data/products';
+import { type IProduct } from '~/src/lib/api/data/products';
 import { ProductBestSeller } from '#/layout/ui/playground/ProductBestSeller';
 import { ProductEstimatedArrival } from '#/layout/ui/playground/ProductEstimatedArrival';
 import { ProductLowStockWarning } from '#/layout/ui/playground/ProductLowStockWarning';

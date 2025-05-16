@@ -1,4 +1,4 @@
-import { fetchCategoryBySlug, type PageProps } from '#/lib/data/getCategories';
+import { fetchCategoryBySlug, type PageProps } from '~/src/lib/api/data/getCategories';
 import { DefaultTags } from '#/layout/ui/playground/DefaultTags';
 
 export default async function Head({ params }: PageProps) {

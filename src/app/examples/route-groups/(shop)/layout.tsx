@@ -1,4 +1,4 @@
-import { fetchCategories } from '#/lib/data/getCategories';
+import { fetchCategories } from '~/src/lib/api/data/getCategories';
 import { Boundary } from '#/layout/ui/playground/Boundary';
 import { ClickCounter } from '#/layout/ui/playground/ClickCounter';
 import { TabGroup } from '#/layout/ui/playground/TabGroup';
