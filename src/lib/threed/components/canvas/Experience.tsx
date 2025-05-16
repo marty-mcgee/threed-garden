@@ -127,30 +127,7 @@ import ccm from '#/lib/utils/console-colors'
 const debug: boolean = false
 const DEBUG: boolean = true
 
-/**
- * Character Model URL (default)
- */
-// const CHARACTER_MODEL_URL = new URL(
-//   '/public/objects/SK_Chr_Farmer_Female_01.glb',
-//   import.meta.url,
-// ).href
-
-/**
- * Character animation set preset
- */
-const animationSet = {
-  idle:     "CharacterArmature|Idle",
-  walk:     "CharacterArmature|Walk",
-  run:      "CharacterArmature|Run",
-  jump:     "CharacterArmature|Jump",
-  jumpIdle: "CharacterArmature|Jump_Idle",
-  jumpLand: "CharacterArmature|Jump_Land",
-  fall:     "CharacterArmature|Duck",
-  action1:  "CharacterArmature|Wave",
-  action2:  "CharacterArmature|Death",
-  action3:  "CharacterArmature|HitReact",
-  action4:  "CharacterArmature|Punch",
-}
+// ** ***************************************************
 
 // ** BOUNDS
 // This function component wraps children in a group with a click handler
@@ -201,10 +178,10 @@ const ThreeDExperience = forwardRef((
   // ** GET THREED PREFERENCES FROM APOLLO CLIENT STORE:STATE
   const prefs = useReactiveVar(preferencesDataVar)
   // console.debug(`%c EXPERIENCE: APOLLO prefs`, ccm.orangeAlert, prefs)
-  // ** TESTING...
-  const capsuleHalfHeight: number = 5.8   // Adjust your model's height
-  const capsuleRadius: number = 3.2       // Adjust your model's width
-  const floatHeight: number = 0.0         // Adjust floating height above ground
+  // ** TODO: set from prefs
+  const capsuleHalfHeight: number = 0.60  // Adjust your model's height (default: 0.35)
+  const capsuleRadius: number = 0.3       // Adjust your model's width (default: 0.3)
+  const floatHeight: number = 0.0         // Adjust floating height above ground (default: 0.3)
   
   // ** PROGRESS LOADER using react-three-drei
   // const { active, progress, errors, item, loaded, total } = useProgress()
@@ -214,7 +191,7 @@ const ThreeDExperience = forwardRef((
   useEffect(() => {
     const timeout = setTimeout(() => {
       setPausedPhysics(false)
-    }, 2000)
+    }, 3000)
     return () => clearTimeout(timeout)
   }, [])
 
@@ -384,7 +361,7 @@ const ThreeDExperience = forwardRef((
               {/* EXAMPLE MAP: TAVERN */}
               <group
                 scale={0.080} 
-                position={[0.8, 0.8, -16]}
+                position={[0.8, 1.4, -16]}
                 rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
                 // quaternion={[0,0,0,0]}
               >
@@ -439,7 +416,7 @@ const ThreeDExperience = forwardRef((
                 <group 
                   key='character1' 
                   // position={[0, 200, 0]}
-                  position={[0, -0.5, 0]}
+                  // position={[0, -0.5, 0]}
                   // scale={[0.01, 0.01, 0.01]}
                   // scale={[0.1, 0.1, 0.1]}
                   // scale={[10.0, 10.0, 10.0]}
@@ -448,24 +425,20 @@ const ThreeDExperience = forwardRef((
                   // quaternion={[0,0,0,0]}
                 >
                   <CharacterControls
-
                     // ** PROPS
+                    debug={false}
+                    // debug={true}
+                    // debug={prefs.doWorldDebug}
 
-                    // position={[0, 0, 0]}
+                    // 'drop from' position
+                    position={[0, 4, 0]}
 
-
-                    
+                    // do not scale here
                     // scale={[100, 100, 100]}
                     // scale={[1.0, 1.0, 1.0]}
                     // scale={[0.1, 0.1, 0.1]}
                     // scale={[0.01, 0.01, 0.01]}
                     // scale={[0.001, 0.001, 0.001]}
-
-
-                    
-                    // debug={false}
-                    // debug={true}
-                    debug={prefs.doWorldDebug}
                     
                     // animated={false}
                     animated={true}
@@ -487,25 +460,19 @@ const ThreeDExperience = forwardRef((
                     followLight={false}
                     // followLight={true}
                     // followLight={prefs.doWorldFollowLight}
-                    
 
 
                     // ** CURRENT ERROR(S)
                     // THREE.BufferGeometry.computeBoundingSphere(): Computed radius is NaN. The "position" attribute is likely to have NaN values
 
 
-                    // // ** MICRO-CONTROLS
-                    // // custom model props...
-                    // // capsuleHalfHeight={capsuleHalfHeight}   // TODO: set from prefs
-                    // // capsuleRadius={capsuleRadius}           // TODO: set from prefs
-                    // // floatHeight={floatHeight}               // TODO: set from prefs
+                    // ** MICRO-CONTROLS
+                    // ** custom model props...
 
                     // // Core Physics (calculated for 0.1 scale model)
-                    // capsuleHalfHeight={0.4}       // Model height ~0.8 units (scaled to 0.1 = 8 units real size)
-                    // capsuleRadius={0.2}           // Model width ~0.4 units
-                    // floatHeight={0.05}            // 5cm float (scaled down)
-                    floatHeight={0.00}               // 0cm float (scaled down)
-                    // floatHeight={-0.25}           // -25cm float (scaled down)
+                    capsuleHalfHeight={capsuleHalfHeight}   // TODO: set from prefs
+                    capsuleRadius={capsuleRadius}           // TODO: set from prefs
+                    floatHeight={floatHeight}               // TODO: set from prefs
                     
                     // // Movement (human-like physics at this scale)
                     // maxVelLimit={2.5}             // 2.5 m/s max speed (scaled to model)
@@ -549,7 +516,7 @@ const ThreeDExperience = forwardRef((
                     // fallingMaxVel={-15}            // Terminal velocity
                   >
                     {/* <ThreeDCharacter position={[0, 0, 0]} /> */}
-                    <ThreeDCharacter position={[0, -0.6, 0]} />
+                    <ThreeDCharacter position={[0, -0.88, 0]} />
                   </CharacterControls>
                 </group>
                 )}

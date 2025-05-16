@@ -6,7 +6,6 @@
 import { RigidBody } from '@react-three/rapier'
 
 // ** REACT THREE DREI Imports
-// useTexture
 import { 
   // Circle, 
   // Detailed, 
@@ -16,27 +15,13 @@ import {
 // ** THREE JS Imports
 import { RepeatWrapping } from 'three'
 
-
-
-// ==========================================================
-// ** PROPERTIES : VARIABLES : CONSTANTS
-
-// ** ** FARMBOT : ASSETS : CONSTANTS
-import { 
-  // SETTINGS?,
-  // PREFERENCES?,
-  // FILES?,
-  // TEXTURES???,
-  ASSETS,
-}from '#/lib/threed/config/configMain'
-// ==========================================================
-
-
+// ** API : PROPERTIES : VARIABLES : CONSTANTS
+import { ASSETS } from '#/lib/api/data/constants'
 
 // ** EXPORT Component
 export default function Floor(
   {
-    color = 'black', 
+    color = 'darkgreen', 
     opacity = 1.0
   }: {
     color: string, 
@@ -47,10 +32,10 @@ export default function Floor(
   // ** HOOKS
 
   // ** TEXTURES
-  // const grassTexture = useTexture(ASSETS.textures.grass + "?=grass");
-  // grassTexture.wrapS = RepeatWrapping;
-  // grassTexture.wrapT = RepeatWrapping;
-  // grassTexture.repeat.set(24, 24);
+  const grassTexture = useTexture(ASSETS.textures.grass + '?=grass')
+  grassTexture.wrapS = RepeatWrapping
+  grassTexture.wrapT = RepeatWrapping
+  grassTexture.repeat.set(1000, 1000)
 
 
   return (
@@ -62,15 +47,17 @@ export default function Floor(
         receiveShadow
       >
         <boxGeometry 
-          args={[20480, -1, 20480]} 
+          args={[2000, 0, 2000]} 
         />
         <meshPhongMaterial 
+          map={grassTexture}
           color={color} 
           opacity={opacity} 
-          transparent={true} 
+          transparent={false} 
         />
         {/* 
         <meshStandardMaterial 
+          map={grassTexture}
           color={color} 
         /> 
         */}
