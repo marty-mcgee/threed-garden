@@ -476,6 +476,7 @@ const ThreeDExperience = forwardRef((
                     
                     // // Movement (human-like physics at this scale)
                     // maxVelLimit={2.5}             // 2.5 m/s max speed (scaled to model)
+                    maxVelLimit={2.7}
                     // turnVelMultiplier={0.25}      // Balanced turning
                     // turnSpeed={12}                // Moderate rotation speed
                     // sprintMult={1.8}              // 80% speed boost when sprinting
