@@ -27,7 +27,6 @@ const utmRadius = 35
 const utmHeight = 35
 const xTrackPadding = 280
 
-// const LIB_DIR = "/3D/lib/"
 const LIB_DIR = "/assets/farmbot/3D/lib/"
 
 enum PartName {
