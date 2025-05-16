@@ -1,6 +1,6 @@
 'use client';
 
-import { demos, type Item } from '#/lib/data/demos';
+import { demos, type Item } from '~/src/lib/api/data/demos';
 import '#/layout/ui/styles/globals.css'; // moved to _app.tsx ???
 import { NextLogo } from '#/layout/ui/playground/NextLogo';
 import Link from 'next/link';

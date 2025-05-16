@@ -1,4 +1,4 @@
-import { fetchSubCategory, PageProps } from '#/lib/data/getCategories';
+import { fetchSubCategory, PageProps } from '~/src/lib/api/data/getCategories';
 import BuggyButton from '#/layout/ui/playground/BuggyButton';
 import { SkeletonCard } from '#/layout/ui/playground/SkeletonCard';
 

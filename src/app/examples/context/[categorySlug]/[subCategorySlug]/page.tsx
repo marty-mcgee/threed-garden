@@ -1,4 +1,4 @@
-import { fetchSubCategory, type PageProps } from '#/lib/data/getCategories';
+import { fetchSubCategory, type PageProps } from '~/src/lib/api/data/getCategories';
 import { Boundary } from '#/layout/ui/playground/Boundary';
 import { Counter } from '../../ContextClickCounter';
 

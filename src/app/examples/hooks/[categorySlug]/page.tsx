@@ -1,4 +1,4 @@
-import { fetchCategoryBySlug, type PageProps } from '#/lib/data/getCategories';
+import { fetchCategoryBySlug, type PageProps } from '~/src/lib/api/data/getCategories';
 import { SkeletonCard } from '#/layout/ui/playground/SkeletonCard';
 
 export default async function Page({ params }: PageProps) {

@@ -1,4 +1,4 @@
-import { fetchCategoryBySlug, type PageProps } from '#/lib/data/getCategories';
+import { fetchCategoryBySlug, type PageProps } from '~/src/lib/api/data/getCategories';
 import { ClickCounter } from '#/layout/ui/playground/ClickCounter';
 import { TabGroup } from '#/layout/ui/playground/TabGroup';
 
