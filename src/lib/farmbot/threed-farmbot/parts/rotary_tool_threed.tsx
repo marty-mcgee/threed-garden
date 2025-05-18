@@ -9,50 +9,51 @@ import { GLTF } from 'three-stdlib'
 
 type GLTFResult = GLTF & {
   nodes: {
-    mesh480_mesh: THREE.Mesh
-    mesh480_mesh_1: THREE.Mesh
-    mesh480_mesh_2: THREE.Mesh
-    mesh480_mesh_3: THREE.Mesh
-    mesh480_mesh_4: THREE.Mesh
-    mesh480_mesh_5: THREE.Mesh
-    mesh480_mesh_6: THREE.Mesh
-    mesh480_mesh_7: THREE.Mesh
-    mesh480_mesh_8: THREE.Mesh
-    mesh480_mesh_9: THREE.Mesh
-    mesh480_mesh_10: THREE.Mesh
-    mesh480_mesh_11: THREE.Mesh
-    mesh480_mesh_12: THREE.Mesh
-    mesh480_mesh_13: THREE.Mesh
-    mesh480_mesh_14: THREE.Mesh
-    mesh480_mesh_15: THREE.Mesh
-    mesh480_mesh_16: THREE.Mesh
-    mesh480_mesh_17: THREE.Mesh
-    mesh528_mesh: THREE.Mesh
-    mesh528_mesh_1: THREE.Mesh
-    mesh528_mesh_2: THREE.Mesh
-    mesh528_mesh_3: THREE.Mesh
-    mesh528_mesh_4: THREE.Mesh
-    mesh528_mesh_5: THREE.Mesh
-    mesh528_mesh_6: THREE.Mesh
-    mesh528_mesh_7: THREE.Mesh
-    mesh528_mesh_8: THREE.Mesh
-    mesh528_mesh_9: THREE.Mesh
-    mesh538_mesh: THREE.Mesh
-    mesh538_mesh_1: THREE.Mesh
-    mesh538_mesh_2: THREE.Mesh
-    mesh538_mesh_3: THREE.Mesh
-    mesh538_mesh_4: THREE.Mesh
-    mesh538_mesh_5: THREE.Mesh
-    mesh538_mesh_6: THREE.Mesh
-    mesh538_mesh_7: THREE.Mesh
-    mesh538_mesh_8: THREE.Mesh
-    mesh538_mesh_9: THREE.Mesh
-    mesh538_mesh_10: THREE.Mesh
-    mesh538_mesh_11: THREE.Mesh
-    mesh538_mesh_12: THREE.Mesh
-    mesh538_mesh_13: THREE.Mesh
-    mesh538_mesh_14: THREE.Mesh
-    M5_Barb: THREE.Mesh
+    mesh0_mesh: THREE.Mesh
+    mesh0_mesh_1: THREE.Mesh
+    mesh0_mesh_2: THREE.Mesh
+    mesh0_mesh_3: THREE.Mesh
+    mesh0_mesh_4: THREE.Mesh
+    mesh0_mesh_5: THREE.Mesh
+    mesh0_mesh_6: THREE.Mesh
+    mesh0_mesh_7: THREE.Mesh
+    mesh0_mesh_8: THREE.Mesh
+    mesh0_mesh_9: THREE.Mesh
+    mesh0_mesh_10: THREE.Mesh
+    mesh0_mesh_11: THREE.Mesh
+    mesh0_mesh_12: THREE.Mesh
+    mesh0_mesh_13: THREE.Mesh
+    mesh0_mesh_14: THREE.Mesh
+    mesh0_mesh_15: THREE.Mesh
+    mesh0_mesh_16: THREE.Mesh
+    mesh0_mesh_17: THREE.Mesh
+    mesh476_mesh: THREE.Mesh
+    mesh476_mesh_1: THREE.Mesh
+    mesh476_mesh_2: THREE.Mesh
+    mesh476_mesh_3: THREE.Mesh
+    mesh476_mesh_4: THREE.Mesh
+    mesh476_mesh_5: THREE.Mesh
+    mesh476_mesh_6: THREE.Mesh
+    mesh476_mesh_7: THREE.Mesh
+    mesh476_mesh_8: THREE.Mesh
+    mesh476_mesh_9: THREE.Mesh
+    mesh476_mesh_10: THREE.Mesh
+    mesh476_mesh_11: THREE.Mesh
+    mesh476_mesh_12: THREE.Mesh
+    mesh476_mesh_13: THREE.Mesh
+    mesh476_mesh_14: THREE.Mesh
+    mesh476_mesh_15: THREE.Mesh
+    mesh476_mesh_16: THREE.Mesh
+    mesh476_mesh_17: THREE.Mesh
+    mesh476_mesh_18: THREE.Mesh
+    mesh476_mesh_19: THREE.Mesh
+    mesh476_mesh_20: THREE.Mesh
+    mesh476_mesh_21: THREE.Mesh
+    mesh476_mesh_22: THREE.Mesh
+    mesh476_mesh_23: THREE.Mesh
+    mesh476_mesh_24: THREE.Mesh
+    mesh476_mesh_25: THREE.Mesh
+    M25_x_6mm_Screw: THREE.Mesh
   }
   materials: {
     // @ts-expect-error
@@ -65,321 +66,328 @@ type GLTFResult = GLTF & {
 // @ts-expect-error
 export function Model(props: JSX.IntrinsicElements['group']) {
   // @ts-expect-error
-  const { nodes, materials } = useGLTF('/assets/farmbot/3D/models/utm.glb') as GLTFResult
+  const { nodes, materials } = useGLTF('/assets/farmbot/3D/models/rotary_tool.glb') as GLTFResult
   return (
     <group {...props} dispose={null}>
       <mesh
-        name="M5_Barb"
+        name="M25_x_6mm_Screw"
         castShadow
         receiveShadow
-        geometry={nodes.M5_Barb.geometry}
+        geometry={nodes.M25_x_6mm_Screw.geometry}
         material={materials.PaletteMaterial001}
-        position={[0.01515544, 0.00875, 0.0355]}
-        rotation={[0, 0, 2.09439511]}
+        position={[0.011, -0.002, -0.049]}
+        rotation={[2.967, 0, 0]}
       />
       <mesh
-        name="mesh480_mesh"
+        name="mesh0_mesh"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh.geometry}
-        material={materials.PaletteMaterial001}
-      />
-      <mesh
-        name="mesh480_mesh_1"
-        castShadow
-        receiveShadow
-        geometry={nodes.mesh480_mesh_1.geometry}
+        geometry={nodes.mesh0_mesh.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_2"
+        name="mesh0_mesh_1"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_2.geometry}
+        geometry={nodes.mesh0_mesh_1.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_3"
+        name="mesh0_mesh_2"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_3.geometry}
+        geometry={nodes.mesh0_mesh_2.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_4"
+        name="mesh0_mesh_3"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_4.geometry}
+        geometry={nodes.mesh0_mesh_3.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_5"
+        name="mesh0_mesh_4"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_5.geometry}
+        geometry={nodes.mesh0_mesh_4.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_6"
+        name="mesh0_mesh_5"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_6.geometry}
+        geometry={nodes.mesh0_mesh_5.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_7"
+        name="mesh0_mesh_6"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_7.geometry}
+        geometry={nodes.mesh0_mesh_6.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_8"
+        name="mesh0_mesh_7"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_8.geometry}
+        geometry={nodes.mesh0_mesh_7.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_9"
+        name="mesh0_mesh_8"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_9.geometry}
+        geometry={nodes.mesh0_mesh_8.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_10"
+        name="mesh0_mesh_9"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_10.geometry}
+        geometry={nodes.mesh0_mesh_9.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_11"
+        name="mesh0_mesh_10"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_11.geometry}
+        geometry={nodes.mesh0_mesh_10.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_12"
+        name="mesh0_mesh_11"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_12.geometry}
+        geometry={nodes.mesh0_mesh_11.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_13"
+        name="mesh0_mesh_12"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_13.geometry}
+        geometry={nodes.mesh0_mesh_12.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_14"
+        name="mesh0_mesh_13"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_14.geometry}
+        geometry={nodes.mesh0_mesh_13.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_15"
+        name="mesh0_mesh_14"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_15.geometry}
+        geometry={nodes.mesh0_mesh_14.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_16"
+        name="mesh0_mesh_15"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_16.geometry}
+        geometry={nodes.mesh0_mesh_15.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh480_mesh_17"
+        name="mesh0_mesh_16"
         castShadow
         receiveShadow
-        geometry={nodes.mesh480_mesh_17.geometry}
+        geometry={nodes.mesh0_mesh_16.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh"
+        name="mesh0_mesh_17"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh.geometry}
+        geometry={nodes.mesh0_mesh_17.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_1"
+        name="mesh476_mesh"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_1.geometry}
+        geometry={nodes.mesh476_mesh.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_2"
+        name="mesh476_mesh_1"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_2.geometry}
+        geometry={nodes.mesh476_mesh_1.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_3"
+        name="mesh476_mesh_2"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_3.geometry}
+        geometry={nodes.mesh476_mesh_2.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_4"
+        name="mesh476_mesh_3"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_4.geometry}
+        geometry={nodes.mesh476_mesh_3.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_5"
+        name="mesh476_mesh_4"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_5.geometry}
+        geometry={nodes.mesh476_mesh_4.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_6"
+        name="mesh476_mesh_5"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_6.geometry}
+        geometry={nodes.mesh476_mesh_5.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_7"
+        name="mesh476_mesh_6"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_7.geometry}
+        geometry={nodes.mesh476_mesh_6.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_8"
+        name="mesh476_mesh_7"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_8.geometry}
+        geometry={nodes.mesh476_mesh_7.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh528_mesh_9"
+        name="mesh476_mesh_8"
         castShadow
         receiveShadow
-        geometry={nodes.mesh528_mesh_9.geometry}
+        geometry={nodes.mesh476_mesh_8.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh"
+        name="mesh476_mesh_9"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh.geometry}
+        geometry={nodes.mesh476_mesh_9.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_1"
+        name="mesh476_mesh_10"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_1.geometry}
+        geometry={nodes.mesh476_mesh_10.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_2"
+        name="mesh476_mesh_11"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_2.geometry}
+        geometry={nodes.mesh476_mesh_11.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_3"
+        name="mesh476_mesh_12"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_3.geometry}
+        geometry={nodes.mesh476_mesh_12.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_4"
+        name="mesh476_mesh_13"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_4.geometry}
+        geometry={nodes.mesh476_mesh_13.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_5"
+        name="mesh476_mesh_14"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_5.geometry}
+        geometry={nodes.mesh476_mesh_14.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_6"
+        name="mesh476_mesh_15"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_6.geometry}
+        geometry={nodes.mesh476_mesh_15.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_7"
+        name="mesh476_mesh_16"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_7.geometry}
+        geometry={nodes.mesh476_mesh_16.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_8"
+        name="mesh476_mesh_17"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_8.geometry}
+        geometry={nodes.mesh476_mesh_17.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_9"
+        name="mesh476_mesh_18"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_9.geometry}
+        geometry={nodes.mesh476_mesh_18.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_10"
+        name="mesh476_mesh_19"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_10.geometry}
+        geometry={nodes.mesh476_mesh_19.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_11"
+        name="mesh476_mesh_20"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_11.geometry}
+        geometry={nodes.mesh476_mesh_20.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_12"
+        name="mesh476_mesh_21"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_12.geometry}
+        geometry={nodes.mesh476_mesh_21.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_13"
+        name="mesh476_mesh_22"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_13.geometry}
+        geometry={nodes.mesh476_mesh_22.geometry}
         material={materials.PaletteMaterial001}
       />
       <mesh
-        name="mesh538_mesh_14"
+        name="mesh476_mesh_23"
         castShadow
         receiveShadow
-        geometry={nodes.mesh538_mesh_14.geometry}
+        geometry={nodes.mesh476_mesh_23.geometry}
+        material={materials.PaletteMaterial001}
+      />
+      <mesh
+        name="mesh476_mesh_24"
+        castShadow
+        receiveShadow
+        geometry={nodes.mesh476_mesh_24.geometry}
+        material={materials.PaletteMaterial001}
+      />
+      <mesh
+        name="mesh476_mesh_25"
+        castShadow
+        receiveShadow
+        geometry={nodes.mesh476_mesh_25.geometry}
         material={materials.PaletteMaterial001}
       />
     </group>
   )
 }
 
-useGLTF.preload('/assets/farmbot/3D/models/utm.glb')
+useGLTF.preload('/assets/farmbot/3D/models/rotary_tool.glb')
