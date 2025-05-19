@@ -271,7 +271,7 @@ const ThreeDExperience = forwardRef((
               position={[0, 0, 0]}
               rotation={[0, 0, 0]} 
             >
-              <Floor color={'darkgreen'} opacity={1.00} />
+              <Floor color={'white'} opacity={1.00} />
             </group>
             {/* ** The Basement Floor (Plane -1) */}
             {/* <group 
