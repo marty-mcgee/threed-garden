@@ -55,9 +55,6 @@ type GLTFResult = GLTF & {
     M5_Barb: THREE.Mesh
   }
   materials: {
-    // @ts-expect-error
-    PaletteMaterial001: THREE.MeshStandardMaterial
-    // @ts-expect-error
     PaletteMaterial001: THREE.MeshStandardMaterial
   }
 }

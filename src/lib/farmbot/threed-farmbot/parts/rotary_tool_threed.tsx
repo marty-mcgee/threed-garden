@@ -56,9 +56,6 @@ type GLTFResult = GLTF & {
     M25_x_6mm_Screw: THREE.Mesh
   }
   materials: {
-    // @ts-expect-error
-    PaletteMaterial001: THREE.MeshStandardMaterial
-    // @ts-expect-error
     PaletteMaterial001: THREE.MeshStandardMaterial
   }
 }
