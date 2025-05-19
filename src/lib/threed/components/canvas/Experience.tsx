@@ -476,7 +476,6 @@ const ThreeDExperience = forwardRef((
                     
                     // // Movement (human-like physics at this scale)
                     // maxVelLimit={2.5}             // 2.5 m/s max speed (scaled to model)
-                    maxVelLimit={2.7}
                     // turnVelMultiplier={0.25}      // Balanced turning
                     // turnSpeed={12}                // Moderate rotation speed
                     // sprintMult={1.8}              // 80% speed boost when sprinting
@@ -499,7 +498,7 @@ const ThreeDExperience = forwardRef((
                     
                     // // Slope Handling
                     // slopeMaxAngle={0.5}            // ~30 degree max slope (radians)
-                    // slopeRayOriginOffest={0.18}     // Slightly inset from edge
+                    // slopeRayOriginOffest={0.18}    // Slightly inset from edge
                     // slopeRayLength={0.5}           // Matching main ray
                     // slopeUpExtraForce={0.1}        // Gentle slope assist
                     // slopeDownExtraForce={0.15}     // Slightly stronger downhill
