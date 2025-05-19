@@ -271,7 +271,10 @@ const ThreeDExperience = forwardRef((
               position={[0, 0, 0]}
               rotation={[0, 0, 0]} 
             >
-              <Floor color={'white'} opacity={1.00} />
+              <Floor 
+                color={'white'} 
+                opacity={1.00} 
+              />
             </group>
             {/* ** The Basement Floor (Plane -1) */}
             {/* <group 
@@ -279,7 +282,10 @@ const ThreeDExperience = forwardRef((
               position={[0, -400, 0]}
               rotation={[0, 0, 0]}
             >
-              <Floor color={'saddlebrown'} opacity={1.00} />
+              <Floor 
+                color={'saddlebrown'} 
+                opacity={1.00} 
+              />
             </group> */}
             {/* ** SUB FLOORS[s] (Plane < 0) */}
             {/* <SubFloor level={`${level[index]}`} /> */}
@@ -484,7 +490,11 @@ const ThreeDExperience = forwardRef((
                     // slopJumpMult={0.25}           // Standard slope jump effect
                     // sprintJumpMult={1.2}          // 20% jump boost when sprinting
                     // airDragMultiplier={0.15}      // Slight air control
+                    airDragMultiplier={0.30}         // [MM] + is ??? hmm
                     // dragDampingC={0.2}            // Good stopping friction
+                    // dragDampingC={0.1}               // [MM] - is ??? YESSSSSSSSSSSSSSS
+                    // dragDampingC={0.05}               // [MM] - is ??? YESSSSSSSSSSSSSSS
+                    dragDampingC={0.025}               // [MM] - is ??? hmm
                     // accDeltaTime={8}              // Responsive acceleration
                     // moveImpulsePointY={0.5}       // Center of mass position
                     
@@ -494,8 +504,13 @@ const ThreeDExperience = forwardRef((
                     // rayLength={0.5}                // Slightly longer than capsule
                     // floatingDis={0.05}             // Target hover distance
                     // springK={30}                   // Firm but not extreme spring
+                    // springK={120}                  // [MM] + is bouncy
+                    // springK={10}                      // [MM] - is ???
                     // dampingC={0.8}                 // Strong enough damping
-                    
+                    // dampingC={2.0}                 // [MM] + is chaos
+                    // dampingC={0.6}                    // [MM] - is ??? better
+                    // dampingC={0.2}                    // [MM] - is ???        
+
                     // // Slope Handling
                     // slopeMaxAngle={0.5}            // ~30 degree max slope (radians)
                     // slopeRayOriginOffest={0.18}    // Slightly inset from edge
@@ -515,8 +530,9 @@ const ThreeDExperience = forwardRef((
                     // fallingGravityScale={2}        // Realistic fall speed
                     // fallingMaxVel={-15}            // Terminal velocity
                   >
-                    {/* <ThreeDCharacter position={[0, 0, 0]} /> */}
-                    <ThreeDCharacter position={[0, -0.88, 0]} />
+                    <ThreeDCharacter 
+                      position={[0, -0.88, 0]} 
+                    />
                   </CharacterControls>
                 </group>
                 )}
@@ -528,7 +544,9 @@ const ThreeDExperience = forwardRef((
                   key='character2' 
                   position={[9, 0.5, -10]}
                 >
-                  <ThreeDMercedes scale={0.10} />
+                  <ThreeDMercedes 
+                    scale={0.10} 
+                  />
                 </group>
                 )}
                 {/* END: CHARACTER MODEL */}
@@ -541,7 +559,9 @@ const ThreeDExperience = forwardRef((
                 >
                   {/* <CharacterModel /> */}
                   {/* <CharacterModelFloating /> */}
-                  <CharacterModelStacy scale={0.12} />
+                  <CharacterModelStacy 
+                    scale={0.12} 
+                  />
                 </group>
                 )}
                 {/* END: CHARACTER MODEL */}
@@ -552,7 +572,9 @@ const ThreeDExperience = forwardRef((
                   key='character3' 
                   position={[-200, 0, 0]}
                 >
-                  <CharacterModelChicken scale={160} />
+                  <CharacterModelChicken 
+                    scale={160} 
+                  />
                 </group>
                 )}
                 {/* END: CHARACTER MODEL */}
