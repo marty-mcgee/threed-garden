@@ -490,11 +490,11 @@ const ThreeDExperience = forwardRef((
                     // slopJumpMult={0.25}           // Standard slope jump effect
                     // sprintJumpMult={1.2}          // 20% jump boost when sprinting
                     // airDragMultiplier={0.15}      // Slight air control
-                    airDragMultiplier={0.30}         // [MM] + is ??? hmm
+                    airDragMultiplier={0.60}         // [MM] + is ??? MAYBE
                     // dragDampingC={0.2}            // Good stopping friction
-                    // dragDampingC={0.1}               // [MM] - is ??? YESSSSSSSSSSSSSSS
-                    // dragDampingC={0.05}               // [MM] - is ??? YESSSSSSSSSSSSSSS
-                    dragDampingC={0.025}               // [MM] - is ??? hmm
+                    // dragDampingC={0.1}            // [MM] - is ??? YES
+                    // dragDampingC={0.05}           // [MM] - is ??? YES
+                    dragDampingC={0.01}              // [MM] - is ??? MAYBE
                     // accDeltaTime={8}              // Responsive acceleration
                     // moveImpulsePointY={0.5}       // Center of mass position
                     
