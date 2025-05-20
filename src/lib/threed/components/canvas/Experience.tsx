@@ -505,11 +505,11 @@ const ThreeDExperience = forwardRef((
                     // floatingDis={0.05}             // Target hover distance
                     // springK={30}                   // Firm but not extreme spring
                     // springK={120}                  // [MM] + is bouncy
-                    // springK={10}                      // [MM] - is ???
+                    // springK={10}                   // [MM] - is ???
                     // dampingC={0.8}                 // Strong enough damping
-                    // dampingC={2.0}                 // [MM] + is chaos
-                    // dampingC={0.6}                    // [MM] - is ??? better
-                    // dampingC={0.2}                    // [MM] - is ???        
+                    // dampingC={2.0}                 // [MM] + is ??? NO: chaos
+                    // dampingC={0.6}                 // [MM] - is ??? MAYBE
+                    // dampingC={0.2}                 // [MM] - is ??? MAYBE
 
                     // // Slope Handling
                     // slopeMaxAngle={0.5}            // ~30 degree max slope (radians)
