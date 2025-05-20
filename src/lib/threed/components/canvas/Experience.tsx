@@ -481,25 +481,29 @@ const ThreeDExperience = forwardRef((
                     floatHeight={floatHeight}               // TODO: set from prefs
                     
                     // // Movement (human-like physics at this scale)
-                    // maxVelLimit={2.5}             // 2.5 m/s max speed (scaled to model)
-                    // turnVelMultiplier={0.25}      // Balanced turning
-                    // turnSpeed={12}                // Moderate rotation speed
-                    // sprintMult={1.8}              // 80% speed boost when sprinting
-                    // jumpVel={4}                   // 4 m/s jump velocity
-                    // jumpForceToGroundMult={5}     // Reasonable ground reaction
-                    // slopJumpMult={0.25}           // Standard slope jump effect
-                    // sprintJumpMult={1.2}          // 20% jump boost when sprinting
-                    // airDragMultiplier={0.15}      // Slight air control
-                    airDragMultiplier={0.60}         // [MM] + is ??? MAYBE
-                    // dragDampingC={0.2}            // Good stopping friction
-                    // dragDampingC={0.1}            // [MM] - is ??? YES
-                    // dragDampingC={0.05}           // [MM] - is ??? YES
-                    dragDampingC={0.01}              // [MM] - is ??? MAYBE
-                    // accDeltaTime={8}              // Responsive acceleration
-                    // moveImpulsePointY={0.5}       // Center of mass position
+                    // maxVelLimit={2.5}              // 2.5 m/s max speed (scaled to model)
+                    // turnVelMultiplier={0.25}       // Balanced turning
+                    // turnSpeed={12}                 // Moderate rotation speed
+                    // sprintMult={1.8}               // 80% speed boost when sprinting
+                    // jumpVel={4}                    // 4 m/s jump velocity
+                    // jumpForceToGroundMult={5}      // Reasonable ground reaction
+                    // slopJumpMult={0.25}            // Standard slope jump effect
+                    // sprintJumpMult={1.2}           // 20% jump boost when sprinting
+                    // airDragMultiplier={0.15}       // Slight air control
+                    airDragMultiplier={0.60}          // [MM] + is ??? MAYBE
+                    // dragDampingC={0.2}             // Good stopping friction
+                    // dragDampingC={0.1}             // [MM] - is ??? YES
+                    // dragDampingC={0.05}            // [MM] - is ??? YES
+                    dragDampingC={0.01}               // [MM] - is ??? MAYBE
+                    // accDeltaTime={8}               // Responsive acceleration
+                    // moveImpulsePointY={0.5}        // Center of mass position
                     
                     // // Floating Ray (stability system)
-                    // rayOriginOffset={{ x: 0, y: -0.4, z: 0 }}  // Just below capsule
+
+                    // rayOriginOffset={
+                    //  { x: 0, y: -0.4, z: 0 }       // Just below capsule
+                    // }       
+
                     // rayHitForgiveness={0.05}       // Small forgiveness margin
                     // rayLength={0.5}                // Slightly longer than capsule
                     // floatingDis={0.05}             // Target hover distance
