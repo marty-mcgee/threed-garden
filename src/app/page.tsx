@@ -440,6 +440,26 @@ export default async function AppPage() {
             >
               ________________
             </li>
+            <li 
+              key='page-Example-threed-API'
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                // href='/examples/threed-design-wp-api'
+                href='https://threed.design'
+                target='_blank'
+                title='ThreeD API Documentation'
+                className='ListMenuItem'
+              >
+                ThreeD.Design
+              </Link>
+            </li>
+            <li
+              className='ListMenuItem'
+            >
+              ________________
+            </li>
           </ul>
         </div>
       </div>
