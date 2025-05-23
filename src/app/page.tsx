@@ -374,7 +374,7 @@ export default async function AppPage() {
           }}
         >
           <Heading as='h3'>
-            🍅 Resources
+            🍅 API Resources
           </Heading>
           <ul
             className='ListMenu'
@@ -383,6 +383,26 @@ export default async function AppPage() {
               marginLeft: '-32px',
             }}
           >
+            <li
+              className='ListMenuItem'
+            >
+              ________________
+            </li>
+            <li 
+              key='page-Example-threed-API'
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                // href='/examples/threed-design-wp-api'
+                href='https://threed.design'
+                target='_blank'
+                title='ThreeD API Documentation'
+                className='ListMenuItem'
+              >
+                ThreeD.Design
+              </Link>
+            </li>
             <li
               className='ListMenuItem'
             >
@@ -433,26 +453,6 @@ export default async function AppPage() {
                 className='ListMenuItem'
               >
                 jstud.io
-              </Link>
-            </li>
-            <li
-              className='ListMenuItem'
-            >
-              ________________
-            </li>
-            <li 
-              key='page-Example-threed-API'
-              className='ListMenuItem'
-              // onClick={() => doUpdatePreferences()}
-            >
-              <Link 
-                // href='/examples/threed-design-wp-api'
-                href='https://threed.design'
-                target='_blank'
-                title='ThreeD API Documentation'
-                className='ListMenuItem'
-              >
-                ThreeD.Design
               </Link>
             </li>
             <li
