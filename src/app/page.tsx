@@ -420,6 +420,26 @@ export default async function AppPage() {
             >
               ________________
             </li>
+            <li 
+              key='page-Example-jstud-IO'
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                // href='/examples/jstudio'
+                href='https://jstud.io'
+                target='_blank'
+                title='JStudio Documentation'
+                className='ListMenuItem'
+              >
+                jstud.io
+              </Link>
+            </li>
+            <li
+              className='ListMenuItem'
+            >
+              ________________
+            </li>
           </ul>
         </div>
       </div>
