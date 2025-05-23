@@ -29,9 +29,6 @@
     
     "_________________TEST": "____ ___________________________________________________",
     "type-check": "tsc --noEmit",
-    "format:prettier": "prettier \"**/*.{css,js,json,jsx,ts,tsx}\"",
-    "format:write": "prettier --write \"{app,lib,layout}/**/*.{ts,tsx,mdx}\" --cache",
-    "format:check": "prettier --check \"{app,lib,layout}**/*.{ts,tsx,mdx}\" --cache",
     
     "__________________END": "____ ___________________________________________________"
   },
