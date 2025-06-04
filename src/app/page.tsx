@@ -330,6 +330,19 @@ export default async function AppPage() {
                 DEMO: TERRAINS
               </Link>
             </li>
+            <li 
+              key='page-Example-Demo'
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/demo' 
+                title='Demo Page'
+                className='ListMenuItem'
+              >
+                DEMO: LEGACY
+              </Link>
+            </li>
             <li
               className='ListMenuItem'
             >
