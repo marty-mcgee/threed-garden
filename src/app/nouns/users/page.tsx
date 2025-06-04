@@ -96,7 +96,8 @@ const debug: boolean = false
 // const AppPage: TNextPageWithProps = async (props: any): Promise<React.ReactNode> => {
 // const AppPage: NextPage = (props) => {
 // const AppPage = ({children}: {children: any}) => {
-export default async function AppPage() {
+// export default async function AppPage() {
+export default function AppPage() {
   // **
   // console.debug('%c🥕 PROPS: AppPage.props', ccm.green, props)
 
