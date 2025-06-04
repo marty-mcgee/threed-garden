@@ -134,7 +134,8 @@ async function getPanelLayout() {
 
 // export default function FarmBotsPage<TNextPageWithProps> (): React.ReactNode { 
 // export default async function FarmBotsPage<NextPage> () {
-export default async function FarmBotsPage () {
+// export default async function FarmBotsPage () {
+export default function FarmBotsPage () {
 
   let QUERY = null
       QUERY = queries.GetFarmBots
