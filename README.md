@@ -10,6 +10,8 @@
 
 🥕 [Demo: Basic 3D](https://threedgarden.com/participate)
 
+🥕 [Demo: Legacy 3D + 2D](https://threedgarden.com/demo)
+
 ## For Developers
 
 🤖 Source Code: [github](https://github.com/marty-mcgee/threed-garden)
