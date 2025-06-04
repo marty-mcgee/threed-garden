@@ -1,0 +1,27 @@
+# gabledRoof.obj
+#
+# Copyright 2019 Sean Bradley
+#
+# Created by Sean Bradley for HomeIdea3D http://homeidea3d.seanwasere.com
+#
+# This file is distributed under Attribution 4.0 International (CC BY 4.0)  license, see https://creativecommons.org/licenses/by/4.0/
+#
+mtllib gabledRoof.mtl
+o Plane
+v 0.000000 166.666672 0.000000
+v -500.000000 166.666672 0.000000
+v 0.000000 -83.333336 500.000000
+v 500.000000 166.666672 0.000000
+v 0.000000 -83.333336 -500.000000
+v -500.000000 -83.333336 500.000000
+v 500.000000 -83.333336 500.000000
+v -500.000000 -83.333336 -500.000000
+v 500.000000 -83.333336 -500.000000
+vn 0.0000 0.8944 0.4472
+vn 0.0000 0.8944 -0.4472
+usemtl Material.001
+s off
+f 1//1 2//1 6//1 3//1
+f 1//1 3//1 7//1 4//1
+f 1//2 4//2 9//2 5//2
+f 1//2 5//2 8//2 2//2

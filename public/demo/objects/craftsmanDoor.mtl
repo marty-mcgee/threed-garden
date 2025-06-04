@@ -1,0 +1,28 @@
+# craftsmanDoorClosed.mtl 
+#
+# Created by mchnz
+# http://sourceforge.net/p/sweethome3d/d-models/349/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+#
+
+newmtl white
+illum 2
+Ka 0.4 0.4 0.4
+Kd 1.0 1.0 1.0
+Ks 0.3 0.3 0.3
+Ns 60.0
+
+newmtl grey
+illum 2
+Ka 0.5 0.5 0.5
+Kd 0.1837 0.1837 0.1837
+Ks 0.5 0.5 0.5
+Ns 65.89
+
+newmtl dkgrey
+illum 2
+Ka 0.049 0.049 0.049
+Kd 0.049 0.049 0.049
+Ks 0.3 0.3 0.3
+Ns 60.0

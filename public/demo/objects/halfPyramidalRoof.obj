@@ -1,0 +1,23 @@
+# halfPyramidalRoof.obj
+#
+# Copyright 2019 Sean Bradley
+#
+# Created by Sean Bradley for HomeIdea3D http://homeidea3d.seanwasere.com
+#
+# This file is distributed under Attribution 4.0 International (CC BY 4.0)  license, see https://creativecommons.org/licenses/by/4.0/
+#
+mtllib halfPyramidalRoof.mtl
+o Cone_Cone.001
+v 469.179626 -125.000000 473.618927
+v -473.618958 -125.000000 469.179596
+v -471.399292 -125.000000 -2.219650
+v 471.399292 -125.000000 2.219650
+v -0.000045 125.000000 -0.000000
+vn -0.0022 0.8835 0.4685
+vn -0.4685 0.8835 -0.0022
+vn 0.4685 0.8835 0.0022
+usemtl Material.001
+s off
+f 1//1 5//1 2//1
+f 2//2 5//2 3//2
+f 4//3 5//3 1//3

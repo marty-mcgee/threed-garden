@@ -1,0 +1,19 @@
+# gardenUmbrella.mtl Produced by Art of Illusion 2.7.1, Mon May 03 13:36:28 EDT 2010
+#
+# Created by Pencilart
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+newmtl mattblack
+Kd 0.1183 0.1183 0.1183
+Ks 0.27 0.27 0.27
+Ka 0 0 0
+illum 2
+Ns 57
+newmtl Sand
+Kd 0.85 0.68204 0.527
+Ks 0 0 0
+Ka 0 0 0
+illum 1

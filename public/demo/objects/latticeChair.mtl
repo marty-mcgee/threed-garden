@@ -1,0 +1,20 @@
+# latticeChair.mtl Produced by Art of Illusion 2.7.1, Mon Mar 29 12:01:04 EDT 2010
+#
+# Created by Pencilart
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+newmtl bluey
+Kd 1 1 1
+map_Kd latticeChair2.jpg
+Ks 0 0 0
+Ka 0 0 0
+illum 1
+newmtl Metalish
+Kd 1 1 1
+map_Kd latticeChair1.jpg
+Ks 0 0 0
+Ka 0.22 0.22 0.22
+illum 1

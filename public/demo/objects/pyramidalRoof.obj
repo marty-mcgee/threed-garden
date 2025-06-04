@@ -1,0 +1,25 @@
+# pyramidalRoof.obj
+#
+# Copyright 2019 Sean Bradley
+#
+# Created by Sean Bradley for HomeIdea3D http://homeidea3d.com
+#
+# This file is distributed under Attribution 4.0 International (CC BY 4.0)  license, see https://creativecommons.org/licenses/by/4.0/
+#
+mtllib pyramidalRoof.mtl
+o Cone_Cone.001
+v 353.554810 -125.000000 353.551971
+v -353.552002 -125.000000 353.554779
+v -353.554779 -125.000000 -353.552002
+v 353.551971 -125.000000 -353.554810
+v 0.000000 125.000000 0.000000
+vn 0.0000 0.8165 0.5774
+vn -0.5774 0.8165 0.0000
+vn -0.0000 0.8165 -0.5774
+vn 0.5774 0.8165 -0.0000
+usemtl Material.001
+s off
+f 1//1 5//1 2//1
+f 2//2 5//2 3//2
+f 3//3 5//3 4//3
+f 4//4 5//4 1//4

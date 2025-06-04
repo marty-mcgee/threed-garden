@@ -1,0 +1,14 @@
+# pinewoodRackFullHeightHalfWidth.mtl - Fr Mrz 19 17:16:07 MEZ 2010
+#
+# Created by Dingenskirchen
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+#
+
+newmtl wood
+illum 1
+Ka 1.0 1.0 1.0
+Kd 1.0 1.0 1.0
+Ks 0 0 0
+map_Kd pinewoodRackFullHeightHalfWidth.jpg
+

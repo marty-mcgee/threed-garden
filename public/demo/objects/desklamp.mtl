@@ -1,0 +1,20 @@
+# Blender MTL File: 'desklamp.blend'
+# Material Count: 2
+
+newmtl Material
+Ns 100
+Ka 0.000000 0.000000 0.000000
+Kd 0.71 0.57 0.12
+Ks 0.8 0.8 0.8
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Material.002
+Ns 5
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.9
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1

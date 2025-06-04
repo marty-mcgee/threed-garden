@@ -1,0 +1,51 @@
+# wash_basin_corner.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/297/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl cabinet
+illum 3
+Ka 0.2 0.2 0.2
+Kd 0.50 0.50 0.50
+Ks 0.49 0.49 0.49
+Ns 64.0
+
+newmtl top
+illum 3
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl sink
+illum 3
+Ka 0.2 0.2 0.2
+Kd 0.90 0.90 0.95
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl front
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 0.98 0.98
+Ks 0.5 0.5 0.5
+Ns 64.0
+
+newmtl metal
+illum 3
+Ka 0.2 0.2 0.2
+Kd 0.84 0.84 0.92
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl drain
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.3 0.3 0.2
+Ks 0.0 0.0 0.0
+Ns 1.0

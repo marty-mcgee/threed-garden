@@ -1,0 +1,37 @@
+# bathroom_sink.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/370/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl cupb
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.94509804 0.9490196 0.9647059
+Ks 0.484375 0.484375 0.484375
+Ns 62.0
+
+newmtl sink
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.31764707 0.3137255 0.29411766
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl chrome
+illum 3
+Ka 0.2 0.2 0.2
+Kd 0.84705883 0.84313726 0.9372549
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl drain
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.007843138 0.11372549 0.2
+Ks 0.0 0.0 0.0
+Ns 1.0
