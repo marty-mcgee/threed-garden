@@ -10,14 +10,14 @@
   <meta name="viewport" content="initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#222222" />
 
-  <link rel="stylesheet" href="./css/threed.css">
-  <link rel="stylesheet" href="./css/fa-550.css">
-  <link rel="stylesheet" href="./css/jquery.minicolors.css">
+  <link rel="stylesheet" href="/css/threed.css">
+  <link rel="stylesheet" href="/css/fa-550.css">
+  <link rel="stylesheet" href="/css/jquery.minicolors.css">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="./favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
-  <link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
   <meta name="msapplication-TileColor" content="#da532c">
 
   <meta name="description" content="Create house and garden plans in 2D and 3D">
@@ -34,32 +34,32 @@
   <meta property="og:image:width" content="600">
   <meta property="og:image:height" content="337">
 
-  <script type="text/javascript" src="demo/scripts/jquery-1.11.3.min.js"></script>
-  <script type="text/javascript" src="demo/scripts/paper-full.js?a=1"></script>
-  <script type="text/javascript" src="demo/scripts/three.min.js"></script>
-  <script type="text/javascript" src="demo/scripts/trackballcontrols.js"></script>
-  <script type="text/javascript" src="demo/scripts/tween.js"></script>
-  <script type="text/javascript" src="demo/scripts/MTLLoader.js"></script>
-  <script type="text/javascript" src="demo/scripts/OBJLoader.js"></script>
-  <script type="text/javascript" src="demo/scripts/OBJExporter.js"></script>
-  <!-- <script type="text/javascript" src="demo/scripts/jsonc.min.js"></script> -->
+  <script type="text/javascript" src="/demo/scripts/jquery-1.11.3.min.js"></script>
+  <script type="text/javascript" src="/demo/scripts/paper-full.js?a=1"></script>
+  <script type="text/javascript" src="/demo/scripts/three.min.js"></script>
+  <script type="text/javascript" src="/demo/scripts/trackballcontrols.js"></script>
+  <script type="text/javascript" src="/demo/scripts/tween.js"></script>
+  <script type="text/javascript" src="/demo/scripts/MTLLoader.js"></script>
+  <script type="text/javascript" src="/demo/scripts/OBJLoader.js"></script>
+  <script type="text/javascript" src="/demo/scripts/OBJExporter.js"></script>
+  <!-- <script type="text/javascript" src="/demo/scripts/jsonc.min.js"></script> -->
   <!-- SHADERS + PROCESSORS -->
-  <!-- <script type="text/javascript" src="demo/scripts/shaders/CopyShader.js"></script> -->
-  <!-- <script type="text/javascript" src="demo/scripts/volumeMaskShader.js"></script> -->
-  <!-- <script type="text/javascript" src="demo/scripts/shaders/RGBShiftShader.js"></script> -->
-  <!-- <script type="text/javascript" src="demo/scripts/postprocessing/EffectComposer.js"></script> -->
-  <!-- <script type="text/javascript" src="demo/scripts/postprocessing/RenderPass.js"></script> -->
-  <!-- <script type="text/javascript" src="demo/scripts/postprocessing/ShaderPass.js"></script> -->
-  <script type="text/javascript" src="demo/scripts/sky.js"></script>
-  <script type="text/javascript" src="demo/scripts/ThreeCSG.js"></script>
-  <script type="text/javascript" src="demo/scripts/jquery.minicolors.min.js"></script>
+  <!-- <script type="text/javascript" src="/demo/scripts/shaders/CopyShader.js"></script> -->
+  <!-- <script type="text/javascript" src="/demo/scripts/volumeMaskShader.js"></script> -->
+  <!-- <script type="text/javascript" src="/demo/scripts/shaders/RGBShiftShader.js"></script> -->
+  <!-- <script type="text/javascript" src="/demo/scripts/postprocessing/EffectComposer.js"></script> -->
+  <!-- <script type="text/javascript" src="/demo/scripts/postprocessing/RenderPass.js"></script> -->
+  <!-- <script type="text/javascript" src="/demo/scripts/postprocessing/ShaderPass.js"></script> -->
+  <script type="text/javascript" src="/demo/scripts/sky.js"></script>
+  <script type="text/javascript" src="/demo/scripts/ThreeCSG.js"></script>
+  <script type="text/javascript" src="/demo/scripts/jquery.minicolors.min.js"></script>
 
   <script type="text/javascript" data-cfasync="false">
     var fragment = null
     var readOnly = false
     var UILayout = "default"
   </script>
-  <script type="text/javascript" src="demo/scripts/threed.js"></script>
+  <script type="text/javascript" src="/demo/scripts/threed.js"></script>
 
 </head>
 
@@ -72,7 +72,7 @@
         
         <a href="https://threedgarden.com/" title="ThreeD Garden"
           style="color: #FFFFFF; text-decoration: none;">        
-          <img src="demo/favicon/favicon.png" 
+          <img src="/demo/favicon/favicon.png" 
             height="48px" 
             style="float:left; padding-top:6px; padding-right: 12px;"
             alt="ThreeD Home + Garden" />
@@ -90,7 +90,7 @@
           <p>Plan + Share Ideas for your Home + Garden in 2D + 3D</p>
           <div style="padding:12px;">
             <p>Save Plan Edits to local web storage : <input type="checkbox" id="saveEditsToLocalStorage" onchange="handleSaveEditsLocalStorageOption()"/>
-              <span class="tooltip"><img src="demo/media/info.png" class="tooltip">
+              <span class="tooltip"><img src="/demo/media/info.png" class="tooltip">
                 <span class="tooltiptext">Any edits you make to the plan will be saved to your browsers local web storage so that you don't lose any work between saves.<br/>The plan may be removed if you clean your browsers cookies and history, so to save your work long term, use the "File->Save" option in the main <a href="https://threedgarden.com">ThreeD Home + Garden</a> toolbar.<br/>More info about <a href="https://www.w3schools.com/HTML/html5_webstorage.asp" target="_blank" rel="noreferrer">Local Web Storage</a>.</span>
               </span>
               <div id="localStoragePlanDiv">
@@ -149,7 +149,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <span class="close">&times;</span>
-        <img src="demo/favicon/favicon.png" height="48px" style="float:left; padding-top:6px; padding-right: 12px;"
+        <img src="/demo/favicon/favicon.png" height="48px" style="float:left; padding-top:6px; padding-right: 12px;"
           title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
         <h2>ThreeD Home + Garden</h2>
       </div>
@@ -190,7 +190,7 @@
   <div id="loadingModal" class="smallModal">
     <div class="smallModal-content">
       <div class="smallModal-header">
-        <img src="demo/favicon/favicon.png" height="48px" style="float:left; padding-top:6px; padding-right: 12px;"
+        <img src="/demo/favicon/favicon.png" height="48px" style="float:left; padding-top:6px; padding-right: 12px;"
           title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
         <h2>ThreeD Home + Garden</h2>
       </div>
@@ -208,7 +208,7 @@
     <div class="smallModal-content">
       <div class="smallModal-header">
         <span class="close">&times;</span>
-        <img src="demo/favicon/favicon.png" height="48px" style="float:left; padding-top:6px; padding-right: 12px;"
+        <img src="/demo/favicon/favicon.png" height="48px" style="float:left; padding-top:6px; padding-right: 12px;"
           title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
         <h2>ThreeD Home + Garden</h2>
       </div>
@@ -250,7 +250,7 @@
       <li class="brandImg">
         <a onclick="showAbout()" style="padding:0px; margin:0px;">
           <img
-            src="demo/favicon/favicon.png" height="48px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
+            src="/demo/favicon/favicon.png" height="48px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" />
         </a>
       </li>
       <li class="brand">
@@ -307,40 +307,40 @@
       <li>
         <a id="pointerTool" onclick="setToolMode('pointer');" class="toolButton activeTool"
           title="Pointer Select" alt="Pointer Select">
-          <img src="demo/media/pointericonWhite.png" height="42px">
+          <img src="/demo/media/pointericonWhite.png" height="42px">
         </a>
       </li>
       <!-- <li>
         <a onClick="setToolMode('hand');">
-          <img src="demo/media/handicon.png" width="50px">
+          <img src="/demo/media/handicon.png" width="50px">
         </a>
       </li> -->
       <li>
         <a id="addWallTool" onclick="setToolMode('walls');" class="toolButton" title="Add Wall" alt="Add Wall">
-          <img src="demo/media/newWallWhite2.png" height="42px">
+          <img src="/demo/media/newWallWhite2.png" height="42px">
         </a>
       </li>
       <li>
         <a id="addFloorTool" onclick="setToolMode('floor');" class="toolButton" title="Add Floor"
           alt="Add Floor">
-          <img src="demo/media/newFloorWhite2.png" height="42px">
+          <img src="/demo/media/newFloorWhite2.png" height="42px">
         </a>
       </li>
       <li>
         <a id="addRoofTool" onclick="setToolMode('roof');" class="toolButton" title="Add Roof" alt="Add Roof">
-          <img src="demo/media/newRoofWhite2.png" height="42px">
+          <img src="/demo/media/newRoofWhite2.png" height="42px">
         </a>
       </li>
       <li>
         <a id="addRulerTool" onclick="setToolMode('dimension');" class="toolButton" title="Add Dimension"
           alt="Add Dimension">
-          <img src="demo/media/newRulerWhite2.png" height="42px">
+          <img src="/demo/media/newRulerWhite2.png" height="42px">
         </a>
       </li>
       <li>
         <a id="addTextTool" onclick="setToolMode('text');" class="toolButton" title="Add Text Annotation"
           alt="Add Text Annotation">
-          <img src="demo/media/newTextWhite.png" height="42px">
+          <img src="/demo/media/newTextWhite.png" height="42px">
         </a>
       </li>
     </ul>
@@ -930,7 +930,7 @@
     <canvas id="planCanvas" width="1024" height="450"></canvas>
     <div id="overlayLogoPlanView" class="overlayLogo">
       <a href="https://threedgarden.com/demo/" style="float:left;padding:0px; margin-top:0px;"><img
-          src="demo/favicon/favicon.png" height="77px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" /></a>&nbsp;
+          src="/demo/favicon/favicon.png" height="77px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" /></a>&nbsp;
       <a href="https://threedgarden.com/demo/"
         style="padding-left: 10px; text-decoration: none; font-size: 32px;">ThreeD Home + Garden</a>
     </div>
@@ -954,7 +954,7 @@
     <canvas id="threeCanvas"></canvas>
     <div id="overlayLogo3dView" class="overlayLogo">
       <a href="https://threedgarden.com/demo/" style="float:left;padding:0px; margin-top:0px;"><img
-          src="demo/favicon/favicon.png" height="77px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" /></a>&nbsp;
+          src="/demo/favicon/favicon.png" height="77px" title="ThreeD Home + Garden" alt="ThreeD Home + Garden" /></a>&nbsp;
       <a href="https://threedgarden.com/demo/"
         style="padding-left: 10px; text-decoration: none; font-size: 32px;">ThreeD Home + Garden</a>
     </div>
@@ -971,9 +971,9 @@
 
   <div id="threedDragDiv"></div>
 
-  <img id="fullscreenPlanViewBtn" src="demo/media/fullscreen.png" width="30" height="30"
+  <img id="fullscreenPlanViewBtn" src="/demo/media/fullscreen.png" width="30" height="30"
     onclick="openFullscreen('planView');" />
-  <img id="fullscreen3dViewBtn" src="demo/media/fullscreen.png" width="30" height="30"
+  <img id="fullscreen3dViewBtn" src="/demo/media/fullscreen.png" width="30" height="30"
     onclick="openFullscreen('view3d');" />
 
   <progress value="50" max="100" class="center" id="progressBar"></progress>
