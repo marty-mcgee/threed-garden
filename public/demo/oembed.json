@@ -1,9 +1,9 @@
 {
     "success": true,
     "type": "rich",
-    "version": "1.0",
-    "provider_name": "ThreeDHomeGarden",
-    "provider_url": "https://threedgarden.com",
+    "version": "2.0",
+    "provider_name": "ThreeDGarden",
+    "provider_url": "https://threedgarden.com/demo",
     "title": "ThreeDHomeGarden",
     "author_name": "Company Juice",
     "height": "400",
