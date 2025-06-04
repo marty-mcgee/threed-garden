@@ -125,13 +125,16 @@ async function getPanelLayout() {
 
 // ==============================================================
 // ** EXPORT JSX as NEXT PAGE
+
 // const FarmBotsPage = (props) => {
 // const FarmBotsPage: NextPage<TPageProps> = (props) => {
 // const FarmBotsPage: NextPage = (): React.ReactNode => {
 // const FarmBotsPage: TNextPageWithProps = (): React.ReactNode => {
-// export default function FarmBotsPage<TNextPageWithProps> (): React.ReactNode { 
-export default async function FarmBotsPage<NextPage> () {
 // const FarmBotsPage: TNextPageWithProps = (pages: any): React.ReactNode => {
+
+// export default function FarmBotsPage<TNextPageWithProps> (): React.ReactNode { 
+// export default async function FarmBotsPage<NextPage> () {
+export default async function FarmBotsPage () {
 
   let QUERY = null
       QUERY = queries.GetFarmBots
