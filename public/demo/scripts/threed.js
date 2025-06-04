@@ -8690,7 +8690,7 @@ $(document).ready(function () {
     (raycaster = new THREE.Raycaster()),
     (mouse = new THREE.Vector2()),
     $.ajax({
-      url: "demo/api/objects.json",
+      url: "/demo/api/objects.json",
       type: "GET",
       contentType: "application/json",
       success: function (e) {
