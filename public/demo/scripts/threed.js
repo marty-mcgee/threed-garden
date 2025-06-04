@@ -3140,7 +3140,7 @@ function initPlanView() {
     }
     ; (toolsGroup = new paper.Group()),
       (toolsGroup.rotation = 0),
-      (rotateIcon = new paper.Raster("media/rotate.png")),
+      (rotateIcon = new paper.Raster("demo/media/rotate.png")),
       (rotateIcon.data.type = "rotateThreedTool"),
       (rotateIcon.onMouseEnter = function (e) {
         planView.style.cursor = "move"
@@ -3150,7 +3150,7 @@ function initPlanView() {
       }),
       (rotateIcon.visible = !1),
       toolsGroup.addChild(rotateIcon),
-      (resizeIcon = new paper.Raster("media/expand.png")),
+      (resizeIcon = new paper.Raster("demo/media/expand.png")),
       (resizeIcon.data.type = "stretchThreedXZTool"),
       (resizeIcon.onMouseEnter = function (e) {
         planView.style.cursor = "move"
@@ -3160,7 +3160,7 @@ function initPlanView() {
       }),
       (resizeIcon.visible = !1),
       toolsGroup.addChild(resizeIcon),
-      (elevateIcon = new paper.Raster("media/elevation.png")),
+      (elevateIcon = new paper.Raster("demo/media/elevation.png")),
       (elevateIcon.data.type = "elevateThreedTool"),
       (elevateIcon.onMouseEnter = function (e) {
         planView.style.cursor = "row-resize"
@@ -3170,7 +3170,7 @@ function initPlanView() {
       }),
       (elevateIcon.visible = !1),
       toolsGroup.addChild(elevateIcon),
-      (heightIcon = new paper.Raster("media/height.png")),
+      (heightIcon = new paper.Raster("demo/media/height.png")),
       (heightIcon.data.type = "stretchThreedYTool"),
       (heightIcon.onMouseEnter = function (e) {
         planView.style.cursor = "ns-resize"
@@ -3308,7 +3308,7 @@ function initPlanView() {
                       (o.selected = !0),
                       (selectedItem = o),
                       o.segments.forEach(function (e) {
-                        var t = new paper.Raster("media/movePointIcon.png")
+                        var t = new paper.Raster("demo/media/movePointIcon.png")
                           ; (t.data.type = "movePointIconWalls"),
                             (t.data.id = e.index),
                             (t.data.level = project.activeLayer.data.id),
@@ -3336,7 +3336,7 @@ function initPlanView() {
                       (a.selected = !0),
                       (selectedItem = a),
                       a.segments.forEach(function (e) {
-                        var t = new paper.Raster("media/movePointIcon.png")
+                        var t = new paper.Raster("demo/media/movePointIcon.png")
                           ; (t.data.type = "movePointIconRoofs"),
                             (t.data.id = e.index),
                             (t.data.level = project.activeLayer.data.id),
@@ -3390,7 +3390,7 @@ function initPlanView() {
                       ; (n.selected = !0),
                         (selectedItem = n),
                         n.segments.forEach(function (e) {
-                          var t = new paper.Raster("media/movePointIcon.png")
+                          var t = new paper.Raster("demo/media/movePointIcon.png")
                             ; (t.data.type = "movePointIconFloors"),
                               (t.data.id = e.index),
                               (t.data.level = project.activeLayer.data.id),
