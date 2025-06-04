@@ -60,7 +60,7 @@ function MainNavDropdownMenuDemo() {
           >
             🟢 DEMOS
           </button>
-          {/* <NavigationMenuItem>
+          <NavigationMenuItem>
             <NavigationMenuLink
               href='/home-design'
               className={navigationMenuTriggerStyle()}
@@ -74,9 +74,9 @@ function MainNavDropdownMenuDemo() {
                 // fontSize: 12,
               }}
             >
-              🟢 DEMO: FULL
+              🔴 DEMO: LATEST
             </NavigationMenuLink>
-          </NavigationMenuItem> */}
+          </NavigationMenuItem>
         </DropdownMenu.Trigger>
   
         <DropdownMenu.Portal>
@@ -95,6 +95,19 @@ function MainNavDropdownMenuDemo() {
                 className='DropdownMenuItem'
               >
                 🟢 DEMO: FULL
+              </Link>
+            </DropdownMenu.Item>
+            
+            <DropdownMenu.Item 
+              className='DropdownMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/demo' 
+                title='Demo Page'
+                className='DropdownMenuItem'
+              >
+                🟠 DEMO: LEGACY
               </Link>
             </DropdownMenu.Item>
             
