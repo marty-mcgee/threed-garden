@@ -10,14 +10,14 @@
   <meta name="viewport" content="initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#222222" />
 
-  <link rel="stylesheet" href="/css/threed.css">
-  <link rel="stylesheet" href="/css/fa-550.css">
-  <link rel="stylesheet" href="/css/jquery.minicolors.css">
+  <link rel="stylesheet" href="/demo/css/threed.css">
+  <link rel="stylesheet" href="/demo/css/fa-550.css">
+  <link rel="stylesheet" href="/demo/css/jquery.minicolors.css">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-  <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="apple-touch-icon" sizes="76x76" href="/demo/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/demo/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/demo/favicon/favicon-16x16.png">
+  <link rel="mask-icon" href="/demo/favicon/safari-pinned-tab.svg" color="#5bbad5">
   <meta name="msapplication-TileColor" content="#da532c">
 
   <meta name="description" content="Create house and garden plans in 2D and 3D">
@@ -102,7 +102,8 @@
                       <br />
                       <button 
                         onClick="loadFromLocalStorage()"
-                        id="loadLocalStoragePlanBtn">
+                        id="loadLocalStoragePlanBtn"
+                      >
                         Load Plan
                       </button>
                       <br /><br />
@@ -110,7 +111,10 @@
                     </td>
                     <td>
                       <div>
-                        <img id="localStoragePlanImage" onClick="loadFromLocalStorage();"/>
+                        <img 
+                          id="localStoragePlanImage" 
+                          onClick="loadFromLocalStorage();"
+                        />
                       </div>
                     </td>
                   </tr>
@@ -130,10 +134,20 @@
                     <br /><br />
                     or
                     <br />
-                    <button onClick="closeAllModals()" class="largeButton">Start New Plan</button>
+                    <button 
+                      onClick="closeAllModals()" 
+                      class="largeButton"
+                    >
+                      Start New Plan
+                    </button>
                   </td>
                   <td>
-                    <div><img id="featuredPlanImage" onClick="loadExamplePlan();" /></div>
+                    <div>
+                      <img 
+                        id="featuredPlanImage" 
+                        onClick="loadExamplePlan();" 
+                      />
+                    </div>
                   </td>
                 </tr>
               </table>
