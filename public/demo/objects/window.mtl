@@ -1,0 +1,30 @@
+# newWindowDk.mtl Produced by Art of Illusion 2.8.1, Thu Aug 26 17:09:18 EDT 2010
+#
+# Created by Pencilart
+#
+# 2019 Sean Bradley rescaled for optimisation in HomeIdea3D http://homeidea3d.com
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+newmtl darkwood
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd newWindowDk1.jpg
+
+newmtl glass
+Ns 101.960784
+Ka 0.000000 0.000000 0.000000
+Kd 0.500000 0.500000 0.500000
+Ks 0.024000 0.024000 0.024000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.500000
+illum 2

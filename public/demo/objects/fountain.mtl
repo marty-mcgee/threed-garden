@@ -1,0 +1,35 @@
+# waterFountain.mtl
+#
+# Modeled by sparkywalk
+# http://sourceforge.net/p/sweethome3d/d-models/339/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+#
+# Material Count: 5
+
+newmtl SkyBlue
+Ka 0.000000 0.000000 0.000000
+Kd 0.733333 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+d 0.800000
+
+newmtl FrontColor
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl Color_D02
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 0.800000 0.196078
+Ks 0.330000 0.330000 0.330000
+
+newmtl Color_D06
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.600000 0.000000
+Ks 0.330000 0.330000 0.330000
+
+newmtl P3300075b
+Ka 0.000000 0.000000 0.000000
+Kd 0.537255 0.435294 0.325490
+Ks 0.330000 0.330000 0.330000
+

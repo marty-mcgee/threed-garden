@@ -1,0 +1,39 @@
+# Blender MTL File: 'lamp.blend'
+# Material Count: 4
+
+newmtl Base
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd wood.jpg
+
+newmtl None
+Ns 0
+Ka 0.000000 0.000000 0.000000
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
+illum 2
+
+newmtl Shade
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.84 0.83 0.78
+Ks 0.1 0.1 0.1
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Stone
+Ns 15
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.15 0.15 0.15
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd white_stone.jpg

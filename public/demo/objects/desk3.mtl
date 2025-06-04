@@ -1,0 +1,37 @@
+# bureauInfoClair.mtl 3D model
+#
+# Created by Gael Bettinelli
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl BoisClair
+illum 2
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 0.04 0.04 0.04
+Ns 41.0
+map_Kd bureauInfoClair_BoisClair.jpg
+
+newmtl Blanc
+illum 2
+Ka 0.83 0.83 0.83
+Kd 0.98 0.98 0.98
+Ks 0.23 0.23 0.23
+Ns 114.0
+
+newmtl Noir
+illum 1
+Ka 0.0 0.0 0.0
+Kd 0.22 0.22 0.22
+Ks 0.0 0.0 0.0
+Ns 1.0
+
+newmtl GrisMetal
+illum 2
+Ka 0.0 0.0 0.0
+Kd 0.7 0.7 0.7
+Ks 0.65 0.65 0.65
+Ns 70.0

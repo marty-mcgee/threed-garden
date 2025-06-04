@@ -1,0 +1,18 @@
+# picnic_table.mtl 
+#
+# Created by Hawkdawg
+# http://sourceforge.net/p/sweethome3d/d-models/377/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+#
+
+newmtl wood
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd picnic-table4.jpg

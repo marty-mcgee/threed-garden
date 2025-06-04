@@ -1,0 +1,36 @@
+# swimmingPool.mtl 
+#
+# Copyright (c) 2013 Emmanuel PUYBARET / eTeks <info@eteks.com>
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+newmtl border
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl liner
+Ns 30
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.3 0.3 0.3
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd swimmingPool.jpg
+
+newmtl water
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.200000 0.200000 0.200000
+Ni 1.000000
+d 0.750000
+illum 2
+map_Kd swimmingPoolWater.jpg

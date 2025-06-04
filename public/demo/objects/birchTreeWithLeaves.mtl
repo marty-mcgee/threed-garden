@@ -1,0 +1,28 @@
+# birchTreeWithLeaves.mtl
+#
+# Copyright 2019 Sean Bradley
+#
+# Created by Sean Bradley for HomeIdea3D http://homeidea3d.seanwasere.com
+#
+# This file is distributed under Attribution 4.0 International (CC BY 4.0)  license, see https://creativecommons.org/licenses/by/4.0/
+#
+
+newmtl Material.001
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.441811 0.055034
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Material.002
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.618115 0.463617
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

@@ -1,0 +1,29 @@
+# Blender MTL File: 'NumbLock_HP.blend'
+# Material Count: 3
+
+newmtl Letters
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.2 0.1 0.02
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 0.400000
+illum 1
+
+newmtl NB_Buttons
+Ns 50
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.9
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl NB_base
+Ns 50
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.9
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2

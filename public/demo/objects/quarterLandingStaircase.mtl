@@ -1,0 +1,69 @@
+# stairs_90_closed_legal_high.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/329/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Handrail
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 0.545098 0.270588 0.074510
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Tread
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 0.576471 0.321569 0.219608
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Stairs_side
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 0.800000 0.541176 0.388235
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Stairs_under
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Baluster
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 0.545098 0.270588 0.074510
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Top_tread
+Ns 0.000000
+Ka 0.200000 0.200000 0.200000
+Kd 0.803922 0.521569 0.247059
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

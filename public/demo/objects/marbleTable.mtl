@@ -1,0 +1,28 @@
+# table_granmother_marble.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/288/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Legs
+Ns 127.450980
+Ka 0.200000 0.200000 0.200000
+Kd 0.850000 0.650000 0.120000
+Ks 1.000000 1.000000 1.000000
+Ni 1.000000
+d 1.000000
+illum 3
+
+newmtl Top
+Ns 30
+Ka 0.200000 0.200000 0.200000
+Kd 0.8 0.8 0.8
+Ks 1 1 1
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd marble.jpg

@@ -1,0 +1,23 @@
+# hangingLight.mtl
+#
+# Copyrights (C) 2010  Peter Smolik
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl ltglass_1_1
+illum 2
+Ka 0.780392 0.784314 0.592157
+Kd 0.980392 1.0 0.890196
+Ks 0.705882 0.705882 0.705882
+Ns 128.0
+d 0.95
+
+newmtl ltgold_2_2
+illum 2
+Ka 0.482353 0.462745 0.25098
+Kd 0.67451 0.678431 0.435294
+Ks 0.992157 1.0 0.639216
+Ns 128.0

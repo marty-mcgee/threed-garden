@@ -1,0 +1,48 @@
+# Blender MTL File: 'bedroom.blend'
+# Material Count: 5
+
+newmtl Wood
+Ns 50
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Wood1.jpg
+
+newmtl couch
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.62 0.76
+Ks 0.01 0.01 0.01
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl mattress
+Ns 1
+Ka 0.000000 0.000000 0.000000
+Kd 0.95 0.85 0.78
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+
+newmtl pillow
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.55 0.48 0.59
+Ks 0.01 0.01 0.01
+Ni 1.000000
+d 1.000000
+illum 1
+
+newmtl sheet
+Ns 10
+Ka 0.000000 0.000000 0.000000
+Kd 0.75 0.67 0.81
+Ks 0.01 0.01 0.01
+Ni 1.000000
+d 1.000000
+illum 1

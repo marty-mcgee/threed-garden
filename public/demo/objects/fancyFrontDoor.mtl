@@ -1,0 +1,27 @@
+# fancyFrontDoor.mtl Produced by Art of Illusion 2.8.1, Fri Aug 27 15:49:28 EDT 2010
+#
+# Created by Pencilart
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+newmtl glass
+Kd 0.5 0.5 0.5
+Ks 0.024 0.024 0.024
+Ka 0 0 0
+illum 2
+Ns 103
+d 0.5
+newmtl frostedglass
+Kd 0.5 0.5 0.5
+Ks 0 0 0
+Ka 0 0 0
+illum 1
+d 0.5
+newmtl darkwood
+Kd 1 1 1
+map_Kd fancyFrontDoor1.jpg
+Ks 0 0 0
+Ka 0 0 0
+illum 1

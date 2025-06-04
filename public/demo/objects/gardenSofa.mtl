@@ -1,0 +1,15 @@
+# canapeJardin.mtl 3D model
+#
+# Created by Gael Bettinelli
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl default
+illum 2
+Ka 0.4 0.4 0.4
+Kd 0.7102 0.702 0.6531
+Ks 0.3 0.3 0.3
+Ns 30

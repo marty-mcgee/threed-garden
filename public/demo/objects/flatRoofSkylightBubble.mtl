@@ -1,0 +1,32 @@
+# window_flat_roof_skylight_bubble.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/308/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Glass
+illum 3
+Ka 0.4 0.4 0.4
+Kd 0.7 0.7 0.7
+Ks 1.0 1.0 1.0
+Ns 128.0
+Ni 1
+d 0.4
+
+newmtl Frame_out
+illum 2
+Ka 0.3 0.3 0.3
+Kd 0.3 0.3 0.3
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl Frame_in
+illum 1
+Ka 1.0 1.0 1.0
+Kd 1.0 1.0 1.0
+Ks 0.1 0.1 0.1
+Ns 1.0

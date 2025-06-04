@@ -1,0 +1,42 @@
+# largeCouch.mtl Produced by Art of Illusion 2.8.1, Sat Mar 12 15:20:59 EST 2011
+#
+# Created by Pencilart
+#
+# 2019 Sean Bradley rescaled and adjusted object origin for optimisation in HomeIdea3D http://homeidea3d.com
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+# 
+
+newmtl Sand
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.834400 0.792740 0.685600
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl circulargreen
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd largeCouch.png
+
+newmtl woodfeet
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd largeCouch.png

@@ -1,0 +1,20 @@
+# Blender MTL File: 'livingroom.blend'
+# Material Count: 2
+
+newmtl SofaCushions
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.9 0.9 0.9
+Ks 0.2 0.2 0.2
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl SofaFrame
+Ns 20
+Ka 0.000000 0.000000 0.000000
+Kd 0.7 0.7 0.7
+Ks 0.8 0.8 0.8
+Ni 1.000000
+d 1.000000
+illum 2

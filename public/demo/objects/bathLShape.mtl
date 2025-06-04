@@ -1,0 +1,41 @@
+# bath_L.mtl
+#
+# Created by Ola-Kristian HOFF
+# http://sourceforge.net/p/sweethome3d/d-models/346/
+#
+# This file is distributed under Free Art License, see http://artlibre.org/licence/lal/en for more informations
+# and under CC-BY Creative Commons Attribution 3.0 Unported license, see http://creativecommons.org/licenses/by/3.0/
+# at your choice
+#
+
+newmtl Tub
+illum 1
+Ka 0.2 0.2 0.2
+Kd 1.0 1.0 1.0
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl Water
+illum 2
+Ka 0.37254903 0.47843137 0.46666667
+Kd 0.37254903 0.47843137 0.46666667
+Ks 0.5703125 0.5703125 0.5703125
+Ns 73.0
+Ni 1
+d 0.45
+
+newmtl Metal_trim
+illum 1
+Ka 0.2 0.2 0.2
+Kd 0.7764706 0.7764706 0.7764706
+Ks 1.0 1.0 1.0
+Ns 128.0
+
+newmtl Glass_safety
+illum 3
+Ka 0.2 0.2 0.2
+Kd 0.8 1.0 1.0
+Ks 1.0 1.0 1.0
+Ns 128.0
+Ni 1.0
+d 0.45
