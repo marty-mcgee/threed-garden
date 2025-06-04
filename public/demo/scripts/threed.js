@@ -8708,7 +8708,7 @@ $(document).ready(function () {
                 "\");'><img " +
                 (t < 32
                   ? "src='" + objectsURL + "objects/" + e + ".png'"
-                  : "src='media/thumbPlaceHolder.png'") +
+                  : "src='/demo/media/thumbPlaceHolder.png'") +
                 " realsrc='" + objectsURL + "objects/" +
                 e +
                 ".png' class='threedThumb' alt='" +
