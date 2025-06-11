@@ -43,7 +43,7 @@ function MainNavDropdownMenuDemo() {
     return (
       <DropdownMenu.Root>
   
-        <DropdownMenu.Trigger asChild>
+        <DropdownMenu.Trigger>
           <button 
             // className='MenuButton' 
             // className={navigationMenuTriggerStyle()}
@@ -177,7 +177,7 @@ function MainNavDropdownMenuChat() {
     return (
       <DropdownMenu.Root>
   
-        <DropdownMenu.Trigger asChild>
+        <DropdownMenu.Trigger>
           <button 
             // className='MenuButton' 
             // className={navigationMenuTriggerStyle()}
