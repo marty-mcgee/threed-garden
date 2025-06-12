@@ -35,15 +35,14 @@ import {
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 
 
-
-
+/** */
 function MainNavDropdownMenuDemo() {
   // ==========================================================
     // ** RETURN JSX
     return (
       <DropdownMenu.Root>
   
-        <DropdownMenu.Trigger>
+        <DropdownMenu.Trigger asChild>
           <button 
             // className='MenuButton' 
             // className={navigationMenuTriggerStyle()}
@@ -171,13 +170,15 @@ function MainNavDropdownMenuDemo() {
     )
 }
 
+
+/** */
 function MainNavDropdownMenuChat() {
   // ==========================================================
     // ** RETURN JSX
     return (
       <DropdownMenu.Root>
   
-        <DropdownMenu.Trigger>
+        <DropdownMenu.Trigger asChild>
           <button 
             // className='MenuButton' 
             // className={navigationMenuTriggerStyle()}
