@@ -43,43 +43,44 @@ function MainNavDropdownMenuDemo() {
       <DropdownMenu.Root>
   
         <DropdownMenu.Trigger asChild>
-          <button 
-            // className='MenuButton' 
-            // className={navigationMenuTriggerStyle()}
-            style={{
-              backgroundColor: '#222222', 
-              color: '#888888',
-              textDecoration: 'none',
-              borderWidth: 0,
-              // marginTop: 0,
-              // padding: 0,
-              fontSize: 12,
-            }}
-            aria-label='DEMOS'
-          >
-            🟢 DEMOS
-          </button>
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              href='/home-design'
-              className={navigationMenuTriggerStyle()}
+          <div>
+            <button 
+              // className='MenuButton' 
+              // className={navigationMenuTriggerStyle()}
               style={{
                 backgroundColor: '#222222', 
                 color: '#888888',
                 textDecoration: 'none',
-                // borderWidth: 0,
+                borderWidth: 0,
                 // marginTop: 0,
                 // padding: 0,
-                // fontSize: 12,
+                fontSize: 12,
               }}
+              aria-label='DEMOS'
             >
-              🔴 DEMO: LATEST
-            </NavigationMenuLink>
-          </NavigationMenuItem>
+              🟢 DEMOS
+            </button>
+            {/* <NavigationMenuItem>
+              <NavigationMenuLink
+                href='/home-design'
+                className={navigationMenuTriggerStyle()}
+                style={{
+                  backgroundColor: '#222222', 
+                  color: '#888888',
+                  textDecoration: 'none',
+                  // borderWidth: 0,
+                  // marginTop: 0,
+                  // padding: 0,
+                  // fontSize: 12,
+                }}
+              >
+                🔴 DEMO: LATEST
+              </NavigationMenuLink>
+            </NavigationMenuItem> */}
+          </div>
         </DropdownMenu.Trigger>
   
         <DropdownMenu.Portal>
-  
           <DropdownMenu.Content 
             className='DropdownMenuContent' 
             // sideOffset={5}
@@ -166,6 +167,7 @@ function MainNavDropdownMenuDemo() {
   
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
+
       </DropdownMenu.Root>
     )
 }
@@ -179,27 +181,28 @@ function MainNavDropdownMenuChat() {
       <DropdownMenu.Root>
   
         <DropdownMenu.Trigger asChild>
-          <button 
-            // className='MenuButton' 
-            // className={navigationMenuTriggerStyle()}
-            style={{
-              backgroundColor: '#222222', 
-              color: '#888888',
-              textDecoration: 'none',
-              borderWidth: 0,
-              // marginTop: 0,
-              // padding: 0,
-              fontSize: 12,
-            }}
-            aria-label='CHATS'
-          >
-            {/* <HamburgerMenuIcon /> */}
-            🟣 CHATS
-          </button>
+          <div>
+            <button 
+              // className='MenuButton' 
+              // className={navigationMenuTriggerStyle()}
+              style={{
+                backgroundColor: '#222222', 
+                color: '#888888',
+                textDecoration: 'none',
+                borderWidth: 0,
+                // marginTop: 0,
+                // padding: 0,
+                fontSize: 12,
+              }}
+              aria-label='CHATS'
+            >
+              {/* <HamburgerMenuIcon /> */}
+              🟣 CHATS
+            </button>
+          </div>
         </DropdownMenu.Trigger>
   
         <DropdownMenu.Portal>
-  
           <DropdownMenu.Content 
             className='DropdownMenuContent' 
             // sideOffset={5}
@@ -252,13 +255,10 @@ function MainNavDropdownMenuChat() {
   
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
+
       </DropdownMenu.Root>
     )
 }
-
-
-
-
 
 
 export default function MainNav() {
