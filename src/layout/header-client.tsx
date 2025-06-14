@@ -133,37 +133,35 @@ export default function Header() {
         <SignedOut>
           <SignInButton mode='modal'>
             <Button 
-              className='
-                rounded 
-                border-0
-                border-black 
-                bg-transparent 
-                px-2 
-                py-0.5
-                m-0
-                text-xs 
-                text-white 
-                transition-colors 
-                hover:bg-black 
-                hover:text-gray
-              '
+              className='Button'
+              // className='
+              //   rounded 
+              //   border-0
+              //   border-black 
+              //   bg-transparent 
+              //   px-2 
+              //   py-0
+              //   m-0
+              //   text-white 
+              //   transition-colors 
+              //   hover:bg-black 
+              //   hover:text-gray
+              // '
             >
               Sign In
             </Button>
           </SignInButton>
         </SignedOut>
         <SignedIn>
-          <div className='m-1'>
             <UserButton>
               <UserButton.MenuItems>
                 <UserButton.Link
                   label='Dashboard'
                   labelIcon={<LayoutDashboard className='h-6 w-6' />}
-                  href='/'
+                  href='/#dashboard'
                 />
               </UserButton.MenuItems>
             </UserButton>
-          </div>
         </SignedIn>       
 
       </div>
