@@ -273,7 +273,7 @@ export default function MainNav() {
       <div
         style={{
           display: 'inline-flex',
-          // flexGrow: '0',
+          // flexGrow: 0,
           alignItems: 'center',
           marginRight: -16,
         }}
@@ -302,7 +302,7 @@ export default function MainNav() {
       
       <div
         style={{
-          flexGrow: '1',
+          flexGrow: 0,
           // marginTop: 0,
         }}
       >
