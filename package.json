@@ -39,41 +39,44 @@
         "use-count-up": "3.0.1",
 
     "next": "15.3.3",
-    "@next/third-parties": "15.3.3",
+      "@next/third-parties": "15.3.3",
         "next-themes": "0.4.6",
 
     "next-auth": "5.0.0-beta.26",
         "@auth0/auth0-react": "2.3.0",
     "@clerk/nextjs": "6.17.0",
-
         "@casl/ability": "5.4.3",
         "@casl/react": "3.1.0",
     
+
     "@apollo/client": "3.13.8",
     "@apollo/client-integration-nextjs": "0.12.2",
     "@apollo/react-hooks": "4.0.0",
-    "graphql": "16.10.0",
-    "graphql-tag": "2.12.6",
-        "zustand": "5.0.3",
+    "graphql": "16.11.0",
+      "graphql-tag": "2.12.6",
+      "zustand": "5.0.5",
         "zustand-x": "6.1.0",
         "scheduler": "0.26.0",
-        "valtio": "2.1.4",
+        "valtio": "2.1.5",
 
-    "three": "0.174.0",
-    "three-mesh-ui": "6.5.4",
-    "three-stdlib": "2.35.15",
 
-    "@react-spring/three": "9.7.5",
+    "three": "0.177.0",
+      "three-mesh-ui": "6.5.4",
+      "three-stdlib": "2.36.0",
 
-    "@react-three/drei": "10.0.6",
+    "@react-spring/three": "10.0.1",
+
+    "@react-three/drei": "10.2.0",
     "@react-three/fiber": "9.1.2",
     "@react-three/rapier": "2.1.0",
     "@react-three/postprocessing": "3.0.4",
     "r3f-perf": "7.2.3",
     
+
     "paper": "0.12.18",
 
-        "leva": "0.10.0",
+    
+      "leva": "0.10.0",
         
     
     "react-resizable-panels": "3.0.3", 
