@@ -2,13 +2,18 @@
 // 'use server'
 
 // ** REACT Imports
-// import { Suspense } from 'react'
+import { Suspense } from 'react'
 
 // ** NEXT Imports
 // import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import Link from 'next/link'
 
 // ** COMPONENT Imports
 import MainNav from '#/layout/ui/main-nav'
+import MainNav2 from '#/layout/ui/main-nav-2'
+import CustomLink from '#/layout/ui/custom-link'
+// ** AUTH Imports
 // import UserButtonNextAuth from '#/layout/ui/user-button'
 // const UserButtonNextAuth = dynamic(() => import('#/layout/ui/user-button'), { ssr: false })
 // const UserButtonNextAuth = dynamic(() => import('#/layout/ui/user-button'), { })
@@ -27,27 +32,98 @@ import {
 export default function Header() {
 // export default async function Header() {
   return (
+  <Suspense fallback={null}>
     <div
       id='ThreeDAppHeader'
       style={{
         display: 'flex',
-        height: '36px',
+        alignItems: 'center',
+        // height: '36px',
       }}
     >
       {/* MAIN NAV */}
       <div
         style={{
+          display: 'inline-flex',
+          alignItems: 'center',
           flexGrow: 1,
         }}
       >
-        <MainNav />
+        {/* <MainNav /> */}
+        {/* OR */}
+        {/* <MainNav2 /> within a dom node shell */}
+        <div
+          style={{
+            display: 'flex',
+            // alignItems: 'center',
+            // flexGrow: 1,
+            // marginLeft: 4,
+            // marginTop: -8,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              // flexGrow: 0,
+              alignItems: 'center',
+              margin: 4,
+            }}
+          >
+            <CustomLink href='/#logo'
+              style={{
+                display: 'flex',
+                color: '#DDDDDD',
+                textDecoration: 'none',
+                // marginTop: 4,
+                // marginLeft: 4,
+                // marginBottom: 4,
+                marginRight: 4,
+              }}
+            >
+              <Image 
+                src='/favicon/favicon.png' 
+                // priority={true} 
+                alt='ThreeD App Home'
+                width={24}
+                height={24}
+              />
+            </CustomLink>
+            <CustomLink href='/#home' 
+              style={{
+                display: 'flex',
+                color: '#DDDDDD',
+                textDecoration: 'none',
+                // marginLeft: 4,
+                // marginTop: -2,
+                // marginBottom: 2,
+              }}
+            >
+              ThreeD Garden
+            </CustomLink>
+          </div>
+          
+          <div
+            style={{
+              // display: 'inline-flex',
+              // flexGrow: 0,
+              // flexGrow: 1,
+              // alignItems: 'center',
+              // marginTop: 0,
+            }}
+          >
+            {/* <MainNav2 /> within a dom node shell */}
+            <MainNav2 />
+          </div>
+
+        </div>
       </div>
       {/* USER AUTH */}
       <div
         style={{
-          flexGrow: 0,
+          display: 'inline-flex',
+          // flexGrow: 0,
           // marginTop: 8,
-          // marginRight: 8,
+          marginRight: 4,
         }}
       >
         {/* NEXT-AUTH */}
@@ -59,12 +135,12 @@ export default function Header() {
             <Button 
               className='
                 rounded 
-                border 
+                border-0
                 border-black 
-                bg-black 
+                bg-transparent 
                 px-2 
                 py-0.5
-                m-1
+                m-0
                 text-xs 
                 text-white 
                 transition-colors 
@@ -92,5 +168,6 @@ export default function Header() {
 
       </div>
     </div>
+  </Suspense>
   )
 }
