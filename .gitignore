@@ -105,6 +105,7 @@ src/lib/ecctrl/src-old
 # src/app/deepseek
 
 # threed.home-design
+public/demo/*
 src/lib/threed/assets/demo/**
 src/lib/threed/assets/media/**
 src/lib/threed/assets/threeds/**
