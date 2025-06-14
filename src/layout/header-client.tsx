@@ -66,7 +66,7 @@ export default function Header() {
               display: 'flex',
               // flexGrow: 0,
               alignItems: 'center',
-              margin: 4,
+              margin: 2,
             }}
           >
             <CustomLink href='/#logo'
