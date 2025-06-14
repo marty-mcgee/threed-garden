@@ -54,31 +54,36 @@
     "@apollo/react-hooks": "4.0.0",
     "graphql": "16.11.0",
       "graphql-tag": "2.12.6",
-      "zustand": "5.0.5",
-        "zustand-x": "6.1.0",
-        "scheduler": "0.26.0",
-        "valtio": "2.1.5",
 
+    "zustand": "5.0.5",
+      "zustand-x": "6.1.0",
+      "scheduler": "0.26.0",
+    
+    "valtio": "2.1.5",
 
-    "three": "0.177.0",
-      "three-mesh-ui": "6.5.4",
-      "three-stdlib": "2.36.0",
+    
+    "paper": "0.12.18",
 
-    "@react-spring/three": "10.0.1",
+    
+    "three": "0.174.0",
 
     "@react-three/drei": "10.2.0",
     "@react-three/fiber": "9.1.2",
     "@react-three/rapier": "2.1.0",
     "@react-three/postprocessing": "3.0.4",
+
+    "@react-spring/three": "10.0.1",
+
     "r3f-perf": "7.2.3",
-    
 
-    "paper": "0.12.18",
+    "leva": "0.10.0",
 
-    
-      "leva": "0.10.0",
-        
-    
+
+
+
+
+
+
     "react-resizable-panels": "3.0.3", 
 
     
@@ -102,6 +107,7 @@
         "@radix-ui/react-switch": "1.2.5",
         "@radix-ui/react-tooltip": "1.2.7",
 
+
     "tailwindcss": "3.4.16",
       "tailwind-merge": "2.5.5",
       "tailwindcss-animate": "1.0.7",
@@ -110,11 +116,13 @@
       "html-react-parser": "5.2.5",
       "autoprefixer": "10.4.21",
 
+
     "styled-components": "6.1.11",
       "@emotion/styled": "11.13.0",
       "@emotion/react": "11.13.3",
       "@mui/material": "6.1.1",
       "@mui/icons-material": "6.1.1",
+
 
     "@heroicons/react": "2.2.0",
 
@@ -128,6 +136,10 @@
 
         "class-variance-authority": "0.7.1",
         "lucide-react": "0.477.0",
+
+
+
+
 
 
     "farmbot": "15.8.10",
@@ -146,29 +158,29 @@
 
   "devDependencies": {
 
-    "typescript": "5.7.3",
-    "@types/chroma-js": "3.1.1",
-    "@types/cors": "2.8.17",
-    "@types/lodash": "4.17.15",
-    "@types/node": "22.13.1",
-    "@types/noisejs": "0.0.31",
-    "@types/pretty-time": "1.1.5",
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.0.4",
-    "@types/three": "0.174.0",
-    "@types/uuid": "10.0.0",
+    "typescript": "5.8.3",
+      "@types/chroma-js": "3.1.1",
+      "@types/cors": "2.8.17",
+      "@types/lodash": "4.17.15",
+      "@types/node": "22.13.1",
+      "@types/noisejs": "0.0.31",
+      "@types/pretty-time": "1.1.5",
+      "@types/react": "19.1.8",
+      "@types/react-dom": "19.1.6",
+      "@types/three": "0.177.0",
+      "@types/uuid": "10.0.0",
 
     "eslint": "9.21.0",
-    "@typescript-eslint/eslint-plugin": "8.26.0",
-    "@typescript-eslint/parser": "8.26.0",
-    "eslint-import-resolver-alias": "1.1.2",
-    "eslint-import-resolver-typescript": "3.8.3",
-    "eslint-plugin-import": "2.31.0",
-    "eslint-plugin-jsx-a11y": "6.10.2",
-    "eslint-plugin-react": "7.37.4",
-    "eslint-plugin-react-hooks": "5.2.0",
-    "@next/eslint-plugin-next": "15.2.1",
-    "eslint-config-next": "15.2.1",
+      "@typescript-eslint/eslint-plugin": "8.26.0",
+      "@typescript-eslint/parser": "8.26.0",
+      "eslint-import-resolver-alias": "1.1.2",
+      "eslint-import-resolver-typescript": "3.8.3",
+      "eslint-plugin-import": "2.31.0",
+      "eslint-plugin-jsx-a11y": "6.10.2",
+      "eslint-plugin-react": "7.37.4",
+      "eslint-plugin-react-hooks": "5.2.0",
+      "@next/eslint-plugin-next": "15.2.1",
+      "eslint-config-next": "15.2.1",
     
     "buffer": "6.0.3",
     "path": "0.12.7",

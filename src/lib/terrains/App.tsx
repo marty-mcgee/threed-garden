@@ -5,12 +5,11 @@ import { OrbitControls } from "@react-three/drei";
 import "./App.css";
 import { Lights } from "./components/Lights";
 import { Gizmo } from "./components/Gizmo";
-import { GUI } from "./components/GUI";
+// import { GUI } from "./components/GUI";
 import { Terrain } from "./components/Terrain";
 
 export default function App() {
   return (
-    <>
     <div 
       id='threedTerrains'
       style={{ 
@@ -22,7 +21,7 @@ export default function App() {
         overflow: 'hidden',
       }}
     >
-      <GUI />
+      {/* <GUI /> */}
       <Canvas
         shadows
         dpr={[1, 2]}
@@ -40,6 +39,5 @@ export default function App() {
         <Terrain />
       </Canvas>
     </div>
-    </>
   );
 }
