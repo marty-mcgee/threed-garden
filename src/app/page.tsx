@@ -422,6 +422,18 @@ export default async function AppPage() {
               ________________
             </li>
             <li 
+              key='page-Example-FarmBots-API'
+            >
+              <Link 
+                href='/farmbot' 
+                // target='_blank'
+                title='FarmBot Application Protocol Interface'
+                className='ListMenuItem'
+              >
+                FarmBot API
+              </Link>
+            </li>
+            <li 
               key='page-Example-FarmBots-UI'
             >
               <Link 

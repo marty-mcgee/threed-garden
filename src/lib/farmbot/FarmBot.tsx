@@ -1,41 +1,44 @@
-'use client' // testing
+// 'use client' // testing
+// 'use server' // testing
 
 // ==========================================================
 // RESOURCES
 
+import React from 'react'
+
+// ** FARMBOT Imports
 import { Farmbot } from 'farmbot'
 
-import useSWR from 'swr'
-
-
+// import useSWR from 'swr'
 
 // ** Helper Components
-import Spinner from '#/layout/ui/spinner'
+// import Spinner from '#/layout/ui/spinner'
 // ** HELPFUL UTIL: COLORFUL CONSOLE MESSAGES (ccm)
 import ccm from '#/lib/utils/console-colors'
 
-// ==========================================================
-// IMPORTS COMPLETE
 // ==========================================================
 
 // ** DEBUG: this module
 const debug: boolean = false
 const DEBUG: boolean = false
 
-const appVersion = 'v0.15.0-bot'
+const appVersion = 'v0.17.3-bot.0'
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION
 // const appVersion = process.env.npm_package_version
 // const appVersion: string = require('package.json').version
 // const appVersion: string = require('../../package.json').version
 
 if (debug || DEBUG) {
-  console.log('%c🥕 ThreeDGarden<FARMBOT>: {.tsx}', ccm.green)
-  console.log('%c🌱 appVersion', ccm.darkgreen, appVersion)
-  console.log(`%c====================================`, ccm.darkgreen)
+  console.debug('%c🥕 ThreeDGarden<FARMBOT>: {.tsx}', ccm.green)
+  console.debug('%c🌱 appVersion', ccm.darkgreen, appVersion)
+  console.debug(`%c====================================`, ccm.darkgreen)
 }
 
-// ** FARMBOT KEY
-const getFarmbotToken = () => {
+// ==========================================================
+
+// ** FARMBOT TOKEN KEY
+// const getFarmbotToken = () => {
+function getFarmbotToken() {
 
       // import requests
       // response = requests.request(
@@ -63,117 +66,141 @@ const getFarmbotToken = () => {
   // ** js fetch (default option)
   // fetch()
   // const data = new URLSearchParams()
-  // data.append('email', 'mcgee.marty@gmail.com')
-  // data.append('password', 'pursueB@8')
+  // data.append('email', process.env.NEXT_PUBLIC_FARMBOT_EMAIL)
+  // data.append('password', process.env.NEXT_PUBLIC_FARMBOT_SECRET)
 
   const data = {
     user: {
-      email: 'mcgee.marty@gmail.com',
-      password: 'XXXxxxXXX',
+      email: process.env.NEXT_PUBLIC_FARMBOT_EMAIL,
+      password: process.env.NEXT_PUBLIC_FARMBOT_SECRET,
     }
   }
+
   // data.token.encoded
-  let MY_THREED_TOKEN = process.env.NEXT_PUBLIC_FARMBOT_TOKEN
+  let MY_THREED_TOKEN 
+  
+      MY_THREED_TOKEN = process.env.NEXT_PUBLIC_FARMBOT_TOKEN
                       ? process.env.NEXT_PUBLIC_FARMBOT_TOKEN
                       : 'NADA.LADA.DADA'
 
-  return MY_THREED_TOKEN
+      return MY_THREED_TOKEN
 
-  const fetcher = (url: string) => fetch(
-    // url // + '?user.email=mcgee.marty@gmail.com&user.password=pursueB@8'
-    'https://my.farm.bot/api/tokens',
-    {
-      method: 'POST',
-      headers: {
-        // 'Content-Type': 'application/x-www-form-urlencoded'
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }
-  )
-  .then(
-    (res) => res.json()
+
+
+
+  const fetcher = (url: string) => (
+    fetch(
+      // url // + '?user.email=process.env.NEXT_PUBLIC_FARMBOT_EMAIL&user.password=process.env.NEXT_PUBLIC_FARMBOT_SECRET'
+      'https://my.farm.bot/api/tokens',
+      {
+        method: 'POST',
+        headers: {
+          // 'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }
+    )
+    // .then(
+    //   (res) => res.json()
+    // )
+    .then(response => {
+      console.debug('YO YO YO ', response)
+      response.json()
+      // @ ts-ignore
+      // MY_THREED_TOKEN = response['token']['encoded']
+    })
+    .then(data => {
+      console.debug('HEY HEY HEY ', data)
+      // MY_THREED_TOKEN = data?.token?.encoded
+    })
+    .catch(error => console.error(error))
   )
 
-  // fetch(
+
+
+  // // ** next.js 'swr' (desired option ???)
+  // // const { data, error, isLoading } = useSWR('/api/user', fetcher)
+  // const { data: swrData, error: swrError, isLoading: swrIsLoading } = useSWR(
+  //   // 'https://api.github.com/repos/vercel/swr',
   //   'https://my.farm.bot/api/tokens',
-  //   {
-  //     method: 'POST',
-  //     headers: {
-  //       // 'Content-Type': 'application/x-www-form-urlencoded'
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify(data)
-  //   }
+  //   fetcher
   // )
-  // .then(response => {
-  //   console.log('YO YO YO ', response)
-  //   response.json()
-  //   // @ ts-ignore
-  //   // MY_THREED_TOKEN = response['token']['encoded']
-  // })
-  // .then(data => {
-  //   console.log('HEY HEY HEY ', data)
-  //   // MY_THREED_TOKEN = data?.token?.encoded
-  // })
-  // .catch(error => console.error(error))
 
-  // ** next.js 'swr' (desired option)
-  // const { data, error, isLoading } = useSWR('/api/user', fetcher)
-  const { data: swrData, error: swrError, isLoading: swrIsLoading } = useSWR(
-    // 'https://api.github.com/repos/vercel/swr',
-    'https://my.farm.bot/api/tokens',
-    fetcher
-  )
+  // if (swrError) return 'Farmbot Token: An error has occurred.'
+  // // if (swrIsLoading) return 'Farmbot Token: Loading...'
 
-  if (swrError) return 'Farmbot Token: An error has occurred.'
-  if (swrIsLoading) return 'Farmbot Token: Loading...'
+  // if (!swrIsLoading) {
+  //   // console.debug('Farmbot Token: returned data', swrData)
+  //   MY_THREED_TOKEN = swrData.token.encoded
+  //   // const MY_THREED_TOKEN = 'NADA LADA'
+  //   // console.debug('Farmbot Token: returned data.token.encoded', MY_THREED_TOKEN)
 
-  console.debug('Farmbot Token: returned data', swrData)
-  MY_THREED_TOKEN = swrData.token.encoded
-  // const MY_THREED_TOKEN = 'NADA LADA'
-  // console.debug('Farmbot Token: returned data.token.encoded', MY_THREED_TOKEN)
+  //   return MY_THREED_TOKEN
+  // }
+  // else {
+  //   return null
+  // }
 
-  return MY_THREED_TOKEN
+
+
 }
 
-const FarmbotComponent = (): React.ReactNode => {
+// ==========================================================
+
+
+
+
+// const FarmbotComponent = (): React.ReactNode => {
+export default function FarmbotComponent() {
   // **
-  const word: string = '[MM] FarmbotComponent'
-  // **
-  // return <>Farmbot: {word}</>
+  const word: string = 'FarmbotComponent: word = [MM]'
+  
   // **
   const SUPER_SECRET_TOKEN = getFarmbotToken()
-  // console.debug('Farmbot Token: SUPER_SECRET_TOKEN', SUPER_SECRET_TOKEN)
+  console.debug('%c Farmbot Token: SUPER_SECRET_TOKEN', ccm.gray, SUPER_SECRET_TOKEN)
+  
   // **
-  // return <>Farmbot: {SUPER_SECRET_TOKEN}</>
-  // **
-  try {
-    const threedBot = new Farmbot({ token: SUPER_SECRET_TOKEN })
-    // ** interact with farmbot api
-    threedBot
-      .connect()
-      .then(() => {
-        console.debug('%c [MM] THREED GARDEN -- FARMBOT INITIATED.', ccm.greenAlert)
-        // threedBot.setConfig('MARTY', 'HEY HEY HEY')
-        // console.debug(threedBot.getConfig('MARTY'))
-        // return threedBot.getConfig('MARTY')
-      })
-      // .then(() =>
-      //   threedBot.moveRelative({
-      //     x: 1,
-      //     y: 2,
-      //     z: 3,
-      //     speed: 100,
-      //   })
-      // )
+  if (SUPER_SECRET_TOKEN) {
+      const threedBot = new Farmbot({ token: SUPER_SECRET_TOKEN })
+      console.debug('%c FarmbotComponent: threedBot', ccm.green, threedBot)
+    
+    
+    // try {
 
-    // console.debug('%c [MM] THREED GARDEN: threedBot', ccm.green, threedBot)
-    return <>Farmbot: {word}</>
-  } catch (ERR) {
-    // console.debug('%c [MM] THREED GARDEN: ERR', ccm.green, ERR)
-    return <>Farmbot ERR: {word}</>
+      // ** interact with farmbot api
+      threedBot
+        // .client.end()
+
+        .connect()
+        // .connect("brisk-bear.rmq.cloudamqp.com", 1883, 60)
+        .then(() => {
+          console.debug('%c [MM] THREED GARDEN -- FARMBOT INITIATED.', ccm.greenAlert)
+          // threedBot.setConfig('MARTY', 'HEY HEY HEY')
+          // console.debug(threedBot.getConfig('MARTY'))
+          // return threedBot.getConfig('MARTY')
+        })
+        // .then(() =>
+        //   threedBot.moveRelative({
+        //     x: 100,
+        //     y: 100,
+        //     z: 100,
+        //     speed: 40,
+        //   })
+        // )
+
+      return <>ThreeD: Farmbot: WORD: {word}</>
+
+
+    // } catch (ERROR) {
+    //   console.debug('%c [MM] THREED GARDEN: ERROR', ccm.red, ERROR)
+    //   return <>ThreeD: Farmbot: ERROR: {word}</>
+    // }
+
+
+  }
+  else {
+    return <>Farmbot LOADING...</>
   }
 }
-
-export default FarmbotComponent
+// export default FarmbotComponent
