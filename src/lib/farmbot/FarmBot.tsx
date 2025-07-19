@@ -162,45 +162,54 @@ export default function FarmbotComponent() {
   
   // **
   if (SUPER_SECRET_TOKEN) {
-      const threedBot = new Farmbot({ token: SUPER_SECRET_TOKEN })
-      console.debug('%c FarmbotComponent: threedBot', ccm.green, threedBot)
     
-    
-    // try {
+    if (true) {
+              const threedBot = new Farmbot({ token: SUPER_SECRET_TOKEN })
+              console.debug('%c FarmbotComponent: threedBot', ccm.green, threedBot)
+              
+              
+              if (true && threedBot) {
+              // try {
 
-      // ** interact with farmbot api
-      threedBot
-        // .client.end()
+                // ** interact with farmbot api
+                threedBot
+                  // .client.end()
 
-        .connect()
-        // .connect("brisk-bear.rmq.cloudamqp.com", 1883, 60)
-        .then(() => {
-          console.debug('%c [MM] THREED GARDEN -- FARMBOT INITIATED.', ccm.greenAlert)
-          // threedBot.setConfig('MARTY', 'HEY HEY HEY')
-          // console.debug(threedBot.getConfig('MARTY'))
-          // return threedBot.getConfig('MARTY')
-        })
-        // .then(() =>
-        //   threedBot.moveRelative({
-        //     x: 100,
-        //     y: 100,
-        //     z: 100,
-        //     speed: 40,
-        //   })
-        // )
+                  .connect()
+                  // .connect("brisk-bear.rmq.cloudamqp.com", 1883, 60)
+                  .then(() => {
+                    console.debug('%c [MM] THREED GARDEN -- FARMBOT INITIATED.', ccm.greenAlert)
+                    // threedBot.setConfig('MARTY', 'HEY HEY HEY')
+                    // console.debug(threedBot.getConfig('MARTY'))
+                    // return threedBot.getConfig('MARTY')
+                  })
+                  // .then(() =>
+                  //   threedBot.moveRelative({
+                  //     x: 100,
+                  //     y: 100,
+                  //     z: 100,
+                  //     speed: 40,
+                  //   })
+                  // )
 
-      return <>ThreeD: Farmbot: WORD: {word}</>
+                return <>ThreeD: Farmbot: WORD: {word}</>
 
 
-    // } catch (ERROR) {
-    //   console.debug('%c [MM] THREED GARDEN: ERROR', ccm.red, ERROR)
-    //   return <>ThreeD: Farmbot: ERROR: {word}</>
-    // }
+              // } catch (ERROR) {
+              //   console.debug('%c [MM] THREED GARDEN: ERROR', ccm.red, ERROR)
+              //   return <>ThreeD: Farmbot: ERROR: {word}</>
+              // }
+              }
 
+
+            }
+    else {
+      return <>Farmbot LOADING...</>
+    }
 
   }
   else {
-    return <>Farmbot LOADING...</>
+    return <>Farmbot STATIC.</>
   }
 }
 // export default FarmbotComponent
