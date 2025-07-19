@@ -9,14 +9,16 @@
 // RESOURCES
 
 
-// ** NEXT Imports
-// import type { NextPage } from 'next'
-import dynamic from 'next/dynamic'
+// // ** NEXT Imports
+// // import type { NextPage } from 'next'
+// import dynamic from 'next/dynamic'
 
-// ** FARMBOT Imports
-// import { Farmbot } from 'farmbot'
-import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
-// const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot')) //, { ssr: false }
+// // ** FARMBOT Imports
+// // import { Farmbot } from 'farmbot'
+// import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
+// // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot')) //, { ssr: false }
+
+
 
 // ==============================================================
 // ** EXPORT JSX as NEXT PAGE
@@ -39,7 +41,10 @@ async function FarmBotPage<NextPage> () {
     // <Suspense fallback={null}>
     // <Suspense fallback={<div>LOADING HEY HEY HEY ...</div>}>
       // <ThreeDHomeDesign panelLayout={panelLayoutGroups} />
-      <ThreeDFarmBot />
+      <>
+        {/* <ThreeDFarmBot /> */}
+        <div>TESTING: THREED: FARMBOT</div>
+      </>
     // </Suspense>
   )
 }
