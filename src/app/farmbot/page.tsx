@@ -15,7 +15,7 @@
 
 // // ** FARMBOT Imports
 // // import { Farmbot } from 'farmbot'
-// import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
+import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
 // // const ThreeDFarmBot = dynamic(() => import('#/lib/farmbot/FarmBot')) //, { ssr: false }
 
 
@@ -42,8 +42,8 @@ async function FarmBotPage<NextPage> () {
     // <Suspense fallback={<div>LOADING HEY HEY HEY ...</div>}>
       // <ThreeDHomeDesign panelLayout={panelLayoutGroups} />
       <>
-        {/* <ThreeDFarmBot /> */}
-        <div>TESTING: THREED: FARMBOT</div>
+        <ThreeDFarmBot />
+        {/* <div>TESTING: THREED: FARMBOT</div> */}
       </>
     // </Suspense>
   )

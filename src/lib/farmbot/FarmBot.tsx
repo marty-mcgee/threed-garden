@@ -168,7 +168,7 @@ export default function FarmbotComponent() {
               console.debug('%c FarmbotComponent: threedBot', ccm.green, threedBot)
               
               
-              if (true && threedBot) {
+              // if (true && threedBot) {
               // try {
 
                 // ** interact with farmbot api
@@ -199,7 +199,7 @@ export default function FarmbotComponent() {
               //   console.debug('%c [MM] THREED GARDEN: ERROR', ccm.red, ERROR)
               //   return <>ThreeD: Farmbot: ERROR: {word}</>
               // }
-              }
+              // }
 
 
             }
