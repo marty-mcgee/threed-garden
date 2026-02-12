@@ -83,7 +83,7 @@ function getFarmbotToken() {
                       ? process.env.NEXT_PUBLIC_FARMBOT_TOKEN
                       : 'NADA_LADA_DADA'
 
-      return MY_THREED_TOKEN
+  return MY_THREED_TOKEN
 
 
 
