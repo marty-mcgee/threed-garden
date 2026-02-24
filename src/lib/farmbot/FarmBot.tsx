@@ -154,7 +154,7 @@ function getFarmbotToken() {
 // const FarmbotComponent = (): React.ReactNode => {
 export default function FarmbotComponent() {
   // **
-  const word: string = 'FarmbotComponent: word = [MM]'
+  const word: string = '[MM] FarmbotComponent: word = ping'
   
   // **
   const SUPER_SECRET_TOKEN = getFarmbotToken()
