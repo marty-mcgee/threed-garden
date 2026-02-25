@@ -46,11 +46,11 @@ Key Features:
 
         Users can interactively design and modify gardens by adding, removing, or rearranging plants.
 
-        It may support drag-and-drop functionality for placing plants in the 3D space.
+        It supports drag-and-drop functionality for placing plants in the 3D space.
 
     Realistic Environment Simulation:
 
-        The library might include features to simulate environmental factors like sunlight, water, and soil conditions, affecting plant growth and appearance.
+        The library has features to simulate environmental factors like sunlight, water, and soil conditions, affecting plant growth and appearance.
 
     Cross-Browser Compatibility:
 
@@ -60,7 +60,7 @@ Key Features:
 
         Developers can extend the library to add custom plants, textures, or environmental effects.
 
-        It may support plugins or integrations with other 3D libraries like Three.js.
+        It supports plugins or integrations with other 3D libraries like Three.js and FarmBot.
 
     Lightweight and Performant:
 
