@@ -432,7 +432,7 @@ const ThreeDScene = forwardRef((
               {/* ...testing */}
 
               {/* THREED FARMBOTS */}
-              { true && (
+              { false && (
                 <group 
                   key="farmbot1"
                   scale={0.00160} 
@@ -444,7 +444,7 @@ const ThreeDScene = forwardRef((
                   />
                 </group>
               )}
-              { true && (
+              { false && (
                 <group 
                   key="farmbot0"
                   scale={0.00160} 
