@@ -30,7 +30,7 @@
       "noImplicitAny": true,
       "noImplicitThis": true,
       "strictNullChecks": false,
-      "downlevelIteration": true,
+      // "downlevelIteration": true,
       "allowUnreachableCode": true,
     // },  
     // ** PATHS + DIRECTORIES
@@ -39,36 +39,36 @@
     "paths": {
       // next-auth
       "auth": [
-        "src/lib/auth/auth"
+        "./src/lib/auth/auth"
       ],
       // global root
       "~/*": [
-        "*"
+        "./*"
       ],
       // threed (next-14)
       "#/*": [
-        "src/*"
+        "./src/*"
       ],
       // threed (next-14)
       // "@/*": [
-      //   "src/app/*"
+      //   "./src/app/*"
       // ],
       // threed (ai next-15)
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
       // ** ai
       "@/auth": [
-        "src/lib/auth/auth"
+        "./src/lib/auth/auth"
       ],
       "@/app/*": [
-        "src/app/ai/*"
+        "./src/app/ai/*"
       ],
       "@/components/*": [
-        "src/lib/ai/*"
+        "./src/lib/ai/*"
       ],
       "@/lib/*": [
-        "src/lib/threed/threed.ai/*"
+        "./src/lib/threed/threed.ai/*"
       ]
     },
     // ** TYPES
