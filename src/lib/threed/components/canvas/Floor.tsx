@@ -46,9 +46,6 @@ export default function Floor(
       <mesh 
         receiveShadow
       >
-        <boxGeometry 
-          args={[2000, 0, 2000]} 
-        />
         <meshPhongMaterial 
           map={grassTexture}
           color={color} 
@@ -61,6 +58,9 @@ export default function Floor(
           color={color} 
         /> 
         */}
+        <boxGeometry 
+          args={[1000, 0, 1000]} 
+        />
       </mesh>
     </RigidBody>
   )

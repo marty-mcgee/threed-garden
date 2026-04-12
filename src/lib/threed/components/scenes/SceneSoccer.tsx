@@ -159,9 +159,9 @@ const handleOnPointerMissed = (e: any, api: any): void => {
   api.refresh().fit()
 }
 
-// ** RETURN ThreeDExperience
-// export default function ThreeDExperience({ threeds }: { threeds: Object[]}, ref: any) {
-const ThreeDExperience = forwardRef((
+// ** RETURN ThreeDScene
+// export default function ThreeDScene({ threeds }: { threeds: Object[]}, ref: any) {
+const ThreeDScene = forwardRef((
   { 
     threeds, 
     ...props 
@@ -266,29 +266,35 @@ const ThreeDExperience = forwardRef((
 
             {/* ** FLOORS (PLANES +/- 0 GROUND) */}
             {/* ** The Floor (Plane 0) */}
-            <group 
-              scale={1.0} 
-              position={[0, 0, 0]}
-              rotation={[0, 0, 0]} 
-            >
-              <Floor 
-                color={'white'} 
-                opacity={1.00} 
-              />
-            </group>
+            { true && (
+              <group 
+                scale={1.0} 
+                position={[0, 0, 0]}
+                rotation={[0, 0, 0]} 
+              >
+                <Floor 
+                  color={'white'} 
+                  opacity={0.50} 
+                />
+              </group>
+            )}
             {/* ** The Basement Floor (Plane -1) */}
-            {/* <group 
-              scale={1.0} 
-              position={[0, -400, 0]}
-              rotation={[0, 0, 0]}
-            >
-              <Floor 
-                color={'saddlebrown'} 
-                opacity={1.00} 
-              />
-            </group> */}
+            { false && (
+              <group 
+                scale={1.0} 
+                position={[0, -400, 0]}
+                rotation={[0, 0, 0]}
+              >
+                <Floor 
+                  color={'saddlebrown'} 
+                  opacity={0.50} 
+                />
+              </group>
+            )}
             {/* ** SUB FLOORS[s] (Plane < 0) */}
-            {/* <SubFloor level={`${level[index]}`} /> */}
+            {/* { false && (
+              <SubFloor level={`${level[index]}`} />
+            )} */}
             {/* ** END FLOORS ** */}
 
             {/* R3F BOUNDS: 
@@ -297,64 +303,85 @@ const ThreeDExperience = forwardRef((
             <SelectToZoom>
 
               {/* STEPS -- aka: four-by-fours, 4"x4"[s], posts, logs */}
-              <group 
-                scale={0.010} 
-                position={[0, 0.1, 0]}
-                rotation={[0, 0, 0]}
-              >
-                <Steps />
-              </group>
+              { false && (
+                <group 
+                  scale={0.010} 
+                  position={[0, 0.1, 0]}
+                  rotation={[0, 0, 0]}
+                >
+                  <Steps />
+                </group>
+              )}
 
               {/* ROUGH PLANE */}
-              <group 
-                scale={1.0} 
-                position={[8, -0.3, 10]}
-                rotation={[0, 0, 0]} 
-                // onClick={handleClick}
-              >
-                <RoughPlane />
-              </group>
+              { false && (
+                <group 
+                  scale={1.0} 
+                  position={[8, -0.3, 10]}
+                  rotation={[0, 0, 0]} 
+                  // onClick={handleClick}
+                >
+                  <RoughPlane />
+                </group>
+              )}
 
               {/* SLOPES + STAIRS */}
-              {/* 
-              <group 
-                scale={0.0} 
-                position={[10, 0, 10]}
-                rotation={[0, 0, 0]} 
-              >
-                <Slopes />
-              </group>
-              */}
+              { false && (
+                <group 
+                  scale={0.0} 
+                  position={[10, 0, 10]}
+                  rotation={[0, 0, 0]} 
+                >
+                  <Slopes />
+                </group>
+              )}
 
               {/* RIGID BODY OBJECTS (basic rapier components) */}
-              <group 
-                scale={0.010} 
-                position={[-0.4, 2.20, 0]}
-                rotation={[0, 0, 0]}
-              >
-                <RigidObjects />
-              </group>
+              { true && (
+                <group 
+                  scale={0.010} 
+                  // position={[-0.4, 2.20, 0]}
+                  rotation={[0, 0, 0]}
+                >
+                  <RigidObjects />
+                </group>
+              )}
 
-              {/* FLOATING PLATFORMS
-              <group rotation={[0, 0, 0]} scale={1.0}>
-                <FloatingPlatforms />
-              </group>
-              */}
+              {/* FLOATING PLATFORMS */}
+              { true && (
+                <group 
+                  rotation={[0, 0, 0]} 
+                  scale={1.0}
+                >
+                  <FloatingPlatforms />
+                </group>
+              )}
+              
 
-              {/* DYNAMIC PLATFORMS
-              <group rotation={[0, 0, 0]} scale={1.0} position={[0, 2.01, 0]}>
-                <DynamicPlatforms />
-              </group>
-              */}
+              {/* DYNAMIC PLATFORMS */}
+              { false && (
+                <group 
+                  rotation={[0, 0, 0]} 
+                  scale={1.0} 
+                  position={[0, 2.01, 0]}
+                >
+                  <DynamicPlatforms />
+                </group>
+              )}
 
-              {/* INTERACTIVE "SHOT CUBES"
-              <group rotation={[0, 0, 0]} scale={1.0} position={[0, 4.0, 0]}>
-                <ShotCube />
-              </group>
-              */}
+              {/* INTERACTIVE "SHOT CUBES" */}
+              { false && (
+                <group 
+                  rotation={[0, 0, 0]} 
+                  scale={1.0} 
+                  position={[0, 4.0, 0]}
+                >
+                  <ShotCube />
+                </group>
+              )}
 
               {/* EXAMPLE: BIRDS */}
-              { true && (
+              { false && (
                 <group 
                   scale={0.24} 
                   position={[0, 12, 0]}
@@ -365,18 +392,20 @@ const ThreeDExperience = forwardRef((
               )}
 
               {/* EXAMPLE MAP: TAVERN */}
-              <group
-                scale={0.080} 
-                position={[0.8, 1.4, -16]}
-                rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
-                // quaternion={[0,0,0,0]}
-              >
-                <Map />
-              </group>
+              { false && (
+                <group
+                  scale={0.080} 
+                  position={[0.8, 1.4, -16]}
+                  rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
+                  // quaternion={[0,0,0,0]}
+                >
+                  <Map />
+                </group>
+              )}
                 
               {/* testing... */}
               {/* THREED MODELS as props.threeds */}
-              { threeds.length > 0 && (
+              {/* { threeds.length > 0 && (
                 <group
                   key='threed_models_children'
                   // master position for all threeds?
@@ -389,30 +418,30 @@ const ThreeDExperience = forwardRef((
                     threeds={threeds}
                   />
                 </group>
-              )}
+              )} */}
               {/* ...testing */}
 
               {/* THREED FARMBOTS */}
-              <group 
-                key="farmbot1"
-                scale={0.00160} 
-                position={[-4, 0.5, -3]}
-                rotation={[-Math.PI/2, 0, -Math.PI]}
-              >
-                <ThreeDFarmBotGarden 
-                  key={'ThreeDFarmBotGarden_' + newUUID()} 
-                />
-              </group>
-              {/* 
-              <group 
-                key="farmbot0"
-                scale={0.002} 
-                position={[-5.4, 0.4, -0.6]}
-                rotation={[-Math.PI/2, 0, -Math.PI/2]}
-              >
-                <ThreeDFarmBotMain />
-              </group>
-              */}
+                {/* <group 
+                  key="farmbot1"
+                  scale={0.00160} 
+                  position={[-4, 0.5, -3]}
+                  rotation={[-Math.PI/2, 0, -Math.PI]}
+                >
+                  <ThreeDFarmBotGarden 
+                    key={'ThreeDFarmBotGarden_' + newUUID()} 
+                  />
+                </group> */}
+                {/* 
+                  <group 
+                    key="farmbot0"
+                    scale={0.002} 
+                    position={[-5.4, 0.4, -0.6]}
+                    rotation={[-Math.PI/2, 0, -Math.PI/2]}
+                  >
+                    <ThreeDFarmBotMain />
+                  </group>
+                */}
 
               {/* THREED CHARACTER MODELS */}
               <KeyboardControls map={keyboardMap}>
@@ -543,43 +572,43 @@ const ThreeDExperience = forwardRef((
                 {/* END: CHARACTER MODEL */}
 
                 {/* EXAMPLE: CHARACTER MODEL: ANIMATION STACY */}
-                { true && (
-                <group 
-                  key='character2' 
-                  position={[9, 0.5, -10]}
-                >
-                  <ThreeDMercedes 
-                    scale={0.10} 
-                  />
-                </group>
+                { false && (
+                  <group 
+                    key='character2' 
+                    position={[9, 0.5, -10]}
+                  >
+                    <ThreeDMercedes 
+                      scale={0.10} 
+                    />
+                  </group>
                 )}
                 {/* END: CHARACTER MODEL */}
 
                 {/* EXAMPLE: CHARACTER MODEL: ANIMATION STACY */}
                 { false && (
-                <group 
-                  key='character2' 
-                  position={[80, 0, 0]}
-                >
-                  {/* <CharacterModel /> */}
-                  {/* <CharacterModelFloating /> */}
-                  <CharacterModelStacy 
-                    scale={0.12} 
-                  />
-                </group>
+                  <group 
+                    key='character2' 
+                    position={[80, 0, 0]}
+                  >
+                    {/* <CharacterModel /> */}
+                    {/* <CharacterModelFloating /> */}
+                    <CharacterModelStacy 
+                      scale={0.12} 
+                    />
+                  </group>
                 )}
                 {/* END: CHARACTER MODEL */}
 
                 {/* EXAMPLE: CHARACTER MODEL: CHICKEN */}
                 { false && (
-                <group 
-                  key='character3' 
-                  position={[-200, 0, 0]}
-                >
-                  <CharacterModelChicken 
-                    scale={160} 
-                  />
-                </group>
+                  <group 
+                    key='character3' 
+                    position={[-200, 0, 0]}
+                  >
+                    <CharacterModelChicken 
+                      scale={160} 
+                    />
+                  </group>
                 )}
                 {/* END: CHARACTER MODEL */}
               
@@ -607,6 +636,6 @@ const ThreeDExperience = forwardRef((
 ) // end forwardRef
 
 // module properties
-ThreeDExperience.displayName = 'ThreeD-Experience'
+ThreeDScene.displayName = 'ThreeD-Scene'
 
-export default ThreeDExperience
+export default ThreeDScene

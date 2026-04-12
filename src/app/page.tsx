@@ -305,6 +305,19 @@ export default async function AppPage() {
               </Link>
             </li>
             <li 
+              key='page-Example-Soccer'
+              className='ListMenuItem'
+              // onClick={() => doUpdatePreferences()}
+            >
+              <Link 
+                href='/soccer' 
+                title='Soccer Page'
+                className='ListMenuItem'
+              >
+                DEMO: SOCCER
+              </Link>
+            </li>
+            <li 
               key='page-Example-Characters'
               className='ListMenuItem'
               // onClick={() => doUpdatePreferences()}

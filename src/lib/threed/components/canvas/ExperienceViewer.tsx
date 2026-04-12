@@ -71,7 +71,7 @@ import {
 // ** THREED OBJECTS
 import ThreeDLights from '#/lib/threed/components/canvas/Lights'
 import ThreeDCamera from '#/lib/threed/components/canvas/Camera'
-import ThreeDExperience from '#/lib/threed/components/canvas/Experience'
+import ThreeDScene from '~/src/lib/threed/components/scenes/Scene'
 
 // ** HELPER Components
 // import Spinner from '#/layout/ui/spinner'
@@ -210,19 +210,18 @@ const ThreeDExperienceViewer = forwardRef((
             </>
           )}
 
-          {/* THREED SCENE
-            * Imports "Custom" Files/Assets via API for ThreeDs into Canvas */}
-          {/* <ThreeDScene /> */}
-
           {/* THREED ENVIRONMENT */}
           <ThreeDEnvironment />
 
-          {/* THREED EXPERIENCE */}
-          <ThreeDExperience 
+          
+          {/* THREED SCENE formerly ThreeDExperience
+            * Imports "Custom" Files/Assets via API for ThreeDs into Canvas */}
+          <ThreeDScene 
+            // scene={1}
             threeds={threeds} 
             ref={refCanvas} 
           />
-          {/* <ThreeDExperienceNew /> */}
+
 
           {/* SHADOW EFFECTS */}
           <ContactShadows
