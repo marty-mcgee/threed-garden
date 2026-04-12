@@ -20,15 +20,25 @@ export default function Map(props: any) {
   const { nodes, materials } = useGLTF(theMapModelFile)
 
   return (
-    <RigidBody type="fixed" colliders="trimesh" ccd>
+    <RigidBody 
+      type="fixed" 
+      colliders="trimesh" 
+      ccd
+    >
       <group 
         {...props} 
         dispose={null}
       >
-        {/* @ts-expect-error */}
-        <mesh castShadow receiveShadow geometry={nodes.TheInn_bakeInn_0.geometry}>
-          {/* @ts-expect-error */}
-          <meshStandardMaterial map={materials.bakeInn.map} />
+        <mesh 
+          castShadow 
+          receiveShadow 
+          // @ts-expect-error
+          geometry={nodes.TheInn_bakeInn_0.geometry}
+        >
+          <meshStandardMaterial 
+            // @ts-expect-error
+            map={materials.bakeInn.map}
+          />
         </mesh>
       </group>
     </RigidBody>

@@ -294,6 +294,20 @@ const ThreeDScene = forwardRef((
             )}
             {/* ** END FLOORS ** */}
 
+
+            {/* EXAMPLE MAP: SOCCER FIELD */}
+            { true && (
+              <group
+                scale={0.012} 
+                position={[-60.00, 6.00, 0.00]}
+                // rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
+                // quaternion={[0,0,0,0]}
+              >
+                <SoccerField />
+              </group>
+            )}
+
+            
             {/* R3F BOUNDS: 
                 SELECT TO ZOOM IN ON OBJECTS 
             */}
@@ -353,7 +367,6 @@ const ThreeDScene = forwardRef((
                   <FloatingPlatforms />
                 </group>
               )}
-              
 
               {/* DYNAMIC PLATFORMS */}
               { false && (
@@ -397,18 +410,6 @@ const ThreeDScene = forwardRef((
                   // quaternion={[0,0,0,0]}
                 >
                   <Map />
-                </group>
-              )}
-
-              {/* EXAMPLE MAP: SOCCER FIELD */}
-              { true && (
-                <group
-                  scale={0.015} 
-                  position={[-48.0, 8.0, 0.0]}
-                  // rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
-                  // quaternion={[0,0,0,0]}
-                >
-                  <SoccerField />
                 </group>
               )}
                 
