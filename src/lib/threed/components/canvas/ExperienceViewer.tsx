@@ -189,10 +189,10 @@ const ThreeDExperienceViewer = forwardRef((
           {/* <ActionRig /> */}
 
           {/* AXES + GRID HELPERS */}
-          {enableAxesHelper && (
+          {false && enableAxesHelper && (
             <axesHelper args={[3200]} />
           )}
-          {enableGridHelper && (
+          {false && enableGridHelper && (
             <>
               {enableGridHelper2 && (
                 <gridHelper args={[25600, 256, 0x333333, 0x222222]}/>
@@ -211,7 +211,7 @@ const ThreeDExperienceViewer = forwardRef((
           )}
 
           {/* THREED ENVIRONMENT */}
-          <ThreeDEnvironment />
+          {/* <ThreeDEnvironment /> */}
 
           
           {/* THREED SCENE formerly ThreeDExperience
@@ -231,7 +231,7 @@ const ThreeDExperienceViewer = forwardRef((
             blur={2.5}
             far={4}
           />
-          <BakeShadows />
+          {/* NO !! <BakeShadows /> */}
 
           {/* Transform Model using TransformControls */}
           {/*
