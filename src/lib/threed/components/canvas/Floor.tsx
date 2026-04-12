@@ -35,7 +35,7 @@ export default function Floor(
   const grassTexture = useTexture(ASSETS.textures.grass + '?=grass')
   grassTexture.wrapS = RepeatWrapping
   grassTexture.wrapT = RepeatWrapping
-  grassTexture.repeat.set(1000, 1000)
+  grassTexture.repeat.set(10000, 10000)
 
 
   return (
@@ -46,11 +46,14 @@ export default function Floor(
       <mesh 
         receiveShadow
       >
+        <boxGeometry 
+          args={[1000, 0, 1000]} 
+        />
         <meshPhongMaterial 
-          map={grassTexture}
+          // map={grassTexture}
           color={color} 
           opacity={opacity} 
-          transparent={false} 
+          transparent={true} 
         />
         {/* 
         <meshStandardMaterial 
@@ -58,9 +61,6 @@ export default function Floor(
           color={color} 
         /> 
         */}
-        <boxGeometry 
-          args={[1000, 0, 1000]} 
-        />
       </mesh>
     </RigidBody>
   )

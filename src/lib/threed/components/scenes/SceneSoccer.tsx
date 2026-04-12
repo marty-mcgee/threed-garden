@@ -105,6 +105,7 @@ import DynamicPlatforms from '#/lib/threed/components/examples/DynamicPlatforms'
 import ShotCube from '#/lib/threed/components/examples/ShotCube'
 import Map from '#/lib/threed/components/examples/Map'
 import Birds from '#/lib/threed/components/examples/Birds/Birds'
+import SoccerField from '#/lib/threed/components/examples/SoccerField'
 
 // ** FARMBOT Imports
 // import ThreeDFarmBot from '#/lib/farmbot/FarmBot'
@@ -273,8 +274,8 @@ const ThreeDScene = forwardRef((
                 rotation={[0, 0, 0]} 
               >
                 <Floor 
-                  color={'white'} 
-                  opacity={0.50} 
+                  color={'darkgreen'} 
+                  opacity={0.90} 
                 />
               </group>
             )}
@@ -282,7 +283,7 @@ const ThreeDScene = forwardRef((
             { false && (
               <group 
                 scale={1.0} 
-                position={[0, -400, 0]}
+                position={[0, -10, 0]}
                 rotation={[0, 0, 0]}
               >
                 <Floor 
@@ -291,10 +292,6 @@ const ThreeDScene = forwardRef((
                 />
               </group>
             )}
-            {/* ** SUB FLOORS[s] (Plane < 0) */}
-            {/* { false && (
-              <SubFloor level={`${level[index]}`} />
-            )} */}
             {/* ** END FLOORS ** */}
 
             {/* R3F BOUNDS: 
@@ -328,7 +325,7 @@ const ThreeDScene = forwardRef((
               {/* SLOPES + STAIRS */}
               { false && (
                 <group 
-                  scale={0.0} 
+                  scale={1.00} 
                   position={[10, 0, 10]}
                   rotation={[0, 0, 0]} 
                 >
@@ -394,12 +391,24 @@ const ThreeDScene = forwardRef((
               {/* EXAMPLE MAP: TAVERN */}
               { false && (
                 <group
-                  scale={0.080} 
-                  position={[0.8, 1.4, -16]}
+                  scale={0.10} 
+                  position={[0.0, 1.4, 0.0]}
                   rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
                   // quaternion={[0,0,0,0]}
                 >
                   <Map />
+                </group>
+              )}
+
+              {/* EXAMPLE MAP: SOCCER FIELD */}
+              { true && (
+                <group
+                  scale={0.015} 
+                  position={[-48.0, 8.0, 0.0]}
+                  // rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
+                  // quaternion={[0,0,0,0]}
+                >
+                  <SoccerField />
                 </group>
               )}
                 
