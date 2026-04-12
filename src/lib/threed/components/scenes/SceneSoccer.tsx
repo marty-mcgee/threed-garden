@@ -245,7 +245,7 @@ const ThreeDScene = forwardRef((
 
         {/* THREED USING PHYSICS */}
         <Physics
-          debug={true}
+          debug={false}
           // debug={prefs.doWorldPhysics}
           // gravity={[0, -9.81, 0]} // default [0, -9.81, 0] 
           // interpolation={false} 
