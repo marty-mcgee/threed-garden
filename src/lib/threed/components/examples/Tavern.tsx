@@ -16,7 +16,7 @@ import { RigidBody } from '@react-three/rapier'
 
 const theMapModelFile = './assets/examples/fantasy_game_inn.glb'
 
-export default function Map(props: any) {
+export default function Tavern(props: any) {
   const { nodes, materials } = useGLTF(theMapModelFile)
 
   return (

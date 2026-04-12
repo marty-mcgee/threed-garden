@@ -96,6 +96,7 @@ import ThreeDMercedes from '~/src/lib/threed/components/nouns/Character/ThreeDMe
 import Floor from '#/lib/threed/components/canvas/Floor'
 import Ground from '#/lib/threed/components/canvas/Ground'
 // ** THREED OBJECTS: INTERACTIVE EXAMPLES
+import Birds from '#/lib/threed/components/examples/Birds/Birds'
 import Steps from '#/lib/threed/components/examples/Steps'
 import Slopes from '#/lib/threed/components/examples/Slopes'
 import RoughPlane from '#/lib/threed/components/examples/RoughPlane'
@@ -103,8 +104,7 @@ import RigidObjects from '#/lib/threed/components/examples/RigidObjects'
 import FloatingPlatforms from '#/lib/threed/components/examples/FloatingPlatforms'
 import DynamicPlatforms from '#/lib/threed/components/examples/DynamicPlatforms'
 import ShotCube from '#/lib/threed/components/examples/ShotCube'
-import Map from '#/lib/threed/components/examples/Map'
-import Birds from '#/lib/threed/components/examples/Birds/Birds'
+import Tavern from '#/lib/threed/components/examples/Tavern'
 import SoccerField from '#/lib/threed/components/examples/SoccerField'
 
 // ** FARMBOT Imports
@@ -409,7 +409,7 @@ const ThreeDScene = forwardRef((
                   rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
                   // quaternion={[0,0,0,0]}
                 >
-                  <Map />
+                  <Tavern />
                 </group>
               )}
                 
@@ -432,26 +432,30 @@ const ThreeDScene = forwardRef((
               {/* ...testing */}
 
               {/* THREED FARMBOTS */}
-                {/* <group 
+              { true && (
+                <group 
                   key="farmbot1"
                   scale={0.00160} 
-                  position={[-4, 0.5, -3]}
+                  position={[0, 0.8, -6]}
                   rotation={[-Math.PI/2, 0, -Math.PI]}
                 >
                   <ThreeDFarmBotGarden 
                     key={'ThreeDFarmBotGarden_' + newUUID()} 
                   />
-                </group> */}
-                {/* 
-                  <group 
-                    key="farmbot0"
-                    scale={0.002} 
-                    position={[-5.4, 0.4, -0.6]}
-                    rotation={[-Math.PI/2, 0, -Math.PI/2]}
-                  >
-                    <ThreeDFarmBotMain />
-                  </group>
-                */}
+                </group>
+              )}
+              { true && (
+                <group 
+                  key="farmbot0"
+                  scale={0.00160} 
+                  position={[0, 0.8, 6]}
+                  rotation={[-Math.PI/2, 0, -Math.PI/2]}
+                >
+                  <ThreeDFarmBotGarden 
+                    key={'ThreeDFarmBotGarden_' + newUUID()} 
+                  />
+                </group>
+              )}
 
               {/* THREED CHARACTER MODELS */}
               <KeyboardControls map={keyboardMap}>

@@ -103,7 +103,7 @@ import RigidObjects from '#/lib/threed/components/examples/RigidObjects'
 import FloatingPlatforms from '#/lib/threed/components/examples/FloatingPlatforms'
 import DynamicPlatforms from '#/lib/threed/components/examples/DynamicPlatforms'
 import ShotCube from '#/lib/threed/components/examples/ShotCube'
-import Map from '#/lib/threed/components/examples/Map'
+import Map from '~/src/lib/threed/components/examples/Tavern'
 import Birds from '#/lib/threed/components/examples/Birds/Birds'
 
 // ** FARMBOT Imports
