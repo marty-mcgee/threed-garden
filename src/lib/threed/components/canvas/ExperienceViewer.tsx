@@ -170,7 +170,7 @@ const ThreeDExperienceViewer = forwardRef((
         <ThreeDViewImpl track={localRef}> */}
 
           {/* BACKGROUND COLOR? */}
-          <color attach="background" args={['#1e2243']} />
+          {/* <color attach="background" args={['#1e2243']} /> */}
 
           {/* LIGHTS, CAMERA, ACTION */}
 
@@ -223,14 +223,14 @@ const ThreeDExperienceViewer = forwardRef((
           />
 
 
-          {/* SHADOW EFFECTS */}
-          <ContactShadows
+          {/* NOT WORKING: SHADOW EFFECTS */}
+          {/* <ContactShadows
             position={[0, 0, 0]}
             opacity={0.75}
             scale={10}
             blur={2.5}
             far={4}
-          />
+          /> */}
           {/* NO !! <BakeShadows /> */}
 
           {/* Transform Model using TransformControls */}
