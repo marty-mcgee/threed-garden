@@ -237,6 +237,26 @@ const ThreeDScene = forwardRef((
         />
       </Html>
     }>
+    
+              {/* Transform Model using TransformControls */}
+              {/*
+                  <TransformModel
+                    name='Zeppelin' // must match node name
+                    state={state}
+                    modes={actionModes}
+                    position={[-20, 10, 10]}
+                    rotation={[3, -1, 3]}
+                    scale={0.005}
+                  />
+              */}
+    
+              {/* EXAMPLE: SHOE + SHOES */}
+              {/*
+                <Stage intensity={0.7}>
+                  <Shoe color='tomato' position={[0, 0, 0]} />
+                  <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
+                </Stage>
+              */}
 
       {/* <group 
         ref={refCanvas}

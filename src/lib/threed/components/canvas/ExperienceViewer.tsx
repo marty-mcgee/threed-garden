@@ -211,7 +211,7 @@ const ThreeDExperienceViewer = forwardRef((
           )}
 
           {/* THREED ENVIRONMENT */}
-          {/* <ThreeDEnvironment /> */}
+          <ThreeDEnvironment />
 
           
           {/* THREED SCENE formerly ThreeDExperience
@@ -233,26 +233,6 @@ const ThreeDExperienceViewer = forwardRef((
           /> */}
           {/* NO !! <BakeShadows /> */}
 
-          {/* Transform Model using TransformControls */}
-          {/*
-              <TransformModel
-                name='Zeppelin' // must match node name
-                state={state}
-                modes={actionModes}
-                position={[-20, 10, 10]}
-                rotation={[3, -1, 3]}
-                scale={0.005}
-              />
-          */}
-
-          {/* EXAMPLE: SHOE + SHOES */}
-          {/*
-            <Stage intensity={0.7}>
-              <Shoe color='tomato' position={[0, 0, 0]} />
-              <Shoe color='orange' scale={-1} rotation={[0, 0.5, Math.PI]} position={[0, 0, -1]} />
-            </Stage>
-          */}
-
           {/* ORBIT CONTROLS (CAMERA CONTROLS) */}
           {/* makeDefault makes the controls known to r3f,
               now transform-controls can auto-disable them when active */}
@@ -261,7 +241,7 @@ const ThreeDExperienceViewer = forwardRef((
               <OrbitControls
                 makeDefault
                 minDistance={0.25}
-                maxDistance={4800}
+                maxDistance={48000}
                 // // minZoom={10}
                 // // maxZoom={20}
                 // // minAzimuthAngle={-Math.PI / 4}

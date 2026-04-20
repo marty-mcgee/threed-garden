@@ -298,7 +298,8 @@ const ThreeDScene = forwardRef((
             {/* EXAMPLE MAP: SOCCER FIELD */}
             { true && (
               <group
-                scale={0.012} 
+                // scale={0.012}
+                scale={1.20}
                 position={[-60.00, 6.00, 0.00]}
                 // rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
                 // quaternion={[0,0,0,0]}
@@ -316,7 +317,8 @@ const ThreeDScene = forwardRef((
               {/* STEPS -- aka: four-by-fours, 4"x4"[s], posts, logs */}
               { false && (
                 <group 
-                  scale={0.010} 
+                  // scale={0.010} 
+                  scale={1.00} 
                   position={[0, 0.1, 0]}
                   rotation={[0, 0, 0]}
                 >
@@ -339,7 +341,8 @@ const ThreeDScene = forwardRef((
               {/* SLOPES + STAIRS */}
               { false && (
                 <group 
-                  scale={1.00} 
+                  // scale={1.00} 
+                  scale={100.0} 
                   position={[10, 0, 10]}
                   rotation={[0, 0, 0]} 
                 >
@@ -350,7 +353,8 @@ const ThreeDScene = forwardRef((
               {/* RIGID BODY OBJECTS (basic rapier components) */}
               { true && (
                 <group 
-                  scale={0.010} 
+                  // scale={0.010} 
+                  scale={1.00} 
                   // position={[-0.4, 2.20, 0]}
                   rotation={[0, 0, 0]}
                 >
@@ -361,8 +365,9 @@ const ThreeDScene = forwardRef((
               {/* FLOATING PLATFORMS */}
               { true && (
                 <group 
+                  // scale={1.0}
+                  scale={100.0} 
                   rotation={[0, 0, 0]} 
-                  scale={1.0}
                 >
                   <FloatingPlatforms />
                 </group>
@@ -371,9 +376,10 @@ const ThreeDScene = forwardRef((
               {/* DYNAMIC PLATFORMS */}
               { false && (
                 <group 
+                  // scale={1.0} 
+                  scale={100.0} 
                   rotation={[0, 0, 0]} 
-                  scale={1.0} 
-                  position={[0, 2.01, 0]}
+                  position={[0, 2.00, 0]}
                 >
                   <DynamicPlatforms />
                 </group>
@@ -382,8 +388,9 @@ const ThreeDScene = forwardRef((
               {/* INTERACTIVE "SHOT CUBES" */}
               { false && (
                 <group 
+                  // scale={1.0} 
+                  scale={100.0} 
                   rotation={[0, 0, 0]} 
-                  scale={1.0} 
                   position={[0, 4.0, 0]}
                 >
                   <ShotCube />
@@ -393,7 +400,8 @@ const ThreeDScene = forwardRef((
               {/* EXAMPLE: BIRDS */}
               { false && (
                 <group 
-                  scale={0.24} 
+                  // scale={0.24} 
+                  scale={24.00} 
                   position={[0, 12, 0]}
                   rotation={[0, 0, 0]} 
                 >
@@ -404,7 +412,8 @@ const ThreeDScene = forwardRef((
               {/* EXAMPLE MAP: TAVERN */}
               { false && (
                 <group
-                  scale={0.10} 
+                  // scale={0.10} 
+                  scale={10.00} 
                   position={[0.0, 1.4, 0.0]}
                   rotation={[(Math.PI/2) + 0, (-Math.PI/1), (-Math.PI/2) + 0]}
                   // quaternion={[0,0,0,0]}
@@ -418,11 +427,11 @@ const ThreeDScene = forwardRef((
               {/* { threeds.length > 0 && (
                 <group
                   key='threed_models_children'
+                  // scale all threeds?
+                  // scale={1.3}
                   // master position for all threeds?
                   // position={[-4, 0, 0]}
                   // position={[0, -1, 0]}
-                  // scale all threeds?
-                  // scale={1.3}
                 >
                   <ThreeDModels
                     threeds={threeds}
@@ -435,7 +444,8 @@ const ThreeDScene = forwardRef((
               { false && (
                 <group 
                   key="farmbot1"
-                  scale={0.00160} 
+                  // scale={0.00160} 
+                  scale={0.160} 
                   position={[0, 0.8, -6]}
                   rotation={[-Math.PI/2, 0, -Math.PI]}
                 >
@@ -446,8 +456,9 @@ const ThreeDScene = forwardRef((
               )}
               { false && (
                 <group 
-                  key="farmbot0"
-                  scale={0.00160} 
+                  key="farmbot2"
+                  // scale={0.00160} 
+                  scale={0.160} 
                   position={[0, 0.8, 6]}
                   rotation={[-Math.PI/2, 0, -Math.PI/2]}
                 >
@@ -480,7 +491,7 @@ const ThreeDScene = forwardRef((
                     // debug={prefs.doWorldDebug}
 
                     // 'drop from' position
-                    position={[0, 4, 0]}
+                    // position={[0, 4, 0]}
 
                     // do not scale here
                     // scale={[100, 100, 100]}
@@ -577,9 +588,13 @@ const ThreeDScene = forwardRef((
                     // fallingGravityScale={2}        // Realistic fall speed
                     // fallingMaxVel={-15}            // Terminal velocity
                   >
+
                     <ThreeDCharacter 
-                      position={[0, -0.88, 0]} 
+                      // position={[0, -0.88, 0]}
+                      position={[0, 0, 0]} 
+                      scale={100}
                     />
+
                   </CharacterControls>
                 </group>
                 )}
@@ -592,7 +607,8 @@ const ThreeDScene = forwardRef((
                     position={[9, 0.5, -10]}
                   >
                     <ThreeDMercedes 
-                      scale={0.10} 
+                      // scale={0.10} 
+                      scale={10.00} 
                     />
                   </group>
                 )}
@@ -607,7 +623,8 @@ const ThreeDScene = forwardRef((
                     {/* <CharacterModel /> */}
                     {/* <CharacterModelFloating /> */}
                     <CharacterModelStacy 
-                      scale={0.12} 
+                      // scale={0.12} 
+                      scale={12.00} 
                     />
                   </group>
                 )}
@@ -620,7 +637,8 @@ const ThreeDScene = forwardRef((
                     position={[-200, 0, 0]}
                   >
                     <CharacterModelChicken 
-                      scale={160} 
+                      // scale={160} 
+                      scale={1600} 
                     />
                   </group>
                 )}
