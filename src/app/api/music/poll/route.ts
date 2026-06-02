@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { musicPoller } from '@/lib/services/music/MusicPoller';
-import { getSession } from '@/lib/auth/server';
+// import { auth } from '@/lib/auth/server';
+import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession();
+    // Get session using Better Auth server API
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
     
     // Allow public polling status without auth
     const searchParams = request.nextUrl.searchParams;

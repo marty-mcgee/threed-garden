@@ -10,14 +10,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const SimpleMap = dynamic(() => import('@/components/map/simpleMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[600px] rounded-xl bg-muted flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>
-  ),
-});
+// const SimpleMap = dynamic(() => import('@/components/map/simpleMap'), {
+//   ssr: false,
+//   loading: () => (
+//     <div className="w-full h-[600px] rounded-xl bg-muted flex items-center justify-center">
+//       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+//     </div>
+//   ),
+// });
 
 type SourceFilter = 'all' | 'caltrans' | 'bayarea511' | 'chp-live' | 'chp-historical' | 'calfire';
 type DateRange = '1d' | '7d' | '30d' | 'all';
@@ -546,7 +546,7 @@ export default function DashboardPage() {
       </div> */}
 
       {/* Master Map */}
-      <Card>
+      {/* <Card>
         <CardContent className="p-0 overflow-hidden rounded-xl">
           {mapEvents.length > 0 ? (
             <SimpleMap events={mapEvents} center={[39.3, -123.5]} zoom={10} height="600px" />
@@ -560,7 +560,7 @@ export default function DashboardPage() {
             </div>
           )}
         </CardContent>
-      </Card>
+      </Card> */}
 
             {/* Events Table */}
       <Card>

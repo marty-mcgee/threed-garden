@@ -56,7 +56,7 @@ export interface MusicTrack {
   title: string;
   duration: number | null;
   trackNumber: number | null;
-  s3Key: string;
+  publicUrl: string;
   status: TrackStatus;
   lyrics: string | null;
   metadata: MusicTrackMetadata | null;
@@ -173,7 +173,7 @@ export interface CreateMusicTrackDTO {
   title: string;
   duration?: number;
   trackNumber?: number;
-  s3Key: string;
+  publicUrl: string;
   lyrics?: string;
   metadata?: MusicTrackMetadata;
 }

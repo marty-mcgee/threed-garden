@@ -242,7 +242,7 @@ export class MusicPoller {
       
       const existingTrack = await db.select()
         .from(musicTracks)
-        .where(eq(musicTracks.s3Key, trackKey))
+        .where(eq(musicTracks.publicUrl, trackKey))
         .limit(1);
 
       if (existingTrack.length === 0) {
@@ -258,7 +258,7 @@ export class MusicPoller {
           albumId: parseInt(albumId),
           title: `Track ${trackNumber}`,
           trackNumber,
-          s3Key: trackKey,
+          publicUrl: trackKey,
           duration: metadata.ContentLength ? Math.floor(metadata.ContentLength / 1000) : null,
           status: 'active',
         });
@@ -323,29 +323,39 @@ export class MusicPoller {
 
   // Log poll start
   private async logPollStart(pollType: MusicPollingType): Promise<void> {
+  try {
     await db.insert(musicPollingLogs).values({
       pollType,
       status: 'in_progress',
       startedAt: new Date(),
+      message: 'Poll started',
     });
+  } catch (error) {
+    console.error('Failed to log poll start:', error);
+    // Don't throw - polling should continue even if logging fails
   }
-
+}
   // Log poll completion
   private async logPollComplete(
-    pollType: MusicPollingType,
-    status: 'success' | 'error',
-    metadata?: any,
-    error?: string
-  ): Promise<void> {
+  pollType: MusicPollingType,
+  status: 'success' | 'error',
+  metadata?: any,
+  error?: string
+): Promise<void> {
+  try {
     await db.insert(musicPollingLogs).values({
       pollType,
       status,
       message: status === 'success' ? 'Poll completed successfully' : 'Poll failed',
       metadata: metadata || null,
       completedAt: new Date(),
-      error,
+      error: error || null,
     });
+  } catch (error) {
+    console.error('Failed to log poll completion:', error);
+    // Don't throw - polling should continue even if logging fails
   }
+}
 
   // Start automatic polling
   public startPolling(): void {

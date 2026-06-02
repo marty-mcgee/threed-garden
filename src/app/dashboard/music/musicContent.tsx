@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from '@/lib/auth/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,27 +10,26 @@ import { Badge } from '@/components/ui/badge';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
 import { LinksManager } from '@/components/music/LinksManager';
 import { AlbumGrid } from '@/components/music/AlbumGrid';
+import { MusicStats } from '@/components/music/MusicStats';
 import { Music, TrendingUp, Headphones, Link as LinkIcon, RefreshCw } from 'lucide-react';
 import { MusicPollStats } from '@/lib/types/music';
-import { MusicStats } from '@/components/music/MusicStats';
-import { NowPlaying } from '@/components/music/NowPlaying';
 
 export default function MusicContent() {
+  const { data: session, isPending: sessionLoading } = useSession();
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
   const [tracks, setTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<MusicPollStats | null>(null);
   const [polling, setPolling] = useState(false);
-  // Add state for now playing
-  const [nowPlayingTrack, setNowPlayingTrack] = useState<any>(null);
-  const [nowPlayingProgress, setNowPlayingProgress] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
 
+  // Wait for session to load
   useEffect(() => {
-    fetchAlbums();
-    fetchStats();
-  }, []);
+    if (!sessionLoading && session?.user) {
+      fetchAlbums();
+      fetchStats();
+    }
+  }, [sessionLoading, session]);
 
   useEffect(() => {
     if (selectedAlbum) {
@@ -95,6 +95,44 @@ export default function MusicContent() {
     }
   };
 
+  // Show loading while session is loading
+  if (sessionLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading session...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle unauthenticated state
+  if (!session?.user) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-3 rounded-full bg-muted">
+                <Music className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h2 className="text-2xl font-semibold">Sign in to access your music</h2>
+              <p className="text-muted-foreground">
+                Please sign in to view and manage your music library
+              </p>
+              <Button onClick={() => window.location.href = '/sign-in'}>
+                Sign In
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="container mx-auto p-6 space-y-6">
@@ -115,12 +153,15 @@ export default function MusicContent() {
 
   return (
     <div className="container mx-auto p-6 pb-32">
-      {/* Header with Stats */}
+      {/* User Info */}
       <div className="mb-8">
         <div className="flex justify-between items-start mb-4">
           <div>
             <h1 className="text-3xl font-bold mb-2">Music Library</h1>
             <p className="text-muted-foreground">
+              Welcome back, {session.user.name || session.user.email}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
               {albums.length} albums • {tracks.length} tracks
             </p>
           </div>
@@ -131,81 +172,18 @@ export default function MusicContent() {
         </div>
 
         {/* Stats Cards */}
-        {stats && (
-          <MusicStats stats={stats} loading={loading} />
-        )}
-        {false && stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Albums</p>
-                    <p className="text-2xl font-bold">{stats.totalAlbums}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {stats.publishedAlbums} published
-                    </p>
-                  </div>
-                  <Music className="h-8 w-8 text-muted-foreground" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Tracks</p>
-                    <p className="text-2xl font-bold">{stats.totalTracks}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {stats.activeTracks} active
-                    </p>
-                  </div>
-                  <Headphones className="h-8 w-8 text-muted-foreground" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Plays</p>
-                    <p className="text-2xl font-bold">{stats.totalPlayCount.toLocaleString()}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      All time
-                    </p>
-                  </div>
-                  <TrendingUp className="h-8 w-8 text-muted-foreground" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Storage Used</p>
-                    <p className="text-2xl font-bold">{stats.storageUsed}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {stats.recentUploads} recent uploads
-                    </p>
-                  </div>
-                  <LinkIcon className="h-8 w-8 text-muted-foreground" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+        {stats && <MusicStats stats={stats} loading={loading} />}
       </div>
 
       {/* Polling Status */}
       {stats?.pollStatus === 'polling' && (
-        <Card className="mb-6 bg-blue-50 border-blue-200">
+        <Card className="mb-6 bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800">
           <CardContent className="p-3">
             <div className="flex items-center gap-2">
               <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
-              <span className="text-sm text-blue-600">Syncing music library from storage...</span>
+              <span className="text-sm text-blue-600 dark:text-blue-400">
+                Syncing music library from storage...
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -226,6 +204,14 @@ export default function MusicContent() {
               setSelectedAlbum(album || null);
             }}
             selectedAlbumId={selectedAlbum?.id}
+            onPlayAlbum={(albumId) => {
+              const album = albums.find(a => a.id === albumId);
+              setSelectedAlbum(album || null);
+              // Auto-play first track
+              if (album) {
+                fetchTracks(album.id);
+              }
+            }}
           />
         </TabsContent>
 
@@ -242,19 +228,12 @@ export default function MusicContent() {
           onTrackChange={(index) => {
             console.log(`Now playing track ${index + 1}`);
           }}
+          onLike={async (trackId) => {
+            // Implement like functionality
+            console.log(`Liked track ${trackId}`);
+          }}
         />
       )}
-
-      <NowPlaying
-        track={nowPlayingTrack}
-        album={selectedAlbum}
-        isPlaying={isPlaying}
-        progress={nowPlayingProgress}
-        onPlayPause={() => {
-          // Handle play/pause
-        }}
-        onClose={() => setNowPlayingTrack(null)}
-      />
     </div>
   );
 }

@@ -138,6 +138,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             
             {/* Right side controls */}
             <div className="flex items-center gap-3">
+
+              {/* In your dashboard layout or navigation component */}
+              <Link href="/dashboard/music/admin" className="text-sm hover:text-primary">
+                Manage Music
+              </Link>
+
               {/* Status Indicator */}
               <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/30">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -165,8 +171,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Tab Navigation */}
-        <Tabs.Root value={pathname} className="mb-6">
-          <Tabs.List className="flex flex-col space-y-4">
+        {/* <Tabs.Root value={pathname} className="mb-6"> */}
+          {/* <Tabs.List className="flex flex-col space-y-4"> */}
             {/* Traffic Services Section */}
             {/* <TabGroup 
               tabs={trafficTabs} 
@@ -176,15 +182,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             /> */}
             
             {/* ThreeD Garden Section */}
-            <TabGroup 
+            {/* <TabGroup 
               tabs={gardenTabs} 
               currentPath={pathname} 
               // title="ThreeD Garden" 
               title="" 
               icon={Carrot}
-            />
-          </Tabs.List>
-        </Tabs.Root>
+            /> */}
+          {/* </Tabs.List> */}
+        {/* </Tabs.Root> */}
 
         {/* Page Content */}
         <div className="rounded-2xl bg-background/50 backdrop-blur-sm border shadow-sm">

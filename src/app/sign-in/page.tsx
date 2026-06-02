@@ -6,35 +6,40 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn } from "@/lib/auth/client";
+import { authClient } from "@/lib/auth/client";
 
 export default function SignInPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setIsLoading(true);
 
     try {
-      const result = await signIn.email({
-        email,
-        password,
+      const result = await authClient.signIn.email({
+        email: formData.email,
+        password: formData.password,
       });
 
       if (result.error) {
         setError(result.error.message || "Failed to sign in");
+        console.error('Sign in result.error:', result.error);
       } else {
         router.push("/");
+        router.refresh();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      console.error('Sign in error:', err);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -51,11 +56,6 @@ export default function SignInPage() {
             </p>
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-              {error && (
-                <div className="rounded-md border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500 dark:text-red-500">
-                  {error}
-                </div>
-              )}
 
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -63,10 +63,10 @@ export default function SignInPage() {
                   <Input
                     id="email"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
-                    disabled={loading}
+                    disabled={isLoading}
                     placeholder="you@example.com"
                   />
                 </div>
@@ -76,22 +76,28 @@ export default function SignInPage() {
                   <Input
                     id="password"
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
-                    disabled={loading}
-                    placeholder="Enter your password"
+                    disabled={isLoading}
+                    placeholder="••••••••"
                   />
                 </div>
               </div>
+              
+              {error && (
+                <div className="rounded-md border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500 dark:text-red-500">
+                  {error}
+                </div>
+              )}
 
               <Button
                 type="submit"
                 variant="default"
                 className="w-full"
-                disabled={loading}
+                disabled={isLoading}
               >
-                {loading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
 

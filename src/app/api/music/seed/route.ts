@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
+// import { auth } from '@/lib/auth/server';
+import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 import { musicAlbums, musicTracks, musicLinks } from '@/lib/auth/schema';
-import { getSession } from '@/lib/auth/server';
 import { MusicLinkType, AlbumStatus, TrackStatus } from '@/lib/types/music';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
+    // Get session using Better Auth server API
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -61,7 +65,7 @@ export async function POST(request: NextRequest) {
           title: `Track ${i}`,
           duration: 180 + (i * 10),
           trackNumber: i,
-          s3Key: `albums/${album.id}/track${i}.mp3`,
+          publicUrl: `albums/${album.id}/track${i}.mp3`,
           status: TrackStatus.ACTIVE,
         });
       }

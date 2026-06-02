@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { musicPoller } from '@/lib/services/music/MusicPoller';
-import { getSession } from '@/lib/auth/server';
+// import { auth } from '@/lib/auth/server';
+import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 import { MusicPollingType } from '@/lib/types/music';
 import { db } from '@/lib/db/client';
 import { musicAlbums, musicTracks, musicLinks } from '@/lib/auth/schema';
@@ -8,7 +9,11 @@ import { eq, and } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession();
+    // Get session using Better Auth server API
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+    
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -16,28 +21,35 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
 
-    switch (action) {
-      case 'stats':
-        const stats = await musicPoller.getStats(session.user.id);
-        return NextResponse.json(stats);
+    if (action === 'stats') {
+      // Get user's music stats
+      const albums = await db.select().from(musicAlbums).where(eq(musicAlbums.userId, session.user.id));
+      const tracks = await db.select().from(musicTracks).where(
+        eq(musicTracks.albumId, albums[0]?.id || 0)
+      );
       
-      case 'polling-status':
-        const status = musicPoller.getPollingStatus();
-        return NextResponse.json(status);
-      
-      default:
-        // Get user's music data
-        const albums = await db.query.musicAlbums.findMany({
-          where: eq(musicAlbums.userId, session.user.id),
-          with: {
-            tracks: {
-              orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
-              limit: 5,
-            },
-          },
-        });
-        return NextResponse.json(albums);
+      return NextResponse.json({
+        totalAlbums: albums.length,
+        totalTracks: tracks.length,
+        totalPlayCount: tracks.reduce((sum, t) => sum + (t.playCount || 0), 0),
+        publishedAlbums: albums.filter(a => a.status === 'published').length,
+        activeTracks: tracks.filter(t => t.status === 'active').length,
+      });
     }
+
+    // Get all albums for user
+    const albums = await db.query.musicAlbums.findMany({
+      where: eq(musicAlbums.userId, session.user.id),
+      with: {
+        tracks: {
+          orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
+          limit: 3,
+        },
+      },
+      orderBy: (albums, { desc }) => [desc(albums.createdAt)],
+    });
+
+    return NextResponse.json(albums);
   } catch (error) {
     console.error('Music API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -46,7 +58,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

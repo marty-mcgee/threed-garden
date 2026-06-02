@@ -15,20 +15,18 @@ import {
   Repeat,
   Shuffle,
   ListMusic,
-  Heart,
-  Share2,
-  Download,
   Maximize2,
   Minimize2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface Track {
   id: number;
   title: string;
   duration: number | null;
   trackNumber: number | null;
-  s3Key: string;
+  publicUrl: string;
 }
 
 interface Album {
@@ -42,10 +40,9 @@ interface MusicPlayerProps {
   tracks: Track[];
   album: Album | null;
   onTrackChange?: (trackIndex: number) => void;
-  onLike?: (trackId: number) => void;
 }
 
-export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlayerProps) {
+export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.7);
@@ -57,17 +54,33 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
   const [isShuffle, setIsShuffle] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement>(null);
-  const progressIntervalRef = useRef<NodeJS.Timeout>();
+  const progressIntervalRef = useRef<NodeJS.Timeout>(null);
 
   const currentTrack = tracks[currentTrackIndex];
 
+  // Set audio URL when track changes
   useEffect(() => {
-    if (audioRef.current) {
+    if (currentTrack?.publicUrl) {
+      setAudioUrl(currentTrack.publicUrl);
+      setIsLoading(false);
+    } else {
+      setAudioUrl(null);
+    }
+  }, [currentTrack]);
+
+  // Handle audio element playback
+  useEffect(() => {
+    if (audioRef.current && audioUrl) {
       if (isPlaying) {
-        audioRef.current.play();
+        audioRef.current.play().catch((error) => {
+          console.error('Playback failed:', error);
+          setIsPlaying(false);
+          toast.error('Failed to play track');
+        });
         startProgressUpdate();
       } else {
         audioRef.current.pause();
@@ -76,7 +89,10 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
     }
     
     return () => stopProgressUpdate();
-  }, [isPlaying, currentTrackIndex]);
+  }, [isPlaying, audioUrl]);
+
+  // Don't render audio element if no URL
+  const shouldShowAudio = audioUrl && audioUrl.trim() !== '';
 
   const startProgressUpdate = () => {
     stopProgressUpdate();
@@ -105,6 +121,10 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
   };
 
   const handlePlayPause = () => {
+    if (!audioUrl) {
+      toast.error('No audio source available for this track');
+      return;
+    }
     setIsPlaying(!isPlaying);
   };
 
@@ -200,14 +220,22 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
 
   return (
     <>
-      <audio
-        ref={audioRef}
-        src={`/api/music/stream/${currentTrack.id}`}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={handleTrackEnd}
-      />
+      {/* Only render audio element if we have a valid URL */}
+      {shouldShowAudio && (
+        <audio
+          ref={audioRef}
+          src={audioUrl}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={handleTrackEnd}
+          onError={(e) => {
+            console.error('Audio playback error:', e);
+            toast.error('Failed to play track. Please check the audio source.');
+            setIsPlaying(false);
+          }}
+        />
+      )}
       
-      {/* Mini Player (Visible when not expanded) */}
+      {/* Mini Player */}
       {!isExpanded && (
         <Card className={cn(
           "fixed bottom-0 left-0 right-0 z-50 rounded-none border-t",
@@ -215,7 +243,6 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
         )}>
           <div className="container mx-auto px-4 py-2">
             <div className="flex items-center gap-4">
-              {/* Album Art */}
               <img
                 src={album.coverArt}
                 alt={album.title}
@@ -223,7 +250,6 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
                 onClick={() => setIsExpanded(true)}
               />
               
-              {/* Track Info */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold truncate">{currentTrack.title}</p>
                 <p className="text-xs text-muted-foreground truncate">
@@ -231,7 +257,6 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
                 </p>
               </div>
               
-              {/* Controls */}
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" onClick={handlePrevious}>
                   <SkipBack className="h-4 w-4" />
@@ -240,15 +265,21 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
                   size="icon"
                   onClick={handlePlayPause}
                   className="h-10 w-10 rounded-full"
+                  disabled={isLoading || !shouldShowAudio}
                 >
-                  {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                  ) : isPlaying ? (
+                    <Pause className="h-5 w-5" />
+                  ) : (
+                    <Play className="h-5 w-5 ml-0.5" />
+                  )}
                 </Button>
                 <Button variant="ghost" size="icon" onClick={handleNext}>
                   <SkipForward className="h-4 w-4" />
                 </Button>
               </div>
               
-              {/* Progress Bar */}
               <div className="hidden md:block w-32">
                 <div className="relative h-1 bg-secondary rounded-full overflow-hidden">
                   <div 
@@ -258,12 +289,7 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
                 </div>
               </div>
               
-              {/* Expand Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsExpanded(true)}
-              >
+              <Button variant="ghost" size="icon" onClick={() => setIsExpanded(true)}>
                 <Maximize2 className="h-4 w-4" />
               </Button>
             </div>
@@ -271,12 +297,11 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
         </Card>
       )}
 
-      {/* Expanded Player Modal */}
+      {/* Expanded Player */}
       {isExpanded && (
         <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="container mx-auto h-full flex items-center justify-center p-6">
             <Card className="w-full max-w-4xl overflow-hidden">
-              {/* Close Button */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -285,26 +310,24 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
               >
                 <Minimize2 className="h-4 w-4" />
               </Button>
-
+              
               <div className="grid md:grid-cols-2 gap-8 p-8">
-                {/* Album Art Section */}
                 <div className="space-y-4">
                   <div className="aspect-square rounded-lg overflow-hidden shadow-2xl">
-                    <img
-                      src={album.coverArt}
-                      alt={album.title}
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={album.coverArt} alt={album.title} className="w-full h-full object-cover" />
                   </div>
                   <div className="text-center">
                     <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
                     <p className="text-muted-foreground">{album.title} • {album.artist}</p>
+                    {!shouldShowAudio && (
+                      <p className="text-sm text-red-500 mt-2">
+                        No audio source available for this track
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* Player Controls Section */}
                 <div className="space-y-6">
-                  {/* Progress */}
                   <div className="space-y-2">
                     <Slider
                       value={[currentTime]}
@@ -312,6 +335,7 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
                       step={1}
                       onValueChange={handleSeek}
                       className="cursor-pointer"
+                      disabled={!shouldShowAudio}
                     />
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>{formatTime(currentTime)}</span>
@@ -319,64 +343,35 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
                     </div>
                   </div>
 
-                  {/* Main Controls */}
                   <div className="flex items-center justify-center gap-4">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsShuffle(!isShuffle)}
-                      className={cn(isShuffle && "text-primary")}
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => setIsShuffle(!isShuffle)} className={cn(isShuffle && "text-primary")}>
                       <Shuffle className="h-5 w-5" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={handlePrevious}>
                       <SkipBack className="h-6 w-6" />
                     </Button>
-                    <Button
-                      size="icon"
-                      onClick={handlePlayPause}
-                      className="h-16 w-16 rounded-full bg-primary hover:bg-primary/90"
+                    <Button 
+                      size="icon" 
+                      onClick={handlePlayPause} 
+                      className="h-16 w-16 rounded-full bg-primary hover:bg-primary/90" 
+                      disabled={isLoading || !shouldShowAudio}
                     >
-                      {isPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8 ml-1" />}
+                      {isLoading ? (
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
+                      ) : isPlaying ? (
+                        <Pause className="h-8 w-8" />
+                      ) : (
+                        <Play className="h-8 w-8 ml-1" />
+                      )}
                     </Button>
                     <Button variant="ghost" size="icon" onClick={handleNext}>
                       <SkipForward className="h-6 w-6" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsRepeat(!isRepeat)}
-                      className={cn(isRepeat && "text-primary")}
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => setIsRepeat(!isRepeat)} className={cn(isRepeat && "text-primary")}>
                       <Repeat className="h-5 w-5" />
                     </Button>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex items-center justify-center gap-3">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setIsLiked(!isLiked);
-                        onLike?.(currentTrack.id);
-                      }}
-                      className={cn(isLiked && "text-red-500")}
-                    >
-                      <Heart className={cn("h-4 w-4 mr-2", isLiked && "fill-current")} />
-                      {isLiked ? "Liked" : "Like"}
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Share2 className="h-4 w-4 mr-2" />
-                      Share
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
-                  </div>
-
-                  {/* Volume Control */}
                   <div className="flex items-center gap-3 justify-center">
                     <Button variant="ghost" size="icon" onClick={toggleMute}>
                       {isMuted || volume === 0 ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -390,17 +385,11 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
                     />
                   </div>
 
-                  {/* Playlist Toggle */}
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => setShowPlaylist(!showPlaylist)}
-                  >
+                  <Button variant="outline" className="w-full" onClick={() => setShowPlaylist(!showPlaylist)}>
                     <ListMusic className="h-4 w-4 mr-2" />
                     {showPlaylist ? "Hide Playlist" : "Show Playlist"}
                   </Button>
 
-                  {/* Playlist */}
                   {showPlaylist && (
                     <div className="mt-4 max-h-64 overflow-y-auto space-y-1 border rounded-lg p-2">
                       {tracks.map((track, index) => (
@@ -417,22 +406,19 @@ export function MusicPlayer({ tracks, album, onTrackChange, onLike }: MusicPlaye
                           }}
                         >
                           <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <span className="text-xs text-muted-foreground w-8">
-                              {track.trackNumber}
-                            </span>
+                            <span className="text-xs text-muted-foreground w-8">{track.trackNumber}</span>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">{track.title}</p>
+                              {!track.publicUrl && (
+                                <p className="text-xs text-red-500">No audio source</p>
+                              )}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             {currentTrackIndex === index && isPlaying && (
-                              <Badge variant="secondary" className="text-xs">
-                                Playing
-                              </Badge>
+                              <Badge variant="secondary" className="text-xs">Playing</Badge>
                             )}
-                            <span className="text-xs text-muted-foreground">
-                              {formatTime(track.duration || 0)}
-                            </span>
+                            <span className="text-xs text-muted-foreground">{formatTime(track.duration || 0)}</span>
                           </div>
                         </div>
                       ))}

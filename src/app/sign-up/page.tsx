@@ -6,38 +6,42 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUp } from "@/lib/auth/client";
+import { authClient } from "@/lib/auth/client";
 
 export default function SignUpPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     setError(null);
-    setLoading(true);
 
     try {
-      const result = await signUp.email({
-        email,
-        password,
-        name,
+      const result = await authClient.signUp.email({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
       });
 
       if (result.error) {
         setError(result.error.message || "Failed to sign up");
+        console.error('Sign up result.error:', result.error);
       } else {
         // Redirect to sign-in page after successful sign-up
         router.push("/");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      console.error('Sign up error:', err);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -54,11 +58,6 @@ export default function SignUpPage() {
             </p>
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-              {error && (
-                <div className="rounded-md border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500 dark:text-red-500">
-                  {error}
-                </div>
-              )}
 
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -66,10 +65,10 @@ export default function SignUpPage() {
                   <Input
                     id="name"
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={loading}
                     placeholder="John Doe"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
                   />
                 </div>
 
@@ -78,11 +77,10 @@ export default function SignUpPage() {
                   <Input
                     id="email"
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={loading}
                     placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
                   />
                 </div>
 
@@ -91,22 +89,27 @@ export default function SignUpPage() {
                   <Input
                     id="password"
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
-                    disabled={loading}
-                    placeholder="Enter your password"
                   />
                 </div>
               </div>
+
+              {error && (
+                <div className="rounded-md border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500 dark:text-red-500">
+                  {error}
+                </div>
+              )}
 
               <Button
                 type="submit"
                 variant="default"
                 className="w-full"
-                disabled={loading}
+                disabled={isLoading}
               >
-                {loading ? "Creating account..." : "Sign Up"}
+                {isLoading ? "Creating account..." : "Sign Up"}
               </Button>
             </form>
 
