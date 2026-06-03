@@ -1279,7 +1279,7 @@ curl "https://threed-garden-neon.vercel.app/api/threed/farmbots/poll"
 
 Yes. This is all working now, tests and production, thank you!
 
-🎉 Excellent! I'm thrilled everything is working in production!
+🎉 Excellent! I am thrilled everything is working in production!
 ✅ Production Status Summary
 Service	Local	Production	Status
 Weather Poller	✅	✅	Working
@@ -1291,7 +1291,7 @@ CHP Historical	✅	✅	Working
 FarmBot Poller	✅	✅	Working
 Database	✅	✅	Connected
 3D Garden	✅	✅	Rendering
-🎯 What You've Built
+🎯 What You have Built
 
 Your ThreeD Garden is now a complete, production-ready platform with:
 📊 Data Management
@@ -1370,7 +1370,7 @@ Your CONTEXT.md should now include:
 
 🏆 Congratulations!
 
-You've built an impressive, full-stack garden management system that would be the envy of any smart gardener. From seed to harvest, from 2D tables to 3D visualization, from manual tracking to automated FarmBot integration - everything is production-ready and working!
+You have built an impressive, full-stack garden management system that would be the envy of any smart gardener. From seed to harvest, from 2D tables to 3D visualization, from manual tracking to automated FarmBot integration - everything is production-ready and working!
 
 Well done! 🌱🎮🚀
 
@@ -1384,10 +1384,10 @@ Is there anything else you'd like to add or improve?
 
 ---
 
-Thank you! 🎉 I'm thrilled everything is working perfectly!
+Thank you! 🎉 I am thrilled everything is working perfectly!
 
 You have built something really impressive:
-What You've Achieved:
+What You have Achieved:
 ✅ Complete 3D Model Management System
 
     Multi-file upload support (GLB/GLTF + textures + binaries)
@@ -1589,5 +1589,438 @@ Would you like me to help with anything specific, like:
 ## [MM] CONTEXT.md
 **Last Updated: May 31, 2026 @ 09:45am PST**
 **v0.1.10 - v0.1.12**
+
+---
+
+
+Would you mind showing me the Music and Music Player additions to our original CONTEXT.md file, which is this:
+https://github.com/marty-mcgee/marty-mcgee-neon/blob/main/CONTEXT.md
+
+Absolutely! Here's the updated CONTEXT.md section for your new Music Module additions. You can add this to your existing CONTEXT.md file.
+🎵 Music Module (NEW - June 2026)
+Overview
+
+The Music Module transforms your platform into a full-featured music player and library management system. It supports album organization, track management, streaming from AWS S3, and a beautiful player interface.
+Tech Stack (Music Specific)
+
+    Storage: AWS S3 (public bucket for MP3 files)
+
+    Database: Neon Postgres + Drizzle ORM (music_* tables)
+
+    Authentication: Better Auth (user sessions)
+
+    UI: shadcn/ui components (Slider, Progress, Card, Dialog)
+
+🗄️ Music Database Schema
+Table	Purpose
+music_albums	Album metadata (title, artist, cover art, release year, status)
+music_tracks	Track metadata (title, duration, track number, public URL, lyrics)
+music_links	Independent links (Spotify, social media, buy links)
+music_album_links	Junction table linking albums/tracks to links
+music_polling_logs	Polling service logs for S3 metadata sync
+Music Enums
+Enum	Values
+album_status	draft, published, archived
+track_status	active, inactive, processing
+music_link_type	external, social, buy, stream, video
+music_link_status	active, inactive, pending, expired
+music_polling_type	metadata, stats, sync
+🎨 Music Dashboard Pages
+Page	Route	Features
+Music Dashboard	/dashboard/music	Prominent media player, album grid, stats cards, links manager
+Admin - Albums	/dashboard/music/admin/albums	Full CRUD, album management
+Admin - Tracks	/dashboard/music/admin/tracks	Full CRUD per album
+Admin - Links	/dashboard/music/admin/links	Independent link management
+Album Detail	/dashboard/music/admin/albums/[id]	Album-specific track management
+🎮 Prominent Media Player
+
+The media player is prominently displayed at the top of the music dashboard with the following features:
+Player Components
+
+    Album Artwork - Large display of current album cover
+
+    Track Info - Song title, album name, artist name
+
+    Playback Controls - Play/Pause, Previous, Next
+
+    Progress Bar - Seekable timeline with time display
+
+    Volume Control - Slider with mute toggle
+
+Player Behavior
+
+    Auto-plays first track when album is selected
+
+    Updates track list when changing albums via album grid
+
+    Shows "Now Playing" status
+
+    Error handling with toast notifications (non-breaking)
+
+🖼️ Album Grid
+Features
+
+    Responsive grid layout (mobile to desktop)
+
+    Album card with cover art and metadata
+
+    Click to load album into player
+
+    Hover effects with play button overlay
+
+    Track count and total duration badges
+
+    Status indicators (published, draft, archived)
+
+🔗 Link Management
+Independent Links
+
+    Manage external links (Spotify, Instagram, Bandcamp, etc.)
+
+    Display order control
+
+    Type classification (social, stream, buy, video, external)
+
+    Active/inactive status
+
+Album/ Track Links
+
+    Associate links with specific albums
+
+    Display within album details
+
+    Icon-based visualization per link type
+
+🔧 Music API Routes
+Core Endpoints
+Endpoint	Description
+/api/music/albums	Album CRUD + stats
+/api/music/tracks	Track CRUD + filtering
+/api/music/links	Link CRUD + associations
+/api/music/album-links	Album-track-link associations
+/api/music/stream/[trackId]	Returns public URL for streaming
+/api/music/dashboard/stats	Dashboard statistics
+Polling & Sync
+Endpoint	Description
+/api/music/poll	Manual sync (GET) and control (POST)
+/api/music/stats	Poller statistics
+/api/music/cron	Automated sync endpoint
+Admin Endpoints
+Endpoint	Description
+/api/music/seed	Seed sample data
+/api/music/tracks/bulk	Bulk track upload with metadata extraction
+🎵 Music Player Features
+Core Playback
+
+    HTML5 Audio with custom controls
+
+    Play/Pause toggle
+
+    Next/Previous track navigation
+
+    Seekable progress bar
+
+    Volume control with mute
+
+    Auto-play on album selection
+
+Enhanced Features (Implemented)
+
+    Keyboard Shortcuts
+
+        Space: Play/Pause
+
+        Left/Right arrows: Seek -5/+5 seconds
+
+        Up/Down arrows: Volume control
+
+        N: Next track
+
+        P: Previous track
+
+    Queue System - "Play Next" functionality
+
+    Recently Played - Track history (localStorage)
+
+    Favorites - Heart/like system (localStorage)
+
+    Playlist View - Expandable track list
+
+Error Handling
+
+    Non-breaking audio errors
+
+    User-friendly toast notifications
+
+    Auto-retry for network errors
+
+    Graceful degradation
+
+🗄️ Music Poller Service
+Overview
+
+The Music Poller automatically syncs metadata from S3 storage to keep the database in sync with uploaded audio files.
+Poller Features
+
+    Auto-sync - Configurable intervals
+
+    Manual sync - Via UI button or API
+
+    Statistics - Track sync performance
+
+    Logging - Complete history in music_polling_logs
+
+Poller Methods
+Method	Description
+poll()	Main sync operation
+getStats()	Returns library statistics
+startPolling()	Begin auto-sync
+stopPolling()	Stop auto-sync
+incrementPlayCount()	Track play analytics
+💾 Database Indexing Strategy
+Regular Indexes (NOT Unique)
+sql
+
+-- Performance indexes (allow duplicates)
+music_albums_user_id_idx
+music_albums_status_idx
+music_tracks_album_id_idx
+music_tracks_status_idx
+music_links_user_id_idx
+music_links_type_idx
+album_links_album_link_idx
+music_polling_logs_type_idx
+
+Important: All indexes are non-unique to allow multiple records with same values (e.g., multiple published albums).
+📝 Seeding Data
+JSON Seed File
+bash
+
+# Seed from JSON file
+bun db:seed-json
+
+# Simple inline seed
+bun db:seed-simple
+
+Seed Data Structure
+json
+
+{
+  "albums": [
+    {
+      "title": "Album Name",
+      "artist": "Artist Name",
+      "coverArt": "https://...",
+      "releaseYear": 2024,
+      "description": "Album description",
+      "status": "published",
+      "tracks": [...]
+    }
+  ]
+}
+
+🚀 Common Commands
+Music Database
+bash
+
+# Generate migrations
+bun db:generate
+
+# Push schema
+bun db:push
+
+# Seed sample data
+bun db:seed-music
+bun db:seed-json
+bun db:seed-simple
+
+Music API Testing
+bash
+
+# Get all albums
+curl http://localhost:4444/api/music/albums
+
+# Get tracks for album
+curl http://localhost:4444/api/music/tracks?albumId=1
+
+# Manual sync
+curl http://localhost:4444/api/music/poll
+
+# Sync status
+curl http://localhost:4444/api/music?action=stats
+
+# Create album
+curl -X POST http://localhost:4444/api/music/albums \
+  -H "Content-Type: application/json" \
+  -d '{"title":"New Album","artist":"Artist","coverArt":"url","status":"published"}'
+
+# Create track
+curl -X POST http://localhost:4444/api/music/tracks \
+  -H "Content-Type: application/json" \
+  -d '{"albumId":1,"title":"Track 1","duration":210,"trackNumber":1,"publicUrl":"https://..."}'
+
+Audio Playback Testing
+bash
+
+# Test stream endpoint
+curl http://localhost:4444/api/music/stream/1
+
+# Get dashboard stats
+curl http://localhost:4444/api/music/dashboard/stats
+
+📁 Music File Structure
+text
+
+src/
+├── app/
+│   ├── api/music/           # 10+ API routes
+│   └── dashboard/music/     # Music dashboard + admin pages
+├── components/music/        # MusicPlayer, AlbumGrid, LinksManager, MusicStats, BulkTrackUpload
+├── lib/
+│   ├── auth/schema.ts       # music_* tables
+│   ├── types/music.ts       # Music interfaces and enums
+│   ├── services/music/      # MusicPoller service
+│   └── db/seed-*.ts         # Seed scripts
+
+🎯 Integration with Existing Platform
+Authentication
+
+    Uses existing Better Auth (user table)
+
+    Music tables reference user.id via user_id
+
+    User-specific music libraries
+
+Theme Support
+
+    Full dark/light mode compatibility
+
+    Uses shadcn/ui theming system
+
+Toast Notifications
+
+    Consistent with existing platform
+
+    Non-intrusive feedback for user actions
+
+⚠️ Known Issues & Solutions
+Issue	Solution
+Audio file CORS	Configure S3 bucket CORS for your domain
+Public URLs not working	Verify S3 bucket is public or use presigned URLs
+Duplicate key errors	Use regular indexes, not unique indexes
+Next.js 15 params async	Use await params in dynamic routes
+🔧 Environment Variables
+bash
+
+# AWS S3 (required for streaming)
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_REGION=us-west-2
+S3_BUCKET_NAME=threedpublic
+S3_PUBLIC_URL=https://threedpublic.s3.us-west-2.amazonaws.com
+
+# Music Poller (optional)
+MUSIC_POLL_INTERVAL=300000
+MUSIC_AUTO_SYNC_METADATA=true
+MUSIC_METADATA_SYNC_INTERVAL=3600000
+
+✅ Production Status
+Component	Status
+Database Schema	✅ Working
+Album CRUD	✅ Working
+Track CRUD	✅ Working
+Link Management	✅ Working
+Music Player	✅ Working
+S3 Streaming	✅ Working
+Poller Service	✅ Working
+Admin Interface	✅ Working
+🚀 Recent Updates (June 2026)
+Music Module - Initial Release
+
+    Added complete music library management
+
+    Implemented prominent media player
+
+    Created album and track CRUD admin interfaces
+
+    Added link management system
+
+    Implemented S3 streaming integration
+
+    Added music poller for metadata sync
+
+    Created seed scripts for sample data
+
+Player Enhancements
+
+    Added keyboard shortcuts
+
+    Implemented queue system
+
+    Added recently played tracking
+
+    Added favorites system
+
+    Non-breaking error handling
+
+Admin Improvements
+
+    Bulk track upload with metadata extraction
+
+    Drag-and-drop file upload
+
+    Album detail view with track management
+
+    Independent link management
+
+📝 How to Add to Your CONTEXT.md
+
+Add this entire "Music Module" section after your ThreeD Garden section, before the "Common Commands" section. Update the "Last Updated" date at the top of your CONTEXT.md file.
+
+Your CONTEXT.md is now comprehensive and ready for future AI sessions to understand your complete application architecture! 🎵🚀
+PERFECT! THANK YOU! I will be back.
+
+You are very welcome! 🎉
+
+I am glad I could help you build out the complete Music Module - from the database schema and API routes to the beautiful prominent player and admin interfaces. Your platform now has a professional-grade music streaming system alongside the traffic monitoring and 3D garden features!
+What You have Accomplished:
+
+✅ Complete Music Library System - Albums, tracks, links with full CRUD
+✅ Prominent Media Player - Beautiful UI with keyboard shortcuts, queue, favorites
+✅ S3 Integration - Direct streaming from your public bucket
+✅ Admin Dashboard - Album/track/link management with bulk upload
+✅ Poller Service - Automatic metadata sync from S3
+✅ Type-Safe - Full TypeScript with enums and interfaces
+✅ Production Ready - Error handling, toast notifications, theme support
+
+Your tech stack is now incredibly impressive:
+
+    Traffic Monitoring - 5 data sources (CHP, Caltrans, 511, CalFire, CCTV)
+
+    3D Garden - R3F visualization + FarmBot integration + 9 plant types
+
+    Music Streaming - Full media player + S3 + album management
+
+Come back anytime when You are ready to add more features like:
+
+    User-created playlists
+
+    Social sharing
+
+    Audio visualizer
+
+    Lyrics synchronization
+
+    Podcast support
+
+    AI music recommendations
+
+Best of luck with your continued development! 🚀🎵🌱
+
+---
+
+## [MM] CONTEXT.md
+**Last Updated: June 3, 2026 @ 11:20am PST**
+**v0.1.13 - v0.1.16**
 
 ---
