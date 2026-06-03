@@ -948,8 +948,6 @@ Layout Features
 
     Sticky header with live status indicator
 
-🚀 Common Commands (ThreeD)
-bash
 
 # Database
 bun run db:generate
@@ -1264,16 +1262,16 @@ This update captures all the 3D visualization enhancements, plant models, contro
 ---
 
 # Test each poller endpoint
-curl "https://threed-garden-neon.vercel.app/api/calfire/poll?action=stats"
-curl "https://threed-garden-neon.vercel.app/api/caltrans/poll?action=stats"
-curl "https://threed-garden-neon.vercel.app/api/bay-area-511/poll?action=stats"
-curl "https://threed-garden-neon.vercel.app/api/chp-cad/poll?action=stats"
-curl "https://threed-garden-neon.vercel.app/api/chp-historical/poll?action=stats"
-# curl "https://threed-garden-neon.vercel.app/api/threed/plants/poll"
-# curl "https://threed-garden-neon.vercel.app/api/threed/beds/poll"
-# curl "https://threed-garden-neon.vercel.app/api/threed/plantings/poll"
-curl "https://threed-garden-neon.vercel.app/api/threed/weather/poll"
-curl "https://threed-garden-neon.vercel.app/api/threed/farmbots/poll"
+curl "https://threed-garden-neon.vercel.app/api/calfire/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/caltrans/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/bay-area-511/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/chp-cad/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/chp-historical/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/threed/plants/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/threed/beds/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/threed/plantings/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/threed/weather/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/threed/farmbots/poll?action=poll"
 
 ---
 
