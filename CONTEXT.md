@@ -169,22 +169,22 @@ bun run db:migrate
 bun run db:push
 
 # Manual Polling
-curl "http://localhost:3333/api/chp-cad/poll?action=poll"
-curl "http://localhost:3333/api/chp-historical/poll?action=poll&limit=500&startDate=2026-01-01"
-curl "http://localhost:3333/api/bay-area-511/poll?action=poll"
-curl "http://localhost:3333/api/caltrans/poll"
+curl "http://localhost:4444/api/chp-cad/poll?action=poll"
+curl "http://localhost:4444/api/chp-historical/poll?action=poll&limit=500&startDate=2026-01-01"
+curl "http://localhost:4444/api/bay-area-511/poll?action=poll"
+curl "http://localhost:4444/api/caltrans/poll"
 
 # Check Stats
-curl "http://localhost:3333/api/chp-cad/poll?action=stats"
-curl "http://localhost:3333/api/chp-historical/collisions/stats"
-curl "http://localhost:3333/api/bay-area-511/poll?action=stats"
-curl "http://localhost:3333/api/caltrans/closures/stats"
+curl "http://localhost:4444/api/chp-cad/poll?action=stats"
+curl "http://localhost:4444/api/chp-historical/collisions/stats"
+curl "http://localhost:4444/api/bay-area-511/poll?action=stats"
+curl "http://localhost:4444/api/caltrans/closures/stats"
 
 # Test Cron Jobs Locally
-curl "http://localhost:3333/api/bay-area-511/cron"
-curl "http://localhost:3333/api/caltrans/cron"
-curl "http://localhost:3333/api/chp-cad/cron"
-curl "http://localhost:3333/api/chp-historical/cron"
+curl "http://localhost:4444/api/bay-area-511/cron"
+curl "http://localhost:4444/api/caltrans/cron"
+curl "http://localhost:4444/api/chp-cad/cron"
+curl "http://localhost:4444/api/chp-historical/cron"
 
 ---
 
@@ -305,7 +305,7 @@ Your `CONTEXT.md` is **production-grade documentation**. Any future AI session (
 bun run src/lib/scripts/backfill-chp-historical.ts
 
 # Incremental polling
-curl "http://localhost:3333/api/chp-historical/poll?action=poll"
+curl "http://localhost:4444/api/chp-historical/poll?action=poll"
 
 ## 🚀 Next Steps
 
@@ -960,26 +960,26 @@ bun run db:push
 bun run src/lib/scripts/seed-threed-plants.ts
 
 # Weather sync
-curl "http://localhost:3333/api/threed/weather/poll"
+curl "http://localhost:4444/api/threed/weather/poll"
 
 # FarmBot sync
-curl "http://localhost:3333/api/threed/farmbots/poll"
+curl "http://localhost:4444/api/threed/farmbots/poll"
 
 # FarmBot water command (replace 1 with device ID)
-curl -X POST "http://localhost:3333/api/threed/farmbots/1/water" \
+curl -X POST "http://localhost:4444/api/threed/farmbots/1/water" \
   -H "Content-Type: application/json" \
   -d '{"durationMs": 30000}'
 
 # FarmBot move command
-curl -X POST "http://localhost:3333/api/threed/farmbots/1/move" \
+curl -X POST "http://localhost:4444/api/threed/farmbots/1/move" \
   -H "Content-Type: application/json" \
   -d '{"x": 0, "y": 0, "z": 0}'
 
 # View 3D garden
-open "http://localhost:3333/dashboard/threed/garden"
+open "http://localhost:4444/dashboard/threed/garden"
 
 # View analytics
-open "http://localhost:3333/dashboard/threed/garden/analytics"
+open "http://localhost:4444/dashboard/threed/garden/analytics"
 
 📁 ThreeD File Structure
 text
