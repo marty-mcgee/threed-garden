@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Play,
   Pause,
@@ -17,6 +19,13 @@ import {
   ListMusic,
   Maximize2,
   Minimize2,
+  Heart,
+  Clock,
+  History,
+  Plus,
+  X,
+  SkipForward as SkipForwardIcon,
+  AlertCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -27,6 +36,7 @@ interface Track {
   duration: number | null;
   trackNumber: number | null;
   publicUrl: string;
+  albumId: number;
 }
 
 interface Album {
@@ -42,7 +52,14 @@ interface MusicPlayerProps {
   onTrackChange?: (trackIndex: number) => void;
 }
 
+interface QueueItem {
+  track: Track;
+  album: Album;
+  addedAt: Date;
+}
+
 export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) {
+  // Player state
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.7);
@@ -56,17 +73,46 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
   const [isExpanded, setIsExpanded] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
+  // New features state
+  const [queue, setQueue] = useState<QueueItem[]>([]);
+  const [recentlyPlayed, setRecentlyPlayed] = useState<Track[]>([]);
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [activeTab, setActiveTab] = useState('queue');
+
+  // Add state for error tracking
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout>(null);
 
   const currentTrack = tracks[currentTrackIndex];
+
+  // Load favorites from localStorage on mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('favoriteTracks');
+    if (savedFavorites) {
+      setFavorites(new Set(JSON.parse(savedFavorites)));
+    }
+  }, []);
+
+  // Save favorites to localStorage
+  useEffect(() => {
+    localStorage.setItem('favoriteTracks', JSON.stringify([...favorites]));
+  }, [favorites]);
 
   // Set audio URL when track changes
   useEffect(() => {
     if (currentTrack?.publicUrl) {
       setAudioUrl(currentTrack.publicUrl);
       setIsLoading(false);
+
+      // Add to recently played
+      setRecentlyPlayed(prev => {
+        const filtered = prev.filter(t => t.id !== currentTrack.id);
+        return [currentTrack, ...filtered].slice(0, 20);
+      });
     } else {
       setAudioUrl(null);
     }
@@ -87,12 +133,53 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
         stopProgressUpdate();
       }
     }
-    
+
     return () => stopProgressUpdate();
   }, [isPlaying, audioUrl]);
 
-  // Don't render audio element if no URL
-  const shouldShowAudio = audioUrl && audioUrl.trim() !== '';
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Space bar - play/pause
+      if (e.code === 'Space' && !e.target?.matches('input, textarea, button')) {
+        e.preventDefault();
+        handlePlayPause();
+      }
+      // Left arrow - seek backward 5 seconds
+      if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        handleSeek([Math.max(0, currentTime - 5)]);
+      }
+      // Right arrow - seek forward 5 seconds
+      if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        handleSeek([Math.min(duration, currentTime + 5)]);
+      }
+      // Up arrow - volume up
+      if (e.code === 'ArrowUp') {
+        e.preventDefault();
+        handleVolumeChange([Math.min(1, volume + 0.1)]);
+      }
+      // Down arrow - volume down
+      if (e.code === 'ArrowDown') {
+        e.preventDefault();
+        handleVolumeChange([Math.max(0, volume - 0.1)]);
+      }
+      // N key - next track
+      if (e.code === 'KeyN') {
+        e.preventDefault();
+        handleNext();
+      }
+      // P key - previous track
+      if (e.code === 'KeyP') {
+        e.preventDefault();
+        handlePrevious();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentTime, duration, volume, isPlaying]);
 
   const startProgressUpdate = () => {
     stopProgressUpdate();
@@ -110,6 +197,17 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
   };
 
   const getNextTrackIndex = () => {
+    // Check queue first
+    if (queue.length > 0) {
+      const nextQueueItem = queue[0];
+      const trackIndex = tracks.findIndex(t => t.id === nextQueueItem.track.id);
+      if (trackIndex !== -1) {
+        setQueue(prev => prev.slice(1));
+        toast.success(`Now playing: ${nextQueueItem.track.title} (from queue)`);
+        return trackIndex;
+      }
+    }
+
     if (isShuffle) {
       let newIndex;
       do {
@@ -204,6 +302,47 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
     }
   };
 
+  const toggleFavorite = () => {
+    if (!currentTrack) return;
+
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(currentTrack.id)) {
+        newFavorites.delete(currentTrack.id);
+        toast.success(`Removed from favorites: ${currentTrack.title}`);
+      } else {
+        newFavorites.add(currentTrack.id);
+        toast.success(`Added to favorites: ${currentTrack.title}`);
+      }
+      return newFavorites;
+    });
+  };
+
+  const addToQueue = (track: Track, albumData: Album) => {
+    setQueue(prev => [...prev, { track, album: albumData, addedAt: new Date() }]);
+    toast.success(`Added to queue: ${track.title}`);
+  };
+
+  const removeFromQueue = (index: number) => {
+    setQueue(prev => prev.filter((_, i) => i !== index));
+    toast.success('Removed from queue');
+  };
+
+  const playNow = (track: Track, albumData: Album) => {
+    const trackIndex = tracks.findIndex(t => t.id === track.id);
+    if (trackIndex !== -1) {
+      setCurrentTrackIndex(trackIndex);
+      onTrackChange?.(trackIndex);
+      setIsPlaying(true);
+      toast.success(`Now playing: ${track.title}`);
+    }
+  };
+
+  const playNext = (track: Track, albumData: Album) => {
+    setQueue(prev => [{ track, album: albumData, addedAt: new Date() }, ...prev]);
+    toast.success(`Added to play next: ${track.title}`);
+  };
+
   const formatTime = (time: number) => {
     if (isNaN(time)) return '0:00';
     const minutes = Math.floor(time / 60);
@@ -216,25 +355,135 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
     return (currentTime / duration) * 100;
   };
 
+  const shouldShowAudio = audioUrl && audioUrl.trim() !== '';
+
+
+
+  // Handle audio errors gracefully
+  const handleAudioError = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+    const audio = e.currentTarget;
+    let errorMessage = 'Unable to play this track. ';
+    
+    // Get more details about the error without breaking the app
+    if (audio.error) {
+      switch (audio.error.code) {
+        case MediaError.MEDIA_ERR_ABORTED:
+          errorMessage += 'Playback was aborted.';
+          break;
+        case MediaError.MEDIA_ERR_NETWORK:
+          errorMessage += 'Network error. Please check your connection.';
+          break;
+        case MediaError.MEDIA_ERR_DECODE:
+          errorMessage += 'Audio format not supported.';
+          break;
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          errorMessage += 'Audio source not found.';
+          break;
+        default:
+          errorMessage += 'Unknown error occurred.';
+      }
+    } else {
+      errorMessage += 'Could not load audio source.';
+    }
+    
+    // Log to console for debugging (doesn't break the app)
+    console.warn('Audio playback warning:', {
+      track: currentTrack?.title,
+      url: audioUrl,
+      errorCode: audio.error?.code,
+      errorMessage
+    });
+    
+    // Show user-friendly toast
+    toast.error(errorMessage);
+    
+    // Update state
+    setAudioError(errorMessage);
+    setIsPlaying(false);
+    
+    // Auto-retry once if it's a network error
+    if (audio.error?.code === MediaError.MEDIA_ERR_NETWORK && retryCount < 1) {
+      setRetryCount(prev => prev + 1);
+      setTimeout(() => {
+        toast.info('Retrying playback...');
+        if (audioRef.current && audioUrl) {
+          audioRef.current.load();
+          if (isPlaying) {
+            audioRef.current.play().catch(() => {});
+          }
+        }
+      }, 2000);
+    }
+  };
+
+  // Reset retry count when track changes
+  useEffect(() => {
+    setRetryCount(0);
+    setAudioError(null);
+  }, [currentTrack]);
+
+
+
+
+
+
+
+
+
+
+
+
   if (!currentTrack || !album) return null;
 
   return (
     <>
-      {/* Only render audio element if we have a valid URL */}
       {shouldShowAudio && (
         <audio
           ref={audioRef}
           src={audioUrl}
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleTrackEnd}
-          onError={(e) => {
-            console.error('Audio playback error:', e);
-            toast.error('Failed to play track. Please check the audio source.');
-            setIsPlaying(false);
+          // Handle Audio File Error
+          onError={handleAudioError}
+          // Prevent React from throwing by catching and suppressing
+          onLoadStart={() => {
+            // Reset error state when loading starts
+            setAudioError(null);
           }}
         />
       )}
-      
+
+
+      {/* Add a small warning indicator if there's an error */}
+      {audioError && (
+        <div className="fixed bottom-20 right-4 z-50">
+          <Card className="p-3 bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800">
+            <div className="flex items-center gap-2 text-sm text-yellow-700 dark:text-yellow-300">
+              <AlertCircle className="h-4 w-4" />
+              <span>{audioError}</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 px-2 text-xs"
+                onClick={() => {
+                  setAudioError(null);
+                  if (audioRef.current && audioUrl) {
+                    audioRef.current.load();
+                    toast.info('Retrying playback...');
+                  }
+                }}
+              >
+                Retry
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
+
+
+
+
       {/* Mini Player */}
       {!isExpanded && (
         <Card className={cn(
@@ -249,14 +498,24 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
                 className="w-12 h-12 rounded-md object-cover cursor-pointer"
                 onClick={() => setIsExpanded(true)}
               />
-              
+
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold truncate">{currentTrack.title}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold truncate">{currentTrack.title}</p>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={toggleFavorite}
+                  >
+                    <Heart className={cn("h-3 w-3", favorites.has(currentTrack.id) && "fill-red-500 text-red-500")} />
+                  </Button>
+                </div>
                 <p className="text-xs text-muted-foreground truncate">
                   {album.title} - {album.artist}
                 </p>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" onClick={handlePrevious}>
                   <SkipBack className="h-4 w-4" />
@@ -279,16 +538,16 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
                   <SkipForward className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="hidden md:block w-32">
                 <div className="relative h-1 bg-secondary rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="absolute h-full bg-primary transition-all duration-100"
                     style={{ width: `${getProgressPercentage()}%` }}
                   />
                 </div>
               </div>
-              
+
               <Button variant="ghost" size="icon" onClick={() => setIsExpanded(true)}>
                 <Maximize2 className="h-4 w-4" />
               </Button>
@@ -300,34 +559,38 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
       {/* Expanded Player */}
       {isExpanded && (
         <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="container mx-auto h-full flex items-center justify-center p-6">
-            <Card className="w-full max-w-4xl overflow-hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-4 right-4 z-10"
-                onClick={() => setIsExpanded(false)}
-              >
-                <Minimize2 className="h-4 w-4" />
+          <div className="container mx-auto h-full flex flex-col p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Now Playing</h2>
+              <Button variant="ghost" size="icon" onClick={() => setIsExpanded(false)}>
+                <Minimize2 className="h-5 w-5" />
               </Button>
-              
-              <div className="grid md:grid-cols-2 gap-8 p-8">
-                <div className="space-y-4">
-                  <div className="aspect-square rounded-lg overflow-hidden shadow-2xl">
-                    <img src={album.coverArt} alt={album.title} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="text-center">
-                    <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
-                    <p className="text-muted-foreground">{album.title} • {album.artist}</p>
-                    {!shouldShowAudio && (
-                      <p className="text-sm text-red-500 mt-2">
-                        No audio source available for this track
-                      </p>
-                    )}
-                  </div>
-                </div>
+            </div>
 
-                <div className="space-y-6">
+            <div className="flex-1 flex flex-col lg:flex-row gap-8 overflow-hidden">
+              {/* Left Panel - Album Art & Track Info */}
+              <div className="lg:w-1/3 space-y-4">
+                <div className="aspect-square rounded-lg overflow-hidden shadow-2xl">
+                  <img src={album.coverArt} alt={album.title} className="w-full h-full object-cover" />
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <h2 className="text-2xl font-bold">{currentTrack.title}</h2>
+                    <Button variant="ghost" size="icon" onClick={toggleFavorite}>
+                      <Heart className={cn("h-5 w-5", favorites.has(currentTrack.id) && "fill-red-500 text-red-500")} />
+                    </Button>
+                  </div>
+                  <p className="text-muted-foreground">{album.title} • {album.artist}</p>
+                  {!shouldShowAudio && (
+                    <p className="text-sm text-red-500 mt-2">No audio source available for this track</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Panel - Player Controls & Queues */}
+              <div className="lg:w-2/3 flex flex-col">
+                {/* Player Controls */}
+                <div className="space-y-6 mb-8">
                   <div className="space-y-2">
                     <Slider
                       value={[currentTime]}
@@ -350,10 +613,10 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
                     <Button variant="ghost" size="icon" onClick={handlePrevious}>
                       <SkipBack className="h-6 w-6" />
                     </Button>
-                    <Button 
-                      size="icon" 
-                      onClick={handlePlayPause} 
-                      className="h-16 w-16 rounded-full bg-primary hover:bg-primary/90" 
+                    <Button
+                      size="icon"
+                      onClick={handlePlayPause}
+                      className="h-16 w-16 rounded-full bg-primary hover:bg-primary/90"
                       disabled={isLoading || !shouldShowAudio}
                     >
                       {isLoading ? (
@@ -384,49 +647,123 @@ export function MusicPlayer({ tracks, album, onTrackChange }: MusicPlayerProps) 
                       className="w-32"
                     />
                   </div>
+                </div>
 
-                  <Button variant="outline" className="w-full" onClick={() => setShowPlaylist(!showPlaylist)}>
-                    <ListMusic className="h-4 w-4 mr-2" />
-                    {showPlaylist ? "Hide Playlist" : "Show Playlist"}
-                  </Button>
+                {/* Tabs for Queue, History, Favorites */}
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="queue">
+                      <ListMusic className="h-4 w-4 mr-2" />
+                      Queue ({queue.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="history">
+                      <History className="h-4 w-4 mr-2" />
+                      Recently Played
+                    </TabsTrigger>
+                    <TabsTrigger value="favorites">
+                      <Heart className="h-4 w-4 mr-2" />
+                      Favorites ({favorites.size})
+                    </TabsTrigger>
+                  </TabsList>
 
-                  {showPlaylist && (
-                    <div className="mt-4 max-h-64 overflow-y-auto space-y-1 border rounded-lg p-2">
-                      {tracks.map((track, index) => (
-                        <div
-                          key={track.id}
-                          className={cn(
-                            "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
-                            currentTrackIndex === index ? "bg-primary/10" : "hover:bg-accent"
-                          )}
-                          onClick={() => {
-                            setCurrentTrackIndex(index);
-                            onTrackChange?.(index);
-                            setIsPlaying(true);
-                          }}
-                        >
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <span className="text-xs text-muted-foreground w-8">{track.trackNumber}</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">{track.title}</p>
-                              {!track.publicUrl && (
-                                <p className="text-xs text-red-500">No audio source</p>
-                              )}
+                  <ScrollArea className="flex-1 mt-4 h-64">
+                    <TabsContent value="queue" className="mt-0">
+                      <div className="space-y-2">
+                        {queue.length === 0 ? (
+                          <p className="text-center text-muted-foreground py-8">Queue is empty. Add tracks to play next!</p>
+                        ) : (
+                          queue.map((item, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-accent/50">
+                              <div className="flex-1">
+                                <p className="font-medium">{item.track.title}</p>
+                                <p className="text-xs text-muted-foreground">{item.album.title}</p>
+                              </div>
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="ghost" onClick={() => playNow(item.track, item.album)}>
+                                  <Play className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={() => removeFromQueue(index)}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {currentTrackIndex === index && isPlaying && (
-                              <Badge variant="secondary" className="text-xs">Playing</Badge>
-                            )}
-                            <span className="text-xs text-muted-foreground">{formatTime(track.duration || 0)}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                          ))
+                        )}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="history" className="mt-0">
+                      <div className="space-y-2">
+                        {recentlyPlayed.length === 0 ? (
+                          <p className="text-center text-muted-foreground py-8">No recently played tracks</p>
+                        ) : (
+                          recentlyPlayed.map((track, index) => (
+                            <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-accent/50">
+                              <div className="flex-1">
+                                <p className="font-medium">{track.title}</p>
+                                <p className="text-xs text-muted-foreground">Track {track.trackNumber}</p>
+                              </div>
+                              <Button size="sm" variant="ghost" onClick={() => playNow(track, album)}>
+                                <Play className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="favorites" className="mt-0">
+                      <div className="space-y-2">
+                        {favorites.size === 0 ? (
+                          <p className="text-center text-muted-foreground py-8">No favorite tracks yet. Click the heart icon to add!</p>
+                        ) : (
+                          tracks.filter(t => favorites.has(t.id)).map((track) => (
+                            <div key={track.id} className="flex items-center justify-between p-2 rounded-lg bg-accent/50">
+                              <div className="flex-1">
+                                <p className="font-medium">{track.title}</p>
+                                <p className="text-xs text-muted-foreground">{album.title}</p>
+                              </div>
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="ghost" onClick={() => playNow(track, album)}>
+                                  <Play className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={() => addToQueue(track, album)}>
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </TabsContent>
+                  </ScrollArea>
+                </Tabs>
+
+                {/* Add from current album section */}
+                <div className="mt-4">
+                  <p className="text-sm font-semibold mb-2">Add from this album:</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {tracks.map((track) => (
+                      <Button
+                        key={track.id}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => addToQueue(track, album)}
+                        disabled={track.id === currentTrack.id}
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        {track.title}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </Card>
+            </div>
+
+            {/* Keyboard shortcuts hint */}
+            <div className="mt-4 text-center text-xs text-muted-foreground">
+              ⌨️ Keyboard shortcuts: Space (play/pause) • ← → (seek) • ↑ ↓ (volume) • N (next) • P (previous)
+            </div>
           </div>
         </div>
       )}

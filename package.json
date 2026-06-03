@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -10,11 +10,7 @@
     "db:migrate": "echo 'Use db:push for development'",
     "db:push": "drizzle-kit push --force",
     "db:studio": "drizzle-kit studio",
-    "auth:generate": "npx @better-auth/cli@latest generate --config src/lib/auth/server.ts --output src/lib/auth/schema.ts",
-    "db:push:threed": "drizzle-kit push --config=./drizzle.threed.config.ts --force",
-    "db:generate:threed": "drizzle-kit generate --config=./drizzle.threed.config.ts",
-    "db:migrate:threed": "drizzle-kit migrate --config=./drizzle.threed.config.ts",
-    "db:studio:threed": "drizzle-kit studio --config=./drizzle.threed.config.ts"
+    "auth:generate": "npx @better-auth/cli@latest generate --config src/lib/auth/server.ts --output src/lib/auth/schema.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.470.0",

@@ -245,3 +245,38 @@ export interface MusicEvent {
   timestamp: Date;
   userId?: string;
 }
+
+
+
+
+
+
+
+// lib/types/music.ts - Add these interfaces
+
+export interface PlaylistQueue {
+  id: string;
+  tracks: MusicTrack[];
+  currentIndex: number;
+  createdAt: Date;
+}
+
+export interface RecentlyPlayed {
+  trackId: number;
+  playedAt: Date;
+  track: MusicTrack;
+}
+
+export interface FavoriteTrack {
+  userId: string;
+  trackId: number;
+  createdAt: Date;
+  track?: MusicTrack;
+}
+
+
+
+
+
+
+

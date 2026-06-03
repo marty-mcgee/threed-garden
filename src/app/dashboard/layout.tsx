@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import * as Tabs from '@radix-ui/react-tabs';
 import { 
-  Flame, Activity, Sun, Moon, MapPin, AlertTriangle, BarChart3, Radio, Car, Carrot, ScanEye,
+  Bird, Flame, Activity, Sun, Moon, MapPin, AlertTriangle, BarChart3, Radio, Car, Carrot, ScanEye,
   Gauge, TrendingUp, Droplets, Sprout, Box, Leaf, Apple, Cpu, Calendar, Image, BedDouble
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -123,15 +123,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center justify-between">
             {/* Logo and Title */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 flex items-center justify-center shadow-lg">
-                <Carrot className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-orange-600 to-orange-600 flex items-center justify-center shadow-lg">
+                <Bird className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-foreground">
-                  ThreeD Garden
+                  Track Dragon
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  Smart Garden Management • Real-time Traffic • FarmBot Integration
+                  Music Tracking Management • Real-time Traffic • ThreeD Integration
                 </p>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               {/* In your dashboard layout or navigation component */}
               <Link href="/dashboard/music/admin" className="text-sm hover:text-primary">
-                Manage Music
+                - Manage Music -
               </Link>
 
               {/* Status Indicator */}
@@ -202,10 +202,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <p>
             🌱 ThreeD Garden • 🚗 Traffic Monitor • 🤖 FarmBot Integration
           </p>
-          <p className="mt-1">
-            {/* Data sources: Caltrans, 511.org, CHP, CalFire, OpenWeatherMap, FarmBot API */}
+          {/* <p className="mt-1">
             Data sources: OpenWeatherMap, FarmBot API
-          </p>
+          </p> */}
           <p className="mt-1">
             Built with Next.js, Neon Postgres, Drizzle ORM, shadcn/ui, Three.js, R3Fiber
           </p>

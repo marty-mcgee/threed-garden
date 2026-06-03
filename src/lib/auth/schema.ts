@@ -141,8 +141,8 @@ export const musicAlbums = pgTable('music_albums', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
-  userIdIdx: uniqueIndex('music_albums_user_id_idx').on(table.userId),
-  statusIdx: uniqueIndex('music_albums_status_idx').on(table.status),
+  userIdIdx: index('music_albums_user_id_idx').on(table.userId),
+  statusIdx: index('music_albums_status_idx').on(table.status),
 }));
 
 export const musicTracks = pgTable('music_tracks', {
@@ -159,8 +159,8 @@ export const musicTracks = pgTable('music_tracks', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
-  albumIdIdx: uniqueIndex('music_tracks_album_id_idx').on(table.albumId),
-  statusIdx: uniqueIndex('music_tracks_status_idx').on(table.status),
+  albumIdIdx: index('music_tracks_album_id_idx').on(table.albumId),
+  statusIdx: index('music_tracks_status_idx').on(table.status),
 }));
 
 export const musicLinks = pgTable('music_links', {
@@ -177,8 +177,8 @@ export const musicLinks = pgTable('music_links', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
-  userIdIdx: uniqueIndex('music_links_user_id_idx').on(table.userId),
-  typeIdx: uniqueIndex('music_links_type_idx').on(table.type),
+  userIdIdx: index('music_links_user_id_idx').on(table.userId),
+  typeIdx: index('music_links_type_idx').on(table.type),
 }));
 
 export const musicAlbumLinks = pgTable('music_album_links', {
@@ -190,8 +190,8 @@ export const musicAlbumLinks = pgTable('music_album_links', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
-  albumLinkIdx: uniqueIndex('album_links_album_link_idx').on(table.albumId, table.linkId),
-  trackLinkIdx: uniqueIndex('album_links_track_link_idx').on(table.trackId, table.linkId),
+  albumLinkIdx: index('album_links_album_link_idx').on(table.albumId, table.linkId),
+  trackLinkIdx: index('album_links_track_link_idx').on(table.trackId, table.linkId),
 }));
 
 export const musicPollingLogs = pgTable('music_polling_logs', {
@@ -204,7 +204,7 @@ export const musicPollingLogs = pgTable('music_polling_logs', {
   completedAt: timestamp('completed_at'),
   error: text('error'),
 }, (table) => ({
-  // Change from uniqueIndex to regular index
+  // Change from index to regular index
   pollTypeIdx: index('music_polling_logs_type_idx').on(table.pollType),
   statusIdx: index('music_polling_logs_status_idx').on(table.status),
   // Optional: add a compound index for common queries

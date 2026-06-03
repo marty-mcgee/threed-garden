@@ -1,0 +1,192 @@
+{
+  "albums": [
+    {
+      "title": "Midnight Dreams",
+      "artist": "Electronic Dreams",
+      "coverArt": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/midnight-dreams-cover.jpg",
+      "releaseYear": 2024,
+      "description": "A journey through ambient electronic landscapes and dreamy synth waves. Perfect for late-night listening and deep focus sessions.",
+      "status": "published",
+      "isPublic": true,
+      "metadata": {
+        "genre": ["Electronic", "Ambient", "Downtempo"],
+        "mood": ["Calm", "Dreamy", "Peaceful"],
+        "label": "Independent",
+        "producer": ["Sarah Chen"]
+      },
+      "tracks": [
+        {
+          "title": "Opening",
+          "duration": 210,
+          "trackNumber": 1,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/opening.mp3",
+          "lyrics": "In the stillness of the night...",
+          "metadata": {
+            "bpm": 70,
+            "key": "C#m"
+          }
+        },
+        {
+          "title": "Dreamscape",
+          "duration": 245,
+          "trackNumber": 2,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/dreamscape.mp3",
+          "lyrics": "Drifting through endless skies...",
+          "metadata": {
+            "bpm": 72,
+            "key": "Am"
+          }
+        },
+        {
+          "title": "Nightfall",
+          "duration": 198,
+          "trackNumber": 3,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/nightfall.mp3",
+          "metadata": {
+            "bpm": 68,
+            "key": "F#m"
+          }
+        },
+        {
+          "title": "Starlight",
+          "duration": 267,
+          "trackNumber": 4,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/starlight.mp3",
+          "lyrics": "Watching the stars align...",
+          "metadata": {
+            "bpm": 74,
+            "key": "D"
+          }
+        },
+        {
+          "title": "Ethereal",
+          "duration": 223,
+          "trackNumber": 5,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/ethereal.mp3",
+          "metadata": {
+            "bpm": 66,
+            "key": "G"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Urban Echoes",
+      "artist": "City Lights",
+      "coverArt": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/urban-echoes-cover.jpg",
+      "releaseYear": 2023,
+      "description": "City-inspired beats and melodies capturing the energy of metropolitan life. Rhythmic and vibrant.",
+      "status": "published",
+      "isPublic": true,
+      "metadata": {
+        "genre": ["Electronic", "Lo-Fi", "Hip Hop"],
+        "mood": ["Energetic", "Urban", "Chill"],
+        "label": "Urban Records",
+        "producer": ["Marcus Thompson", "Elena Rodriguez"]
+      },
+      "tracks": [
+        {
+          "title": "City Lights",
+          "duration": 185,
+          "trackNumber": 1,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/city-lights.mp3",
+          "metadata": {
+            "bpm": 85,
+            "key": "Em"
+          }
+        },
+        {
+          "title": "Midnight Drive",
+          "duration": 234,
+          "trackNumber": 2,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/midnight-drive.mp3",
+          "lyrics": "Cruising through empty streets...",
+          "metadata": {
+            "bpm": 88,
+            "key": "Am"
+          }
+        },
+        {
+          "title": "Concrete Jungle",
+          "duration": 256,
+          "trackNumber": 3,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/concrete-jungle.mp3",
+          "metadata": {
+            "bpm": 92,
+            "key": "Dm"
+          }
+        },
+        {
+          "title": "Neon Streets",
+          "duration": 212,
+          "trackNumber": 4,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/neon-streets.mp3",
+          "lyrics": "Reflections in glass and light...",
+          "metadata": {
+            "bpm": 80,
+            "key": "F#m"
+          }
+        },
+        {
+          "title": "Rooftop Views",
+          "duration": 278,
+          "trackNumber": 5,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/rooftop-views.mp3",
+          "metadata": {
+            "bpm": 76,
+            "key": "Bm"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Acoustic Sessions",
+      "artist": "Solo Sounds",
+      "coverArt": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/acoustic-sessions-cover.jpg",
+      "releaseYear": 2024,
+      "description": "Raw and intimate acoustic performances recorded in a single take. Stripped-down and authentic.",
+      "status": "published",
+      "isPublic": true,
+      "metadata": {
+        "genre": ["Acoustic", "Folk", "Singer-Songwriter"],
+        "mood": ["Intimate", "Raw", "Emotional"],
+        "label": "Independent",
+        "producer": ["Emma Watson"]
+      },
+      "tracks": [
+        {
+          "title": "Morning Light",
+          "duration": 198,
+          "trackNumber": 1,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/morning-light.mp3",
+          "lyrics": "Waking to a new day...",
+          "metadata": {
+            "bpm": 65,
+            "key": "G"
+          }
+        },
+        {
+          "title": "Simple Things",
+          "duration": 223,
+          "trackNumber": 2,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/simple-things.mp3",
+          "lyrics": "Found joy in the ordinary...",
+          "metadata": {
+            "bpm": 72,
+            "key": "C"
+          }
+        },
+        {
+          "title": "Wood & Strings",
+          "duration": 245,
+          "trackNumber": 3,
+          "publicUrl": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/wood-and-strings.mp3",
+          "metadata": {
+            "bpm": 68,
+            "key": "Am"
+          }
+        }
+      ]
+    }
+  ]
+}
