@@ -123,15 +123,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center justify-between">
             {/* Logo and Title */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-orange-600 to-orange-600 flex items-center justify-center shadow-lg">
-                <Bird className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-green-600 to-green-600 flex items-center justify-center shadow-lg">
+                <Radio className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-foreground">
-                  Track Dragon
+                  Marty McGee Music
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  Music Tracking Management • Real-time Traffic • ThreeD Integration
+                  Track Dragon: Music Tracking Management • Real-time Traffic • ThreeD Integration
                 </p>
               </div>
             </div>
