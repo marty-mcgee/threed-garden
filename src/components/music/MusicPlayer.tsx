@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+import { WaveformVisualizer } from './WaveformVisualizer';
+
 interface Track {
   id: number;
   title: string;
@@ -236,21 +238,31 @@ export function MusicPlayer({
           <div className="space-y-4">
             {/* Waveform Visualization - Now at top of right column */}
             {waveformData && (
+              <>
               <div className="bg-black/20 rounded-lg p-3">
-                <p className="text-xs text-gray-400 mb-2">Audio Waveform</p>
-                <div className="flex items-end gap-px h-12">
-                  {waveformData.map((amplitude, index) => (
-                    <div
-                      key={index}
-                      className="flex-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded-t transition-all duration-300"
-                      style={{ 
-                        height: `${Math.max(8, amplitude * 35)}px`,
-                        opacity: getProgressPercentage() > (index / 80) ? 1 : 0.3
-                      }}
-                    />
-                  ))}
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-gray-400">Audio Waveform</p>
+                  {isPlaying && (
+                    <div className="flex gap-0.5">
+                      <div className="w-1 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-1 h-3 bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-1 h-4 bg-green-500 rounded-full animate-bounce"></div>
+                      <div className="w-1 h-3 bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-1 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    </div>
+                  )}
                 </div>
+                <WaveformVisualizer
+                  audioUrl={track.publicUrl}
+                  isPlaying={isPlaying}
+                  currentTime={currentTime}
+                  duration={duration}
+                  height={80}
+                  barWidth={3}
+                  barSpacing={2}
+                />
               </div>
+              </>
             )}
 
             {/* Track List - Scrollable, fits remaining space */}
