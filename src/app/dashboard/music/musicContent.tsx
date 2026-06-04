@@ -204,7 +204,7 @@ export default function MusicContent() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your music...</p>
+          <p className="text-muted-foreground">Loading music...</p>
         </div>
       </div>
     );
@@ -310,7 +310,7 @@ export default function MusicContent() {
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="albums" className="space-y-6 mt-8">
-          <TabsList>
+          {/* <TabsList>
             <TabsTrigger value="albums" className="gap-2">
               <Music className="h-4 w-4" />
               Albums
@@ -319,7 +319,7 @@ export default function MusicContent() {
               <ListMusic className="h-4 w-4" />
               Links
             </TabsTrigger>
-          </TabsList>
+          </TabsList> */}
 
           <TabsContent value="albums" className="space-y-6">
             <AlbumGrid
@@ -343,7 +343,7 @@ export default function MusicContent() {
         
 
         {/* Stats Cards */}
-        {stats && <MusicStats stats={stats} loading={loading} />}
+        {false && stats && <MusicStats stats={stats} loading={loading} />}
 
 
       </div>

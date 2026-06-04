@@ -270,6 +270,18 @@ export default function AlbumDetailPage() {
                 required
               />
             </div>
+            <div>
+              <Label>Sort Order</Label>
+              <Input
+                type="number"
+                value={formData.sortOrder}
+                onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })}
+                placeholder="0"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Lower numbers appear first in the music library
+              </p>
+            </div>
             <div className="flex gap-2">
               <Button type="submit">{editingTrack ? 'Update' : 'Add'}</Button>
               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>

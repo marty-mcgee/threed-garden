@@ -21,6 +21,7 @@ interface Album {
   description: string | null;
   status: string;
   isPublic: boolean;
+  sortOrder: number;
   tracks?: Track[];
 }
 
@@ -45,6 +46,7 @@ export default function AlbumsManagementPage() {
     description: '',
     status: 'draft',
     isPublic: false,
+    sortOrder: '0',
   });
 
   useEffect(() => {
@@ -65,8 +67,17 @@ export default function AlbumsManagementPage() {
     const url = '/api/music/albums';
     const method = editingAlbum ? 'PUT' : 'POST';
     const body = editingAlbum
-      ? { id: editingAlbum.id, ...formData, releaseYear: formData.releaseYear ? parseInt(formData.releaseYear) : null }
-      : { ...formData, releaseYear: formData.releaseYear ? parseInt(formData.releaseYear) : null };
+      ? { 
+          id: editingAlbum.id, 
+          ...formData, 
+          releaseYear: formData.releaseYear ? parseInt(formData.releaseYear) : null,
+          sortOrder: parseInt(formData.sortOrder)
+        }
+      : { 
+          ...formData, 
+          releaseYear: formData.releaseYear ? parseInt(formData.releaseYear) : null,
+          sortOrder: parseInt(formData.sortOrder)
+        };
 
     const response = await fetch(url, {
       method,
@@ -105,6 +116,7 @@ export default function AlbumsManagementPage() {
       description: '',
       status: 'draft',
       isPublic: false,
+      sortOrder: albums.length.toString(),
     });
     setEditingAlbum(null);
   };
@@ -119,6 +131,7 @@ export default function AlbumsManagementPage() {
       description: album.description || '',
       status: album.status,
       isPublic: album.isPublic,
+      sortOrder: album.sortOrder?.toString() || '0',
     });
     setIsDialogOpen(true);
   };
@@ -135,6 +148,9 @@ export default function AlbumsManagementPage() {
   if (loading) {
     return <div className="text-center py-12">Loading albums...</div>;
   }
+
+  // Sort albums by sortOrder for display in admin
+  const sortedAlbums = [...albums].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
   return (
     <div className="space-y-6">
@@ -153,7 +169,7 @@ export default function AlbumsManagementPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {albums.map((album) => (
+        {sortedAlbums.map((album) => (
           <Card key={album.id} className="group">
             <CardContent className="p-0">
               <div className="relative">
@@ -248,6 +264,18 @@ export default function AlbumsManagementPage() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
+            </div>
+            <div>
+              <Label>Sort Order</Label>
+              <Input
+                type="number"
+                value={formData.sortOrder}
+                onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })}
+                placeholder="0"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Lower numbers appear first in the music library
+              </p>
             </div>
             <div>
               <Label>Status</Label>

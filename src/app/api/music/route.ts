@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
           limit: 3,
         },
       },
-      orderBy: (albums, { desc }) => [desc(albums.createdAt)],
+      orderBy: (albums, { asc }) => [asc(albums.sortOrder)],
     });
 
     return NextResponse.json(albums);
@@ -89,5 +89,44 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Music API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+// PATCH - Update sort order (for reordering)
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: request.headers });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { orders } = body; // Expects [{ id: 1, sortOrder: 0 }, { id: 2, sortOrder: 1 }, ...]
+
+    if (!orders || !Array.isArray(orders)) {
+      return NextResponse.json({ error: 'Invalid orders array' }, { status: 400 });
+    }
+
+    // Update each album's sort order
+    for (const item of orders) {
+      // Verify ownership
+      const album = await db.query.musicAlbums.findFirst({
+        where: and(
+          eq(musicAlbums.id, item.id),
+          eq(musicAlbums.userId, session.user.id)
+        ),
+      });
+
+      if (album) {
+        await db.update(musicAlbums)
+          .set({ sortOrder: item.sortOrder, updatedAt: new Date() })
+          .where(eq(musicAlbums.id, item.id));
+      }
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating sort order:', error);
+    return NextResponse.json({ error: 'Failed to update sort order' }, { status: 500 });
   }
 }

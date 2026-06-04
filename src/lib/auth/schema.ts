@@ -135,6 +135,7 @@ export const musicAlbums = pgTable('music_albums', {
   coverArt: text('cover_art').notNull(), // Direct URL to the image file
   releaseYear: integer('release_year'),
   description: text('description'),
+  sortOrder: integer('sort_order').default(0),
   status: albumStatusEnum('status').default('draft'),
   isPublic: boolean('is_public').default(false),
   metadata: jsonb('metadata'),
@@ -143,6 +144,7 @@ export const musicAlbums = pgTable('music_albums', {
 }, (table) => ({
   userIdIdx: index('music_albums_user_id_idx').on(table.userId),
   statusIdx: index('music_albums_status_idx').on(table.status),
+  sortOrderIdx: index('music_albums_sort_order_idx').on(table.sortOrder),
 }));
 
 export const musicTracks = pgTable('music_tracks', {

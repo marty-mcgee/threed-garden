@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
           eq(musicAlbums.id, parseInt(albumId)),
           eq(musicAlbums.userId, session.user.id)
         ),
+        orderBy: (albums, { asc }) => [asc(albums.sortOrder)],
         with: includeTracks ? {
           tracks: {
             orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
@@ -48,13 +49,13 @@ export async function GET(request: NextRequest) {
         eq(musicAlbums.userId, session.user.id),
         status ? eq(musicAlbums.status, status) : undefined
       ),
+      orderBy: (albums, { asc }) => [asc(albums.sortOrder), asc(albums.id)],
       with: includeTracks ? {
         tracks: {
           orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
           limit: 5,
         },
       } : undefined,
-      orderBy: (albums, { desc }) => [desc(albums.createdAt)],
     });
 
     return NextResponse.json(albums);
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, artist, coverArt, releaseYear, description, status, isPublic, metadata } = body;
+    const { title, artist, coverArt, releaseYear, description, status, isPublic, sortOrder, metadata } = body;
 
     // Validate required fields
     if (!title || !artist || !coverArt) {
@@ -89,6 +90,7 @@ export async function POST(request: NextRequest) {
       description: description || null,
       status: status || AlbumStatus.DRAFT,
       isPublic: isPublic || false,
+      sortOrder: sortOrder !== undefined ? sortOrder : 0,
       metadata: metadata || null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -110,7 +112,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, title, artist, coverArt, releaseYear, description, status, isPublic, metadata } = body;
+    const { id, title, artist, coverArt, releaseYear, description, status, isPublic, metadata, sortOrder } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Album ID required' }, { status: 400 });
@@ -130,13 +132,14 @@ export async function PUT(request: NextRequest) {
 
     const updatedAlbum = await db.update(musicAlbums)
       .set({
-        title: title || existingAlbum.title,
-        artist: artist || existingAlbum.artist,
-        coverArt: coverArt || existingAlbum.coverArt,
+        title: title !== undefined ? title : existingAlbum.title,
+        artist: artist !== undefined ? artist : existingAlbum.artist,
+        coverArt: coverArt !== undefined ? coverArt : existingAlbum.coverArt,
         releaseYear: releaseYear !== undefined ? releaseYear : existingAlbum.releaseYear,
         description: description !== undefined ? description : existingAlbum.description,
         status: status || existingAlbum.status,
         isPublic: isPublic !== undefined ? isPublic : existingAlbum.isPublic,
+        sortOrder: sortOrder !== undefined ? sortOrder : existingAlbum.sortOrder,  // Add this line
         metadata: metadata || existingAlbum.metadata,
         updatedAt: new Date(),
       })
@@ -183,5 +186,44 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     console.error('Error deleting album:', error);
     return NextResponse.json({ error: 'Failed to delete album' }, { status: 500 });
+  }
+}
+
+// PATCH - Bulk update sort orders
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: request.headers });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { orders } = body; // Expects [{ id: 1, sortOrder: 0 }, ...]
+
+    if (!orders || !Array.isArray(orders)) {
+      return NextResponse.json({ error: 'Invalid orders array' }, { status: 400 });
+    }
+
+    // Update each album's sort order
+    for (const item of orders) {
+      // Verify ownership
+      const album = await db.query.musicAlbums.findFirst({
+        where: and(
+          eq(musicAlbums.id, item.id),
+          eq(musicAlbums.userId, session.user.id)
+        ),
+      });
+
+      if (album) {
+        await db.update(musicAlbums)
+          .set({ sortOrder: item.sortOrder, updatedAt: new Date() })
+          .where(eq(musicAlbums.id, item.id));
+      }
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating sort orders:', error);
+    return NextResponse.json({ error: 'Failed to update sort orders' }, { status: 500 });
   }
 }
