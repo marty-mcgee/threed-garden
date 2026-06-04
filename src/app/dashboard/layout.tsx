@@ -127,9 +127,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Radio className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">
-                  Marty McGee Music
-                </h1>
+                <Link href="/dashboard/music" className="text-sm hover:text-primary">
+                  <h1 className="text-xl font-bold text-foreground">
+                    Marty McGee Music
+                  </h1>
+                </Link>
                 <p className="text-xs text-muted-foreground">
                   Track Dragon: Music Tracking Management • Real-time Traffic • ThreeD Integration
                 </p>

@@ -1,6 +1,3 @@
-Here's your complete, updated CONTEXT.md with the Music Module fully integrated. I've added the Music Module section after the ThreeD Garden section, consolidated duplicate content, updated the file structure, and added music-specific commands and known issues.
-markdown
-
 # Project Context – threed-garden-neon
 
 **Last Updated: June 3, 2026 @ 10:30am PST**
@@ -349,8 +346,7 @@ S3_PUBLIC_URL=https://threedpublic.s3.us-west-2.amazonaws.com
 MUSIC_POLL_INTERVAL=300000
 MUSIC_AUTO_SYNC_METADATA=true
 
-📁 Complete File Structure (Key Directories)
-text
+---
 
 src/
 ├── app/
@@ -375,6 +371,8 @@ src/
 │   │   ├── music.ts         # Music interfaces and enums
 │   │   └── threed.ts        # ThreeD types
 │   └── scripts/             # Backfill and maintenance scripts
+
+---
 
 🔧 Common Commands
 Development
@@ -440,12 +438,12 @@ bash
 # Water (replace 1 with device ID)
 curl -X POST "http://localhost:3333/api/threed/farmbots/1/water" \
   -H "Content-Type: application/json" \
-  -d '{"durationMs": 30000}'
+  -d `{"durationMs": 30000}`
 
 # Move
 curl -X POST "http://localhost:3333/api/threed/farmbots/1/move" \
   -H "Content-Type: application/json" \
-  -d '{"x": 0, "y": 0, "z": 0}'
+  -d `{"x": 0, "y": 0, "z": 0}`
 
 Test Cron Jobs Locally
 bash
@@ -565,9 +563,10 @@ Your platform is complete and production-ready, featuring:
 
     ✅ Responsive Design - Mobile-friendly with theme support
 
-Last Updated: June 3, 2026 @ 11:35am PST
+Last Updated: June 3, 2026 @ 10:30am PST
 Version: v0.2.0
 text
+
 
 This updated CONTEXT.md now fully documents all three major modules of your platform: Traffic Monitoring, ThreeD Garden, and Music Streaming. The documentation is comprehensive, well-organized, and ready for any future AI session or new developer to understand your complete application architecture.
 
