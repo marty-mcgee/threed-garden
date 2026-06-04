@@ -5,13 +5,14 @@ import { useSession } from '@/lib/auth/client';
 import { AlbumGrid } from '@/components/music/AlbumGrid';
 import { LinksManager } from '@/components/music/LinksManager';
 import { MusicStats } from '@/components/music/MusicStats';
-import { MusicPlayer } from '@/components/music/MusicPlayer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
-import { Music, ListMusic, RefreshCw } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { Music, ListMusic, RefreshCw, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from 'lucide-react';
 import { MusicPollStats } from '@/lib/types/music';
+import { cn } from '@/lib/utils';
 
 export default function MusicContent() {
   const { data: session, isPending: sessionLoading } = useSession();
@@ -30,6 +31,7 @@ export default function MusicContent() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   
+  const audioRef = useState<HTMLAudioElement | null>(null)[0];
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   const currentTrack = tracks[currentTrackIndex];
@@ -181,50 +183,12 @@ export default function MusicContent() {
     setIsMuted(newVolume === 0);
   };
   
-  const handleToggleMute = () => setIsMuted(!isMuted);
+  const toggleMute = () => setIsMuted(!isMuted);
   
   const handleSeek = (value: number[]) => {
     if (audioElement) {
       audioElement.currentTime = value[0];
       setCurrentTime(value[0]);
-    }
-  };
-
-  // Wrap the onPlayAlbum logic in a function
-  const handlePlayAlbum = (albumId: number) => {
-    const album = albums.find(a => a.id === albumId);
-    if (album) {
-      setSelectedAlbum(album);
-      
-      // // Auto-Scroll to music-player
-      // setTimeout(() => {
-      //   const playerElement = document.getElementById('music-player');
-      //   if (playerElement) {
-      //     playerElement.scrollIntoView({ 
-      //       behavior: 'smooth', 
-      //       block: 'start' 
-      //     });
-      //   }
-      // }, 100);
-      // Auto-Scroll to top
-      setTimeout(() => {
-        window.scrollTo({ 
-          top: 0, 
-          behavior: 'smooth' 
-        });
-      }, 50);
-
-    }
-  };
-
-  // Add the onTrackSelect handler
-  const handleTrackSelect = (index: number) => {
-    setCurrentTrackIndex(index);
-    setIsPlaying(true);
-    // Scroll to player
-    const playerElement = document.getElementById('music-player');
-    if (playerElement) {
-      playerElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -248,7 +212,88 @@ export default function MusicContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-      <div className="container mx-auto px-6 py-8">
+      {/* Prominent Media Player - Only playback controls */}
+      {selectedAlbum && currentTrack && (
+        <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl">
+          <div className="container mx-auto px-6 py-6">
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              {/* Album Artwork */}
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden shadow-2xl flex-shrink-0">
+                <img 
+                  src={selectedAlbum.coverArt} 
+                  alt={selectedAlbum.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Track Info */}
+              <div className="flex-1 text-center md:text-left">
+                <p className="text-xs uppercase tracking-wider text-gray-400">Now Playing</p>
+                <h2 className="text-xl md:text-2xl font-bold mt-1">{currentTrack.title}</h2>
+                <p className="text-gray-400 text-sm">{selectedAlbum.title} • {selectedAlbum.artist}</p>
+              </div>
+
+              {/* Playback Controls */}
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={handlePrevious}
+                    className="p-2 hover:bg-white/10 rounded-full transition-all"
+                  >
+                    <SkipBack className="w-5 h-5" />
+                  </button>
+                  
+                  <button 
+                    onClick={handlePlayPause}
+                    className="p-3 bg-white text-gray-900 rounded-full hover:scale-105 transition-transform"
+                  >
+                    {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
+                  </button>
+                  
+                  <button 
+                    onClick={handleNext}
+                    className="p-2 hover:bg-white/10 rounded-full transition-all"
+                  >
+                    <SkipForward className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-64">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-400">{formatTime(currentTime)}</span>
+                    <Slider
+                      value={[currentTime]}
+                      max={duration || 0}
+                      step={1}
+                      onValueChange={handleSeek}
+                      className="flex-1"
+                    />
+                    <span className="text-xs text-gray-400">{formatTime(duration)}</span>
+                  </div>
+                </div>
+
+                {/* Volume Control */}
+                <div className="flex items-center gap-2">
+                  <button onClick={toggleMute} className="p-1 hover:text-gray-300">
+                    {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  </button>
+                  <Slider
+                    value={[isMuted ? 0 : volume]}
+                    max={1}
+                    step={0.01}
+                    onValueChange={handleVolumeChange}
+                    className="w-24"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rest of the page content */}
+      <div className="container mx-auto px-6 py-0">
         {/* Header */}
         {/* <div className="flex justify-between items-start mb-6">
           <div>
@@ -262,51 +307,6 @@ export default function MusicContent() {
             {polling ? 'Syncing...' : 'Sync Music'}
           </Button>
         </div> */}
-
-        {/* Music Player Component */}
-        {selectedAlbum && currentTrack && (
-          // <MusicPlayer
-          //   track={currentTrack}
-          //   album={{ ...selectedAlbum, tracks }}
-          //   isPlaying={isPlaying}
-          //   onPlayPause={handlePlayPause}
-          //   onNext={handleNext}
-          //   onPrevious={handlePrevious}
-          //   onSeek={handleSeek}
-          //   currentTime={currentTime}
-          //   duration={duration}
-          //   volume={volume}
-          //   isMuted={isMuted}
-          //   onVolumeChange={handleVolumeChange}
-          //   onToggleMute={handleToggleMute}
-          //   formatTime={formatTime}
-          // />
-
-
-          <div id="music-player">
-            <MusicPlayer
-              track={currentTrack}
-              album={{ ...selectedAlbum, tracks }}
-              tracks={tracks}
-              isPlaying={isPlaying}
-              onPlayPause={handlePlayPause}
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-              onSeek={handleSeek}
-              onTrackSelect={handleTrackSelect}
-              currentTime={currentTime}
-              duration={duration}
-              volume={volume}
-              isMuted={isMuted}
-              onVolumeChange={handleVolumeChange}
-              onToggleMute={handleToggleMute}
-              formatTime={formatTime}
-            />
-          </div>
-        )}
-
-        {/* Stats Cards */}
-        {/* {stats && <MusicStats stats={stats} loading={loading} />} */}
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="albums" className="space-y-6 mt-8">
@@ -329,29 +329,23 @@ export default function MusicContent() {
                 setSelectedAlbum(album || null);
               }}
               selectedAlbumId={selectedAlbum?.id}
-              // onPlayAlbum={(albumId) => {
-              //   const album = albums.find(a => a.id === albumId);
-              //   setSelectedAlbum(album || null);
-                
-              //   // Add auto-scroll to player with a small delay
-              //   setTimeout(() => {
-              //     const playerElement = document.getElementById('music-player');
-              //     if (playerElement) {
-              //       playerElement.scrollIntoView({ 
-              //         behavior: 'smooth', 
-              //         block: 'start' 
-              //       });
-              //     }
-              //   }, 100);
-              // }}
-              onPlayAlbum={handlePlayAlbum}
+              onPlayAlbum={(albumId) => {
+                const album = albums.find(a => a.id === albumId);
+                setSelectedAlbum(album || null);
+              }}
             />
           </TabsContent>
 
-          {/* <TabsContent value="links">
+          <TabsContent value="links">
             <LinksManager isIndependent />
-          </TabsContent> */}
+          </TabsContent>
         </Tabs>
+        
+
+        {/* Stats Cards */}
+        {false && stats && <MusicStats stats={stats} loading={loading} />}
+
+
       </div>
     </div>
   );

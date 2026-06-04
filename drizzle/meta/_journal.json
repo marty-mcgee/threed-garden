@@ -15,6 +15,13 @@
       "when": 1780546105577,
       "tag": "0001_flawless_nuke",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780548046022,
+      "tag": "0002_yellow_satana",
+      "breakpoints": true
     }
   ]
 }

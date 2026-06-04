@@ -260,3 +260,24 @@ export const musicPollingLogsRelations = relations(musicPollingLogs, ({}) => ({}
 // ## Schema Updated 2026-06-02
 // ## Added music
 // ============================================
+
+// Add this to your schema file
+export const musicPlaybackHistory = pgTable('music_playback_history', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  trackId: integer('track_id').references(() => musicTracks.id, { onDelete: 'cascade' }),
+  albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }),
+  playedAt: timestamp('played_at').defaultNow(),
+  playDuration: integer('play_duration'), // seconds played
+  completed: boolean('completed').default(false),
+  source: text('source').default('music_player'), // 'music_player', 'queue', 'autoplay'
+}, (table) => ({
+  userIdIdx: index('music_playback_user_id_idx').on(table.userId),
+  trackIdIdx: index('music_playback_track_id_idx').on(table.trackId),
+  playedAtIdx: index('music_playback_played_at_idx').on(table.playedAt),
+}));
+
+// ============================================
+// ## Schema Updated 2026-06-03
+// ## Added music playback history
+// ============================================

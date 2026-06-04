@@ -77,9 +77,14 @@ export function AlbumGrid({ albums, onSelectAlbum, selectedAlbumId, onPlayAlbum 
               src={album.coverArt}
               alt={album.title}
               className={cn(
-                "w-full h-full object-cover transition-transform duration-500",
+                "w-full h-full object-contain",  // Changed from object-cover to object-contain
+                "transition-transform duration-500",
                 hoveredAlbumId === album.id && "scale-110"
               )}
+              onError={(e) => {
+                // Fallback if image fails to load
+                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=No+Cover';
+              }}
             />
             
             {/* Gradient Overlay */}

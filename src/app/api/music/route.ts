@@ -21,19 +21,34 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
 
+    // In your existing /api/music/route.ts, update the stats action
     if (action === 'stats') {
-      // Get user's music stats
       const albums = await db.select().from(musicAlbums).where(eq(musicAlbums.userId, session.user.id));
-      const tracks = await db.select().from(musicTracks).where(
-        eq(musicTracks.albumId, albums[0]?.id || 0)
-      );
+      const tracks = await db.select().from(musicTracks).innerJoin(
+        musicAlbums,
+        eq(musicTracks.albumId, musicAlbums.id)
+      ).where(eq(musicAlbums.userId, session.user.id));
+      
+      const links = await db.select().from(musicLinks).where(eq(musicLinks.userId, session.user.id));
+      
+      // Calculate total storage from S3 (optional - you'd need to query S3 API)
       
       return NextResponse.json({
         totalAlbums: albums.length,
         totalTracks: tracks.length,
-        totalPlayCount: tracks.reduce((sum, t) => sum + (t.playCount || 0), 0),
+        totalLinks: links.length,
+        totalPlayCount: tracks.reduce((sum, t) => sum + (t.music_tracks.playCount || 0), 0),
         publishedAlbums: albums.filter(a => a.status === 'published').length,
-        activeTracks: tracks.filter(t => t.status === 'active').length,
+        activeTracks: tracks.filter(t => t.music_tracks.status === 'active').length,
+        activeLinks: links.filter(l => l.status === 'active').length,
+        recentUploads: tracks.filter(t => {
+          const daysAgo = new Date();
+          daysAgo.setDate(daysAgo.getDate() - 30);
+          return new Date(t.music_tracks.createdAt) > daysAgo;
+        }).length,
+        storageUsed: '0 GB', // You'll need S3 API for this
+        lastPollTime: null,
+        pollStatus: 'idle',
       });
     }
 
