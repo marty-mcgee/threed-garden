@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Music, ListMusic, RefreshCw } from 'lucide-react';
 import { MusicPollStats } from '@/lib/types/music';
+import { toast } from 'sonner';
 
 export default function MusicContent() {
   const { data: session, isPending: sessionLoading } = useSession();
@@ -228,6 +229,101 @@ export default function MusicContent() {
     }
   };
 
+  // In musicContent.tsx, update your audio element event handlers
+
+  // First, create a function that handles track end and auto-next album
+ // Handle track end with auto-next album
+  const handleTrackEnded = () => {
+
+    if (!currentTrack || !selectedAlbum) return;
+    
+    const currentIndex = tracks.findIndex(t => t.id === currentTrack.id);
+    const isLastTrack = currentIndex === tracks.length - 1;
+    
+    console.log('Track ended:', { currentIndex, isLastTrack, tracksLength: tracks.length });
+    console.log('🎵 Track ended!', {
+      currentTrack: currentTrack?.title,
+      currentIndex: tracks.findIndex(t => t.id === currentTrack?.id),
+      totalTracks: tracks.length,
+      currentAlbum: selectedAlbum?.title,
+      albumIndex: albums.findIndex(a => a.id === selectedAlbum?.id)
+    })
+    
+    if (isLastTrack) {
+      // Last track finished - move to next album
+      const currentAlbumIndex = albums.findIndex(a => a.id === selectedAlbum.id);
+      const nextAlbumIndex = currentAlbumIndex + 1;
+      
+      console.log('Album navigation:', { currentAlbumIndex, nextAlbumIndex, totalAlbums: albums.length });
+      
+      if (nextAlbumIndex < albums.length) {
+        const nextAlbum = albums[nextAlbumIndex];
+        setSelectedAlbum(nextAlbum);
+        
+        // Show notification
+        toast.success(`Auto-playing: ${nextAlbum.title}`);
+        
+        // Scroll to top
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+      } else {
+        toast.info("You've reached the end of your library!");
+      }
+    } else {
+      // Not last track - play next track
+      const nextIndex = (currentIndex + 1) % tracks.length;
+      setCurrentTrackIndex(nextIndex);
+      setIsPlaying(true);
+    }
+  };
+
+  // Handle audio element events
+  useEffect(() => {
+    if (audioElement) {
+      const handleTimeUpdate = () => setCurrentTime(audioElement.currentTime);
+      const handleDurationChange = () => setDuration(audioElement.duration);
+      const handleEnded = handleTrackEnded;
+
+      audioElement.addEventListener('timeupdate', handleTimeUpdate);
+      audioElement.addEventListener('durationchange', handleDurationChange);
+      audioElement.addEventListener('ended', handleEnded);
+
+      return () => {
+        audioElement.removeEventListener('timeupdate', handleTimeUpdate);
+        audioElement.removeEventListener('durationchange', handleDurationChange);
+        audioElement.removeEventListener('ended', handleEnded);
+      };
+    }
+  }, [audioElement, currentTrack, tracks, selectedAlbum, albums]);
+
+  // Add this function to your MusicContent component
+  const handleNextAlbum = () => {
+    if (!selectedAlbum || albums.length === 0) return;
+    
+    // Find current album index
+    const currentIndex = albums.findIndex(a => a.id === selectedAlbum.id);
+    const nextIndex = currentIndex + 1;
+    
+    // Check if there's a next album
+    if (nextIndex < albums.length) {
+      const nextAlbum = albums[nextIndex];
+      setSelectedAlbum(nextAlbum);
+      
+      // Auto-scroll to top to show the new album
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+      
+      // Show a toast notification
+      // toast.success(`Now playing: ${nextAlbum.title}`);
+      console.log(`Now playing: ${nextAlbum.title}`);
+    } else {
+      // toast.info("You've reached the end of your library!");
+      console.log("You've reached the end of your library!");
+    }
+  };
+
   const formatTime = (time: number) => {
     if (isNaN(time)) return '0:00';
     const minutes = Math.floor(time / 60);
@@ -294,6 +390,7 @@ export default function MusicContent() {
               onPrevious={handlePrevious}
               onSeek={handleSeek}
               onTrackSelect={handleTrackSelect}
+              onNextAlbum={handleNextAlbum}
               currentTime={currentTime}
               duration={duration}
               volume={volume}

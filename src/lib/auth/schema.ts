@@ -147,6 +147,53 @@ export const musicAlbums = pgTable('music_albums', {
   sortOrderIdx: index('music_albums_sort_order_idx').on(table.sortOrder),
 }));
 
+// ============================================
+// ## Schema Updated 2026-06-04
+// ## Added music .. album pictures/media
+// ============================================
+
+// Add this new table after music_albums
+
+export const musicMedia = pgTable('music_media', {
+  id: serial('id').primaryKey(),
+  albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }).notNull(),
+  fileName: text('file_name').notNull(),
+  fileUrl: text('file_url').notNull(),
+  fileType: text('file_type').notNull(), // 'image/jpeg', 'image/png', etc.
+  fileSize: integer('file_size'), // in bytes
+  isPrimary: boolean('is_primary').default(true),
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
+}, (table) => ({
+  albumIdIdx: index('music_media_album_id_idx').on(table.albumId),
+  isPrimaryIdx: index('music_media_is_primary_idx').on(table.isPrimary),
+}));
+
+// Add relation to musicAlbums
+export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
+  tracks: many(musicTracks),
+  musicAlbumLinks: many(musicAlbumLinks),
+  media: many(musicMedia), // Add this line
+  user: one(user, {
+    fields: [musicAlbums.userId],
+    references: [user.id],
+  }),
+}));
+
+// Add relation from musicMedia to musicAlbums
+export const musicMediaRelations = relations(musicMedia, ({ one }) => ({
+  album: one(musicAlbums, {
+    fields: [musicMedia.albumId],
+    references: [musicAlbums.id],
+  }),
+}));
+
+// ============================================
+// ## Schema Updated 2026-06-04
+// ## Added music .. album pictures
+// ============================================
+
 export const musicTracks = pgTable('music_tracks', {
   id: serial('id').primaryKey(),
   albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }),
@@ -214,14 +261,14 @@ export const musicPollingLogs = pgTable('music_polling_logs', {
 }));
 
 // Relations
-export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
-  tracks: many(musicTracks),
-  musicAlbumLinks: many(musicAlbumLinks),
-  user: one(user, {
-    fields: [musicAlbums.userId],
-    references: [user.id],
-  }),
-}));
+// export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
+//   tracks: many(musicTracks),
+//   musicAlbumLinks: many(musicAlbumLinks),
+//   user: one(user, {
+//     fields: [musicAlbums.userId],
+//     references: [user.id],
+//   }),
+// }));
 
 export const musicTracksRelations = relations(musicTracks, ({ one, many }) => ({
   album: one(musicAlbums, {

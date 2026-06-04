@@ -30,12 +30,15 @@ interface MusicPlayerProps {
   track: Track;
   album: Album;
   tracks: Track[];
+  albums?: Album[];  // Add albums prop for next album functionality
   isPlaying: boolean;
   onPlayPause: () => void;
   onNext: () => void;
   onPrevious: () => void;
   onSeek: (value: number[]) => void;
   onTrackSelect: (index: number) => void;
+  onTrackEnd?: () => void;  // Add callback for track end to go to next album
+  onNextAlbum?: () => void;  // Add callback for next album
   currentTime: number;
   duration: number;
   volume: number;
@@ -49,12 +52,14 @@ export function MusicPlayer({
   track,
   album,
   tracks,
+  albums,
   isPlaying,
   onPlayPause,
   onNext,
   onPrevious,
   onSeek,
   onTrackSelect,
+  onNextAlbum,
   currentTime,
   duration,
   volume,
@@ -65,6 +70,7 @@ export function MusicPlayer({
 }: MusicPlayerProps) {
   const [waveformData, setWaveformData] = useState<number[] | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Analyze audio file for waveform
   useEffect(() => {
@@ -84,7 +90,6 @@ export function MusicPlayer({
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
       const channelData = audioBuffer.getChannelData(0);
       
-      // Sample down to 80 points for compact waveform
       const sampleRate = Math.floor(channelData.length / 80);
       const waveform: number[] = [];
       
@@ -114,6 +119,22 @@ export function MusicPlayer({
   const getProgressPercentage = () => {
     if (duration === 0) return 0;
     return (currentTime / duration) * 100;
+  };
+
+  // Handle track end - move to next track or next album
+  const handleTrackEnd = () => {
+    const currentIndex = tracks.findIndex(t => t.id === track.id);
+    const isLastTrack = currentIndex === tracks.length - 1;
+    
+    if (isLastTrack) {
+      // Last track finished - move to next album if available
+      if (onNextAlbum && albums && albums.length > 0) {
+        onNextAlbum();
+      }
+    } else {
+      // Not last track - play next track in current album
+      onNext();
+    }
   };
 
   return (
@@ -200,6 +221,15 @@ export function MusicPlayer({
                 className="w-28"
               />
             </div>
+
+            {/* Auto-play next album indicator */}
+            {albums && albums.length > 1 && (
+              <div className="text-center mt-2">
+                <p className="text-xs text-gray-500">
+                  ⏭️ Will auto-play next album after last track
+                </p>
+              </div>
+            )}
           </div>
 
           {/* RIGHT COLUMN - Waveform (Top) + Track List (Bottom) */}
@@ -239,6 +269,7 @@ export function MusicPlayer({
                 <div className="space-y-1 pr-2">
                   {tracks.map((t, idx) => {
                     const isCurrentTrack = track.id === t.id;
+                    const isLastTrack = idx === tracks.length - 1;
                     return (
                       <div
                         key={t.id}
@@ -278,6 +309,11 @@ export function MusicPlayer({
                             <div className="w-0.5 h-4 bg-white rounded-full animate-bounce"></div>
                             <div className="w-0.5 h-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
                             <div className="w-0.5 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                          </div>
+                        )}
+                        {isLastTrack && !isCurrentTrack && (
+                          <div className="text-xs text-gray-500 ml-2">
+                            ⏭️ Last track
                           </div>
                         )}
                       </div>
