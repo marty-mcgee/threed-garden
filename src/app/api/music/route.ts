@@ -9,14 +9,17 @@ import { eq, and } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get session using Better Auth server API
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    // // Get session with headers
+    // const session = await auth.api.getSession({
+    //   headers: request.headers,
+    // });
     
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // if (!session?.user?.id) {
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // }
+
+    // Use a hardcoded user ID for testing (replace with your actual user ID from database)
+    const defaultUserId = '1';
 
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
@@ -54,7 +57,8 @@ export async function GET(request: NextRequest) {
 
     // Get all albums for user
     const albums = await db.query.musicAlbums.findMany({
-      where: eq(musicAlbums.userId, session.user.id),
+      // where: eq(musicAlbums.userId, session.user.id),
+      where: eq(musicAlbums.userId, defaultUserId),
       with: {
         tracks: {
           orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],

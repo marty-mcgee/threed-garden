@@ -8,10 +8,17 @@ import { TrackStatus } from '@/lib/types/music';
 // GET - Fetch tracks
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // // Get session with headers
+    // const session = await auth.api.getSession({
+    //   headers: request.headers,
+    // });
+    
+    // if (!session?.user?.id) {
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // }
+
+    // Use a hardcoded user ID for testing (replace with your actual user ID from database)
+    const defaultUserId = '1';
 
     const searchParams = request.nextUrl.searchParams;
     const trackId = searchParams.get('id');
@@ -32,7 +39,8 @@ export async function GET(request: NextRequest) {
       const album = await db.query.musicAlbums.findFirst({
         where: and(
           eq(musicAlbums.id, track.albumId),
-          eq(musicAlbums.userId, session.user.id)
+          // eq(musicAlbums.userId, session.user.id)
+          eq(musicAlbums.userId, defaultUserId)
         ),
       });
 
@@ -48,7 +56,8 @@ export async function GET(request: NextRequest) {
       const album = await db.query.musicAlbums.findFirst({
         where: and(
           eq(musicAlbums.id, parseInt(albumId)),
-          eq(musicAlbums.userId, session.user.id)
+          // eq(musicAlbums.userId, session.user.id)
+          eq(musicAlbums.userId, defaultUserId)
         ),
       });
 
