@@ -8,7 +8,11 @@ import { AlbumStatus } from '@/lib/types/music';
 // GET - Fetch albums (with optional filters)
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Get session with headers
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+    
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -68,7 +72,11 @@ export async function GET(request: NextRequest) {
 // POST - Create new album
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Get session with headers
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+    
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -1,5 +1,5 @@
-// import { betterAuth } from "better-auth";
-import { betterAuth } from "better-auth/minimal";
+import { betterAuth } from "better-auth";
+// import { betterAuth } from "better-auth/minimal";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/lib/db/client";
@@ -20,6 +20,8 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: true,
   },
+  // Add secret for production
+  secret: process.env.BETTER_AUTH_SECRET,
   plugins: [
     nextCookies() // make sure this is the last plugin in the array
   ],
@@ -50,7 +52,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     process.env.BETTER_AUTH_URL || "",
     "https://marty-mcgee-neon.vercel.app",
-  ],
+  ].filter(Boolean),
 });
 
 // Export auth types

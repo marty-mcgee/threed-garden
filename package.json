@@ -32,7 +32,6 @@
     "@react-three/postprocessing": "^3.0.4",
     "@vercel/blob": "^2.4.0",
     "@vercel/functions": "^3.3.3",
-    "axios": "^1.16.0",
     "better-auth": "^1.6.13",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
