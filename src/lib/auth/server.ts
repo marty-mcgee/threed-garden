@@ -45,14 +45,26 @@ export const auth = betterAuth({
     cookiePrefix: "better-auth",
     // Required for HTTPS in production
     secureCookies: process.env.NODE_ENV === "production",
+    // Don't use secure cookies in development
+    useSecureCookies: process.env.NODE_ENV === "production",
     sameSite: "lax",
     generateId: false,
+        // Explicit cookie domain
+    cookieDomain: process.env.NODE_ENV === "production" 
+      ? ".vercel.app" 
+      : undefined,
   },
   // Trust the Vercel proxy
   trustedOrigins: [
     process.env.BETTER_AUTH_URL || "",
+    "http://localhost:4444",
     "https://marty-mcgee-neon.vercel.app",
-  ].filter(Boolean),
+  ],
+  // Disable CSRF for API routes (or configure properly)
+  csrf: {
+    enabled: true,
+    ignoreMethods: ["GET", "HEAD", "OPTIONS"],
+  },
 });
 
 // Export auth types
