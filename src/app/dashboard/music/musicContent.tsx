@@ -109,13 +109,23 @@ export default function MusicContent() {
     }
   }, [audioElement, currentTrackIndex, tracks.length]);
 
+  // Add this helper function at the top of your component
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('auth_token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
+    };
+  };
+
   const fetchAlbums = async () => {
     try {
       const response = await fetch('/api/music/albums', {
-        credentials: 'include', // Important!
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        // credentials: 'include', // Important!
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+        headers: getAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
@@ -150,7 +160,13 @@ export default function MusicContent() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/music?action=stats');
+      const response = await fetch('/api/music?action=stats', {
+        // credentials: 'include', // Important!
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+        headers: getAuthHeaders(),
+      });
       if (response.ok) {
         const data = await response.json();
         setStats(data);
