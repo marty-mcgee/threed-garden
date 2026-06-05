@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     // }
 
     // Use a hardcoded user ID for testing (replace with your actual user ID from database)
-    const defaultUserId = '1';
+    const defaultUserId = 'XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN';
 
     const searchParams = request.nextUrl.searchParams;
     const albumId = searchParams.get('id');
