@@ -8,14 +8,17 @@ import { AlbumStatus } from '@/lib/types/music';
 // GET - Fetch albums (with optional filters)
 export async function GET(request: NextRequest) {
   try {
-    // Get session with headers
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    // // Get session with headers
+    // const session = await auth.api.getSession({
+    //   headers: request.headers,
+    // });
     
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // if (!session?.user?.id) {
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // }
+
+    // Use a hardcoded user ID for testing (replace with your actual user ID from database)
+    const defaultUserId = '1';
 
     const searchParams = request.nextUrl.searchParams;
     const albumId = searchParams.get('id');
@@ -27,7 +30,8 @@ export async function GET(request: NextRequest) {
       const album = await db.query.musicAlbums.findFirst({
         where: and(
           eq(musicAlbums.id, parseInt(albumId)),
-          eq(musicAlbums.userId, session.user.id)
+          // eq(musicAlbums.userId, session.user.id)
+          eq(musicAlbums.userId, defaultUserId)
         ),
         orderBy: (albums, { asc }) => [asc(albums.sortOrder)],
         with: includeTracks ? {
@@ -50,7 +54,8 @@ export async function GET(request: NextRequest) {
     // Get all albums for user
     const albums = await db.query.musicAlbums.findMany({
       where: and(
-        eq(musicAlbums.userId, session.user.id),
+        // eq(musicAlbums.userId, session.user.id),
+        eq(musicAlbums.userId, defaultUserId),
         status ? eq(musicAlbums.status, status) : undefined
       ),
       orderBy: (albums, { asc }) => [asc(albums.sortOrder), asc(albums.id)],
