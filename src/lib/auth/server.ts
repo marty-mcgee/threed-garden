@@ -53,6 +53,13 @@ export const auth = betterAuth({
     cookieDomain: process.env.NODE_ENV === "production" 
       ? ".vercel.app" 
       : undefined,
+    // Disable CSRF for API routes (or configure properly)
+    // csrf: {
+    //   enabled: true,
+    //   ignoreMethods: ["GET", "HEAD", "OPTIONS"],
+    // },
+    // Disable CSRF for testing
+    csrf: false,
   },
   // Trust the Vercel proxy
   trustedOrigins: [
@@ -60,11 +67,6 @@ export const auth = betterAuth({
     "http://localhost:4444",
     "https://marty-mcgee-neon.vercel.app",
   ],
-  // Disable CSRF for API routes (or configure properly)
-  csrf: {
-    enabled: true,
-    ignoreMethods: ["GET", "HEAD", "OPTIONS"],
-  },
 });
 
 // Export auth types
