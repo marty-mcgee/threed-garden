@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from '@/lib/auth/client';
 import { AlbumGrid } from '@/components/music/AlbumGrid';
 import { LinksManager } from '@/components/music/LinksManager';
 import { MusicStats } from '@/components/music/MusicStats';
@@ -12,15 +11,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Music, ListMusic, RefreshCw } from 'lucide-react';
 import { MusicPollStats } from '@/lib/types/music';
-import { toast } from 'sonner';
 
 export default function MusicContent() {
-  const { data: session, isPending: sessionLoading } = useSession();
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
   const [tracks, setTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<MusicPollStats | null>(null);
+  const [stats, setStats] = useState<any>(null);
   const [polling, setPolling] = useState(false);
   
   // Player state
@@ -32,10 +29,9 @@ export default function MusicContent() {
   const [duration, setDuration] = useState(0);
   
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
-
   const currentTrack = tracks[currentTrackIndex];
 
-  // Fetch albums on load
+  // Fetch albums and stats on load
   useEffect(() => {
     fetchAlbums();
     fetchStats();
@@ -109,34 +105,15 @@ export default function MusicContent() {
     }
   }, [audioElement, currentTrackIndex, tracks.length]);
 
-  // Add this helper function at the top of your component
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('auth_token');
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : '',
-    };
-  };
-
   const fetchAlbums = async () => {
     try {
-      const response = await fetch('/api/music/albums', {
-        // credentials: 'include', // Important!
-        // headers: {
-        //   'Content-Type': 'application/json',
-        // },
-        // headers: getAuthHeaders(),
-      });
+      const response = await fetch('/api/music/albums?includeTracks=true');
       if (response.ok) {
         const data = await response.json();
         setAlbums(data);
         if (data.length > 0 && !selectedAlbum) {
           setSelectedAlbum(data[0]);
         }
-      } 
-      else if (response.status === 401) {
-        console.error('Unauthorized - redirect to sign in');
-        // router.push('/sign-in');
       }
     } catch (error) {
       console.error('Error fetching albums:', error);
@@ -160,13 +137,7 @@ export default function MusicContent() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/music?action=stats', {
-        // credentials: 'include', // Important!
-        // headers: {
-        //   'Content-Type': 'application/json',
-        // },
-        // headers: getAuthHeaders(),
-      });
+      const response = await fetch('/api/music/stats');
       if (response.ok) {
         const data = await response.json();
         setStats(data);
@@ -216,137 +187,9 @@ export default function MusicContent() {
     }
   };
 
-  // Wrap the onPlayAlbum logic in a function
-  const handlePlayAlbum = (albumId: number) => {
-    const album = albums.find(a => a.id === albumId);
-    if (album) {
-      setSelectedAlbum(album);
-      
-      // // Auto-Scroll to music-player
-      // setTimeout(() => {
-      //   const playerElement = document.getElementById('music-player');
-      //   if (playerElement) {
-      //     playerElement.scrollIntoView({ 
-      //       behavior: 'smooth', 
-      //       block: 'start' 
-      //     });
-      //   }
-      // }, 100);
-      // Auto-Scroll to top
-      setTimeout(() => {
-        window.scrollTo({ 
-          top: 0, 
-          behavior: 'smooth' 
-        });
-      }, 50);
-
-    }
-  };
-
-  // Add the onTrackSelect handler
   const handleTrackSelect = (index: number) => {
     setCurrentTrackIndex(index);
     setIsPlaying(true);
-    // Scroll to player
-    const playerElement = document.getElementById('music-player');
-    if (playerElement) {
-      playerElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  // In musicContent.tsx, update your audio element event handlers
-
-  // First, create a function that handles track end and auto-next album
- // Handle track end with auto-next album
-  const handleTrackEnded = () => {
-
-    if (!currentTrack || !selectedAlbum) return;
-    
-    const currentIndex = tracks.findIndex(t => t.id === currentTrack.id);
-    const isLastTrack = currentIndex === tracks.length - 1;
-    
-    console.log('Track ended:', { currentIndex, isLastTrack, tracksLength: tracks.length });
-    console.log('🎵 Track ended!', {
-      currentTrack: currentTrack?.title,
-      currentIndex: tracks.findIndex(t => t.id === currentTrack?.id),
-      totalTracks: tracks.length,
-      currentAlbum: selectedAlbum?.title,
-      albumIndex: albums.findIndex(a => a.id === selectedAlbum?.id)
-    })
-    
-    if (isLastTrack) {
-      // Last track finished - move to next album
-      const currentAlbumIndex = albums.findIndex(a => a.id === selectedAlbum.id);
-      const nextAlbumIndex = currentAlbumIndex + 1;
-      
-      console.log('Album navigation:', { currentAlbumIndex, nextAlbumIndex, totalAlbums: albums.length });
-      
-      if (nextAlbumIndex < albums.length) {
-        const nextAlbum = albums[nextAlbumIndex];
-        setSelectedAlbum(nextAlbum);
-        
-        // Show notification
-        toast.success(`Auto-playing: ${nextAlbum.title}`);
-        
-        // Scroll to top
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 100);
-      } else {
-        toast.info("You've reached the end of your library!");
-      }
-    } else {
-      // Not last track - play next track
-      const nextIndex = (currentIndex + 1) % tracks.length;
-      setCurrentTrackIndex(nextIndex);
-      setIsPlaying(true);
-    }
-  };
-
-  // Handle audio element events
-  useEffect(() => {
-    if (audioElement) {
-      const handleTimeUpdate = () => setCurrentTime(audioElement.currentTime);
-      const handleDurationChange = () => setDuration(audioElement.duration);
-      const handleEnded = handleTrackEnded;
-
-      audioElement.addEventListener('timeupdate', handleTimeUpdate);
-      audioElement.addEventListener('durationchange', handleDurationChange);
-      audioElement.addEventListener('ended', handleEnded);
-
-      return () => {
-        audioElement.removeEventListener('timeupdate', handleTimeUpdate);
-        audioElement.removeEventListener('durationchange', handleDurationChange);
-        audioElement.removeEventListener('ended', handleEnded);
-      };
-    }
-  }, [audioElement, currentTrack, tracks, selectedAlbum, albums]);
-
-  // Add this function to your MusicContent component
-  const handleNextAlbum = () => {
-    if (!selectedAlbum || albums.length === 0) return;
-    
-    // Find current album index
-    const currentIndex = albums.findIndex(a => a.id === selectedAlbum.id);
-    const nextIndex = currentIndex + 1;
-    
-    // Check if there's a next album
-    if (nextIndex < albums.length) {
-      const nextAlbum = albums[nextIndex];
-      setSelectedAlbum(nextAlbum);
-      
-      // Auto-scroll to top to show the new album
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 100);
-      
-      // Show a toast notification
-      // toast.success(`Now playing: ${nextAlbum.title}`);
-      console.log(`Now playing: ${nextAlbum.title}`);
-    } else {
-      // toast.info("You've reached the end of your library!");
-      console.log("You've reached the end of your library!");
-    }
   };
 
   const formatTime = (time: number) => {
@@ -356,7 +199,7 @@ export default function MusicContent() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  if (sessionLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -371,7 +214,7 @@ export default function MusicContent() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
-        {/* <div className="flex justify-between items-start mb-6">
+        <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-3xl font-bold">Music Library</h1>
             <p className="text-muted-foreground mt-1">
@@ -382,29 +225,11 @@ export default function MusicContent() {
             <RefreshCw className={`h-4 w-4 mr-2 ${polling ? 'animate-spin' : ''}`} />
             {polling ? 'Syncing...' : 'Sync Music'}
           </Button>
-        </div> */}
+        </div>
 
-        {/* Music Player Component */}
+        {/* Music Player */}
         {selectedAlbum && currentTrack && (
-          // <MusicPlayer
-          //   track={currentTrack}
-          //   album={{ ...selectedAlbum, tracks }}
-          //   isPlaying={isPlaying}
-          //   onPlayPause={handlePlayPause}
-          //   onNext={handleNext}
-          //   onPrevious={handlePrevious}
-          //   onSeek={handleSeek}
-          //   currentTime={currentTime}
-          //   duration={duration}
-          //   volume={volume}
-          //   isMuted={isMuted}
-          //   onVolumeChange={handleVolumeChange}
-          //   onToggleMute={handleToggleMute}
-          //   formatTime={formatTime}
-          // />
-
-
-          <div id="music-player">
+          <div id="music-player" className="mb-8">
             <MusicPlayer
               track={currentTrack}
               album={{ ...selectedAlbum, tracks }}
@@ -415,7 +240,6 @@ export default function MusicContent() {
               onPrevious={handlePrevious}
               onSeek={handleSeek}
               onTrackSelect={handleTrackSelect}
-              onNextAlbum={handleNextAlbum}
               currentTime={currentTime}
               duration={duration}
               volume={volume}
@@ -428,11 +252,11 @@ export default function MusicContent() {
         )}
 
         {/* Stats Cards */}
-        {/* {stats && <MusicStats stats={stats} loading={loading} />} */}
+        {stats && <MusicStats stats={stats} loading={loading} />}
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="albums" className="space-y-6 mt-8">
-          {/* <TabsList>
+          <TabsList>
             <TabsTrigger value="albums" className="gap-2">
               <Music className="h-4 w-4" />
               Albums
@@ -441,7 +265,7 @@ export default function MusicContent() {
               <ListMusic className="h-4 w-4" />
               Links
             </TabsTrigger>
-          </TabsList> */}
+          </TabsList>
 
           <TabsContent value="albums" className="space-y-6">
             <AlbumGrid
@@ -451,28 +275,16 @@ export default function MusicContent() {
                 setSelectedAlbum(album || null);
               }}
               selectedAlbumId={selectedAlbum?.id}
-              // onPlayAlbum={(albumId) => {
-              //   const album = albums.find(a => a.id === albumId);
-              //   setSelectedAlbum(album || null);
-                
-              //   // Add auto-scroll to player with a small delay
-              //   setTimeout(() => {
-              //     const playerElement = document.getElementById('music-player');
-              //     if (playerElement) {
-              //       playerElement.scrollIntoView({ 
-              //         behavior: 'smooth', 
-              //         block: 'start' 
-              //       });
-              //     }
-              //   }, 100);
-              // }}
-              onPlayAlbum={handlePlayAlbum}
+              onPlayAlbum={(albumId) => {
+                const album = albums.find(a => a.id === albumId);
+                setSelectedAlbum(album || null);
+              }}
             />
           </TabsContent>
 
-          {/* <TabsContent value="links">
+          <TabsContent value="links">
             <LinksManager isIndependent />
-          </TabsContent> */}
+          </TabsContent>
         </Tabs>
       </div>
     </div>

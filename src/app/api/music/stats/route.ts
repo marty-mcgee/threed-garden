@@ -1,35 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { musicPoller } from '@/lib/services/music/MusicPoller';
-// import { auth } from '@/lib/auth/server';
-import { minimalAuth as auth } from "@/lib/auth/minimal-server";
+import { db } from '@/lib/db/client';
+import { musicAlbums, musicTracks } from '@/lib/auth/schema';
+import { eq, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get session using Better Auth server API
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
-    
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Public stats - no authentication needed
+    const albumStats = await db.select({
+      total: sql<number>`count(*)`,
+      published: sql<number>`sum(case when status = 'published' then 1 else 0 end)`,
+    }).from(musicAlbums).where(eq(musicAlbums.isPublic, true));
 
-    const searchParams = request.nextUrl.searchParams;
-    const detail = searchParams.get('detail');
-    
-    const stats = await musicPoller.getStats(session.user.id);
-    
-    if (detail === 'full') {
-      const pollingStatus = musicPoller.getPollingStatus();
-      return NextResponse.json({
-        ...stats,
-        pollingStatus,
-      });
-    }
-    
-    return NextResponse.json(stats);
+    const trackStats = await db.select({
+      total: sql<number>`count(*)`,
+      totalPlays: sql<number>`sum(play_count)`,
+    }).from(musicTracks).innerJoin(
+      musicAlbums,
+      eq(musicTracks.albumId, musicAlbums.id)
+    ).where(eq(musicAlbums.isPublic, true));
+
+    return NextResponse.json({
+      totalAlbums: Number(albumStats[0]?.total || 0),
+      totalTracks: Number(trackStats[0]?.total || 0),
+      totalPlays: Number(trackStats[0]?.totalPlays || 0),
+      publishedAlbums: Number(albumStats[0]?.published || 0),
+    });
   } catch (error) {
-    console.error('Stats error:', error);
-    return NextResponse.json({ error: 'Failed to get stats' }, { status: 500 });
+    console.error('Error fetching stats:', error);
+    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
   }
 }

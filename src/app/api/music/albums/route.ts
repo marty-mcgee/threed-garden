@@ -8,38 +8,17 @@ import { AlbumStatus } from '@/lib/types/music';
 // GET - Fetch albums (with optional filters)
 export async function GET(request: NextRequest) {
   try {
-    // // Get session with headers
-    // const session = await auth.api.getSession({
-    //   headers: request.headers,
-    // });
-    
-    // if (!session?.user?.id) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
-    // Use a hardcoded user ID for testing (replace with your actual user ID from database)
-    const defaultUserId = 'XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN';
-
     const searchParams = request.nextUrl.searchParams;
     const albumId = searchParams.get('id');
-    const status = searchParams.get('status') as AlbumStatus;
     const includeTracks = searchParams.get('includeTracks') === 'true';
 
     if (albumId) {
-      // Get single album
+      // Get single album - public access
       const album = await db.query.musicAlbums.findFirst({
-        where: and(
-          eq(musicAlbums.id, parseInt(albumId)),
-          // eq(musicAlbums.userId, session.user.id)
-          eq(musicAlbums.userId, defaultUserId)
-        ),
-        orderBy: (albums, { asc }) => [asc(albums.sortOrder)],
+        where: eq(musicAlbums.id, parseInt(albumId)),
         with: includeTracks ? {
           tracks: {
             orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
-          },
-          musicAlbumLinks: {
-            with: { link: true },
           },
         } : undefined,
       });
@@ -51,20 +30,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(album);
     }
 
-    // Get all albums for user
+    // Get all public albums (no authentication needed)
     const albums = await db.query.musicAlbums.findMany({
-      where: and(
-        // eq(musicAlbums.userId, session.user.id),
-        eq(musicAlbums.userId, defaultUserId),
-        status ? eq(musicAlbums.status, status) : undefined
-      ),
-      orderBy: (albums, { asc }) => [asc(albums.sortOrder), asc(albums.id)],
+      where: eq(musicAlbums.isPublic, true),
       with: includeTracks ? {
         tracks: {
           orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
-          limit: 5,
+          limit: 3,
         },
       } : undefined,
+      orderBy: (albums, { asc }) => [asc(albums.sortOrder)],
     });
 
     return NextResponse.json(albums);

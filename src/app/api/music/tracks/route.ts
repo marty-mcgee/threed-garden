@@ -8,24 +8,12 @@ import { TrackStatus } from '@/lib/types/music';
 // GET - Fetch tracks
 export async function GET(request: NextRequest) {
   try {
-    // // Get session with headers
-    // const session = await auth.api.getSession({
-    //   headers: request.headers,
-    // });
-    
-    // if (!session?.user?.id) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
-    // Use a hardcoded user ID for testing (replace with your actual user ID from database)
-    const defaultUserId = 'XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN';
-
     const searchParams = request.nextUrl.searchParams;
     const trackId = searchParams.get('id');
     const albumId = searchParams.get('albumId');
 
     if (trackId) {
-      // Get single track
+      // Get single track - public if album is public
       const track = await db.query.musicTracks.findFirst({
         where: eq(musicTracks.id, parseInt(trackId)),
         with: { album: true },
@@ -35,29 +23,20 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Track not found' }, { status: 404 });
       }
 
-      // Verify ownership through album
-      const album = await db.query.musicAlbums.findFirst({
-        where: and(
-          eq(musicAlbums.id, track.albumId),
-          // eq(musicAlbums.userId, session.user.id)
-          eq(musicAlbums.userId, defaultUserId)
-        ),
-      });
-
-      if (!album) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      // Only return if album is public
+      if (!track.album?.isPublic) {
+        return NextResponse.json({ error: 'Track not available' }, { status: 403 });
       }
 
       return NextResponse.json(track);
     }
 
     if (albumId) {
-      // Get tracks for specific album
+      // Get tracks for album - only if album is public
       const album = await db.query.musicAlbums.findFirst({
         where: and(
           eq(musicAlbums.id, parseInt(albumId)),
-          // eq(musicAlbums.userId, session.user.id)
-          eq(musicAlbums.userId, defaultUserId)
+          eq(musicAlbums.isPublic, true)
         ),
       });
 
