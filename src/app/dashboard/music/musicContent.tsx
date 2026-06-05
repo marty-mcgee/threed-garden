@@ -3,21 +3,18 @@
 import { useState, useEffect } from 'react';
 import { AlbumGrid } from '@/components/music/AlbumGrid';
 import { LinksManager } from '@/components/music/LinksManager';
-import { MusicStats } from '@/components/music/MusicStats';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent } from '@/components/ui/card';
 import { Music, ListMusic, RefreshCw } from 'lucide-react';
-import { MusicPollStats } from '@/lib/types/music';
+import { toast } from 'sonner';
 
 export default function MusicContent() {
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
   const [tracks, setTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>(null);
   const [polling, setPolling] = useState(false);
   
   // Player state
@@ -31,10 +28,9 @@ export default function MusicContent() {
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const currentTrack = tracks[currentTrackIndex];
 
-  // Fetch albums and stats on load
+  // Fetch albums on load
   useEffect(() => {
     fetchAlbums();
-    fetchStats();
   }, []);
 
   // Set up audio element
@@ -83,14 +79,16 @@ export default function MusicContent() {
     }
   }, [volume, isMuted, audioElement]);
 
-  // Handle time updates
+  // Handle time updates and auto-next
   useEffect(() => {
     if (audioElement) {
       const handleTimeUpdate = () => setCurrentTime(audioElement.currentTime);
       const handleDurationChange = () => setDuration(audioElement.duration);
       const handleEnded = () => {
+        // Auto-play next track when current track ends
         const nextIndex = (currentTrackIndex + 1) % tracks.length;
         setCurrentTrackIndex(nextIndex);
+        setIsPlaying(true);
       };
 
       audioElement.addEventListener('timeupdate', handleTimeUpdate);
@@ -129,21 +127,11 @@ export default function MusicContent() {
         const data = await response.json();
         setTracks(data);
         setCurrentTrackIndex(0);
+        // Auto-play when tracks load
+        setIsPlaying(true);
       }
     } catch (error) {
       console.error('Error fetching tracks:', error);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const response = await fetch('/api/music/stats');
-      if (response.ok) {
-        const data = await response.json();
-        setStats(data);
-      }
-    } catch (error) {
-      console.error('Error fetching stats:', error);
     }
   };
 
@@ -153,10 +141,11 @@ export default function MusicContent() {
       const response = await fetch('/api/music/poll', { method: 'GET' });
       if (response.ok) {
         await fetchAlbums();
-        await fetchStats();
+        toast.success('Music library synced');
       }
     } catch (error) {
       console.error('Error during poll:', error);
+      toast.error('Sync failed');
     } finally {
       setPolling(false);
     }
@@ -165,11 +154,15 @@ export default function MusicContent() {
   const handlePlayPause = () => setIsPlaying(!isPlaying);
   
   const handleNext = () => {
-    setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
+    const nextIndex = (currentTrackIndex + 1) % tracks.length;
+    setCurrentTrackIndex(nextIndex);
+    setIsPlaying(true);
   };
   
   const handlePrevious = () => {
-    setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length);
+    const prevIndex = currentTrackIndex === 0 ? tracks.length - 1 : currentTrackIndex - 1;
+    setCurrentTrackIndex(prevIndex);
+    setIsPlaying(true);
   };
   
   const handleVolumeChange = (value: number[]) => {
@@ -190,6 +183,19 @@ export default function MusicContent() {
   const handleTrackSelect = (index: number) => {
     setCurrentTrackIndex(index);
     setIsPlaying(true);
+  };
+
+  const handlePlayAlbum = (albumId: number) => {
+    const album = albums.find(a => a.id === albumId);
+    if (album) {
+      setSelectedAlbum(album);
+      // Scroll to top to show the player
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+      // Show toast notification
+      toast.success(`Now playing: ${album.title}`);
+    }
   };
 
   const formatTime = (time: number) => {
@@ -214,20 +220,15 @@ export default function MusicContent() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
-        {/* <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-3xl font-bold">Music Library</h1>
-            <p className="text-muted-foreground mt-1">
-              {albums.length} albums • {tracks.length} tracks
-            </p>
-          </div>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Music Library</h1>
           <Button onClick={handleManualPoll} disabled={polling} size="sm" variant="outline">
             <RefreshCw className={`h-4 w-4 mr-2 ${polling ? 'animate-spin' : ''}`} />
-            {polling ? 'Syncing...' : 'Sync Music'}
+            {polling ? 'Syncing...' : 'Sync'}
           </Button>
-        </div> */}
+        </div>
 
-        {/* Music Player */}
+        {/* Music Player - Prominent at top */}
         {selectedAlbum && currentTrack && (
           <div id="music-player" className="mb-8">
             <MusicPlayer
@@ -251,23 +252,20 @@ export default function MusicContent() {
           </div>
         )}
 
-        {/* Stats Cards */}
-        {/* {stats && <MusicStats stats={stats} loading={loading} />} */}
-
-        {/* Main Content Tabs */}
-        {/* <Tabs defaultValue="albums" className="space-y-6 mt-8"> */}
-          {/* <TabsList>
+        {/* Main Content - Albums and Links */}
+        <Tabs defaultValue="albums" className="space-y-6">
+          <TabsList>
             <TabsTrigger value="albums" className="gap-2">
               <Music className="h-4 w-4" />
-              Albums
+              Albums ({albums.length})
             </TabsTrigger>
             <TabsTrigger value="links" className="gap-2">
               <ListMusic className="h-4 w-4" />
               Links
             </TabsTrigger>
-          </TabsList> */}
+          </TabsList>
 
-          {/* <TabsContent value="albums" className="space-y-6"> */}
+          <TabsContent value="albums" className="space-y-6">
             <AlbumGrid
               albums={albums}
               onSelectAlbum={(id) => {
@@ -275,17 +273,14 @@ export default function MusicContent() {
                 setSelectedAlbum(album || null);
               }}
               selectedAlbumId={selectedAlbum?.id}
-              onPlayAlbum={(albumId) => {
-                const album = albums.find(a => a.id === albumId);
-                setSelectedAlbum(album || null);
-              }}
+              onPlayAlbum={handlePlayAlbum}
             />
-          {/* </TabsContent> */}
+          </TabsContent>
 
-          {/* <TabsContent value="links">
+          <TabsContent value="links">
             <LinksManager isIndependent />
-          </TabsContent> */}
-        {/* </Tabs> */}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
