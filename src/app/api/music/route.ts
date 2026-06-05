@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     // const session = await auth.api.getSession({
     //   headers: request.headers,
     // });
-    
+
     // if (!session?.user?.id) {
     //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     // }
@@ -26,16 +26,21 @@ export async function GET(request: NextRequest) {
 
     // In your existing /api/music/route.ts, update the stats action
     if (action === 'stats') {
-      const albums = await db.select().from(musicAlbums).where(eq(musicAlbums.userId, session.user.id));
+      const albums = await db.select().from(musicAlbums)
+        // .where(eq(musicAlbums.userId, session.user.id));
+        .where(eq(musicAlbums.userId, defaultUserId));
       const tracks = await db.select().from(musicTracks).innerJoin(
         musicAlbums,
         eq(musicTracks.albumId, musicAlbums.id)
-      ).where(eq(musicAlbums.userId, session.user.id));
-      
-      const links = await db.select().from(musicLinks).where(eq(musicLinks.userId, session.user.id));
-      
+      // ).where(eq(musicAlbums.userId, session.user.id));
+      ).where(eq(musicAlbums.userId, defaultUserId));
+
+      const links = await db.select().from(musicLinks)
+        // .where(eq(musicLinks.userId, session.user.id));
+        .where(eq(musicLinks.userId, defaultUserId));
+
       // Calculate total storage from S3 (optional - you'd need to query S3 API)
-      
+
       return NextResponse.json({
         totalAlbums: albums.length,
         totalTracks: tracks.length,
@@ -94,14 +99,14 @@ export async function POST(request: NextRequest) {
           return NextResponse.json(result);
         }
         break;
-      
+
       case 'increment-play':
         if (data?.trackId) {
           await musicPoller.incrementPlayCount(data.trackId);
           return NextResponse.json({ success: true });
         }
         break;
-      
+
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
