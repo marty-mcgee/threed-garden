@@ -252,15 +252,18 @@ export function MusicPlayer({
                     </div>
                   )}
                 </div>
-                <WaveformVisualizer
-                  audioUrl={track.publicUrl}
-                  isPlaying={isPlaying}
-                  currentTime={currentTime}
-                  duration={duration}
-                  height={80}
-                  barWidth={3}
-                  barSpacing={2}
-                />
+                {/* Waveform Visualization */}
+                {track.publicUrl && (
+                  <WaveformVisualizer
+                    audioUrl={track.publicUrl}
+                    isPlaying={isPlaying}
+                    currentTime={currentTime}
+                    duration={duration}
+                    height={80}
+                    barWidth={3}
+                    barSpacing={2}
+                  />
+                )}
               </div>
               </>
             )}

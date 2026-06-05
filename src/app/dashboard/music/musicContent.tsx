@@ -214,7 +214,7 @@ export default function MusicContent() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
-        <div className="flex justify-between items-start mb-6">
+        {/* <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-3xl font-bold">Music Library</h1>
             <p className="text-muted-foreground mt-1">
@@ -225,7 +225,7 @@ export default function MusicContent() {
             <RefreshCw className={`h-4 w-4 mr-2 ${polling ? 'animate-spin' : ''}`} />
             {polling ? 'Syncing...' : 'Sync Music'}
           </Button>
-        </div>
+        </div> */}
 
         {/* Music Player */}
         {selectedAlbum && currentTrack && (
@@ -252,10 +252,10 @@ export default function MusicContent() {
         )}
 
         {/* Stats Cards */}
-        {stats && <MusicStats stats={stats} loading={loading} />}
+        {/* {stats && <MusicStats stats={stats} loading={loading} />} */}
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="albums" className="space-y-6 mt-8">
+        {/* <Tabs defaultValue="albums" className="space-y-6 mt-8">
           <TabsList>
             <TabsTrigger value="albums" className="gap-2">
               <Music className="h-4 w-4" />
@@ -285,7 +285,7 @@ export default function MusicContent() {
           <TabsContent value="links">
             <LinksManager isIndependent />
           </TabsContent>
-        </Tabs>
+        </Tabs> */}
       </div>
     </div>
   );

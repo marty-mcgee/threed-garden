@@ -37,6 +37,7 @@ export function WaveformVisualizer({
 
   // Analyze audio file and generate waveform
   useEffect(() => {
+    console.log('WaveformVisualizer mounted with audioUrl:', audioUrl);
     if (!audioUrl) return;
 
     const analyzeAudio = async () => {
