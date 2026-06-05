@@ -111,13 +111,22 @@ export default function MusicContent() {
 
   const fetchAlbums = async () => {
     try {
-      const response = await fetch('/api/music/albums');
+      const response = await fetch('/api/music/albums', {
+        credentials: 'include', // Important!
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setAlbums(data);
         if (data.length > 0 && !selectedAlbum) {
           setSelectedAlbum(data[0]);
         }
+      } 
+      else if (response.status === 401) {
+        console.error('Unauthorized - redirect to sign in');
+        // router.push('/sign-in');
       }
     } catch (error) {
       console.error('Error fetching albums:', error);
