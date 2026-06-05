@@ -125,7 +125,7 @@ export default function MusicContent() {
         // headers: {
         //   'Content-Type': 'application/json',
         // },
-        headers: getAuthHeaders(),
+        // headers: getAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
@@ -165,7 +165,7 @@ export default function MusicContent() {
         // headers: {
         //   'Content-Type': 'application/json',
         // },
-        headers: getAuthHeaders(),
+        // headers: getAuthHeaders(),
       });
       if (response.ok) {
         const data = await response.json();
