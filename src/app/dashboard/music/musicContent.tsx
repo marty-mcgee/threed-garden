@@ -255,8 +255,8 @@ export default function MusicContent() {
         {/* {stats && <MusicStats stats={stats} loading={loading} />} */}
 
         {/* Main Content Tabs */}
-        {/* <Tabs defaultValue="albums" className="space-y-6 mt-8">
-          <TabsList>
+        {/* <Tabs defaultValue="albums" className="space-y-6 mt-8"> */}
+          {/* <TabsList>
             <TabsTrigger value="albums" className="gap-2">
               <Music className="h-4 w-4" />
               Albums
@@ -265,9 +265,9 @@ export default function MusicContent() {
               <ListMusic className="h-4 w-4" />
               Links
             </TabsTrigger>
-          </TabsList>
+          </TabsList> */}
 
-          <TabsContent value="albums" className="space-y-6">
+          {/* <TabsContent value="albums" className="space-y-6"> */}
             <AlbumGrid
               albums={albums}
               onSelectAlbum={(id) => {
@@ -280,12 +280,12 @@ export default function MusicContent() {
                 setSelectedAlbum(album || null);
               }}
             />
-          </TabsContent>
+          {/* </TabsContent> */}
 
-          <TabsContent value="links">
+          {/* <TabsContent value="links">
             <LinksManager isIndependent />
-          </TabsContent>
-        </Tabs> */}
+          </TabsContent> */}
+        {/* </Tabs> */}
       </div>
     </div>
   );
