@@ -201,14 +201,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         
         {/* Footer */}
         <footer className="mt-8 py-4 text-center text-xs text-muted-foreground border-t">
-          <p>
+          {/* <p>
             🌱 ThreeD Garden • 🚗 Traffic Monitor • 🤖 FarmBot Integration
-          </p>
+          </p> */}
           {/* <p className="mt-1">
             Data sources: OpenWeatherMap, FarmBot API
           </p> */}
           <p className="mt-1">
-            Built with Next.js, Neon Postgres, Drizzle ORM, shadcn/ui, Three.js, R3Fiber
+            Built with Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3Fiber
           </p>
         </footer>
       </div>
