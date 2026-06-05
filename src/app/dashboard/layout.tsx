@@ -142,9 +142,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex items-center gap-3">
 
               {/* In your dashboard layout or navigation component */}
-              <Link href="/dashboard/music/admin" className="text-sm hover:text-primary">
+              {/* <Link href="/dashboard/music/admin" className="text-sm hover:text-primary">
                 - Manage Music -
-              </Link>
+              </Link> */}
 
               {/* Status Indicator */}
               <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/30">
