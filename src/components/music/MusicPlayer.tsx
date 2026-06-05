@@ -253,17 +253,18 @@ export function MusicPlayer({
                   )}
                 </div>
                 {/* Waveform Visualization */}
-                {track.publicUrl && (
+                {/* {track.publicUrl && ( */}
                   <WaveformVisualizer
                     audioUrl={track.publicUrl}
                     isPlaying={isPlaying}
                     currentTime={currentTime}
                     duration={duration}
                     height={80}
-                    barWidth={3}
-                    barSpacing={2}
+                    className="w-full"
+                    // barWidth={3}
+                    // barSpacing={2}
                   />
-                )}
+                {/* )} */}
               </div>
               </>
             )}
