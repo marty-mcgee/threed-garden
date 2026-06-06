@@ -153,18 +153,47 @@ export default function HomePage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  // Content Links (features)
   const features = [
-    { icon: "🎵", title: "Music Streaming", description: "Full-featured music player with waveform visualization", href: "/dashboard/music", color: "from-purple-500 to-pink-500" },
-    // { icon: "🌱", title: "ThreeD Garden", description: "Interactive 3D garden with FarmBot integration", href: "/dashboard/threed", color: "from-green-500 to-emerald-500" },
-    // { icon: "📻", title: "Traffic Monitor", description: "Real-time CHP, Caltrans, and wildfire tracking", href: "/dashboard", color: "from-blue-500 to-cyan-500" },
-    { icon: "🌱", title: "ThreeD Garden", description: "Interactive 3D garden with FarmBot integration", href: "https://threed-garden-neon.vercel.app/", color: "from-green-500 to-emerald-500", external: true },
-    { icon: "📻", title: "Traffic Monitor", description: "Real-time CHP, Caltrans, and wildfire tracking", href: "https://mendocinocoast.news/traffic/", color: "from-blue-500 to-cyan-500", external: true },
-    { icon: "💻", title: "Full-Stack Platform", description: "Next.js 15, Neon, Drizzle, TypeScript, Three.js, R3F", href: "https://github.com/marty-mcgee/marty-mcgee-neon", color: "from-gray-500 to-gray-700", external: true },
-  ];
+  { 
+    icon: "🎵", 
+    title: "Music Streaming", 
+    description: "Full-featured music player with waveform visualization", 
+    href: "/dashboard/music", 
+    color: "from-purple-500 to-pink-500", 
+    external: false 
+  },
+  { 
+    icon: "🌱", 
+    title: "ThreeD Garden", 
+    description: "Interactive 3D garden with FarmBot integration", 
+    // href: "/dashboard/threed",
+    href: "https://threed-garden-neon.vercel.app/", 
+    color: "from-green-500 to-emerald-500", 
+    external: true 
+  },
+  { 
+    icon: "📻", 
+    title: "Traffic Monitor", 
+    description: "Real-time CHP, Caltrans, and wildfire tracking", 
+    // href: "/dashboard/traffic",
+    href: "https://mendocinocoast.news/traffic/", 
+    color: "from-blue-500 to-cyan-500", 
+    external: true 
+  },
+  { 
+    icon: "💻", 
+    title: "Full-Stack Platform", 
+    description: "Next.js 15, Neon, Drizzle, TypeScript, Three.js, R3F", 
+    href: "https://github.com/marty-mcgee/marty-mcgee-neon", 
+    color: "from-gray-500 to-gray-700", 
+    external: true 
+  },
+];
 
   const stats = [
-    { value: "12+", label: "Albums", icon: "🎵" },
-    { value: "64+", label: "Tracks", icon: "🎵" },
+    { value: "8+", label: "Albums", icon: "🎵" },
+    { value: "48+", label: "Tracks", icon: "🎵" },
     { value: "16", label: "APIs", icon: "🗄️" },
     { value: "24/7", label: "Live", icon: "📡" },
   ];
@@ -214,22 +243,48 @@ export default function HomePage() {
             <p className="text-lg lg:text-xl mb-6 text-white/90">
               Musician • Developer • 3D Artist • Gardener • Broadcaster
             </p>
+            
+            {/* Hero CTA Buttons - Horizontal layout */}
             <div className="flex flex-wrap gap-3 justify-center">
-              <Link href="/dashboard/music" className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-10 px-4 py-2 transition-colors">
-                <span className="mr-2">🎵</span>
-                Music Composition
-              </Link>
-              <Link href="/dashboard/threed" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors">
-                <span className="mr-2">🌱</span>
-                ThreeD Garden
-              </Link>
-              <Link href="/dashboard" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors">
-                <span className="mr-2">📻</span>
-                Live News + Traffic
-              </Link>
+              {features.map((feature, index) => {
+                const ButtonContent = (
+                  <>
+                    <span className="mr-2">{feature.icon}</span>
+                    {feature.title}
+                  </>
+                );
+                
+                if (feature.external) {
+                  return (
+                    <a
+                      key={index}
+                      href={feature.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-black/40 text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 h-10 px-4 py-2 transition-colors"
+                    >
+                      {ButtonContent}
+                    </a>
+                  );
+                }
+                
+                return (
+                  <Link
+                    key={index}
+                    href={feature.href}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-black/40 text-white hover:bg-white/20 backdrop-blur-sm border border-white/30 h-10 px-4 py-2 transition-colors"
+                  >
+                    {ButtonContent}
+                  </Link>
+                );
+              })}
             </div>
+
+
+
           </div>
         </div>
+
       </div>
 
       {/* Tech Stack */}
