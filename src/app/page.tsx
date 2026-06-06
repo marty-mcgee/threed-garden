@@ -162,7 +162,7 @@ export default function HomePage() {
 
   const stats = [
     { value: "10+", label: "Albums", icon: "🎵" },
-    { value: "50+", label: "Tracks", icon: "❤️" },
+    { value: "50+", label: "Tracks", icon: "🎵" },
     { value: "5", label: "APIs", icon: "🗄️" },
     { value: "24/7", label: "Live", icon: "📡" },
   ];
@@ -215,15 +215,15 @@ export default function HomePage() {
             <div className="flex flex-wrap gap-3 justify-center">
               <Link href="/dashboard/music" className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-10 px-4 py-2 transition-colors">
                 <span className="mr-2">🎵</span>
-                Full Library
-              </Link>
-              <Link href="/dashboard" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors">
-                <span className="mr-2">📻</span>
-                Live Traffic
+                Music Composition
               </Link>
               <Link href="/dashboard/threed" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors">
                 <span className="mr-2">🌱</span>
-                3D Garden
+                ThreeD Garden
+              </Link>
+              <Link href="/dashboard" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors">
+                <span className="mr-2">📻</span>
+                Live News + Traffic
               </Link>
             </div>
           </div>
