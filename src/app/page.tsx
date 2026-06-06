@@ -1,36 +1,163 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { MusicPlayer } from '@/components/music/MusicPlayer';
 
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false);
+  const [albums, setAlbums] = useState<any[]>([]);
+  const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
+  const [tracks, setTracks] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Player state
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.7);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  
+  const currentTrack = tracks[currentTrackIndex];
+
+  // Fetch first album on mount
+  useEffect(() => {
+    setMounted(true);
+    fetchFirstAlbum();
+  }, []);
+
+  // Set up audio element
+  useEffect(() => {
+    const audio = new Audio();
+    setAudioElement(audio);
+    return () => {
+      audio.pause();
+      audio.src = '';
+    };
+  }, []);
+
+  // Handle audio source changes
+  useEffect(() => {
+    if (audioElement && currentTrack?.publicUrl) {
+      audioElement.src = currentTrack.publicUrl;
+      audioElement.load();
+      if (isPlaying) {
+        audioElement.play().catch(console.error);
+      }
+    }
+  }, [currentTrack, audioElement]);
+
+  // Handle play/pause
+  useEffect(() => {
+    if (audioElement) {
+      if (isPlaying) {
+        audioElement.play().catch(console.error);
+      } else {
+        audioElement.pause();
+      }
+    }
+  }, [isPlaying, audioElement]);
+
+  // Handle volume
+  useEffect(() => {
+    if (audioElement) {
+      audioElement.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted, audioElement]);
+
+  // Handle time updates
+  useEffect(() => {
+    if (audioElement) {
+      const handleTimeUpdate = () => setCurrentTime(audioElement.currentTime);
+      const handleDurationChange = () => setDuration(audioElement.duration);
+      const handleEnded = () => {
+        const nextIndex = (currentTrackIndex + 1) % tracks.length;
+        setCurrentTrackIndex(nextIndex);
+        setIsPlaying(true);
+      };
+
+      audioElement.addEventListener('timeupdate', handleTimeUpdate);
+      audioElement.addEventListener('durationchange', handleDurationChange);
+      audioElement.addEventListener('ended', handleEnded);
+
+      return () => {
+        audioElement.removeEventListener('timeupdate', handleTimeUpdate);
+        audioElement.removeEventListener('durationchange', handleDurationChange);
+        audioElement.removeEventListener('ended', handleEnded);
+      };
+    }
+  }, [audioElement, currentTrackIndex, tracks.length]);
+
+  const fetchFirstAlbum = async () => {
+    try {
+      const response = await fetch('/api/music/albums');
+      if (response.ok) {
+        const data = await response.json();
+        setAlbums(data);
+        if (data.length > 0) {
+          setSelectedAlbum(data[0]);
+          await fetchTracks(data[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching albums:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTracks = async (albumId: number) => {
+    try {
+      const response = await fetch(`/api/music/tracks?albumId=${albumId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTracks(data);
+        setCurrentTrackIndex(0);
+      }
+    } catch (error) {
+      console.error('Error fetching tracks:', error);
+    }
+  };
+
+  const handlePlayPause = () => setIsPlaying(!isPlaying);
+  const handleNext = () => {
+    setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
+    setIsPlaying(true);
+  };
+  const handlePrevious = () => {
+    setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length);
+    setIsPlaying(true);
+  };
+  const handleVolumeChange = (value: number[]) => {
+    const newVolume = value[0];
+    setVolume(newVolume);
+    setIsMuted(newVolume === 0);
+  };
+  const handleToggleMute = () => setIsMuted(!isMuted);
+  const handleSeek = (value: number[]) => {
+    if (audioElement) {
+      audioElement.currentTime = value[0];
+      setCurrentTime(value[0]);
+    }
+  };
+  const handleTrackSelect = (index: number) => {
+    setCurrentTrackIndex(index);
+    setIsPlaying(true);
+  };
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return '0:00';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   const features = [
-    {
-      icon: "🎵",
-      title: "Music Streaming",
-      description: "Full-featured music player with waveform visualization",
-      href: "/dashboard/music",
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: "🌱",
-      title: "ThreeD Garden",
-      description: "Interactive 3D garden with FarmBot integration",
-      href: "/dashboard/threed",
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      icon: "📻",
-      title: "Traffic Monitor",
-      description: "Real-time CHP, Caltrans, and wildfire tracking",
-      href: "/dashboard",
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      icon: "💻",
-      title: "Full-Stack Platform",
-      description: "Next.js 15, Neon, Drizzle, TypeScript, Three.js, R3F",
-      href: "https://github.com/marty-mcgee/marty-mcgee-neon",
-      color: "from-gray-500 to-gray-700",
-      external: true
-    },
+    { icon: "🎵", title: "Music Streaming", description: "Full-featured music player with waveform visualization", href: "/dashboard/music", color: "from-purple-500 to-pink-500" },
+    { icon: "🌱", title: "ThreeD Garden", description: "Interactive 3D garden with FarmBot integration", href: "/dashboard/threed", color: "from-green-500 to-emerald-500" },
+    { icon: "📻", title: "Traffic Monitor", description: "Real-time CHP, Caltrans, and wildfire tracking", href: "/dashboard", color: "from-blue-500 to-cyan-500" },
+    { icon: "💻", title: "Full-Stack Platform", description: "Next.js 15, Neon, Drizzle, TypeScript, Three.js, R3F", href: "https://github.com/marty-mcgee/marty-mcgee-neon", color: "from-gray-500 to-gray-700", external: true },
   ];
 
   const stats = [
@@ -51,12 +178,29 @@ export default function HomePage() {
     { name: "Vercel", url: "https://vercel.com" },
   ];
 
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
-        <div className="absolute inset-0 bg-black/20" />
+      {/* Hero Section with Blurred Background Image */}
+      <div className="relative overflow-hidden">
+        {/* Background Image with Blur */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 blur-md"
+          style={{ 
+            backgroundImage: `url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&h=1080&fit=crop')`,
+          }}
+        />
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/50" />
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-pink-600/50" />
+        
+        {/* Content */}
         <div className="relative container mx-auto px-6 py-16 lg:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center rounded-full border border-white/20 bg-white/20 px-3 py-1 text-sm backdrop-blur-sm mb-3">
@@ -65,30 +209,21 @@ export default function HomePage() {
             <h1 className="text-4xl lg:text-6xl font-bold mb-3 bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent">
               Marty McGee
             </h1>
-            <p className="text-lg lg:text-xl mb-6 text-blue-100">
+            <p className="text-lg lg:text-xl mb-6 text-white/90">
               Musician • Developer • 3D Artist • Gardener • Broadcaster
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
-              <Link
-                href="/dashboard/music"
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-10 px-4 py-2 transition-colors"
-              >
+              <Link href="/dashboard/music" className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-10 px-4 py-2 transition-colors">
                 <span className="mr-2">🎵</span>
-                Listen to Music
+                Full Library
               </Link>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors"
-              >
+              <Link href="/dashboard" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors">
                 <span className="mr-2">📻</span>
                 Live Traffic
               </Link>
-              <Link
-                href="/dashboard/threed"
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors"
-              >
+              <Link href="/dashboard/threed" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-10 px-4 py-2 transition-colors">
                 <span className="mr-2">🌱</span>
-                ThreeD Garden
+                3D Garden
               </Link>
             </div>
           </div>
@@ -96,22 +231,15 @@ export default function HomePage() {
       </div>
 
       {/* Tech Stack */}
-      <div className="py-8 bg-gray-50 dark:bg-gray-900/50">
+      <div className="py-6 bg-gray-50 dark:bg-gray-900/50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-4">
             <h2 className="text-lg font-semibold mb-1">Tech Stack</h2>
             <div className="w-8 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto" />
           </div>
-          
           <div className="flex flex-wrap justify-center gap-3">
             {techStack.map((tech) => (
-              <a
-                key={tech.name}
-                href={tech.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm hover:shadow-md"
-              >
+              <a key={tech.name} href={tech.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm hover:shadow-md">
                 <span>{tech.name}</span>
                 <span className="text-xs opacity-50">↗</span>
               </a>
@@ -120,19 +248,15 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* About + Stats Row */}
+      {/* About + Stats */}
       <div className="py-8">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-center md:text-left">
               <h2 className="text-2xl font-bold mb-2">About Marty</h2>
               <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto md:mx-0 mb-4" />
-              <p className="text-muted-foreground">
-                Multidisciplinary creator building immersive digital experiences that blend 
-                music, technology, and nature.
-              </p>
+              <p className="text-muted-foreground">Multidisciplinary creator building immersive digital experiences that blend music, technology, and nature.</p>
             </div>
-            
             <div className="grid grid-cols-2 gap-4">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
@@ -153,31 +277,16 @@ export default function HomePage() {
             <h2 className="text-2xl font-bold mb-2">What I Build</h2>
             <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto" />
           </div>
-          
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature, index) => (
               <div key={index} className="rounded-lg border bg-white dark:bg-gray-800 shadow-sm p-4 group hover:shadow-md transition-all">
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${feature.color} flex items-center justify-center text-xl mb-3 group-hover:scale-105 transition-transform`}>
-                  {feature.icon}
-                </div>
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${feature.color} flex items-center justify-center text-xl mb-3 group-hover:scale-105 transition-transform`}>{feature.icon}</div>
                 <h3 className="font-semibold mb-1">{feature.title}</h3>
                 <p className="text-muted-foreground text-xs mb-3">{feature.description}</p>
                 {feature.external ? (
-                  <a
-                    href={feature.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                  >
-                    Explore <span>↗</span>
-                  </a>
+                  <a href={feature.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">Explore <span>↗</span></a>
                 ) : (
-                  <Link
-                    href={feature.href}
-                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                  >
-                    Explore <span>→</span>
-                  </Link>
+                  <Link href={feature.href} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">Explore <span>→</span></Link>
                 )}
               </div>
             ))}
@@ -185,59 +294,59 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Music Spotlight */}
-      <div className="py-8">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold mb-2 bg-secondary text-secondary-foreground">
-                🎵 Latest Release
+      {/* Featured Music Player Section */}
+      {selectedAlbum && currentTrack && !loading && (
+        <div className="py-8 bg-gradient-to-r from-gray-900 to-gray-800">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-4">
+              <div className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/20 px-3 py-1 text-xs text-purple-300 mb-2">
+                🎵 Featured Release
               </div>
-              <h2 className="text-2xl font-bold mb-2">Featured Album</h2>
-              <p className="text-muted-foreground text-sm mb-4">
-                Electronic, ambient, and acoustic elements. Available now for streaming.
-              </p>
-              <Link
-                href="/dashboard/music"
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3 transition-colors"
-              >
-                <span className="mr-2">▶</span>
-                Listen Now
-              </Link>
+              <h2 className="text-2xl font-bold text-white mb-1">{selectedAlbum.title}</h2>
+              <p className="text-gray-400 text-sm">{selectedAlbum.artist}</p>
             </div>
-            <div className="relative">
-              <div className="aspect-square rounded-xl overflow-hidden shadow-lg bg-gradient-to-br from-purple-500 to-pink-500 max-w-[200px] mx-auto flex items-center justify-center">
-                <span className="text-6xl opacity-50">🎵</span>
-              </div>
+            <MusicPlayer
+              track={currentTrack}
+              album={selectedAlbum}
+              tracks={tracks}
+              isPlaying={isPlaying}
+              onPlayPause={handlePlayPause}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+              onSeek={handleSeek}
+              onTrackSelect={handleTrackSelect}
+              currentTime={currentTime}
+              duration={duration}
+              volume={volume}
+              isMuted={isMuted}
+              onVolumeChange={handleVolumeChange}
+              onToggleMute={handleToggleMute}
+              formatTime={formatTime}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="py-8 bg-gradient-to-r from-gray-900 to-gray-800">
+          <div className="container mx-auto px-6 text-center">
+            <div className="animate-pulse">
+              <div className="h-8 w-48 bg-gray-700 rounded mx-auto mb-2"></div>
+              <div className="h-4 w-64 bg-gray-700 rounded mx-auto"></div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Call to Action */}
       <div className="py-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-xl font-bold mb-2">Ready to Explore?</h2>
-          <p className="text-sm mb-4 text-blue-100">
-            Dive into my music, explore the 3D garden, or check out live traffic.
-          </p>
+          <h2 className="text-xl font-bold mb-2">Ready to Explore More?</h2>
+          <p className="text-sm mb-4 text-blue-100">Dive into my full music library, explore the 3D garden, or check out live traffic.</p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link
-              href="/dashboard/music"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-9 px-4 py-2 transition-colors"
-            >
-              <span className="mr-2">🎵</span>
-              Start Listening
-            </Link>
-            <a
-              href="https://github.com/marty-mcgee"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-9 px-4 py-2 transition-colors"
-            >
-              <span className="mr-2">🐙</span>
-              GitHub
-            </a>
+            <Link href="/dashboard/music" className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-9 px-4 py-2 transition-colors"><span className="mr-2">🎵</span>Full Library</Link>
+            <a href="https://github.com/marty-mcgee" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-9 px-4 py-2 transition-colors"><span className="mr-2">🐙</span>GitHub</a>
           </div>
         </div>
       </div>
