@@ -13,21 +13,35 @@ export async function GET(request: NextRequest) {
     const includeTracks = searchParams.get('includeTracks') === 'true';
 
     if (albumId) {
-      // Get single album - public access
+      // Get single album - public access with links
       const album = await db.query.musicAlbums.findFirst({
         where: eq(musicAlbums.id, parseInt(albumId)),
-        with: includeTracks ? {
-          tracks: {
+        with: {
+          tracks: includeTracks ? {
             orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
+          } : undefined,
+          musicAlbumLinks: {
+            with: {
+              link: true,
+            },
           },
-        } : undefined,
+        },
       });
 
       if (!album) {
         return NextResponse.json({ error: 'Album not found' }, { status: 404 });
       }
 
-      return NextResponse.json(album);
+      // Transform the response to include links directly
+      const albumWithLinks = {
+        ...album,
+        links: album.musicAlbumLinks
+          ?.map(albumLink => albumLink.link)
+          .filter(link => link?.status === 'active') || [],
+        musicAlbumLinks: undefined, // Remove the raw relation data
+      };
+
+      return NextResponse.json(albumWithLinks);
     }
 
     // Get all public albums (no authentication needed)
@@ -35,8 +49,7 @@ export async function GET(request: NextRequest) {
       where: eq(musicAlbums.isPublic, true),
       with: includeTracks ? {
         tracks: {
-          orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
-          limit: 3,
+          orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)]
         },
       } : undefined,
       orderBy: (albums, { asc }) => [asc(albums.sortOrder)],
@@ -127,7 +140,7 @@ export async function PUT(request: NextRequest) {
         description: description !== undefined ? description : existingAlbum.description,
         status: status || existingAlbum.status,
         isPublic: isPublic !== undefined ? isPublic : existingAlbum.isPublic,
-        sortOrder: sortOrder !== undefined ? sortOrder : existingAlbum.sortOrder,  // Add this line
+        sortOrder: sortOrder !== undefined ? sortOrder : existingAlbum.sortOrder,
         metadata: metadata || existingAlbum.metadata,
         updatedAt: new Date(),
       })

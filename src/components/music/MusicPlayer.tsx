@@ -5,10 +5,9 @@ import { Slider } from '@/components/ui/slider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic, ExternalLink, Music, ShoppingBag, Youtube, Instagram, Globe, Link as LinkIcon } from 'lucide-react';
 import { WaveformVisualizer } from './WaveformVisualizer';
+import { cn } from '@/lib/utils';
 
 interface Track {
   id: number;
@@ -16,6 +15,15 @@ interface Track {
   duration: number | null;
   trackNumber: number | null;
   publicUrl: string;
+}
+
+interface Link {
+  id: number;
+  title: string;
+  url: string;
+  type: string;
+  icon: string | null;
+  description: string | null;
 }
 
 interface Album {
@@ -26,21 +34,19 @@ interface Album {
   releaseYear?: number | null;
   description?: string | null;
   tracks?: Track[];
+  links?: Link[];
 }
 
 interface MusicPlayerProps {
   track: Track;
   album: Album;
   tracks: Track[];
-  albums?: Album[];  // Add albums prop for next album functionality
   isPlaying: boolean;
   onPlayPause: () => void;
   onNext: () => void;
   onPrevious: () => void;
   onSeek: (value: number[]) => void;
   onTrackSelect: (index: number) => void;
-  onTrackEnd?: () => void;  // Add callback for track end to go to next album
-  onNextAlbum?: () => void;  // Add callback for next album
   currentTime: number;
   duration: number;
   volume: number;
@@ -54,14 +60,12 @@ export function MusicPlayer({
   track,
   album,
   tracks,
-  albums,
   isPlaying,
   onPlayPause,
   onNext,
   onPrevious,
   onSeek,
   onTrackSelect,
-  onNextAlbum,
   currentTime,
   duration,
   volume,
@@ -70,109 +74,53 @@ export function MusicPlayer({
   onToggleMute,
   formatTime,
 }: MusicPlayerProps) {
-  const [waveformData, setWaveformData] = useState<number[] | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [showTrackList, setShowTrackList] = useState(true);
+  const [showLinks, setShowLinks] = useState(true);
 
-  // Analyze audio file for waveform
-  useEffect(() => {
-    if (track?.publicUrl) {
-      analyzeAudioWaveform(track.publicUrl);
-    }
-  }, [track]);
-
-  const analyzeAudioWaveform = async (audioUrl: string) => {
-    try {
-      const response = await fetch(audioUrl);
-      const arrayBuffer = await response.arrayBuffer();
-      
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      audioContextRef.current = audioContext;
-      
-      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-      const channelData = audioBuffer.getChannelData(0);
-      
-      const sampleRate = Math.floor(channelData.length / 80);
-      const waveform: number[] = [];
-      
-      for (let i = 0; i < 80; i++) {
-        let sum = 0;
-        for (let j = 0; j < sampleRate && i * sampleRate + j < channelData.length; j++) {
-          sum += Math.abs(channelData[i * sampleRate + j]);
-        }
-        const average = sum / sampleRate;
-        waveform.push(Math.min(1, average * 2));
-      }
-      
-      setWaveformData(waveform);
-    } catch (error) {
-      console.error('Error analyzing waveform:', error);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-    };
-  }, []);
-
-  const getProgressPercentage = () => {
-    if (duration === 0) return 0;
-    return (currentTime / duration) * 100;
-  };
-
-  // Handle track end - move to next track or next album
-  const handleTrackEnd = () => {
-    const currentIndex = tracks.findIndex(t => t.id === track.id);
-    const isLastTrack = currentIndex === tracks.length - 1;
-    
-    if (isLastTrack) {
-      // Last track finished - move to next album if available
-      if (onNextAlbum && albums && albums.length > 0) {
-        onNextAlbum();
-      }
-    } else {
-      // Not last track - play next track in current album
-      onNext();
+  const getLinkIcon = (type: string) => {
+    switch (type) {
+      case 'stream': return <Music className="h-4 w-4" />;
+      case 'buy': return <ShoppingBag className="h-4 w-4" />;
+      case 'video': return <Youtube className="h-4 w-4" />;
+      case 'social': return <Instagram className="h-4 w-4" />;
+      default: return <Globe className="h-4 w-4" />;
     }
   };
 
   return (
-    <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg mb-6">
+    <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
       <div className="p-6">
-        {/* 2-Column Layout - Compact, fits 100% height */}
+        {/* 2-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* LEFT COLUMN - Album Art & Player Controls */}
-          <div className="space-y-4">
-            {/* Album Art - Smaller, compact */}
+          <div className="space-y-3">
+            {/* Album Art */}
             <div className="flex justify-center">
-              <div className="w-40 h-40 lg:w-48 lg:h-48 rounded-lg overflow-hidden shadow-2xl bg-gray-800">
+              <div className="w-56 h-56 lg:w-64 lg:h-64 rounded-lg overflow-hidden shadow-2xl bg-gray-800">
                 <img 
                   src={album.coverArt} 
                   alt={album.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/192x192?text=No+Cover';
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/256x256?text=No+Cover';
                   }}
                 />
               </div>
             </div>
 
-            {/* Track Info - Compact */}
+            {/* Track Info */}
             <div className="text-center">
               <p className="text-xs uppercase tracking-wider text-gray-400">Now Playing</p>
-              <h2 className="text-lg lg:text-xl font-bold mt-1 truncate px-2">{track.title}</h2>
+              <h2 className="text-lg font-bold mt-1 truncate px-2">{track.title}</h2>
               <p className="text-gray-400 text-sm truncate">{album.title} • {album.artist}</p>
               {album.releaseYear && (
                 <p className="text-gray-500 text-xs mt-1">Released: {album.releaseYear}</p>
               )}
             </div>
 
-            {/* Playback Controls - Compact */}
-            <div className="flex items-center justify-center gap-3">
+            {/* Playback Controls */}
+            <div className="flex items-center justify-center gap-2">
               <button 
                 onClick={onPrevious}
                 className="p-2 hover:bg-white/10 rounded-full transition-all"
@@ -195,7 +143,7 @@ export function MusicPlayer({
               </button>
             </div>
 
-            {/* Progress Bar - Compact */}
+            {/* Progress Bar */}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-400">{formatTime(currentTime)}</span>
@@ -204,13 +152,13 @@ export function MusicPlayer({
                   max={duration || 0}
                   step={1}
                   onValueChange={onSeek}
-                  className="flex-1 cursor-pointer"
+                  className="flex-1 cursor-pointer h-1"
                 />
                 <span className="text-xs text-gray-400">{formatTime(duration)}</span>
               </div>
             </div>
 
-            {/* Volume Control - Compact */}
+            {/* Volume Control */}
             <div className="flex items-center justify-center gap-2">
               <button onClick={onToggleMute} className="p-1 hover:text-gray-300">
                 {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -220,58 +168,26 @@ export function MusicPlayer({
                 max={1}
                 step={0.01}
                 onValueChange={onVolumeChange}
-                className="w-28"
+                className="w-24 h-1"
               />
             </div>
-
-            {/* Auto-play next album indicator */}
-            {albums && albums.length > 1 && (
-              <div className="text-center mt-2">
-                <p className="text-xs text-gray-500">
-                  ⏭️ Will auto-play next album after last track
-                </p>
-              </div>
-            )}
           </div>
 
-          {/* RIGHT COLUMN - Waveform (Top) + Track List (Bottom) */}
+          {/* RIGHT COLUMN - Waveform + Track List + Links */}
           <div className="space-y-4">
-            {/* Waveform Visualization - Now at top of right column */}
-            {waveformData && (
-              <>
-              <div className="bg-black/20 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-gray-400">Audio Waveform</p>
-                  {isPlaying && (
-                    <div className="flex gap-0.5">
-                      <div className="w-1 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                      <div className="w-1 h-3 bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                      <div className="w-1 h-4 bg-green-500 rounded-full animate-bounce"></div>
-                      <div className="w-1 h-3 bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                      <div className="w-1 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                    </div>
-                  )}
-                </div>
-                {/* Waveform Visualization */}
-                {/* {track.publicUrl && ( */}
-                  <WaveformVisualizer
-                    audioUrl={track.publicUrl}
-                    isPlaying={isPlaying}
-                    currentTime={currentTime}
-                    duration={duration}
-                    height={80}
-                    className="w-full"
-                    // barWidth={3}
-                    // barSpacing={2}
-                  />
-                {/* )} */}
-              </div>
-              </>
-            )}
+            {/* Waveform Visualization */}
+            <WaveformVisualizer
+              audioUrl={track.publicUrl}
+              isPlaying={isPlaying}
+              currentTime={currentTime}
+              duration={duration}
+              height={100}
+              className="w-full"
+            />
 
-            {/* Track List - Scrollable, fits remaining space */}
-            <div className="flex-1 min-h-0">
-              <div className="flex items-center justify-between mb-3">
+            {/* Track List Section */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ListMusic className="h-4 w-4 text-gray-400" />
                   <h3 className="text-sm font-semibold">Track List</h3>
@@ -279,65 +195,106 @@ export function MusicPlayer({
                     {tracks.length}
                   </Badge>
                 </div>
+                <button
+                  onClick={() => setShowTrackList(!showTrackList)}
+                  className="text-xs text-gray-400 hover:text-white"
+                >
+                  {showTrackList ? 'Hide' : 'Show'}
+                </button>
               </div>
 
-              <ScrollArea className="h-64 lg:h-72">
-                <div className="space-y-1 pr-2">
-                  {tracks.map((t, idx) => {
-                    const isCurrentTrack = track.id === t.id;
-                    const isLastTrack = idx === tracks.length - 1;
-                    return (
-                      <div
-                        key={t.id}
-                        onClick={() => onTrackSelect(idx)}
-                        className={cn(
-                          "flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all group",
-                          isCurrentTrack
-                            ? "bg-white/20 border-l-2 border-white"
-                            : "hover:bg-white/10"
-                        )}
-                      >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-7 text-center">
-                            <span className={cn(
-                              "text-xs font-mono",
-                              isCurrentTrack && "font-bold text-white"
-                            )}>
-                              {t.trackNumber || idx + 1}
-                            </span>
+              {showTrackList && (
+                <ScrollArea className="h-48 lg:h-52">
+                  <div className="space-y-1 pr-2">
+                    {tracks.map((t, idx) => {
+                      const isCurrentTrack = track.id === t.id;
+                      return (
+                        <div
+                          key={t.id}
+                          onClick={() => onTrackSelect(idx)}
+                          className={cn(
+                            "flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all group",
+                            isCurrentTrack
+                              ? "bg-white/20 border-l-2 border-white"
+                              : "hover:bg-white/10"
+                          )}
+                        >
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="w-7 text-center">
+                              <span className={cn(
+                                "text-xs font-mono",
+                                isCurrentTrack && "font-bold text-white"
+                              )}>
+                                {t.trackNumber || idx + 1}
+                              </span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={cn(
+                                "truncate text-sm",
+                                isCurrentTrack && "font-semibold text-white"
+                              )}>
+                                {t.title}
+                              </p>
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {formatTime(t.duration || 0)}
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className={cn(
-                              "truncate text-sm",
-                              isCurrentTrack && "font-semibold text-white"
-                            )}>
-                              {t.title}
-                            </p>
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {formatTime(t.duration || 0)}
-                          </div>
+                          {isCurrentTrack && isPlaying && (
+                            <div className="flex gap-0.5 ml-2">
+                              <div className="w-0.5 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                              <div className="w-0.5 h-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                              <div className="w-0.5 h-4 bg-white rounded-full animate-bounce"></div>
+                              <div className="w-0.5 h-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                              <div className="w-0.5 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                            </div>
+                          )}
                         </div>
-                        {isCurrentTrack && isPlaying && (
-                          <div className="flex gap-0.5 ml-2">
-                            <div className="w-0.5 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                            <div className="w-0.5 h-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                            <div className="w-0.5 h-4 bg-white rounded-full animate-bounce"></div>
-                            <div className="w-0.5 h-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                            <div className="w-0.5 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                          </div>
-                        )}
-                        {isLastTrack && !isCurrentTrack && (
-                          <div className="text-xs text-gray-500 ml-2">
-                            ⏭️ Last track
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </ScrollArea>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
+              )}
             </div>
+
+            {/* Links Section - New! */}
+            {album.links && album.links.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-white/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <LinkIcon className="h-4 w-4 text-gray-400" />
+                    <h3 className="text-sm font-semibold">Links List</h3>
+                    <Badge variant="outline" className="bg-white/10 text-xs">
+                      {album.links.length}
+                    </Badge>
+                  </div>
+                  <button
+                    onClick={() => setShowLinks(!showLinks)}
+                    className="text-xs text-gray-400 hover:text-white"
+                  >
+                    {showLinks ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+
+                {showLinks && (
+                  <div className="flex flex-wrap gap-2">
+                    {album.links.map((link) => (
+                      <a
+                        key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-full transition-all text-sm group"
+                      >
+                        {getLinkIcon(link.type)}
+                        <span>{link.title}</span>
+                        <ExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

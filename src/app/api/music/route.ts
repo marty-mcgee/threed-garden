@@ -67,7 +67,6 @@ export async function GET(request: NextRequest) {
       with: {
         tracks: {
           orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
-          limit: 3,
         },
       },
       orderBy: (albums, { asc }) => [asc(albums.sortOrder)],

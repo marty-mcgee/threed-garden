@@ -28,6 +28,14 @@ export async function GET(request: NextRequest) {
           eq(musicLinks.id, parseInt(linkId)),
           eq(musicLinks.userId, session.user.id)
         ),
+        with: {
+          musicAlbumLinks: {
+            with: {
+              album: true,
+              track: true,
+            },
+          },
+        },
       });
 
       if (!link) {
@@ -52,27 +60,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(associations.map(a => a.link));
     }
 
-    // Get independent links (not associated with any album/track)
-    if (independent) {
-      const allLinks = await db.query.musicLinks.findMany({
-        where: and(
-          eq(musicLinks.userId, session.user.id),
-          status ? eq(musicLinks.status, status) : undefined,
-          linkType ? eq(musicLinks.type, linkType) : undefined
-        ),
-        orderBy: (links, { asc }) => [asc(links.displayOrder)],
-      });
-
-      // Get all linked link IDs
-      const linkedLinkIds = await db.query.musicAlbumLinks.findMany({
-        columns: { linkId: true },
-      });
-      const linkedIds = new Set(linkedLinkIds.map(l => l.linkId));
-      
-      const independentLinks = allLinks.filter(link => !linkedIds.has(link.id));
-      return NextResponse.json(independentLinks);
-    }
-
     // Get all links for user
     const links = await db.query.musicLinks.findMany({
       where: and(
@@ -80,6 +67,14 @@ export async function GET(request: NextRequest) {
         status ? eq(musicLinks.status, status) : undefined,
         linkType ? eq(musicLinks.type, linkType) : undefined
       ),
+      with: {
+        musicAlbumLinks: {
+          with: {
+            album: true,
+            track: true,
+          },
+        },
+      },
       orderBy: (links, { asc }) => [asc(links.displayOrder)],
     });
 
@@ -107,12 +102,10 @@ export async function POST(request: NextRequest) {
       description, 
       albumId, 
       trackId, 
-      isIndependent,
       displayOrder,
       metadata 
     } = body;
 
-    // Validate required fields
     if (!title || !url) {
       return NextResponse.json({ error: 'Title and URL are required' }, { status: 400 });
     }
@@ -136,7 +129,6 @@ export async function POST(request: NextRequest) {
 
     // Associate with album or track if specified
     if (albumId) {
-      // Verify album ownership
       const album = await db.query.musicAlbums.findFirst({
         where: and(
           eq(musicAlbums.id, parseInt(albumId)),
@@ -144,39 +136,30 @@ export async function POST(request: NextRequest) {
         ),
       });
 
-      if (!album) {
-        // Rollback - delete the created link
-        await db.delete(musicLinks).where(eq(musicLinks.id, link.id));
-        return NextResponse.json({ error: 'Album not found or unauthorized' }, { status: 404 });
+      if (album) {
+        await db.insert(musicAlbumLinks).values({
+          albumId: parseInt(albumId),
+          linkId: link.id,
+          linkType: 'album',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
       }
-
-      await db.insert(musicAlbumLinks).values({
-        albumId: parseInt(albumId),
-        linkId: link.id,
-        linkType: 'album',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
     } else if (trackId) {
-      // Verify track ownership through album
       const track = await db.query.musicTracks.findFirst({
         where: eq(musicTracks.id, parseInt(trackId)),
         with: { album: true },
       });
 
-      if (!track || track.album?.userId !== session.user.id) {
-        // Rollback - delete the created link
-        await db.delete(musicLinks).where(eq(musicLinks.id, link.id));
-        return NextResponse.json({ error: 'Track not found or unauthorized' }, { status: 404 });
+      if (track && track.album?.userId === session.user.id) {
+        await db.insert(musicAlbumLinks).values({
+          trackId: parseInt(trackId),
+          linkId: link.id,
+          linkType: 'track',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
       }
-
-      await db.insert(musicAlbumLinks).values({
-        trackId: parseInt(trackId),
-        linkId: link.id,
-        linkType: 'track',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
     }
 
     return NextResponse.json(link, { status: 201 });
@@ -204,7 +187,9 @@ export async function PUT(request: NextRequest) {
       description, 
       status, 
       displayOrder, 
-      metadata 
+      metadata,
+      albumId,
+      trackId
     } = body;
 
     if (!id) {
@@ -223,6 +208,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Link not found' }, { status: 404 });
     }
 
+    // Update the link
     const updatedLink = await db.update(musicLinks)
       .set({
         title: title !== undefined ? title : existingLink.title,
@@ -237,6 +223,31 @@ export async function PUT(request: NextRequest) {
       })
       .where(eq(musicLinks.id, parseInt(id)))
       .returning();
+
+    // Update association if albumId or trackId provided
+    if (albumId !== undefined || trackId !== undefined) {
+      // Remove existing associations
+      await db.delete(musicAlbumLinks).where(eq(musicAlbumLinks.linkId, parseInt(id)));
+      
+      // Add new association
+      if (albumId) {
+        await db.insert(musicAlbumLinks).values({
+          albumId: parseInt(albumId),
+          linkId: parseInt(id),
+          linkType: 'album',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      } else if (trackId) {
+        await db.insert(musicAlbumLinks).values({
+          trackId: parseInt(trackId),
+          linkId: parseInt(id),
+          linkType: 'track',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
+    }
 
     return NextResponse.json(updatedLink[0]);
   } catch (error) {
@@ -272,7 +283,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Link not found' }, { status: 404 });
     }
 
-    // Delete associations first (using musicAlbumLinks)
+    // Delete associations first
     await db.delete(musicAlbumLinks).where(eq(musicAlbumLinks.linkId, parseInt(id)));
     
     // Delete the link

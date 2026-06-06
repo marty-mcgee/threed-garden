@@ -18,7 +18,7 @@ export function WaveformVisualizer({
   currentTime = 0,
   duration = 0,
   className,
-  height = 60,
+  height = 100,
 }: WaveformVisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [waveformData, setWaveformData] = useState<number[] | null>(null);
@@ -133,11 +133,11 @@ export function WaveformVisualizer({
   }
 
   return (
-    <div className={cn("bg-black/20 rounded-lg p-2", className)}>
+    <div className={cn("bg-black/20 rounded-lg overflow-hidden", className)}>
       <canvas
         ref={canvasRef}
-        className="w-full rounded-lg"
-        style={{ height: `${height}px` }}
+        className="w-full"
+        style={{ height: `${height}px`, display: 'block' }}
       />
     </div>
   );

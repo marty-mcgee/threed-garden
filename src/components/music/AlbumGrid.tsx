@@ -109,7 +109,7 @@ export function AlbumGrid({ albums, onSelectAlbum, selectedAlbumId, onPlayAlbum 
             </div>
 
             {/* Play Button on Hover */}
-            <Button
+            {/* <Button
               size="icon"
               className={cn(
                 "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
@@ -122,7 +122,7 @@ export function AlbumGrid({ albums, onSelectAlbum, selectedAlbumId, onPlayAlbum 
               }}
             >
               <Play className="h-8 w-8" />
-            </Button>
+            </Button> */}
           </div>
 
           {/* Album Info */}
