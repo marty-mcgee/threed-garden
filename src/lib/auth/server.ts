@@ -75,6 +75,7 @@ export const auth = betterAuth({
     process.env.BETTER_AUTH_URL || "",
     "http://localhost:4444",
     "https://marty-mcgee-neon.vercel.app",
+    "https://marty-mcgee.com",
   ],
   
   // Disable CSRF for API routes (or configure properly)
