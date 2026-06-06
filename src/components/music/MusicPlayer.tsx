@@ -87,6 +87,11 @@ export function MusicPlayer({
 }: MusicPlayerProps) {
   const [activeTab, setActiveTab] = useState('tracks');
 
+  // Reset to Track List tab when album changes
+  useEffect(() => {
+    setActiveTab('tracks');
+  }, [album.id]);
+
   const getLinkIcon = (type: string) => {
     switch (type) {
       case 'stream': return <Music className="h-4 w-4" />;

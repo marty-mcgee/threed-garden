@@ -612,3 +612,255 @@ UI Features:
 This gives you complete control over album artwork without complex upload logic - just provide URLs to your images!
 
 ---
+
+## 🎵 Music Module (Complete - June 2026)
+
+### Overview
+Full-featured music streaming platform with album management, track playback, link integration, and media gallery. Features a prominent music player with waveform visualization, tabbed interface for track list, external links, and photo gallery.
+
+### Tech Stack (Music Specific)
+- **Storage:** AWS S3 (audio files), Vercel Blob (images)
+- **Database:** Neon Postgres + Drizzle ORM (music_* tables)
+- **Authentication:** Better Auth (admin panel only)
+- **Audio Analysis:** Web Audio API for waveform visualization
+- **UI:** shadcn/ui components (Slider, Tabs, Dialog, ScrollArea)
+
+### Music Database Schema
+
+| Table | Purpose |
+|-------|---------|
+| `music_albums` | Album metadata (title, artist, coverArt, releaseYear, sortOrder, isPublic) |
+| `music_tracks` | Track metadata (title, duration, trackNumber, publicUrl, playCount) |
+| `music_links` | External links (Spotify, social, buy, stream, video) |
+| `music_album_links` | Junction table linking albums/tracks to links |
+| `music_media` | Album images (fileName, fileUrl, fileType, isPrimary) |
+| `music_polling_logs` | Sync service logs |
+| `music_playback_history` | User listening history (trackId, albumId, playDuration, completed) |
+
+### Music Enums
+
+| Enum | Values |
+|------|--------|
+| `album_status` | draft, published, archived |
+| `track_status` | active, inactive, processing |
+| `music_link_type` | external, social, buy, stream, video |
+| `music_link_status` | active, inactive, pending, expired |
+
+### Music Dashboard Pages
+
+| Page | Route | Features |
+|------|-------|----------|
+| **Music Library** | `/dashboard/music` | Prominent player, album grid |
+| **Admin - Albums** | `/dashboard/music/admin/albums` | Full CRUD, sort order, track management |
+| **Admin - Tracks** | `/dashboard/music/admin/tracks` | Cross-album track management |
+| **Admin - Links** | `/dashboard/music/admin/links` | Link CRUD with album association |
+| **Admin - Media** | `/dashboard/music/admin/media` | Image management across albums |
+| **Album Detail** | `/dashboard/music/admin/albums/[id]` | Tracks, links, media per album |
+
+### MusicPlayer Components
+
+#### Left Column
+- **Album Art** - Large square artwork (w-64 h-64)
+- **Now Playing Info** - Track title, album, artist, release year
+- **Playback Controls** - Play/Pause, Previous, Next
+- **Progress Bar** - Seekable timeline with time display
+- **Volume Control** - Slider with mute toggle
+
+#### Right Column
+- **Waveform Visualizer** - Real-time audio waveform with purple gradient
+- **Tabbed Interface** - Track List | Links | Media Gallery
+
+#### Track List Tab
+- Scrollable track list with numbers and durations
+- Current track highlighted with left border
+- Animated equalizer bars for playing track
+- Click to select and play any track
+
+#### Links Tab
+- External link cards with type-specific icons
+- Opens in new tab with external link indicator
+- Shows title and optional description
+
+#### Media Gallery Tab
+- Responsive image grid (3-6 columns)
+- Lightbox carousel on image click
+- Keyboard navigation (arrow keys, escape)
+- Zoom in/out functionality
+- Primary badge on main album image
+
+### Music API Routes
+
+| Endpoint | Description |
+|----------|-------------|
+| `/api/music/albums` | Album CRUD + links + media |
+| `/api/music/tracks` | Track CRUD + filtering |
+| `/api/music/links` | Link CRUD + album associations |
+| `/api/music/media` | Image upload + CRUD |
+| `/api/music/stream/[trackId]` | Returns public URL for streaming |
+| `/api/music/photos` | Photo upload (deprecated - use media) |
+
+### Waveform Visualizer
+
+#### Features
+- **Deterministic generation** - Consistent waveform per track based on URL hash
+- **Real progress tracking** - Purple gradient for played portion
+- **Rounded bars** - Modern pill-shaped bars
+- **Edge-to-edge fit** - No left/right padding
+- **Loading states** - Animated bouncing bars during analysis
+- **Error handling** - Graceful fallback messages
+
+### Playback Logic
+
+| Scenario | Behavior |
+|----------|----------|
+| **Page loads** | First album loaded, PAUSED (no autoplay error) |
+| **User clicks album card** | Album loads, PAUSED |
+| **User clicks Play Album button** | Album loads, PAUSED |
+| **User clicks Play button** | Starts playing current track |
+| **Track ends (not last)** | Auto-plays next track in same album |
+| **Last track ends** | Auto-loads next album, auto-plays first track |
+| **End of library** | Playback stops |
+
+### Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `Space` | Play/Pause |
+| `←` | Seek backward 5 seconds |
+| `→` | Seek forward 5 seconds |
+| `↑` | Volume up |
+| `↓` | Volume down |
+| `N` | Next track |
+| `P` | Previous track |
+
+### Admin Features
+
+#### Album Management
+- Create/Edit/Delete albums
+- Sort order control (lower numbers appear first)
+- Public/private visibility toggle
+- Drag-and-drop image upload for cover art
+- Auto-extract release year from metadata
+
+#### Track Management
+- Upload MP3 files to S3
+- Auto-extract duration from audio
+- Bulk upload with metadata extraction
+- Track number ordering per album
+
+#### Link Management
+- Associate links with specific albums
+- Type classification (Spotify, Bandcamp, YouTube, Instagram, etc.)
+- Display order control
+- Active/inactive status
+
+#### Media Management
+- Upload images to Vercel Blob
+- Set primary album cover
+- Delete images
+- Gallery view with hover actions
+
+### Environment Variables
+
+```bash
+# AWS S3 (audio files)
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_REGION=us-west-2
+S3_BUCKET_NAME=threedpublic
+S3_PUBLIC_URL=https://threedpublic.s3.us-west-2.amazonaws.com
+
+# Vercel Blob (images)
+BLOB_READ_WRITE_TOKEN=your_token
+
+# Authentication (admin only)
+NEXTAUTH_URL=https://your-domain.vercel.app
+NEXTAUTH_SECRET=your_secret
+
+# Database
+DATABASE_URL=your_neon_connection_string
+
+Database Indexes
+Table	Index	Type
+music_albums	user_id, status, sortOrder	Regular (non-unique)
+music_tracks	album_id, status	Regular (non-unique)
+music_links	user_id, type	Regular (non-unique)
+music_media	user_id, album_id, isPrimary	Regular (non-unique)
+music_album_links	album_id+link_id, track_id+link_id	Regular (non-unique)
+File Structure
+text
+
+src/
+├── app/
+│   ├── api/music/
+│   │   ├── albums/route.ts
+│   │   ├── tracks/route.ts
+│   │   ├── links/route.ts
+│   │   ├── media/route.ts
+│   │   ├── stream/[trackId]/route.ts
+│   │   └── upload/route.ts
+│   └── dashboard/music/
+│       ├── page.tsx (musicContent.tsx)
+│       └── admin/
+│           ├── albums/page.tsx
+│           ├── tracks/page.tsx
+│           ├── links/page.tsx
+│           └── media/page.tsx
+├── components/music/
+│   ├── MusicPlayer.tsx
+│   ├── AlbumGrid.tsx
+│   ├── MusicStats.tsx
+│   ├── LinksManager.tsx
+│   ├── MediaManager.tsx
+│   ├── MediaGallery.tsx
+│   ├── WaveformVisualizer.tsx
+│   └── BulkTrackUpload.tsx
+└── lib/
+    ├── auth/schema.ts (music_* tables)
+    ├── types/music.ts
+    └── services/music/MusicPoller.ts
+
+Common Commands
+bash
+
+# Database
+bun db:generate
+bun db:push
+bun db:studio
+
+# Seed data
+bun db:seed-music
+
+# Manual sync
+curl "http://localhost:4444/api/music/poll"
+
+# API Testing
+curl "http://localhost:4444/api/music/albums"
+curl "http://localhost:4444/api/music/tracks?albumId=1"
+
+Known Issues & Solutions
+Issue	Solution
+Waveform not showing	Configure S3 CORS headers
+Autoplay blocked	User must initiate first play
+Image upload fails	Check Vercel Blob token
+Audio CORS errors	Add allowed origins to S3 bucket
+Production Status
+Component	Status
+Album CRUD	✅ Working
+Track CRUD	✅ Working
+Link CRUD	✅ Working
+Media CRUD	✅ Working
+Music Player	✅ Working
+Waveform	✅ Working
+Auto-play logic	✅ Working
+Lightbox Gallery	✅ Working
+S3 Streaming	✅ Working
+
+Last Updated: June 6, 2026
+Version: Music Module v1.0
+text
+
+
+This CONTEXT.md section provides comprehensive documentation for your Music Module, making it easy for any developer (or future AI) to understand the complete architecture, features, and setup! 🎵
+
+---

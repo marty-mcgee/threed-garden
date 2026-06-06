@@ -208,7 +208,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             Data sources: OpenWeatherMap, FarmBot API
           </p> */}
           <p className="mt-1">
-            Built with Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3Fiber
+            Built by Marty McGee with Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3Fiber
           </p>
         </footer>
       </div>
