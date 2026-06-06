@@ -155,15 +155,17 @@ export default function HomePage() {
 
   const features = [
     { icon: "🎵", title: "Music Streaming", description: "Full-featured music player with waveform visualization", href: "/dashboard/music", color: "from-purple-500 to-pink-500" },
-    { icon: "🌱", title: "ThreeD Garden", description: "Interactive 3D garden with FarmBot integration", href: "/dashboard/threed", color: "from-green-500 to-emerald-500" },
-    { icon: "📻", title: "Traffic Monitor", description: "Real-time CHP, Caltrans, and wildfire tracking", href: "/dashboard", color: "from-blue-500 to-cyan-500" },
+    // { icon: "🌱", title: "ThreeD Garden", description: "Interactive 3D garden with FarmBot integration", href: "/dashboard/threed", color: "from-green-500 to-emerald-500" },
+    // { icon: "📻", title: "Traffic Monitor", description: "Real-time CHP, Caltrans, and wildfire tracking", href: "/dashboard", color: "from-blue-500 to-cyan-500" },
+    { icon: "🌱", title: "ThreeD Garden", description: "Interactive 3D garden with FarmBot integration", href: "https://threed-garden-neon.vercel.app/", color: "from-green-500 to-emerald-500", external: true },
+    { icon: "📻", title: "Traffic Monitor", description: "Real-time CHP, Caltrans, and wildfire tracking", href: "https://mendocinocoast.news/traffic/", color: "from-blue-500 to-cyan-500", external: true },
     { icon: "💻", title: "Full-Stack Platform", description: "Next.js 15, Neon, Drizzle, TypeScript, Three.js, R3F", href: "https://github.com/marty-mcgee/marty-mcgee-neon", color: "from-gray-500 to-gray-700", external: true },
   ];
 
   const stats = [
-    { value: "10+", label: "Albums", icon: "🎵" },
-    { value: "50+", label: "Tracks", icon: "🎵" },
-    { value: "5", label: "APIs", icon: "🗄️" },
+    { value: "12+", label: "Albums", icon: "🎵" },
+    { value: "64+", label: "Tracks", icon: "🎵" },
+    { value: "16", label: "APIs", icon: "🗄️" },
     { value: "24/7", label: "Live", icon: "📡" },
   ];
 
