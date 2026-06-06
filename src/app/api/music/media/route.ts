@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
     const media = await db.query.musicMedia.findMany({
       where: eq(musicMedia.albumId, parseInt(albumId)),
-      orderBy: (media, { desc }) => [desc(media.createdAt)],
+      orderBy: (media, { desc }) => [desc(media.isPrimary), desc(media.createdAt)],
     });
 
     return NextResponse.json(media);
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Create media
+// POST - Create media (with file upload)
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -77,17 +77,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { albumId, fileName, fileUrl, fileType, fileSize, isPrimary, metadata } = body;
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const albumId = formData.get('albumId') as string;
+    const isPrimary = formData.get('isPrimary') === 'true';
+    const metadata = formData.get('metadata') ? JSON.parse(formData.get('metadata') as string) : null;
 
-    if (!albumId || !fileName || !fileUrl || !fileType) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    if (!albumId) {
+      return NextResponse.json({ error: 'Album ID required' }, { status: 400 });
     }
 
     // Verify album ownership
     const album = await db.query.musicAlbums.findFirst({
       where: and(
-        eq(musicAlbums.id, albumId),
+        eq(musicAlbums.id, parseInt(albumId)),
         eq(musicAlbums.userId, session.user.id)
       ),
     });
@@ -96,21 +103,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Album not found or unauthorized' }, { status: 404 });
     }
 
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      return NextResponse.json({ error: 'Invalid file type. Use JPEG, PNG, WebP, or GIF.' }, { status: 400 });
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File too large. Max 10MB.' }, { status: 400 });
+    }
+
     // If this is primary, unset other primary media for this album
     if (isPrimary) {
       await db.update(musicMedia)
         .set({ isPrimary: false })
-        .where(eq(musicMedia.albumId, albumId));
+        .where(eq(musicMedia.albumId, parseInt(albumId)));
     }
 
+    // Here you would upload to Vercel Blob or S3
+    // For now, we'll use a placeholder - you'll need to implement actual upload
+    const timestamp = Date.now();
+    const extension = file.name.split('.').pop();
+    const fileUrl = `/uploads/${albumId}/${timestamp}.${extension}`; // Placeholder
+
     const newMedia = await db.insert(musicMedia).values({
-      albumId,
-      fileName,
-      fileUrl,
-      fileType,
-      fileSize: fileSize || null,
-      isPrimary: isPrimary !== undefined ? isPrimary : true,
-      metadata: metadata || null,
+      albumId: parseInt(albumId),
+      fileName: file.name,
+      fileUrl: fileUrl,
+      fileType: file.type,
+      fileSize: file.size,
+      isPrimary: isPrimary,
+      metadata: metadata,
       createdAt: new Date(),
       updatedAt: new Date(),
     }).returning();

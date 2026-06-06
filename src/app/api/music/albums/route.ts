@@ -17,13 +17,16 @@ export async function GET(request: NextRequest) {
       const album = await db.query.musicAlbums.findFirst({
         where: eq(musicAlbums.id, parseInt(albumId)),
         with: {
-          tracks: includeTracks ? {
+          tracks: {
             orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
-          } : undefined,
+          },
           musicAlbumLinks: {
             with: {
               link: true,
             },
+          },
+          media: {  // Add this - includes photos
+            orderBy: (media, { asc }) => [asc(media.createdAt)],
           },
         },
       });

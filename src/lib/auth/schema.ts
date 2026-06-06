@@ -20,7 +20,6 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 
-
 // ============================================
 // ## Better Auth: User Session + Account
 // ============================================
@@ -156,16 +155,18 @@ export const musicAlbums = pgTable('music_albums', {
 
 export const musicMedia = pgTable('music_media', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }).notNull(), // Add this
   albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }).notNull(),
   fileName: text('file_name').notNull(),
   fileUrl: text('file_url').notNull(),
-  fileType: text('file_type').notNull(), // 'image/jpeg', 'image/png', etc.
-  fileSize: integer('file_size'), // in bytes
+  fileType: text('file_type').notNull(),
+  fileSize: integer('file_size'),
   isPrimary: boolean('is_primary').default(true),
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
+  userIdIdx: index('music_media_user_id_idx').on(table.userId), // Add this
   albumIdIdx: index('music_media_album_id_idx').on(table.albumId),
   isPrimaryIdx: index('music_media_is_primary_idx').on(table.isPrimary),
 }));
@@ -183,6 +184,10 @@ export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
 
 // Add relation from musicMedia to musicAlbums
 export const musicMediaRelations = relations(musicMedia, ({ one }) => ({
+  user: one(user, {
+    fields: [musicMedia.userId],
+    references: [user.id],
+  }),
   album: one(musicAlbums, {
     fields: [musicMedia.albumId],
     references: [musicAlbums.id],
@@ -261,14 +266,6 @@ export const musicPollingLogs = pgTable('music_polling_logs', {
 }));
 
 // Relations
-// export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
-//   tracks: many(musicTracks),
-//   musicAlbumLinks: many(musicAlbumLinks),
-//   user: one(user, {
-//     fields: [musicAlbums.userId],
-//     references: [user.id],
-//   }),
-// }));
 
 export const musicTracksRelations = relations(musicTracks, ({ one, many }) => ({
   album: one(musicAlbums, {

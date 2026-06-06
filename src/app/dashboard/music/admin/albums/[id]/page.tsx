@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ArrowLeft, Plus, Edit, Trash2, Music } from 'lucide-react';
 import { toast } from 'sonner';
+import { MediaManager } from '@/components/music/MediaManager';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Track {
   id: number;
@@ -161,6 +163,34 @@ export default function AlbumDetailPage() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
+
+        <Tabs defaultValue="tracks" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="tracks">Tracks</TabsTrigger>
+            <TabsTrigger value="links">Links</TabsTrigger>
+            <TabsTrigger value="media">Media Gallery</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="tracks">
+            {/* Existing tracks management */}
+          </TabsContent>
+          
+          <TabsContent value="links">
+            {/* Existing links management */}
+          </TabsContent>
+          
+          <TabsContent value="media">
+            <MediaManager 
+              albumId={album.id} 
+              albumTitle={album.title}
+              onMediaChange={() => {
+                // Refresh album data
+                router.refresh();
+              }}
+            />
+          </TabsContent>
+        </Tabs>
+
         <Card className="md:col-span-1">
           <CardContent className="p-4">
             <img

@@ -9,7 +9,8 @@ import {
   Music, 
   Link as LinkIcon,
   BarChart3,
-  Settings
+  Settings,
+  ImageIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -33,6 +34,11 @@ const navigationItems = [
     name: 'Links',
     href: '/dashboard/music/admin/links',
     icon: LinkIcon,
+  },
+  {
+    name: 'Media',  // Add this
+    href: '/dashboard/music/admin/media',
+    icon: ImageIcon, // You'll need to import this
   },
   {
     name: 'Analytics',

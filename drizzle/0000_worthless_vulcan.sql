@@ -37,6 +37,7 @@ CREATE TABLE "music_albums" (
 	"cover_art" text NOT NULL,
 	"release_year" integer,
 	"description" text,
+	"sort_order" integer DEFAULT 0,
 	"status" "album_status" DEFAULT 'draft',
 	"is_public" boolean DEFAULT false,
 	"metadata" jsonb,
@@ -57,6 +58,31 @@ CREATE TABLE "music_links" (
 	"metadata" jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "music_media" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"album_id" integer NOT NULL,
+	"file_name" text NOT NULL,
+	"file_url" text NOT NULL,
+	"file_type" text NOT NULL,
+	"file_size" integer,
+	"is_primary" boolean DEFAULT true,
+	"metadata" jsonb,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "music_playback_history" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
+	"track_id" integer,
+	"album_id" integer,
+	"played_at" timestamp DEFAULT now(),
+	"play_duration" integer,
+	"completed" boolean DEFAULT false,
+	"source" text DEFAULT 'music_player'
 );
 --> statement-breakpoint
 CREATE TABLE "music_polling_logs" (
@@ -123,6 +149,11 @@ ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_link_id_music_
 ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_track_id_music_tracks_id_fk" FOREIGN KEY ("track_id") REFERENCES "public"."music_tracks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_albums" ADD CONSTRAINT "music_albums_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_links" ADD CONSTRAINT "music_links_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_media" ADD CONSTRAINT "music_media_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_media" ADD CONSTRAINT "music_media_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_playback_history" ADD CONSTRAINT "music_playback_history_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_playback_history" ADD CONSTRAINT "music_playback_history_track_id_music_tracks_id_fk" FOREIGN KEY ("track_id") REFERENCES "public"."music_tracks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_playback_history" ADD CONSTRAINT "music_playback_history_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_tracks" ADD CONSTRAINT "music_tracks_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> statement-breakpoint
@@ -130,8 +161,15 @@ CREATE INDEX "album_links_album_link_idx" ON "music_album_links" USING btree ("a
 CREATE INDEX "album_links_track_link_idx" ON "music_album_links" USING btree ("track_id","link_id");--> statement-breakpoint
 CREATE INDEX "music_albums_user_id_idx" ON "music_albums" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "music_albums_status_idx" ON "music_albums" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "music_albums_sort_order_idx" ON "music_albums" USING btree ("sort_order");--> statement-breakpoint
 CREATE INDEX "music_links_user_id_idx" ON "music_links" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "music_links_type_idx" ON "music_links" USING btree ("type");--> statement-breakpoint
+CREATE INDEX "music_media_user_id_idx" ON "music_media" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "music_media_album_id_idx" ON "music_media" USING btree ("album_id");--> statement-breakpoint
+CREATE INDEX "music_media_is_primary_idx" ON "music_media" USING btree ("is_primary");--> statement-breakpoint
+CREATE INDEX "music_playback_user_id_idx" ON "music_playback_history" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "music_playback_track_id_idx" ON "music_playback_history" USING btree ("track_id");--> statement-breakpoint
+CREATE INDEX "music_playback_played_at_idx" ON "music_playback_history" USING btree ("played_at");--> statement-breakpoint
 CREATE INDEX "music_polling_logs_type_idx" ON "music_polling_logs" USING btree ("poll_type");--> statement-breakpoint
 CREATE INDEX "music_polling_logs_status_idx" ON "music_polling_logs" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "music_polling_logs_type_status_idx" ON "music_polling_logs" USING btree ("poll_type","status");--> statement-breakpoint

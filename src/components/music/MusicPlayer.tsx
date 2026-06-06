@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic, ExternalLink, Music, ShoppingBag, Youtube, Instagram, Globe, Link as LinkIcon } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic, ExternalLink, Music, ShoppingBag, Youtube, Instagram, Globe, Image as ImageIcon } from 'lucide-react';
 import { WaveformVisualizer } from './WaveformVisualizer';
+import { MediaGallery } from './MediaGallery';
 import { cn } from '@/lib/utils';
 
 interface Track {
@@ -26,6 +28,14 @@ interface Link {
   description: string | null;
 }
 
+interface MediaItem {
+  id: number;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  isPrimary: boolean;
+}
+
 interface Album {
   id: number;
   title: string;
@@ -35,6 +45,7 @@ interface Album {
   description?: string | null;
   tracks?: Track[];
   links?: Link[];
+  media?: MediaItem[];
 }
 
 interface MusicPlayerProps {
@@ -74,8 +85,7 @@ export function MusicPlayer({
   onToggleMute,
   formatTime,
 }: MusicPlayerProps) {
-  const [showTrackList, setShowTrackList] = useState(true);
-  const [showLinks, setShowLinks] = useState(true);
+  const [activeTab, setActiveTab] = useState('tracks');
 
   const getLinkIcon = (type: string) => {
     switch (type) {
@@ -173,7 +183,7 @@ export function MusicPlayer({
             </div>
           </div>
 
-          {/* RIGHT COLUMN - Waveform + Track List + Links */}
+          {/* RIGHT COLUMN - Waveform + Tabs (Track List, Links, Media Gallery) */}
           <div className="space-y-4">
             {/* Waveform Visualization */}
             <WaveformVisualizer
@@ -185,26 +195,35 @@ export function MusicPlayer({
               className="w-full"
             />
 
-            {/* Track List Section */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ListMusic className="h-4 w-4 text-gray-400" />
-                  <h3 className="text-sm font-semibold">Track List</h3>
-                  <Badge variant="outline" className="bg-white/10 text-xs">
+            {/* Tabs for Track List, Links, and Media Gallery */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
+                <TabsTrigger value="tracks" className="data-[state=active]:bg-gray-700 gap-2">
+                  <ListMusic className="h-4 w-4" />
+                  Track List
+                  <Badge variant="secondary" className="ml-1 bg-gray-600">
                     {tracks.length}
                   </Badge>
-                </div>
-                <button
-                  onClick={() => setShowTrackList(!showTrackList)}
-                  className="text-xs text-gray-400 hover:text-white"
-                >
-                  {showTrackList ? 'Hide' : 'Show'}
-                </button>
-              </div>
+                </TabsTrigger>
+                <TabsTrigger value="links" className="data-[state=active]:bg-gray-700 gap-2">
+                  <ExternalLink className="h-4 w-4" />
+                  Links
+                  <Badge variant="secondary" className="ml-1 bg-gray-600">
+                    {album.links?.length || 0}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="media" className="data-[state=active]:bg-gray-700 gap-2">
+                  <ImageIcon className="h-4 w-4" />
+                  Media
+                  <Badge variant="secondary" className="ml-1 bg-gray-600">
+                    {album.media?.length || 0}
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
 
-              {showTrackList && (
-                <ScrollArea className="h-48 lg:h-52">
+              {/* Track List Tab */}
+              <TabsContent value="tracks" className="mt-4">
+                <ScrollArea className="h-64 lg:h-72">
                   <div className="space-y-1 pr-2">
                     {tracks.map((t, idx) => {
                       const isCurrentTrack = track.id === t.id;
@@ -254,47 +273,59 @@ export function MusicPlayer({
                     })}
                   </div>
                 </ScrollArea>
-              )}
-            </div>
+              </TabsContent>
 
-            {/* Links Section - New! */}
-            {album.links && album.links.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-white/10">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <LinkIcon className="h-4 w-4 text-gray-400" />
-                    <h3 className="text-sm font-semibold">Links List</h3>
-                    <Badge variant="outline" className="bg-white/10 text-xs">
-                      {album.links.length}
-                    </Badge>
-                  </div>
-                  <button
-                    onClick={() => setShowLinks(!showLinks)}
-                    className="text-xs text-gray-400 hover:text-white"
-                  >
-                    {showLinks ? 'Hide' : 'Show'}
-                  </button>
-                </div>
+              {/* Links Tab */}
+              <TabsContent value="links" className="mt-4">
+                <ScrollArea className="h-64 lg:h-72">
+                  {album.links && album.links.length > 0 ? (
+                    <div className="space-y-2 pr-2">
+                      {album.links.map((link) => (
+                        <a
+                          key={link.id}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all group"
+                        >
+                          <div className="p-2 bg-white/10 rounded-full">
+                            {getLinkIcon(link.type)}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{link.title}</p>
+                            {link.description && (
+                              <p className="text-xs text-gray-400">{link.description}</p>
+                            )}
+                          </div>
+                          <ExternalLink className="h-4 w-4 opacity-50 group-hover:opacity-100" />
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-64 text-center">
+                      <ExternalLink className="h-12 w-12 text-gray-500 mb-3" />
+                      <p className="text-gray-400">No links available for this album</p>
+                      <p className="text-xs text-gray-500 mt-1">Check back later for updates</p>
+                    </div>
+                  )}
+                </ScrollArea>
+              </TabsContent>
 
-                {showLinks && (
-                  <div className="flex flex-wrap gap-2">
-                    {album.links.map((link) => (
-                      <a
-                        key={link.id}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-full transition-all text-sm group"
-                      >
-                        {getLinkIcon(link.type)}
-                        <span>{link.title}</span>
-                        <ExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100" />
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+              {/* Media Gallery Tab */}
+              <TabsContent value="media" className="mt-4">
+                <ScrollArea className="h-64 lg:h-72">
+                  {album.media && album.media.length > 0 ? (
+                    <MediaGallery media={album.media} albumId={album.id} />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-64 text-center">
+                      <ImageIcon className="h-12 w-12 text-gray-500 mb-3" />
+                      <p className="text-gray-400">No media available for this album</p>
+                      <p className="text-xs text-gray-500 mt-1">Check back later for photos</p>
+                    </div>
+                  )}
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>

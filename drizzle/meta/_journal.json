@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1780429483899,
-      "tag": "0000_milky_wiccan",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1780546105577,
-      "tag": "0001_flawless_nuke",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1780548046022,
-      "tag": "0002_yellow_satana",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1780559865646,
-      "tag": "0003_tough_wong",
+      "when": 1780757041577,
+      "tag": "0000_worthless_vulcan",
       "breakpoints": true
     }
   ]

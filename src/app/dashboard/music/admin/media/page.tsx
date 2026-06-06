@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit, Trash2, Image, Star, ExternalLink, Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -17,23 +18,27 @@ interface Media {
   fileType: string;
   fileSize: number | null;
   isPrimary: boolean;
-  metadata: any;
+  album?: {
+    title: string;
+    artist: string;
+  };
   createdAt: string;
 }
 
-interface MediaManagerProps {
-  albumId: number;
-  albumTitle: string;
-  onMediaChange?: () => void;
+interface Album {
+  id: number;
+  title: string;
+  artist: string;
 }
 
-export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManagerProps) {
+export default function MediaManagementPage() {
   const [media, setMedia] = useState<Media[]>([]);
+  const [albums, setAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMedia, setEditingMedia] = useState<Media | null>(null);
+  const [selectedAlbumId, setSelectedAlbumId] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     fileName: '',
     fileUrl: '',
@@ -43,10 +48,11 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
 
   useEffect(() => {
     fetchMedia();
-  }, [albumId]);
+    fetchAlbums();
+  }, []);
 
   const fetchMedia = async () => {
-    const response = await fetch(`/api/music/media?albumId=${albumId}`);
+    const response = await fetch('/api/music/media/all');
     if (response.ok) {
       const data = await response.json();
       setMedia(data);
@@ -54,14 +60,27 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
     setLoading(false);
   };
 
+  const fetchAlbums = async () => {
+    const response = await fetch('/api/music/albums');
+    if (response.ok) {
+      const data = await response.json();
+      setAlbums(data);
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!selectedAlbumId) {
+      toast.error('Please select an album first');
+      return;
+    }
+
     setIsUploading(true);
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
-    uploadFormData.append('albumId', albumId.toString());
+    uploadFormData.append('albumId', selectedAlbumId);
     uploadFormData.append('isPrimary', formData.isPrimary.toString());
 
     try {
@@ -72,11 +91,9 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
 
       if (!response.ok) throw new Error('Upload failed');
 
-      const newMedia = await response.json();
       toast.success('Media uploaded successfully');
       setIsDialogOpen(false);
       fetchMedia();
-      onMediaChange?.();
       resetForm();
     } catch (error) {
       toast.error('Failed to upload media');
@@ -95,7 +112,7 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
           ...formData,
         }
       : {
-          albumId,
+          albumId: parseInt(selectedAlbumId),
           ...formData,
           fileSize: 0,
         };
@@ -110,7 +127,6 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
       toast.success(editingMedia ? 'Media updated' : 'Media added');
       setIsDialogOpen(false);
       fetchMedia();
-      onMediaChange?.();
       resetForm();
     } else {
       toast.error('Failed to save media');
@@ -124,28 +140,8 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
     if (response.ok) {
       toast.success('Media deleted');
       fetchMedia();
-      onMediaChange?.();
     } else {
       toast.error('Failed to delete media');
-    }
-  };
-
-  const handleSetPrimary = async (id: number) => {
-    const response = await fetch('/api/music/media', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id,
-        isPrimary: true,
-      }),
-    });
-
-    if (response.ok) {
-      toast.success('Primary media updated');
-      fetchMedia();
-      onMediaChange?.();
-    } else {
-      toast.error('Failed to update primary');
     }
   };
 
@@ -157,7 +153,7 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
       isPrimary: false,
     });
     setEditingMedia(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    setSelectedAlbumId('');
   };
 
   const openEdit = (item: Media) => {
@@ -168,26 +164,26 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
       fileType: item.fileType,
       isPrimary: item.isPrimary,
     });
+    setSelectedAlbumId(item.albumId.toString());
     setIsDialogOpen(true);
   };
 
   if (loading) {
-    return <div className="text-center py-4">Loading media...</div>;
+    return <div className="text-center py-12">Loading media...</div>;
   }
 
-  const primaryMedia = media.find(m => m.isPrimary);
-  const otherMedia = media.filter(m => !m.isPrimary);
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold">Album Media</h3>
-          <p className="text-sm text-muted-foreground">Manage images for {albumTitle}</p>
+          <h1 className="text-3xl font-bold">Media Gallery</h1>
+          <p className="text-muted-foreground mt-1">
+            Manage images across all albums
+          </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" onClick={resetForm}>
+            <Button onClick={resetForm}>
               <Plus className="h-4 w-4 mr-2" />
               Add Media
             </Button>
@@ -197,10 +193,27 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
               <DialogTitle>{editingMedia ? 'Edit Media' : 'Upload Media'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {!editingMedia && (
+                <div>
+                  <Label>Select Album *</Label>
+                  <Select value={selectedAlbumId} onValueChange={setSelectedAlbumId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose an album" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {albums.map((album) => (
+                        <SelectItem key={album.id} value={album.id.toString()}>
+                          {album.title} - {album.artist}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              
               <div>
                 <Label>Upload Image File</Label>
                 <input
-                  ref={fileInputRef}
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/gif"
                   onChange={handleFileUpload}
@@ -275,53 +288,13 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
         </Dialog>
       </div>
 
-      {/* Primary Media Display */}
-      {primaryMedia && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-start gap-4">
-              <div className="w-32 h-32 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                <img
-                  src={primaryMedia.fileUrl}
-                  alt={primaryMedia.fileName}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <h4 className="font-semibold">Primary Cover</h4>
-                </div>
-                <p className="text-sm mt-1">{primaryMedia.fileName}</p>
-                <p className="text-xs text-muted-foreground">{primaryMedia.fileType}</p>
-                {primaryMedia.fileSize && (
-                  <p className="text-xs text-muted-foreground">
-                    {(primaryMedia.fileSize / 1024).toFixed(1)} KB
-                  </p>
-                )}
-                <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline" asChild>
-                    <a href={primaryMedia.fileUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-3 w-3 mr-1" />
-                      View
-                    </a>
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => openEdit(primaryMedia)}>
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Other Media */}
-      {otherMedia.length > 0 && (
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium">Additional Images ({otherMedia.length})</h4>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {otherMedia.map((item) => (
+      <Card>
+        <CardHeader>
+          <CardTitle>All Media</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {media.map((item) => (
               <Card key={item.id} className="group">
                 <CardContent className="p-3">
                   <div className="aspect-square rounded-md overflow-hidden bg-muted mb-2 relative">
@@ -334,44 +307,42 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
                       <Button
                         size="sm"
                         variant="secondary"
-                        className="h-7 w-7 p-0"
-                        onClick={() => handleSetPrimary(item.id)}
-                        title="Set as primary"
-                      >
-                        <Star className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="h-7 w-7 p-0"
+                        className="h-8 w-8 p-0"
                         onClick={() => openEdit(item)}
                       >
-                        <Edit className="h-3 w-3" />
+                        <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
-                        className="h-7 w-7 p-0"
+                        className="h-8 w-8 p-0"
                         onClick={() => handleDelete(item.id)}
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
+                    {item.isPrimary && (
+                      <div className="absolute top-1 left-1">
+                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs font-medium truncate">{item.fileName}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {item.album?.title} - {item.album?.artist}
+                  </p>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </div>
-      )}
-
-      {media.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Image className="h-12 w-12 mx-auto mb-2 opacity-50" />
-          <p>No media yet. Click "Add Media" to upload images.</p>
-        </div>
-      )}
+          {media.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground">
+              <Image className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No media yet. Click "Add Media" to upload images.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
