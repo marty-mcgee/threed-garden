@@ -1,3 +1,5 @@
+// ./src/app/api/music/tracks/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db/client';
