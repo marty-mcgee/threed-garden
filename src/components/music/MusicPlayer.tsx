@@ -128,7 +128,7 @@ export function MusicPlayer({
             <div className="text-center">
               <p className="text-xs uppercase tracking-wider text-gray-400">Now Playing</p>
               <h2 className="text-lg font-bold mt-1 truncate px-2">{track.title}</h2>
-              <p className="text-gray-400 text-sm truncate">{album.title} • {album.artist}</p>
+              <p className="text-gray-400 text-sm truncate">{album.artist}</p>
               {album.releaseYear && (
                 <p className="text-gray-500 text-xs mt-1">Released: {album.releaseYear}</p>
               )}
