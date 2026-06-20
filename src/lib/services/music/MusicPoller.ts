@@ -1,5 +1,5 @@
 import { db } from '@/lib/db/client';
-import { musicAlbums, musicTracks, musicLinks, musicPollingLogs } from '@/lib/auth/schema';
+import { musicAlbums, musicTracks, musicLinks, musicPollingLogs } from '@/lib/schema';
 import { 
   MusicAlbum, 
   MusicTrack, 

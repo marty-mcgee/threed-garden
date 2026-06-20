@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db/client';
-import { musicLinks, musicAlbumLinks, musicAlbums, musicTracks } from '@/lib/auth/schema';
+import { musicLinks, musicAlbumLinks, musicAlbums, musicTracks } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 import { MusicLinkType, MusicLinkStatus } from '@/lib/types/music';
 

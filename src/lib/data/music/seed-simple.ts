@@ -1,6 +1,6 @@
 // lib/db/seed-simple.ts
 import { db } from '@/lib/db/client';
-import { musicAlbums, musicTracks } from '@/lib/auth/schema';
+import { musicAlbums, musicTracks } from '@/lib/schema';
 import { AlbumStatus, TrackStatus } from '@/lib/types/music';
 import { sql } from 'drizzle-orm';
 

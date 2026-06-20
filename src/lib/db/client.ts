@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { attachDatabasePool } from "@vercel/functions";
-import * as authSchema from "@/lib/auth/schema";
+import * as authSchema from "@/lib/schema";
 
 // Create the connection pool
 const pool = new Pool({

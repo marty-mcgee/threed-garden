@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db/client';
-import { musicTracks, musicAlbums } from '@/lib/auth/schema';
+import { musicTracks, musicAlbums } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 import { TrackStatus } from '@/lib/types/music';
 

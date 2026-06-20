@@ -167,19 +167,19 @@ export default function HomePage() {
     icon: "🌱", 
     title: "ThreeD Garden", 
     description: "Interactive 3D garden with FarmBot integration", 
-    // href: "/dashboard/threed",
-    href: "https://threed-garden-neon.vercel.app/", 
+    href: "/dashboard/threed",
+    // href: "https://threed-garden-neon.vercel.app/", 
     color: "from-green-500 to-emerald-500", 
-    external: true 
+    external: false 
   },
   { 
     icon: "📻", 
     title: "Traffic Monitor", 
     description: "Real-time CHP, Caltrans, and wildfire tracking", 
-    // href: "/dashboard/traffic",
-    href: "https://mendocinocoast.news/traffic/", 
+    href: "/dashboard/traffic",
+    // href: "https://mendocinocoast.news/traffic/", 
     color: "from-blue-500 to-cyan-500", 
-    external: true 
+    external: false 
   },
   { 
     icon: "💻", 

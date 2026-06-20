@@ -3,7 +3,7 @@ import { betterAuth } from "better-auth/minimal";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/lib/db/client";
-import { user, session, account, verification } from "@/lib/auth/schema";
+import { user, session, account, verification } from "@/lib/schema";
 
 export const auth = betterAuth({
 
@@ -73,6 +73,9 @@ export const auth = betterAuth({
   // Trust the Vercel proxy
   trustedOrigins: [
     process.env.BETTER_AUTH_URL || "",
+    "http://localhost:3333",
+    "https://threed-garden-neon.vercel.app",
+    "https://threedgarden.com",
     "http://localhost:4444",
     "https://marty-mcgee-neon.vercel.app",
     "https://marty-mcgee.com",

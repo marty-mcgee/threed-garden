@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db/client';
-import { musicMedia, musicAlbums } from '@/lib/auth/schema';
+import { musicMedia, musicAlbums } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
 // GET - Fetch media for an album

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db/client';
-import { musicPlaybackHistory } from '@/lib/auth/schema';
+import { musicPlaybackHistory } from '@/lib/schema';
 
 export async function POST(request: NextRequest) {
   try {

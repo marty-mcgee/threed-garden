@@ -5,8 +5,8 @@ import "./globals.css";
 import { inter } from "./fonts";
 
 export const metadata: Metadata = {
-  title: "Marty McGee Music",
-  description: "Track Dragon: Music Tracking Management • Real-time Traffic • ThreeD Integration",
+  title: "Marty McGee Dashboard",
+  description: "Track Dragon: Music Management • Real-time Traffic • ThreeD Integration",
 };
 
 export default function RootLayout({

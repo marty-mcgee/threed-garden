@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { musicAlbums, musicTracks } from '@/lib/auth/schema';
+import { musicAlbums, musicTracks } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {

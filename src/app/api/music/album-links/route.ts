@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db/client';
-import { musicAlbumLinks, musicAlbums, musicTracks, musicLinks } from '@/lib/auth/schema';
+import { musicAlbumLinks, musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
 // GET - Get associations for an album or track

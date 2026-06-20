@@ -66,7 +66,7 @@ export default function AlbumPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 py-4">
         <Button variant="ghost" asChild className="mb-6">
           <Link href="/dashboard/music">
             <ArrowLeft className="mr-2 h-4 w-4" />

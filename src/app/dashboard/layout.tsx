@@ -127,13 +127,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Radio className="w-5 h-5 text-white" />
               </div>
               <div>
-                <Link href="/dashboard/music" className="text-sm hover:text-primary">
+                <Link href="/" className="text-sm hover:text-primary">
                   <h1 className="text-xl font-bold text-foreground">
-                    Marty McGee Music
+                    Marty McGee
                   </h1>
                 </Link>
                 <p className="text-xs text-muted-foreground">
-                  Track Dragon: Music Tracking Management • Real-time Traffic • ThreeD Integration
+                  Track Dragon: Music Library • Real-time Traffic • ThreeD Integration
                 </p>
               </div>
             </div>
@@ -171,7 +171,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         {/* Tab Navigation */}
         {/* <Tabs.Root value={pathname} className="mb-6"> */}
           {/* <Tabs.List className="flex flex-col space-y-4"> */}
@@ -195,7 +195,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* </Tabs.Root> */}
 
         {/* Page Content */}
-        <div className="rounded-2xl bg-background/50 backdrop-blur-sm border shadow-sm">
+        <div className="rounded-2xl bg-background/50 backdrop-blur-sm">
           {children}
         </div>
         

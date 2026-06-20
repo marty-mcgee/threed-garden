@@ -4,7 +4,7 @@ import { musicPoller } from '@/lib/services/music/MusicPoller';
 import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 import { MusicPollingType } from '@/lib/types/music';
 import { db } from '@/lib/db/client';
-import { musicAlbums, musicTracks, musicLinks } from '@/lib/auth/schema';
+import { musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {

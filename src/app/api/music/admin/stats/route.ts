@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/server';
 import { db } from '@/lib/db/client';
-import { musicAlbums, musicTracks, musicLinks, musicPlaybackHistory } from '@/lib/auth/schema';
+import { musicAlbums, musicTracks, musicLinks, musicPlaybackHistory } from '@/lib/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
