@@ -317,9 +317,9 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-center md:text-left">
-              <h2 className="text-2xl font-bold mb-2">About Marty</h2>
+              <h2 className="text-2xl font-bold mb-2">About Marty McGee</h2>
               <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto md:mx-0 mb-4" />
-              <p className="text-muted-foreground">Multidisciplinary creator building immersive digital experiences that blend music, technology, and nature.</p>
+              <p className="text-muted-foreground">Multi-Channel Creator, building pleasant digital experiences that blend Music, Technology, Nature.</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {stats.map((stat, index) => (
