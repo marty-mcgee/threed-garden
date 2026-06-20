@@ -15,6 +15,13 @@ import { Badge } from '@/components/ui/badge';
 
 export const dynamic = 'force-dynamic';
 
+// Music Tabs
+const musicTabs = [
+  { path: '/dashboard/music', name: 'Overview', icon: MapPin, color: 'orange' },
+  { path: '/dashboard/music/albums', name: 'Albums', icon: MapPin, color: 'orange' },
+  { path: '/dashboard/music/tracks', name: 'Tracks', icon: MapPin, color: 'orange' },
+]
+
 // Traffic Services Tabs
 const trafficTabs = [
   { path: '/dashboard/traffic', name: 'Overview', icon: MapPin, color: 'blue' },
@@ -26,7 +33,7 @@ const trafficTabs = [
 ];
 
 // ThreeD Garden Tabs
-const gardenTabs = [
+const threedTabs = [
   { path: '/dashboard/threed', name: 'Dashboard', icon: ScanEye, color: 'green' },
   { path: '/dashboard/threed/plants', name: 'Plants', icon: Leaf, color: 'green' },
   { path: '/dashboard/threed/models', name: 'Models', icon: Box, color: 'yellow' },
@@ -113,7 +120,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   // Determine active tab for root selection
   const isTrafficActive = trafficTabs.some(tab => pathname === tab.path || pathname.startsWith(tab.path + '/'));
-  const isGardenActive = gardenTabs.some(tab => pathname === tab.path || pathname.startsWith(tab.path + '/'));
+  const isGardenActive = threedTabs.some(tab => pathname === tab.path || pathname.startsWith(tab.path + '/'));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
@@ -175,17 +182,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Tab Navigation */}
         <Tabs.Root value={pathname} className="mb-6">
           <Tabs.List className="flex flex-col space-y-4">
+            {/* Music Section */}
+            <TabGroup 
+              tabs={musicTabs} 
+              currentPath={pathname} 
+              // title="Music" 
+              title="" 
+              icon={Activity}
+            />
+
             {/* Traffic Services Section */}
             <TabGroup 
               tabs={trafficTabs} 
               currentPath={pathname} 
-              title="Traffic Services" 
-              icon={Activity}
+              // title="Traffic Services" 
+              title="" 
+              icon={Car}
             />
             
             {/* ThreeD Garden Section */}
             <TabGroup 
-              tabs={gardenTabs} 
+              tabs={threedTabs} 
               currentPath={pathname} 
               // title="ThreeD Garden" 
               title="" 

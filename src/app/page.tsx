@@ -235,13 +235,20 @@ export default function HomePage() {
         <div className="relative container mx-auto px-6 py-16 lg:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center rounded-full border border-white/20 bg-white/20 px-3 py-1 text-sm backdrop-blur-sm mb-3">
-              🎵 Full-Stack Creator
+              <a
+                key={`MM-LINK-MAIN-1`}
+                href={`/`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🎵 Full-Stack Creation
+              </a>
             </div>
             <h1 className="text-4xl lg:text-6xl font-bold mb-3 bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent">
               Marty McGee
             </h1>
             <p className="text-lg lg:text-xl mb-6 text-white/90">
-              Musician • Developer • 3D Artist • Gardener • Broadcaster
+              Music • Development • 3D Art • Gardening • Broadcasting
             </p>
             
             {/* Hero CTA Buttons - Horizontal layout */}
