@@ -64,6 +64,7 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.184.1",
     "autoprefixer": "^10.4.16",
+    "axios": "^1.18.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "drizzle-kit": "^0.31.9",
     "tailwindcss": "^4",
