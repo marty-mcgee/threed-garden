@@ -1,6 +1,6 @@
 # Project Context – threed-garden-neon
 
-**Last Updated: June 3, 2026 @ 10:30am PST**
+**Last Updated: June 23, 2026 @ 09:30am PST**
 
 ## 🧱 Tech Stack
 
@@ -10,6 +10,32 @@
 - Music Streaming: AWS S3
 - Deployment: Vercel
 - Package Manager: Bun
+
+
+## App Modules (Services)
+- Traffic
+- ThreeD
+- Music
+
+
+## 🗄️ Database Schema (Key Tables for all Modules)
+
+| Table | Purpose |
+|-------|---------|
+| `api_request_logs` | API monitoring |
+| `traffic_chp_cad_incidents` | Live CHP incidents |
+| `traffic_chp_cad_centers` | CHP communication centers |
+| `traffic_chp_collisions` | Historical collisions |
+| `traffic_lane_closures` | Caltrans lane closures |
+| `traffic_bay_area_traffic_events` | 511.org events |
+| `traffic_cctv_cameras` | Traffic cameras |
+| `traffic_calfire_incidents` | Wildfire incidents from CalFire API |
+| `music_albums` | Album metadata |
+| `music_tracks` | Track metadata |
+| `music_links` | Independent links |
+| `music_album_links` | Album-track-link associations |
+| `music_polling_logs` | Polling service logs |
+
 
 ## 📡 Data Sources
 
@@ -22,15 +48,48 @@
 | Caltrans CCTV | Traffic cameras | Official JSON API | ✅ Working |
 | CalFire | Wildfire incidents | Official JSON API | ✅ Working |
 
+
+## 🔧 API Routes
+
+### Utility Endpoints
+- `/api/*/poll?action=poll` - Manual trigger polling
+- `/api/*/poll?action=stats` - Get poll statistics
+- `/api/*/debug` - Debug endpoints for testing
+- `/api/*/cron` - CRON endpoints for CRON jobs and Vercel
+- `/api/*/seed` - Seed endpoints for populating db initially
+
+### Main Data Endpoints
+
+| Endpoint | Parameters | Description |
+|----------|------------|-------------|
+| `/api/traffic/bay-area-511` | `?showAll=true` | 511.org events (all Bay Area) |
+| `/api/traffic/caltrans/closures/raw` | `?showAll=true` | Lane closures (District 1 by default) |
+| `/api/traffic/chp-cad` | - | Live CHP incidents (Ukiah/Humboldt only) |
+| `/api/traffic/chp-historical/collisions` | `?showAll=true` | Historical collisions (local counties by default) |
+| `/api/traffic/calfire` | `?showAll=true` | Wildfire incidents (active only by default) |
+
+### Polling Endpoints
+
+| Endpoint | Schedule | Description |
+|----------|----------|-------------|
+| `/api/traffic/bay-area-511/cron` | Every 30 min | Polls 511.org API |
+| `/api/traffic/caltrans/cron` | Every 30 min | Polls Caltrans CWWP2 API |
+| `/api/traffic/chp-cad/cron` | Every 5 min | Scrapes CHP CAD page |
+| `/api/traffic/chp-historical/cron` | Once daily | Polls CKAN API |
+| `/api/traffic/calfire/cron` | Every 30 min | Polls CalFire API (active only) |
+
+
+
 ## 🎵 Music Module
 
 ### Overview
 Complete music streaming and library management system with prominent media player, album/track CRUD, and AWS S3 integration.
 
 ### Tech Stack (Music Specific)
-- **Storage:** AWS S3 (public bucket for MP3 files)
+- **Storage:** AWS S3 (public bucket for MP3|WAV|PNG|JPG|GLB|FBX|OBJ files)
+- **Storage:** Vercel Blob (public blobs for any media files)
 - **Authentication:** Better Auth (existing user sessions)
-- **UI:** shadcn/ui (Slider, Progress, Dialog, Tabs)
+- **UI:** shadcn/ui (Slider, Progress, Dialog, Tabs, Cards, ...)
 
 ### Music Database Schema
 
@@ -49,7 +108,7 @@ Complete music streaming and library management system with prominent media play
 - `music_link_status`: active, inactive, pending, expired
 - `music_polling_type`: metadata, stats, sync
 
-### Music Dashboard Pages
+### Music Dashboard + Admin Pages
 
 | Page | Route | Features |
 |------|-------|----------|
@@ -103,6 +162,14 @@ Complete music streaming and library management system with prominent media play
 - `music_tracks_album_id_idx` (allow multiple tracks per album)
 - `music_links_user_id_idx` (allow multiple links per user)
 
+
+
+
+
+
+
+
+
 ## 🗺️ Main Dashboard (/dashboard)
 
 ### Layer Toggle Cards
@@ -135,11 +202,11 @@ The main dashboard features color-coded layer toggle cards that control map mark
 
 | Page | Route | Features |
 |------|-------|----------|
-| 511.org | `/dashboard/511org` | Mendocino filter, expandable rows, map view |
-| Caltrans | `/dashboard/caltrans` | District filter, closure details, map view |
-| CHP Live | `/dashboard/chp-live` | Type filter, incident details, map view |
-| CHP Historical | `/dashboard/chp-historical` | Severity/year filters, collision stats, map view |
-| CalFire | `/dashboard/calfire` | County/status filters, fire stats, map view, pagination, show inactive toggle |
+| 511.org | `/dashboard/traffic/511org` | Mendocino filter, expandable rows, map view |
+| Caltrans | `/dashboard/traffic/caltrans` | District filter, closure details, map view |
+| CHP Live | `/dashboard/traffic/chp-live` | Type filter, incident details, map view |
+| CHP Historical | `/dashboard/traffic/chp-historical` | Severity/year filters, collision stats, map view |
+| CalFire | `/dashboard/traffic/calfire` | County/status filters, fire stats, map view, pagination, show inactive toggle |
 
 ### Common Dashboard Patterns
 - Expandable table rows - click row to see full details
@@ -148,53 +215,46 @@ The main dashboard features color-coded layer toggle cards that control map mark
 - Responsive design with Tailwind CSS
 - Consistent card layouts using shadcn/ui components
 
-## 🔧 API Routes
 
-### Main Data Endpoints
 
-| Endpoint | Parameters | Description |
-|----------|------------|-------------|
-| `/api/caltrans/closures/raw` | `?showAll=true` | Lane closures (District 1 by default) |
-| `/api/bay-area-511` | `?showAll=true` | 511.org events (all Bay Area) |
-| `/api/chp-cad` | - | Live CHP incidents (Ukiah/Humboldt only) |
-| `/api/chp-historical/collisions` | `?showAll=true` | Historical collisions (local counties by default) |
-| `/api/dashboard` | `?showAll=true&historical=true` | Unified endpoint for main dashboard |
-| `/api/calfire` | `?showAll=true` | Wildfire incidents (active only by default) |
 
-### Polling Endpoints
 
-| Endpoint | Schedule | Description |
-|----------|----------|-------------|
-| `/api/bay-area-511/cron` | Once daily | Polls 511.org API |
-| `/api/caltrans/cron` | Once daily | Polls Caltrans CWWP2 API |
-| `/api/chp-cad/cron` | Once daily | Scrapes CHP CAD page |
-| `/api/chp-historical/cron` | Once daily | Polls CKAN API |
-| `/api/calfire/cron` | Every 30 min | Polls CalFire API (active only) |
 
-### Utility Endpoints
-- `/api/*/poll?action=poll` - Manual trigger polling
-- `/api/*/poll?action=stats` - Get poll statistics
-- `/api/*/debug` - Debug endpoints for testing
-- `/api/*/cron` - CRON endpoints for CRON jobs and Vercel
-- `/api/*/seed` - Seed endpoints for populating db initially
 
-## 🗄️ Database Schema (Key Tables)
 
-| Table | Purpose |
-|-------|---------|
-| `chp_cad_incidents` | Live CHP incidents |
-| `chp_cad_centers` | CHP communication centers |
-| `chp_collisions` | Historical collisions |
-| `lane_closures` | Caltrans lane closures |
-| `bay_area_traffic_events` | 511.org events |
-| `cctv_cameras` | Traffic cameras |
-| `api_request_logs` | API monitoring |
-| `calfire_incidents` | Wildfire incidents from CalFire API |
-| `music_albums` | Album metadata |
-| `music_tracks` | Track metadata |
-| `music_links` | Independent links |
-| `music_album_links` | Album-track-link associations |
-| `music_polling_logs` | Polling service logs |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 🎨 UI Components (shadcn/ui)
 
@@ -870,35 +930,24 @@ our Complete Music Platform - Final Summary
 Player
 
     Prominent 2-column layout with large album art
-
     Real waveform visualization with purple gradient progress
-
     Tabbed interface: Track List | Links | Media Gallery
-
     Smart auto-play logic (no autoplay on load, auto-next track/album)
-
     Keyboard shortcuts (Space, arrows, N/P)
-
     Volume control with mute toggle
 
 Admin
 
     Albums - CRUD with sort order, public/private toggle
-
     Tracks - MP3 upload, duration extraction, bulk upload
-
     Links - Associate with albums, type classification
-
     Media - Image upload to Vercel Blob, primary flag, lightbox gallery
 
 Data Flow
 
     Albums load with all relations (tracks, links, media)
-
     First album loads but stays paused
-
     User clicks play to start listening
-
     Seamless auto-advance through tracks and albums
 
 What You've Built
@@ -908,15 +957,471 @@ You now have a professional-grade music streaming platform that would be perfect
 Is there anything else you'd like to add or refine? Some possibilities:
 
     Playlist creation for users
-
     Search functionality across albums/tracks
-
     Social sharing features
-
     Download options for purchased music
-
     Lyrics display synchronized with playback
 
 Great work on this entire project! 🚀🎵
+
+---
+
+## Current App File Structure
+
+marty@NucBoxK10:~/marty-mcgee-neon$ tree -r ./src
+./src
+├── lib
+│   ├── utils
+│   │   ├── upload.ts
+│   │   ├── locationCoords.ts
+│   │   ├── index.ts
+│   │   └── cityGeocoder.ts
+│   ├── types
+│   │   ├── traffic.ts
+│   │   ├── threed.ts
+│   │   ├── music.ts
+│   │   └── app.ts
+│   ├── services
+│   │   ├── traffic
+│   │   │   ├── TravelTimesPoller.ts
+│   │   │   ├── CaltransPoller.ts
+│   │   │   ├── CaltransPoller-info.ts
+│   │   │   ├── CalFirePoller.ts
+│   │   │   ├── CHPPoller.ts
+│   │   │   ├── CHPCADPoller.ts
+│   │   │   ├── CCTVPoller.ts
+│   │   │   └── BayArea511Poller.ts
+│   │   ├── threed
+│   │   │   ├── WeatherPoller.ts
+│   │   │   ├── PlantModelMapping.ts
+│   │   │   ├── PlantDataPoller.ts
+│   │   │   └── FarmBotPoller.ts
+│   │   ├── music
+│   │   │   ├── S3.ts
+│   │   │   └── MusicPoller.ts
+│   │   ├── index.ts
+│   │   └── app
+│   │       └── MasterDataService.ts
+│   ├── scripts
+│   ├── schema
+│   │   ├── traffic
+│   │   ├── threed
+│   │   ├── music
+│   │   └── index.ts
+│   ├── db
+│   │   └── client.ts
+│   ├── data
+│   │   ├── traffic
+│   │   │   └── seed.ts
+│   │   ├── threed
+│   │   │   └── plants.ts
+│   │   └── music
+│   │       ├── seed.ts
+│   │       ├── seed-simple.ts
+│   │       ├── seed-from-json.ts
+│   │       ├── seed-data.json
+│   │       └── music.ts
+│   └── auth
+│       ├── server.ts
+│       ├── minimal-server.ts
+│       └── client.ts
+├── components
+│   ├── ui
+│   │   ├── toast.tsx
+│   │   ├── textarea.tsx
+│   │   ├── tabs.tsx
+│   │   ├── table.tsx
+│   │   ├── slider.tsx
+│   │   ├── skeleton.tsx
+│   │   ├── separator.tsx
+│   │   ├── select.tsx
+│   │   ├── scroll-area.tsx
+│   │   ├── progress.tsx
+│   │   ├── navbar.tsx
+│   │   ├── modal.tsx
+│   │   ├── modal-confirm.tsx
+│   │   ├── loading-spinner.tsx
+│   │   ├── label.tsx
+│   │   ├── input.tsx
+│   │   ├── dropdown-menu.tsx
+│   │   ├── dialog.tsx
+│   │   ├── card.tsx
+│   │   ├── button.tsx
+│   │   └── badge.tsx
+│   ├── threed
+│   │   ├── WeatherEffects.tsx
+│   │   ├── ThreeDGarden.tsx
+│   │   ├── ThreeDGarden-working.tsx
+│   │   ├── ThreeDGarden-working-3-base.tsx
+│   │   ├── ThreeDGarden-working-2.tsx
+│   │   ├── PlantModels.tsx
+│   │   ├── PlantModels-working.tsx
+│   │   ├── ModelPreview.tsx
+│   │   ├── GardenViewer.tsx
+│   │   ├── GardenPlant.tsx
+│   │   ├── GardenPlant-working.tsx
+│   │   ├── GardenPlant-original.tsx
+│   │   ├── GardenGround.tsx
+│   │   ├── GardenCharacter.tsx
+│   │   ├── GardenBed.tsx
+│   │   ├── GLTFPlant.tsx
+│   │   ├── FloatingUI.tsx
+│   │   ├── FloatingUI copy.tsx
+│   │   └── AnimatedFBXPlant.tsx
+│   ├── themes
+│   │   ├── selector.tsx
+│   │   └── provider.tsx
+│   ├── music
+│   │   ├── WaveformVisualizer.tsx
+│   │   ├── MusicStats.tsx
+│   │   ├── MusicPlayer.tsx
+│   │   ├── MediaManager.tsx
+│   │   ├── MediaGallery.tsx
+│   │   ├── LinksManager.tsx
+│   │   ├── AlbumGrid.tsx
+│   │   └── AdminMusicManager.tsx
+│   ├── map
+│   │   ├── simpleMap.tsx
+│   │   ├── masterMap.tsx
+│   │   └── leafletMap.tsx
+│   └── dashboard
+│       ├── CaltransClosures.tsx
+│       ├── CHPLiveIncidents.tsx
+│       ├── CHPHistorical.tsx
+│       └── BayArea511.tsx
+└── app
+    ├── sign-up
+    │   └── page.tsx
+    ├── sign-in
+    │   └── page.tsx
+    ├── page.tsx
+    ├── layout.tsx
+    ├── globals.css
+    ├── fonts.js
+    ├── favicon.ico
+    ├── dashboard
+    │   ├── traffic
+    │   │   ├── page.tsx
+    │   │   ├── chp-live
+    │   │   │   ├── page.tsx
+    │   │   │   └── chpLiveContent.tsx
+    │   │   ├── chp-historical
+    │   │   │   ├── page.tsx
+    │   │   │   └── chpHistoricalContent.tsx
+    │   │   ├── caltrans
+    │   │   │   ├── page.tsx
+    │   │   │   ├── closure
+    │   │   │   │   └── [id]
+    │   │   │   │       └── page.tsx
+    │   │   │   └── caltransContent.tsx
+    │   │   ├── calfire
+    │   │   │   ├── page.tsx
+    │   │   │   └── calfireContent.tsx
+    │   │   └── 511org
+    │   │       ├── page.tsx
+    │   │       └── 511orgContent.tsx
+    │   ├── threed
+    │   │   ├── weather
+    │   │   │   ├── weatherContent.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── tasks
+    │   │   │   ├── tasksContent.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── plants
+    │   │   │   ├── plantsContent.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── plantings
+    │   │   │   ├── plantingsContent.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── plant-models
+    │   │   │   └── page.tsx
+    │   │   ├── page.tsx
+    │   │   ├── models
+    │   │   │   ├── page.tsx
+    │   │   │   └── modelsContent.tsx
+    │   │   ├── logs
+    │   │   │   ├── page.tsx
+    │   │   │   └── logsContent.tsx
+    │   │   ├── harvests
+    │   │   │   ├── page.tsx
+    │   │   │   └── harvestsContent.tsx
+    │   │   ├── garden
+    │   │   │   ├── page.tsx
+    │   │   │   ├── page-working.tsx
+    │   │   │   └── analytics
+    │   │   │       └── page.tsx
+    │   │   ├── farmbots
+    │   │   │   ├── page.tsx
+    │   │   │   └── farmbotsContent.tsx
+    │   │   ├── characters
+    │   │   │   ├── page.tsx
+    │   │   │   └── charactersContent.tsx
+    │   │   └── beds
+    │   │       ├── page.tsx
+    │   │       └── bedsContent.tsx
+    │   ├── page.tsx
+    │   ├── music
+    │   │   ├── page.tsx
+    │   │   ├── musicContent.tsx
+    │   │   ├── layout-potential.tsx
+    │   │   ├── album
+    │   │   │   └── [id]
+    │   │   │       └── page.tsx
+    │   │   └── admin
+    │   │       ├── tracks
+    │   │       │   ├── page.tsx
+    │   │       │   └── [id]
+    │   │       │       └── page.tsx
+    │   │       ├── page.tsx
+    │   │       ├── media
+    │   │       │   └── page.tsx
+    │   │       ├── links
+    │   │       │   └── page.tsx
+    │   │       ├── layout.tsx
+    │   │       └── albums
+    │   │           ├── page.tsx
+    │   │           └── [id]
+    │   │               └── page.tsx
+    │   └── layout.tsx
+    ├── api
+    │   ├── traffic
+    │   │   ├── chp-historical
+    │   │   │   ├── seed
+    │   │   │   │   └── route.ts
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── debug
+    │   │   │   │   └── route.ts
+    │   │   │   ├── cron
+    │   │   │   │   └── route.ts
+    │   │   │   └── collisions
+    │   │   │       ├── stats
+    │   │   │       │   └── route.ts
+    │   │   │       └── route.ts
+    │   │   ├── chp-cad
+    │   │   │   ├── seed
+    │   │   │   │   └── chp-cad-centers
+    │   │   │   │       ├── route.ts
+    │   │   │   │       └── data
+    │   │   │   │           └── chpCadCenters.ts
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── cron
+    │   │   │   │   └── route.ts
+    │   │   │   └── chp-cad-centers
+    │   │   │       └── route.ts
+    │   │   ├── cctv
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── caltrans
+    │   │   │   ├── seed
+    │   │   │   │   └── route.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── cron
+    │   │   │   │   └── route.ts
+    │   │   │   └── closures
+    │   │   │       ├── update-coordinates
+    │   │   │       │   └── route.ts
+    │   │   │       ├── summary
+    │   │   │       │   ├── route.ts
+    │   │   │       │   └── debug
+    │   │   │       │       └── route.ts
+    │   │   │       ├── stats
+    │   │   │       │   └── route.ts
+    │   │   │       ├── simple
+    │   │   │       │   └── route.ts
+    │   │   │       ├── search
+    │   │   │       │   └── route.ts
+    │   │   │       ├── route.ts
+    │   │   │       ├── raw
+    │   │   │       │   └── route.ts
+    │   │   │       ├── export
+    │   │   │       │   └── route.ts
+    │   │   │       ├── add-test-coordinates
+    │   │   │       │   └── route.ts
+    │   │   │       └── [id]
+    │   │   │           └── route.ts
+    │   │   ├── calfire
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   │       └── route.ts
+    │   │   └── bay-area-511
+    │   │       ├── seed
+    │   │       │   └── route.ts
+    │   │       ├── route.ts
+    │   │       ├── poll
+    │   │       │   └── route.ts
+    │   │       ├── debug
+    │   │       │   └── route.ts
+    │   │       └── cron
+    │   │           └── route.ts
+    │   ├── threed
+    │   │   ├── weather
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── tasks
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── plants
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── plantings
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── models
+    │   │   │   ├── route.ts
+    │   │   │   └── [id]
+    │   │   │       ├── route.ts
+    │   │   │       └── files
+    │   │   │           ├── route.ts
+    │   │   │           └── [fileId]
+    │   │   │               └── route.ts
+    │   │   ├── logs
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   └── route.ts
+    │   │   ├── harvests
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── farmbots
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── debug
+    │   │   │   ├── cron
+    │   │   │   ├── commands
+    │   │   │   │   └── route.ts
+    │   │   │   └── [id]
+    │   │   │       └── water
+    │   │   │           ├── route.ts
+    │   │   │           └── move
+    │   │   │               └── route.ts
+    │   │   ├── characters
+    │   │   │   ├── stats
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   └── [id]
+    │   │   │       └── route.ts
+    │   │   ├── beds
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   └── analytics
+    │   │       └── route.ts
+    │   ├── music
+    │   │   ├── tracks
+    │   │   │   └── route.ts
+    │   │   ├── stream
+    │   │   │   └── [trackId]
+    │   │   │       └── route.ts
+    │   │   ├── stats
+    │   │   │   └── route.ts
+    │   │   ├── seed
+    │   │   │   └── route.ts
+    │   │   ├── route.ts
+    │   │   ├── poll
+    │   │   │   └── route.ts
+    │   │   ├── playback
+    │   │   │   └── track
+    │   │   │       └── route.ts
+    │   │   ├── media
+    │   │   │   └── route.ts
+    │   │   ├── links
+    │   │   │   └── route.ts
+    │   │   ├── cron
+    │   │   │   └── route.ts
+    │   │   ├── albums
+    │   │   │   └── route.ts
+    │   │   ├── album-links
+    │   │   │   └── route.ts
+    │   │   └── admin
+    │   │       └── stats
+    │   │           └── route.ts
+    │   ├── debug
+    │   │   ├── test
+    │   │   │   ├── verify
+    │   │   │   │   └── route.ts
+    │   │   │   ├── route.ts
+    │   │   │   ├── populate
+    │   │   │   │   └── route.ts
+    │   │   │   ├── cwwp2-status
+    │   │   │   │   └── route.ts
+    │   │   │   ├── caltrans
+    │   │   │   │   └── route.ts
+    │   │   │   └── add-more
+    │   │   │       └── route.ts
+    │   │   ├── schema-check
+    │   │   │   └── route.ts
+    │   │   ├── route.ts
+    │   │   ├── ids
+    │   │   │   └── route.ts
+    │   │   ├── full
+    │   │   │   └── route.ts
+    │   │   ├── database
+    │   │   │   └── route.ts
+    │   │   ├── compare
+    │   │   │   └── route.ts
+    │   │   └── api-structures
+    │   │       └── route.ts
+    │   ├── dashboard
+    │   │   ├── stats
+    │   │   │   └── route.ts
+    │   │   └── route.ts
+    │   ├── auth
+    │   │   ├── debug
+    │   │   │   └── route.ts
+    │   │   └── [...all]
+    │   │       └── route.ts
+    │   └── app
+    │       └── master-data
+    │           └── route.ts
+    └── admin
+        └── coordinates
+            └── page.tsx
+
+205 directories, 247 files
 
 ---

@@ -121,8 +121,18 @@ export default function ThreeDMasterDashboard() {
         console.log('📦 Raw characters data:', charsData);
         
         // Extract character objects from nested structure if needed
-        if (charsData && charsData.length > 0 && charsData[0].character) {
-          charsData = charsData.map((item: any) => item.character);
+        // ❌ BEFORE - Lost the model
+        // if (charsData && charsData.length > 0 && charsData[0].character) {
+        //   charsData = charsData.map((item: any) => item.character);
+        // }
+
+        // ✅ AFTER - Keeps the model
+        if (charsData && charsData.length > 0) {
+          charsData = charsData.map((item: any) => ({
+            ...(item.character || item),
+            model: item.model || null,
+            bed: item.bed || null
+          }));
         }
         
         console.log('📦 Processed characters:', charsData);

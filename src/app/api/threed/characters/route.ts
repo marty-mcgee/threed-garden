@@ -15,6 +15,9 @@ function safeEnumValue<T>(value: T | null | undefined, defaultValue: T): T {
 
 // GET /api/threed/characters - Fetch characters with optional filtering
 export async function GET(request: NextRequest) {
+  console.log('🚀 CHARACTERS API WAS CALLED!');
+  console.log('📋 Request URL:', request.url);
+  
   try {
     const searchParams = request.nextUrl.searchParams;
     const type = searchParams.get('type');
@@ -99,6 +102,16 @@ export async function GET(request: NextRequest) {
     } else {
       query = db.select().from(threedCharacters);
     }
+
+    // In your characters route.ts GET handler
+    console.log('🔍 Characters query result:', {
+      charactersFound: query.length,
+      sample: query[0] ? {
+        name: query[0].character?.name,
+        modelId: query[0].character?.modelId,
+        hasModelData: !!query[0].model
+      } : null
+    });
 
     // Apply filters
     if (type) query = query.where(eq(threedCharacters.type, type as any));
