@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-const SimpleMap = dynamic(() => import('@/components/map/simpleMap'), { ssr: false, loading: () => <div className="h-[400px] bg-muted flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div> });
+const SimpleMap = dynamic(() => import('@/components/traffic/map/simpleMap'), { ssr: false, loading: () => <div className="h-[400px] bg-muted flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div> });
 
 interface CHPIncident {
   id: number;

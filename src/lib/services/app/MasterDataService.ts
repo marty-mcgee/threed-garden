@@ -1,5 +1,5 @@
 // src/lib/services/MasterDataService.ts
-import { MasterMapEvent } from '@/components/map/masterMap';
+import { MasterMapEvent } from '@/components/traffic/map/masterMap';
 
 export interface MasterData {
   events: MasterMapEvent[];

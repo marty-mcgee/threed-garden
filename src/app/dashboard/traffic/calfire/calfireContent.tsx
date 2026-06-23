@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const SimpleMap = dynamic(() => import('@/components/map/simpleMap'), {
+const SimpleMap = dynamic(() => import('@/components/traffic/map/simpleMap'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-[400px] rounded-xl bg-muted flex items-center justify-center">
