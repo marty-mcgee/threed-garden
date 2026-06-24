@@ -5,105 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
-import * as Tabs from '@radix-ui/react-tabs';
 import { 
-  Bird, Flame, Activity, Sun, Moon, MapPin, AlertTriangle, BarChart3, Radio, Car, Carrot, ScanEye,
-  Gauge, TrendingUp, Droplets, Sprout, Box, Leaf, Apple, Cpu, Calendar, Image, BedDouble
+  Sun, Moon, Radio
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-
-export const dynamic = 'force-dynamic';
-
-// Music Tabs
-const musicTabs = [
-  { path: '/dashboard/music', name: 'Overview', icon: MapPin, color: 'orange' },
-  { path: '/dashboard/music/albums', name: 'Albums', icon: MapPin, color: 'orange' },
-  { path: '/dashboard/music/tracks', name: 'Tracks', icon: MapPin, color: 'orange' },
-]
-
-// Traffic Services Tabs
-const trafficTabs = [
-  { path: '/dashboard/traffic', name: 'Overview', icon: MapPin, color: 'blue' },
-  { path: '/dashboard/traffic/chp-live', name: 'CHP Live', icon: AlertTriangle, color: 'red' },
-  { path: '/dashboard/traffic/511org', name: 'Bay Area 511', icon: Radio, color: 'emerald' },
-  { path: '/dashboard/traffic/caltrans', name: 'Caltrans', icon: Car, color: 'blue' },
-  { path: '/dashboard/traffic/calfire', name: 'CalFire', icon: Flame, color: 'orange' },
-  { path: '/dashboard/traffic/chp-historical', name: 'CHP Historical', icon: BarChart3, color: 'purple' },
-];
-
-// ThreeD Garden Tabs
-const threedTabs = [
-  { path: '/dashboard/threed', name: 'Dashboard', icon: ScanEye, color: 'green' },
-  { path: '/dashboard/threed/plants', name: 'Plants', icon: Leaf, color: 'green' },
-  { path: '/dashboard/threed/models', name: 'Models', icon: Box, color: 'yellow' },
-  { path: '/dashboard/threed/characters', name: 'Characters', icon: Box, color: 'cyan' },
-  { path: '/dashboard/threed/beds', name: 'Beds', icon: BedDouble, color: 'blue' },
-  { path: '/dashboard/threed/plantings', name: 'Plantings', icon: Sprout, color: 'emerald' },
-  { path: '/dashboard/threed/tasks', name: 'Tasks', icon: Calendar, color: 'orange' },
-  { path: '/dashboard/threed/harvests', name: 'Harvests', icon: Apple, color: 'red' },
-  { path: '/dashboard/threed/weather', name: 'Weather', icon: Droplets, color: 'cyan' },
-  { path: '/dashboard/threed/farmbots', name: 'FarmBots', icon: Cpu, color: 'purple' },
-  { path: '/dashboard/threed/garden/analytics', name: 'Analytics', icon: TrendingUp, color: 'amber' },
-];
-
-const getTabColor = (color: string) => {
-  const colors: Record<string, string> = {
-    blue: 'data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-950/30 data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-400',
-    red: 'data-[state=active]:bg-red-50 dark:data-[state=active]:bg-red-950/30 data-[state=active]:text-red-700 dark:data-[state=active]:text-red-400',
-    emerald: 'data-[state=active]:bg-emerald-50 dark:data-[state=active]:bg-emerald-950/30 data-[state=active]:text-emerald-700 dark:data-[state=active]:text-emerald-400',
-    orange: 'data-[state=active]:bg-orange-50 dark:data-[state=active]:bg-orange-950/30 data-[state=active]:text-orange-700 dark:data-[state=active]:text-orange-400',
-    purple: 'data-[state=active]:bg-purple-50 dark:data-[state=active]:bg-purple-950/30 data-[state=active]:text-purple-700 dark:data-[state=active]:text-purple-400',
-    green: 'data-[state=active]:bg-green-50 dark:data-[state=active]:bg-green-950/30 data-[state=active]:text-green-700 dark:data-[state=active]:text-green-400',
-    cyan: 'data-[state=active]:bg-cyan-50 dark:data-[state=active]:bg-cyan-950/30 data-[state=active]:text-cyan-700 dark:data-[state=active]:text-cyan-400',
-    amber: 'data-[state=active]:bg-amber-50 dark:data-[state=active]:bg-amber-950/30 data-[state=active]:text-amber-700 dark:data-[state=active]:text-amber-400',
-    yellow: 'data-[state=active]:bg-yellow-50 dark:data-[state=active]:bg-yellow-950/30 data-[state=active]:text-yellow-700 dark:data-[state=active]:text-yellow-400',
-  };
-  return colors[color] || colors.blue;
-};
-
-// Tab Group Component
-function TabGroup({ tabs, currentPath, title, icon: Icon }: { 
-  tabs: typeof trafficTabs; 
-  currentPath: string; 
-  title: string;
-  icon: React.ElementType;
-}) {
-  const isActive = tabs.some(tab => currentPath === tab.path || currentPath.startsWith(tab.path + '/'));
-  
-  return (
-    <div className="mb-4">
-      <div className="flex items-center gap-2 mb-2 px-1">
-        <Icon className="w-4 h-4 text-muted-foreground" />
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</h2>
-        <div className="flex-1 h-px bg-border" />
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {tabs.map((tab) => (
-          <Tabs.Trigger
-            key={tab.path}
-            value={tab.path}
-            asChild
-            className={`
-              px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
-              text-muted-foreground hover:text-foreground hover:bg-muted
-              data-[state=active]:shadow-sm data-[state=active]:ring-1 data-[state=active]:ring-border
-              ${getTabColor(tab.color)}
-            `}
-          >
-            <Link href={tab.path} className="flex items-center gap-2">
-              <tab.icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{tab.name}</span>
-              {currentPath === tab.path && (
-                <span className="w-1.5 h-1.5 rounded-full bg-current ml-1" />
-              )}
-            </Link>
-          </Tabs.Trigger>
-        ))}
-      </div>
-    </div>
-  );
-}
+import NavDropdown from '@/components/navigation/NavDropdown';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -117,10 +23,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!mounted) {
     return <div className="min-h-screen bg-background" />;
   }
-
-  // Determine active tab for root selection
-  const isTrafficActive = trafficTabs.some(tab => pathname === tab.path || pathname.startsWith(tab.path + '/'));
-  const isGardenActive = threedTabs.some(tab => pathname === tab.path || pathname.startsWith(tab.path + '/'));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
@@ -147,12 +49,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             
             {/* Right side controls */}
             <div className="flex items-center gap-3">
-
-              {/* In your dashboard layout or navigation component */}
-              {/* <Link href="/dashboard/music/admin" className="text-sm hover:text-primary">
-                - Manage Music -
-              </Link> */}
-
               {/* Status Indicator */}
               <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/30">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -172,6 +68,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <Moon className="w-4 h-4" />
                 )}
               </Button>
+
+              {/* Navigation Dropdown */}
+              <NavDropdown />
             </div>
           </div>
         </div>
@@ -179,38 +78,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-        {/* Tab Navigation */}
-        <Tabs.Root value={pathname} className="mb-6">
-          <Tabs.List className="flex flex-col space-y-4">
-            {/* Music Section */}
-            <TabGroup 
-              tabs={musicTabs} 
-              currentPath={pathname} 
-              // title="Music" 
-              title="" 
-              icon={Activity}
-            />
-
-            {/* Traffic Services Section */}
-            <TabGroup 
-              tabs={trafficTabs} 
-              currentPath={pathname} 
-              // title="Traffic Services" 
-              title="" 
-              icon={Car}
-            />
-            
-            {/* ThreeD Garden Section */}
-            <TabGroup 
-              tabs={threedTabs} 
-              currentPath={pathname} 
-              // title="ThreeD Garden" 
-              title="" 
-              icon={Carrot}
-            />
-          </Tabs.List>
-        </Tabs.Root>
-
         {/* Page Content */}
         <div className="rounded-2xl bg-background/50 backdrop-blur-sm">
           {children}
@@ -218,12 +85,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         
         {/* Footer */}
         <footer className="mt-8 py-4 text-center text-xs text-muted-foreground border-t">
-          {/* <p>
-            🌱 ThreeD Garden • 🚗 Traffic Monitor • 🤖 FarmBot Integration
-          </p> */}
-          {/* <p className="mt-1">
-            Data sources: OpenWeatherMap, FarmBot API
-          </p> */}
           <p className="mt-1">
             Built by Marty McGee with Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3Fiber
           </p>
