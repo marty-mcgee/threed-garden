@@ -90,7 +90,7 @@ export async function GET() {
       success: true,
       message: 'Data already exists in database',
       record_count: recordCount,
-      note: recordCount > 0 ? 'Run /api/caltrans/poll?action=poll to fetch fresh data from Caltrans' : null
+      note: recordCount > 0 ? 'Run /api/traffic/caltrans/poll?action=poll to fetch fresh data from Caltrans' : null
     });
     
   } catch (error) {

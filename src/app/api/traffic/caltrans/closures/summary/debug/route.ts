@@ -1,4 +1,4 @@
-// app/api/caltrans/closures/summary/debug/route.ts
+// app/api/traffic/caltrans/closures/summary/debug/route.ts
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 

@@ -1,4 +1,4 @@
-// app/api/caltrans/closures/update-coordinates/route.ts
+// app/api/traffic/caltrans/closures/update-coordinates/route.ts
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 

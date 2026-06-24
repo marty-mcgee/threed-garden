@@ -109,7 +109,7 @@ export default function BayArea511Content() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/bay-area-511?limit=2000&showAll=true`);
+      const response = await fetch(`/api/traffic/bay-area-511?limit=2000&showAll=true`);
       const data = await response.json();
       if (data.success) {
         setAllEvents(data.data);
@@ -127,7 +127,7 @@ export default function BayArea511Content() {
   const pollData = async () => {
     setIsPolling(true);
     try {
-      const response = await fetch('/api/bay-area-511/poll?action=poll');
+      const response = await fetch('/api/traffic/bay-area-511/poll?action=poll');
       const data = await response.json();
       if (data.success) {
         await fetchData();

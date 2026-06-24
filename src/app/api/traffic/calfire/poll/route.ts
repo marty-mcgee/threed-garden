@@ -1,4 +1,4 @@
-// src/app/api/calfire/poll/route.ts
+// src/app/api/traffic/calfire/poll/route.ts
 import { NextResponse } from 'next/server';
 import { CalFirePoller } from '@/lib/services/traffic/CalFirePoller';
 

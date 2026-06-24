@@ -1,4 +1,4 @@
-// src/app/api/chp-historical/collisions/route.ts
+// src/app/api/traffic/chp-historical/collisions/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
 import { chpCollisions } from '@/lib/schema';

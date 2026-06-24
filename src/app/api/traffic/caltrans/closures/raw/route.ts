@@ -1,4 +1,4 @@
-// src/app/api/caltrans/closures/raw/route.ts
+// src/app/api/traffic/caltrans/closures/raw/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
 import { laneClosures } from '@/lib/schema';

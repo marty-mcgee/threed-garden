@@ -1,4 +1,4 @@
-// src/app/api/calfire/route.ts
+// src/app/api/traffic/calfire/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
 import { calfireIncidents } from '@/lib/schema';

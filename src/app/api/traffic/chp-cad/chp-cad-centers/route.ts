@@ -1,4 +1,4 @@
-// src/app/api/chp-cad-centers/route.ts
+// src/app/api/traffic/chp-cad-centers/route.ts
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';

@@ -459,11 +459,11 @@ bun run src/lib/scripts/seed-threed-plants.ts
 Manual Polling - Traffic Services
 bash
 
-curl "http://localhost:3333/api/chp-cad/poll?action=poll"
-curl "http://localhost:3333/api/chp-historical/poll?action=poll&limit=500&startDate=2026-01-01"
-curl "http://localhost:3333/api/bay-area-511/poll?action=poll"
-curl "http://localhost:3333/api/caltrans/poll"
-curl "http://localhost:3333/api/calfire/poll?action=poll"
+curl "http://localhost:3333/api/traffic/chp-cad/poll?action=poll"
+curl "http://localhost:3333/api/traffic/chp-historical/poll?action=poll&limit=500&startDate=2026-01-01"
+curl "http://localhost:3333/api/traffic/bay-area-511/poll?action=poll"
+curl "http://localhost:3333/api/traffic/caltrans/poll"
+curl "http://localhost:3333/api/traffic/calfire/poll?action=poll"
 
 Manual Polling - ThreeD Services
 bash
@@ -508,18 +508,18 @@ curl -X POST "http://localhost:3333/api/threed/farmbots/1/move" \
 Test Cron Jobs Locally
 bash
 
-curl "http://localhost:3333/api/bay-area-511/cron"
-curl "http://localhost:3333/api/caltrans/cron"
-curl "http://localhost:3333/api/chp-cad/cron"
-curl "http://localhost:3333/api/chp-historical/cron"
-curl "http://localhost:3333/api/calfire/cron"
+curl "http://localhost:3333/api/traffic/bay-area-511/cron"
+curl "http://localhost:3333/api/traffic/caltrans/cron"
+curl "http://localhost:3333/api/traffic/chp-cad/cron"
+curl "http://localhost:3333/api/traffic/chp-historical/cron"
+curl "http://localhost:3333/api/traffic/calfire/cron"
 curl "http://localhost:3333/api/music/cron"
 
 Production Health Checks
 bash
 
 curl "https://threed-garden-neon.vercel.app/api/threed/weather/poll"
-curl "https://threed-garden-neon.vercel.app/api/calfire/poll?action=stats"
+curl "https://threed-garden-neon.vercel.app/api/traffic/calfire/poll?action=stats"
 curl "https://threed-garden-neon.vercel.app/api/music?action=stats"
 curl "https://threed-garden-neon.vercel.app/api/debug/db-test"
 

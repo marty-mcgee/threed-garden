@@ -1,4 +1,4 @@
-// src/app/api/chp-cad/cron/route.ts
+// src/app/api/traffic/chp-cad/cron/route.ts
 import { NextResponse } from 'next/server';
 import { CHPCADPoller } from '@/lib/services/traffic/CHPCADPoller';
 

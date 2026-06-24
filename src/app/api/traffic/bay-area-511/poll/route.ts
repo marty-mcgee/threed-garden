@@ -1,4 +1,4 @@
-// src/app/api/bay-area-511/poll/route.ts
+// src/app/api/traffic/bay-area-511/poll/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
 import { sql } from 'drizzle-orm';

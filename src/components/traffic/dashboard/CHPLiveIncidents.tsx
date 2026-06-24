@@ -10,7 +10,7 @@ export default function CHPLiveIncidents() {
     setIsPolling(true);
     try {
       // TODO: Implement CHP CAD poller
-      // const response = await fetch('/api/chp-cad/poll?action=poll');
+      // const response = await fetch('/api/traffic/chp-cad/poll?action=poll');
       alert('CHP Live Incidents - Coming soon! This feature is currently being developed.');
     } catch (error) {
       alert('Poll failed: ' + (error instanceof Error ? error.message : 'Unknown error'));

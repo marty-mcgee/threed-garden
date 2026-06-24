@@ -90,7 +90,7 @@ export default function CHPHistoricalContent() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/chp-historical/collisions?limit=2000`);
+      const response = await fetch(`/api/traffic/chp-historical/collisions?limit=2000`);
       const data = await response.json();
       if (data.success) {
         setAllData(data.data);
@@ -108,7 +108,7 @@ export default function CHPHistoricalContent() {
   const pollData = async () => {
     setIsPolling(true);
     try {
-      const response = await fetch('/api/chp-historical/poll?action=poll&limit=500');
+      const response = await fetch('/api/traffic/chp-historical/poll?action=poll&limit=500');
       const data = await response.json();
       if (data.success) {
         await fetchData();

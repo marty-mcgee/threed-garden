@@ -126,7 +126,7 @@ export default function CalFireContent() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/calfire?limit=500&showAll=${showInactive}`);
+      const response = await fetch(`/api/traffic/calfire?limit=500&showAll=${showInactive}`);
       const data = await response.json();
       if (data.success) {
         setAllIncidents(data.data);
@@ -144,7 +144,7 @@ export default function CalFireContent() {
   const pollData = async () => {
     setIsPolling(true);
     try {
-      const response = await fetch('/api/calfire/poll?action=poll');
+      const response = await fetch('/api/traffic/calfire/poll?action=poll');
       const data = await response.json();
       if (data.success) {
         await fetchData();

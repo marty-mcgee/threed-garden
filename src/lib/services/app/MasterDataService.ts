@@ -17,10 +17,10 @@ class MasterDataService {
     
     // Fetch data from all services in parallel
     const [caltransRes, bayAreaRes, chpLiveRes, chpHistoricalRes] = await Promise.all([
-      fetch('/api/caltrans/closures/raw').catch(() => ({ json: () => ({ data: [] }) })),
-      fetch('/api/bay-area-511?limit=1000').catch(() => ({ json: () => ({ data: [] }) })),
-      fetch('/api/chp-cad?limit=1000').catch(() => ({ json: () => ({ data: [] }) })),
-      fetch('/api/chp-historical/collisions?limit=1000').catch(() => ({ json: () => ({ data: [] }) })),
+      fetch('/api/traffic/caltrans/closures/raw').catch(() => ({ json: () => ({ data: [] }) })),
+      fetch('/api/traffic/bay-area-511?limit=1000').catch(() => ({ json: () => ({ data: [] }) })),
+      fetch('/api/traffic/chp-cad?limit=1000').catch(() => ({ json: () => ({ data: [] }) })),
+      fetch('/api/traffic/chp-historical/collisions?limit=1000').catch(() => ({ json: () => ({ data: [] }) })),
     ]);
     
     const caltransData = await caltransRes.json();

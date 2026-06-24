@@ -8,7 +8,7 @@ export default function CoordinatesAdmin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/caltrans/closures/update-coordinates?action=missing')
+    fetch('/api/traffic/caltrans/closures/update-coordinates?action=missing')
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -19,7 +19,7 @@ export default function CoordinatesAdmin() {
   }, []);
 
   const addCoordinates = async (closureId: number, lat: number, lng: number) => {
-    const response = await fetch('/api/caltrans/closures/update-coordinates', {
+    const response = await fetch('/api/traffic/caltrans/closures/update-coordinates', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ closure_id: closureId, latitude: lat, longitude: lng })

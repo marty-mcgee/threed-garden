@@ -80,21 +80,21 @@ The main dashboard features **color-coded layer toggle cards** that control map 
 ### Main Data Endpoints
 | Endpoint | Parameters | Description |
 |----------|------------|-------------|
-| `/api/caltrans/closures/raw` | `?showAll=true` | Lane closures (District 1 by default) |
-| `/api/bay-area-511` | `?showAll=true` | 511.org events (all Bay Area) |
-| `/api/chp-cad` | - | Live CHP incidents (Ukiah/Humboldt only) |
-| `/api/chp-historical/collisions` | `?showAll=true` | Historical collisions (local counties by default) |
+| `/api/traffic/caltrans/closures/raw` | `?showAll=true` | Lane closures (District 1 by default) |
+| `/api/traffic/bay-area-511` | `?showAll=true` | 511.org events (all Bay Area) |
+| `/api/traffic/chp-cad` | - | Live CHP incidents (Ukiah/Humboldt only) |
+| `/api/traffic/chp-historical/collisions` | `?showAll=true` | Historical collisions (local counties by default) |
 | `/api/dashboard` | `?showAll=true&historical=true` | Unified endpoint for main dashboard |
-| **`/api/calfire`** | **`?showAll=true`** | **Wildfire incidents (active only by default)** |
+| **`/api/traffic/calfire`** | **`?showAll=true`** | **Wildfire incidents (active only by default)** |
 
 ### Polling Endpoints
 | Endpoint | Schedule | Description |
 |----------|----------|-------------|
-| `/api/bay-area-511/cron` | Once daily | Polls 511.org API |
-| `/api/caltrans/cron` | Once daily | Polls Caltrans CWWP2 API |
-| `/api/chp-cad/cron` | Once daily | Scrapes CHP CAD page |
-| `/api/chp-historical/cron` | Once daily | Polls CKAN API |
-| **`/api/calfire/cron`** | **Every 30 min** | **Polls CalFire API (active only)** |
+| `/api/traffic/bay-area-511/cron` | Once daily | Polls 511.org API |
+| `/api/traffic/caltrans/cron` | Once daily | Polls Caltrans CWWP2 API |
+| `/api/traffic/chp-cad/cron` | Once daily | Scrapes CHP CAD page |
+| `/api/traffic/chp-historical/cron` | Once daily | Polls CKAN API |
+| **`/api/traffic/calfire/cron`** | **Every 30 min** | **Polls CalFire API (active only)** |
 
 ### Utility Endpoints
 - `/api/*/poll?action=poll` - Manual trigger polling
@@ -169,22 +169,22 @@ bun run db:migrate
 bun run db:push
 
 # Manual Polling
-curl "http://localhost:4444/api/chp-cad/poll?action=poll"
-curl "http://localhost:4444/api/chp-historical/poll?action=poll&limit=500&startDate=2026-01-01"
-curl "http://localhost:4444/api/bay-area-511/poll?action=poll"
-curl "http://localhost:4444/api/caltrans/poll"
+curl "http://localhost:4444/api/traffic/chp-cad/poll?action=poll"
+curl "http://localhost:4444/api/traffic/chp-historical/poll?action=poll&limit=500&startDate=2026-01-01"
+curl "http://localhost:4444/api/traffic/bay-area-511/poll?action=poll"
+curl "http://localhost:4444/api/traffic/caltrans/poll"
 
 # Check Stats
-curl "http://localhost:4444/api/chp-cad/poll?action=stats"
-curl "http://localhost:4444/api/chp-historical/collisions/stats"
-curl "http://localhost:4444/api/bay-area-511/poll?action=stats"
-curl "http://localhost:4444/api/caltrans/closures/stats"
+curl "http://localhost:4444/api/traffic/chp-cad/poll?action=stats"
+curl "http://localhost:4444/api/traffic/chp-historical/collisions/stats"
+curl "http://localhost:4444/api/traffic/bay-area-511/poll?action=stats"
+curl "http://localhost:4444/api/traffic/caltrans/closures/stats"
 
 # Test Cron Jobs Locally
-curl "http://localhost:4444/api/bay-area-511/cron"
-curl "http://localhost:4444/api/caltrans/cron"
-curl "http://localhost:4444/api/chp-cad/cron"
-curl "http://localhost:4444/api/chp-historical/cron"
+curl "http://localhost:4444/api/traffic/bay-area-511/cron"
+curl "http://localhost:4444/api/traffic/caltrans/cron"
+curl "http://localhost:4444/api/traffic/chp-cad/cron"
+curl "http://localhost:4444/api/traffic/chp-historical/cron"
 
 ---
 
@@ -305,7 +305,7 @@ Your `CONTEXT.md` is **production-grade documentation**. Any future AI session (
 bun run src/lib/scripts/backfill-chp-historical.ts
 
 # Incremental polling
-curl "http://localhost:4444/api/chp-historical/poll?action=poll"
+curl "http://localhost:4444/api/traffic/chp-historical/poll?action=poll"
 
 ## 🚀 Next Steps
 
@@ -375,16 +375,16 @@ The CalFire service monitors wildfire incidents across California using the offi
 ### Polling Options
 | Endpoint | Action | Description |
 |----------|--------|-------------|
-| `/api/calfire/poll?action=poll` | Active only | Fast poll for cron jobs (active incidents only) |
-| `/api/calfire/poll?action=poll-norcal` | NorCal | All incidents (active+inactive) in Northern CA |
-| `/api/calfire/poll?action=poll-all` | Full | **All incidents statewide (no filter)** |
+| `/api/traffic/calfire/poll?action=poll` | Active only | Fast poll for cron jobs (active incidents only) |
+| `/api/traffic/calfire/poll?action=poll-norcal` | NorCal | All incidents (active+inactive) in Northern CA |
+| `/api/traffic/calfire/poll?action=poll-all` | Full | **All incidents statewide (no filter)** |
 
 ### API Routes
 | Endpoint | Purpose |
 |----------|---------|
-| `/api/calfire` | Main data endpoint (supports `?showAll=true`) |
-| `/api/calfire/poll` | Manual polling with actions |
-| `/api/calfire/cron` | Cron job endpoint (every 30 min) |
+| `/api/traffic/calfire` | Main data endpoint (supports `?showAll=true`) |
+| `/api/traffic/calfire/poll` | Manual polling with actions |
+| `/api/traffic/calfire/cron` | Cron job endpoint (every 30 min) |
 
 ### Database Schema
 ```typescript
@@ -1262,11 +1262,11 @@ This update captures all the 3D visualization enhancements, plant models, contro
 ---
 
 # Test each poller endpoint
-curl "https://threed-garden-neon.vercel.app/api/calfire/poll?action=poll"
-curl "https://threed-garden-neon.vercel.app/api/caltrans/poll?action=poll"
-curl "https://threed-garden-neon.vercel.app/api/bay-area-511/poll?action=poll"
-curl "https://threed-garden-neon.vercel.app/api/chp-cad/poll?action=poll"
-curl "https://threed-garden-neon.vercel.app/api/chp-historical/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/traffic/calfire/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/traffic/caltrans/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/traffic/bay-area-511/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/traffic/chp-cad/poll?action=poll"
+curl "https://threed-garden-neon.vercel.app/api/traffic/chp-historical/poll?action=poll"
 curl "https://threed-garden-neon.vercel.app/api/threed/plants/poll?action=poll"
 curl "https://threed-garden-neon.vercel.app/api/threed/beds/poll?action=poll"
 curl "https://threed-garden-neon.vercel.app/api/threed/plantings/poll?action=poll"
@@ -1349,7 +1349,7 @@ bash
 
 # Quick health check (run these)
 curl "https://threed-garden-neon.vercel.app/api/threed/weather/poll"
-curl "https://threed-garden-neon.vercel.app/api/calfire/poll?action=stats"
+curl "https://threed-garden-neon.vercel.app/api/traffic/calfire/poll?action=stats"
 curl "https://threed-garden-neon.vercel.app/api/debug/db-test"
 
 📝 Final Documentation

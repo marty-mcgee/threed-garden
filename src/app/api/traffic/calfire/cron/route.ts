@@ -1,4 +1,4 @@
-// src/app/api/calfire/cron/route.ts
+// src/app/api/traffic/calfire/cron/route.ts
 import { NextResponse } from 'next/server';
 import { CalFirePoller } from '@/lib/services/traffic/CalFirePoller';
 

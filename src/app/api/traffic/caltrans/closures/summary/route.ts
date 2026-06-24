@@ -1,4 +1,4 @@
-// app/api/caltrans/closures/summary/route.ts (Confirmed Working)
+// app/api/traffic/caltrans/closures/summary/route.ts (Confirmed Working)
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';

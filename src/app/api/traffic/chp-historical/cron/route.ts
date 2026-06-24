@@ -1,4 +1,4 @@
-// src/app/api/chp-historical/cron/route.ts
+// src/app/api/traffic/chp-historical/cron/route.ts
 import { NextResponse } from 'next/server';
 import { CHPPoller } from '@/lib/services/traffic/CHPPoller';
 

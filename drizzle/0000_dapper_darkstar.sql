@@ -1,3 +1,4 @@
+CREATE TYPE "public"."album_status" AS ENUM('draft', 'published', 'archived');--> statement-breakpoint
 CREATE TYPE "public"."threed_bed_shape" AS ENUM('rectangle', 'square', 'circle', 'raised', 'container', 'custom');--> statement-breakpoint
 CREATE TYPE "public"."threed_character_animation" AS ENUM('idle', 'walk', 'run', 'fly', 'dance', 'sway', 'float', 'spin', 'bounce');--> statement-breakpoint
 CREATE TYPE "public"."threed_character_emote" AS ENUM('none', 'happy', 'sad', 'surprised', 'angry', 'wave', 'dance', 'sleep');--> statement-breakpoint
@@ -8,13 +9,33 @@ CREATE TYPE "public"."threed_character_weather_sensitivity" AS ENUM('all', 'sunn
 CREATE TYPE "public"."threed_farmbot_status" AS ENUM('online', 'offline', 'maintenance', 'error');--> statement-breakpoint
 CREATE TYPE "public"."threed_growth_stage" AS ENUM('seed', 'seedling', 'vegetative', 'flowering', 'fruiting', 'mature', 'dormant');--> statement-breakpoint
 CREATE TYPE "public"."threed_model_type" AS ENUM('procedural', 'gltf', 'glb', 'fbx', 'usdz', 'obj', 'herb-generic', 'vegetable-generic', 'flower-generic', 'fruit-generic', 'tree-generic', 'custom');--> statement-breakpoint
+CREATE TYPE "public"."music_link_status" AS ENUM('active', 'inactive', 'pending', 'expired');--> statement-breakpoint
+CREATE TYPE "public"."music_link_type" AS ENUM('external', 'social', 'buy', 'stream', 'video');--> statement-breakpoint
+CREATE TYPE "public"."music_polling_type" AS ENUM('metadata', 'stats', 'sync');--> statement-breakpoint
 CREATE TYPE "public"."threed_plant_status" AS ENUM('active', 'inactive', 'archived');--> statement-breakpoint
 CREATE TYPE "public"."threed_plant_type" AS ENUM('Vegetable', 'Fruit', 'Herb', 'Flower', 'Tree', 'Shrub', 'CoverCrop');--> statement-breakpoint
 CREATE TYPE "public"."threed_planting_status" AS ENUM('planned', 'planted', 'growing', 'harvesting', 'harvested', 'failed');--> statement-breakpoint
 CREATE TYPE "public"."threed_task_priority" AS ENUM('low', 'medium', 'high', 'urgent');--> statement-breakpoint
 CREATE TYPE "public"."threed_task_status" AS ENUM('pending', 'in_progress', 'completed', 'cancelled');--> statement-breakpoint
+CREATE TYPE "public"."track_status" AS ENUM('active', 'inactive', 'processing');--> statement-breakpoint
 CREATE TYPE "public"."threed_watering_frequency" AS ENUM('daily', 'weekly', 'custom', 'moisture-based', 'hourly', 'bi-daily');--> statement-breakpoint
-CREATE TABLE "api_request_logs" (
+CREATE TABLE "account" (
+	"id" text PRIMARY KEY NOT NULL,
+	"account_id" text NOT NULL,
+	"provider_id" text NOT NULL,
+	"user_id" text NOT NULL,
+	"access_token" text,
+	"refresh_token" text,
+	"id_token" text,
+	"access_token_expires_at" timestamp,
+	"refresh_token_expires_at" timestamp,
+	"scope" text,
+	"password" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "traffic_api_request_logs" (
 	"log_id" serial PRIMARY KEY NOT NULL,
 	"endpoint" text,
 	"district" integer,
@@ -27,7 +48,7 @@ CREATE TABLE "api_request_logs" (
 	"request_timestamp" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "bay_area_traffic_events" (
+CREATE TABLE "traffic_bay_area_traffic_events" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"source_id" varchar(100),
 	"event_type" varchar(100),
@@ -48,10 +69,10 @@ CREATE TABLE "bay_area_traffic_events" (
 	"raw_data" jsonb,
 	"fetched_at" timestamp DEFAULT now(),
 	"created_at" timestamp DEFAULT now(),
-	CONSTRAINT "bay_area_traffic_events_source_id_unique" UNIQUE("source_id")
+	CONSTRAINT "traffic_bay_area_traffic_events_source_id_unique" UNIQUE("source_id")
 );
 --> statement-breakpoint
-CREATE TABLE "calfire_incidents" (
+CREATE TABLE "traffic_calfire_incidents" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"unique_id" varchar(100) NOT NULL,
 	"name" varchar(200) NOT NULL,
@@ -73,10 +94,10 @@ CREATE TABLE "calfire_incidents" (
 	"raw_data" jsonb,
 	"fetched_at" timestamp with time zone DEFAULT now(),
 	"last_seen" timestamp with time zone DEFAULT now(),
-	CONSTRAINT "calfire_incidents_unique_id_unique" UNIQUE("unique_id")
+	CONSTRAINT "traffic_calfire_incidents_unique_id_unique" UNIQUE("unique_id")
 );
 --> statement-breakpoint
-CREATE TABLE "caltrans_districts" (
+CREATE TABLE "traffic_caltrans_districts" (
 	"district_id" integer PRIMARY KEY NOT NULL,
 	"district_name" varchar(100),
 	"region" varchar(50),
@@ -84,7 +105,7 @@ CREATE TABLE "caltrans_districts" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "cctv_cameras" (
+CREATE TABLE "traffic_cctv_cameras" (
 	"camera_id" serial PRIMARY KEY NOT NULL,
 	"index" varchar(10),
 	"district" integer,
@@ -102,7 +123,7 @@ CREATE TABLE "cctv_cameras" (
 	"fetched_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "chp_cad_centers" (
+CREATE TABLE "traffic_chp_cad_centers" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"center_code" varchar(10) NOT NULL,
 	"center_name" varchar(100) NOT NULL,
@@ -111,10 +132,10 @@ CREATE TABLE "chp_cad_centers" (
 	"is_active" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "chp_cad_centers_center_code_unique" UNIQUE("center_code")
+	CONSTRAINT "traffic_chp_cad_centers_center_code_unique" UNIQUE("center_code")
 );
 --> statement-breakpoint
-CREATE TABLE "chp_cad_incidents" (
+CREATE TABLE "traffic_chp_cad_incidents" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"source_id" varchar(100),
 	"center_id" integer,
@@ -130,10 +151,10 @@ CREATE TABLE "chp_cad_incidents" (
 	"fetched_at" timestamp DEFAULT now(),
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "chp_cad_incidents_source_id_unique" UNIQUE("source_id")
+	CONSTRAINT "traffic_chp_cad_incidents_source_id_unique" UNIQUE("source_id")
 );
 --> statement-breakpoint
-CREATE TABLE "chp_collisions" (
+CREATE TABLE "traffic_chp_collisions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"case_id" varchar(50),
 	"collision_date" timestamp,
@@ -153,10 +174,21 @@ CREATE TABLE "chp_collisions" (
 	"fetched_at" timestamp DEFAULT now(),
 	"last_seen" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "chp_collisions_case_id_unique" UNIQUE("case_id")
+	CONSTRAINT "traffic_chp_collisions_case_id_unique" UNIQUE("case_id")
 );
 --> statement-breakpoint
-CREATE TABLE "lane_closures" (
+CREATE TABLE "deployment_settings" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"description" text,
+	"settings" jsonb NOT NULL,
+	"is_active" boolean DEFAULT false,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "deployment_settings_name_unique" UNIQUE("name")
+);
+--> statement-breakpoint
+CREATE TABLE "traffic_lane_closures" (
 	"closure_id" serial PRIMARY KEY NOT NULL,
 	"source_id" varchar(100),
 	"district" integer,
@@ -186,10 +218,10 @@ CREATE TABLE "lane_closures" (
 	"times_seen" integer DEFAULT 1,
 	"raw_data" jsonb,
 	"created_at" timestamp DEFAULT now(),
-	CONSTRAINT "lane_closures_source_id_unique" UNIQUE("source_id")
+	CONSTRAINT "traffic_lane_closures_source_id_unique" UNIQUE("source_id")
 );
 --> statement-breakpoint
-CREATE TABLE "lane_closures_snapshots" (
+CREATE TABLE "traffic_lane_closures_snapshots" (
 	"snapshot_id" serial PRIMARY KEY NOT NULL,
 	"snapshot_timestamp" timestamp DEFAULT now(),
 	"district" integer,
@@ -197,6 +229,110 @@ CREATE TABLE "lane_closures_snapshots" (
 	"closures_by_type" jsonb,
 	"closures_by_route" jsonb,
 	"raw_summary" jsonb
+);
+--> statement-breakpoint
+CREATE TABLE "music_album_links" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"album_id" integer,
+	"link_id" integer,
+	"link_type" text NOT NULL,
+	"track_id" integer,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "music_albums" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
+	"title" text NOT NULL,
+	"artist" text NOT NULL,
+	"cover_art" text NOT NULL,
+	"release_year" integer,
+	"description" text,
+	"sort_order" integer DEFAULT 0,
+	"status" "album_status" DEFAULT 'draft',
+	"is_public" boolean DEFAULT false,
+	"metadata" jsonb,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "music_links" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
+	"title" text NOT NULL,
+	"url" text NOT NULL,
+	"type" "music_link_type" DEFAULT 'external',
+	"icon" text,
+	"description" text,
+	"status" "music_link_status" DEFAULT 'active',
+	"display_order" integer DEFAULT 0,
+	"metadata" jsonb,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "music_media" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"album_id" integer NOT NULL,
+	"file_name" text NOT NULL,
+	"file_url" text NOT NULL,
+	"file_type" text NOT NULL,
+	"file_size" integer,
+	"is_primary" boolean DEFAULT true,
+	"metadata" jsonb,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "music_playback_history" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
+	"track_id" integer,
+	"album_id" integer,
+	"played_at" timestamp DEFAULT now(),
+	"play_duration" integer,
+	"completed" boolean DEFAULT false,
+	"source" text DEFAULT 'music_player'
+);
+--> statement-breakpoint
+CREATE TABLE "music_polling_logs" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"poll_type" "music_polling_type" NOT NULL,
+	"status" text NOT NULL,
+	"message" text,
+	"metadata" jsonb,
+	"started_at" timestamp DEFAULT now(),
+	"completed_at" timestamp,
+	"error" text
+);
+--> statement-breakpoint
+CREATE TABLE "music_tracks" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"album_id" integer,
+	"title" text NOT NULL,
+	"duration" integer,
+	"track_number" integer,
+	"public_url" text NOT NULL,
+	"status" "track_status" DEFAULT 'active',
+	"lyrics" text,
+	"metadata" jsonb,
+	"play_count" integer DEFAULT 0,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "session" (
+	"id" text PRIMARY KEY NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"token" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp NOT NULL,
+	"ip_address" text,
+	"user_agent" text,
+	"user_id" text NOT NULL,
+	CONSTRAINT "session_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
 CREATE TABLE "threed_beds" (
@@ -525,7 +661,51 @@ CREATE TABLE "threed_weather_logs" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-ALTER TABLE "chp_cad_incidents" ADD CONSTRAINT "chp_cad_incidents_center_id_chp_cad_centers_id_fk" FOREIGN KEY ("center_id") REFERENCES "public"."chp_cad_centers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE TABLE "user" (
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"email" text NOT NULL,
+	"email_verified" boolean DEFAULT false NOT NULL,
+	"image" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "user_email_unique" UNIQUE("email")
+);
+--> statement-breakpoint
+CREATE TABLE "user_settings_overrides" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
+	"module" text NOT NULL,
+	"service" text,
+	"setting_key" text NOT NULL,
+	"setting_value" boolean NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "verification" (
+	"id" text PRIMARY KEY NOT NULL,
+	"identifier" text NOT NULL,
+	"value" text NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "traffic_chp_cad_incidents" ADD CONSTRAINT "traffic_chp_cad_incidents_center_id_traffic_chp_cad_centers_id_fk" FOREIGN KEY ("center_id") REFERENCES "public"."traffic_chp_cad_centers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_link_id_music_links_id_fk" FOREIGN KEY ("link_id") REFERENCES "public"."music_links"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_track_id_music_tracks_id_fk" FOREIGN KEY ("track_id") REFERENCES "public"."music_tracks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_albums" ADD CONSTRAINT "music_albums_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_links" ADD CONSTRAINT "music_links_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_media" ADD CONSTRAINT "music_media_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_media" ADD CONSTRAINT "music_media_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_playback_history" ADD CONSTRAINT "music_playback_history_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_playback_history" ADD CONSTRAINT "music_playback_history_track_id_music_tracks_id_fk" FOREIGN KEY ("track_id") REFERENCES "public"."music_tracks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_playback_history" ADD CONSTRAINT "music_playback_history_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "music_tracks" ADD CONSTRAINT "music_tracks_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_characters" ADD CONSTRAINT "threed_characters_model_id_threed_models_id_fk" FOREIGN KEY ("model_id") REFERENCES "public"."threed_models"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_characters" ADD CONSTRAINT "threed_characters_bed_id_threed_beds_id_fk" FOREIGN KEY ("bed_id") REFERENCES "public"."threed_beds"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_farmbot_logs" ADD CONSTRAINT "threed_farmbot_logs_farmbot_id_threed_farmbots_id_fk" FOREIGN KEY ("farmbot_id") REFERENCES "public"."threed_farmbots"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -549,36 +729,57 @@ ALTER TABLE "threed_watering_schedules" ADD CONSTRAINT "threed_watering_schedule
 ALTER TABLE "threed_watering_schedules" ADD CONSTRAINT "threed_watering_schedules_farmbot_id_threed_farmbots_id_fk" FOREIGN KEY ("farmbot_id") REFERENCES "public"."threed_farmbots"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_watering_schedules" ADD CONSTRAINT "threed_watering_schedules_bed_id_threed_beds_id_fk" FOREIGN KEY ("bed_id") REFERENCES "public"."threed_beds"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_watering_schedules" ADD CONSTRAINT "threed_watering_schedules_planting_id_threed_plantings_id_fk" FOREIGN KEY ("planting_id") REFERENCES "public"."threed_plantings"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "idx_api_logs_timestamp" ON "api_request_logs" USING btree ("request_timestamp");--> statement-breakpoint
-CREATE INDEX "idx_api_logs_success" ON "api_request_logs" USING btree ("success");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_bay_area_source_id" ON "bay_area_traffic_events" USING btree ("source_id");--> statement-breakpoint
-CREATE INDEX "idx_bay_area_type" ON "bay_area_traffic_events" USING btree ("event_type");--> statement-breakpoint
-CREATE INDEX "idx_bay_area_roadway" ON "bay_area_traffic_events" USING btree ("roadway_name");--> statement-breakpoint
-CREATE INDEX "idx_bay_area_status" ON "bay_area_traffic_events" USING btree ("status");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_calfire_unique_id" ON "calfire_incidents" USING btree ("unique_id");--> statement-breakpoint
-CREATE INDEX "idx_calfire_county" ON "calfire_incidents" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_calfire_status" ON "calfire_incidents" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "idx_calfire_active" ON "calfire_incidents" USING btree ("is_active");--> statement-breakpoint
-CREATE INDEX "idx_districts_region" ON "caltrans_districts" USING btree ("region");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_chp_cad_centers_code" ON "chp_cad_centers" USING btree ("center_code");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_centers_county" ON "chp_cad_centers" USING btree ("county");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_chp_cad_source_id" ON "chp_cad_incidents" USING btree ("source_id");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_center_id" ON "chp_cad_incidents" USING btree ("center_id");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_county" ON "chp_cad_incidents" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_log_time" ON "chp_cad_incidents" USING btree ("log_time");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_chp_case_id" ON "chp_collisions" USING btree ("case_id");--> statement-breakpoint
-CREATE INDEX "idx_chp_county" ON "chp_collisions" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_chp_severity" ON "chp_collisions" USING btree ("severity");--> statement-breakpoint
-CREATE INDEX "idx_chp_year" ON "chp_collisions" USING btree ("collision_year");--> statement-breakpoint
-CREATE INDEX "idx_chp_date" ON "chp_collisions" USING btree ("collision_date");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_closures_source_id" ON "lane_closures" USING btree ("source_id");--> statement-breakpoint
-CREATE INDEX "idx_closures_district" ON "lane_closures" USING btree ("district");--> statement-breakpoint
-CREATE INDEX "idx_closures_route" ON "lane_closures" USING btree ("route");--> statement-breakpoint
-CREATE INDEX "idx_closures_status" ON "lane_closures" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "idx_closures_last_seen" ON "lane_closures" USING btree ("last_seen");--> statement-breakpoint
-CREATE INDEX "idx_closures_dates" ON "lane_closures" USING btree ("start_date","end_date");--> statement-breakpoint
-CREATE INDEX "idx_snapshots_timestamp" ON "lane_closures_snapshots" USING btree ("snapshot_timestamp");--> statement-breakpoint
-CREATE INDEX "idx_snapshots_district" ON "lane_closures_snapshots" USING btree ("district");--> statement-breakpoint
+ALTER TABLE "user_settings_overrides" ADD CONSTRAINT "user_settings_overrides_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "idx_api_logs_timestamp" ON "traffic_api_request_logs" USING btree ("request_timestamp");--> statement-breakpoint
+CREATE INDEX "idx_api_logs_success" ON "traffic_api_request_logs" USING btree ("success");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_bay_area_source_id" ON "traffic_bay_area_traffic_events" USING btree ("source_id");--> statement-breakpoint
+CREATE INDEX "idx_bay_area_type" ON "traffic_bay_area_traffic_events" USING btree ("event_type");--> statement-breakpoint
+CREATE INDEX "idx_bay_area_roadway" ON "traffic_bay_area_traffic_events" USING btree ("roadway_name");--> statement-breakpoint
+CREATE INDEX "idx_bay_area_status" ON "traffic_bay_area_traffic_events" USING btree ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_calfire_unique_id" ON "traffic_calfire_incidents" USING btree ("unique_id");--> statement-breakpoint
+CREATE INDEX "idx_calfire_county" ON "traffic_calfire_incidents" USING btree ("county");--> statement-breakpoint
+CREATE INDEX "idx_calfire_status" ON "traffic_calfire_incidents" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "idx_calfire_active" ON "traffic_calfire_incidents" USING btree ("is_active");--> statement-breakpoint
+CREATE INDEX "idx_districts_region" ON "traffic_caltrans_districts" USING btree ("region");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_chp_cad_centers_code" ON "traffic_chp_cad_centers" USING btree ("center_code");--> statement-breakpoint
+CREATE INDEX "idx_chp_cad_centers_county" ON "traffic_chp_cad_centers" USING btree ("county");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_chp_cad_source_id" ON "traffic_chp_cad_incidents" USING btree ("source_id");--> statement-breakpoint
+CREATE INDEX "idx_chp_cad_center_id" ON "traffic_chp_cad_incidents" USING btree ("center_id");--> statement-breakpoint
+CREATE INDEX "idx_chp_cad_county" ON "traffic_chp_cad_incidents" USING btree ("county");--> statement-breakpoint
+CREATE INDEX "idx_chp_cad_log_time" ON "traffic_chp_cad_incidents" USING btree ("log_time");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_chp_case_id" ON "traffic_chp_collisions" USING btree ("case_id");--> statement-breakpoint
+CREATE INDEX "idx_chp_county" ON "traffic_chp_collisions" USING btree ("county");--> statement-breakpoint
+CREATE INDEX "idx_chp_severity" ON "traffic_chp_collisions" USING btree ("severity");--> statement-breakpoint
+CREATE INDEX "idx_chp_year" ON "traffic_chp_collisions" USING btree ("collision_year");--> statement-breakpoint
+CREATE INDEX "idx_chp_date" ON "traffic_chp_collisions" USING btree ("collision_date");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_closures_source_id" ON "traffic_lane_closures" USING btree ("source_id");--> statement-breakpoint
+CREATE INDEX "idx_closures_district" ON "traffic_lane_closures" USING btree ("district");--> statement-breakpoint
+CREATE INDEX "idx_closures_route" ON "traffic_lane_closures" USING btree ("route");--> statement-breakpoint
+CREATE INDEX "idx_closures_status" ON "traffic_lane_closures" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "idx_closures_last_seen" ON "traffic_lane_closures" USING btree ("last_seen");--> statement-breakpoint
+CREATE INDEX "idx_closures_dates" ON "traffic_lane_closures" USING btree ("start_date","end_date");--> statement-breakpoint
+CREATE INDEX "idx_snapshots_timestamp" ON "traffic_lane_closures_snapshots" USING btree ("snapshot_timestamp");--> statement-breakpoint
+CREATE INDEX "idx_snapshots_district" ON "traffic_lane_closures_snapshots" USING btree ("district");--> statement-breakpoint
+CREATE INDEX "album_links_album_link_idx" ON "music_album_links" USING btree ("album_id","link_id");--> statement-breakpoint
+CREATE INDEX "album_links_track_link_idx" ON "music_album_links" USING btree ("track_id","link_id");--> statement-breakpoint
+CREATE INDEX "music_albums_user_id_idx" ON "music_albums" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "music_albums_status_idx" ON "music_albums" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "music_albums_sort_order_idx" ON "music_albums" USING btree ("sort_order");--> statement-breakpoint
+CREATE INDEX "music_links_user_id_idx" ON "music_links" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "music_links_type_idx" ON "music_links" USING btree ("type");--> statement-breakpoint
+CREATE INDEX "music_media_user_id_idx" ON "music_media" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "music_media_album_id_idx" ON "music_media" USING btree ("album_id");--> statement-breakpoint
+CREATE INDEX "music_media_is_primary_idx" ON "music_media" USING btree ("is_primary");--> statement-breakpoint
+CREATE INDEX "music_playback_user_id_idx" ON "music_playback_history" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "music_playback_track_id_idx" ON "music_playback_history" USING btree ("track_id");--> statement-breakpoint
+CREATE INDEX "music_playback_played_at_idx" ON "music_playback_history" USING btree ("played_at");--> statement-breakpoint
+CREATE INDEX "music_polling_logs_type_idx" ON "music_polling_logs" USING btree ("poll_type");--> statement-breakpoint
+CREATE INDEX "music_polling_logs_status_idx" ON "music_polling_logs" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "music_polling_logs_type_status_idx" ON "music_polling_logs" USING btree ("poll_type","status");--> statement-breakpoint
+CREATE INDEX "music_tracks_album_id_idx" ON "music_tracks" USING btree ("album_id");--> statement-breakpoint
+CREATE INDEX "music_tracks_status_idx" ON "music_tracks" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "session_userId_idx" ON "session" USING btree ("user_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_threed_beds_bed_id" ON "threed_beds" USING btree ("bed_id");--> statement-breakpoint
 CREATE INDEX "idx_threed_beds_active" ON "threed_beds" USING btree ("is_active");--> statement-breakpoint
 CREATE INDEX "idx_threed_beds_name" ON "threed_beds" USING btree ("name");--> statement-breakpoint
@@ -629,4 +830,5 @@ CREATE INDEX "idx_threed_watering_farmbot" ON "threed_watering_schedules" USING 
 CREATE INDEX "idx_threed_watering_next" ON "threed_watering_schedules" USING btree ("next_watering");--> statement-breakpoint
 CREATE INDEX "idx_threed_watering_active" ON "threed_watering_schedules" USING btree ("is_active");--> statement-breakpoint
 CREATE INDEX "idx_threed_watering_next_active" ON "threed_watering_schedules" USING btree ("next_watering","is_active");--> statement-breakpoint
-CREATE INDEX "idx_threed_weather_recorded_at" ON "threed_weather_logs" USING btree ("recorded_at");
+CREATE INDEX "idx_threed_weather_recorded_at" ON "threed_weather_logs" USING btree ("recorded_at");--> statement-breakpoint
+CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");

@@ -20,7 +20,7 @@ export default function CaltransClosures() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/caltrans/closures/raw');
+      const response = await fetch('/api/traffic/caltrans/closures/raw');
       const data = await response.json();
       if (data.success && Array.isArray(data.data)) {
         setClosures(data.data);
@@ -35,7 +35,7 @@ export default function CaltransClosures() {
   const pollData = async () => {
     setIsPolling(true);
     try {
-      const response = await fetch('/api/caltrans/poll?action=poll');
+      const response = await fetch('/api/traffic/caltrans/poll?action=poll');
       const data = await response.json();
       if (data.success) {
         alert(`Caltrans poll completed! Found ${data.stats?.totalClosures || 0} closures.`);

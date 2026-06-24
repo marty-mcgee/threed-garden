@@ -81,7 +81,7 @@ export default function CHPLiveContent() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/chp-cad?limit=500');
+      const response = await fetch('/api/traffic/chp-cad?limit=500');
       const data = await response.json();
       if (data.success) { 
         setIncidents(data.data); 
@@ -93,7 +93,7 @@ export default function CHPLiveContent() {
   const pollData = async () => {
     setIsPolling(true);
     try {
-      const response = await fetch('/api/chp-cad/poll?action=poll');
+      const response = await fetch('/api/traffic/chp-cad/poll?action=poll');
       const data = await response.json();
       if (data.success) { 
         await fetchData(); 

@@ -1,4 +1,4 @@
-// src/app/api/chp-cad/seed/chp-cad-centers/route.ts
+// src/app/api/traffic/chp-cad/seed/chp-cad-centers/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
 import { chpCadCenters } from '@/lib/schema';

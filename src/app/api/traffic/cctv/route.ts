@@ -1,4 +1,4 @@
-// app/api/cctv/route.ts
+// app/api/traffic/cctv/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
 import { cctvCameras } from '@/lib/schema';

@@ -80,7 +80,7 @@ export default function ClosureDetailPage() {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`/api/caltrans/closures/${id}`);
+        const response = await fetch(`/api/traffic/caltrans/closures/${id}`);
         const data = await response.json();
         
         if (!response.ok) {

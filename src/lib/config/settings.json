@@ -1,0 +1,64 @@
+{
+  "modules": {
+    "traffic": {
+      "enabled": true,
+      "services": {
+        "chpCad": true,
+        "chpHistorical": true,
+        "caltrans": true,
+        "bayArea511": true,
+        "calfire": true,
+        "cctv": true,
+        "features": {
+          "polling": true,
+          "cronJobs": true,
+          "dashboard": true,
+          "apiDocs": true
+        }
+      }
+    },
+    "threed": {
+      "enabled": true,
+      "services": {
+        "weather": true,
+        "farmbot": true,
+        "plants": true,
+        "beds": true,
+        "plantings": true,
+        "tasks": true,
+        "harvests": true,
+        "characters": true,
+        "models": true,
+        "analytics": true,
+        "features": {
+          "polling": true,
+          "cronJobs": true,
+          "dashboard": true,
+          "apiDocs": true
+        }
+      }
+    },
+    "music": {
+      "enabled": true,
+      "services": {
+        "albums": true,
+        "tracks": true,
+        "links": true,
+        "media": true,
+        "streaming": true,
+        "features": {
+          "polling": true,
+          "cronJobs": true,
+          "dashboard": true,
+          "apiDocs": true
+        }
+      }
+    }
+  },
+  "features": {
+    "polling": true,
+    "cronJobs": true,
+    "dashboard": true,
+    "apiDocs": true
+  }
+}
