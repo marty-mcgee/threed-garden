@@ -20,6 +20,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
+import { projects } from '../projects';
 
 // ============================================
 // ### Music Service

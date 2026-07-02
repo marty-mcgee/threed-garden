@@ -10,6 +10,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
+// app/dashboard/traffic/page.tsx
+import { TrafficMapDashboard } from '@/components/traffic/dashboard/TrafficMapDashboard';
+
+export function TrafficPage() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Traffic Dashboard</h1>
+        <p className="text-muted-foreground">
+          Real-time traffic incidents and closures in California
+        </p>
+      </div>
+      
+      <TrafficMapDashboard />
+    </div>
+  );
+}
+
 const SimpleMap = dynamic(() => import('@/components/traffic/map/simpleMap'), {
   ssr: false,
   loading: () => (
@@ -549,7 +567,8 @@ export default function DashboardPage() {
       <Card>
         <CardContent className="p-0 overflow-hidden rounded-xl">
           {mapEvents.length > 0 ? (
-            <SimpleMap events={mapEvents} center={[39.3, -123.5]} zoom={10} height="600px" />
+            // <SimpleMap events={mapEvents} center={[39.3, -123.5]} zoom={10} height="600px" />
+            <TrafficMapDashboard />
           ) : (
             <div className="h-[600px] bg-muted flex flex-col items-center justify-center">
               <MapPin className="w-12 h-12 text-muted-foreground mb-2" />

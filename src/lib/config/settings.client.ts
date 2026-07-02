@@ -2,7 +2,7 @@
 'use client';
 
 import settingsData from './settings.json';
-import type { AppSettings, ModuleName } from './settings';
+import type { AppSettings, ModuleName } from './settings-old';
 
 export function getClientSettings(): AppSettings {
   return settingsData as AppSettings;

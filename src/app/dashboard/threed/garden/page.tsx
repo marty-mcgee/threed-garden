@@ -17,7 +17,7 @@ import { RefreshCw, Box, Sprout, Sun, Droplets, Thermometer, MapPin, AlertCircle
 //     </div>
 //   ),
 // });
-import ThreeDGarden from '@/components/threed/ThreeDGarden'; // Regular import, NOT dynamic
+import ThreeDGarden from '@/components/threed/_test/ThreeDGarden'; // Regular import, NOT dynamic
 
 interface GardenBed {
   id: number;

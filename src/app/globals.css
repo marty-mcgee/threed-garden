@@ -162,3 +162,82 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
+
+
+
+
+
+
+
+
+/* Leaflet Map */
+/* app/globals.css */
+.incident-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  overflow: hidden;
+}
+
+.incident-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+  min-width: 250px;
+}
+
+.incident-popup .leaflet-popup-tip {
+  background: white;
+}
+
+/* Dark mode support */
+.dark .incident-popup .leaflet-popup-content-wrapper {
+  background: #1a1a2e;
+  color: #e2e8f0;
+}
+
+.dark .incident-popup .leaflet-popup-tip {
+  background: #1a1a2e;
+}
+
+/* Custom marker hover effects */
+.custom-marker {
+  transition: transform 0.2s;
+}
+
+.custom-marker:hover {
+  transform: scale(1.2);
+  z-index: 1000 !important;
+}
+
+/* Cluster styles */
+.marker-cluster {
+  background-color: rgba(59, 130, 246, 0.6);
+}
+
+.marker-cluster div {
+  background-color: rgba(37, 99, 235, 0.8);
+  color: white;
+  font-weight: bold;
+}
+
+
+
+
+
+
+
+
+/* app/globals.css - Add this */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+

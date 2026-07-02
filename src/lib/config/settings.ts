@@ -1,7 +1,52 @@
 // lib/config/settings.ts
-// ONE FILE TO RULE ALL SETTINGS - Reads from JSON
+// ONE FILE TO RULE ALL SETTINGS - Reads from JSON with DB overrides
 
-import settingsData from './settings.json';
+import fs from 'fs';
+import path from 'path';
+import { db } from '@/lib/db/client';
+import { 
+  settings as settingsTable,
+  settingsUserOverrides,
+  settingsDeployment,
+  settingsAuditLogs
+} from '@/lib/schema/settings';
+import { eq, and } from 'drizzle-orm';
+
+// ============================================
+// CONSTANTS
+// ============================================
+
+export const SOURCE_COLORS: Record<string, string> = {
+  caltrans: '#3b82f6',
+  bayarea511: '#10b981',
+  chpLive: '#ef4444',
+  chpHistorical: '#8b5cf6',
+  calfire: '#f97316',
+  default: '#6b7280',
+};
+
+export const SOURCE_ICONS: Record<string, string> = {
+  caltrans: '🚧',
+  bayarea511: '📻',
+  chpLive: '🚨',
+  chpHistorical: '📊',
+  calfire: '🔥',
+  default: '📍',
+};
+
+export const SEVERITY_SCALE: Record<string, number> = {
+  critical: 1.6,
+  fatal: 1.6,
+  injury: 1.3,
+  high: 1.3,
+  medium: 1.0,
+  low: 0.8,
+  default: 1.0,
+};
+
+// ============================================
+// TYPES
+// ============================================
 
 export type ModuleName = 'traffic' | 'threed' | 'music';
 
@@ -61,21 +106,23 @@ export interface AppSettings {
 // ============================================
 // LOAD SETTINGS FROM JSON
 // ============================================
+
+import settingsData from './settings.json';
+
 let cachedSettings: AppSettings | null = null;
 
 export function loadSettings(): AppSettings {
   if (cachedSettings) return cachedSettings;
   
-  // Load from JSON file
   const settings = settingsData as AppSettings;
   cachedSettings = settings;
-  
   return settings;
 }
 
 // ============================================
-// CONVENIENCE HELPERS (Sync - No DB)
+// CONVENIENCE HELPERS (Sync - JSON Only)
 // ============================================
+
 export function getSettings(): AppSettings {
   return loadSettings();
 }
@@ -119,8 +166,6 @@ export function hasAnyServiceEnabled(module: ModuleName): boolean {
 // ============================================
 // UPDATE SETTINGS (Write to JSON)
 // ============================================
-import fs from 'fs';
-import path from 'path';
 
 const settingsPath = path.join(process.cwd(), 'lib/config/settings.json');
 
@@ -161,86 +206,16 @@ export function toggleFeature(feature: keyof ModuleFeatures, enabled: boolean): 
 }
 
 // ============================================
-// STARTUP LOG
+// DATABASE SETTINGS LOADER (Overrides JSON)
 // ============================================
-if (typeof window === 'undefined') {
-  const settings = getSettings();
-  console.log('\n⚙️  Application Settings Loaded:');
-  console.log(`  📦 Modules: Traffic=${settings.modules.traffic.enabled}, ThreeD=${settings.modules.threed.enabled}, Music=${settings.modules.music.enabled}`);
-  console.log(`  ⚡ Features: Polling=${settings.features.polling}, Cron=${settings.features.cronJobs}, Dashboard=${settings.features.dashboard}, API Docs=${settings.features.apiDocs}`);
-  
-  const totalServices = 
-    Object.keys(settings.modules.traffic.services).filter(k => k !== 'features' && settings.modules.traffic.services[k as keyof typeof settings.modules.traffic.services]).length +
-    Object.keys(settings.modules.threed.services).filter(k => k !== 'features' && settings.modules.threed.services[k as keyof typeof settings.modules.threed.services]).length +
-    Object.keys(settings.modules.music.services).filter(k => k !== 'features' && settings.modules.music.services[k as keyof typeof settings.modules.music.services]).length;
-  
-  console.log(`  🎯 ${totalServices} services enabled\n`);
-}
-
-// lib/config/settings.ts (Add these functions)
-
-import { db } from '@/lib/db/client';
-import { userSettingsOverrides, deploymentSettings } from '@/lib/schema/settings';
-import { eq } from 'drizzle-orm';
 
 let cachedDBSettings: AppSettings | null = null;
 let lastDBLoad: number = 0;
 const CACHE_TTL = 60000; // 60 seconds
 
 /**
- * Load settings from: JSON > Database > Overrides
+ * Deep merge two objects
  */
-export async function loadSettingsWithDB(userId?: string): Promise<AppSettings> {
-  // 1. Start with JSON settings
-  let settings = loadSettings();
-  
-  // 2. Get active deployment settings from database
-  const activeDeployment = await db
-    .select()
-    .from(deploymentSettings)
-    .where(eq(deploymentSettings.isActive, true))
-    .limit(1);
-
-  if (activeDeployment.length > 0) {
-    const deploymentConfig = activeDeployment[0].settings as AppSettings;
-    settings = deepMerge(settings, deploymentConfig);
-  }
-
-  // 3. Get user-specific overrides
-  if (userId) {
-    const overrides = await db
-      .select()
-      .from(userSettingsOverrides)
-      .where(eq(userSettingsOverrides.userId, userId));
-
-    for (const override of overrides) {
-      if (override.module && override.service) {
-        // Service-level override
-        const module = settings.modules[override.module as ModuleName];
-        if (module && module.services[override.service as keyof typeof module.services] !== undefined) {
-          (module.services as any)[override.service] = override.settingValue;
-        }
-      } else if (override.module) {
-        // Module-level override
-        const module = settings.modules[override.module as ModuleName];
-        if (module) {
-          if (override.settingKey === 'enabled') {
-            module.enabled = override.settingValue;
-          } else if (override.settingKey === 'polling' || 
-                     override.settingKey === 'cronJobs' || 
-                     override.settingKey === 'dashboard' || 
-                     override.settingKey === 'apiDocs') {
-            module.services.features[override.settingKey as keyof ModuleFeatures] = override.settingValue;
-          }
-        }
-      }
-    }
-  }
-
-  return settings;
-}
-
-// Helper: Deep merge objects
 function deepMerge<T>(target: T, source: Partial<T>): T {
   const result = { ...target };
   for (const key in source) {
@@ -253,6 +228,67 @@ function deepMerge<T>(target: T, source: Partial<T>): T {
   return result;
 }
 
+/**
+ * Load settings from: JSON → Database Deployment → User Overrides
+ */
+export async function loadSettingsWithDB(userId?: string): Promise<AppSettings> {
+  // 1. Start with JSON settings
+  let settings = loadSettings();
+  
+  // 2. Get active deployment settings from database
+  const [activeDeployment] = await db
+    .select()
+    .from(settingsDeployment)
+    .where(eq(settingsDeployment.isActive, true))
+    .limit(1);
+
+  if (activeDeployment) {
+    const deploymentConfig = activeDeployment.settings as AppSettings;
+    settings = deepMerge(settings, deploymentConfig);
+  }
+
+  // 3. Get user-specific overrides
+  if (userId) {
+    const overrides = await db
+      .select()
+      .from(settingsUserOverrides)
+      .where(eq(settingsUserOverrides.userId, userId));
+
+    for (const override of overrides) {
+      // Get the setting to know its type
+      const [settingDef] = await db
+        .select()
+        .from(settingsTable)
+        .where(eq(settingsTable.id, override.settingId))
+        .limit(1);
+
+      if (!settingDef) continue;
+
+      // Parse the setting key path (e.g., "modules.traffic.enabled")
+      const keyParts = settingDef.key.split('.');
+      
+      // Navigate to the setting location
+      let current: any = settings;
+      for (let i = 0; i < keyParts.length - 1; i++) {
+        if (current[keyParts[i]] === undefined) {
+          // If path doesn't exist, create it
+          current[keyParts[i]] = {};
+        }
+        current = current[keyParts[i]];
+      }
+      
+      // Set the value
+      const lastKey = keyParts[keyParts.length - 1];
+      current[lastKey] = override.value;
+    }
+  }
+
+  return settings;
+}
+
+/**
+ * Get settings with database overrides (cached)
+ */
 export async function getSettingsWithDB(userId?: string, forceRefresh: boolean = false): Promise<AppSettings> {
   const now = Date.now();
   if (!forceRefresh && cachedDBSettings && (now - lastDBLoad) < CACHE_TTL) {
@@ -267,53 +303,139 @@ export async function getSettingsWithDB(userId?: string, forceRefresh: boolean =
 // DATABASE CRUD OPERATIONS
 // ============================================
 
-export async function saveDeploymentSettings(
+/**
+ * Create a new deployment snapshot
+ */
+export async function createDeploymentSettings(
   name: string,
   settings: AppSettings,
-  description?: string
+  description?: string,
+  environment: 'development' | 'staging' | 'production' = 'development'
 ): Promise<void> {
-  await db.insert(deploymentSettings).values({
+  await db.insert(settingsDeployment).values({
     name,
     description,
+    environment,
     settings: settings as any,
     isActive: false,
   });
 }
 
+/**
+ * Activate a deployment by name
+ */
 export async function activateDeploymentSettings(name: string): Promise<void> {
-  await db.update(deploymentSettings).set({ isActive: false });
+  // Deactivate all
+  await db.update(settingsDeployment).set({ isActive: false });
+  
+  // Activate the chosen one
   await db
-    .update(deploymentSettings)
+    .update(settingsDeployment)
     .set({ isActive: true })
-    .where(eq(deploymentSettings.name, name));
+    .where(eq(settingsDeployment.name, name));
+  
   cachedDBSettings = null;
 }
 
+/**
+ * Set a user-specific setting override
+ */
 export async function setUserSettingOverride(
   userId: string,
-  module: ModuleName,
   settingKey: string,
-  settingValue: boolean,
-  service?: string
+  value: any
 ): Promise<void> {
-  await db.insert(userSettingsOverrides).values({
+  // Find the setting definition
+  const [setting] = await db
+    .select()
+    .from(settingsTable)
+    .where(eq(settingsTable.key, settingKey))
+    .limit(1);
+
+  if (!setting) {
+    throw new Error(`Setting "${settingKey}" not found`);
+  }
+
+  // Check if override exists
+  const [existing] = await db
+    .select()
+    .from(settingsUserOverrides)
+    .where(
+      and(
+        eq(settingsUserOverrides.userId, userId),
+        eq(settingsUserOverrides.settingId, setting.id)
+      )
+    )
+    .limit(1);
+
+  if (existing) {
+    await db
+      .update(settingsUserOverrides)
+      .set({ 
+        value: value,
+        updatedAt: new Date(),
+      })
+      .where(eq(settingsUserOverrides.id, existing.id));
+  } else {
+    await db.insert(settingsUserOverrides).values({
+      userId,
+      settingId: setting.id,
+      value: value,
+    });
+  }
+
+  // Log the change
+  await db.insert(settingsAuditLogs).values({
+    settingId: setting.id,
     userId,
-    module,
-    service,
-    settingKey,
-    settingValue,
+    action: 'override',
+    newValue: value,
   });
+
   cachedDBSettings = null;
 }
 
+/**
+ * Clear all user overrides
+ */
 export async function clearUserOverrides(userId: string): Promise<void> {
   await db
-    .delete(userSettingsOverrides)
-    .where(eq(userSettingsOverrides.userId, userId));
+    .delete(settingsUserOverrides)
+    .where(eq(settingsUserOverrides.userId, userId));
+  
   cachedDBSettings = null;
 }
 
-// Async versions for DB-enabled checks
+/**
+ * Get a user's setting override
+ */
+export async function getUserSettingOverride(userId: string, settingKey: string): Promise<any> {
+  const [setting] = await db
+    .select()
+    .from(settingsTable)
+    .where(eq(settingsTable.key, settingKey))
+    .limit(1);
+
+  if (!setting) return null;
+
+  const [override] = await db
+    .select()
+    .from(settingsUserOverrides)
+    .where(
+      and(
+        eq(settingsUserOverrides.userId, userId),
+        eq(settingsUserOverrides.settingId, setting.id)
+      )
+    )
+    .limit(1);
+
+  return override?.value ?? null;
+}
+
+// ============================================
+// ASYNC HELPERS (DB-enabled checks)
+// ============================================
+
 export async function isModuleEnabledAsync(module: ModuleName, userId?: string): Promise<boolean> {
   const settings = await getSettingsWithDB(userId);
   return settings.modules[module].enabled;
@@ -329,3 +451,27 @@ export async function isServiceEnabledAsync(
   const services = settings.modules[module].services as any;
   return services[service] ?? false;
 }
+
+export async function isFeatureEnabledAsync(feature: keyof ModuleFeatures, userId?: string): Promise<boolean> {
+  const settings = await getSettingsWithDB(userId);
+  return settings.features[feature];
+}
+
+// ============================================
+// STARTUP LOG
+// ============================================
+
+if (typeof window === 'undefined') {
+  const settings = getSettings();
+  console.log('\n⚙️  Application Settings Loaded:');
+  console.log(`  📦 Modules: Traffic=${settings.modules.traffic.enabled}, ThreeD=${settings.modules.threed.enabled}, Music=${settings.modules.music.enabled}`);
+  console.log(`  ⚡ Features: Polling=${settings.features.polling}, Cron=${settings.features.cronJobs}, Dashboard=${settings.features.dashboard}, API Docs=${settings.features.apiDocs}`);
+  
+  const totalServices = 
+    Object.keys(settings.modules.traffic.services).filter(k => k !== 'features' && settings.modules.traffic.services[k as keyof typeof settings.modules.traffic.services]).length +
+    Object.keys(settings.modules.threed.services).filter(k => k !== 'features' && settings.modules.threed.services[k as keyof typeof settings.modules.threed.services]).length +
+    Object.keys(settings.modules.music.services).filter(k => k !== 'features' && settings.modules.music.services[k as keyof typeof settings.modules.music.services]).length;
+  
+  console.log(`  🎯 ${totalServices} services enabled\n`);
+}
+

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw, Box, Sprout } from 'lucide-react';
 
 // Dynamically import the 3D viewer to avoid SSR issues
-const GardenViewer = dynamic(() => import('@/components/threed/GardenViewer'), {
+const GardenViewer = dynamic(() => import('@/components/threed/shared/GardenViewer'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-[600px] bg-muted rounded-xl flex items-center justify-center">

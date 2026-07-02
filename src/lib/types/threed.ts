@@ -94,3 +94,75 @@ export interface WeatherData {
   condition: string;
   rainfall: number;
 }
+
+// ===== TRAFFIC =====
+export interface TrafficIncident3D {
+  id: string;
+  type: 'chp' | 'caltrans' | '511' | 'calfire';
+  title: string;
+  description: string;
+  location: string;
+  lat: number;
+  lng: number;
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+  timestamp: string;
+  source: string;
+}
+
+// ===== GARDEN =====
+export interface GardenBed3D {
+  id: string;
+  name: string;
+  x: number;
+  z: number;
+  width: number;
+  depth: number;
+  color?: string;
+}
+
+export interface Plant3D {
+  id: string;
+  name: string;
+  species: string;
+  x: number;
+  z: number;
+  growthStage: 'seed' | 'seedling' | 'vegetative' | 'flowering' | 'fruiting' | 'mature';
+  plantedAt: string;
+}
+
+// ===== FARMBOT =====
+export interface FarmBot3D {
+  id: string;
+  name: string;
+  status: 'online' | 'offline' | 'busy' | 'error';
+  x: number;
+  z: number;
+  battery: number;
+  lastSeen: string;
+}
+
+// ===== WEATHER =====
+export interface Weather3D {
+  temperature: number;
+  conditions: 'sunny' | 'cloudy' | 'rainy' | 'snowy' | 'foggy';
+  humidity: number;
+  windSpeed: number;
+  precipitation: number;
+}
+
+// ===== LAYER VISIBILITY =====
+export interface LayerVisibility {
+  traffic: boolean;
+  garden: boolean;
+  farmbots: boolean;
+  weather: boolean;
+}
+
+// ===== MAIN DATA TYPE =====
+export interface ThreeDData {
+  traffic: TrafficIncident3D[];
+  beds: GardenBed3D[];
+  plants: Plant3D[];
+  farmbots: FarmBot3D[];
+  weather: Weather3D | null;
+}

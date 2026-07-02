@@ -35,7 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/toast';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { ModelPreview } from '@/components/threed/ModelPreview';
+import { ModelPreview } from '@/components/threed/shared/ModelPreview';
 import {
   Upload,
   Trash2,

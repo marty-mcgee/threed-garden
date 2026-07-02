@@ -25,10 +25,10 @@ import { EffectComposer, Bloom, DepthOfField, Vignette } from '@react-three/post
 import * as THREE from 'three';
 
 // Import our custom components
-import { GardenBed } from './GardenBed';
-import { GardenPlant } from './GardenPlant';
-import { WeatherEffects } from './WeatherEffects';
-import { FloatingUI } from './FloatingUI';
+import { GardenBed } from '../shared/GardenBed';
+import { GardenPlant } from '../shared/GardenPlant';
+import { WeatherEffects } from '../shared/WeatherEffects';
+import { FloatingUI } from '../shared/FloatingUI';
 
 interface Bed {
   id: number;

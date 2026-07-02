@@ -19,7 +19,7 @@ import { Modal } from '@/components/ui/modal';
 import { ModalConfirm } from '@/components/ui/modal-confirm';
 import { DialogFooter } from '@/components/ui/dialog';
 // threed components
-import { ModelPreview } from '@/components/threed/ModelPreview';
+import { ModelPreview } from '@/components/threed/shared/ModelPreview';
 
 interface Model {
   id: number;

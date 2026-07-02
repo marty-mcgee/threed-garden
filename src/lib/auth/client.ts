@@ -1,22 +1,13 @@
-"use client";
-
-import { createAuthClient } from "better-auth/react";
-import { adminClient } from "better-auth/client/plugins";
+// lib/auth/client.ts
+import { createAuthClient } from 'better-auth/client';
 
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:4444",
-  plugins: [adminClient()],
-  // Ensure credentials are included in requests
-  credentials: "include",
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:4444',
 });
 
 export const { 
-  useSession, 
   signIn, 
+  signUp, 
   signOut, 
-  signUp,
-  getSession 
+  useSession 
 } = authClient;
-
-// Type-safe session hook
-export type Session = typeof authClient.$Infer.Session;

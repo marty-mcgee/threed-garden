@@ -8,7 +8,7 @@ import {
   Image, Volume2, type LucideIcon
 } from 'lucide-react';
 import { getServerSettings, isServiceEnabledServer } from './settings.server';
-import type { ModuleName } from './settings';
+import type { ModuleName } from './settings-old';
 
 export interface NavItem {
   path: string;

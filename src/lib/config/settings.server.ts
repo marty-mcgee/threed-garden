@@ -1,7 +1,7 @@
 // lib/config/settings.server.ts
 import 'server-only';
 import settingsData from './settings.json';
-import type { AppSettings, ModuleName } from './settings';
+import type { AppSettings, ModuleName } from './settings-old';
 
 let cachedSettings: AppSettings | null = null;
 

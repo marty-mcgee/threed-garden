@@ -248,7 +248,7 @@ export default function HomePage() {
               Marty McGee
             </h1>
             <p className="text-lg lg:text-xl mb-6 text-white/90">
-              Music • Development • 3D Art • Gardening • Broadcasting
+              Music • Web • 3D Business • Cooking • Gardening • Broadcasting
             </p>
             
             {/* Hero CTA Buttons - Horizontal layout */}
@@ -312,28 +312,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* About + Stats */}
-      <div className="py-8">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="text-center md:text-left">
-              <h2 className="text-2xl font-bold mb-2">About Marty McGee</h2>
-              <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto md:mx-0 mb-4" />
-              <p className="text-muted-foreground">Multi-Channel Creator, building pleasant digital experiences that blend Music, Technology, Nature.</p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
-                  <div className="text-3xl mb-1">{stat.icon}</div>
-                  <div className="text-xl font-bold">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Features Grid */}
       <div className="py-8 bg-gray-50 dark:bg-gray-900/50">
         <div className="container mx-auto px-6">
@@ -354,6 +332,28 @@ export default function HomePage() {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* About + Stats */}
+      <div className="py-8">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="text-center md:text-left">
+              <h2 className="text-2xl font-bold mb-2">About Music</h2>
+              <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto md:mx-0 mb-4" />
+              <p className="text-muted-foreground">Multi-Channel Creator, building pleasant digital experiences that blend Music, Technology, Nature.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                  <div className="text-3xl mb-1">{stat.icon}</div>
+                  <div className="text-xl font-bold">{stat.value}</div>
+                  <div className="text-xs text-muted-foreground">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

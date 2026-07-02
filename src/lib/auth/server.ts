@@ -1,9 +1,17 @@
+// lib/auth/server.ts
+
 // import { betterAuth } from "better-auth";
 import { betterAuth } from "better-auth/minimal";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/lib/db/client";
-import { user, session, account, verification } from "@/lib/schema";
+// import { user, session, account, verification } from "@/lib/schema";
+import { 
+  user, 
+  userAccounts, 
+  userSessions, 
+  userVerifications 
+} from '@/lib/schema/auth';
 
 export const auth = betterAuth({
 
@@ -12,16 +20,16 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
-      user,
-      session,
-      account,
-      verification,
+      user: user,
+      account: userAccounts,
+      session: userSessions,
+      verification: userVerifications,
     },
   }),
 
   emailAndPassword: {
     enabled: true,
-    autoSignIn: true,
+    // autoSignIn: true,
   },
 
   // Add secret for production
@@ -30,6 +38,17 @@ export const auth = betterAuth({
   plugins: [
     nextCookies() // make sure this is the last plugin in the array
   ],
+  
+  // socialProviders: {
+  //   google: {
+  //     clientId: process.env.GOOGLE_CLIENT_ID || '',
+  //     clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+  //   },
+  //   github: {
+  //     clientId: process.env.GITHUB_CLIENT_ID || '',
+  //     clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+  //   },
+  // },
 
   // Disable account linking and other features that might require Kysely
   account: {
@@ -91,7 +110,55 @@ export const auth = betterAuth({
     enabled: false,
   },
 
+  
+  user: {
+    additionalFields: {
+      username: {
+        type: 'string',
+        required: false,
+      },
+      displayName: {
+        type: 'string',
+        required: false,
+      },
+      bio: {
+        type: 'string',
+        required: false,
+      },
+      theme: {
+        type: 'string',
+        required: false,
+        defaultValue: 'system',
+      },
+      language: {
+        type: 'string',
+        required: false,
+        defaultValue: 'en',
+      },
+      timezone: {
+        type: 'string',
+        required: false,
+        defaultValue: 'UTC',
+      },
+      role: {
+        type: 'string',
+        required: false,
+        defaultValue: 'user',
+      },
+      isActive: {
+        type: 'boolean',
+        required: false,
+        defaultValue: true,
+      },
+    },
+  },
+
 });
 
 // Export auth types
 export type Auth = typeof auth;
+
+
+
+
+

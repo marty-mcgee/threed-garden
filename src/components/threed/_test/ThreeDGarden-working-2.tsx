@@ -1,22 +1,39 @@
 // src/components/threed/ThreeDGarden.tsx
 'use client';
 
-import { Suspense, useRef, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, Sky, Cloud, Stats } from '@react-three/drei';
+import { Suspense, useRef, useState, useEffect } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { 
+  OrbitControls, 
+  Environment, 
+  Stats, 
+  Grid,
+  Sky,
+  Cloud,
+  Html
+} from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 
 // Import your existing components
-import { GardenBed } from './GardenBed';
-import { GardenGround } from './GardenGround';
-import { GardenPlant } from './GardenPlant';
-import { WeatherEffects } from './WeatherEffects';
-import { FloatingUI } from './FloatingUI';
+import { GardenBed } from '../shared/GardenBed';
+import { GardenGround } from '../shared/GardenGround';
+import { GardenPlant } from '../shared/GardenPlant';
+import { WeatherEffects } from '../shared/WeatherEffects';
+import { FloatingUI } from '../shared/FloatingUI';
 
 // Enhanced Lighting Component
 function EnhancedLighting() {
   const sunLightRef = useRef<THREE.DirectionalLight>(null);
+  
+  useFrame(({ clock }) => {
+    if (sunLightRef.current) {
+      // Subtle light movement for dynamic feel
+      const time = clock.getElapsedTime();
+      const intensity = 1.2 + Math.sin(time * 0.1) * 0.1;
+      sunLightRef.current.intensity = intensity;
+    }
+  });
   
   return (
     <>
@@ -67,9 +84,28 @@ function EnhancedLighting() {
   );
 }
 
-// Animated floating particles
-function FloatingParticles({ count = 200 }: { count?: number }) {
+// Animated floating particles (dust motes / pollen)
+function FloatingParticles({ count = 200 }) {
   const particlesRef = useRef<THREE.Points>(null);
+  
+  useEffect(() => {
+    if (particlesRef.current) {
+      const positions = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 20;
+        positions[i * 3 + 1] = Math.random() * 5;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
+      }
+      particlesRef.current.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    }
+  }, [count]);
+  
+  useFrame(({ clock }) => {
+    if (particlesRef.current) {
+      const time = clock.getElapsedTime();
+      particlesRef.current.rotation.y = time * 0.05;
+    }
+  });
   
   return (
     <points ref={particlesRef}>
@@ -88,6 +124,12 @@ function FloatingParticles({ count = 200 }: { count?: number }) {
 // Animated clouds
 function AnimatedClouds() {
   const cloudGroupRef = useRef<THREE.Group>(null);
+  
+  useFrame(({ clock }) => {
+    if (cloudGroupRef.current) {
+      cloudGroupRef.current.position.x = Math.sin(clock.getElapsedTime() * 0.05) * 2;
+    }
+  });
   
   return (
     <group ref={cloudGroupRef} position={[0, 12, -5]}>
@@ -133,7 +175,7 @@ export function ThreeDGarden({ beds, plantings, weather, showControls = true }: 
   );
   
   return (
-    <div className="w-full h-[600px] relative rounded-lg overflow-hidden">
+    <div className="relative w-full h-full min-h-[600px] bg-gradient-to-b from-sky-400 to-sky-200 dark:from-sky-900 dark:to-sky-700 rounded-lg overflow-hidden">
       {/* UI Overlay */}
       {showControls && (
         <FloatingUI
@@ -154,7 +196,6 @@ export function ThreeDGarden({ beds, plantings, weather, showControls = true }: 
           alpha: false,
           powerPreference: "high-performance"
         }}
-        style={{ width: '100%', height: '100%' }}
       >
         {/* Scene Background */}
         <color attach="background" args={['#87CEEB']} />
@@ -188,22 +229,38 @@ export function ThreeDGarden({ beds, plantings, weather, showControls = true }: 
         {/* Garden Ground */}
         <GardenGround />
         
-        {/* Garden Beds - CRITICAL: Keep your bed rendering */}
+        {/* Garden Beds */}
         <Suspense fallback={null}>
           {beds.map((bed) => (
-            <GardenBed key={`bed-${bed.id}`} bed={bed} />
+            <GardenBed key={bed.id} bed={bed} />
           ))}
         </Suspense>
         
-        {/* Plants - CRITICAL: This renders your GLB/FBX models */}
+        {/* Plants */}
         <Suspense fallback={null}>
           {plantings.map((planting) => (
-            <GardenPlant key={`plant-${planting.id}`} planting={planting} />
+            <GardenPlant key={planting.id} planting={planting} />
           ))}
         </Suspense>
         
         {/* Weather Effects */}
         {weather && <WeatherEffects weather={weather} />}
+        
+        {/* Reference Grid (optional, helpful for debugging) */}
+        {showStats && (
+          <Grid
+            args={[20, 20]}
+            cellSize={0.5}
+            cellThickness={0.5}
+            cellColor="#6f6f6f"
+            sectionSize={2}
+            sectionThickness={1}
+            sectionColor="#9d4b4b"
+            fadeDistance={30}
+            fadeStrength={1}
+            followCamera={false}
+          />
+        )}
         
         {/* Post Processing Effects */}
         {showEffects && quality !== 'low' && (

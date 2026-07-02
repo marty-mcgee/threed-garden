@@ -17,17 +17,91 @@ import {
   pgEnum,
   time,
   AnyPgColumn,
+  real,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
+import { projects } from '../projects';
 
 // ============================================
-// ## THREED MODULE
+// THREED MODULE - Main Table
 // ============================================
+
+/**
+ * threed - Main table for ThreeD module
+ * Stores the overall garden configuration and status
+ */
+export const threed = pgTable('threed', {
+  id: serial('id').primaryKey(),
+
+  projectId: integer('project_id').references(() => projects.id, { onDelete: 'cascade' }),
+  
+  // Basic info
+  name: text('name').notNull(),
+  description: text('description'),
+  slug: text('slug').unique().notNull(),
+  
+  // Owner
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
+  // Garden configuration
+  config: jsonb('config').default({}), // Layout, grid, units, etc.
+  
+  // Status
+  isActive: boolean('is_active').default(true),
+  isPublic: boolean('is_public').default(false),
+  
+  // Metadata
+  version: text('version').default('1.0.0'),
+  metadata: jsonb('metadata').default({}),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  slugIdx: uniqueIndex('idx_threed_slug').on(table.slug),
+  userIdIdx: index('idx_threed_user_id').on(table.userId),
+  activeIdx: index('idx_threed_active').on(table.isActive),
+}));
+
+// ============================================
+// UPDATE RELATIONSHIPS
+// ============================================
+
+export const threedRelations = relations(threed, ({ one, many }) => ({
+  user: one(user, {
+    fields: [threed.userId],
+    references: [user.id],
+  }),
+  // All other threed tables relate to this
+  plants: many(threedPlants),
+  beds: many(threedBeds),
+  plantings: many(threedPlantings),
+  farmbots: many(threedFarmbots),
+  models: many(threedModels),
+  characters: many(threedCharacters),
+  tasks: many(threedTasks),
+  weatherLogs: many(threedWeatherLogs),
+  wateringSchedules: many(threedWateringSchedules),
+  harvests: many(threedHarvests),
+  layers: many(threedLayers),
+  markers: many(threedMarkers),
+}));
+
+
+
+
+
+
+
+
+
+
 
 // ============================================
 // ENUMS for type safety
 // ============================================
+
 export const plantTypeEnum = pgEnum('threed_plant_type', ['Vegetable', 'Fruit', 'Herb', 'Flower', 'Tree', 'Shrub', 'CoverCrop']);
 export const plantStatusEnum = pgEnum('threed_plant_status', ['active', 'inactive', 'archived']);
 export const plantingStatusEnum = pgEnum('threed_planting_status', ['planned', 'planted', 'growing', 'harvesting', 'harvested', 'failed']);
@@ -36,7 +110,6 @@ export const taskPriorityEnum = pgEnum('threed_task_priority', ['low', 'medium',
 export const taskStatusEnum = pgEnum('threed_task_status', ['pending', 'in_progress', 'completed', 'cancelled']);
 export const bedShapeEnum = pgEnum('threed_bed_shape', ['rectangle', 'square', 'circle', 'raised', 'container', 'custom']);
 export const farmbotStatusEnum = pgEnum('threed_farmbot_status', ['online', 'offline', 'maintenance', 'error']);
-// Update the modelTypeEnum to include more values
 export const modelTypeEnum = pgEnum('threed_model_type', [
   'procedural', 
   'gltf', 
@@ -61,10 +134,91 @@ export const wateringFrequencyEnum = pgEnum('threed_watering_frequency', [
 ]);
 
 // ============================================
-// 1. threed_plants - Master plant database (UPDATED with GLTF support)
+// LAYERS + MARKERS ENUMS
+// ============================================
+export const layerTypeEnum = pgEnum('threed_layer_type', [
+  'garden',
+  'plants',
+  'beds', 
+  'farmbots',
+  'models',
+  'characters',
+  'tasks',
+  'weather',
+  'traffic',
+  'custom'
+]);
+
+export const layerVisibilityEnum = pgEnum('threed_layer_visibility', [
+  'public',
+  'private',
+  'shared'
+]);
+
+export const markerTypeEnum = pgEnum('threed_marker_type', [
+  'plant',
+  'bed',
+  'farmbot',
+  'model',
+  'character',
+  'task',
+  'weather_station',
+  'traffic_incident',
+  'custom'
+]);
+
+export const markerStatusEnum = pgEnum('threed_marker_status', [
+  'active',
+  'inactive',
+  'archived',
+  'pending'
+]);
+
+// ============================================
+// ENUMS for Characters
+// ============================================
+export const characterTypeEnum = pgEnum('threed_character_type', [
+  'animal', 'bird', 'insect', 'mythical', 'human', 'robot', 'decoration'
+]);
+
+export const characterStatusEnum = pgEnum('threed_character_status', [
+  'active', 'idle', 'sleeping', 'moving', 'hidden'
+]);
+
+export const characterAnimationEnum = pgEnum('threed_character_animation', [
+  'idle', 'walk', 'run', 'fly', 'dance', 'sway', 'float', 'spin', 'bounce'
+]);
+
+export const characterMovementTypeEnum = pgEnum('threed_character_movement_type', [
+  'stationary', 'wander', 'patrol', 'circle', 'follow', 'teleport'
+]);
+
+export const characterWeatherSensitivityEnum = pgEnum('threed_character_weather_sensitivity', [
+  'all', 'sunny_only', 'rainy_only', 'no_rain', 'no_snow'
+]);
+
+export const characterEmoteEnum = pgEnum('threed_character_emote', [
+  'none', 'happy', 'sad', 'surprised', 'angry', 'wave', 'dance', 'sleep'
+]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================================
+// 1. threed_plants - Master plant database
 // ============================================
 export const threedPlants = pgTable('threed_plants', {
   id: serial('id').primaryKey(),
+  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
   plantId: varchar('plant_id', { length: 50 }).unique().notNull(),
   commonName: varchar('common_name', { length: 255 }).notNull(),
   scientificName: varchar('scientific_name', { length: 255 }),
@@ -75,6 +229,9 @@ export const threedPlants = pgTable('threed_plants', {
   
   // Relationship to model (shared with characters)
   modelId: integer('model_id').references(() => threedModels.id, { onDelete: 'set null' }),
+  
+  // Marker relationship (NEW)
+  markerId: integer('marker_id').references(() => threedMarkers.id, { onDelete: 'set null' }),
   
   // Growth parameters
   growthHabit: varchar('growth_habit', { length: 50 }),
@@ -113,18 +270,20 @@ export const threedPlants = pgTable('threed_plants', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
+  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
   plantIdIdx: uniqueIndex('idx_threed_plants_plant_id').on(table.plantId),
   commonNameIdx: index('idx_threed_plants_common_name').on(table.commonName),
   typeIdx: index('idx_threed_plants_type').on(table.type),
   statusIdx: index('idx_threed_plants_status').on(table.status),
-  // modelTypeIdx: index('idx_threed_plants_model_type').on(table.modelType),
+  markerIdx: index('idx_threed_plants_marker').on(table.markerId),
 }));
 
 // ============================================
-// 1b. threed_models - GLTF model library (NEW)
+// 1b. threed_models - GLTF model library
 // ============================================
 export const threedModels = pgTable('threed_models', {
   id: serial('id').primaryKey(),
+  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
   
   // Add these to track what uses this model
   usedByPlants: boolean('used_by_plants').default(false),
@@ -151,7 +310,6 @@ export const threedModels = pgTable('threed_models', {
   animations: jsonb('animations').default([]), // ['idle', 'sway', 'grow', 'flower']
   defaultAnimation: varchar('default_animation', { length: 50 }),
 
-  // Update threedModels table to track if it has external files
   hasExternalFiles: boolean('has_external_files').default(false),
   textureCount: integer('texture_count').default(0),
   mainModelFileId: integer('main_model_file_id'), // Reference to the main GLB/GLTF file in threedModelFiles
@@ -162,22 +320,53 @@ export const threedModels = pgTable('threed_models', {
   uploadedBy: varchar('uploaded_by', { length: 255 }),
   uploadedAt: timestamp('uploaded_at').defaultNow(),
   
+  // Marker relationship (NEW)
+  markerId: integer('marker_id').references(() => threedMarkers.id, { onDelete: 'set null' }),
+  
   // Additional metadata (author, license, etc.)
   metadata: jsonb('metadata').default({}),
   
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  // plantIdIdx: index('idx_threed_models_plant_id').on(table.plantId),
+  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
   modelTypeIdx: index('idx_threed_models_type').on(table.modelType),
   activeIdx: index('idx_threed_models_active').on(table.isActive),
+  markerIdx: index('idx_threed_models_marker').on(table.markerId),
 }));
 
 // ============================================
-// 2. threed_beds - Garden layout (UPDATED with GLTF support)
+// 1c. threed_model_files - Associated files for 3D models
+// ============================================
+export const threedModelFiles = pgTable('threed_model_files', {
+  id: serial('id').primaryKey(),
+  modelId: integer('model_id').references(() => threedModels.id, { onDelete: 'cascade' }),
+  
+  // File information
+  fileName: varchar('file_name', { length: 255 }).notNull(),
+  fileType: varchar('file_type', { length: 50 }).notNull(), // 'model', 'texture', 'binary', 'other'
+  textureType: varchar('texture_type', { length: 50 }), // 'baseColor', 'normalMap', 'roughness', 'metallic', 'emissive', 'occlusion'
+  filePath: varchar('file_path', { length: 500 }).notNull(),
+  fileSize: integer('file_size'),
+  
+  // For GLTF binary
+  isBinaryBuffer: boolean('is_binary_buffer').default(false),
+  
+  // Order in which files should be loaded
+  loadOrder: integer('load_order').default(0),
+  
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => ({
+  modelIdIdx: index('idx_threed_model_files_model_id').on(table.modelId),
+  fileTypeIdx: index('idx_threed_model_files_type').on(table.fileType),
+}));
+
+// ============================================
+// 2. threed_beds - Garden layout
 // ============================================
 export const threedBeds = pgTable('threed_beds', {
   id: serial('id').primaryKey(),
+  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
   bedId: varchar('bed_id', { length: 50 }).unique().notNull(),
   name: varchar('name', { length: 100 }).notNull(),
   description: text('description'),
@@ -204,21 +393,27 @@ export const threedBeds = pgTable('threed_beds', {
   isActive: boolean('is_active').default(true),
   color: varchar('color', { length: 20 }).default('#8B5E3C'),
   
+  // Marker relationship (NEW)
+  markerId: integer('marker_id').references(() => threedMarkers.id, { onDelete: 'set null' }),
+  
   // Metadata
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
+  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
   bedIdIdx: uniqueIndex('idx_threed_beds_bed_id').on(table.bedId),
   activeIdx: index('idx_threed_beds_active').on(table.isActive),
   nameIdx: index('idx_threed_beds_name').on(table.name),
+  markerIdx: index('idx_threed_beds_marker').on(table.markerId),
 }));
 
 // ============================================
-// 3. threed_plantings - Plants in beds (UPDATED with GLTF support)
+// 3. threed_plantings - Plants in beds
 // ============================================
 export const threedPlantings = pgTable('threed_plantings', {
   id: serial('id').primaryKey(),
+  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
   plantingId: varchar('planting_id', { length: 50 }).unique().notNull(),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
   bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'set null' }),
@@ -251,6 +446,7 @@ export const threedPlantings = pgTable('threed_plantings', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
+  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
   plantingIdIdx: uniqueIndex('idx_threed_plantings_planting_id').on(table.plantingId),
   plantIdx: index('idx_threed_plantings_plant').on(table.plantId),
   bedIdx: index('idx_threed_plantings_bed').on(table.bedId),
@@ -259,7 +455,7 @@ export const threedPlantings = pgTable('threed_plantings', {
 }));
 
 // ============================================
-// 4. threed_watering_schedules - Automated watering (NEW)
+// 4. threed_watering_schedules - Automated watering
 // ============================================
 export const threedWateringSchedules = pgTable('threed_watering_schedules', {
   id: serial('id').primaryKey(),
@@ -312,7 +508,7 @@ export const threedWateringSchedules = pgTable('threed_watering_schedules', {
 }));
 
 // ============================================
-// 5. threed_watering_history - Watering logs (NEW)
+// 5. threed_watering_history - Watering logs
 // ============================================
 export const threedWateringHistory = pgTable('threed_watering_history', {
   id: serial('id').primaryKey(),
@@ -357,6 +553,7 @@ export const threedWateringHistory = pgTable('threed_watering_history', {
 // ============================================
 export const threedHarvests = pgTable('threed_harvests', {
   id: serial('id').primaryKey(),
+  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
   harvestId: varchar('harvest_id', { length: 50 }).unique().notNull(),
   plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'set null' }),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
@@ -374,16 +571,18 @@ export const threedHarvests = pgTable('threed_harvests', {
   // Metadata
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
+  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
   harvestIdIdx: uniqueIndex('idx_threed_harvests_harvest_id').on(table.harvestId),
   plantingIdx: index('idx_threed_harvests_planting').on(table.plantingId),
   harvestDateIdx: index('idx_threed_harvests_date').on(table.harvestDate),
 }));
 
 // ============================================
-// 7. threed_tasks - Garden tasks/to-do (UPDATED with watering integration)
+// 7. threed_tasks - Garden tasks/to-do
 // ============================================
 export const threedTasks = pgTable('threed_tasks', {
   id: serial('id').primaryKey(),
+  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
   taskId: varchar('task_id', { length: 50 }).unique().notNull(),
   plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'set null' }),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
@@ -403,17 +602,22 @@ export const threedTasks = pgTable('threed_tasks', {
   dueDate: timestamp('due_date'),
   completedAt: timestamp('completed_at'),
   
+  // Marker relationship (NEW)
+  markerId: integer('marker_id').references(() => threedMarkers.id, { onDelete: 'set null' }),
+  
   // Metadata
   assignedTo: varchar('assigned_to', { length: 100 }),
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
+  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
   taskIdIdx: uniqueIndex('idx_threed_tasks_task_id').on(table.taskId),
   plantingIdx: index('idx_threed_tasks_planting').on(table.plantingId),
   dueDateIdx: index('idx_threed_tasks_due_date').on(table.dueDate),
   statusIdx: index('idx_threed_tasks_status').on(table.status),
   wateringScheduleIdx: index('idx_threed_tasks_watering').on(table.wateringScheduleId),
+  markerIdx: index('idx_threed_tasks_marker').on(table.markerId),
 }));
 
 // ============================================
@@ -436,12 +640,16 @@ export const threedWeatherLogs = pgTable('threed_weather_logs', {
   heatWarning: boolean('heat_warning').default(false),
   droughtWarning: boolean('drought_warning').default(false),
   
+  // Marker relationship (NEW)
+  markerId: integer('marker_id').references(() => threedMarkers.id, { onDelete: 'set null' }),
+  
   // Source and metadata
   source: varchar('source', { length: 50 }).default('api'),
   rawData: jsonb('raw_data'),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
   recordedAtIdx: index('idx_threed_weather_recorded_at').on(table.recordedAt),
+  markerIdx: index('idx_threed_weather_marker').on(table.markerId),
 }));
 
 // ============================================
@@ -449,6 +657,7 @@ export const threedWeatherLogs = pgTable('threed_weather_logs', {
 // ============================================
 export const threedFarmbots = pgTable('threed_farmbots', {
   id: serial('id').primaryKey(),
+  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
   deviceId: varchar('device_id', { length: 100 }).unique().notNull(),
   name: varchar('name', { length: 100 }).notNull(),
   status: farmbotStatusEnum('status').default('offline'),
@@ -468,14 +677,19 @@ export const threedFarmbots = pgTable('threed_farmbots', {
   batteryLevel: integer('battery_level'),
   firmwareVersion: varchar('firmware_version', { length: 50 }),
   
+  // Marker relationship (NEW)
+  markerId: integer('marker_id').references(() => threedMarkers.id, { onDelete: 'set null' }),
+  
   // Metadata
   isActive: boolean('is_active').default(true),
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
+  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
   deviceIdIdx: uniqueIndex('idx_threed_farmbots_device_id').on(table.deviceId),
   statusIdx: index('idx_threed_farmbots_status').on(table.status),
+  markerIdx: index('idx_threed_farmbots_marker').on(table.markerId),
 }));
 
 // ============================================
@@ -514,14 +728,259 @@ export const threedSystemLogs = pgTable('threed_system_logs', {
 }));
 
 // ============================================
-// RELATIONSHIPS (UPDATED)
+// 12. threed_characters - Characters and creatures
 // ============================================
-export const threedPlantsRelations = relations(threedPlants, ({ many }) => ({
+export const threedCharacters = pgTable('threed_characters', {
+  id: serial('id').primaryKey(),
+  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
+  characterId: varchar('character_id', { length: 50 }).unique().notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
+  description: text('description'),
+  type: characterTypeEnum('type').default('animal'),
+  status: characterStatusEnum('status').default('active'),
+  
+  // Model relationship
+  modelId: integer('model_id').references(() => threedModels.id, { onDelete: 'set null' }),
+  
+  // Marker relationship (NEW)
+  markerId: integer('marker_id').references(() => threedMarkers.id, { onDelete: 'set null' }),
+  
+  // Animation
+  animations: characterAnimationEnum('animations').array().default([]),
+  defaultAnimation: characterAnimationEnum('default_animation'),
+  animationSpeed: decimal('animation_speed', { precision: 4, scale: 2 }).default('1.0'),
+  
+  // Enhanced Movement
+  isMovable: boolean('is_movable').default(false),
+  movementType: characterMovementTypeEnum('movement_type').default('stationary'),
+  movementPattern: varchar('movement_pattern', { length: 50 }),
+  movementRadius: decimal('movement_radius', { precision: 5, scale: 2 }),
+  movementSpeed: decimal('movement_speed', { precision: 4, scale: 2 }).default('0.5'),
+  
+  // Patrol waypoints (store as JSON array of {x, y, z})
+  patrolWaypoints: jsonb('patrol_waypoints').default([]),
+  
+  // Follow target (could be plantId, characterId, or 'camera')
+  followTarget: varchar('follow_target', { length: 50 }),
+  followDistance: decimal('follow_distance', { precision: 4, scale: 2 }).default('2.0'),
+  
+  // Teleport positions
+  teleportPositions: jsonb('teleport_positions').default([]),
+  teleportInterval: integer('teleport_interval'), // seconds between teleports
+  
+  // Enhanced Interaction
+  interactable: boolean('interactable').default(true),
+  interactionMessage: text('interaction_message'),
+  soundEffect: varchar('sound_effect', { length: 255 }),
+  
+  // Emote system
+  defaultEmote: characterEmoteEnum('default_emote').default('none'),
+  emoteOnInteract: characterEmoteEnum('emote_on_interact').default('happy'),
+  
+  // Time-based activation
+  activeStartHour: integer('active_start_hour'), // 0-23
+  activeEndHour: integer('active_end_hour'),
+  
+  // Weather sensitivity
+  weatherSensitivity: characterWeatherSensitivityEnum('weather_sensitivity').default('all'),
+  
+  // Position (absolute world coordinates)
+  bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'set null' }),
+  positionX: decimal('position_x', { precision: 8, scale: 2 }).default('0'),
+  positionY: decimal('position_y', { precision: 8, scale: 2 }).default('0'),
+  positionZ: decimal('position_z', { precision: 8, scale: 2 }).default('0'),
+  rotation: decimal('rotation', { precision: 8, scale: 2 }).default('0'),
+  
+  // Scale and appearance
+  scale: decimal('scale', { precision: 5, scale: 2 }).default('1'),
+  scaleMultiplier: decimal('scale_multiplier', { precision: 5, scale: 2 }).default('1'),
+  colorTint: varchar('color_tint', { length: 20 }),
+  
+  // Visibility
+  visible: boolean('visible').default(true),
+  visibleDistance: decimal('visible_distance', { precision: 5, scale: 2 }).default('30.0'),
+  
+  // Metadata
+  isActive: boolean('is_active').default(true),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
+  characterIdIdx: uniqueIndex('idx_threed_characters_character_id').on(table.characterId),
+  nameIdx: index('idx_threed_characters_name').on(table.name),
+  typeIdx: index('idx_threed_characters_type').on(table.type),
+  statusIdx: index('idx_threed_characters_status').on(table.status),
+  movementTypeIdx: index('idx_threed_characters_movement_type').on(table.movementType),
+  modelIdx: index('idx_threed_characters_model').on(table.modelId),
+  bedIdx: index('idx_threed_characters_bed').on(table.bedId),
+  visibleIdx: index('idx_threed_characters_visible').on(table.visible),
+  markerIdx: index('idx_threed_characters_marker').on(table.markerId),
+}));
+
+// ============================================
+// LAYERS TABLE - Groups of 3D objects
+// ============================================
+export const threedLayers = pgTable('threed_layers', {
+  id: serial('id').primaryKey(),
+  
+  // Basic info
+  name: text('name').notNull(),
+  description: text('description'),
+  type: layerTypeEnum('type').notNull().default('custom'),
+  
+  // Visibility & access
+  isEnabled: boolean('is_enabled').default(true),
+  visibility: layerVisibilityEnum('visibility').default('public'),
+  userId: integer('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
+  // Display settings
+  icon: text('icon'), // Lucide icon name
+  color: text('color'), // Hex color code
+  orderIndex: integer('order_index').default(0),
+  
+  // Metadata & configuration
+  config: jsonb('config'), // Layer-specific configuration
+  metadata: jsonb('metadata'),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  userIdIdx: index('idx_threed_layers_user_id').on(table.userId),
+  typeIdx: index('idx_threed_layers_type').on(table.type),
+  enabledIdx: index('idx_threed_layers_enabled').on(table.isEnabled),
+}));
+
+// ============================================
+// MARKERS TABLE - All 3D objects
+// ============================================
+export const threedMarkers = pgTable('threed_markers', {
+  id: serial('id').primaryKey(),
+  
+  // Basic info
+  name: text('name').notNull(),
+  description: text('description'),
+  type: markerTypeEnum('type').notNull(),
+  status: markerStatusEnum('status').default('active'),
+  
+  // Relationships
+  layerId: integer('layer_id').references(() => threedLayers.id, { 
+    onDelete: 'cascade' 
+  }),
+  userId: integer('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
+  // ===== 3D POSITION =====
+  positionX: real('position_x').default(0),
+  positionY: real('position_y').default(0),
+  positionZ: real('position_z').default(0),
+  
+  // ===== 3D ROTATION =====
+  rotationX: real('rotation_x').default(0),
+  rotationY: real('rotation_y').default(0),
+  rotationZ: real('rotation_z').default(0),
+  
+  // ===== 3D SCALE =====
+  scaleX: real('scale_x').default(1),
+  scaleY: real('scale_y').default(1),
+  scaleZ: real('scale_z').default(1),
+  
+  // ===== SOURCE REFERENCE =====
+  // Links to the original data source
+  sourceType: text('source_type'), // 'plant', 'bed', 'farmbot', 'model', 'character', 'task', 'weather_log'
+  sourceId: integer('source_id'), // ID from the source table
+  
+  // ===== DISPLAY SETTINGS =====
+  icon: text('icon'),
+  color: text('color'),
+  size: real('size').default(1),
+  
+  // ===== CUSTOM DATA =====
+  customData: jsonb('custom_data'), // Flexible storage for type-specific data
+  metadata: jsonb('metadata'),
+  
+  // ===== TIMESTAMPS =====
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  layerIdIdx: index('idx_threed_markers_layer_id').on(table.layerId),
+  userIdIdx: index('idx_threed_markers_user_id').on(table.userId),
+  typeIdx: index('idx_threed_markers_type').on(table.type),
+  sourceIdx: index('idx_threed_markers_source').on(table.sourceType, table.sourceId),
+  statusIdx: index('idx_threed_markers_status').on(table.status),
+}));
+
+// ============================================
+// MARKER RELATIONSHIPS - Parent-Child connections
+// ============================================
+export const threedMarkerRelationships = pgTable(
+  'threed_marker_relationships',
+  {
+    id: serial('id').primaryKey(),
+    
+    parentMarkerId: integer('parent_marker_id').references(
+      () => threedMarkers.id,
+      { onDelete: 'cascade' }
+    ),
+    childMarkerId: integer('child_marker_id').references(
+      () => threedMarkers.id,
+      { onDelete: 'cascade' }
+    ),
+    
+    relationshipType: text('relationship_type'), // 'contains', 'attached_to', 'part_of', 'grows_in'
+    
+    // Metadata
+    metadata: jsonb('metadata'),
+    
+    // Timestamps
+    createdAt: timestamp('created_at').defaultNow(),
+  }, (table) => ({
+    parentIdx: index('idx_threed_marker_relationships_parent').on(table.parentMarkerId),
+    childIdx: index('idx_threed_marker_relationships_child').on(table.childMarkerId),
+  })
+);
+
+// ============================================
+// LAYER PRESETS - Saved configurations
+// ============================================
+export const threedLayerPresets = pgTable('threed_layer_presets', {
+  id: serial('id').primaryKey(),
+  
+  name: text('name').notNull(),
+  description: text('description'),
+  
+  // Which layers are included
+  layerIds: jsonb('layer_ids'), // Array of layer IDs
+  
+  // Preset configuration
+  config: jsonb('config'),
+  
+  userId: integer('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  userIdIdx: index('idx_threed_layer_presets_user_id').on(table.userId),
+}));
+
+// ============================================
+// RELATIONSHIPS - FULLY INTEGRATED
+// ============================================
+
+// ---- Existing Relationships (Updated) ----
+
+export const threedPlantsRelations = relations(threedPlants, ({ one, many }) => ({
   plantings: many(threedPlantings),
   harvests: many(threedHarvests),
   tasks: many(threedTasks),
   models: many(threedModels),
   wateringSchedules: many(threedWateringSchedules),
+  // NEW: Marker relationship
+  marker: one(threedMarkers, {
+    fields: [threedPlants.markerId],
+    references: [threedMarkers.id],
+  }),
 }));
 
 export const threedModelsRelations = relations(threedModels, ({ one, many }) => ({
@@ -533,13 +992,24 @@ export const threedModelsRelations = relations(threedModels, ({ one, many }) => 
     fields: [threedModels.id],
     references: [threedCharacters.modelId],
   }),
+  // NEW: Marker relationship
+  marker: one(threedMarkers, {
+    fields: [threedModels.markerId],
+    references: [threedMarkers.id],
+  }),
+  modelFiles: many(threedModelFiles),
 }));
 
-export const threedBedsRelations = relations(threedBeds, ({ many }) => ({
+export const threedBedsRelations = relations(threedBeds, ({ one, many }) => ({
   plantings: many(threedPlantings),
   farmbots: many(threedFarmbots),
   tasks: many(threedTasks),
   wateringSchedules: many(threedWateringSchedules),
+  // NEW: Marker relationship
+  marker: one(threedMarkers, {
+    fields: [threedBeds.markerId],
+    references: [threedMarkers.id],
+  }),
 }));
 
 export const threedPlantingsRelations = relations(threedPlantings, ({ one, many }) => ({
@@ -608,13 +1078,178 @@ export const threedFarmbotsRelations = relations(threedFarmbots, ({ one, many })
   logs: many(threedFarmbotLogs),
   wateringSchedules: many(threedWateringSchedules),
   wateringHistory: many(threedWateringHistory),
+  // NEW: Marker relationship
+  marker: one(threedMarkers, {
+    fields: [threedFarmbots.markerId],
+    references: [threedMarkers.id],
+  }),
 }));
 
-// Export types for use in the application
+export const threedTasksRelations = relations(threedTasks, ({ one, many }) => ({
+  planting: one(threedPlantings, {
+    fields: [threedTasks.plantingId],
+    references: [threedPlantings.id],
+  }),
+  plant: one(threedPlants, {
+    fields: [threedTasks.plantId],
+    references: [threedPlants.id],
+  }),
+  bed: one(threedBeds, {
+    fields: [threedTasks.bedId],
+    references: [threedBeds.id],
+  }),
+  wateringSchedule: one(threedWateringSchedules, {
+    fields: [threedTasks.wateringScheduleId],
+    references: [threedWateringSchedules.id],
+  }),
+  // NEW: Marker relationship
+  marker: one(threedMarkers, {
+    fields: [threedTasks.markerId],
+    references: [threedMarkers.id],
+  }),
+}));
+
+export const threedWeatherLogsRelations = relations(threedWeatherLogs, ({ one }) => ({
+  // NEW: Marker relationship
+  marker: one(threedMarkers, {
+    fields: [threedWeatherLogs.markerId],
+    references: [threedMarkers.id],
+  }),
+}));
+
+export const threedCharactersRelations = relations(threedCharacters, ({ one }) => ({
+  model: one(threedModels, {
+    fields: [threedCharacters.modelId],
+    references: [threedModels.id],
+  }),
+  bed: one(threedBeds, {
+    fields: [threedCharacters.bedId],
+    references: [threedBeds.id],
+  }),
+  // NEW: Marker relationship
+  marker: one(threedMarkers, {
+    fields: [threedCharacters.markerId],
+    references: [threedMarkers.id],
+  }),
+}));
+
+export const threedModelFilesRelations = relations(threedModelFiles, ({ one }) => ({
+  model: one(threedModels, {
+    fields: [threedModelFiles.modelId],
+    references: [threedModels.id],
+  }),
+}));
+
+// ---- NEW: Layers + Markers Relationships ----
+
+export const threedLayersRelations = relations(threedLayers, ({ one, many }) => ({
+  user: one(user, {
+    fields: [threedLayers.userId],
+    references: [user.id],
+  }),
+  markers: many(threedMarkers),
+}));
+
+export const threedMarkersRelations = relations(threedMarkers, ({ one, many }) => ({
+  // Layer relationship
+  layer: one(threedLayers, {
+    fields: [threedMarkers.layerId],
+    references: [threedLayers.id],
+  }),
+  
+  // User relationship
+  user: one(user, {
+    fields: [threedMarkers.userId],
+    references: [user.id],
+  }),
+  
+  
+  
+  
+  
+  // // ---- SOURCE RELATIONSHIPS (Polymorphic) ----
+  // // Each marker can link to one source type
+  // plant: one(threedPlants, {
+  //   fields: [threedMarkers.sourceId, threedMarkers.sourceType],
+  //   references: [threedPlants.id, sql`'plant'`],
+  // }),
+  // bed: one(threedBeds, {
+  //   fields: [threedMarkers.sourceId, threedMarkers.sourceType],
+  //   references: [threedBeds.id, sql`'bed'`],
+  // }),
+  // farmbot: one(threedFarmbots, {
+  //   fields: [threedMarkers.sourceId, threedMarkers.sourceType],
+  //   references: [threedFarmbots.id, sql`'farmbot'`],
+  // }),
+  // model: one(threedModels, {
+  //   fields: [threedMarkers.sourceId, threedMarkers.sourceType],
+  //   references: [threedModels.id, sql`'model'`],
+  // }),
+  // character: one(threedCharacters, {
+  //   fields: [threedMarkers.sourceId, threedMarkers.sourceType],
+  //   references: [threedCharacters.id, sql`'character'`],
+  // }),
+  // task: one(threedTasks, {
+  //   fields: [threedMarkers.sourceId, threedMarkers.sourceType],
+  //   references: [threedTasks.id, sql`'task'`],
+  // }),
+  // weatherLog: one(threedWeatherLogs, {
+  //   fields: [threedMarkers.sourceId, threedMarkers.sourceType],
+  //   references: [threedWeatherLogs.id, sql`'weather_log'`],
+  // }),
+  
+  // // ---- RELATIONSHIPS ----
+  // // Parent relationships (this marker as parent)
+  // parentRelationships: many(threedMarkerRelationships, {
+  //   relationName: 'parentRelationships',
+  //   fields: [threedMarkers.id],
+  //   references: [threedMarkerRelationships.parentMarkerId],
+  // }),
+  // // Child relationships (this marker as child)
+  // childRelationships: many(threedMarkerRelationships, {
+  //   relationName: 'childRelationships',
+  //   fields: [threedMarkers.id],
+  //   references: [threedMarkerRelationships.childMarkerId],
+  // }),
+
+
+
+  
+}));
+
+export const threedMarkerRelationshipsRelations = relations(threedMarkerRelationships, ({ one }) => ({
+  // Parent marker
+  parentMarker: one(threedMarkers, {
+    fields: [threedMarkerRelationships.parentMarkerId],
+    references: [threedMarkers.id],
+    relationName: 'parentRelationships',
+  }),
+  // Child marker
+  childMarker: one(threedMarkers, {
+    fields: [threedMarkerRelationships.childMarkerId],
+    references: [threedMarkers.id],
+    relationName: 'childRelationships',
+  }),
+}));
+
+export const threedLayerPresetsRelations = relations(threedLayerPresets, ({ one }) => ({
+  user: one(user, {
+    fields: [threedLayerPresets.userId],
+    references: [user.id],
+  }),
+}));
+
+// ============================================
+// EXPORT TYPES
+// ============================================
+
+// Existing types
 export type ThreedPlant = typeof threedPlants.$inferSelect;
 export type NewThreedPlant = typeof threedPlants.$inferInsert;
 export type ThreedModel = typeof threedModels.$inferSelect;
 export type NewThreedModel = typeof threedModels.$inferInsert;
+export type ThreedModelFile = typeof threedModelFiles.$inferSelect;
+export type NewThreedModelFile = typeof threedModelFiles.$inferInsert;
 export type ThreedBed = typeof threedBeds.$inferSelect;
 export type NewThreedBed = typeof threedBeds.$inferInsert;
 export type ThreedPlanting = typeof threedPlantings.$inferSelect;
@@ -628,174 +1263,24 @@ export type NewThreedHarvest = typeof threedHarvests.$inferInsert;
 export type ThreedTask = typeof threedTasks.$inferSelect;
 export type NewThreedTask = typeof threedTasks.$inferInsert;
 export type ThreedWeatherLog = typeof threedWeatherLogs.$inferSelect;
+export type NewThreedWeatherLog = typeof threedWeatherLogs.$inferInsert;
 export type ThreedFarmbot = typeof threedFarmbots.$inferSelect;
+export type NewThreedFarmbot = typeof threedFarmbots.$inferInsert;
 export type ThreedFarmbotLog = typeof threedFarmbotLogs.$inferSelect;
+export type NewThreedFarmbotLog = typeof threedFarmbotLogs.$inferInsert;
+export type ThreedCharacter = typeof threedCharacters.$inferSelect;
+export type NewThreedCharacter = typeof threedCharacters.$inferInsert;
 
-// ============================================
-// ## Schema Updated 2026-05-30
-// ## Added GLTF model support and automated watering schedules
-// ============================================
+// NEW: Layers + Markers types
+export type ThreeDLayer = typeof threedLayers.$inferSelect;
+export type NewThreeDLayer = typeof threedLayers.$inferInsert;
+export type ThreeDMarker = typeof threedMarkers.$inferSelect;
+export type NewThreeDMarker = typeof threedMarkers.$inferInsert;
+export type ThreeDMarkerRelationship = typeof threedMarkerRelationships.$inferSelect;
+export type NewThreeDMarkerRelationship = typeof threedMarkerRelationships.$inferInsert;
+export type ThreeDLayerPreset = typeof threedLayerPresets.$inferSelect;
+export type NewThreeDLayerPreset = typeof threedLayerPresets.$inferInsert;
 
-// ============================================
-// 1c. threed_model_files - Associated files for 3D models (NEW)
-// ============================================
-export const threedModelFiles = pgTable('threed_model_files', {
-  id: serial('id').primaryKey(),
-  modelId: integer('model_id').references(() => threedModels.id, { onDelete: 'cascade' }),
-  
-  // File information
-  fileName: varchar('file_name', { length: 255 }).notNull(),
-  fileType: varchar('file_type', { length: 50 }).notNull(), // 'model', 'texture', 'binary', 'other'
-  textureType: varchar('texture_type', { length: 50 }), // 'baseColor', 'normalMap', 'roughness', 'metallic', 'emissive', 'occlusion'
-  filePath: varchar('file_path', { length: 500 }).notNull(),
-  fileSize: integer('file_size'),
-  
-  // For GLTF binary
-  isBinaryBuffer: boolean('is_binary_buffer').default(false),
-  
-  // Order in which files should be loaded
-  loadOrder: integer('load_order').default(0),
-  
-  createdAt: timestamp('created_at').defaultNow(),
-}, (table) => ({
-  modelIdIdx: index('idx_threed_model_files_model_id').on(table.modelId),
-  fileTypeIdx: index('idx_threed_model_files_type').on(table.fileType),
-}));
-
-// ============================================
-// ## Schema Updated 2026-05-30
-// ## Added model files, so models can have multiple files
-// ============================================
-
-// ============================================
-// ENUMS for Characters
-// ============================================
-export const characterTypeEnum = pgEnum('threed_character_type', [
-  'animal', 'bird', 'insect', 'mythical', 'human', 'robot', 'decoration'
-]);
-
-export const characterStatusEnum = pgEnum('threed_character_status', [
-  'active', 'idle', 'sleeping', 'moving', 'hidden'
-]);
-
-export const characterAnimationEnum = pgEnum('threed_character_animation', [
-  'idle', 'walk', 'run', 'fly', 'dance', 'sway', 'float', 'spin', 'bounce'
-]);
-
-// src/lib/auth/schema.ts - Add new enums and fields to threedCharacters only
-
-// New enums for characters
-export const characterMovementTypeEnum = pgEnum('threed_character_movement_type', [
-  'stationary', 'wander', 'patrol', 'circle', 'follow', 'teleport'
-]);
-
-export const characterWeatherSensitivityEnum = pgEnum('threed_character_weather_sensitivity', [
-  'all', 'sunny_only', 'rainy_only', 'no_rain', 'no_snow'
-]);
-
-export const characterEmoteEnum = pgEnum('threed_character_emote', [
-  'none', 'happy', 'sad', 'surprised', 'angry', 'wave', 'dance', 'sleep'
-]);
-
-// Update threedCharacters table with new fields
-export const threedCharacters = pgTable('threed_characters', {
-  id: serial('id').primaryKey(),
-  characterId: varchar('character_id', { length: 50 }).unique().notNull(),
-  name: varchar('name', { length: 255 }).notNull(),
-  description: text('description'),
-  type: characterTypeEnum('type').default('animal'),
-  status: characterStatusEnum('status').default('active'),
-  
-  // Model relationship
-  modelId: integer('model_id').references(() => threedModels.id, { onDelete: 'set null' }),
-  
-  // Animation
-  animations: characterAnimationEnum('animations').array().default([]),
-  defaultAnimation: characterAnimationEnum('default_animation'),
-  animationSpeed: decimal('animation_speed', { precision: 4, scale: 2 }).default('1.0'),
-  
-  // Enhanced Movement
-  isMovable: boolean('is_movable').default(false),
-  movementType: characterMovementTypeEnum('movement_type').default('stationary'),
-  movementPattern: varchar('movement_pattern', { length: 50 }), // Legacy, keep for compatibility
-  movementRadius: decimal('movement_radius', { precision: 5, scale: 2 }),
-  movementSpeed: decimal('movement_speed', { precision: 4, scale: 2 }).default('0.5'),
-  
-  // New: Patrol waypoints (store as JSON array of {x, y, z})
-  patrolWaypoints: jsonb('patrol_waypoints').default([]),
-  
-  // New: Follow target (could be plantId, characterId, or 'camera')
-  followTarget: varchar('follow_target', { length: 50 }),
-  followDistance: decimal('follow_distance', { precision: 4, scale: 2 }).default('2.0'),
-  
-  // New: Teleport positions
-  teleportPositions: jsonb('teleport_positions').default([]),
-  teleportInterval: integer('teleport_interval'), // seconds between teleports
-  
-  // Enhanced Interaction
-  interactable: boolean('interactable').default(true),
-  interactionMessage: text('interaction_message'),
-  soundEffect: varchar('sound_effect', { length: 255 }),
-  
-  // New: Emote system
-  defaultEmote: characterEmoteEnum('default_emote').default('none'),
-  emoteOnInteract: characterEmoteEnum('emote_on_interact').default('happy'),
-  
-  // New: Time-based activation
-  activeStartHour: integer('active_start_hour'), // 0-23
-  activeEndHour: integer('active_end_hour'),
-  
-  // New: Weather sensitivity
-  weatherSensitivity: characterWeatherSensitivityEnum('weather_sensitivity').default('all'),
-  
-  // Position (absolute world coordinates)
-  bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'set null' }),
-  positionX: decimal('position_x', { precision: 8, scale: 2 }).default('0'),
-  positionY: decimal('position_y', { precision: 8, scale: 2 }).default('0'),
-  positionZ: decimal('position_z', { precision: 8, scale: 2 }).default('0'),
-  rotation: decimal('rotation', { precision: 8, scale: 2 }).default('0'),
-  
-  // Scale and appearance
-  scale: decimal('scale', { precision: 5, scale: 2 }).default('1'),
-  scaleMultiplier: decimal('scale_multiplier', { precision: 5, scale: 2 }).default('1'),
-  colorTint: varchar('color_tint', { length: 20 }),
-  
-  // New: Visibility
-  visible: boolean('visible').default(true),
-  visibleDistance: decimal('visible_distance', { precision: 5, scale: 2 }).default('30.0'),
-  
-  // Metadata
-  isActive: boolean('is_active').default(true),
-  metadata: jsonb('metadata').default({}),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-}, (table) => ({
-  characterIdIdx: uniqueIndex('idx_threed_characters_character_id').on(table.characterId),
-  nameIdx: index('idx_threed_characters_name').on(table.name),
-  typeIdx: index('idx_threed_characters_type').on(table.type),
-  statusIdx: index('idx_threed_characters_status').on(table.status),
-  movementTypeIdx: index('idx_threed_characters_movement_type').on(table.movementType),
-  modelIdx: index('idx_threed_characters_model').on(table.modelId),
-  bedIdx: index('idx_threed_characters_bed').on(table.bedId),
-  visibleIdx: index('idx_threed_characters_visible').on(table.visible),
-}));
-
-// Add character-specific file to threedModelFiles if needed
-// (no changes needed - model files work the same)
-
-// Update relationships
-export const threedCharactersRelations = relations(threedCharacters, ({ one }) => ({
-  model: one(threedModels, {
-    fields: [threedCharacters.modelId],
-    references: [threedModels.id],
-  }),
-  bed: one(threedBeds, {
-    fields: [threedCharacters.bedId],
-    references: [threedBeds.id],
-  }),
-}));
-
-// ============================================
-// ## Schema Updated 2026-05-31
-// ## Added characters
-// ============================================
+// =====================================
+// ## [MM]
+// 

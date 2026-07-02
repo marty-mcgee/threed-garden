@@ -19,7 +19,8 @@ import {
   AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
-// import { user } from '../auth';
+import { user } from '../auth';
+import { projects } from '../projects';
 
 // ============================================
 // ## TRAFFIC MODULE
