@@ -857,7 +857,7 @@ import { WeatherLayer } from './layers/WeatherLayer';
 import { Legend3D } from './controls/Legend3D';
 
 // Import types
-import { ThreeDData, LayerVisibility } from './shared/types';
+import { ThreeDData, LayerVisibility } from '@/lib/types/threed';
 
 interface ThreeDGardenProps {
   data: ThreeDData;

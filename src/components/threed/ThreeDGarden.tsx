@@ -7,14 +7,14 @@ import { OrbitControls, Environment, Html, Plane, Grid } from '@react-three/drei
 import * as THREE from 'three';
 
 // Import layers
-import { TrafficLayer } from './layers/TrafficLayer';
+// import { TrafficLayer } from './layers/TrafficLayer';
 import { GardenLayer } from './layers/GardenLayer';
 import { FarmBotLayer } from './layers/FarmBotLayer';
 import { WeatherLayer } from './layers/WeatherLayer';
 import { Legend3D } from './controls/Legend3D';
 
 // Import types
-import { ThreeDData, LayerVisibility } from './shared/types';
+import { ThreeDData, LayerVisibility } from '@/lib/types/threed';
 
 interface ThreeDGardenProps {
   data: ThreeDData;
@@ -88,7 +88,7 @@ export function ThreeDGarden({
         />
 
         {/* === LAYERS === */}
-        {layers.traffic && <TrafficLayer incidents={data.traffic} />}
+        {/* {layers.traffic && <TrafficLayer incidents={data.traffic} />} */}
         {layers.garden && <GardenLayer beds={data.beds} plants={data.plants} />}
         {layers.farmbots && <FarmBotLayer farmbots={data.farmbots} />}
         {layers.weather && <WeatherLayer weather={data.weather} />}

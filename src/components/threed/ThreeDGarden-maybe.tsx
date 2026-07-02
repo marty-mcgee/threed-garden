@@ -14,7 +14,7 @@ import { FarmBotMarker3D } from './markers/FarmBotMarker3D';
 import { WeatherEffects } from './effects/WeatherEffects';
 
 // Import utilities
-import { ThreeDData } from './shared/types';
+import { ThreeDData } from '@/lib/types/threed';
 import { latLngToPosition } from './shared/coordinates';
 import { getSourceColor, getSourceIcon } from './shared/colors';
 
