@@ -630,7 +630,7 @@ OPENWEATHER_API_KEY=your_api_key
 │   │   │   └── seed
 │   │   │       └── chp-cad-centers
 │   │   │           ├── data
-│   │   │           │   └── chpCadCenters.ts
+│   │   │           │   └── trafficChpCadCenters.ts
 │   │   │           └── route.ts
 │   │   ├── chp-historical
 │   │   │   ├── collisions

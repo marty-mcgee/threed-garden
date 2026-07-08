@@ -1,6 +1,6 @@
 // src/lib/services/CHPPoller.ts
 import { db } from '@/lib/db/client';
-import { chpCollisions } from '@/lib/schema';
+import { trafficChpCollisions } from '@/lib/schema';
 import { eq, sql, desc } from 'drizzle-orm';
 
 export class CHPPoller {
@@ -16,9 +16,9 @@ export class CHPPoller {
    */
   private async getLatestCollisionDate(): Promise<Date | null> {
     const result = await db
-      .select({ latestDate: chpCollisions.collisionDate })
-      .from(chpCollisions)
-      .orderBy(desc(chpCollisions.collisionDate))
+      .select({ latestDate: trafficChpCollisions.collisionDate })
+      .from(trafficChpCollisions)
+      .orderBy(desc(trafficChpCollisions.collisionDate))
       .limit(1);
     
     return result[0]?.latestDate || null;
@@ -56,15 +56,15 @@ export class CHPPoller {
     
     const existing = await db
       .select()
-      .from(chpCollisions)
-      .where(eq(chpCollisions.caseId, caseId))
+      .from(trafficChpCollisions)
+      .where(eq(trafficChpCollisions.caseId, caseId))
       .limit(1);
     
     if (existing.length > 0) return 'skipped';
     
     const collisionDate = record['Crash Date Time'] ? new Date(record['Crash Date Time']) : null;
     
-    await db.insert(chpCollisions).values({
+    await db.insert(trafficChpCollisions).values({
       caseId: caseId,
       collisionDate: collisionDate,
       collisionYear: collisionDate?.getFullYear() || null,
@@ -180,30 +180,30 @@ export class CHPPoller {
   async getStats() {
     const total = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(chpCollisions);
+      .from(trafficChpCollisions);
     
     const bySeverity = await db
       .select({
-        severity: chpCollisions.severity,
+        severity: trafficChpCollisions.severity,
         count: sql<number>`COUNT(*)`,
       })
-      .from(chpCollisions)
-      .groupBy(chpCollisions.severity);
+      .from(trafficChpCollisions)
+      .groupBy(trafficChpCollisions.severity);
     
     const byYear = await db
       .select({
-        year: chpCollisions.collisionYear,
+        year: trafficChpCollisions.collisionYear,
         count: sql<number>`COUNT(*)`,
       })
-      .from(chpCollisions)
-      .where(sql`${chpCollisions.collisionYear} IS NOT NULL`)
-      .groupBy(chpCollisions.collisionYear)
+      .from(trafficChpCollisions)
+      .where(sql`${trafficChpCollisions.collisionYear} IS NOT NULL`)
+      .groupBy(trafficChpCollisions.collisionYear)
       .orderBy(sql`year DESC`);
     
     const latest = await db
-      .select({ latestDate: chpCollisions.collisionDate })
-      .from(chpCollisions)
-      .orderBy(desc(chpCollisions.collisionDate))
+      .select({ latestDate: trafficChpCollisions.collisionDate })
+      .from(trafficChpCollisions)
+      .orderBy(desc(trafficChpCollisions.collisionDate))
       .limit(1);
     
     return {

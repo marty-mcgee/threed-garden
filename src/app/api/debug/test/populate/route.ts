@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +16,7 @@ export async function GET() {
     // Check record count
     const countResult = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(laneClosures);
+      .from(trafficCaltransLaneClosures);
     
     const recordCount = Number(countResult[0]?.count || 0);
     
@@ -71,12 +71,12 @@ export async function GET() {
       ];
       
       for (const closure of testClosures) {
-        await db.insert(laneClosures).values(closure);
+        await db.insert(trafficCaltransLaneClosures).values(closure);
       }
       
       const newCount = await db
         .select({ count: sql<number>`COUNT(*)` })
-        .from(laneClosures);
+        .from(trafficCaltransLaneClosures);
       
       return NextResponse.json({
         success: true,

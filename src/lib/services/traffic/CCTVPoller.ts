@@ -1,7 +1,7 @@
 // services/CCTVPoller.ts
 import axios from 'axios';
 import { db } from '@/lib/db/client';
-import { cctvCameras } from '@/lib/schema';
+import { trafficCctvCameras } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
 export class CCTVPoller {
@@ -42,14 +42,14 @@ export class CCTVPoller {
 
     const existing = await db
       .select()
-      .from(cctvCameras)
-      .where(eq(cctvCameras.index, camera.index))
+      .from(trafficCctvCameras)
+      .where(eq(trafficCctvCameras.index, camera.index))
       .limit(1);
 
     if (existing.length > 0) {
-      await db.update(cctvCameras).set(cameraData).where(eq(cctvCameras.index, camera.index));
+      await db.update(trafficCctvCameras).set(cameraData).where(eq(trafficCctvCameras.index, camera.index));
     } else {
-      await db.insert(cctvCameras).values(cameraData);
+      await db.insert(trafficCctvCameras).values(cameraData);
     }
   }
 }

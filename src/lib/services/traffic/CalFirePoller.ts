@@ -1,7 +1,7 @@
 // src/lib/services/CalFirePoller.ts - Updated to fetch both active and inactive
 
 import { db } from '@/lib/db/client';
-import { calfireIncidents } from '@/lib/schema';
+import { trafficCalfireIncidents } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 // Northern California counties to monitor (including test counties)
@@ -222,8 +222,8 @@ export class CalFirePoller {
     
     const existing = await db
       .select()
-      .from(calfireIncidents)
-      .where(eq(calfireIncidents.uniqueId, uniqueId))
+      .from(trafficCalfireIncidents)
+      .where(eq(trafficCalfireIncidents.uniqueId, uniqueId))
       .limit(1);
     
     const isActive = incident.IsActive === true;
@@ -254,10 +254,10 @@ export class CalFirePoller {
     
     try {
       if (existing.length > 0) {
-        await db.update(calfireIncidents).set({
+        await db.update(trafficCalfireIncidents).set({
           ...incidentData,
           lastSeen: new Date(),
-        }).where(eq(calfireIncidents.uniqueId, uniqueId));
+        }).where(eq(trafficCalfireIncidents.uniqueId, uniqueId));
         
         // Check if status changed from active to inactive
         const wasActive = existing[0].isActive;
@@ -266,7 +266,7 @@ export class CalFirePoller {
         }
         return 'updated';
       } else {
-        await db.insert(calfireIncidents).values(incidentData);
+        await db.insert(trafficCalfireIncidents).values(incidentData);
         return 'new';
       }
     } catch (error) {
@@ -368,32 +368,32 @@ export class CalFirePoller {
   async getStats() {
     const total = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(calfireIncidents);
+      .from(trafficCalfireIncidents);
     
     const active = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(calfireIncidents)
-      .where(eq(calfireIncidents.isActive, true));
+      .from(trafficCalfireIncidents)
+      .where(eq(trafficCalfireIncidents.isActive, true));
     
     const inactive = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(calfireIncidents)
-      .where(eq(calfireIncidents.isActive, false));
+      .from(trafficCalfireIncidents)
+      .where(eq(trafficCalfireIncidents.isActive, false));
     
     const byCounty = await db
       .select({
-        county: calfireIncidents.county,
+        county: trafficCalfireIncidents.county,
         count: sql<number>`COUNT(*)`,
       })
-      .from(calfireIncidents)
-      .where(eq(calfireIncidents.isActive, true))
-      .groupBy(calfireIncidents.county)
+      .from(trafficCalfireIncidents)
+      .where(eq(trafficCalfireIncidents.isActive, true))
+      .groupBy(trafficCalfireIncidents.county)
       .orderBy(sql`count DESC`);
     
     const totalAcres = await db
       .select({ sum: sql<number>`SUM(acres_burned)` })
-      .from(calfireIncidents)
-      .where(eq(calfireIncidents.isActive, true));
+      .from(trafficCalfireIncidents)
+      .where(eq(trafficCalfireIncidents.isActive, true));
     
     return {
       total: total[0]?.count || 0,

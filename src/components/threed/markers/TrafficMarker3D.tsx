@@ -6,7 +6,7 @@ import { useFrame } from '@react-three/fiber';
 import { Sphere, Html, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import { TrafficIncident3D } from '@/lib/types/threed';
-import { getSourceColor, getSourceIcon } from '@/lib/config/settings';
+import { getSourceColor, getSourceIcon } from '@/lib/config/constants';
 
 interface TrafficMarker3DProps {
   incident: TrafficIncident3D;

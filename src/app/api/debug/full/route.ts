@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -15,7 +15,7 @@ export async function GET() {
   
   try {
     // Get ALL records using Drizzle
-    const allDrizzleRecords = await db.select().from(laneClosures);
+    const allDrizzleRecords = await db.select().from(trafficCaltransLaneClosures);
     
     // Get raw SQL records (bypassing Drizzle)
     const allRawRecords = await rawSql`SELECT * FROM lane_closures`;

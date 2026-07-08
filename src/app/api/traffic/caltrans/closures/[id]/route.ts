@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -32,8 +32,8 @@ export async function GET(
     // Step 3: Query with number (matches database serial type)
     const closures = await db
       .select()
-      .from(laneClosures)
-      .where(eq(laneClosures.closureId, closureId));  // ✅ closureId expects number
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.closureId, closureId));  // ✅ closureId expects number
     
     if (closures.length === 0) {
       return NextResponse.json(

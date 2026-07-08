@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -17,8 +17,8 @@ export async function GET() {
     // Get ALL active closures from Drizzle
     const drizzleActive = await db
       .select()
-      .from(laneClosures)
-      .where(eq(laneClosures.status, 'active'));
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.status, 'active'));
     
     // Get ALL active closures from raw SQL
     const rawActive = await rawSql`
@@ -28,12 +28,12 @@ export async function GET() {
     // Get count by district from Drizzle
     const drizzleByDistrict = await db
       .select({
-        district: laneClosures.district,
+        district: trafficCaltransLaneClosures.district,
         count: sql<number>`COUNT(*)`,
       })
-      .from(laneClosures)
-      .where(eq(laneClosures.status, 'active'))
-      .groupBy(laneClosures.district);
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.status, 'active'))
+      .groupBy(trafficCaltransLaneClosures.district);
     
     // Get count by district from raw SQL
     const rawByDistrict = await rawSql`

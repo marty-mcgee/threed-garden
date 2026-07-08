@@ -47,7 +47,7 @@ interface ThreeDMapProps {
 // CONSTANTS
 // ============================================
 
-import { SOURCE_COLORS } from '@/lib/config/settings';
+import { SOURCE_COLORS } from '@/lib/config/constants';
 // const SOURCE_COLORS: Record<string, string> = {
 //   caltrans: '#3b82f6',
 //   bayarea511: '#10b981',

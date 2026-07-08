@@ -19,12 +19,77 @@ import {
   AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
-import { user } from '../auth';
-import { projects } from '../projects';
+import { user } from '../user';
+import { project } from '../project';
 
 // ============================================
 // ### Music Service
 // ============================================
+
+// ============================================
+// MUSIC MAIN TABLE - Parent for all music data
+// ============================================
+
+export const music = pgTable('music', {
+  id: serial('id').primaryKey(),
+  
+  // Link to Project
+  projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
+  
+  // Basic info
+  name: text('name').notNull(),
+  description: text('description'),
+  slug: text('slug').unique().notNull(),
+  
+  // Configuration
+  config: jsonb('config').default({}), // Storage settings, default view, sorting
+  
+  // Status
+  isActive: boolean('is_active').default(true),
+  isPublic: boolean('is_public').default(false),
+  
+  // Module metadata
+  version: text('version').default('1.0.0'),
+  metadata: jsonb('metadata').default({}),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  slugIdx: uniqueIndex('idx_music_slug').on(table.slug),
+  projectIdIdx: index('idx_music_project_id').on(table.projectId),
+  activeIdx: index('idx_music_active').on(table.isActive),
+}));
+
+// ============================================
+// RELATIONSHIPS
+// ============================================
+
+export const musicRelations = relations(music, ({ one, many }) => ({
+  // Project relationship
+  project: one(project, {
+    fields: [music.projectId],
+    references: [project.id],
+  }),
+  
+  // All child tables (to be added after they're updated)
+  albums: many(musicAlbums),
+  tracks: many(musicTracks),
+  links: many(musicLinks),
+  media: many(musicMedia),
+  pollingLogs: many(musicPollingLogs),
+  playbackHistory: many(musicPlaybackHistory),
+}));
+
+// ============================================
+// TYPES
+// ============================================
+
+export type Music = typeof music.$inferSelect;
+export type NewMusic = typeof music.$inferInsert;
+
+
+
 
 // Music Enums
 export const musicLinkTypeEnum = pgEnum('music_link_type', ['external', 'social', 'buy', 'stream', 'video']);
@@ -35,6 +100,7 @@ export const musicPollingTypeEnum = pgEnum('music_polling_type', ['metadata', 's
 
 // Music Tables
 export const musicAlbums = pgTable('music_albums', {
+
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),

@@ -1,7 +1,7 @@
 // src/app/api/traffic/calfire/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { calfireIncidents } from '@/lib/schema';
+import { trafficCalfireIncidents } from '@/lib/schema';
 import { desc, eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -14,15 +14,15 @@ export async function GET(request: Request) {
   try {
     let query = db
       .select()
-      .from(calfireIncidents);
+      .from(trafficCalfireIncidents);
     
     // If showAll is false, only show active incidents
     if (!showAll) {
-      query = query.where(eq(calfireIncidents.isActive, true));
+      query = query.where(eq(trafficCalfireIncidents.isActive, true));
     }
     
     const incidents = await query
-      .orderBy(desc(calfireIncidents.startedAt))
+      .orderBy(desc(trafficCalfireIncidents.startedAt))
       .limit(limit);
     
     return NextResponse.json({

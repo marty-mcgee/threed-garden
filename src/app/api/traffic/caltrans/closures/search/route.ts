@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq, or, ilike, and, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -29,41 +29,41 @@ export async function GET(request: Request) {
     
     // Build search conditions
     const searchConditions = or(
-      ilike(laneClosures.description, searchPattern),
-      ilike(laneClosures.route, searchPattern),
-      ilike(laneClosures.city, searchPattern),
-      ilike(laneClosures.county, searchPattern)
+      ilike(trafficCaltransLaneClosures.description, searchPattern),
+      ilike(trafficCaltransLaneClosures.route, searchPattern),
+      ilike(trafficCaltransLaneClosures.city, searchPattern),
+      ilike(trafficCaltransLaneClosures.county, searchPattern)
     );
     
     const whereClause = and(
-      eq(laneClosures.status, 'active'),
+      eq(trafficCaltransLaneClosures.status, 'active'),
       searchConditions
     );
     
     // Execute search with relevance ranking
     const results = await db
       .select({
-        closureId: laneClosures.closureId,
-        route: laneClosures.route,
-        closureType: laneClosures.closureType,
-        description: laneClosures.description,
-        city: laneClosures.city,
-        county: laneClosures.county,
-        endDate: laneClosures.endDate,
-        status: laneClosures.status,
+        closureId: trafficCaltransLaneClosures.closureId,
+        route: trafficCaltransLaneClosures.route,
+        closureType: trafficCaltransLaneClosures.closureType,
+        description: trafficCaltransLaneClosures.description,
+        city: trafficCaltransLaneClosures.city,
+        county: trafficCaltransLaneClosures.county,
+        endDate: trafficCaltransLaneClosures.endDate,
+        status: trafficCaltransLaneClosures.status,
         // Add relevance score
         rank: sql<number>`ts_rank(
           to_tsvector('english', 
-            COALESCE(${laneClosures.description}, '') || ' ' || 
-            COALESCE(${laneClosures.route}, '') || ' ' || 
-            COALESCE(${laneClosures.city}, '')
+            COALESCE(${trafficCaltransLaneClosures.description}, '') || ' ' || 
+            COALESCE(${trafficCaltransLaneClosures.route}, '') || ' ' || 
+            COALESCE(${trafficCaltransLaneClosures.city}, '')
           ),
           plainto_tsquery('english', ${q})
         )`,
       })
-      .from(laneClosures)
+      .from(trafficCaltransLaneClosures)
       .where(whereClause)
-      .orderBy(sql`rank DESC, ${laneClosures.endDate} ASC`)
+      .orderBy(sql`rank DESC, ${trafficCaltransLaneClosures.endDate} ASC`)
       .limit(limit);
     
     return NextResponse.json({

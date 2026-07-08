@@ -1,7 +1,7 @@
 // src/app/api/traffic/caltrans/closures/raw/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { sql, desc, eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -18,17 +18,17 @@ export async function GET(request: Request) {
     
     if (!showAll) {
       // Filter to District 1 only
-      conditions = sql`${laneClosures.status} = 'active' AND ${laneClosures.district} = ${LOCAL_DISTRICT}`;
+      conditions = sql`${trafficCaltransLaneClosures.status} = 'active' AND ${trafficCaltransLaneClosures.district} = ${LOCAL_DISTRICT}`;
     } else {
       // Show all active closures statewide
-      conditions = eq(laneClosures.status, 'active');
+      conditions = eq(trafficCaltransLaneClosures.status, 'active');
     }
     
     const closures = await db
       .select()
-      .from(laneClosures)
+      .from(trafficCaltransLaneClosures)
       .where(conditions)
-      .orderBy(desc(laneClosures.lastSeen))
+      .orderBy(desc(trafficCaltransLaneClosures.lastSeen))
       .limit(limit);
     
     return NextResponse.json({

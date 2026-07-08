@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { sql, eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -65,19 +65,19 @@ export async function GET() {
     for (const record of additionalRecords) {
       const existing = await db
         .select()
-        .from(laneClosures)
-        .where(eq(laneClosures.sourceId, record.sourceId))
+        .from(trafficCaltransLaneClosures)
+        .where(eq(trafficCaltransLaneClosures.sourceId, record.sourceId))
         .limit(1);
       
       if (existing.length === 0) {
-        await db.insert(laneClosures).values(record);
+        await db.insert(trafficCaltransLaneClosures).values(record);
         added++;
       }
     }
     
     const total = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(laneClosures);
+      .from(trafficCaltransLaneClosures);
     
     return NextResponse.json({
       success: true,

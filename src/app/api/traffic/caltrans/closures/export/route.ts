@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -18,29 +18,29 @@ export async function GET(request: Request) {
     const db = drizzle(sqlClient);
     
     // Build conditions
-    const conditions = [eq(laneClosures.status, status)];
+    const conditions = [eq(trafficCaltransLaneClosures.status, status)];
     const whereClause = and(...conditions);
     
     // Fetch data
     const data = await db
       .select({
-        closureId: laneClosures.closureId,
-        district: laneClosures.district,
-        route: laneClosures.route,
-        direction: laneClosures.direction,
-        closureType: laneClosures.closureType,
-        lanesAffected: laneClosures.lanesAffected,
-        description: laneClosures.description,
-        city: laneClosures.city,
-        county: laneClosures.county,
-        startDate: laneClosures.startDate,
-        endDate: laneClosures.endDate,
-        status: laneClosures.status,
-        createdAt: laneClosures.createdAt,
+        closureId: trafficCaltransLaneClosures.closureId,
+        district: trafficCaltransLaneClosures.district,
+        route: trafficCaltransLaneClosures.route,
+        direction: trafficCaltransLaneClosures.direction,
+        closureType: trafficCaltransLaneClosures.closureType,
+        lanesAffected: trafficCaltransLaneClosures.lanesAffected,
+        description: trafficCaltransLaneClosures.description,
+        city: trafficCaltransLaneClosures.city,
+        county: trafficCaltransLaneClosures.county,
+        startDate: trafficCaltransLaneClosures.startDate,
+        endDate: trafficCaltransLaneClosures.endDate,
+        status: trafficCaltransLaneClosures.status,
+        createdAt: trafficCaltransLaneClosures.createdAt,
       })
-      .from(laneClosures)
+      .from(trafficCaltransLaneClosures)
       .where(whereClause)
-      .orderBy(laneClosures.endDate);
+      .orderBy(trafficCaltransLaneClosures.endDate);
     
     if (format === 'csv') {
       // Convert to CSV

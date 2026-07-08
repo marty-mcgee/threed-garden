@@ -10,14 +10,14 @@ export async function GET() {
   
   try {
     // Get actual column names from the database
-    const laneClosuresColumns = await sql`
+    const trafficCaltransLaneClosuresColumns = await sql`
       SELECT column_name, data_type 
       FROM information_schema.columns 
       WHERE table_name = 'lane_closures'
       ORDER BY ordinal_position
     `;
     
-    const chpCollisionsColumns = await sql`
+    const trafficChpCollisionsColumns = await sql`
       SELECT column_name, data_type 
       FROM information_schema.columns 
       WHERE table_name = 'chp_collisions'
@@ -25,8 +25,8 @@ export async function GET() {
     `;
     
     return NextResponse.json({
-      lane_closures_columns: laneClosuresColumns,
-      chp_collisions_columns: chpCollisionsColumns,
+      lane_closures_columns: trafficCaltransLaneClosuresColumns,
+      chp_collisions_columns: trafficChpCollisionsColumns,
       note: "Compare these with your Drizzle schema in src/lib/schema.ts"
     });
     

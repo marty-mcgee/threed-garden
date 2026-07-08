@@ -1,13 +1,16 @@
 // lib/schema/projects/index.ts
 import { pgTable, text, timestamp, boolean, jsonb, serial, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { user } from '../auth';
+import { user } from '../user';
+import { threed } from '../threed';
+import { traffic } from '../traffic';
+import { music } from '../music';
 
 // ============================================
 // PROJECTS TABLE
 // ============================================
 
-export const projects = pgTable('projects', {
+export const project = pgTable('project', {
   id: serial('id').primaryKey(),
   
   // Basic info
@@ -39,20 +42,20 @@ export const projects = pgTable('projects', {
 // RELATIONSHIPS
 // ============================================
 
-export const projectsRelations = relations(projects, ({ one, many }) => ({
+export const projectRelations = relations(project, ({ one, many }) => ({
   user: one(user, {
-    fields: [projects.userId],
+    fields: [project.userId],
     references: [user.id],
   }),
   // These will be populated when we update the module schemas
-  // threed: many(threed),
-  // traffic: many(traffic),
-  // music: many(music),
+  threed: many(threed),
+  traffic: many(traffic),
+  music: many(music),
 }));
 
 // ============================================
 // TYPES
 // ============================================
 
-export type Project = typeof projects.$inferSelect;
-export type NewProject = typeof projects.$inferInsert;
+export type Project = typeof project.$inferSelect;
+export type NewProject = typeof project.$inferInsert;

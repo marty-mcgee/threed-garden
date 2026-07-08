@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures, caltransDistricts, apiRequestLogs } from '@/lib/schema';
+import { trafficCaltransLaneClosures, trafficCaltransDistricts, trafficApiRequestLogs } from '@/lib/schema';
 import { eq, sql, and } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -16,20 +16,20 @@ export async function GET() {
     // 1. Get district summary with active closures
     const districtSummary = await db
       .select({
-        districtId: caltransDistricts.districtId,
-        districtName: caltransDistricts.districtName,
-        region: caltransDistricts.region,
-        activeClosures: sql<number>`COUNT(${laneClosures.closureId})`,
-        routesAffected: sql<string[]>`ARRAY_AGG(DISTINCT ${laneClosures.route})`,
-        earliestEnd: sql<Date>`MIN(${laneClosures.endDate})`,
+        districtId: trafficCaltransDistricts.districtId,
+        districtName: trafficCaltransDistricts.districtName,
+        region: trafficCaltransDistricts.region,
+        activeClosures: sql<number>`COUNT(${trafficCaltransLaneClosures.closureId})`,
+        routesAffected: sql<string[]>`ARRAY_AGG(DISTINCT ${trafficCaltransLaneClosures.route})`,
+        earliestEnd: sql<Date>`MIN(${trafficCaltransLaneClosures.endDate})`,
       })
-      .from(caltransDistricts)
-      .leftJoin(laneClosures, eq(caltransDistricts.districtId, laneClosures.district))
-      .where(eq(laneClosures.status, 'active'))
+      .from(trafficCaltransDistricts)
+      .leftJoin(trafficCaltransLaneClosures, eq(trafficCaltransDistricts.districtId, trafficCaltransLaneClosures.district))
+      .where(eq(trafficCaltransLaneClosures.status, 'active'))
       .groupBy(
-        caltransDistricts.districtId,
-        caltransDistricts.districtName,
-        caltransDistricts.region
+        trafficCaltransDistricts.districtId,
+        trafficCaltransDistricts.districtName,
+        trafficCaltransDistricts.region
       )
       .orderBy(sql`activeClosures DESC`);
     
@@ -37,23 +37,23 @@ export async function GET() {
     const apiHealth = await db
       .select({
         totalRequests: sql<number>`COUNT(*)`,
-        avgResponseTime: sql<number>`AVG(${apiRequestLogs.responseTimeMs})`,
-        successRate: sql<number>`(SUM(CASE WHEN ${apiRequestLogs.success} THEN 1 ELSE 0 END)::float / COUNT(*)::float) * 100`,
-        lastRequest: sql<Date>`MAX(${apiRequestLogs.requestTimestamp})`,
+        avgResponseTime: sql<number>`AVG(${trafficApiRequestLogs.responseTimeMs})`,
+        successRate: sql<number>`(SUM(CASE WHEN ${trafficApiRequestLogs.success} THEN 1 ELSE 0 END)::float / COUNT(*)::float) * 100`,
+        lastRequest: sql<Date>`MAX(${trafficApiRequestLogs.requestTimestamp})`,
       })
-      .from(apiRequestLogs)
-      .where(sql`${apiRequestLogs.requestTimestamp} > NOW() - INTERVAL '24 hours'`);
+      .from(trafficApiRequestLogs)
+      .where(sql`${trafficApiRequestLogs.requestTimestamp} > NOW() - INTERVAL '24 hours'`);
     
     // 3. Get 7-day trend
     const trends = await db
       .select({
-        date: sql<Date>`DATE(${laneClosures.createdAt})`,
+        date: sql<Date>`DATE(${trafficCaltransLaneClosures.createdAt})`,
         newClosures: sql<number>`COUNT(*)`,
-        completedClosures: sql<number>`COUNT(CASE WHEN ${laneClosures.status} = 'completed' THEN 1 END)`,
+        completedClosures: sql<number>`COUNT(CASE WHEN ${trafficCaltransLaneClosures.status} = 'completed' THEN 1 END)`,
       })
-      .from(laneClosures)
-      .where(sql`${laneClosures.createdAt} > NOW() - INTERVAL '7 days'`)
-      .groupBy(sql`DATE(${laneClosures.createdAt})`)
+      .from(trafficCaltransLaneClosures)
+      .where(sql`${trafficCaltransLaneClosures.createdAt} > NOW() - INTERVAL '7 days'`)
+      .groupBy(sql`DATE(${trafficCaltransLaneClosures.createdAt})`)
       .orderBy(sql`date DESC`);
     
     return NextResponse.json({

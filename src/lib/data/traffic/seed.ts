@@ -1,7 +1,7 @@
 // @/lib/db/seed.ts
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { caltransDistricts } from '@/lib/schema';
+import { trafficCaltransDistricts } from '@/lib/schema';
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
@@ -30,7 +30,7 @@ async function seed() {
   
   try {
     for (const district of districtsData) {
-      await db.insert(caltransDistricts).values(district).onConflictDoNothing();
+      await db.insert(trafficCaltransDistricts).values(district).onConflictDoNothing();
       console.log(`✓ Inserted district ${district.districtId}: ${district.districtName}`);
     }
     console.log('✅ Seeding completed!');

@@ -1,6 +1,6 @@
 // src/lib/services/CaltransPoller.ts
 import { db } from '@/lib/db/client';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export class CaltransPoller {
@@ -180,19 +180,19 @@ export class CaltransPoller {
     try {
       const existing = await db
         .select()
-        .from(laneClosures)
-        .where(eq(laneClosures.sourceId, sourceId))
+        .from(trafficCaltransLaneClosures)
+        .where(eq(trafficCaltransLaneClosures.sourceId, sourceId))
         .limit(1);
       
       if (existing.length > 0) {
-        await db.update(laneClosures).set({
+        await db.update(trafficCaltransLaneClosures).set({
           lastSeen: new Date(),
           timesSeen: (existing[0].timesSeen || 0) + 1,
           rawData: closure,
-        }).where(eq(laneClosures.sourceId, sourceId));
+        }).where(eq(trafficCaltransLaneClosures.sourceId, sourceId));
         return 'updated';
       } else {
-        await db.insert(laneClosures).values(closureData);
+        await db.insert(trafficCaltransLaneClosures).values(closureData);
         return 'new';
       }
     } catch (error) {
@@ -236,7 +236,7 @@ export class CaltransPoller {
       
       const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
       const staleResult = await db
-        .update(laneClosures)
+        .update(trafficCaltransLaneClosures)
         .set({ status: 'completed' })
         .where(sql`status = 'active' AND last_seen < ${thirtyMinutesAgo}`);
       
@@ -272,20 +272,20 @@ export class CaltransPoller {
   async getStats() {
     const total = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(laneClosures);
+      .from(trafficCaltransLaneClosures);
     
     const active = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(laneClosures)
-      .where(eq(laneClosures.status, 'active'));
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.status, 'active'));
     
     const byDistrict = await db
       .select({
-        district: laneClosures.district,
+        district: trafficCaltransLaneClosures.district,
         count: sql<number>`COUNT(*)`,
       })
-      .from(laneClosures)
-      .groupBy(laneClosures.district)
+      .from(trafficCaltransLaneClosures)
+      .groupBy(trafficCaltransLaneClosures.district)
       .orderBy(sql`count DESC`);
     
     return {

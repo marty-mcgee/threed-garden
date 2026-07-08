@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures, chpCollisions, bayAreaTrafficEvents, chpCadIncidents } from '@/lib/schema';
+import { trafficCaltransLaneClosures, trafficChpCollisions, trafficBayArea511Events, trafficChpCadIncidents } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -17,83 +17,83 @@ export async function GET() {
     // Fetch Caltrans closures with coordinates
     const caltransEvents = await db
       .select({
-        id: laneClosures.closureId,
+        id: trafficCaltransLaneClosures.closureId,
         source: sql<string>`'caltrans'`,
-        type: laneClosures.closureType,
-        severity: laneClosures.status,
-        location: laneClosures.route,
-        city: laneClosures.city,
-        county: laneClosures.county,
-        description: laneClosures.description,
-        latitude: laneClosures.latitude,
-        longitude: laneClosures.longitude,
-        timestamp: laneClosures.endDate,
+        type: trafficCaltransLaneClosures.closureType,
+        severity: trafficCaltransLaneClosures.status,
+        location: trafficCaltransLaneClosures.route,
+        city: trafficCaltransLaneClosures.city,
+        county: trafficCaltransLaneClosures.county,
+        description: trafficCaltransLaneClosures.description,
+        latitude: trafficCaltransLaneClosures.latitude,
+        longitude: trafficCaltransLaneClosures.longitude,
+        timestamp: trafficCaltransLaneClosures.endDate,
       })
-      .from(laneClosures)
-      .where(sql`${laneClosures.latitude} IS NOT NULL AND ${laneClosures.longitude} IS NOT NULL`)
+      .from(trafficCaltransLaneClosures)
+      .where(sql`${trafficCaltransLaneClosures.latitude} IS NOT NULL AND ${trafficCaltransLaneClosures.longitude} IS NOT NULL`)
       .limit(200);
     
     // Fetch Bay Area 511 events with coordinates
-    const bayAreaEvents = await db
+    const trafficBayAreaEvents = await db
       .select({
-        id: bayAreaTrafficEvents.id,
+        id: trafficBayArea511Events.id,
         source: sql<string>`'bayarea511'`,
-        type: bayAreaTrafficEvents.eventType,
-        severity: bayAreaTrafficEvents.severity,
-        location: bayAreaTrafficEvents.roadwayName,
+        type: trafficBayArea511Events.eventType,
+        severity: trafficBayArea511Events.severity,
+        location: trafficBayArea511Events.roadwayName,
         city: sql<string>`NULL`,
         county: sql<string>`NULL`,
-        description: bayAreaTrafficEvents.description,
-        latitude: bayAreaTrafficEvents.latitude,
-        longitude: bayAreaTrafficEvents.longitude,
-        timestamp: bayAreaTrafficEvents.startTime,
+        description: trafficBayArea511Events.description,
+        latitude: trafficBayArea511Events.latitude,
+        longitude: trafficBayArea511Events.longitude,
+        timestamp: trafficBayArea511Events.startTime,
       })
-      .from(bayAreaTrafficEvents)
-      .where(sql`${bayAreaTrafficEvents.latitude} IS NOT NULL AND ${bayAreaTrafficEvents.longitude} IS NOT NULL`)
+      .from(trafficBayArea511Events)
+      .where(sql`${trafficBayArea511Events.latitude} IS NOT NULL AND ${trafficBayArea511Events.longitude} IS NOT NULL`)
       .limit(200);
     
     // Fetch CHP live incidents with coordinates
     const chpLiveEvents = await db
       .select({
-        id: chpCadIncidents.id,
+        id: trafficChpCadIncidents.id,
         source: sql<string>`'chp-live'`,
-        type: chpCadIncidents.incidentType,
+        type: trafficChpCadIncidents.incidentType,
         severity: sql<string>`'Active'`,
-        location: chpCadIncidents.location,
-        city: chpCadIncidents.city,
-        county: chpCadIncidents.county,
-        description: chpCadIncidents.details,
-        latitude: chpCadIncidents.latitude,
-        longitude: chpCadIncidents.longitude,
-        timestamp: chpCadIncidents.logTime,
+        location: trafficChpCadIncidents.location,
+        city: trafficChpCadIncidents.city,
+        county: trafficChpCadIncidents.county,
+        description: trafficChpCadIncidents.details,
+        latitude: trafficChpCadIncidents.latitude,
+        longitude: trafficChpCadIncidents.longitude,
+        timestamp: trafficChpCadIncidents.logTime,
       })
-      .from(chpCadIncidents)
-      .where(sql`${chpCadIncidents.latitude} IS NOT NULL AND ${chpCadIncidents.longitude} IS NOT NULL AND ${chpCadIncidents.status} = 'active'`)
+      .from(trafficChpCadIncidents)
+      .where(sql`${trafficChpCadIncidents.latitude} IS NOT NULL AND ${trafficChpCadIncidents.longitude} IS NOT NULL AND ${trafficChpCadIncidents.status} = 'active'`)
       .limit(200);
     
     // Fetch CHP historical collisions with coordinates
     const chpHistoricalEvents = await db
       .select({
-        id: chpCollisions.id,
+        id: trafficChpCollisions.id,
         source: sql<string>`'chp-historical'`,
         type: sql<string>`'Collision'`,
-        severity: chpCollisions.severity,
-        location: chpCollisions.location,
-        city: chpCollisions.city,
-        county: chpCollisions.county,
-        description: chpCollisions.primaryFactor,
-        latitude: chpCollisions.latitude,
-        longitude: chpCollisions.longitude,
-        timestamp: chpCollisions.collisionDate,
+        severity: trafficChpCollisions.severity,
+        location: trafficChpCollisions.location,
+        city: trafficChpCollisions.city,
+        county: trafficChpCollisions.county,
+        description: trafficChpCollisions.primaryFactor,
+        latitude: trafficChpCollisions.latitude,
+        longitude: trafficChpCollisions.longitude,
+        timestamp: trafficChpCollisions.collisionDate,
       })
-      .from(chpCollisions)
-      .where(sql`${chpCollisions.latitude} IS NOT NULL AND ${chpCollisions.longitude} IS NOT NULL`)
+      .from(trafficChpCollisions)
+      .where(sql`${trafficChpCollisions.latitude} IS NOT NULL AND ${trafficChpCollisions.longitude} IS NOT NULL`)
       .limit(200);
     
     // Combine all events
     const allEvents = [
       ...caltransEvents,
-      ...bayAreaEvents,
+      ...trafficBayAreaEvents,
       ...chpLiveEvents,
       ...chpHistoricalEvents,
     ];

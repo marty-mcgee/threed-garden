@@ -1,7 +1,7 @@
 // app/api/traffic/cctv/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { cctvCameras } from '@/lib/schema';
+import { trafficCctvCameras } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -11,13 +11,13 @@ export async function GET(request: Request) {
   const district = searchParams.get('district');
   const route = searchParams.get('route');
   
-  let query = db.select().from(cctvCameras).where(eq(cctvCameras.inService, true));
+  let query = db.select().from(trafficCctvCameras).where(eq(trafficCctvCameras.inService, true));
   
   if (district) {
-    query = query.where(eq(cctvCameras.district, parseInt(district)));
+    query = query.where(eq(trafficCctvCameras.district, parseInt(district)));
   }
   if (route) {
-    query = query.where(eq(cctvCameras.route, route));
+    query = query.where(eq(trafficCctvCameras.route, route));
   }
   
   const cameras = await query;

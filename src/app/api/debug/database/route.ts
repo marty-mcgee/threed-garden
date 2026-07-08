@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -14,30 +14,30 @@ export async function GET() {
   
   try {
     // Get ALL records using Drizzle
-    const allRecords = await db.select().from(laneClosures);
+    const allRecords = await db.select().from(trafficCaltransLaneClosures);
     
     // Get counts by status
     const statusCounts = await db
       .select({
-        status: laneClosures.status,
+        status: trafficCaltransLaneClosures.status,
         count: sql<number>`COUNT(*)`,
       })
-      .from(laneClosures)
-      .groupBy(laneClosures.status);
+      .from(trafficCaltransLaneClosures)
+      .groupBy(trafficCaltransLaneClosures.status);
     
     // Get sample records with full details
     const sampleRecords = await db
       .select({
-        closureId: laneClosures.closureId,
-        sourceId: laneClosures.sourceId,
-        status: laneClosures.status,
-        route: laneClosures.route,
-        closureType: laneClosures.closureType,
-        startDate: laneClosures.startDate,
-        endDate: laneClosures.endDate,
-        createdAt: laneClosures.createdAt,
+        closureId: trafficCaltransLaneClosures.closureId,
+        sourceId: trafficCaltransLaneClosures.sourceId,
+        status: trafficCaltransLaneClosures.status,
+        route: trafficCaltransLaneClosures.route,
+        closureType: trafficCaltransLaneClosures.closureType,
+        startDate: trafficCaltransLaneClosures.startDate,
+        endDate: trafficCaltransLaneClosures.endDate,
+        createdAt: trafficCaltransLaneClosures.createdAt,
       })
-      .from(laneClosures)
+      .from(trafficCaltransLaneClosures)
       .limit(5);
     
     return NextResponse.json({

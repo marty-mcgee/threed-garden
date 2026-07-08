@@ -16,8 +16,8 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
-import { user } from '../auth';
-import { projects } from '../projects';
+import { user } from '../user';
+import { projects } from '../project';
 
 // ============================================
 // ENUMS

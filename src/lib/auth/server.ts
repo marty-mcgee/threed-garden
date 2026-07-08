@@ -10,8 +10,8 @@ import {
   user, 
   userAccounts, 
   userSessions, 
-  userVerifications 
-} from '@/lib/schema/auth';
+  userVerifications
+} from '@/lib/schema/user';
 
 export const auth = betterAuth({
 
@@ -49,19 +49,6 @@ export const auth = betterAuth({
   //     clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
   //   },
   // },
-
-  // Disable account linking and other features that might require Kysely
-  account: {
-    accountLinking: {
-      enabled: false,
-    },
-  },
-
-  // Use simple session management
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day
-  },
 
   // This ensures no Kysely-related features are loaded
   databaseHooks: {
@@ -110,8 +97,9 @@ export const auth = betterAuth({
     enabled: false,
   },
 
-  
+  // CUSTOM TABLE + FIELD NAMES
   user: {
+    modelName: "user",
     additionalFields: {
       username: {
         type: 'string',
@@ -152,6 +140,25 @@ export const auth = betterAuth({
       },
     },
   },
+ 
+  account: {
+    modelName: "user_accounts",
+    // Disable account linking and other features that might require Kysely
+    accountLinking: {
+      enabled: false,
+    },
+  },
+  
+  session: {
+    modelName: "user_sessions",
+    // Use simple session management
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day
+  },
+
+  verification: {
+    modelName: "user_verifications",
+  }
 
 });
 

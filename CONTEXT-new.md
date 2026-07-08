@@ -792,7 +792,7 @@ export function LayerToggles({ layers, onToggle }: LayerTogglesProps) {
 
 import { Html } from '@react-three/drei';
 import { LayerVisibility } from '@/lib/types/threed';
-import { SOURCE_COLORS } from '@/lib/config/settings';
+import { SOURCE_COLORS } from '@/lib/config/constants';
 
 interface Legend3DProps {
   layers: LayerVisibility;

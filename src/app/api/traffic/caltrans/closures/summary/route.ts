@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -16,56 +16,56 @@ export async function GET() {
     // 1. Get counts by status
     const statusCounts = await db
       .select({
-        status: laneClosures.status,
+        status: trafficCaltransLaneClosures.status,
         count: sql<number>`COUNT(*)`,
       })
-      .from(laneClosures)
-      .groupBy(laneClosures.status);
+      .from(trafficCaltransLaneClosures)
+      .groupBy(trafficCaltransLaneClosures.status);
     
     // 2. Get active closures by district
     const activeByDistrict = await db
       .select({
-        district: laneClosures.district,
+        district: trafficCaltransLaneClosures.district,
         count: sql<number>`COUNT(*)`,
       })
-      .from(laneClosures)
-      .where(eq(laneClosures.status, 'active'))
-      .groupBy(laneClosures.district)
-      .orderBy(laneClosures.district);
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.status, 'active'))
+      .groupBy(trafficCaltransLaneClosures.district)
+      .orderBy(trafficCaltransLaneClosures.district);
     
     // 3. Get top routes with active closures
     const topRoutes = await db
       .select({
-        route: laneClosures.route,
+        route: trafficCaltransLaneClosures.route,
         count: sql<number>`COUNT(*)`,
       })
-      .from(laneClosures)
-      .where(eq(laneClosures.status, 'active'))
-      .groupBy(laneClosures.route)
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.status, 'active'))
+      .groupBy(trafficCaltransLaneClosures.route)
       .orderBy(sql`count DESC`)
       .limit(10);
     
     // 4. Get closures expiring in next 24 hours
     const expiringSoon = await db
       .select()
-      .from(laneClosures)
+      .from(trafficCaltransLaneClosures)
       .where(
-        sql`${laneClosures.status} = 'active' AND 
-            ${laneClosures.endTimestamp} > NOW() AND 
-            ${laneClosures.endTimestamp} < NOW() + INTERVAL '24 hours'`
+        sql`${trafficCaltransLaneClosures.status} = 'active' AND 
+            ${trafficCaltransLaneClosures.endTimestamp} > NOW() AND 
+            ${trafficCaltransLaneClosures.endTimestamp} < NOW() + INTERVAL '24 hours'`
       )
-      .orderBy(laneClosures.endTimestamp)
+      .orderBy(trafficCaltransLaneClosures.endTimestamp)
       .limit(20);
     
     // 5. Get closure types distribution
     const closureTypes = await db
       .select({
-        type: laneClosures.closureType,
+        type: trafficCaltransLaneClosures.closureType,
         count: sql<number>`COUNT(*)`,
       })
-      .from(laneClosures)
-      .where(eq(laneClosures.status, 'active'))
-      .groupBy(laneClosures.closureType)
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.status, 'active'))
+      .groupBy(trafficCaltransLaneClosures.closureType)
       .orderBy(sql`count DESC`);
     
     // 6. Get today's new closures
@@ -73,8 +73,8 @@ export async function GET() {
       .select({
         count: sql<number>`COUNT(*)`,
       })
-      .from(laneClosures)
-      .where(sql`DATE(${laneClosures.createdAt}) = CURRENT_DATE`);
+      .from(trafficCaltransLaneClosures)
+      .where(sql`DATE(${trafficCaltransLaneClosures.createdAt}) = CURRENT_DATE`);
     
     const totalActive = activeByDistrict.reduce((sum, d) => sum + (Number(d.count) || 0), 0);
     

@@ -1,7 +1,7 @@
 // src/app/api/traffic/bay-area-511/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { bayAreaTrafficEvents } from '@/lib/schema';
+import { trafficBayArea511Events } from '@/lib/schema';
 import { desc, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -18,16 +18,16 @@ export async function GET(request: Request) {
       // Only active events
       events = await db
         .select()
-        .from(bayAreaTrafficEvents)
-        .where(sql`${bayAreaTrafficEvents.status} = 'active'`)
-        .orderBy(desc(bayAreaTrafficEvents.fetchedAt))
+        .from(trafficBayArea511Events)
+        .where(sql`${trafficBayArea511Events.status} = 'active'`)
+        .orderBy(desc(trafficBayArea511Events.fetchedAt))
         .limit(limit);
     } else {
       // All events (including closed)
       events = await db
         .select()
-        .from(bayAreaTrafficEvents)
-        .orderBy(desc(bayAreaTrafficEvents.fetchedAt))
+        .from(trafficBayArea511Events)
+        .orderBy(desc(trafficBayArea511Events.fetchedAt))
         .limit(limit);
     }
     

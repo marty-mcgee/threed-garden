@@ -1,7 +1,7 @@
 // src/app/api/traffic/chp-cad/seed/chp-cad-centers/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { chpCadCenters } from '@/lib/schema';
+import { trafficChpCadCenters } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -49,17 +49,17 @@ export async function GET() {
     
     for (const center of ALL_CENTERS) {
       // Check if center already exists
-      const conditions = [eq(chpCadCenters.centerCode, center.centerCode)];
+      const conditions = [eq(trafficChpCadCenters.centerCode, center.centerCode)];
       const whereClause = and(...conditions);
       
       const existing = await db
         .select()
-        .from(chpCadCenters)
+        .from(trafficChpCadCenters)
         .where(whereClause)
         .limit(1);
       
       if (existing.length === 0) {
-        await db.insert(chpCadCenters).values({
+        await db.insert(trafficChpCadCenters).values({
           centerCode: center.centerCode,
           centerName: center.centerName,
           county: center.county,

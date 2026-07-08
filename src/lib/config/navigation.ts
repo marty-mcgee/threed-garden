@@ -92,7 +92,7 @@ import {
   isModuleEnabled, 
   isServiceEnabled, 
   type ModuleName 
-} from './settings-old';
+} from './settings';
 
 
 /**

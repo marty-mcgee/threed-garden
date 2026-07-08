@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { caltransDistricts } from '@/lib/schema';
+import { trafficCaltransDistricts } from '@/lib/schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
     let skipped = 0;
     
     for (const district of districtsData) {
-      const result = await db.insert(caltransDistricts).values(district).onConflictDoNothing();
+      const result = await db.insert(trafficCaltransDistricts).values(district).onConflictDoNothing();
       if (result.rowCount && result.rowCount > 0) {
         inserted++;
         console.debug(`✓ Inserted district ${district.districtId}: ${district.districtName}`);

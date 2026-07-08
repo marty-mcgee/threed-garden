@@ -3,7 +3,7 @@
 
 import { Html } from '@react-three/drei';
 import { LayerVisibility } from '@/lib/types/threed';
-import { SOURCE_COLORS } from '@/lib/config/settings';
+import { SOURCE_COLORS } from '@/lib/config/constants';
 
 interface Legend3DProps {
   layers: LayerVisibility;
@@ -11,7 +11,7 @@ interface Legend3DProps {
 
 export function Legend3D({ layers }: Legend3DProps) {
   const items = [
-    { key: 'traffic' as const, label: 'Traffic', color: SOURCE_COLORS.chp },
+    { key: 'traffic' as const, label: 'Traffic', color: SOURCE_COLORS.chpLive },
     { key: 'garden' as const, label: 'Garden', color: '#22c55e' },
     { key: 'farmbots' as const, label: 'FarmBots', color: '#8b5cf6' },
     { key: 'weather' as const, label: 'Weather', color: '#60a5fa' },

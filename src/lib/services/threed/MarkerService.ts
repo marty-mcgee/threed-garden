@@ -1,4 +1,4 @@
-// lib/services/threed/markerService.ts
+// lib/services/threed/MarkerService.ts
 import { db } from '@/lib/db/client';
 import { markers } from '@/lib/schema/threed';
 import { eq } from 'drizzle-orm';

@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     const conditions = [];
     
     if (district) {
-      conditions.push(eq(laneClosures.district, parseInt(district)));
+      conditions.push(eq(trafficCaltransLaneClosures.district, parseInt(district)));
     }
     
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
@@ -31,13 +31,13 @@ export async function GET(request: Request) {
     if (whereClause) {
       query = await db
         .select()
-        .from(laneClosures)
+        .from(trafficCaltransLaneClosures)
         .where(whereClause)
         .limit(limit);
     } else {
       query = await db
         .select()
-        .from(laneClosures)
+        .from(trafficCaltransLaneClosures)
         .limit(limit);
     }
     

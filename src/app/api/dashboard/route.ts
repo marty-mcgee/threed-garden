@@ -1,7 +1,7 @@
 // src/app/api/dashboard/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { laneClosures, bayAreaTrafficEvents, chpCadIncidents, chpCollisions } from '@/lib/schema';
+import { trafficCaltransLaneClosures, trafficBayArea511Events, trafficChpCadIncidents, trafficChpCollisions } from '@/lib/schema';
 import { sql, desc, eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -18,43 +18,43 @@ export async function GET(request: Request) {
       // Caltrans lane closures (District 1 only unless showAllRegions)
       db
         .select()
-        .from(laneClosures)
+        .from(trafficCaltransLaneClosures)
         .where(
           showAllRegions 
-            ? eq(laneClosures.status, 'active')
-            : sql`${laneClosures.status} = 'active' AND ${laneClosures.district} = 1`
+            ? eq(trafficCaltransLaneClosures.status, 'active')
+            : sql`${trafficCaltransLaneClosures.status} = 'active' AND ${trafficCaltransLaneClosures.district} = 1`
         )
         .limit(10),
       
       // Bay Area 511 events (Mendocino only unless showAllRegions)
       db
         .select()
-        .from(bayAreaTrafficEvents)
+        .from(trafficBayArea511Events)
         .where(
           showAllRegions 
-            ? eq(bayAreaTrafficEvents.status, 'active')
-            : sql`${bayAreaTrafficEvents.status} = 'active' AND LOWER(${bayAreaTrafficEvents.roadwayName}) LIKE '%mendocino%' OR LOWER(${bayAreaTrafficEvents.roadwayName}) LIKE '%ukiah%'`
+            ? eq(trafficBayArea511Events.status, 'active')
+            : sql`${trafficBayArea511Events.status} = 'active' AND LOWER(${trafficBayArea511Events.roadwayName}) LIKE '%mendocino%' OR LOWER(${trafficBayArea511Events.roadwayName}) LIKE '%ukiah%'`
         )
         .limit(10),
       
       // CHP Live incidents (already filtered to Ukiah/Humboldt)
       db
         .select()
-        .from(chpCadIncidents)
-        .where(eq(chpCadIncidents.status, 'active'))
+        .from(trafficChpCadIncidents)
+        .where(eq(trafficChpCadIncidents.status, 'active'))
         .limit(10),
       
       // CHP Historical collisions (local counties only unless showAllRegions)
       showHistorical
         ? db
             .select()
-            .from(chpCollisions)
+            .from(trafficChpCollisions)
             .where(
               showAllRegions 
                 ? undefined
-                : sql`${chpCollisions.county} IN ('12', '23')`  // Humboldt & Mendocino
+                : sql`${trafficChpCollisions.county} IN ('12', '23')`  // Humboldt & Mendocino
             )
-            .orderBy(desc(chpCollisions.collisionDate))
+            .orderBy(desc(trafficChpCollisions.collisionDate))
             .limit(10)
         : Promise.resolve([])
     ]);

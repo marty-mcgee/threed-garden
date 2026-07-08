@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -25,47 +25,47 @@ export async function GET() {
       // Total active closures
       db
         .select({ count: sql<number>`COUNT(*)` })
-        .from(laneClosures)
-        .where(eq(laneClosures.status, 'active')),
+        .from(trafficCaltransLaneClosures)
+        .where(eq(trafficCaltransLaneClosures.status, 'active')),
       
       // Total completed closures
       db
         .select({ count: sql<number>`COUNT(*)` })
-        .from(laneClosures)
-        .where(eq(laneClosures.status, 'completed')),
+        .from(trafficCaltransLaneClosures)
+        .where(eq(trafficCaltransLaneClosures.status, 'completed')),
       
       // Unique routes with active closures
       db
-        .select({ count: sql<number>`COUNT(DISTINCT ${laneClosures.route})` })
-        .from(laneClosures)
-        .where(eq(laneClosures.status, 'active')),
+        .select({ count: sql<number>`COUNT(DISTINCT ${trafficCaltransLaneClosures.route})` })
+        .from(trafficCaltransLaneClosures)
+        .where(eq(trafficCaltransLaneClosures.status, 'active')),
       
       // New closures in last 24 hours
       db
         .select({ count: sql<number>`COUNT(*)` })
-        .from(laneClosures)
-        .where(sql`${laneClosures.createdAt} > NOW() - INTERVAL '24 hours'`),
+        .from(trafficCaltransLaneClosures)
+        .where(sql`${trafficCaltransLaneClosures.createdAt} > NOW() - INTERVAL '24 hours'`),
       
       // Stats by district
       db
         .select({
-          district: laneClosures.district,
+          district: trafficCaltransLaneClosures.district,
           total: sql<number>`COUNT(*)`,
-          active: sql<number>`COUNT(CASE WHEN ${laneClosures.status} = 'active' THEN 1 END)`,
+          active: sql<number>`COUNT(CASE WHEN ${trafficCaltransLaneClosures.status} = 'active' THEN 1 END)`,
         })
-        .from(laneClosures)
-        .groupBy(laneClosures.district)
-        .orderBy(laneClosures.district),
+        .from(trafficCaltransLaneClosures)
+        .groupBy(trafficCaltransLaneClosures.district)
+        .orderBy(trafficCaltransLaneClosures.district),
       
       // Weekly trend (last 7 days)
       db
         .select({
-          date: sql<Date>`DATE(${laneClosures.createdAt})`,
+          date: sql<Date>`DATE(${trafficCaltransLaneClosures.createdAt})`,
           newClosures: sql<number>`COUNT(*)`,
         })
-        .from(laneClosures)
-        .where(sql`${laneClosures.createdAt} > NOW() - INTERVAL '7 days'`)
-        .groupBy(sql`DATE(${laneClosures.createdAt})`)
+        .from(trafficCaltransLaneClosures)
+        .where(sql`${trafficCaltransLaneClosures.createdAt} > NOW() - INTERVAL '7 days'`)
+        .groupBy(sql`DATE(${trafficCaltransLaneClosures.createdAt})`)
         .orderBy(sql`date DESC`)
     ]);
     

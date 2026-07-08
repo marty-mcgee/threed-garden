@@ -13,38 +13,6 @@ import {
 import { eq, and } from 'drizzle-orm';
 
 // ============================================
-// CONSTANTS
-// ============================================
-
-export const SOURCE_COLORS: Record<string, string> = {
-  caltrans: '#3b82f6',
-  bayarea511: '#10b981',
-  chpLive: '#ef4444',
-  chpHistorical: '#8b5cf6',
-  calfire: '#f97316',
-  default: '#6b7280',
-};
-
-export const SOURCE_ICONS: Record<string, string> = {
-  caltrans: '🚧',
-  bayarea511: '📻',
-  chpLive: '🚨',
-  chpHistorical: '📊',
-  calfire: '🔥',
-  default: '📍',
-};
-
-export const SEVERITY_SCALE: Record<string, number> = {
-  critical: 1.6,
-  fatal: 1.6,
-  injury: 1.3,
-  high: 1.3,
-  medium: 1.0,
-  low: 0.8,
-  default: 1.0,
-};
-
-// ============================================
 // TYPES
 // ============================================
 

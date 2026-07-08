@@ -98,7 +98,7 @@ export interface WeatherData {
 // ===== TRAFFIC =====
 export interface TrafficIncident3D {
   id: string;
-  type: 'chp' | 'caltrans' | '511' | 'calfire';
+  type: 'chpLive' | 'chpHistorical' | 'caltrans' | 'bayarea511' | 'calfire';
   title: string;
   description: string;
   location: string;

@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { laneClosures } from '@/lib/schema';
+import { trafficCaltransLaneClosures } from '@/lib/schema';
 import { eq, and, ilike, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -20,23 +20,23 @@ export async function GET(request: Request) {
     const sqlClient = neon(connectionString);
     const db = drizzle(sqlClient);
     
-    const conditions = [eq(laneClosures.status, status)];
-    if (district) conditions.push(eq(laneClosures.district, parseInt(district)));
-    if (route) conditions.push(ilike(laneClosures.route, `%${route}%`));
+    const conditions = [eq(trafficCaltransLaneClosures.status, status)];
+    if (district) conditions.push(eq(trafficCaltransLaneClosures.district, parseInt(district)));
+    if (route) conditions.push(ilike(trafficCaltransLaneClosures.route, `%${route}%`));
     
     const whereClause = and(...conditions);
     
     const closures = await db
       .select()
-      .from(laneClosures)
+      .from(trafficCaltransLaneClosures)
       .where(whereClause)
-      .orderBy(laneClosures.endDate)
+      .orderBy(trafficCaltransLaneClosures.endDate)
       .offset(offset)
       .limit(limit);
     
     const totalResult = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(laneClosures)
+      .from(trafficCaltransLaneClosures)
       .where(whereClause);
     
     return NextResponse.json({

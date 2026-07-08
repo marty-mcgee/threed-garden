@@ -1,6 +1,6 @@
 // src/lib/services/BayArea511Poller.ts
 import { db } from '@/lib/db/client';
-import { bayAreaTrafficEvents } from '@/lib/schema';
+import { trafficBayArea511Events } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export class BayArea511Poller {
@@ -141,15 +141,15 @@ export class BayArea511Poller {
     try {
       const existing = await db
         .select()
-        .from(bayAreaTrafficEvents)
-        .where(eq(bayAreaTrafficEvents.sourceId, sourceId))
+        .from(trafficBayArea511Events)
+        .where(eq(trafficBayArea511Events.sourceId, sourceId))
         .limit(1);
       
       if (existing.length > 0) {
-        await db.update(bayAreaTrafficEvents).set(eventData).where(eq(bayAreaTrafficEvents.sourceId, sourceId));
+        await db.update(trafficBayArea511Events).set(eventData).where(eq(trafficBayArea511Events.sourceId, sourceId));
         return 'updated';
       } else {
-        await db.insert(bayAreaTrafficEvents).values(eventData);
+        await db.insert(trafficBayArea511Events).values(eventData);
         return 'new';
       }
     } catch (error) {
@@ -243,8 +243,8 @@ export class BayArea511Poller {
   async getEvents(limit: number = 1000) {
     const events = await db
       .select()
-      .from(bayAreaTrafficEvents)
-      .where(sql`${bayAreaTrafficEvents.status} = 'active'`)
+      .from(trafficBayArea511Events)
+      .where(sql`${trafficBayArea511Events.status} = 'active'`)
       .limit(limit);
     
     return events;

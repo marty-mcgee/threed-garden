@@ -2,7 +2,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { db } from '@/lib/db/client';
-import { chpCadIncidents, chpCadCenters } from '@/lib/schema';
+import { trafficChpCadIncidents, trafficChpCadCenters } from '@/lib/schema';
 import { eq, and, sql } from 'drizzle-orm';
 // import { getCityCoordinates } from '@/lib/utils/cityGeocoder';
 
@@ -50,12 +50,12 @@ export class CHPCADPoller {
       for (const incident of allIncidents) {
         const existing = await db
           .select()
-          .from(chpCadIncidents)
-          .where(eq(chpCadIncidents.sourceId, incident.sourceId))
+          .from(trafficChpCadIncidents)
+          .where(eq(trafficChpCadIncidents.sourceId, incident.sourceId))
           .limit(1);
         
         if (existing.length === 0) {
-          await db.insert(chpCadIncidents).values(incident);
+          await db.insert(trafficChpCadIncidents).values(incident);
           newCount++;
         }
       }
@@ -85,9 +85,9 @@ export class CHPCADPoller {
       console.log(`  Fetching ${center.name} (${center.code})...`);
       
       const centerRecord = await db
-        .select({ id: chpCadCenters.id })
-        .from(chpCadCenters)
-        .where(eq(chpCadCenters.centerCode, center.code))
+        .select({ id: trafficChpCadCenters.id })
+        .from(trafficChpCadCenters)
+        .where(eq(trafficChpCadCenters.centerCode, center.code))
         .limit(1);
       
       const centerId = centerRecord[0]?.id || null;
@@ -196,17 +196,17 @@ export class CHPCADPoller {
   async getStats() {
     const total = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(chpCadIncidents);
+      .from(trafficChpCadIncidents);
     
     const byCenter = await db
       .select({
-        centerName: chpCadCenters.centerName,
-        centerCode: chpCadCenters.centerCode,
+        centerName: trafficChpCadCenters.centerName,
+        centerCode: trafficChpCadCenters.centerCode,
         count: sql<number>`COUNT(*)`,
       })
-      .from(chpCadIncidents)
-      .leftJoin(chpCadCenters, eq(chpCadIncidents.centerId, chpCadCenters.id))
-      .groupBy(chpCadCenters.centerName, chpCadCenters.centerCode);
+      .from(trafficChpCadIncidents)
+      .leftJoin(trafficChpCadCenters, eq(trafficChpCadIncidents.centerId, trafficChpCadCenters.id))
+      .groupBy(trafficChpCadCenters.centerName, trafficChpCadCenters.centerCode);
     
     return {
       total: total[0]?.count || 0,

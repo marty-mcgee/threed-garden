@@ -1,7 +1,7 @@
 // src/app/api/traffic/chp-historical/collisions/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { chpCollisions } from '@/lib/schema';
+import { trafficChpCollisions } from '@/lib/schema';
 import { desc, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -16,8 +16,8 @@ export async function GET(request: Request) {
     // Build query with DESC order (most recent first)
     let query = db
       .select()
-      .from(chpCollisions)
-      .orderBy(desc(chpCollisions.collisionDate))
+      .from(trafficChpCollisions)
+      .orderBy(desc(trafficChpCollisions.collisionDate))
       .limit(limit)
       .offset(offset);
     
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     // Get total count for pagination
     const totalResult = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(chpCollisions);
+      .from(trafficChpCollisions);
     
     return NextResponse.json({
       success: true,
