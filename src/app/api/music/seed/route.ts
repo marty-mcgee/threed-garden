@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-// import { auth } from '@/lib/auth/server';
-import { minimalAuth as auth } from "@/lib/auth/minimal-server";
+import { auth } from '@/lib/auth/server';
+// import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 import { musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
 import { MusicLinkType, AlbumStatus, TrackStatus } from '@/lib/types/music';
 

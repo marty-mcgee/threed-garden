@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { musicPoller } from '@/lib/services/music/MusicPoller';
-// import { auth } from '@/lib/auth/server';
-import { minimalAuth as auth } from "@/lib/auth/minimal-server";
+import { auth } from '@/lib/auth/server';
+// import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 import { MusicPollingType } from '@/lib/types/music';
 import { db } from '@/lib/db/client';
 import { musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
