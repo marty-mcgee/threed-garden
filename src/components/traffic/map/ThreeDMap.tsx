@@ -56,7 +56,7 @@ import { SOURCE_COLORS } from '@/lib/config/constants';
 //   calfire: '#f97316',
 //   default: '#6b7280',
 // };
-import { SOURCE_ICONS } from '@/lib/config/settings';
+import { SOURCE_ICONS } from '@/lib/config/constants';
 // const SOURCE_ICONS: Record<string, string> = {
 //   caltrans: '🚧',
 //   bayarea511: '📻',
@@ -65,7 +65,7 @@ import { SOURCE_ICONS } from '@/lib/config/settings';
 //   calfire: '🔥',
 //   default: '📍',
 // };
-import { SEVERITY_SCALE } from '@/lib/config/settings';
+import { SEVERITY_SCALE } from '@/lib/config/constants';
 // const SEVERITY_SCALE: Record<string, number> = {
 //   critical: 1.6,
 //   Fatal: 1.6,
