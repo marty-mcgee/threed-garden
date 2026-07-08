@@ -5,7 +5,7 @@
 // }
 
 // app/dashboard/page.tsx
-import { getSettings } from '@/lib/config/settings-old';
+import { getSettings } from '@/lib/config/settings';
 import { buildNavigation } from '@/lib/config/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 

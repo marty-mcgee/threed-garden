@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
-import { type AppSettings, type ModuleName } from '@/lib/config/settings-old';
+import { type AppSettings, type ModuleName } from '@/lib/config/settings';
 
 interface SettingsManagerProps {
   initialSettings: AppSettings;
