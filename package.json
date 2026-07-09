@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -12,8 +12,7 @@
     "db:studio": "drizzle-kit studio",
     "db:seed:threed": "bun run src/lib/data/threed/seed-simple.ts",
     "db:seed:traffic": "bun run src/lib/data/traffic/seed-simple.ts",
-    "db:seed:music": "bun run src/lib/data/music/seed-simple.ts",
-    "auth:generate": "npx @better-auth/cli@latest generate --config src/lib/auth/server.ts --output src/lib/schema/index.ts"
+    "db:seed:music": "bun run src/lib/data/music/seed-simple.ts"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",
