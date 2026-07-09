@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { musicAlbumLinks, musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
@@ -7,7 +7,10 @@ import { eq, and } from 'drizzle-orm';
 // GET - Get associations for an album or track
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -41,7 +44,10 @@ export async function GET(request: NextRequest) {
 // POST - Create association (link album/track to link)
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -126,7 +132,10 @@ export async function POST(request: NextRequest) {
 // DELETE - Remove association
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

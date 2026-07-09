@@ -1,25 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { musicPoller } from '@/lib/services/music/MusicPoller';
-import { auth } from '@/lib/auth/server';
+import { auth } from '@/lib/auth';
 // import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 import { MusicPollingType } from '@/lib/types/music';
 import { db } from '@/lib/db/client';
 import { musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
+// Use a hardcoded user ID for testing (replace with your actual user ID from database)
+const defaultUserId = 'XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN';
+
 export async function GET(request: NextRequest) {
   try {
-    // // Get session with headers
-    // const session = await auth.api.getSession({
-    //   headers: request.headers,
-    // });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    // if (!session?.user?.id) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
-    // Use a hardcoded user ID for testing (replace with your actual user ID from database)
-    const defaultUserId = 'XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN';
+    // Use session user ID if available, otherwise use default for testing
+    const userId = session?.user?.id || defaultUserId;
 
     const searchParams = request.nextUrl.searchParams;
     const action = searchParams.get('action');
@@ -28,16 +30,16 @@ export async function GET(request: NextRequest) {
     if (action === 'stats') {
       const albums = await db.select().from(musicAlbums)
         // .where(eq(musicAlbums.userId, session.user.id));
-        .where(eq(musicAlbums.userId, defaultUserId));
+        .where(eq(musicAlbums.userId, userId));
       const tracks = await db.select().from(musicTracks).innerJoin(
         musicAlbums,
         eq(musicTracks.albumId, musicAlbums.id)
       // ).where(eq(musicAlbums.userId, session.user.id));
-      ).where(eq(musicAlbums.userId, defaultUserId));
+      ).where(eq(musicAlbums.userId, userId));
 
       const links = await db.select().from(musicLinks)
         // .where(eq(musicLinks.userId, session.user.id));
-        .where(eq(musicLinks.userId, defaultUserId));
+        .where(eq(musicLinks.userId, userId));
 
       // Calculate total storage from S3 (optional - you'd need to query S3 API)
 
@@ -63,7 +65,7 @@ export async function GET(request: NextRequest) {
     // Get all albums for user
     const albums = await db.query.musicAlbums.findMany({
       // where: eq(musicAlbums.userId, session.user.id),
-      where: eq(musicAlbums.userId, defaultUserId),
+      where: eq(musicAlbums.userId, userId),
       with: {
         tracks: {
           orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
@@ -81,9 +83,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -118,7 +121,10 @@ export async function POST(request: NextRequest) {
 // PATCH - Update sort order (for reordering)
 export async function PATCH(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

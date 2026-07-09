@@ -1,7 +1,7 @@
 // lib/schema/projects/index.ts
 import { pgTable, text, timestamp, boolean, jsonb, serial, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { user } from '../user';
+import { user } from '../auth';
 import { threed } from '../threed';
 import { traffic } from '../traffic';
 import { music } from '../music';

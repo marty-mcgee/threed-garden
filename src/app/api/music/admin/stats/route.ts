@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { musicAlbums, musicTracks, musicLinks, musicPlaybackHistory } from '@/lib/schema';
 import { eq, desc, sql } from 'drizzle-orm';

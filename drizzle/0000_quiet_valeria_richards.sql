@@ -26,6 +26,62 @@ CREATE TYPE "public"."threed_task_priority" AS ENUM('low', 'medium', 'high', 'ur
 CREATE TYPE "public"."threed_task_status" AS ENUM('pending', 'in_progress', 'completed', 'cancelled');--> statement-breakpoint
 CREATE TYPE "public"."track_status" AS ENUM('active', 'inactive', 'processing');--> statement-breakpoint
 CREATE TYPE "public"."threed_watering_frequency" AS ENUM('daily', 'weekly', 'custom', 'moisture-based', 'hourly', 'bi-daily');--> statement-breakpoint
+CREATE TABLE "user" (
+	"id" text PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text,
+	"email" text NOT NULL,
+	"email_verified" timestamp,
+	"image" text,
+	"username" text,
+	"display_name" text,
+	"bio" text,
+	"theme" text DEFAULT 'system',
+	"language" text DEFAULT 'en',
+	"timezone" text DEFAULT 'UTC',
+	"role" text DEFAULT 'user',
+	"is_active" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "user_email_unique" UNIQUE("email"),
+	CONSTRAINT "user_username_unique" UNIQUE("username")
+);
+--> statement-breakpoint
+CREATE TABLE "user_accounts" (
+	"id" text PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" text NOT NULL,
+	"type" text NOT NULL,
+	"provider" text NOT NULL,
+	"provider_account_id" text NOT NULL,
+	"refresh_token" text,
+	"access_token" text,
+	"expires_at" integer,
+	"token_type" text,
+	"scope" text,
+	"id_token" text,
+	"session_state" text,
+	"password" text,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "user_sessions" (
+	"id" text PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"session_token" text NOT NULL,
+	"user_id" text NOT NULL,
+	"expires" timestamp NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "user_sessions_session_token_unique" UNIQUE("session_token")
+);
+--> statement-breakpoint
+CREATE TABLE "user_verifications" (
+	"id" text PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"identifier" text NOT NULL,
+	"token" text NOT NULL,
+	"expires" timestamp NOT NULL,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE "music" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"project_id" integer,
@@ -850,54 +906,8 @@ CREATE TABLE "traffic_chp_collisions" (
 	CONSTRAINT "traffic_chp_collisions_case_id_unique" UNIQUE("case_id")
 );
 --> statement-breakpoint
-CREATE TABLE "user" (
-	"id" text PRIMARY KEY NOT NULL,
-	"name" text NOT NULL,
-	"email" text NOT NULL,
-	"email_verified" boolean DEFAULT false NOT NULL,
-	"image" text,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "user_email_unique" UNIQUE("email")
-);
---> statement-breakpoint
-CREATE TABLE "user_accounts" (
-	"id" text PRIMARY KEY NOT NULL,
-	"account_id" text NOT NULL,
-	"provider_id" text NOT NULL,
-	"user_id" text NOT NULL,
-	"access_token" text,
-	"refresh_token" text,
-	"id_token" text,
-	"access_token_expires_at" timestamp,
-	"refresh_token_expires_at" timestamp,
-	"scope" text,
-	"password" text,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE "user_sessions" (
-	"id" text PRIMARY KEY NOT NULL,
-	"expires_at" timestamp NOT NULL,
-	"token" text NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp NOT NULL,
-	"ip_address" text,
-	"user_agent" text,
-	"user_id" text NOT NULL,
-	CONSTRAINT "user_sessions_token_unique" UNIQUE("token")
-);
---> statement-breakpoint
-CREATE TABLE "user_verifications" (
-	"id" text PRIMARY KEY NOT NULL,
-	"identifier" text NOT NULL,
-	"value" text NOT NULL,
-	"expires_at" timestamp NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
-);
---> statement-breakpoint
+ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music" ADD CONSTRAINT "music_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_link_id_music_links_id_fk" FOREIGN KEY ("link_id") REFERENCES "public"."music_links"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -972,8 +982,13 @@ ALTER TABLE "traffic_cctv_cameras" ADD CONSTRAINT "traffic_cctv_cameras_traffic_
 ALTER TABLE "traffic_chp_cad_incidents" ADD CONSTRAINT "traffic_chp_cad_incidents_traffic_id_traffic_id_fk" FOREIGN KEY ("traffic_id") REFERENCES "public"."traffic"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traffic_chp_cad_incidents" ADD CONSTRAINT "traffic_chp_cad_incidents_center_id_traffic_chp_cad_centers_id_fk" FOREIGN KEY ("center_id") REFERENCES "public"."traffic_chp_cad_centers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traffic_chp_collisions" ADD CONSTRAINT "traffic_chp_collisions_traffic_id_traffic_id_fk" FOREIGN KEY ("traffic_id") REFERENCES "public"."traffic"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_user_email" ON "user" USING btree ("email");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_user_username" ON "user" USING btree ("username");--> statement-breakpoint
+CREATE INDEX "idx_user_accounts_user_id" ON "user_accounts" USING btree ("user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_user_accounts_provider" ON "user_accounts" USING btree ("provider","provider_account_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_user_sessions_token" ON "user_sessions" USING btree ("session_token");--> statement-breakpoint
+CREATE INDEX "idx_user_sessions_user_id" ON "user_sessions" USING btree ("user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_user_verifications_token" ON "user_verifications" USING btree ("identifier","token");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_music_slug" ON "music" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_music_project_id" ON "music" USING btree ("project_id");--> statement-breakpoint
 CREATE INDEX "idx_music_active" ON "music" USING btree ("is_active");--> statement-breakpoint
@@ -1130,7 +1145,4 @@ CREATE UNIQUE INDEX "idx_chp_case_id" ON "traffic_chp_collisions" USING btree ("
 CREATE INDEX "idx_chp_county" ON "traffic_chp_collisions" USING btree ("county");--> statement-breakpoint
 CREATE INDEX "idx_chp_severity" ON "traffic_chp_collisions" USING btree ("severity");--> statement-breakpoint
 CREATE INDEX "idx_chp_year" ON "traffic_chp_collisions" USING btree ("collision_year");--> statement-breakpoint
-CREATE INDEX "idx_chp_date" ON "traffic_chp_collisions" USING btree ("collision_date");--> statement-breakpoint
-CREATE INDEX "account_userId_idx" ON "user_accounts" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "session_userId_idx" ON "user_sessions" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "verification_identifier_idx" ON "user_verifications" USING btree ("identifier");
+CREATE INDEX "idx_chp_date" ON "traffic_chp_collisions" USING btree ("collision_date");

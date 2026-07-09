@@ -90,7 +90,7 @@ User (user)
 
 ## 🗄️ Complete Database Schema
 
-### Auth Module (`lib/schema/user/`)
+### Auth Module (`lib/schema/auth/`)
 
 | Table | Purpose |
 |-------|---------|

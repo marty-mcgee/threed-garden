@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { musicTracks, musicAlbums } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
@@ -20,7 +20,10 @@ export async function GET(
     }
 
     // Get session to verify user
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

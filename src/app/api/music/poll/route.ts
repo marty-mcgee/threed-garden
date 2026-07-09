@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { musicPoller } from '@/lib/services/music/MusicPoller';
-import { auth } from '@/lib/auth/server';
+import { auth } from '@/lib/auth';
 // import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 
 export async function GET(request: NextRequest) {

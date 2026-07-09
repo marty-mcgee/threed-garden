@@ -1,7 +1,7 @@
 export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/server';
+import { auth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,10 +13,13 @@ export async function GET(request: NextRequest) {
       if (key) cookies[key] = rest.join('=');
     });
     
-    // Try to get session
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
+    // if (!session?.user?.id) {
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // }
     
     return NextResponse.json({
       hasSession: !!session,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { musicAlbums, musicTracks } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
@@ -110,7 +110,10 @@ export async function POST(request: NextRequest) {
 // PUT - Update album
 export async function PUT(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -160,7 +163,10 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete album
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -196,7 +202,10 @@ export async function DELETE(request: NextRequest) {
 // PATCH - Bulk update sort orders
 export async function PATCH(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

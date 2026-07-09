@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { auth } from '@/lib/auth/server';
+import { auth } from '@/lib/auth';
 // import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 import { musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
 import { MusicLinkType, AlbumStatus, TrackStatus } from '@/lib/types/music';
@@ -8,9 +8,10 @@ import { MusicLinkType, AlbumStatus, TrackStatus } from '@/lib/types/music';
 export async function POST(request: NextRequest) {
   try {
     // Get session using Better Auth server API
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    // Auth.js: get session
+    const session = await auth();
+    
+    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

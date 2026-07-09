@@ -28,7 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
-, "src/lib/schema/user/index.ts-future"  ],
+    "**/*.mts",
+  ],
   "exclude": ["node_modules"]
 }

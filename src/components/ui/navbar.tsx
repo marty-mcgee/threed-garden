@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ThemeSelector } from "@/components/themes/selector";
 import { Button } from "@/components/ui/button";
-import { useSession, signOut } from "@/lib/auth/client-old";
+import { useSession, signOut } from "@/lib/auth/better-auth/client";
 
 export function NavBar() {
   const { data: session, isPending } = useSession();
