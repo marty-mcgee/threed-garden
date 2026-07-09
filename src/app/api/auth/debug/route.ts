@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
         id: session.user.id,
         email: session.user.email,
       } : null,
-      hasAuthCookie: !!cookies['better-auth.session_token'],
+      hasAuthCookie: !!cookies['authjs.session_token'],
       allCookies: Object.keys(cookies),
       environment: process.env.NODE_ENV,
       baseURL: process.env.NEXTAUTH_URL,
