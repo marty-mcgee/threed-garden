@@ -63,7 +63,7 @@ BETTER_AUTH_SECRET=<generated-secret>
 Set the base URL of your application to your local development URL:
 
 ```txt
-BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_URL=http://localhost:4444
 ```
 
 Note: Make sure to set the base URL to your production Vercel URL for your production environment.
@@ -74,7 +74,7 @@ Note: Make sure to set the base URL to your production Vercel URL for your produ
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:4444](http://localhost:4444) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

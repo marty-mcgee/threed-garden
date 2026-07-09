@@ -2,7 +2,6 @@
   "albums": [
     {
       "id": 1,
-      "user_id": "XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN",
       "title": "Ground Zero",
       "artist": "Marty McGee",
       "cover_art": "https://martymcgee.hearnow.com/dynamic/images/xtalb04499120/large.jpg",
@@ -37,6 +36,79 @@
           "updated_at": "2026-06-02 19:23:32.939"
         }
       ]
+    },
+
+
+    
+    {
+      "id": 2,
+      "title": "It will all make sense.",
+      "artist": "Marty McGee, Jessica Torres, Alan Watts",
+      "cover_art": "https://martymcgee.hearnow.com/dynamic/images/c2alb04506553/large.jpg",
+      "release_year": 2026,
+      "description": "Long Beach City College - Dance Show - Spring 2026",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-02 19:45:00.52",
+      "updated_at": "2026-06-08 15:10:48.178",
+      "sort_order": 2,
+      "tracks": [
+        {
+          "id": 2,
+          "album_id": 2,
+          "title": "It will all make sense.",
+          "duration": 600,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/2026-Jess-Torres-Daylight-Shadow-v4.0.4-mastered-2026-04-22-09-18.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-02 20:00:04.98",
+          "updated_at": "2026-06-06 15:00:39.32"
+        }
+      ]
+    },
+
+
+    
+    {
+      "id": 3,
+      "title": "Salesman",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Salesman.jpg",
+      "release_year": 2026,
+      "description": "Long Beach City College - Dance Show - Spring 2026",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-02 19:45:00.52",
+      "updated_at": "2026-06-08 15:10:48.178",
+      "sort_order": 2,
+      "tracks": [
+        {
+          "id": 8,
+          "album_id": 3,
+          "title": "Salesman",
+          "duration": 210,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/2024-Salesman-Remastered-v2024-16bit.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-03 17:09:25.826",
+          "updated_at": "2026-06-04 06:47:45.547"
+        }
+      ]
     }
+
+
+
   ]
 }

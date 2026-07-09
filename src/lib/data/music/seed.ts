@@ -14,7 +14,11 @@ async function seedFromJSON() {
   console.log('🎵 Starting JSON seed...\n');
 
   // Get the first user ID
-  const userId = await getFirstUserId();
+  // const userId = await getFirstUserId();
+  const userId = "9a9ed475-3dcd-492e-b22f-de27a33ed1fc";
+      // "user_id": "XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN",
+      // "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      // "user_id": "cf18745e-97cf-463e-8d66-dbaedf09bcf8",
   
   if (!userId) {
     console.error('❌ No users found. Please create a user first via sign-up.');
@@ -34,8 +38,8 @@ async function seedFromJSON() {
     // Insert album
     const [album] = await db.insert(musicAlbums).values({
       id: albumData.id,
-      // userId: userId,
-      userId: albumData.user_id,
+      userId: userId,
+      // userId: albumData.user_id,
       title: albumData.title,
       artist: albumData.artist,
       coverArt: albumData.cover_art,
@@ -79,7 +83,7 @@ async function seedFromJSON() {
   console.log(`  • ${totalAlbums} albums created`);
   console.log(`  • ${totalTracks} tracks created`);
   console.log('\n💡 Next steps:');
-  console.log('  1. Visit: http://localhost:3000/dashboard/music');
+  console.log('  1. Visit: http://localhost:4444/dashboard/music');
   console.log('  2. Your albums should now appear in the music library');
   console.log('  3. Click play to test audio playback');
 }
