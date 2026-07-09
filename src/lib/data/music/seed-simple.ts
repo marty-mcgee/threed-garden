@@ -56,61 +56,61 @@ const albumsData = [
       {
         title: "New Design",
         duration: 272,
-        trackNumber: 1,
+        trackNumber: 2,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-new-design.mp3"
       },
       {
         title: "Conversate",
         duration: 294,
-        trackNumber: 1,
+        trackNumber: 3,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-conversate.mp3"
       },
       {
         title: "Womb",
         duration: 427,
-        trackNumber: 1,
+        trackNumber: 4,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-womb.mp3"
       },
       {
         title: "Vice Conversion",
         duration: 218,
-        trackNumber: 1,
+        trackNumber: 5,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-vice-conversion.mp3"
       },
       {
         title: "Innocent",
         duration: 313,
-        trackNumber: 1,
+        trackNumber: 6,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-innocent.mp3"
       },
       {
         title: "This Disease",
         duration: 390,
-        trackNumber: 1,
+        trackNumber: 7,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-this-disease.mp3"
       },
       {
         title: "Manhattan",
         duration: 328,
-        trackNumber: 1,
+        trackNumber: 8,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-manhattan.mp3"
       },
       {
         title: "Sailing",
         duration: 187,
-        trackNumber: 1,
+        trackNumber: 9,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-sailing.mp3"
       },
       {
         title: "Antidote",
         duration: 320,
-        trackNumber: 1,
+        trackNumber: 10,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-antidote.mp3"
       },
       {
         title: "Eleven",
         duration: 259,
-        trackNumber: 1,
+        trackNumber: 11,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-eleven.mp3"
       },
     ]
@@ -202,81 +202,6 @@ const albumsData = [
         duration: 210,
         trackNumber: 1,
         publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-salesman.mp3"
-      }
-    ]
-  },
-  {
-    title: "Sit Back",
-    artist: "Marty McGee",
-    coverArt: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Sit-Back.jpg",
-    releaseYear: 2007,
-    description: "Sit back, watch the days go by.. until somebody tells me to see.",
-    tracks: [
-      {
-        title: "Sit Back",
-        duration: 185,
-        trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-sit-back.mp3"
-      },
-      {
-        title: "nVomitous",
-        duration: 234,
-        trackNumber: 2,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-nvomitous.mp3"
-      },
-      {
-        title: "New Design",
-        duration: 245,
-        trackNumber: 3,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-new-design.mp3"
-      },
-      {
-        title: "Greats",
-        duration: 198,
-        trackNumber: 4,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-greats.mp3"
-      },
-      {
-        title: "The Fat",
-        duration: 240,
-        trackNumber: 5,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-the-fat.mp3"
-      }
-    ]
-  },
-  {
-    title: "Neat and Fool",
-    artist: "Marty McGee",
-    coverArt: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Neat-and-Fool.jpg",
-    releaseYear: 2016,
-    description: "Funky off-beat instrumental chill.",
-    tracks: [
-      {
-        title: "Neat and Fool",
-        duration: 220,
-        trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-neat-and-fool.mp3"
-      },
-      {
-        title: "Tea Among Colleagues",
-        duration: 300,
-        trackNumber: 2,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-tea-among-colleagues.mp3"
-      }
-    ]
-  },
-  {
-    title: "MesMerized",
-    artist: "Marty McGee",
-    coverArt: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-MesMerized.jpg",
-    releaseYear: 2001,
-    description: "I'm missing the silent voices of you.",
-    tracks: [
-      {
-        title: "MesMerized",
-        duration: 210,
-        trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-mesmerized.mp3"
       }
     ]
   },
