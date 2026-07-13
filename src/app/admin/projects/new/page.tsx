@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, X } from 'lucide-react';
+import { ArrowLeft, Save, X, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,16 +38,17 @@ export default function NewProjectPage() {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        showToast('Project created successfully', 'success');
-        router.push(`/admin/projects/${data.data.id}`);
-      } else {
-        showToast('Failed to create project', 'error');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create project');
       }
+
+      const data = await response.json();
+      showToast('Project created successfully', 'success');
+      router.push(`/admin/projects/${data.data.id}`);
     } catch (error) {
       console.error('Error creating project:', error);
-      showToast('Failed to create project', 'error');
+      showToast(error instanceof Error ? error.message : 'Failed to create project', 'error');
     } finally {
       setLoading(false);
     }
@@ -81,6 +82,7 @@ export default function NewProjectPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -92,6 +94,7 @@ export default function NewProjectPage() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
+                disabled={loading}
               />
             </div>
 
@@ -100,16 +103,26 @@ export default function NewProjectPage() {
                 id="isPublic"
                 checked={formData.isPublic}
                 onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
+                disabled={loading}
               />
               <Label htmlFor="isPublic">Make this project public</Label>
             </div>
 
             <div className="flex gap-2">
               <Button type="submit" disabled={loading}>
-                <Save className="w-4 h-4 mr-2" />
-                {loading ? 'Creating...' : 'Create Project'}
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Create Project
+                  </>
+                )}
               </Button>
-              <Button type="button" variant="outline" onClick={() => router.push('/admin')}>
+              <Button type="button" variant="outline" onClick={() => router.push('/admin')} disabled={loading}>
                 <X className="w-4 h-4 mr-2" />
                 Cancel
               </Button>

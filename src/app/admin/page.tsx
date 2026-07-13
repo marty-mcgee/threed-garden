@@ -13,7 +13,8 @@ import {
   Trash2,
   Edit,
   Eye,
-  EyeOff
+  EyeOff,
+  Loader2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,14 +44,19 @@ export default function AdminPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [moduleCounts, setModuleCounts] = useState<Record<number, ModuleCounts>>({});
+  const [deleting, setDeleting] = useState<number | null>(null);
 
   useEffect(() => {
     fetchProjects();
   }, []);
 
   const fetchProjects = async () => {
+    setLoading(true);
     try {
       const response = await fetch('/api/project');
+      if (!response.ok) {
+        throw new Error('Failed to fetch projects');
+      }
       const data = await response.json();
       setProjects(data.data || []);
       
@@ -69,6 +75,9 @@ export default function AdminPage() {
   const fetchModuleCounts = async (projectId: number) => {
     try {
       const response = await fetch(`/api/project/${projectId}/modules`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch modules');
+      }
       const data = await response.json();
       const counts = {
         threed: data.data?.threed?.length || 0,
@@ -84,27 +93,31 @@ export default function AdminPage() {
   const deleteProject = async (id: number) => {
     if (!confirm('Are you sure you want to delete this project? This will also delete all associated modules.')) return;
     
+    setDeleting(id);
     try {
       const response = await fetch(`/api/project/${id}`, {
         method: 'DELETE',
       });
       
-      if (response.ok) {
-        showToast('Project deleted successfully', 'success');
-        fetchProjects();
-      } else {
-        showToast('Failed to delete project', 'error');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete project');
       }
+      
+      showToast('Project deleted successfully', 'success');
+      await fetchProjects();
     } catch (error) {
       console.error('Error deleting project:', error);
-      showToast('Failed to delete project', 'error');
+      showToast(error instanceof Error ? error.message : 'Failed to delete project', 'error');
+    } finally {
+      setDeleting(null);
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -127,7 +140,7 @@ export default function AdminPage() {
         </Button>
       </div>
 
-      {/* Stats */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -210,25 +223,25 @@ export default function AdminPage() {
                       project.isActive ? 'hover:bg-muted/50' : 'opacity-60 bg-muted/20'
                     }`}
                   >
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3">
-                        <Folder className={`w-5 h-5 ${project.isActive ? 'text-blue-500' : 'text-gray-400'}`} />
-                        <div>
-                          <h3 className="font-semibold flex items-center gap-2">
+                        <Folder className={`w-5 h-5 flex-shrink-0 ${project.isActive ? 'text-blue-500' : 'text-gray-400'}`} />
+                        <div className="min-w-0">
+                          <h3 className="font-semibold flex items-center gap-2 truncate">
                             {project.name}
                             {!project.isActive && (
-                              <Badge variant="secondary" className="text-xs">Inactive</Badge>
+                              <Badge variant="secondary" className="text-xs flex-shrink-0">Inactive</Badge>
                             )}
                             {project.isPublic && (
-                              <Badge variant="outline" className="text-xs">Public</Badge>
+                              <Badge variant="outline" className="text-xs flex-shrink-0">Public</Badge>
                             )}
                           </h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-muted-foreground truncate">
                             {project.description || 'No description'}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 mt-2">
+                      <div className="flex items-center gap-3 mt-2 flex-wrap">
                         <Badge variant="outline" className="flex items-center gap-1">
                           <Box className="w-3 h-3" />
                           {counts.threed} ThreeD
@@ -246,7 +259,7 @@ export default function AdminPage() {
                         </Badge>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-4">
                       <Button 
                         variant="ghost" 
                         size="sm"
@@ -259,8 +272,13 @@ export default function AdminPage() {
                         variant="ghost" 
                         size="icon"
                         onClick={() => deleteProject(project.id)}
+                        disabled={deleting === project.id}
                       >
-                        <Trash2 className="w-4 h-4 text-red-500" />
+                        {deleting === project.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        )}
                       </Button>
                     </div>
                   </div>

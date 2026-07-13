@@ -350,3 +350,1306 @@ src/
 ---
 
 **Version:** v0.4.0 (Projects & Module Hierarchy) 🚀
+
+---
+
+**Version:** v0.4.4 (Projects & Module API Hierarchy for Next.js 16) 🚀
+
+Excellent! Let's apply the same proven pattern to the **ThreeD, Traffic, and Music** modules. We'll build a consistent RESTful API for each module, just like we did for Projects.
+
+## 🎯 The Pattern: One API Structure for All Modules
+
+```
+api/[module]/
+├── route.ts              # GET (list), POST (create)
+└── [id]/
+    ├── route.ts          # GET, PATCH, DELETE (single item)
+    └── [child]/
+        └── route.ts      # GET, POST, DELETE (child items)
+```
+
+## 📁 1. ThreeD Module API
+
+### `app/api/threed/route.ts` (List & Create)
+
+```typescript
+// app/api/threed/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import { threed } from '@/lib/schema/threed';
+import { eq, desc } from 'drizzle-orm';
+
+// GET /api/threed - List all ThreeD modules
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get('projectId');
+
+    let query = db
+      .select()
+      .from(threed)
+      .where(eq(threed.userId, session.user.id))
+      .orderBy(desc(threed.createdAt));
+
+    if (projectId) {
+      query = db
+        .select()
+        .from(threed)
+        .where(
+          and(
+            eq(threed.userId, session.user.id),
+            eq(threed.projectId, parseInt(projectId))
+          )
+        )
+        .orderBy(desc(threed.createdAt));
+    }
+
+    const results = await query;
+    return NextResponse.json({ data: results });
+  } catch (error) {
+    console.error('ThreeD API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/threed - Create a new ThreeD module
+export async function POST(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { projectId, name, description, config } = body;
+
+    if (!projectId || !name) {
+      return NextResponse.json(
+        { error: 'Missing required fields: projectId, name' },
+        { status: 400 }
+      );
+    }
+
+    const [newModule] = await db
+      .insert(threed)
+      .values({
+        projectId,
+        name,
+        description: description || '',
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        userId: session.user.id,
+        isActive: true,
+        config: config || {},
+      })
+      .returning();
+
+    return NextResponse.json({ data: newModule });
+  } catch (error) {
+    console.error('ThreeD API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create ThreeD module' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### `app/api/threed/[id]/route.ts` (Get, Update, Delete)
+
+```typescript
+// app/api/threed/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import { threed } from '@/lib/schema/threed';
+import { eq, and } from 'drizzle-orm';
+
+// GET /api/threed/1 - Get single ThreeD module
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const [result] = await db
+      .select()
+      .from(threed)
+      .where(
+        and(
+          eq(threed.id, moduleId),
+          eq(threed.userId, userId)
+        )
+      );
+
+    if (!result) {
+      return NextResponse.json(
+        { error: 'ThreeD module not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ data: result });
+  } catch (error) {
+    console.error('ThreeD API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH /api/threed/1 - Update a ThreeD module
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, description, isActive, config } = body;
+
+    const [existing] = await db
+      .select()
+      .from(threed)
+      .where(
+        and(
+          eq(threed.id, moduleId),
+          eq(threed.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'ThreeD module not found' },
+        { status: 404 }
+      );
+    }
+
+    const updateData: any = { updatedAt: new Date() };
+    if (name) {
+      updateData.name = name;
+      updateData.slug = name.toLowerCase().replace(/\s+/g, '-');
+    }
+    if (description !== undefined) updateData.description = description;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (config !== undefined) updateData.config = config;
+
+    const [updated] = await db
+      .update(threed)
+      .set(updateData)
+      .where(
+        and(
+          eq(threed.id, moduleId),
+          eq(threed.userId, userId)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ data: updated });
+  } catch (error) {
+    console.error('ThreeD API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update ThreeD module' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/threed/1 - Delete a ThreeD module
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const [existing] = await db
+      .select()
+      .from(threed)
+      .where(
+        and(
+          eq(threed.id, moduleId),
+          eq(threed.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'ThreeD module not found' },
+        { status: 404 }
+      );
+    }
+
+    const [deleted] = await db
+      .delete(threed)
+      .where(
+        and(
+          eq(threed.id, moduleId),
+          eq(threed.userId, userId)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ data: deleted });
+  } catch (error) {
+    console.error('ThreeD API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete ThreeD module' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### `app/api/threed/[id]/plants/route.ts` (Child Routes - Example)
+
+```typescript
+// app/api/threed/[id]/plants/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import { threed, threedPlants } from '@/lib/schema/threed';
+import { eq, and } from 'drizzle-orm';
+
+// GET /api/threed/1/plants - Get all plants for a ThreeD module
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const threedId = parseInt(id);
+
+    if (isNaN(threedId)) {
+      return NextResponse.json(
+        { error: 'Invalid ThreeD ID' },
+        { status: 400 }
+      );
+    }
+
+    // Verify ownership
+    const [module] = await db
+      .select()
+      .from(threed)
+      .where(
+        and(
+          eq(threed.id, threedId),
+          eq(threed.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!module) {
+      return NextResponse.json(
+        { error: 'ThreeD module not found' },
+        { status: 404 }
+      );
+    }
+
+    const plants = await db
+      .select()
+      .from(threedPlants)
+      .where(eq(threedPlants.threedId, threedId))
+      .orderBy(threedPlants.commonName);
+
+    return NextResponse.json({ data: plants });
+  } catch (error) {
+    console.error('ThreeD plants API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/threed/1/plants - Create a new plant for a ThreeD module
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const threedId = parseInt(id);
+
+    if (isNaN(threedId)) {
+      return NextResponse.json(
+        { error: 'Invalid ThreeD ID' },
+        { status: 400 }
+      );
+    }
+
+    // Verify ownership
+    const [module] = await db
+      .select()
+      .from(threed)
+      .where(
+        and(
+          eq(threed.id, threedId),
+          eq(threed.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!module) {
+      return NextResponse.json(
+        { error: 'ThreeD module not found' },
+        { status: 404 }
+      );
+    }
+
+    const body = await request.json();
+    const { commonName, scientificName, type, ...rest } = body;
+
+    if (!commonName) {
+      return NextResponse.json(
+        { error: 'Missing required field: commonName' },
+        { status: 400 }
+      );
+    }
+
+    const [newPlant] = await db
+      .insert(threedPlants)
+      .values({
+        threedId,
+        commonName,
+        scientificName: scientificName || '',
+        type: type || 'Vegetable',
+        ...rest,
+      })
+      .returning();
+
+    return NextResponse.json({ data: newPlant });
+  } catch (error) {
+    console.error('ThreeD plants API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create plant' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## 📁 2. Traffic Module API
+
+### `app/api/traffic/route.ts`
+
+```typescript
+// app/api/traffic/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import { traffic } from '@/lib/schema/traffic';
+import { eq, desc, and } from 'drizzle-orm';
+
+// GET /api/traffic - List all Traffic modules
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get('projectId');
+
+    let query = db
+      .select()
+      .from(traffic)
+      .where(eq(traffic.userId, session.user.id))
+      .orderBy(desc(traffic.createdAt));
+
+    if (projectId) {
+      query = db
+        .select()
+        .from(traffic)
+        .where(
+          and(
+            eq(traffic.userId, session.user.id),
+            eq(traffic.projectId, parseInt(projectId))
+          )
+        )
+        .orderBy(desc(traffic.createdAt));
+    }
+
+    const results = await query;
+    return NextResponse.json({ data: results });
+  } catch (error) {
+    console.error('Traffic API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/traffic - Create a new Traffic module
+export async function POST(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { projectId, name, description, config } = body;
+
+    if (!projectId || !name) {
+      return NextResponse.json(
+        { error: 'Missing required fields: projectId, name' },
+        { status: 400 }
+      );
+    }
+
+    const [newModule] = await db
+      .insert(traffic)
+      .values({
+        projectId,
+        name,
+        description: description || '',
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        userId: session.user.id,
+        isActive: true,
+        config: config || {},
+      })
+      .returning();
+
+    return NextResponse.json({ data: newModule });
+  } catch (error) {
+    console.error('Traffic API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create Traffic module' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### `app/api/traffic/[id]/route.ts`
+
+```typescript
+// app/api/traffic/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import { traffic } from '@/lib/schema/traffic';
+import { eq, and } from 'drizzle-orm';
+
+// GET /api/traffic/1 - Get single Traffic module
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const [result] = await db
+      .select()
+      .from(traffic)
+      .where(
+        and(
+          eq(traffic.id, moduleId),
+          eq(traffic.userId, userId)
+        )
+      );
+
+    if (!result) {
+      return NextResponse.json(
+        { error: 'Traffic module not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ data: result });
+  } catch (error) {
+    console.error('Traffic API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH /api/traffic/1 - Update a Traffic module
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, description, isActive, config } = body;
+
+    const [existing] = await db
+      .select()
+      .from(traffic)
+      .where(
+        and(
+          eq(traffic.id, moduleId),
+          eq(traffic.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'Traffic module not found' },
+        { status: 404 }
+      );
+    }
+
+    const updateData: any = { updatedAt: new Date() };
+    if (name) {
+      updateData.name = name;
+      updateData.slug = name.toLowerCase().replace(/\s+/g, '-');
+    }
+    if (description !== undefined) updateData.description = description;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (config !== undefined) updateData.config = config;
+
+    const [updated] = await db
+      .update(traffic)
+      .set(updateData)
+      .where(
+        and(
+          eq(traffic.id, moduleId),
+          eq(traffic.userId, userId)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ data: updated });
+  } catch (error) {
+    console.error('Traffic API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update Traffic module' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/traffic/1 - Delete a Traffic module
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const [existing] = await db
+      .select()
+      .from(traffic)
+      .where(
+        and(
+          eq(traffic.id, moduleId),
+          eq(traffic.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'Traffic module not found' },
+        { status: 404 }
+      );
+    }
+
+    const [deleted] = await db
+      .delete(traffic)
+      .where(
+        and(
+          eq(traffic.id, moduleId),
+          eq(traffic.userId, userId)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ data: deleted });
+  } catch (error) {
+    console.error('Traffic API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete Traffic module' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## 📁 3. Music Module API
+
+### `app/api/music/route.ts`
+
+```typescript
+// app/api/music/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import { music } from '@/lib/schema/music';
+import { eq, desc, and } from 'drizzle-orm';
+
+// GET /api/music - List all Music modules
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get('projectId');
+
+    let query = db
+      .select()
+      .from(music)
+      .where(eq(music.userId, session.user.id))
+      .orderBy(desc(music.createdAt));
+
+    if (projectId) {
+      query = db
+        .select()
+        .from(music)
+        .where(
+          and(
+            eq(music.userId, session.user.id),
+            eq(music.projectId, parseInt(projectId))
+          )
+        )
+        .orderBy(desc(music.createdAt));
+    }
+
+    const results = await query;
+    return NextResponse.json({ data: results });
+  } catch (error) {
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/music - Create a new Music module
+export async function POST(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { projectId, name, description, config } = body;
+
+    if (!projectId || !name) {
+      return NextResponse.json(
+        { error: 'Missing required fields: projectId, name' },
+        { status: 400 }
+      );
+    }
+
+    const [newModule] = await db
+      .insert(music)
+      .values({
+        projectId,
+        name,
+        description: description || '',
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        userId: session.user.id,
+        isActive: true,
+        config: config || {},
+      })
+      .returning();
+
+    return NextResponse.json({ data: newModule });
+  } catch (error) {
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create Music module' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### `app/api/music/[id]/route.ts`
+
+```typescript
+// app/api/music/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import { music } from '@/lib/schema/music';
+import { eq, and } from 'drizzle-orm';
+
+// GET /api/music/1 - Get single Music module
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const [result] = await db
+      .select()
+      .from(music)
+      .where(
+        and(
+          eq(music.id, moduleId),
+          eq(music.userId, userId)
+        )
+      );
+
+    if (!result) {
+      return NextResponse.json(
+        { error: 'Music module not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ data: result });
+  } catch (error) {
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH /api/music/1 - Update a Music module
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, description, isActive, config } = body;
+
+    const [existing] = await db
+      .select()
+      .from(music)
+      .where(
+        and(
+          eq(music.id, moduleId),
+          eq(music.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'Music module not found' },
+        { status: 404 }
+      );
+    }
+
+    const updateData: any = { updatedAt: new Date() };
+    if (name) {
+      updateData.name = name;
+      updateData.slug = name.toLowerCase().replace(/\s+/g, '-');
+    }
+    if (description !== undefined) updateData.description = description;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (config !== undefined) updateData.config = config;
+
+    const [updated] = await db
+      .update(music)
+      .set(updateData)
+      .where(
+        and(
+          eq(music.id, moduleId),
+          eq(music.userId, userId)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ data: updated });
+  } catch (error) {
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update Music module' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/music/1 - Delete a Music module
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    const [existing] = await db
+      .select()
+      .from(music)
+      .where(
+        and(
+          eq(music.id, moduleId),
+          eq(music.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'Music module not found' },
+        { status: 404 }
+      );
+    }
+
+    const [deleted] = await db
+      .delete(music)
+      .where(
+        and(
+          eq(music.id, moduleId),
+          eq(music.userId, userId)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ data: deleted });
+  } catch (error) {
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete Music module' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## 📁 4. Nested Child Routes Template
+
+For any child routes (like plants, beds, albums, tracks, incidents), use this pattern:
+
+### `app/api/[module]/[id]/[child]/route.ts`
+
+```typescript
+// app/api/[module]/[id]/[child]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import { [module] } from '@/lib/schema/[module]';
+import { [child] } from '@/lib/schema/[module]';
+import { eq, and } from 'drizzle-orm';
+
+// GET /api/[module]/1/[child] - List all child items
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    // Verify ownership
+    const [module] = await db
+      .select()
+      .from([module])
+      .where(
+        and(
+          eq([module].id, moduleId),
+          eq([module].userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!module) {
+      return NextResponse.json(
+        { error: 'Module not found' },
+        { status: 404 }
+      );
+    }
+
+    const items = await db
+      .select()
+      .from([child])
+      .where(eq([child].moduleId, moduleId))
+      .orderBy([child].createdAt);
+
+    return NextResponse.json({ data: items });
+  } catch (error) {
+    console.error(`[Module] ${child} API error:`, error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/[module]/1/[child] - Create a new child item
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    // Verify ownership
+    const [module] = await db
+      .select()
+      .from([module])
+      .where(
+        and(
+          eq([module].id, moduleId),
+          eq([module].userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!module) {
+      return NextResponse.json(
+        { error: 'Module not found' },
+        { status: 404 }
+      );
+    }
+
+    const body = await request.json();
+    // Validation for required fields
+    if (!body.name) {
+      return NextResponse.json(
+        { error: 'Missing required field: name' },
+        { status: 400 }
+      );
+    }
+
+    const [newItem] = await db
+      .insert([child])
+      .values({
+        moduleId,
+        ...body,
+      })
+      .returning();
+
+    return NextResponse.json({ data: newItem });
+  } catch (error) {
+    console.error(`[Module] ${child} API error:`, error);
+    return NextResponse.json(
+      { error: `Failed to create ${child}` },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/[module]/1/[child] - Delete a child item (requires itemId in body)
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const moduleId = parseInt(id);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: 'Invalid module ID' },
+        { status: 400 }
+      );
+    }
+
+    // Verify ownership
+    const [module] = await db
+      .select()
+      .from([module])
+      .where(
+        and(
+          eq([module].id, moduleId),
+          eq([module].userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!module) {
+      return NextResponse.json(
+        { error: 'Module not found' },
+        { status: 404 }
+      );
+    }
+
+    const body = await request.json();
+    const { itemId } = body;
+
+    if (!itemId) {
+      return NextResponse.json(
+        { error: 'Missing required field: itemId' },
+        { status: 400 }
+      );
+    }
+
+    // Verify item belongs to module
+    const [item] = await db
+      .select()
+      .from([child])
+      .where(
+        and(
+          eq([child].id, parseInt(itemId)),
+          eq([child].moduleId, moduleId)
+        )
+      )
+      .limit(1);
+
+    if (!item) {
+      return NextResponse.json(
+        { error: 'Item not found in this module' },
+        { status: 404 }
+      );
+    }
+
+    const [deleted] = await db
+      .delete([child])
+      .where(eq([child].id, parseInt(itemId)))
+      .returning();
+
+    return NextResponse.json({ data: deleted });
+  } catch (error) {
+    console.error(`[Module] ${child} API error:`, error);
+    return NextResponse.json(
+      { error: `Failed to delete ${child}` },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## 📊 API Structure Summary (PROPOSED)
+
+api/
+├── project/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── [id]/
+│       ├── route.ts          # GET, PATCH, DELETE
+│       └── modules/
+│           └── route.ts      # GET, POST, DELETE
+├── threed/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── [id]/
+│       ├── route.ts          # GET, PATCH, DELETE
+│       ├── plants/
+│       │   └── route.ts      # GET, POST, DELETE
+│       ├── beds/
+│       │   └── route.ts      # GET, POST, DELETE
+│       └── farmbots/
+│           └── route.ts      # GET, POST, DELETE
+├── traffic/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── [id]/
+│       ├── route.ts          # GET, PATCH, DELETE
+│       ├── incidents/
+│       │   └── route.ts      # GET, POST, DELETE
+│       └── closures/
+│           └── route.ts      # GET, POST, DELETE
+└── music/
+    ├── route.ts              # GET (list), POST (create)
+    └── [id]/
+        ├── route.ts          # GET, PATCH, DELETE
+        ├── albums/
+        │   └── route.ts      # GET, POST, DELETE
+        └── tracks/
+            └── route.ts      # GET, POST, DELETE
+
+---
+
+**Version:** v0.4.4 (Projects & Module API Hierarchy for Next.js 16) 🚀
+
+---
