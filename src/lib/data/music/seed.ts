@@ -16,7 +16,7 @@ async function seedFromJSON() {
   // Get the first user ID
   // const userId = await getFirstUserId();
   const userId = "9a9ed475-3dcd-492e-b22f-de27a33ed1fc";
-      // "user_id": "XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN",
+      // "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
       // "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
       // "user_id": "cf18745e-97cf-463e-8d66-dbaedf09bcf8",
   

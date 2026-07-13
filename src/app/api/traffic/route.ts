@@ -6,7 +6,7 @@ import { eq, and, desc, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 
 // Helper to get default user ID for testing
-const defaultUserId = 'XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN';
+const defaultUserId = '9a9ed475-3dcd-492e-b22f-de27a33ed1fc';
 
 // GET /api/project
 export async function GET(request: NextRequest) {

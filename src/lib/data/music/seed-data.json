@@ -1,10 +1,12 @@
 {
   "albums": [
+    
     {
       "id": 1,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
       "title": "Ground Zero",
       "artist": "Marty McGee",
-      "cover_art": "https://martymcgee.hearnow.com/dynamic/images/xtalb04499120/large.jpg",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Ground-Zero.jpg",
       "release_year": 2026,
       "description": "Tango Tango Tango + Flamenco Flamenco Flamenco",
       "status": "published",
@@ -38,13 +40,12 @@
       ]
     },
 
-
-    
     {
       "id": 2,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
       "title": "It will all make sense.",
       "artist": "Marty McGee, Jessica Torres, Alan Watts",
-      "cover_art": "https://martymcgee.hearnow.com/dynamic/images/c2alb04506553/large.jpg",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-It-Will-All-Make-Sense-v000.jpg",
       "release_year": 2026,
       "description": "Long Beach City College - Dance Show - Spring 2026",
       "status": "published",
@@ -72,43 +73,788 @@
         }
       ]
     },
-
-
     
     {
       "id": 3,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
       "title": "Salesman",
       "artist": "Marty McGee",
       "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Salesman.jpg",
-      "release_year": 2026,
-      "description": "Long Beach City College - Dance Show - Spring 2026",
+      "release_year": 1999,
+      "description": "You know your job is divine.. make a speech, bait the hook, and drop the line.",
       "status": "published",
       "is_public": true,
       "metadata": null,
-      "created_at": "2026-06-02 19:45:00.52",
-      "updated_at": "2026-06-08 15:10:48.178",
-      "sort_order": 2,
+      "created_at": "1999-06-02 19:45:00.52",
+      "updated_at": "1999-06-08 15:10:48.178",
+      "sort_order": 3,
       "tracks": [
         {
-          "id": 8,
+          "id": 3,
           "album_id": 3,
           "title": "Salesman",
           "duration": 210,
           "track_number": 1,
           "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/2024-Salesman-Remastered-v2024-16bit.mp3",
           "status": "active",
+          "release_year": 2026,
+          "description": "You know your job is divine.. make a speech, bait the hook, and drop the line.",
+          "is_public": true,
+          "metadata": {
+            "lastUpdated": "2026-07-09T21:01:18.606909+00:00"
+          },
+          "lyrics": null,
+          "play_count": 0,
+          "created_at": "2026-06-03 17:09:25.755",
+          "updated_at": "2026-07-09 15:11:02.708"
+        }
+      ]
+    },
+    
+    {
+      "id": 4,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "Sit Back",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Sit-Back.jpg",
+      "release_year": 1999,
+      "description": "Sit back, watch the days go by, until somebody tells me to see..",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-03 17:09:25.755",
+      "updated_at": "2026-06-08 15:11:02.708",
+      "sort_order": 4,
+      "tracks": [
+        {
+          "id": 4,
+          "album_id": 4,
+          "title": "Sit Back",
+          "duration": 185,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Sit-Back.mp3",
+          "status": "active",
+          "lyrics": "Sit back, watch the days go by, until somebody tells me to see..",
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 1,
+          "created_at": "2026-06-03 17:09:25.912",
+          "updated_at": "2026-06-07 19:58:19.041"
+        },
+        {
+          "id": 5,
+          "album_id": 4,
+          "title": "nVomitous",
+          "duration": 234,
+          "track_number": 2,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-nVomitous.mp3",
+          "status": "active",
+          "lyrics": "It's nVomitous",
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-03 17:09:25.951",
+          "updated_at": "2026-06-07 20:10:30.217"
+        },
+        {
+          "id": 6,
+          "album_id": 4,
+          "title": "New Design",
+          "duration": 245,
+          "track_number": 3,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-New-Design.mp3",
+          "status": "active",
           "lyrics": null,
           "metadata": {
             "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
           },
           "play_count": 0,
-          "created_at": "2026-06-03 17:09:25.826",
-          "updated_at": "2026-06-04 06:47:45.547"
+          "created_at": "2026-06-03 17:09:25.989",
+          "updated_at": "2026-06-07 20:16:41.512"
+        },
+        {
+          "id": 7,
+          "album_id": 4,
+          "title": "Greats",
+          "duration": 198,
+          "track_number": 4,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Greats.wav",
+          "status": "active",
+          "lyrics": "Instrumental",
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-03 17:09:26.027",
+          "updated_at": "2026-06-07 20:23:03.253"
+        },
+        {
+          "id": 8,
+          "album_id": 4,
+          "title": "The Fat",
+          "duration": 240,
+          "track_number": 5,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/The+Fat+%5BMM%5D+2026.mp3",
+          "status": "active",
+          "lyrics": "We are proud to be the fat.",
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-03 17:09:26.065",
+          "updated_at": "2026-06-07 20:19:50.107"
+        }
+      ]
+    },
+
+    {
+      "id": 5,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "Neat and Fool",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Neat-and-Fool.jpg",
+      "release_year": 2016,
+      "description": "Funky off-beat instrumental chill.",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-03 17:09:26.103",
+      "updated_at": "2026-06-08 15:11:14.297",
+      "sort_order": 5,
+      "tracks": [
+        {
+          "id": 9,
+          "album_id": 5,
+          "title": "Neat and Fool",
+          "duration": 220,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Neat+and+Fool+2025+v000_4.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-03 17:09:26.142",
+          "updated_at": "2026-06-05 21:14:12.839"
+        },
+        {
+          "id": 10,
+          "album_id": 5,
+          "title": "Tea Among Colleagues",
+          "duration": 300,
+          "track_number": 2,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Tea-Amongst-Colleagues-2026-v002.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-03 17:09:26.18",
+          "updated_at": "2026-06-05 21:19:01.715"
+        }
+      ]
+    },
+
+    {
+      "id": 6,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "MesMerized",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-MesMerized.jpg",
+      "release_year": 2001,
+      "description": "I'm missing the silent voices of you.",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-03 17:09:26.22",
+      "updated_at": "2026-06-08 15:11:23.004",
+      "sort_order": 6,
+      "tracks": [
+        {
+          "id": 11,
+          "album_id": 6,
+          "title": "MesMerized",
+          "duration": 210,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-MesMerized.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-03 17:09:26.261",
+          "updated_at": "2026-06-04 20:36:58.169"
+        }
+      ]
+    },
+
+    {
+      "id": 7,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "Selfish Phase",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Selfish-Phase.jpg",
+      "release_year": 2020,
+      "description": "First you kill the eyes. Then you kill the smile. You leave the heart to sing. The lyrics that you choose.",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-04 02:09:49.385",
+      "updated_at": "2026-06-08 15:11:27.882",
+      "sort_order": 7,
+      "tracks": [
+        {
+          "id": 12,
+          "album_id": 7,
+          "title": "Eleven",
+          "duration": 259,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-Eleven.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.846",
+          "updated_at": "2026-06-06 15:01:48.792"
+        },
+        {
+          "id": 13,
+          "album_id": 7,
+          "title": "nVomitous",
+          "duration": 282,
+          "track_number": 2,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-nVomitous.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.454",
+          "updated_at": "2026-06-06 15:01:54.608"
+        },
+        {
+          "id": 14,
+          "album_id": 7,
+          "title": "New Design",
+          "duration": 272,
+          "track_number": 3,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-New-Design.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.499",
+          "updated_at": "2026-06-06 15:01:58.168"
+        },
+        {
+          "id": 15,
+          "album_id": 7,
+          "title": "Conversate",
+          "duration": 294,
+          "track_number": 4,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-Conversate.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.538",
+          "updated_at": "2026-06-06 15:02:02.437"
+        },
+        {
+          "id": 16,
+          "album_id": 7,
+          "title": "Womb",
+          "duration": 427,
+          "track_number": 5,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-Womb.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.575",
+          "updated_at": "2026-06-06 15:02:06.898"
+        },
+        {
+          "id": 17,
+          "album_id": 7,
+          "title": "Vice Conversion",
+          "duration": 218,
+          "track_number": 6,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Vice+Conversion+2020+Remaster+000.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.614",
+          "updated_at": "2026-06-08 10:59:04.657"
+        },
+        {
+          "id": 18,
+          "album_id": 7,
+          "title": "Innocent",
+          "duration": 313,
+          "track_number": 7,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/2024-Trade-Innocent-Bounce-1.0.L-R-speed96-2024.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.656",
+          "updated_at": "2026-06-08 11:04:33.639"
+        },
+        {
+          "id": 19,
+          "album_id": 7,
+          "title": "This Disease",
+          "duration": 390,
+          "track_number": 8,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-This-Disease.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.695",
+          "updated_at": "2026-06-06 15:02:30.482"
+        },
+        {
+          "id": 20,
+          "album_id": 7,
+          "title": "Manhattan",
+          "duration": 328,
+          "track_number": 9,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/2024-Manhattan%E2%80%94Trade%E2%80%941996-trade-music+2.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.732",
+          "updated_at": "2026-06-08 11:04:57.608"
+        },
+        {
+          "id": 21,
+          "album_id": 7,
+          "title": "Sailing",
+          "duration": 187,
+          "track_number": 10,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Sailing+Remastered+2021.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.772",
+          "updated_at": "2026-06-08 11:06:36.967"
+        },
+        {
+          "id": 22,
+          "album_id": 7,
+          "title": "Antidote [Full Dose]",
+          "duration": 320,
+          "track_number": 11,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-Antidote.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:09:49.809",
+          "updated_at": "2026-06-08 12:33:05.39"
+        }
+      ]
+    },
+
+    {
+      "id": 8,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "Trouble",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Trouble.jpg",
+      "release_year": 2024,
+      "description": "You know your job is divine.. make a speech, bait the hook, and drop the line.",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-04 02:14:31.533",
+      "updated_at": "2026-06-08 15:11:08.143",
+      "sort_order": 8,
+      "tracks": [
+        {
+          "id": 23,
+          "album_id": 8,
+          "title": "Trouble",
+          "duration": 210,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/White+Walls+2024+Album_RealGood_4.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:14:31.584",
+          "updated_at": "2026-06-05 20:57:52.191"
+        }
+      ]
+    },
+
+    {
+      "id": 9,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "Decide",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Decide.jpg",
+      "release_year": 2024,
+      "description": "You know your job is divine.. make a speech, bait the hook, and drop the line.",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-04 02:14:31.628",
+      "updated_at": "2026-06-08 15:11:18.878",
+      "sort_order": 9,
+      "tracks": [
+        {
+          "id": 24,
+          "album_id": 9,
+          "title": "Decide",
+          "duration": 210,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Marty-McGee-Music-Decide.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": {
+            "lastUpdated": "2026-06-05T21:01:18.606909+00:00"
+          },
+          "play_count": 0,
+          "created_at": "2026-06-04 02:14:31.672",
+          "updated_at": "2026-06-04 20:37:17.67"
+        }
+      ]
+    },
+
+    {
+      "id": 10,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "Outnumbered",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Trade-High.jpg",
+      "release_year": 2026,
+      "description": "",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-07 19:22:31.459",
+      "updated_at": "2026-06-08 15:11:36.082",
+      "sort_order": 10,
+      "tracks": [
+        {
+          "id": 25,
+          "album_id": 10,
+          "title": "Outnumbered",
+          "duration": 400,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Outnumbered.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-07 19:27:35.083",
+          "updated_at": "2026-06-07 19:27:35.083"
+        }
+      ]
+    },
+
+    {
+      "id": 11,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "Coming to the Surface",
+      "artist": "Patrick McGinnis, Sudhanva Rajagopal, Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Coming-to-the-Surface.png",
+      "release_year": 1995,
+      "description": "",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-08 11:11:25.596",
+      "updated_at": "2026-06-08 15:11:40.591",
+      "sort_order": 11,
+      "tracks": [
+        {
+          "id": 26,
+          "album_id": 11,
+          "title": "Coming to the Surface",
+          "duration": 354,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Coming+to+the+Surface+--+Bounce+1.1.L%2BR.2025.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 11:12:51.76",
+          "updated_at": "2026-06-08 12:14:48.977"
+        }
+      ]
+    },
+
+    {
+      "id": 12,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "Tragically Delicious",
+      "artist": "Marty McGee",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-Tragically-Delicious.png",
+      "release_year": 1999,
+      "description": null,
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-08 11:43:48.655",
+      "updated_at": "2026-06-08 11:43:48.655",
+      "sort_order": 12,
+      "tracks": [
+        {
+          "id": 27,
+          "album_id": 12,
+          "title": "Dead Strategies",
+          "duration": 255,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Dead-Strategies.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 11:57:59.239",
+          "updated_at": "2026-06-08 12:13:08.264"
+        },
+        {
+          "id": 28,
+          "album_id": 12,
+          "title": "Don't Tell Me",
+          "duration": 162,
+          "track_number": 2,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Don_t-Tell-Me.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 11:58:34.742",
+          "updated_at": "2026-06-08 12:13:19.528"
+        },
+        {
+          "id": 29,
+          "album_id": 12,
+          "title": "Lama",
+          "duration": 168,
+          "track_number": 3,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Lama.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 11:59:11.878",
+          "updated_at": "2026-06-08 12:13:29.129"
+        },
+        {
+          "id": 30,
+          "album_id": 12,
+          "title": "I Hate Goodbyes",
+          "duration": 110,
+          "track_number": 4,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/I-Hate-Goodbyes.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 11:59:42.771",
+          "updated_at": "2026-06-08 12:13:41.753"
+        },
+        {
+          "id": 31,
+          "album_id": 12,
+          "title": "Ratchet",
+          "duration": 123,
+          "track_number": 5,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Ratchet.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 12:00:02.556",
+          "updated_at": "2026-06-08 12:13:49.588"
+        },
+        {
+          "id": 32,
+          "album_id": 12,
+          "title": "Tragically Delicious",
+          "duration": 206,
+          "track_number": 6,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Tragically-Delicious.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 12:00:27.176",
+          "updated_at": "2026-06-08 12:13:58.487"
+        },
+        {
+          "id": 33,
+          "album_id": 12,
+          "title": "Don't Tell Me",
+          "duration": 162,
+          "track_number": 6,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Don_t-Tell-Me.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 12:51:13.084",
+          "updated_at": "2026-06-08 12:52:27.405"
+        }
+      ]
+    },
+
+    {
+      "id": 13,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "TRADE",
+      "artist": "Patrick McGinnis, Sudhanva Rajagopal, Marty McGee, Zac Locke",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-TRADE-2.png",
+      "release_year": 1996,
+      "description": "",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-08 15:04:20.636",
+      "updated_at": "2026-06-08 15:11:56.878",
+      "sort_order": 13,
+      "tracks": [
+
+      ]
+    },
+
+    {
+      "id": 14,
+      "user_id": "9a9ed475-3dcd-492e-b22f-de27a33ed1fc",
+      "title": "LBCC Dance Show - Fall 2026",
+      "artist": "Marty McGee, Jessica Torres",
+      "cover_art": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/art/Marty-McGee-Music-LLBC-Dance-Show-Fall-2026.png",
+      "release_year": 2026,
+      "description": "Upcoming Show at Long Beach City College, Fall 2026. Choreography by Jessica Torres.",
+      "status": "published",
+      "is_public": true,
+      "metadata": null,
+      "created_at": "2026-06-08 15:07:36.708",
+      "updated_at": "2026-06-08 15:10:43.912",
+      "sort_order": 14,
+      "tracks": [
+        {
+          "id": 34,
+          "album_id": 14,
+          "title": "Antidote",
+          "duration": 200,
+          "track_number": 1,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Jess-Torres_-Future-Dance-Show-2026-v002_-Stem-1_-Antidote.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 15:33:14.559",
+          "updated_at": "2026-06-08 15:33:14.559"
+        },
+        {
+          "id": 35,
+          "album_id": 14,
+          "title": "FULL 9 MINUTES",
+          "duration": 580,
+          "track_number": 0,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Jess-Torres_-Future-Dance-Show-2026-v004_-FULL-9-MINUTES.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 15:34:18.787",
+          "updated_at": "2026-06-08 15:38:09.028"
+        },
+        {
+          "id": 36,
+          "album_id": 14,
+          "title": "Venice",
+          "duration": 104,
+          "track_number": 2,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Jess-Torres_-Future-Dance-Show-2026-v005_-Venice.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 15:35:23.421",
+          "updated_at": "2026-06-08 15:51:34.534"
+        },
+        {
+          "id": 37,
+          "album_id": 14,
+          "title": "County Kerry",
+          "duration": 107,
+          "track_number": 3,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Jess-Torres_-Future-Dance-Show-2026-v002_-Stem-3_-County-Kerry.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 15:36:07.311",
+          "updated_at": "2026-06-08 15:52:22.451"
+        },
+        {
+          "id": 38,
+          "album_id": 14,
+          "title": "Spring Morning",
+          "duration": 166,
+          "track_number": 5,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Jess-Torres_-Future-Dance-Show-2026-v005_-Spring-Morning.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 15:36:52.123",
+          "updated_at": "2026-06-08 15:59:06.972"
+        },
+        {
+          "id": 39,
+          "album_id": 14,
+          "title": "Delight",
+          "duration": 76,
+          "track_number": 6,
+          "public_url": "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/Jess-Torres_-Future-Dance-Show-2026-v002_-Stem-6_-Delight.mp3",
+          "status": "active",
+          "lyrics": null,
+          "metadata": null,
+          "play_count": 0,
+          "created_at": "2026-06-08 15:37:31.083",
+          "updated_at": "2026-06-08 15:53:02.194"
         }
       ]
     }
-
-
 
   ]
 }

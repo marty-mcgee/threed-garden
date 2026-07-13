@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     // }
     const session = {
       user: {
-        id: 'XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN',
+        id: '9a9ed475-3dcd-492e-b22f-de27a33ed1fc',
       }
     }
 

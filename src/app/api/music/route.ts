@@ -8,7 +8,7 @@ import { musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
 
 // Use a hardcoded user ID for testing (replace with your actual user ID from database)
-const defaultUserId = 'XMrgpabACyfUCkn6yZ9XoF0jFIuAf1PN';
+const defaultUserId = '9a9ed475-3dcd-492e-b22f-de27a33ed1fc';
 
 export async function GET(request: NextRequest) {
   try {
