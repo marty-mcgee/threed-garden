@@ -1,16 +1,62 @@
+// app/api/music/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { musicPoller } from '@/lib/services/music/MusicPoller';
 import { auth } from '@/lib/auth';
 // import { minimalAuth as auth } from "@/lib/auth/minimal-server";
-import { MusicPollingType } from '@/lib/types/music';
 import { db } from '@/lib/db/client';
+
+import { music } from '@/lib/schema/music';
 import { musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
+import { musicPoller } from '@/lib/services/music/MusicPoller';
+import { MusicPollingType } from '@/lib/types/music';
+
+import { eq, and, desc } from 'drizzle-orm';
 
 // Use a hardcoded user ID for testing (replace with your actual user ID from database)
 const defaultUserId = '9a9ed475-3dcd-492e-b22f-de27a33ed1fc';
 
+
+
+// GET /api/music - List all Music modules
 export async function GET(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get('projectId');
+
+    let query = db
+      .select()
+      .from(music)
+      .where(eq(music.userId, session.user.id))
+      .orderBy(desc(music.createdAt));
+
+    if (projectId) {
+      query = db
+        .select()
+        .from(music)
+        .where(
+          and(
+            eq(music.userId, session.user.id),
+            eq(music.projectId, parseInt(projectId))
+          )
+        )
+        .orderBy(desc(music.createdAt));
+    }
+
+    const results = await query;
+    return NextResponse.json({ data: results });
+  } catch (error) {
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+export async function GETold(request: NextRequest) {
   try {
     // Auth.js: get session
     const session = await auth();
@@ -81,81 +127,121 @@ export async function GET(request: NextRequest) {
   }
 }
 
+
+
+// POST /api/music - Create a new Music module
 export async function POST(request: NextRequest) {
   try {
-    // Auth.js: get session
     const session = await auth();
-    
-    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { action, data } = body;
+    const { projectId, name, description, config } = body;
 
-    switch (action) {
-      case 'poll':
-        if (data?.type === MusicPollingType.METADATA) {
-          const result = await musicPoller.poll();
-          return NextResponse.json(result);
-        }
-        break;
-
-      case 'increment-play':
-        if (data?.trackId) {
-          await musicPoller.incrementPlayCount(data.trackId);
-          return NextResponse.json({ success: true });
-        }
-        break;
-
-      default:
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    if (!projectId || !name) {
+      return NextResponse.json(
+        { error: 'Missing required fields: projectId, name' },
+        { status: 400 }
+      );
     }
+
+    const [newModule] = await db
+      .insert(music)
+      .values({
+        projectId,
+        name,
+        description: description || '',
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        userId: session.user.id,
+        isActive: true,
+        config: config || {},
+      })
+      .returning();
+
+    return NextResponse.json({ data: newModule });
   } catch (error) {
     console.error('Music API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create Music module' },
+      { status: 500 }
+    );
   }
 }
-
-// PATCH - Update sort order (for reordering)
-export async function PATCH(request: NextRequest) {
-  try {
-    // Auth.js: get session
-    const session = await auth();
+export async function POSTold(request: NextRequest) {
+  // try {
+  //   // Auth.js: get session
+  //   const session = await auth();
     
-    // Use session user ID, or return 401 if not authenticated
+  //   // Use session user ID, or return 401 if not authenticated
+  //   if (!session?.user?.id) {
+  //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  //   }
+
+  //   const body = await request.json();
+  //   const { action, data } = body;
+
+  //   switch (action) {
+  //     case 'poll':
+  //       if (data?.type === MusicPollingType.METADATA) {
+  //         const result = await musicPoller.poll();
+  //         return NextResponse.json(result);
+  //       }
+  //       break;
+
+  //     case 'increment-play':
+  //       if (data?.trackId) {
+  //         await musicPoller.incrementPlayCount(data.trackId);
+  //         return NextResponse.json({ success: true });
+  //       }
+  //       break;
+
+  //     default:
+  //       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+  //   }
+  // } catch (error) {
+  //   console.error('Music API error:', error);
+  //   return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  // }
+
+  
+  try {
+    const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { orders } = body; // Expects [{ id: 1, sortOrder: 0 }, { id: 2, sortOrder: 1 }, ...]
+    const { projectId, name, description, config } = body;
 
-    if (!orders || !Array.isArray(orders)) {
-      return NextResponse.json({ error: 'Invalid orders array' }, { status: 400 });
+    if (!projectId || !name) {
+      return NextResponse.json(
+        { error: 'Missing required fields: projectId, name' },
+        { status: 400 }
+      );
     }
 
-    // Update each album's sort order
-    for (const item of orders) {
-      // Verify ownership
-      const album = await db.query.musicAlbums.findFirst({
-        where: and(
-          eq(musicAlbums.id, item.id),
-          eq(musicAlbums.userId, session.user.id)
-        ),
-      });
+    const [newModule] = await db
+      .insert(music)
+      .values({
+        projectId,
+        name,
+        description: description || '',
+        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        userId: session.user.id, // ✅ Add this!
+        isActive: true,
+        config: config || {},
+      })
+      .returning();
 
-      if (album) {
-        await db.update(musicAlbums)
-          .set({ sortOrder: item.sortOrder, updatedAt: new Date() })
-          .where(eq(musicAlbums.id, item.id));
-      }
-    }
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ data: newModule });
   } catch (error) {
-    console.error('Error updating sort order:', error);
-    return NextResponse.json({ error: 'Failed to update sort order' }, { status: 500 });
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create Music module' },
+      { status: 500 }
+    );
   }
 }
+

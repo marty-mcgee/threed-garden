@@ -13,9 +13,10 @@ import {
   Trash2,
   Save,
   X,
-  Eye,
-  EyeOff,
-  Loader2
+  Loader2,
+  CheckCircle,
+  XCircle,
+  MoreHorizontal
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/toast';
 
 interface Project {
@@ -50,6 +53,12 @@ interface Module {
 
 type ModuleType = 'threed' | 'traffic' | 'music';
 
+const moduleConfig: Record<ModuleType, { icon: React.ElementType; color: string; label: string }> = {
+  threed: { icon: Box, color: 'text-green-500', label: 'ThreeD' },
+  traffic: { icon: Car, color: 'text-blue-500', label: 'Traffic' },
+  music: { icon: Music, color: 'text-purple-500', label: 'Music' },
+};
+
 export default function ProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -63,21 +72,20 @@ export default function ProjectDetailPage() {
     music: [],
   });
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    isPublic: false,
-    isActive: true,
-  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewModuleDialog, setShowNewModuleDialog] = useState(false);
   const [newModuleData, setNewModuleData] = useState({
     type: 'threed' as ModuleType,
     name: '',
     description: '',
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deletingModule, setDeletingModule] = useState<{ type: ModuleType; id: number } | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    isPublic: false,
+    isActive: true,
+  });
 
   useEffect(() => {
     fetchProject();
@@ -86,11 +94,10 @@ export default function ProjectDetailPage() {
   const fetchProject = async () => {
     setLoading(true);
     try {
-      // ✅ Using the correct Next.js 16 pattern - params is a Promise
+      // Fetch project
       const projectRes = await fetch(`/api/project/${projectId}`);
       if (!projectRes.ok) {
-        const error = await projectRes.json();
-        throw new Error(error.error || 'Failed to fetch project');
+        throw new Error('Failed to fetch project');
       }
       const projectData = await projectRes.json();
       
@@ -108,7 +115,7 @@ export default function ProjectDetailPage() {
         isActive: projectData.data.isActive !== false,
       });
 
-      // ✅ Fetch modules using the correct pattern
+      // Fetch modules
       const modulesRes = await fetch(`/api/project/${projectId}/modules`);
       if (!modulesRes.ok) {
         throw new Error('Failed to fetch modules');
@@ -133,18 +140,37 @@ export default function ProjectDetailPage() {
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to update project');
+        throw new Error('Failed to update project');
       }
       
       showToast('Project updated successfully', 'success');
-      setEditing(false);
+      setIsEditing(false);
       await fetchProject();
     } catch (error) {
       console.error('Error updating project:', error);
       showToast(error instanceof Error ? error.message : 'Failed to update project', 'error');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const toggleModuleStatus = async (type: ModuleType, moduleId: number, currentStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/${type}/${moduleId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !currentStatus }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update module status');
+      }
+      
+      showToast(`Module ${!currentStatus ? 'activated' : 'deactivated'} successfully`, 'success');
+      await fetchProject();
+    } catch (error) {
+      console.error('Error toggling module status:', error);
+      showToast(error instanceof Error ? error.message : 'Failed to update module status', 'error');
     }
   };
 
@@ -167,11 +193,10 @@ export default function ProjectDetailPage() {
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create module');
+        throw new Error('Failed to create module');
       }
       
-      showToast('Module created successfully', 'success');
+      showToast(`${moduleConfig[newModuleData.type].label} module created successfully`, 'success');
       setShowNewModuleDialog(false);
       setNewModuleData({ type: 'threed', name: '', description: '' });
       await fetchProject();
@@ -183,10 +208,9 @@ export default function ProjectDetailPage() {
     }
   };
 
-  const deleteModule = async (type: ModuleType, id: number) => {
-    if (!confirm(`Delete this ${type} module?`)) return;
+  const deleteModule = async (type: ModuleType, id: number, name: string) => {
+    if (!confirm(`Delete "${name}" module? This action cannot be undone.`)) return;
 
-    setDeletingModule({ type, id });
     try {
       const response = await fetch(`/api/project/${projectId}/modules`, {
         method: 'DELETE',
@@ -195,8 +219,7 @@ export default function ProjectDetailPage() {
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to delete module');
+        throw new Error('Failed to delete module');
       }
       
       showToast('Module deleted successfully', 'success');
@@ -204,15 +227,15 @@ export default function ProjectDetailPage() {
     } catch (error) {
       console.error('Error deleting module:', error);
       showToast(error instanceof Error ? error.message : 'Failed to delete module', 'error');
-    } finally {
-      setDeletingModule(null);
     }
   };
 
-  const moduleConfig = {
-    threed: { icon: Box, color: 'text-green-500', label: 'ThreeD' },
-    traffic: { icon: Car, color: 'text-blue-500', label: 'Traffic' },
-    music: { icon: Music, color: 'text-purple-500', label: 'Music' },
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   if (loading) {
@@ -244,71 +267,75 @@ export default function ProjectDetailPage() {
       </Button>
 
       {/* Project Header */}
-      <div className="flex justify-between items-start flex-wrap gap-4">
+      <div className="flex flex-wrap justify-between items-start gap-4">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-3 flex-wrap">
             {project.name}
-            {!project.isActive && (
-              <Badge variant="secondary">Inactive</Badge>
-            )}
+            <Badge variant={project.isActive ? 'default' : 'secondary'}>
+              {project.isActive ? 'Active' : 'Inactive'}
+            </Badge>
             {project.isPublic && (
               <Badge variant="outline">Public</Badge>
             )}
           </h1>
-          <p className="text-muted-foreground">{project.description || 'No description'}</p>
-          <div className="flex items-center gap-3 mt-2 flex-wrap">
-            <Badge variant="outline">ID: {project.id}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Created: {new Date(project.createdAt).toLocaleDateString()}
-            </span>
+          <p className="text-muted-foreground mt-1">
+            {project.description || 'No description provided'}
+          </p>
+          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+            <span>ID: {project.id}</span>
+            <span>Slug: {project.slug}</span>
+            <span>Created: {formatDate(project.createdAt)}</span>
           </div>
         </div>
-        <Button variant="outline" onClick={() => setEditing(!editing)} disabled={isSubmitting}>
+        <Button variant="outline" onClick={() => setIsEditing(true)} disabled={isSubmitting}>
           <Edit className="w-4 h-4 mr-2" />
           Edit Project
         </Button>
       </div>
 
       {/* Edit Form */}
-      {editing && (
+      {isEditing && (
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-6">
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  disabled={isSubmitting}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name">Project Name</Label>
+                  <Input
+                    id="edit-name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-description">Description</Label>
+                  <Input
+                    id="edit-description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Switch
+                    id="edit-public"
                     checked={formData.isPublic}
                     onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
                     disabled={isSubmitting}
                   />
-                  <Label>Public</Label>
+                  <Label htmlFor="edit-public">Public</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch
+                    id="edit-active"
                     checked={formData.isActive}
                     onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                     disabled={isSubmitting}
                   />
-                  <Label>Active</Label>
+                  <Label htmlFor="edit-active">Active</Label>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -325,7 +352,7 @@ export default function ProjectDetailPage() {
                     </>
                   )}
                 </Button>
-                <Button variant="outline" onClick={() => setEditing(false)} disabled={isSubmitting}>
+                <Button variant="outline" onClick={() => setIsEditing(false)} disabled={isSubmitting}>
                   <X className="w-4 h-4 mr-2" />
                   Cancel
                 </Button>
@@ -336,11 +363,16 @@ export default function ProjectDetailPage() {
       )}
 
       {/* Modules Section */}
-      <div className="flex justify-between items-center flex-wrap gap-4">
-        <h2 className="text-xl font-semibold">Modules</h2>
+      <div className="flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold">Modules</h2>
+          <p className="text-muted-foreground">
+            Manage modules associated with this project
+          </p>
+        </div>
         <Dialog open={showNewModuleDialog} onOpenChange={setShowNewModuleDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
+            <Button>
               <Plus className="w-4 h-4 mr-2" />
               Add Module
             </Button>
@@ -397,52 +429,105 @@ export default function ProjectDetailPage() {
         </Dialog>
       </div>
 
-      {/* Module Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {Object.entries(moduleConfig).map(([type, config]) => {
-          const moduleList = modules[type as ModuleType] || [];
+      {/* Module Tables */}
+      <div className="space-y-6">
+        {(['threed', 'traffic', 'music'] as ModuleType[]).map((type) => {
+          const config = moduleConfig[type];
           const Icon = config.icon;
-          
+          const moduleList = modules[type] || [];
+
           return (
             <Card key={type}>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Icon className={`w-5 h-5 ${config.color}`} />
-                  {config.label}
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <Icon className={`w-6 h-6 ${config.color}`} />
+                  <CardTitle className="text-lg">{config.label}</CardTitle>
                   <Badge variant="secondary" className="ml-2">
-                    {moduleList.length}
+                    {moduleList.length} {moduleList.length === 1 ? 'module' : 'modules'}
                   </Badge>
-                </CardTitle>
+                </div>
               </CardHeader>
               <CardContent>
                 {moduleList.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No {config.label} modules</p>
-                ) : (
-                  <div className="space-y-2">
-                    {moduleList.map((mod) => (
-                      <div key={mod.id} className="flex items-center justify-between p-2 border rounded">
-                        <div className="min-w-0">
-                          <span className="text-sm font-medium">{mod.name}</span>
-                          {mod.description && (
-                            <p className="text-xs text-muted-foreground truncate">{mod.description}</p>
-                          )}
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 flex-shrink-0"
-                          onClick={() => deleteModule(type as ModuleType, mod.id)}
-                          disabled={deletingModule?.type === type && deletingModule?.id === mod.id}
-                        >
-                          {deletingModule?.type === type && deletingModule?.id === mod.id ? (
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-3 h-3 text-red-500" />
-                          )}
-                        </Button>
-                      </div>
-                    ))}
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No {config.label} modules yet</p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="mt-2"
+                      onClick={() => {
+                        setNewModuleData({ type, name: '', description: '' });
+                        setShowNewModuleDialog(true);
+                      }}
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add {config.label} Module
+                    </Button>
                   </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead className="hidden md:table-cell">Description</TableHead>
+                        <TableHead className="hidden sm:table-cell">Created</TableHead>
+                        <TableHead className="text-center">Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {moduleList.map((mod) => (
+                        <TableRow key={mod.id}>
+                          <TableCell className="font-medium">{mod.name}</TableCell>
+                          <TableCell className="hidden md:table-cell text-muted-foreground">
+                            {mod.description || '—'}
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell text-muted-foreground">
+                            {formatDate(mod.createdAt)}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              {mod.isActive ? (
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                              ) : (
+                                <XCircle className="w-4 h-4 text-red-500" />
+                              )}
+                              <span className="text-sm">
+                                {mod.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleModuleStatus(type, mod.id, mod.isActive)}
+                              >
+                                {mod.isActive ? 'Deactivate' : 'Activate'}
+                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <MoreHorizontal className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    className="text-red-600"
+                                    onClick={() => deleteModule(type, mod.id, mod.name)}
+                                  >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 )}
               </CardContent>
             </Card>

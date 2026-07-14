@@ -32,8 +32,8 @@ import { project } from '../project';
 
 export const music = pgTable('music', {
   id: serial('id').primaryKey(),
-  
-  // Link to Project
+  // Owner
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
   
   // Basic info
@@ -57,6 +57,7 @@ export const music = pgTable('music', {
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
   slugIdx: uniqueIndex('idx_music_slug').on(table.slug),
+  userIdIdx: index('idx_music_user_id').on(table.userId),
   projectIdIdx: index('idx_music_project_id').on(table.projectId),
   activeIdx: index('idx_music_active').on(table.isActive),
 }));
@@ -66,12 +67,15 @@ export const music = pgTable('music', {
 // ============================================
 
 export const musicRelations = relations(music, ({ one, many }) => ({
+  user: one(user, {
+    fields: [music.userId],
+    references: [user.id],
+  }),
   // Project relationship
   project: one(project, {
     fields: [music.projectId],
     references: [project.id],
   }),
-  
   // All child tables (to be added after they're updated)
   albums: many(musicAlbums),
   tracks: many(musicTracks),

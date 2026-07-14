@@ -16,6 +16,9 @@ export async function GET(
     // ✅ Must await params in Next.js 16
     const { id } = await params;
     console.log('📦 modules params.id:', id);
+
+    const { searchParams } = new URL(request.url);
+    const includeCounts = searchParams.get('includeCounts') === 'true';
     
     const session = await auth();
     if (!session?.user?.id) {
