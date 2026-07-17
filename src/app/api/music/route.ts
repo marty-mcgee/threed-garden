@@ -1,140 +1,90 @@
 // app/api/music/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-// import { minimalAuth as auth } from "@/lib/auth/minimal-server";
 import { db } from '@/lib/db/client';
-
 import { music } from '@/lib/schema/music';
-import { musicAlbums, musicTracks, musicLinks } from '@/lib/schema';
-import { musicPoller } from '@/lib/services/music/MusicPoller';
-import { MusicPollingType } from '@/lib/types/music';
+import { eq, desc, and, sql } from 'drizzle-orm';
 
-import { eq, and, desc } from 'drizzle-orm';
-
-// Use a hardcoded user ID for testing (replace with your actual user ID from database)
-const defaultUserId = '9a9ed475-3dcd-492e-b22f-de27a33ed1fc';
-
-
-
-// GET /api/music - List all Music modules
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
     const projectId = searchParams.get('projectId');
+    const includeInactive = searchParams.get('includeInactive') === 'true';
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
 
-    let query = db
-      .select()
-      .from(music)
-      .where(eq(music.userId, session.user.id))
-      .orderBy(desc(music.createdAt));
-
-    if (projectId) {
-      query = db
+    if (id) {
+      const [result] = await db
         .select()
         .from(music)
         .where(
           and(
-            eq(music.userId, session.user.id),
-            eq(music.projectId, parseInt(projectId))
+            eq(music.id, parseInt(id)),
+            eq(music.userId, session.user.id)
           )
-        )
-        .orderBy(desc(music.createdAt));
+        );
+
+      if (!result) {
+        return NextResponse.json(
+          { success: false, error: 'Music module not found' },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({ success: true, data: result });
     }
 
-    const results = await query;
-    return NextResponse.json({ data: results });
+    let query = db
+      .select()
+      .from(music)
+      .where(eq(music.userId, session.user.id));
+
+    if (projectId) {
+      query = query.where(eq(music.projectId, parseInt(projectId)));
+    }
+    if (!includeInactive) {
+      query = query.where(eq(music.isActive, true));
+    }
+
+    const countResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(music)
+      .where(eq(music.userId, session.user.id));
+
+    const results = await query
+      .orderBy(desc(music.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return NextResponse.json({
+      success: true,
+      data: results,
+      pagination: {
+        limit,
+        offset,
+        total: countResult[0]?.count || 0,
+      },
+    });
   } catch (error) {
     console.error('Music API error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
 }
-export async function GETold(request: NextRequest) {
-  try {
-    // Auth.js: get session
-    const session = await auth();
-    
-    // Use session user ID, or return 401 if not authenticated
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
 
-    // Use session user ID if available, otherwise use default for testing
-    const userId = session?.user?.id || defaultUserId;
-
-    const searchParams = request.nextUrl.searchParams;
-    const action = searchParams.get('action');
-
-    // In your existing /api/music/route.ts, update the stats action
-    if (action === 'stats') {
-      const albums = await db.select().from(musicAlbums)
-        // .where(eq(musicAlbums.userId, session.user.id));
-        .where(eq(musicAlbums.userId, userId));
-      const tracks = await db.select().from(musicTracks).innerJoin(
-        musicAlbums,
-        eq(musicTracks.albumId, musicAlbums.id)
-      // ).where(eq(musicAlbums.userId, session.user.id));
-      ).where(eq(musicAlbums.userId, userId));
-
-      const links = await db.select().from(musicLinks)
-        // .where(eq(musicLinks.userId, session.user.id));
-        .where(eq(musicLinks.userId, userId));
-
-      // Calculate total storage from S3 (optional - you'd need to query S3 API)
-
-      return NextResponse.json({
-        totalAlbums: albums.length,
-        totalTracks: tracks.length,
-        totalLinks: links.length,
-        totalPlayCount: tracks.reduce((sum, t) => sum + (t.music_tracks.playCount || 0), 0),
-        publishedAlbums: albums.filter(a => a.status === 'published').length,
-        activeTracks: tracks.filter(t => t.music_tracks.status === 'active').length,
-        activeLinks: links.filter(l => l.status === 'active').length,
-        recentUploads: tracks.filter(t => {
-          const daysAgo = new Date();
-          daysAgo.setDate(daysAgo.getDate() - 30);
-          return new Date(t.music_tracks.createdAt) > daysAgo;
-        }).length,
-        storageUsed: '0 GB', // You'll need S3 API for this
-        lastPollTime: null,
-        pollStatus: 'idle',
-      });
-    }
-
-    // Get all albums for user
-    const albums = await db.query.musicAlbums.findMany({
-      // where: eq(musicAlbums.userId, session.user.id),
-      where: eq(musicAlbums.userId, userId),
-      with: {
-        tracks: {
-          orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
-        },
-      },
-      orderBy: (albums, { asc }) => [asc(albums.sortOrder)],
-    });
-
-    return NextResponse.json(albums);
-  } catch (error) {
-    console.error('Music API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
-
-
-
-// POST /api/music - Create a new Music module
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -142,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     if (!projectId || !name) {
       return NextResponse.json(
-        { error: 'Missing required fields: projectId, name' },
+        { success: false, error: 'Missing required fields: projectId, name' },
         { status: 400 }
       );
     }
@@ -156,92 +106,215 @@ export async function POST(request: NextRequest) {
         slug: name.toLowerCase().replace(/\s+/g, '-'),
         userId: session.user.id,
         isActive: true,
+        isPublic: false,
         config: config || {},
+        version: '1.0.0',
+        metadata: {},
       })
       .returning();
 
-    return NextResponse.json({ data: newModule });
+    return NextResponse.json({ success: true, data: newModule });
   } catch (error) {
     console.error('Music API error:', error);
     return NextResponse.json(
-      { error: 'Failed to create Music module' },
+      { success: false, error: 'Failed to create Music module' },
       { status: 500 }
     );
   }
 }
-export async function POSTold(request: NextRequest) {
-  // try {
-  //   // Auth.js: get session
-  //   const session = await auth();
-    
-  //   // Use session user ID, or return 401 if not authenticated
-  //   if (!session?.user?.id) {
-  //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  //   }
 
-  //   const body = await request.json();
-  //   const { action, data } = body;
-
-  //   switch (action) {
-  //     case 'poll':
-  //       if (data?.type === MusicPollingType.METADATA) {
-  //         const result = await musicPoller.poll();
-  //         return NextResponse.json(result);
-  //       }
-  //       break;
-
-  //     case 'increment-play':
-  //       if (data?.trackId) {
-  //         await musicPoller.incrementPlayCount(data.trackId);
-  //         return NextResponse.json({ success: true });
-  //       }
-  //       break;
-
-  //     default:
-  //       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
-  //   }
-  // } catch (error) {
-  //   console.error('Music API error:', error);
-  //   return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  // }
-
-  
+export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { projectId, name, description, config } = body;
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
-    if (!projectId || !name) {
+    if (!id) {
       return NextResponse.json(
-        { error: 'Missing required fields: projectId, name' },
+        { success: false, error: 'Missing module ID' },
         { status: 400 }
       );
     }
 
-    const [newModule] = await db
-      .insert(music)
-      .values({
-        projectId,
-        name,
-        description: description || '',
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
-        userId: session.user.id, // ✅ Add this!
-        isActive: true,
-        config: config || {},
+    const body = await request.json();
+    const { projectId, name, description, isActive, isPublic, config, version, metadata } = body;
+
+    const [existing] = await db
+      .select()
+      .from(music)
+      .where(
+        and(
+          eq(music.id, parseInt(id)),
+          eq(music.userId, session.user.id)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Music module not found' },
+        { status: 404 }
+      );
+    }
+
+    const [updated] = await db
+      .update(music)
+      .set({
+        projectId: projectId || existing.projectId,
+        name: name || existing.name,
+        description: description !== undefined ? description : existing.description,
+        slug: name ? name.toLowerCase().replace(/\s+/g, '-') : existing.slug,
+        isActive: isActive !== undefined ? isActive : existing.isActive,
+        isPublic: isPublic !== undefined ? isPublic : existing.isPublic,
+        config: config || existing.config,
+        version: version || existing.version,
+        metadata: metadata || existing.metadata,
+        updatedAt: new Date(),
       })
+      .where(
+        and(
+          eq(music.id, parseInt(id)),
+          eq(music.userId, session.user.id)
+        )
+      )
       .returning();
 
-    return NextResponse.json({ data: newModule });
+    return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     console.error('Music API error:', error);
     return NextResponse.json(
-      { error: 'Failed to create Music module' },
+      { success: false, error: 'Failed to update Music module' },
       { status: 500 }
     );
   }
 }
 
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Missing module ID' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, description, isActive, isPublic, config, version, metadata } = body;
+
+    const [existing] = await db
+      .select()
+      .from(music)
+      .where(
+        and(
+          eq(music.id, parseInt(id)),
+          eq(music.userId, session.user.id)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Music module not found' },
+        { status: 404 }
+      );
+    }
+
+    const updateData: any = { updatedAt: new Date() };
+    if (name !== undefined) {
+      updateData.name = name;
+      updateData.slug = name.toLowerCase().replace(/\s+/g, '-');
+    }
+    if (description !== undefined) updateData.description = description;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (isPublic !== undefined) updateData.isPublic = isPublic;
+    if (config !== undefined) updateData.config = config;
+    if (version !== undefined) updateData.version = version;
+    if (metadata !== undefined) updateData.metadata = metadata;
+
+    const [updated] = await db
+      .update(music)
+      .set(updateData)
+      .where(
+        and(
+          eq(music.id, parseInt(id)),
+          eq(music.userId, session.user.id)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ success: true, data: updated });
+  } catch (error) {
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update Music module' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Missing module ID' },
+        { status: 400 }
+      );
+    }
+
+    const [existing] = await db
+      .select()
+      .from(music)
+      .where(
+        and(
+          eq(music.id, parseInt(id)),
+          eq(music.userId, session.user.id)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Music module not found' },
+        { status: 404 }
+      );
+    }
+
+    const [deleted] = await db
+      .delete(music)
+      .where(
+        and(
+          eq(music.id, parseInt(id)),
+          eq(music.userId, session.user.id)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ success: true, data: deleted });
+  } catch (error) {
+    console.error('Music API error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete Music module' },
+      { status: 500 }
+    );
+  }
+}

@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { 
   ArrowLeft,
   Plus,
@@ -17,9 +16,7 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  MoreHorizontal,
-  ChevronDown,
-  ChevronRight
+  MoreHorizontal
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,13 +29,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/toast';
-
-// ✅ Import the Music Album CRUD component
-import { MusicAlbumCRUD } from '@/components/admin/music/albums/MusicAlbumCRUD';
-
-// Future imports for other module CRUD components
-// import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
-// import { TrafficIncidentsCRUD } from '@/components/admin/traffic/incidents/TrafficIncidentsCRUD';
 
 interface Project {
   id: number;
@@ -73,7 +63,6 @@ export default function ProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { showToast, ToastComponent } = useToast();
-  const { data: session, status } = useSession();
   const projectId = parseInt(params.id as string);
   
   const [project, setProject] = useState<Project | null>(null);
@@ -97,56 +86,23 @@ export default function ProjectDetailPage() {
     isPublic: false,
     isActive: true,
   });
-  
-  // ✅ Track expanded sections for child CRUD components
-  const [expandedModules, setExpandedModules] = useState<Record<ModuleType, boolean>>({
-    threed: false,
-    traffic: false,
-    music: true, // Music expanded by default
-  });
-
-  // ✅ Check authentication
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/sign-in');
-    }
-  }, [status, router]);
 
   useEffect(() => {
-    if (session?.user?.id) {
-      fetchProject();
-    }
-  }, [projectId, session]);
+    fetchProject();
+  }, [projectId]);
 
   const fetchProject = async () => {
-    if (!session?.user?.id) {
-      showToast('You must be signed in', 'error');
-      router.push('/sign-in');
-      return;
-    }
-
     setLoading(true);
     try {
-      // ✅ Fetch project - the API will filter by userId from the session
+      // Fetch project
       const projectRes = await fetch(`/api/project/${projectId}`);
       if (!projectRes.ok) {
-        if (projectRes.status === 401) {
-          router.push('/sign-in');
-          return;
-        }
         throw new Error('Failed to fetch project');
       }
       const projectData = await projectRes.json();
       
       if (!projectData.data) {
         showToast('Project not found', 'error');
-        router.push('/admin');
-        return;
-      }
-
-      // ✅ Verify the project belongs to the current user
-      if (projectData.data.userId !== session.user.id) {
-        showToast('You do not have permission to view this project', 'error');
         router.push('/admin');
         return;
       }
@@ -159,7 +115,7 @@ export default function ProjectDetailPage() {
         isActive: projectData.data.isActive !== false,
       });
 
-      // ✅ Fetch modules - the API will filter by userId from the session
+      // Fetch modules
       const modulesRes = await fetch(`/api/project/${projectId}/modules`);
       if (!modulesRes.ok) {
         throw new Error('Failed to fetch modules');
@@ -175,11 +131,6 @@ export default function ProjectDetailPage() {
   };
 
   const updateProject = async () => {
-    if (!session?.user?.id) {
-      showToast('You must be signed in', 'error');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const response = await fetch(`/api/project/${projectId}`, {
@@ -189,10 +140,6 @@ export default function ProjectDetailPage() {
       });
       
       if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/sign-in');
-          return;
-        }
         throw new Error('Failed to update project');
       }
       
@@ -208,11 +155,6 @@ export default function ProjectDetailPage() {
   };
 
   const toggleModuleStatus = async (type: ModuleType, moduleId: number, currentStatus: boolean) => {
-    if (!session?.user?.id) {
-      showToast('You must be signed in', 'error');
-      return;
-    }
-
     try {
       const response = await fetch(`/api/${type}/${moduleId}`, {
         method: 'PATCH',
@@ -221,10 +163,6 @@ export default function ProjectDetailPage() {
       });
       
       if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/sign-in');
-          return;
-        }
         throw new Error('Failed to update module status');
       }
       
@@ -237,11 +175,6 @@ export default function ProjectDetailPage() {
   };
 
   const createModule = async () => {
-    if (!session?.user?.id) {
-      showToast('You must be signed in', 'error');
-      return;
-    }
-
     if (!newModuleData.name.trim()) {
       showToast('Module name is required', 'error');
       return;
@@ -260,10 +193,6 @@ export default function ProjectDetailPage() {
       });
       
       if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/sign-in');
-          return;
-        }
         throw new Error('Failed to create module');
       }
       
@@ -280,11 +209,6 @@ export default function ProjectDetailPage() {
   };
 
   const deleteModule = async (type: ModuleType, id: number, name: string) => {
-    if (!session?.user?.id) {
-      showToast('You must be signed in', 'error');
-      return;
-    }
-
     if (!confirm(`Delete "${name}" module? This action cannot be undone.`)) return;
 
     try {
@@ -295,10 +219,6 @@ export default function ProjectDetailPage() {
       });
       
       if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/sign-in');
-          return;
-        }
         throw new Error('Failed to delete module');
       }
       
@@ -310,14 +230,6 @@ export default function ProjectDetailPage() {
     }
   };
 
-  // ✅ Toggle module expansion for child CRUD
-  const toggleExpand = (type: ModuleType) => {
-    setExpandedModules(prev => ({
-      ...prev,
-      [type]: !prev[type],
-    }));
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -326,25 +238,10 @@ export default function ProjectDetailPage() {
     });
   };
 
-  // ✅ Loading state
-  if (status === 'loading' || loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // ✅ Unauthenticated state
-  if (status === 'unauthenticated') {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <p className="text-muted-foreground">Please sign in to access this page</p>
-          <Button className="mt-4" onClick={() => router.push('/sign-in')}>
-            Sign In
-          </Button>
-        </div>
       </div>
     );
   }
@@ -532,35 +429,22 @@ export default function ProjectDetailPage() {
         </Dialog>
       </div>
 
-      {/* Module Tables with Child CRUD Components */}
+      {/* Module Tables */}
       <div className="space-y-6">
         {(['threed', 'traffic', 'music'] as ModuleType[]).map((type) => {
           const config = moduleConfig[type];
           const Icon = config.icon;
           const moduleList = modules[type] || [];
-          const isExpanded = expandedModules[type];
 
           return (
             <Card key={type}>
-              <CardHeader 
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() => toggleExpand(type)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Icon className={`w-6 h-6 ${config.color}`} />
-                    <CardTitle className="text-lg">{config.label}</CardTitle>
-                    <Badge variant="secondary" className="ml-2">
-                      {moduleList.length} {moduleList.length === 1 ? 'module' : 'modules'}
-                    </Badge>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    {isExpanded ? (
-                      <ChevronDown className="w-4 h-4" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4" />
-                    )}
-                  </Button>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <Icon className={`w-6 h-6 ${config.color}`} />
+                  <CardTitle className="text-lg">{config.label}</CardTitle>
+                  <Badge variant="secondary" className="ml-2">
+                    {moduleList.length} {moduleList.length === 1 ? 'module' : 'modules'}
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent>
@@ -581,113 +465,69 @@ export default function ProjectDetailPage() {
                     </Button>
                   </div>
                 ) : (
-                  <div>
-                    {/* Module List Table */}
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead className="hidden md:table-cell">Description</TableHead>
-                          <TableHead className="hidden sm:table-cell">Created</TableHead>
-                          <TableHead className="text-center">Status</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead className="hidden md:table-cell">Description</TableHead>
+                        <TableHead className="hidden sm:table-cell">Created</TableHead>
+                        <TableHead className="text-center">Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {moduleList.map((mod) => (
+                        <TableRow key={mod.id}>
+                          <TableCell className="font-medium">{mod.name}</TableCell>
+                          <TableCell className="hidden md:table-cell text-muted-foreground">
+                            {mod.description || '—'}
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell text-muted-foreground">
+                            {formatDate(mod.createdAt)}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              {mod.isActive ? (
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                              ) : (
+                                <XCircle className="w-4 h-4 text-red-500" />
+                              )}
+                              <span className="text-sm">
+                                {mod.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleModuleStatus(type, mod.id, mod.isActive)}
+                              >
+                                {mod.isActive ? 'Deactivate' : 'Activate'}
+                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <MoreHorizontal className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    className="text-red-600"
+                                    onClick={() => deleteModule(type, mod.id, mod.name)}
+                                  >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {moduleList.map((mod) => (
-                          <TableRow key={mod.id}>
-                            <TableCell className="font-medium">{mod.name}</TableCell>
-                            <TableCell className="hidden md:table-cell text-muted-foreground">
-                              {mod.description || '—'}
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell text-muted-foreground">
-                              {formatDate(mod.createdAt)}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                {mod.isActive ? (
-                                  <CheckCircle className="w-4 h-4 text-green-500" />
-                                ) : (
-                                  <XCircle className="w-4 h-4 text-red-500" />
-                                )}
-                                <span className="text-sm">
-                                  {mod.isActive ? 'Active' : 'Inactive'}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex items-center justify-end gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleModuleStatus(type, mod.id, mod.isActive)}
-                                >
-                                  {mod.isActive ? 'Deactivate' : 'Activate'}
-                                </Button>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                      <MoreHorizontal className="w-4 h-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem
-                                      className="text-red-600"
-                                      onClick={() => deleteModule(type, mod.id, mod.name)}
-                                    >
-                                      <Trash2 className="w-4 h-4 mr-2" />
-                                      Delete
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-
-                    {/* ✅ Child CRUD Components - Only show when expanded */}
-                    {isExpanded && (
-                      <div className="mt-6 pt-6 border-t">
-                        {type === 'music' && (
-                          <div className="space-y-4">
-                            {moduleList.map((mod) => (
-                              <div key={mod.id} className="ml-4 pl-4 border-l-2 border-purple-200">
-                                <h4 className="text-sm font-medium text-muted-foreground mb-4">
-                                  Albums for: <span className="text-foreground">{mod.name}</span>
-                                </h4>
-                                {session?.user?.id && (
-                                  <MusicAlbumCRUD
-                                    userId={session.user.id}
-                                    onModuleUpdate={fetchProject}
-                                  />
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        
-                        {/* Future ThreeD CRUD */}
-                        {type === 'threed' && (
-                          <div className="ml-4 pl-4 border-l-2 border-green-200">
-                            <p className="text-sm text-muted-foreground">
-                              ThreeD CRUD components coming soon...
-                            </p>
-                          </div>
-                        )}
-                        
-                        {/* Future Traffic CRUD */}
-                        {type === 'traffic' && (
-                          <div className="ml-4 pl-4 border-l-2 border-blue-200">
-                            <p className="text-sm text-muted-foreground">
-                              Traffic CRUD components coming soon...
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                      ))}
+                    </TableBody>
+                  </Table>
                 )}
               </CardContent>
             </Card>
