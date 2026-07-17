@@ -33,6 +33,7 @@ import { project } from '../project';
  */
 export const threed = pgTable('threed', {
   id: serial('id').primaryKey(),
+  
   // Owner
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
