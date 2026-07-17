@@ -85,7 +85,6 @@ CREATE TABLE "user_verifications" (
 CREATE TABLE "music" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
-	"project_id" integer,
 	"name" text NOT NULL,
 	"description" text,
 	"slug" text NOT NULL,
@@ -193,10 +192,10 @@ CREATE TABLE "music_tracks" (
 --> statement-breakpoint
 CREATE TABLE "project" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
 	"name" text NOT NULL,
 	"description" text,
 	"slug" text NOT NULL,
-	"user_id" text,
 	"is_active" boolean DEFAULT true,
 	"is_public" boolean DEFAULT false,
 	"config" jsonb DEFAULT '{}'::jsonb,
@@ -204,6 +203,36 @@ CREATE TABLE "project" (
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "project_slug_unique" UNIQUE("slug")
+);
+--> statement-breakpoint
+CREATE TABLE "project_music" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"project_id" integer,
+	"music_id" integer,
+	"config" jsonb DEFAULT '{}'::jsonb,
+	"is_active" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "project_threed" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"project_id" integer,
+	"threed_id" integer,
+	"config" jsonb DEFAULT '{}'::jsonb,
+	"is_active" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "project_traffic" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"project_id" integer,
+	"traffic_id" integer,
+	"config" jsonb DEFAULT '{}'::jsonb,
+	"is_active" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "settings" (
@@ -916,7 +945,6 @@ CREATE TABLE "traffic_chp_cases" (
 ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music" ADD CONSTRAINT "music_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "music" ADD CONSTRAINT "music_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_link_id_music_links_id_fk" FOREIGN KEY ("link_id") REFERENCES "public"."music_links"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_album_links" ADD CONSTRAINT "music_album_links_track_id_music_tracks_id_fk" FOREIGN KEY ("track_id") REFERENCES "public"."music_tracks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -929,6 +957,12 @@ ALTER TABLE "music_playback_history" ADD CONSTRAINT "music_playback_history_trac
 ALTER TABLE "music_playback_history" ADD CONSTRAINT "music_playback_history_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "music_tracks" ADD CONSTRAINT "music_tracks_album_id_music_albums_id_fk" FOREIGN KEY ("album_id") REFERENCES "public"."music_albums"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "project" ADD CONSTRAINT "project_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_music" ADD CONSTRAINT "project_music_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_music" ADD CONSTRAINT "project_music_music_id_music_id_fk" FOREIGN KEY ("music_id") REFERENCES "public"."music"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_threed" ADD CONSTRAINT "project_threed_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_threed" ADD CONSTRAINT "project_threed_threed_id_threed_id_fk" FOREIGN KEY ("threed_id") REFERENCES "public"."threed"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_traffic" ADD CONSTRAINT "project_traffic_project_id_project_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."project"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_traffic" ADD CONSTRAINT "project_traffic_traffic_id_traffic_id_fk" FOREIGN KEY ("traffic_id") REFERENCES "public"."traffic"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "settings_audit_logs" ADD CONSTRAINT "settings_audit_logs_setting_id_settings_id_fk" FOREIGN KEY ("setting_id") REFERENCES "public"."settings"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "settings_audit_logs" ADD CONSTRAINT "settings_audit_logs_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "settings_deployment" ADD CONSTRAINT "settings_deployment_rollback_to_settings_deployment_id_fk" FOREIGN KEY ("rollback_to") REFERENCES "public"."settings_deployment"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -998,9 +1032,8 @@ CREATE UNIQUE INDEX "idx_user_accounts_provider" ON "user_accounts" USING btree 
 CREATE UNIQUE INDEX "idx_user_sessions_token" ON "user_sessions" USING btree ("session_token");--> statement-breakpoint
 CREATE INDEX "idx_user_sessions_user_id" ON "user_sessions" USING btree ("user_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_user_verifications_token" ON "user_verifications" USING btree ("identifier","token");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_music_slug" ON "music" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_music_user_id" ON "music" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "idx_music_project_id" ON "music" USING btree ("project_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_music_slug" ON "music" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_music_active" ON "music" USING btree ("is_active");--> statement-breakpoint
 CREATE INDEX "album_links_album_link_idx" ON "music_album_links" USING btree ("album_id","link_id");--> statement-breakpoint
 CREATE INDEX "album_links_track_link_idx" ON "music_album_links" USING btree ("track_id","link_id");--> statement-breakpoint
@@ -1020,9 +1053,18 @@ CREATE INDEX "music_polling_logs_status_idx" ON "music_polling_logs" USING btree
 CREATE INDEX "music_polling_logs_type_status_idx" ON "music_polling_logs" USING btree ("poll_type","status");--> statement-breakpoint
 CREATE INDEX "music_tracks_album_id_idx" ON "music_tracks" USING btree ("album_id");--> statement-breakpoint
 CREATE INDEX "music_tracks_status_idx" ON "music_tracks" USING btree ("status");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_projects_slug" ON "project" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_projects_user_id" ON "project" USING btree ("user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_projects_slug" ON "project" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_projects_active" ON "project" USING btree ("is_active");--> statement-breakpoint
+CREATE INDEX "idx_project_music_project_id" ON "project_music" USING btree ("project_id");--> statement-breakpoint
+CREATE INDEX "idx_project_music_music_id" ON "project_music" USING btree ("music_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_project_music_unique" ON "project_music" USING btree ("project_id","music_id");--> statement-breakpoint
+CREATE INDEX "idx_project_threed_project_id" ON "project_threed" USING btree ("project_id");--> statement-breakpoint
+CREATE INDEX "idx_project_threed_threed_id" ON "project_threed" USING btree ("threed_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_project_threed_unique" ON "project_threed" USING btree ("project_id","threed_id");--> statement-breakpoint
+CREATE INDEX "idx_project_traffic_project_id" ON "project_traffic" USING btree ("project_id");--> statement-breakpoint
+CREATE INDEX "idx_project_traffic_traffic_id" ON "project_traffic" USING btree ("traffic_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_project_traffic_unique" ON "project_traffic" USING btree ("project_id","traffic_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_settings_key" ON "settings" USING btree ("key");--> statement-breakpoint
 CREATE INDEX "idx_settings_scope" ON "settings" USING btree ("scope");--> statement-breakpoint
 CREATE INDEX "idx_settings_group" ON "settings" USING btree ("group");--> statement-breakpoint

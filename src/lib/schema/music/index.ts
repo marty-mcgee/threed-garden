@@ -20,7 +20,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
-import { project } from '../project';
+import { projectMusic, project } from '../project';
 
 // ============================================
 // ### Music Service
@@ -35,7 +35,6 @@ export const music = pgTable('music', {
 
   // Owner
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
-  projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
   
   // Basic info
   name: text('name').notNull(),
@@ -58,65 +57,30 @@ export const music = pgTable('music', {
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
   userIdIdx: index('idx_music_user_id').on(table.userId),
-  projectIdIdx: index('idx_music_project_id').on(table.projectId),
   slugIdx: uniqueIndex('idx_music_slug').on(table.slug),
   activeIdx: index('idx_music_active').on(table.isActive),
 }));
 
 // ============================================
-// RELATIONSHIPS
-// ============================================
-
-export const musicRelations = relations(music, ({ one, many }) => ({
-  user: one(user, {
-    fields: [music.userId],
-    references: [user.id],
-  }),
-  // Project relationship
-  project: one(project, {
-    fields: [music.projectId],
-    references: [project.id],
-  }),
-  // All child tables (to be added after they're updated)
-  albums: many(musicAlbums),
-  tracks: many(musicTracks),
-  links: many(musicLinks),
-  media: many(musicMedia),
-  pollingLogs: many(musicPollingLogs),
-  playbackHistory: many(musicPlaybackHistory),
-}));
-
-// ============================================
-// TYPES
-// ============================================
-
-export type Music = typeof music.$inferSelect;
-export type NewMusic = typeof music.$inferInsert;
-
-// ============================================
 // ENUMS
 // ============================================
 
-// Music Enums
 export const musicLinkTypeEnum = pgEnum('music_link_type', ['external', 'social', 'buy', 'stream', 'video']);
 export const musicLinkStatusEnum = pgEnum('music_link_status', ['active', 'inactive', 'pending', 'expired']);
 export const albumStatusEnum = pgEnum('album_status', ['draft', 'published', 'archived']);
 export const trackStatusEnum = pgEnum('track_status', ['active', 'inactive', 'processing']);
 export const musicPollingTypeEnum = pgEnum('music_polling_type', ['metadata', 'stats', 'sync']);
 
-
 // ============================================
 // MODULE CHILD TABLES
 // ============================================
 
-// Music Tables
 export const musicAlbums = pgTable('music_albums', {
-
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   artist: text('artist').notNull(),
-  coverArt: text('cover_art').notNull(), // Direct URL to the image file
+  coverArt: text('cover_art').notNull(),
   releaseYear: integer('release_year'),
   description: text('description'),
   sortOrder: integer('sort_order').default(0),
@@ -133,7 +97,7 @@ export const musicAlbums = pgTable('music_albums', {
 
 export const musicMedia = pgTable('music_media', {
   id: serial('id').primaryKey(),
-  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }).notNull(), // Add this
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }).notNull(),
   albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }).notNull(),
   fileName: text('file_name').notNull(),
   fileUrl: text('file_url').notNull(),
@@ -144,32 +108,9 @@ export const musicMedia = pgTable('music_media', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
-  userIdIdx: index('music_media_user_id_idx').on(table.userId), // Add this
+  userIdIdx: index('music_media_user_id_idx').on(table.userId),
   albumIdIdx: index('music_media_album_id_idx').on(table.albumId),
   isPrimaryIdx: index('music_media_is_primary_idx').on(table.isPrimary),
-}));
-
-// Add relation to musicAlbums
-export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
-  tracks: many(musicTracks),
-  musicAlbumLinks: many(musicAlbumLinks),
-  media: many(musicMedia), // Add this line
-  user: one(user, {
-    fields: [musicAlbums.userId],
-    references: [user.id],
-  }),
-}));
-
-// Add relation from musicMedia to musicAlbums
-export const musicMediaRelations = relations(musicMedia, ({ one }) => ({
-  user: one(user, {
-    fields: [musicMedia.userId],
-    references: [user.id],
-  }),
-  album: one(musicAlbums, {
-    fields: [musicMedia.albumId],
-    references: [musicAlbums.id],
-  }),
 }));
 
 export const musicTracks = pgTable('music_tracks', {
@@ -178,7 +119,7 @@ export const musicTracks = pgTable('music_tracks', {
   title: text('title').notNull(),
   duration: integer('duration'),
   trackNumber: integer('track_number'),
-  publicUrl: text('public_url').notNull(), // Direct URL to the audio file
+  publicUrl: text('public_url').notNull(),
   status: trackStatusEnum('status').default('active'),
   lyrics: text('lyrics'),
   metadata: jsonb('metadata'),
@@ -194,7 +135,7 @@ export const musicLinks = pgTable('music_links', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
-  url: text('url').notNull(), // Direct URL to the link file
+  url: text('url').notNull(),
   type: musicLinkTypeEnum('type').default('external'),
   icon: text('icon'),
   description: text('description'),
@@ -212,7 +153,7 @@ export const musicAlbumLinks = pgTable('music_album_links', {
   id: serial('id').primaryKey(),
   albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }),
   linkId: integer('link_id').references(() => musicLinks.id, { onDelete: 'cascade' }),
-  linkType: text('link_type').notNull(), // 'album' or 'track'
+  linkType: text('link_type').notNull(),
   trackId: integer('track_id').references(() => musicTracks.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
@@ -224,17 +165,15 @@ export const musicAlbumLinks = pgTable('music_album_links', {
 export const musicPollingLogs = pgTable('music_polling_logs', {
   id: serial('id').primaryKey(),
   pollType: musicPollingTypeEnum('poll_type').notNull(),
-  status: text('status').notNull(), // 'success', 'error', 'in_progress'
+  status: text('status').notNull(),
   message: text('message'),
   metadata: jsonb('metadata'),
   startedAt: timestamp('started_at').defaultNow(),
   completedAt: timestamp('completed_at'),
   error: text('error'),
 }, (table) => ({
-  // Change from index to regular index
   pollTypeIdx: index('music_polling_logs_type_idx').on(table.pollType),
   statusIdx: index('music_polling_logs_status_idx').on(table.status),
-  // Optional: add a compound index for common queries
   pollTypeStatusIdx: index('music_polling_logs_type_status_idx').on(table.pollType, table.status),
 }));
 
@@ -244,19 +183,54 @@ export const musicPlaybackHistory = pgTable('music_playback_history', {
   trackId: integer('track_id').references(() => musicTracks.id, { onDelete: 'cascade' }),
   albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }),
   playedAt: timestamp('played_at').defaultNow(),
-  playDuration: integer('play_duration'), // seconds played
+  playDuration: integer('play_duration'),
   completed: boolean('completed').default(false),
-  source: text('source').default('music_player'), // 'music_player', 'queue', 'autoplay'
+  source: text('source').default('music_player'),
 }, (table) => ({
   userIdIdx: index('music_playback_user_id_idx').on(table.userId),
   trackIdIdx: index('music_playback_track_id_idx').on(table.trackId),
   playedAtIdx: index('music_playback_played_at_idx').on(table.playedAt),
 }));
 
+// ============================================
+// RELATIONSHIPS
+// ============================================
 
-// ============================================
-// Relations
-// ============================================
+export const musicRelations = relations(music, ({ one, many }) => ({
+  user: one(user, {
+    fields: [music.userId],
+    references: [user.id],
+  }),
+  // ✅ Many-to-many with Projects via junction table (defined in project schema)
+  projects: many(projectMusic),
+  albums: many(musicAlbums),
+  tracks: many(musicTracks),
+  links: many(musicLinks),
+  media: many(musicMedia),
+  pollingLogs: many(musicPollingLogs),
+  playbackHistory: many(musicPlaybackHistory),
+}));
+
+export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
+  tracks: many(musicTracks),
+  musicAlbumLinks: many(musicAlbumLinks),
+  media: many(musicMedia),
+  user: one(user, {
+    fields: [musicAlbums.userId],
+    references: [user.id],
+  }),
+}));
+
+export const musicMediaRelations = relations(musicMedia, ({ one }) => ({
+  user: one(user, {
+    fields: [musicMedia.userId],
+    references: [user.id],
+  }),
+  album: one(musicAlbums, {
+    fields: [musicMedia.albumId],
+    references: [musicAlbums.id],
+  }),
+}));
 
 export const musicTracksRelations = relations(musicTracks, ({ one, many }) => ({
   album: one(musicAlbums, {
@@ -291,6 +265,38 @@ export const musicAlbumLinksRelations = relations(musicAlbumLinks, ({ one }) => 
 
 export const musicPollingLogsRelations = relations(musicPollingLogs, ({}) => ({}));
 
+export const musicPlaybackHistoryRelations = relations(musicPlaybackHistory, ({ one }) => ({
+  user: one(user, {
+    fields: [musicPlaybackHistory.userId],
+    references: [user.id],
+  }),
+  track: one(musicTracks, {
+    fields: [musicPlaybackHistory.trackId],
+    references: [musicTracks.id],
+  }),
+  album: one(musicAlbums, {
+    fields: [musicPlaybackHistory.albumId],
+    references: [musicAlbums.id],
+  }),
+}));
+
 // ============================================
-// ## Schema Updated 2026-07-17
+// TYPES
 // ============================================
+
+export type Music = typeof music.$inferSelect;
+export type NewMusic = typeof music.$inferInsert;
+export type MusicAlbum = typeof musicAlbums.$inferSelect;
+export type NewMusicAlbum = typeof musicAlbums.$inferInsert;
+export type MusicTrack = typeof musicTracks.$inferSelect;
+export type NewMusicTrack = typeof musicTracks.$inferInsert;
+export type MusicLink = typeof musicLinks.$inferSelect;
+export type NewMusicLink = typeof musicLinks.$inferInsert;
+export type MusicAlbumLink = typeof musicAlbumLinks.$inferSelect;
+export type NewMusicAlbumLink = typeof musicAlbumLinks.$inferInsert;
+export type MusicMedia = typeof musicMedia.$inferSelect;
+export type NewMusicMedia = typeof musicMedia.$inferInsert;
+export type MusicPollingLog = typeof musicPollingLogs.$inferSelect;
+export type NewMusicPollingLog = typeof musicPollingLogs.$inferInsert;
+export type MusicPlaybackHistory = typeof musicPlaybackHistory.$inferSelect;
+export type NewMusicPlaybackHistory = typeof musicPlaybackHistory.$inferInsert;

@@ -1,5 +1,5 @@
 {
-  "id": "edbb1c9c-448c-49ac-b07f-e4044304107f",
+  "id": "d911770d-d1c3-4b5a-821e-2e70e2552d4e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -506,12 +506,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "project_id": {
-          "name": "project_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "name": {
           "name": "name",
           "type": "text",
@@ -581,21 +575,6 @@
         }
       },
       "indexes": {
-        "idx_music_slug": {
-          "name": "idx_music_slug",
-          "columns": [
-            {
-              "expression": "slug",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_music_user_id": {
           "name": "idx_music_user_id",
           "columns": [
@@ -611,17 +590,17 @@
           "method": "btree",
           "with": {}
         },
-        "idx_music_project_id": {
-          "name": "idx_music_project_id",
+        "idx_music_slug": {
+          "name": "idx_music_slug",
           "columns": [
             {
-              "expression": "project_id",
+              "expression": "slug",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
             }
           ],
-          "isUnique": false,
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -649,19 +628,6 @@
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "music_project_id_project_id_fk": {
-          "name": "music_project_id_project_id_fk",
-          "tableFrom": "music",
-          "tableTo": "project",
-          "columnsFrom": [
-            "project_id"
           ],
           "columnsTo": [
             "id"
@@ -1683,6 +1649,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
           "type": "text",
@@ -1700,12 +1672,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "is_active": {
           "name": "is_active",
@@ -1751,21 +1717,6 @@
         }
       },
       "indexes": {
-        "idx_projects_slug": {
-          "name": "idx_projects_slug",
-          "columns": [
-            {
-              "expression": "slug",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_projects_user_id": {
           "name": "idx_projects_user_id",
           "columns": [
@@ -1777,6 +1728,21 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_projects_slug": {
+          "name": "idx_projects_slug",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -1822,6 +1788,420 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.project_music": {
+      "name": "project_music",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "music_id": {
+          "name": "music_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_project_music_project_id": {
+          "name": "idx_project_music_project_id",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_music_music_id": {
+          "name": "idx_project_music_music_id",
+          "columns": [
+            {
+              "expression": "music_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_music_unique": {
+          "name": "idx_project_music_unique",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "music_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "project_music_project_id_project_id_fk": {
+          "name": "project_music_project_id_project_id_fk",
+          "tableFrom": "project_music",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_music_music_id_music_id_fk": {
+          "name": "project_music_music_id_music_id_fk",
+          "tableFrom": "project_music",
+          "tableTo": "music",
+          "columnsFrom": [
+            "music_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.project_threed": {
+      "name": "project_threed",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "threed_id": {
+          "name": "threed_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_project_threed_project_id": {
+          "name": "idx_project_threed_project_id",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_threed_threed_id": {
+          "name": "idx_project_threed_threed_id",
+          "columns": [
+            {
+              "expression": "threed_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_threed_unique": {
+          "name": "idx_project_threed_unique",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "threed_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "project_threed_project_id_project_id_fk": {
+          "name": "project_threed_project_id_project_id_fk",
+          "tableFrom": "project_threed",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_threed_threed_id_threed_id_fk": {
+          "name": "project_threed_threed_id_threed_id_fk",
+          "tableFrom": "project_threed",
+          "tableTo": "threed",
+          "columnsFrom": [
+            "threed_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.project_traffic": {
+      "name": "project_traffic",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "traffic_id": {
+          "name": "traffic_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_project_traffic_project_id": {
+          "name": "idx_project_traffic_project_id",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_traffic_traffic_id": {
+          "name": "idx_project_traffic_traffic_id",
+          "columns": [
+            {
+              "expression": "traffic_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_traffic_unique": {
+          "name": "idx_project_traffic_unique",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "traffic_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "project_traffic_project_id_project_id_fk": {
+          "name": "project_traffic_project_id_project_id_fk",
+          "tableFrom": "project_traffic",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_traffic_traffic_id_traffic_id_fk": {
+          "name": "project_traffic_traffic_id_traffic_id_fk",
+          "tableFrom": "project_traffic",
+          "tableTo": "traffic",
+          "columnsFrom": [
+            "traffic_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
