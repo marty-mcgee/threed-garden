@@ -1,22 +1,8 @@
 // @/lib/schema/traffic/index
 import { 
-  pgTable, 
-  text, 
-  timestamp, 
-  boolean,
-  index,
-  serial, 
-  varchar, 
-  integer, 
-  decimal, 
-  numeric,
-  jsonb,
-  uniqueIndex,
-  foreignKey,
-  pgSchema,
-  pgEnum,
-  time,
-  AnyPgColumn,
+  pgTable, text, timestamp, boolean, index, serial, 
+  varchar, integer, decimal, numeric, jsonb, uniqueIndex, 
+  // foreignKey, pgSchema, pgEnum, time, AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
@@ -27,11 +13,12 @@ import { project } from '../project';
 // ============================================
 
 // ============================================
-// TRAFFIC MAIN TABLE - Parent for all traffic data
+// TRAFFIC MAIN TABLE - Parent for all traffic data related to project
 // ============================================
 
 export const traffic = pgTable('traffic', {
   id: serial('id').primaryKey(),
+
   // Owner
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
@@ -56,9 +43,9 @@ export const traffic = pgTable('traffic', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  slugIdx: uniqueIndex('idx_traffic_slug').on(table.slug),
   userIdIdx: index('idx_traffic_user_id').on(table.userId),
   projectIdIdx: index('idx_traffic_project_id').on(table.projectId),
+  slugIdx: uniqueIndex('idx_traffic_slug').on(table.slug),
   activeIdx: index('idx_traffic_active').on(table.isActive),
 }));
 
@@ -81,8 +68,8 @@ export const trafficRelations = relations(traffic, ({ one, many }) => ({
   trafficCaltransLaneClosures: many(trafficCaltransLaneClosures),
   trafficBayArea511Events: many(trafficBayArea511Events),
   trafficCalfireIncidents: many(trafficCalfireIncidents),
-  trafficCctvCameras: many(trafficCctvCameras),
-  trafficChpCollisions: many(trafficChpCollisions),
+  trafficCaltransCctvCameras: many(trafficCaltransCctvCameras),
+  trafficChpCases: many(trafficChpCases),
   trafficApiRequestLogs: many(trafficApiRequestLogs),
 }));
 
@@ -93,27 +80,36 @@ export const trafficRelations = relations(traffic, ({ one, many }) => ({
 export type Traffic = typeof traffic.$inferSelect;
 export type NewTraffic = typeof traffic.$inferInsert;
 
+
+
+// ============================================
+// ## CalTrans
+// ============================================
+
 // ============================================
 // ## Caltrans Districts Table
 // ============================================
 export const trafficCaltransDistricts = pgTable('traffic_caltrans_districts', {
-  districtId: integer('district_id').primaryKey(),
+  id: serial('id').primaryKey(),
+  districtId: varchar('district_id', { length: 50 }).unique(),
   districtName: varchar('district_name', { length: 100 }),
   region: varchar('region', { length: 50 }),
   counties: text('counties').array(),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
+  districtIdx: index('idx_district_district_id').on(table.districtId),
   regionIdx: index('idx_districts_region').on(table.region),
 }));
 
 // ============================================
 // ## Caltrans Lane Closures Table
 // ============================================
-export const trafficCaltransLaneClosures = pgTable('traffic_lane_closures', {
-  closureId: serial('closure_id').primaryKey(),
+export const trafficCaltransLaneClosures = pgTable('traffic_caltrans_lane_closures', {
+  id: serial('id').primaryKey(),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
+  closureId: varchar('closure_id', { length: 50 }).unique(),
   sourceId: varchar('source_id', { length: 100 }).unique(),
-  district: integer('district'),
+  districtId: varchar('district_id', { length: 100 }),
   route: varchar('route', { length: 20 }),
   direction: varchar('direction', { length: 10 }),
   closureType: varchar('closure_type', { length: 50 }),
@@ -140,19 +136,131 @@ export const trafficCaltransLaneClosures = pgTable('traffic_lane_closures', {
   timesSeen: integer('times_seen').default(1),
   rawData: jsonb('raw_data'),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
   sourceIdIdx: uniqueIndex('idx_closures_source_id').on(table.sourceId),
-  districtIdx: index('idx_closures_district').on(table.district),
+  districtIdx: index('idx_closures_district_id').on(table.districtId),
   routeIdx: index('idx_closures_route').on(table.route),
   statusIdx: index('idx_closures_status').on(table.status),
   lastSeenIdx: index('idx_closures_last_seen').on(table.lastSeen),
   datesIdx: index('idx_closures_dates').on(table.startDate, table.endDate),
 }));
 
+// Snapshots table for analytics
+export const trafficCaltransLaneClosuresSnapshots = pgTable('traffic_caltrans_lane_closures_snapshots', {
+  snapshotId: serial('snapshot_id').primaryKey(),
+  snapshotTimestamp: timestamp('snapshot_timestamp').defaultNow(),
+  districtId: varchar('district_id', { length: 100 }),
+  totalClosures: integer('total_closures'),
+  closuresByType: jsonb('closures_by_type'),
+  closuresByRoute: jsonb('closures_by_route'),
+  rawSummary: jsonb('raw_summary'),
+}, (table) => ({
+  timestampIdx: index('idx_snapshots_timestamp').on(table.snapshotTimestamp),
+  districtIdx: index('idx_snapshots_district').on(table.districtId),
+}));
+
+// Define relationships
+export const trafficCaltransLaneClosuresRelations = relations(trafficCaltransLaneClosures, ({ one }) => ({
+  district: one(trafficCaltransDistricts, {
+    fields: [trafficCaltransLaneClosures.districtId],
+    references: [trafficCaltransDistricts.id],
+  }),
+}));
+
+export const trafficCaltransDistrictsRelations = relations(trafficCaltransDistricts, ({ many }) => ({
+  closures: many(trafficCaltransLaneClosures),
+}));
+
+// ============================================
+// ## CCTV Cameras Table (Future)
+// ============================================
+export const trafficCaltransCctvCameras = pgTable('traffic_caltrans_cctv_cameras', {
+  id: serial('id').primaryKey(),
+  trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
+  cameraId: varchar('camera_id', { length: 100 }),
+  districtId: varchar('district_id', { length: 100 }),
+  locationName: varchar('location_name', { length: 100 }),
+  nearbyPlace: varchar('nearby_place', { length: 100 }),
+  latitude: numeric('latitude', { precision: 10, scale: 7 }).$type<number>(),
+  longitude: numeric('longitude', { precision: 10, scale: 7 }).$type<number>(),
+  direction: varchar('direction', { length: 10 }),
+  county: varchar('county', { length: 50 }),
+  route: varchar('route', { length: 20 }),
+  inService: boolean('in_service'),
+  currentImageUrl: text('current_image_url'),
+  lastUpdated: timestamp('last_updated'),
+  rawData: jsonb('raw_data'),
+  fetchedAt: timestamp('fetched_at').defaultNow(),
+});
+
+// Types for use in the application
+export type LaneClosure = typeof trafficCaltransLaneClosures.$inferSelect;
+export type NewLaneClosure = typeof trafficCaltransLaneClosures.$inferInsert;
+export type ApiRequestLog = typeof trafficApiRequestLogs.$inferSelect;
+export type NewApiRequestLog = typeof trafficApiRequestLogs.$inferInsert;
+export type CaltransDistrict = typeof trafficCaltransDistricts.$inferSelect;
+
+// ============================================
+// ## CHP CAD Live Incidents Tables
+// ============================================
+
+// CHP CAD Communications Centers table
+export const trafficChpCadCenters = pgTable('traffic_chp_cad_centers', {
+  id: serial('id').primaryKey(),
+  centerCode: varchar('center_code', { length: 10 }).unique().notNull(),
+  centerName: varchar('center_name', { length: 100 }).notNull(),
+  county: varchar('county', { length: 100 }),
+  region: varchar('region', { length: 50 }),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  centerCodeIdx: uniqueIndex('idx_chp_cad_centers_code').on(table.centerCode),
+  countyIdx: index('idx_chp_cad_centers_county').on(table.county),
+}));
+
+// CHP CAD Incidents table with foreign key to centers
+export const trafficChpCadIncidents = pgTable('traffic_chp_cad_incidents', {
+  id: serial('id').primaryKey(),
+  trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
+  sourceId: varchar('source_id', { length: 100 }).unique(),
+  centerId: integer('center_id').references(() => trafficChpCadCenters.id, { onDelete: 'set null' }),
+  incidentType: varchar('incident_type', { length: 100 }),
+  location: text('location'),
+  city: varchar('city', { length: 100 }),
+  county: varchar('county', { length: 100 }),
+  latitude: decimal('latitude', { precision: 10, scale: 7 }),
+  longitude: decimal('longitude', { precision: 10, scale: 7 }),
+  logTime: timestamp('log_time'),
+  details: text('details'),
+  status: varchar('status', { length: 20 }).default('active'),
+  fetchedAt: timestamp('fetched_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  sourceIdIdx: uniqueIndex('idx_chp_cad_source_id').on(table.sourceId),
+  centerIdIdx: index('idx_chp_cad_center_id').on(table.centerId),
+  countyIdx: index('idx_chp_cad_county').on(table.county),
+  logTimeIdx: index('idx_chp_cad_log_time').on(table.logTime),
+}));
+
+// Define relationships
+export const trafficChpCadCentersRelations = relations(trafficChpCadCenters, ({ many }) => ({
+  incidents: many(trafficChpCadIncidents),
+}));
+
+export const trafficChpCadIncidentsRelations = relations(trafficChpCadIncidents, ({ one }) => ({
+  center: one(trafficChpCadCenters, {
+    fields: [trafficChpCadIncidents.centerId],
+    references: [trafficChpCadCenters.id],
+  }),
+}));
+
 // ============================================
 // ## CHP Collisions Table (Historical)
 // ============================================
-export const trafficChpCollisions = pgTable('traffic_chp_collisions', {
+export const trafficChpCases = pgTable('traffic_chp_cases', {
   id: serial('id').primaryKey(),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   caseId: varchar('case_id', { length: 50 }).unique(),
@@ -217,10 +325,10 @@ export const trafficBayArea511Events = pgTable('traffic_bay_area_511_events', {
 // ## API Request Logs Table (for monitoring)
 // ============================================
 export const trafficApiRequestLogs = pgTable('traffic_api_request_logs', {
-  logId: serial('log_id').primaryKey(),
+  id: serial('id').primaryKey(),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   endpoint: text('endpoint'),
-  district: integer('district'),
+  districtId: varchar('district_id', { length: 100 }),
   responseTimeMs: integer('response_time_ms'),
   statusCode: integer('status_code'),
   success: boolean('success'),
@@ -234,129 +342,12 @@ export const trafficApiRequestLogs = pgTable('traffic_api_request_logs', {
 }));
 
 // ============================================
-// ## CHP CAD Incidents Tables
-// ============================================
-
-// CHP CAD Communications Centers table
-export const trafficChpCadCenters = pgTable('traffic_chp_cad_centers', {
-  id: serial('id').primaryKey(),
-  centerCode: varchar('center_code', { length: 10 }).unique().notNull(),
-  centerName: varchar('center_name', { length: 100 }).notNull(),
-  county: varchar('county', { length: 100 }),
-  region: varchar('region', { length: 50 }),
-  isActive: boolean('is_active').default(true),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-}, (table) => ({
-  centerCodeIdx: uniqueIndex('idx_chp_cad_centers_code').on(table.centerCode),
-  countyIdx: index('idx_chp_cad_centers_county').on(table.county),
-}));
-
-// CHP CAD Incidents table with foreign key to centers
-export const trafficChpCadIncidents = pgTable('traffic_chp_cad_incidents', {
-  id: serial('id').primaryKey(),
-  trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
-  sourceId: varchar('source_id', { length: 100 }).unique(),
-  centerId: integer('center_id').references(() => trafficChpCadCenters.id, { onDelete: 'set null' }),
-  incidentType: varchar('incident_type', { length: 100 }),
-  location: text('location'),
-  city: varchar('city', { length: 100 }),
-  county: varchar('county', { length: 100 }),
-  latitude: decimal('latitude', { precision: 10, scale: 7 }),
-  longitude: decimal('longitude', { precision: 10, scale: 7 }),
-  logTime: timestamp('log_time'),
-  details: text('details'),
-  status: varchar('status', { length: 20 }).default('active'),
-  fetchedAt: timestamp('fetched_at').defaultNow(),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-}, (table) => ({
-  sourceIdIdx: uniqueIndex('idx_chp_cad_source_id').on(table.sourceId),
-  centerIdIdx: index('idx_chp_cad_center_id').on(table.centerId),
-  countyIdx: index('idx_chp_cad_county').on(table.county),
-  logTimeIdx: index('idx_chp_cad_log_time').on(table.logTime),
-}));
-
-// Define relationships
-export const trafficChpCadCentersRelations = relations(trafficChpCadCenters, ({ many }) => ({
-  incidents: many(trafficChpCadIncidents),
-}));
-
-export const trafficChpCadIncidentsRelations = relations(trafficChpCadIncidents, ({ one }) => ({
-  center: one(trafficChpCadCenters, {
-    fields: [trafficChpCadIncidents.centerId],
-    references: [trafficChpCadCenters.id],
-  }),
-}));
-
-
-// ============================================
-// ## CCTV Cameras Table (Future)
-// ============================================
-export const trafficCctvCameras = pgTable('traffic_cctv_cameras', {
-  cameraId: serial('camera_id').primaryKey(),
-  trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
-  index: varchar('index', { length: 10 }),
-  district: integer('district'),
-  locationName: varchar('location_name', { length: 100 }),
-  nearbyPlace: varchar('nearby_place', { length: 100 }),
-  latitude: numeric('latitude', { precision: 10, scale: 7 }).$type<number>(),
-  longitude: numeric('longitude', { precision: 10, scale: 7 }).$type<number>(),
-  direction: varchar('direction', { length: 10 }),
-  county: varchar('county', { length: 50 }),
-  route: varchar('route', { length: 20 }),
-  inService: boolean('in_service'),
-  currentImageUrl: text('current_image_url'),
-  lastUpdated: timestamp('last_updated'),
-  rawData: jsonb('raw_data'),
-  fetchedAt: timestamp('fetched_at').defaultNow(),
-});
-
-
-// ============================================
-// ## CalTrans
-// ============================================
-
-// Snapshots table for analytics
-export const trafficCaltransLaneClosuresSnapshots = pgTable('traffic_lane_closures_snapshots', {
-  snapshotId: serial('snapshot_id').primaryKey(),
-  snapshotTimestamp: timestamp('snapshot_timestamp').defaultNow(),
-  district: integer('district'),
-  totalClosures: integer('total_closures'),
-  closuresByType: jsonb('closures_by_type'),
-  closuresByRoute: jsonb('closures_by_route'),
-  rawSummary: jsonb('raw_summary'),
-}, (table) => ({
-  timestampIdx: index('idx_snapshots_timestamp').on(table.snapshotTimestamp),
-  districtIdx: index('idx_snapshots_district').on(table.district),
-}));
-
-// Define relationships
-export const trafficCaltransLaneClosuresRelations = relations(trafficCaltransLaneClosures, ({ one }) => ({
-  district: one(trafficCaltransDistricts, {
-    fields: [trafficCaltransLaneClosures.district],
-    references: [trafficCaltransDistricts.districtId],
-  }),
-}));
-
-export const trafficCaltransDistrictsRelations = relations(trafficCaltransDistricts, ({ many }) => ({
-  closures: many(trafficCaltransLaneClosures),
-}));
-
-// Types for use in the application
-export type LaneClosure = typeof trafficCaltransLaneClosures.$inferSelect;
-export type NewLaneClosure = typeof trafficCaltransLaneClosures.$inferInsert;
-export type ApiRequestLog = typeof trafficApiRequestLogs.$inferSelect;
-export type NewApiRequestLog = typeof trafficApiRequestLogs.$inferInsert;
-export type CaltransDistrict = typeof trafficCaltransDistricts.$inferSelect;
-
-// ============================================
 // ## CalFire Incidents
 // ============================================
 export const trafficCalfireIncidents = pgTable('traffic_calfire_incidents', {
   id: serial('id').primaryKey(),
-  uniqueId: varchar('unique_id', { length: 100 }).unique().notNull(),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
+  incidentId: varchar('incident_id', { length: 100 }).unique().notNull(),
   name: varchar('name', { length: 200 }).notNull(),
   type: varchar('type', { length: 50 }).default('Wildfire'),
   status: varchar('status', { length: 20 }).default('active'),
@@ -377,12 +368,12 @@ export const trafficCalfireIncidents = pgTable('traffic_calfire_incidents', {
   fetchedAt: timestamp('fetched_at', { withTimezone: true }).defaultNow(),
   lastSeen: timestamp('last_seen', { withTimezone: true }).defaultNow(),
 }, (table) => ({
-  uniqueIdIdx: uniqueIndex('idx_calfire_unique_id').on(table.uniqueId),
+  incidentIdIdx: uniqueIndex('idx_calfire_incident_id').on(table.incidentId),
   countyIdx: index('idx_calfire_county').on(table.county),
   statusIdx: index('idx_calfire_status').on(table.status),
   activeIdx: index('idx_calfire_active').on(table.isActive),
 }));
 
 // ============================================
-// ## [MM] Schema Updated 2026-07-01
+// ## [MM] Schema Updated 2026-07-17
 // ============================================

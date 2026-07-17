@@ -1,5 +1,5 @@
 {
-  "id": "921e4e72-8ac1-451b-9233-7b7e1e5e2d7c",
+  "id": "edbb1c9c-448c-49ac-b07f-e4044304107f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -7193,21 +7193,6 @@
         }
       },
       "indexes": {
-        "idx_traffic_slug": {
-          "name": "idx_traffic_slug",
-          "columns": [
-            {
-              "expression": "slug",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_traffic_user_id": {
           "name": "idx_traffic_user_id",
           "columns": [
@@ -7234,6 +7219,21 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_slug": {
+          "name": "idx_traffic_slug",
+          "columns": [
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -7300,8 +7300,8 @@
       "name": "traffic_api_request_logs",
       "schema": "",
       "columns": {
-        "log_id": {
-          "name": "log_id",
+        "id": {
+          "name": "id",
           "type": "serial",
           "primaryKey": true,
           "notNull": true
@@ -7318,9 +7318,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "district": {
-          "name": "district",
-          "type": "integer",
+        "district_id": {
+          "name": "district_id",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
@@ -7658,17 +7658,17 @@
           "primaryKey": true,
           "notNull": true
         },
-        "unique_id": {
-          "name": "unique_id",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "traffic_id": {
           "name": "traffic_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
+        },
+        "incident_id": {
+          "name": "incident_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
         },
         "name": {
           "name": "name",
@@ -7792,11 +7792,11 @@
         }
       },
       "indexes": {
-        "idx_calfire_unique_id": {
-          "name": "idx_calfire_unique_id",
+        "idx_calfire_incident_id": {
+          "name": "idx_calfire_incident_id",
           "columns": [
             {
-              "expression": "unique_id",
+              "expression": "incident_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -7870,14 +7870,138 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "traffic_calfire_incidents_unique_id_unique": {
-          "name": "traffic_calfire_incidents_unique_id_unique",
+        "traffic_calfire_incidents_incident_id_unique": {
+          "name": "traffic_calfire_incidents_incident_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "unique_id"
+            "incident_id"
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.traffic_caltrans_cctv_cameras": {
+      "name": "traffic_caltrans_cctv_cameras",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "traffic_id": {
+          "name": "traffic_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "camera_id": {
+          "name": "camera_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "district_id": {
+          "name": "district_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location_name": {
+          "name": "location_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nearby_place": {
+          "name": "nearby_place",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "direction": {
+          "name": "direction",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "county": {
+          "name": "county",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "route": {
+          "name": "route",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "in_service": {
+          "name": "in_service",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "current_image_url": {
+          "name": "current_image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_updated": {
+          "name": "last_updated",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "raw_data": {
+          "name": "raw_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fetched_at": {
+          "name": "fetched_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "traffic_caltrans_cctv_cameras_traffic_id_traffic_id_fk": {
+          "name": "traffic_caltrans_cctv_cameras_traffic_id_traffic_id_fk",
+          "tableFrom": "traffic_caltrans_cctv_cameras",
+          "tableTo": "traffic",
+          "columnsFrom": [
+            "traffic_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -7886,11 +8010,17 @@
       "name": "traffic_caltrans_districts",
       "schema": "",
       "columns": {
-        "district_id": {
-          "name": "district_id",
-          "type": "integer",
+        "id": {
+          "name": "id",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "district_id": {
+          "name": "district_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
         },
         "district_name": {
           "name": "district_name",
@@ -7919,6 +8049,21 @@
         }
       },
       "indexes": {
+        "idx_district_district_id": {
+          "name": "idx_district_district_id",
+          "columns": [
+            {
+              "expression": "district_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "idx_districts_region": {
           "name": "idx_districts_region",
           "columns": [
@@ -7937,17 +8082,25 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "traffic_caltrans_districts_district_id_unique": {
+          "name": "traffic_caltrans_districts_district_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "district_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.traffic_lane_closures": {
-      "name": "traffic_lane_closures",
+    "public.traffic_caltrans_lane_closures": {
+      "name": "traffic_caltrans_lane_closures",
       "schema": "",
       "columns": {
-        "closure_id": {
-          "name": "closure_id",
+        "id": {
+          "name": "id",
           "type": "serial",
           "primaryKey": true,
           "notNull": true
@@ -7958,15 +8111,21 @@
           "primaryKey": false,
           "notNull": false
         },
+        "closure_id": {
+          "name": "closure_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "source_id": {
           "name": "source_id",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
-        "district": {
-          "name": "district",
-          "type": "integer",
+        "district_id": {
+          "name": "district_id",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
@@ -8131,6 +8290,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {
@@ -8149,11 +8315,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_closures_district": {
-          "name": "idx_closures_district",
+        "idx_closures_district_id": {
+          "name": "idx_closures_district_id",
           "columns": [
             {
-              "expression": "district",
+              "expression": "district_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8232,9 +8398,9 @@
         }
       },
       "foreignKeys": {
-        "traffic_lane_closures_traffic_id_traffic_id_fk": {
-          "name": "traffic_lane_closures_traffic_id_traffic_id_fk",
-          "tableFrom": "traffic_lane_closures",
+        "traffic_caltrans_lane_closures_traffic_id_traffic_id_fk": {
+          "name": "traffic_caltrans_lane_closures_traffic_id_traffic_id_fk",
+          "tableFrom": "traffic_caltrans_lane_closures",
           "tableTo": "traffic",
           "columnsFrom": [
             "traffic_id"
@@ -8248,8 +8414,15 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "traffic_lane_closures_source_id_unique": {
-          "name": "traffic_lane_closures_source_id_unique",
+        "traffic_caltrans_lane_closures_closure_id_unique": {
+          "name": "traffic_caltrans_lane_closures_closure_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "closure_id"
+          ]
+        },
+        "traffic_caltrans_lane_closures_source_id_unique": {
+          "name": "traffic_caltrans_lane_closures_source_id_unique",
           "nullsNotDistinct": false,
           "columns": [
             "source_id"
@@ -8260,8 +8433,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.traffic_lane_closures_snapshots": {
-      "name": "traffic_lane_closures_snapshots",
+    "public.traffic_caltrans_lane_closures_snapshots": {
+      "name": "traffic_caltrans_lane_closures_snapshots",
       "schema": "",
       "columns": {
         "snapshot_id": {
@@ -8277,9 +8450,9 @@
           "notNull": false,
           "default": "now()"
         },
-        "district": {
-          "name": "district",
-          "type": "integer",
+        "district_id": {
+          "name": "district_id",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
@@ -8328,7 +8501,7 @@
           "name": "idx_snapshots_district",
           "columns": [
             {
-              "expression": "district",
+              "expression": "district_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8341,130 +8514,6 @@
         }
       },
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.traffic_cctv_cameras": {
-      "name": "traffic_cctv_cameras",
-      "schema": "",
-      "columns": {
-        "camera_id": {
-          "name": "camera_id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "traffic_id": {
-          "name": "traffic_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "index": {
-          "name": "index",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "district": {
-          "name": "district",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "location_name": {
-          "name": "location_name",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "nearby_place": {
-          "name": "nearby_place",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "latitude": {
-          "name": "latitude",
-          "type": "numeric(10, 7)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "longitude": {
-          "name": "longitude",
-          "type": "numeric(10, 7)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "direction": {
-          "name": "direction",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "county": {
-          "name": "county",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "route": {
-          "name": "route",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "in_service": {
-          "name": "in_service",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "current_image_url": {
-          "name": "current_image_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_updated": {
-          "name": "last_updated",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "raw_data": {
-          "name": "raw_data",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "fetched_at": {
-          "name": "fetched_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "traffic_cctv_cameras_traffic_id_traffic_id_fk": {
-          "name": "traffic_cctv_cameras_traffic_id_traffic_id_fk",
-          "tableFrom": "traffic_cctv_cameras",
-          "tableTo": "traffic",
-          "columnsFrom": [
-            "traffic_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -8783,8 +8832,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.traffic_chp_collisions": {
-      "name": "traffic_chp_collisions",
+    "public.traffic_chp_cases": {
+      "name": "traffic_chp_cases",
       "schema": "",
       "columns": {
         "id": {
@@ -8991,9 +9040,9 @@
         }
       },
       "foreignKeys": {
-        "traffic_chp_collisions_traffic_id_traffic_id_fk": {
-          "name": "traffic_chp_collisions_traffic_id_traffic_id_fk",
-          "tableFrom": "traffic_chp_collisions",
+        "traffic_chp_cases_traffic_id_traffic_id_fk": {
+          "name": "traffic_chp_cases_traffic_id_traffic_id_fk",
+          "tableFrom": "traffic_chp_cases",
           "tableTo": "traffic",
           "columnsFrom": [
             "traffic_id"
@@ -9007,8 +9056,8 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "traffic_chp_collisions_case_id_unique": {
-          "name": "traffic_chp_collisions_case_id_unique",
+        "traffic_chp_cases_case_id_unique": {
+          "name": "traffic_chp_cases_case_id_unique",
           "nullsNotDistinct": false,
           "columns": [
             "case_id"

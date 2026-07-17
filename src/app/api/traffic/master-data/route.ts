@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { trafficCaltransLaneClosures, trafficChpCollisions, trafficBayArea511Events, trafficChpCadIncidents } from '@/lib/schema';
+import { trafficCaltransLaneClosures, trafficChpCases, trafficBayArea511Events, trafficChpCadIncidents } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -74,20 +74,20 @@ export async function GET() {
     // Fetch CHP historical collisions with coordinates
     const chpHistoricalEvents = await db
       .select({
-        id: trafficChpCollisions.id,
+        id: trafficChpCases.id,
         source: sql<string>`'chp-historical'`,
         type: sql<string>`'Collision'`,
-        severity: trafficChpCollisions.severity,
-        location: trafficChpCollisions.location,
-        city: trafficChpCollisions.city,
-        county: trafficChpCollisions.county,
-        description: trafficChpCollisions.primaryFactor,
-        latitude: trafficChpCollisions.latitude,
-        longitude: trafficChpCollisions.longitude,
-        timestamp: trafficChpCollisions.collisionDate,
+        severity: trafficChpCases.severity,
+        location: trafficChpCases.location,
+        city: trafficChpCases.city,
+        county: trafficChpCases.county,
+        description: trafficChpCases.primaryFactor,
+        latitude: trafficChpCases.latitude,
+        longitude: trafficChpCases.longitude,
+        timestamp: trafficChpCases.collisionDate,
       })
-      .from(trafficChpCollisions)
-      .where(sql`${trafficChpCollisions.latitude} IS NOT NULL AND ${trafficChpCollisions.longitude} IS NOT NULL`)
+      .from(trafficChpCases)
+      .where(sql`${trafficChpCases.latitude} IS NOT NULL AND ${trafficChpCases.longitude} IS NOT NULL`)
       .limit(200);
     
     // Combine all events

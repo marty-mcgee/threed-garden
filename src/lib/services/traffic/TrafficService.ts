@@ -6,7 +6,7 @@ import {
   trafficBayArea511Events,
   trafficCalfireIncidents,
   trafficCctvCameras,
-  trafficChpCollisions,
+  trafficChpCases,
 } from '@/lib/schema/traffic';
 import { eq } from 'drizzle-orm';
 
@@ -22,7 +22,7 @@ export async function fetchTrafficData(projectId: number) {
       db.select().from(trafficBayArea511Events).where(eq(trafficBayArea511Events.trafficId, projectId)),
       db.select().from(trafficCalfireIncidents).where(eq(trafficCalfireIncidents.trafficId, projectId)),
       db.select().from(trafficCctvCameras).where(eq(trafficCctvCameras.trafficId, projectId)),
-      db.select().from(trafficChpCollisions).where(eq(trafficChpCollisions.trafficId, projectId)),
+      db.select().from(trafficChpCases).where(eq(trafficChpCases.trafficId, projectId)),
     ]);
 
     return {
@@ -64,6 +64,6 @@ export async function fetchTrafficCctvCameras(projectId: number) {
   return db.select().from(trafficCctvCameras).where(eq(trafficCctvCameras.trafficId, projectId));
 }
 
-export async function fetchTrafficChpCollisions(projectId: number) {
-  return db.select().from(trafficChpCollisions).where(eq(trafficChpCollisions.trafficId, projectId));
+export async function fetchTrafficChpCases(projectId: number) {
+  return db.select().from(trafficChpCases).where(eq(trafficChpCases.trafficId, projectId));
 }

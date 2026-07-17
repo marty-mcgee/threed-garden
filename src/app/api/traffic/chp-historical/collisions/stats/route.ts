@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { trafficChpCollisions } from '@/lib/schema';
+import { trafficChpCases } from '@/lib/schema';
 import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -15,7 +15,7 @@ export async function GET() {
     
     const total = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(trafficChpCollisions);
+      .from(trafficChpCases);
     
     return NextResponse.json({
       success: true,

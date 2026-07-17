@@ -1,7 +1,7 @@
 // src/app/api/dashboard/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/client';
-import { trafficCaltransLaneClosures, trafficBayArea511Events, trafficChpCadIncidents, trafficChpCollisions } from '@/lib/schema';
+import { trafficCaltransLaneClosures, trafficBayArea511Events, trafficChpCadIncidents, trafficChpCases } from '@/lib/schema';
 import { sql, desc, eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -48,13 +48,13 @@ export async function GET(request: Request) {
       showHistorical
         ? db
             .select()
-            .from(trafficChpCollisions)
+            .from(trafficChpCases)
             .where(
               showAllRegions 
                 ? undefined
-                : sql`${trafficChpCollisions.county} IN ('12', '23')`  // Humboldt & Mendocino
+                : sql`${trafficChpCases.county} IN ('12', '23')`  // Humboldt & Mendocino
             )
-            .orderBy(desc(trafficChpCollisions.collisionDate))
+            .orderBy(desc(trafficChpCases.collisionDate))
             .limit(10)
         : Promise.resolve([])
     ]);
