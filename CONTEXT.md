@@ -528,7 +528,8 @@ Let me know how the deployment goes and if you need any help! 🙌
 ---
 
 ```
-src
+marty@NucBoxK10:~/marty-mcgee-neon$ tree -r ./src/
+./src/
 ├── lib
 │   ├── utils
 │   │   ├── upload.ts
@@ -703,24 +704,32 @@ src
 │   │   ├── WaveformVisualizer.tsx
 │   │   ├── MusicStats.tsx
 │   │   ├── MusicPlayer.tsx
-│   │   ├── MediaManager.tsx
 │   │   ├── MediaGallery.tsx
-│   │   ├── LinksManager.tsx
-│   │   ├── AlbumGrid.tsx
-│   │   └── AdminMusicManager.tsx
+│   │   └── AlbumGrid.tsx
 │   ├── auth
 │   │   └── SignOutButton.tsx
 │   └── admin
 │       ├── traffic
-│       │   └── chp-cad
-│       │       └── TrafficCHPCADCRUD.tsx
+│       │   ├── chp-cad
+│       │   │   └── TrafficCHPCADCRUD.tsx
+│       │   └── caltrans
+│       │       └── TrafficCaltransCRUD.tsx
 │       ├── threed
-│       │   └── plants
-│       │       └── ThreeDPlantsCRUD.tsx
-│       ├── music
-│       │   └── albums
-│       │       └── MusicAlbumCRUD.tsx
-│       └── SettingsManager.tsx
+│       │   ├── plants
+│       │   │   └── ThreeDPlantsCRUD.tsx
+│       │   └── beds
+│       │       └── ThreeDBedsCRUD.tsx
+│       ├── settings
+│       │   └── SettingsManager.tsx
+│       └── music
+│           ├── tracks
+│           ├── media
+│           │   └── MediaManager.tsx
+│           ├── links
+│           │   └── LinksManager.tsx
+│           ├── albums
+│           │   └── MusicAlbumCRUD.tsx
+│           └── AdminMusicManager.tsx
 └── app
     ├── providers.tsx
     ├── page.tsx
@@ -806,8 +815,7 @@ src
     │   ├── sign-in
     │   │   └── page.tsx
     │   └── error
-    │       ├── page.tsx
-    │       └── page-maybe.tsx
+    │       └── page.tsx
     ├── api
     │   ├── traffic
     │   │   ├── stats
@@ -848,6 +856,7 @@ src
     │   │   ├── caltrans
     │   │   │   ├── seed
     │   │   │   │   └── route.ts
+    │   │   │   ├── route.ts
     │   │   │   ├── poll
     │   │   │   │   └── route.ts
     │   │   │   ├── cron
@@ -1055,7 +1064,7 @@ src
         └── coordinates
             └── page.tsx
 
-223 directories, 303 files
+229 directories, 305 file
 ```
 
 ---
@@ -1063,5 +1072,7 @@ src
 **Version:** v0.5.6 (Hybrid Architecture with Free-Standing Data) 🚀
 
 ---
+
+## [MM] HEY HEY HEY
 
 ---

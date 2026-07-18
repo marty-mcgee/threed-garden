@@ -1,6 +1,6 @@
 // app/admin/settings/page.tsx
 import { getSettings, updateSettings, type AppSettings } from '@/lib/config/settings';
-import { SettingsManager } from '@/components/admin/SettingsManager';
+import { SettingsManager } from '@/components/admin/settings/SettingsManager';
 
 export default async function SettingsPage() {
   const settings = getSettings();

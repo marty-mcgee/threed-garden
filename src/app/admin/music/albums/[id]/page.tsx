@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ArrowLeft, Plus, Edit, Trash2, Music } from 'lucide-react';
 import { toast } from 'sonner';
-import { MediaManager } from '@/components/music/MediaManager';
+import { MediaManager } from '@/components/admin/music/media/MediaManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Track {
