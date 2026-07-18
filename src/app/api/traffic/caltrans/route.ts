@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { trafficLaneClosures } from '@/lib/schema/traffic';
+import { trafficCaltransLaneClosures } from '@/lib/schema/traffic';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
@@ -22,11 +22,11 @@ export async function GET(request: NextRequest) {
     if (id) {
       const [closure] = await db
         .select()
-        .from(trafficLaneClosures)
+        .from(trafficCaltransLaneClosures)
         .where(
           and(
-            eq(trafficLaneClosures.id, parseInt(id)),
-            eq(trafficLaneClosures.userId, session.user.id)
+            eq(trafficCaltransLaneClosures.id, parseInt(id)),
+            eq(trafficCaltransLaneClosures.userId, session.user.id)
           )
         )
         .limit(1);
@@ -43,16 +43,16 @@ export async function GET(request: NextRequest) {
 
     let query = db
       .select()
-      .from(trafficLaneClosures)
-      .where(eq(trafficLaneClosures.userId, session.user.id));
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.userId, session.user.id));
 
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
-      .from(trafficLaneClosures)
-      .where(eq(trafficLaneClosures.userId, session.user.id));
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.userId, session.user.id));
 
     const closures = await query
-      .orderBy(desc(trafficLaneClosures.createdAt))
+      .orderBy(desc(trafficCaltransLaneClosures.createdAt))
       .limit(limit)
       .offset(offset);
 
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     await ensureTableSequence('traffic_lane_closures');
 
     const [newClosure] = await db
-      .insert(trafficLaneClosures)
+      .insert(trafficCaltransLaneClosures)
       .values({
         userId: session.user.id,
         closureId,
@@ -153,11 +153,11 @@ export async function PUT(request: NextRequest) {
 
     const [existing] = await db
       .select()
-      .from(trafficLaneClosures)
+      .from(trafficCaltransLaneClosures)
       .where(
         and(
-          eq(trafficLaneClosures.id, parseInt(id)),
-          eq(trafficLaneClosures.userId, session.user.id)
+          eq(trafficCaltransLaneClosures.id, parseInt(id)),
+          eq(trafficCaltransLaneClosures.userId, session.user.id)
         )
       )
       .limit(1);
@@ -170,7 +170,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const [updated] = await db
-      .update(trafficLaneClosures)
+      .update(trafficCaltransLaneClosures)
       .set({
         route: route || existing.route,
         direction: direction !== undefined ? direction : existing.direction,
@@ -186,8 +186,8 @@ export async function PUT(request: NextRequest) {
       })
       .where(
         and(
-          eq(trafficLaneClosures.id, parseInt(id)),
-          eq(trafficLaneClosures.userId, session.user.id)
+          eq(trafficCaltransLaneClosures.id, parseInt(id)),
+          eq(trafficCaltransLaneClosures.userId, session.user.id)
         )
       )
       .returning();
@@ -222,11 +222,11 @@ export async function DELETE(request: NextRequest) {
 
     const [existing] = await db
       .select()
-      .from(trafficLaneClosures)
+      .from(trafficCaltransLaneClosures)
       .where(
         and(
-          eq(trafficLaneClosures.id, parseInt(id)),
-          eq(trafficLaneClosures.userId, session.user.id)
+          eq(trafficCaltransLaneClosures.id, parseInt(id)),
+          eq(trafficCaltransLaneClosures.userId, session.user.id)
         )
       )
       .limit(1);
@@ -239,11 +239,11 @@ export async function DELETE(request: NextRequest) {
     }
 
     const [deleted] = await db
-      .delete(trafficLaneClosures)
+      .delete(trafficCaltransLaneClosures)
       .where(
         and(
-          eq(trafficLaneClosures.id, parseInt(id)),
-          eq(trafficLaneClosures.userId, session.user.id)
+          eq(trafficCaltransLaneClosures.id, parseInt(id)),
+          eq(trafficCaltransLaneClosures.userId, session.user.id)
         )
       )
       .returning();
