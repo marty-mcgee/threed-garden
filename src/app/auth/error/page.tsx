@@ -1,12 +1,15 @@
 // app/auth/error/page.tsx
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 
-export default function AuthErrorPage() {
+// ✅ Separate component that uses useSearchParams
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
 
@@ -29,23 +32,38 @@ export default function AuthErrorPage() {
   const errorMessage = errorMessages[error as keyof typeof errorMessages] || errorMessages.default;
 
   return (
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle className="text-2xl text-center text-red-600">Authentication Error</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm">
+          <p className="font-medium">Error: {error || 'Unknown Error'}</p>
+          <p className="mt-1">{errorMessage}</p>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Button asChild className="w-full">
+            <Link href="/auth/sign-in">Back to Sign In</Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ✅ Main page with Suspense boundary
+export default function AuthErrorPage() {
+  return (
     <div className="flex items-center justify-center min-h-screen bg-muted/30 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center text-red-600">Authentication Error</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm">
-            <p className="font-medium">Error: {error || 'Unknown Error'}</p>
-            <p className="mt-1">{errorMessage}</p>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Button asChild className="w-full">
-              <Link href="/auth/sign-in">Back to Sign In</Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Suspense fallback={
+        <Card className="w-full max-w-md">
+          <CardContent className="flex items-center justify-center py-8">
+            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+          </CardContent>
+        </Card>
+      }>
+        <AuthErrorContent />
+      </Suspense>
     </div>
   );
 }
