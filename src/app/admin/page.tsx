@@ -50,10 +50,13 @@ export default function AdminPage() {
     fetchProjects();
   }, []);
 
+  // app/admin/page.tsx
+  // The fetchProjects function already gets the correct project IDs
+  // The issue is that fetchModuleCounts is called with the project.id from the response
+
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      // ✅ GET /api/project - List all projects
       const response = await fetch('/api/project');
       if (!response.ok) {
         throw new Error('Failed to fetch projects');
@@ -61,8 +64,9 @@ export default function AdminPage() {
       const data = await response.json();
       setProjects(data.data || []);
       
-      // ✅ Fetch module counts for each project using the new endpoint
+      // ✅ Fetch module counts for each project using the project.id from the response
       for (const project of data.data || []) {
+        console.log(`🔍 Fetching modules for project ${project.id}:`, project);
         await fetchModuleCounts(project.id);
       }
     } catch (error) {
@@ -73,14 +77,31 @@ export default function AdminPage() {
     }
   };
 
+  // app/admin/page.tsx - Updated fetchModuleCounts
   const fetchModuleCounts = async (projectId: number) => {
     try {
-      // ✅ FIX: Use the new endpoint with query parameter
       const response = await fetch(`/api/project/modules?projectId=${projectId}`);
+      
+      // ✅ Log the full response for debugging
+      console.log(`📡 Fetching modules for project ${projectId}:`, {
+        status: response.status,
+        statusText: response.statusText,
+      });
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch modules');
+        const errorText = await response.text();
+        console.error(`❌ API error (${response.status}):`, errorText);
+        // ✅ Set counts to 0 but log the error
+        setModuleCounts(prev => ({ 
+          ...prev, 
+          [projectId]: { threed: 0, traffic: 0, music: 0 } 
+        }));
+        return;
       }
+      
       const data = await response.json();
+      console.log(`✅ Modules for project ${projectId}:`, data);
+      
       const counts = {
         threed: data.data?.threed?.length || 0,
         traffic: data.data?.traffic?.length || 0,
@@ -89,7 +110,11 @@ export default function AdminPage() {
       setModuleCounts(prev => ({ ...prev, [projectId]: counts }));
     } catch (error) {
       console.error('Error fetching module counts:', error);
-      // Don't show toast for individual module count failures
+      // ✅ Set counts to 0 so the UI doesn't break
+      setModuleCounts(prev => ({ 
+        ...prev, 
+        [projectId]: { threed: 0, traffic: 0, music: 0 } 
+      }));
     }
   };
 

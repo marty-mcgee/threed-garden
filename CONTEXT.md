@@ -352,8 +352,13 @@ bun run settings:edit
 ```
 src/
 ├── app/
+│   ├── auth/                       # Auth pages
+│   │   ├── sign-in/                # Auth sign in (existing user)
+│   │   ├── sign-out/               # Auth sign out (clean logout, clear cookies/storage)
+│   │   ├── sign-up/                # Auth sign up (new user)
+│   │   ├── error/                  # Auth error page (custom error output)
 │   ├── admin/
-│   │   ├── page.tsx                 # Admin dashboard
+│   │   ├── page.tsx                # Admin dashboard (for auth users)
 │   │   └── projects/
 │   │       ├── new/
 │   │       │   └── page.tsx        # Create new project
@@ -380,7 +385,6 @@ src/
 │   │   ├── traffic/                # Traffic dashboard pages
 │   │   ├── threed/                 # ThreeD dashboard pages
 │   │   └── music/                  # Music dashboard pages
-│   └── sign-in/                    # Auth pages
 ├── components/
 │   ├── admin/
 │   │   ├── music/
@@ -396,14 +400,14 @@ src/
 │   └── navigation/
 ├── lib/
 │   ├── schema/
-│   │   ├── auth/                   # Auth.js schema
-│   │   ├── settings/               # Settings schema
-│   │   ├── project/                # Project schema + junction tables
+│   │   ├── auth/                   # Auth.js schema (Next Auth.js compatible)
+│   │   ├── settings/               # Settings schema (App Configuration Settings)
+│   │   ├── project/                # Project schema + junction tables (Relate to Module Objects)
 │   │   ├── threed/                 # ThreeD schema
 │   │   ├── traffic/                # Traffic schema
 │   │   └── music/                  # Music schema
-│   ├── services/                   # Polling services
-│   ├── config/                     # Configuration
+│   ├── services/                   # Polling services for installed modules
+│   ├── config/                     # Configuration of app
 │   ├── db/                         # Database client
 │   └── auth/                       # Auth.js configuration
 └── middleware.ts
