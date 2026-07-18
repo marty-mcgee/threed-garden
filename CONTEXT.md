@@ -527,10 +527,8 @@ Let me know how the deployment goes and if you need any help! 🙌
 
 ---
 
-marty@NucBoxK10:~/marty-mcgee-neon$ 
-
-tree -r ./src/
-./src/
+```
+src
 ├── lib
 │   ├── utils
 │   │   ├── upload.ts
@@ -1058,6 +1056,7 @@ tree -r ./src/
             └── page.tsx
 
 223 directories, 303 files
+```
 
 ---
 
