@@ -115,6 +115,7 @@ export const musicMedia = pgTable('music_media', {
 
 export const musicTracks = pgTable('music_tracks', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   duration: integer('duration'),
@@ -151,6 +152,7 @@ export const musicLinks = pgTable('music_links', {
 
 export const musicAlbumLinks = pgTable('music_album_links', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }),
   linkId: integer('link_id').references(() => musicLinks.id, { onDelete: 'cascade' }),
   linkType: text('link_type').notNull(),
@@ -164,6 +166,7 @@ export const musicAlbumLinks = pgTable('music_album_links', {
 
 export const musicPollingLogs = pgTable('music_polling_logs', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   pollType: musicPollingTypeEnum('poll_type').notNull(),
   status: text('status').notNull(),
   message: text('message'),
@@ -212,13 +215,13 @@ export const musicRelations = relations(music, ({ one, many }) => ({
 }));
 
 export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
-  tracks: many(musicTracks),
-  musicAlbumLinks: many(musicAlbumLinks),
-  media: many(musicMedia),
   user: one(user, {
     fields: [musicAlbums.userId],
     references: [user.id],
   }),
+  tracks: many(musicTracks),
+  musicAlbumLinks: many(musicAlbumLinks),
+  media: many(musicMedia),
 }));
 
 export const musicMediaRelations = relations(musicMedia, ({ one }) => ({
@@ -237,18 +240,26 @@ export const musicTracksRelations = relations(musicTracks, ({ one, many }) => ({
     fields: [musicTracks.albumId],
     references: [musicAlbums.id],
   }),
+  user: one(user, {
+    fields: [musicTracks.userId],
+    references: [user.id],
+  }),
   trackLinks: many(musicAlbumLinks),
 }));
 
 export const musicLinksRelations = relations(musicLinks, ({ many, one }) => ({
-  musicAlbumLinks: many(musicAlbumLinks),
   user: one(user, {
     fields: [musicLinks.userId],
     references: [user.id],
   }),
+  musicAlbumLinks: many(musicAlbumLinks),
 }));
 
 export const musicAlbumLinksRelations = relations(musicAlbumLinks, ({ one }) => ({
+  user: one(user, {
+    fields: [musicAlbumLinks.userId],
+    references: [user.id],
+  }),
   album: one(musicAlbums, {
     fields: [musicAlbumLinks.albumId],
     references: [musicAlbums.id],
@@ -270,13 +281,13 @@ export const musicPlaybackHistoryRelations = relations(musicPlaybackHistory, ({ 
     fields: [musicPlaybackHistory.userId],
     references: [user.id],
   }),
-  track: one(musicTracks, {
-    fields: [musicPlaybackHistory.trackId],
-    references: [musicTracks.id],
-  }),
   album: one(musicAlbums, {
     fields: [musicPlaybackHistory.albumId],
     references: [musicAlbums.id],
+  }),
+  track: one(musicTracks, {
+    fields: [musicPlaybackHistory.trackId],
+    references: [musicTracks.id],
   }),
 }));
 

@@ -53,6 +53,7 @@ export default function AdminPage() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
+      // ✅ GET /api/project - List all projects
       const response = await fetch('/api/project');
       if (!response.ok) {
         throw new Error('Failed to fetch projects');
@@ -60,7 +61,7 @@ export default function AdminPage() {
       const data = await response.json();
       setProjects(data.data || []);
       
-      // Fetch module counts for each project
+      // ✅ Fetch module counts for each project using the new endpoint
       for (const project of data.data || []) {
         await fetchModuleCounts(project.id);
       }
@@ -74,7 +75,8 @@ export default function AdminPage() {
 
   const fetchModuleCounts = async (projectId: number) => {
     try {
-      const response = await fetch(`/api/project/${projectId}/modules`);
+      // ✅ FIX: Use the new endpoint with query parameter
+      const response = await fetch(`/api/project/modules?projectId=${projectId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch modules');
       }
@@ -87,6 +89,7 @@ export default function AdminPage() {
       setModuleCounts(prev => ({ ...prev, [projectId]: counts }));
     } catch (error) {
       console.error('Error fetching module counts:', error);
+      // Don't show toast for individual module count failures
     }
   };
 
@@ -95,7 +98,8 @@ export default function AdminPage() {
     
     setDeleting(id);
     try {
-      const response = await fetch(`/api/project/${id}`, {
+      // ✅ DELETE /api/project?id=1 - Delete a project
+      const response = await fetch(`/api/project?id=${id}`, {
         method: 'DELETE',
       });
       

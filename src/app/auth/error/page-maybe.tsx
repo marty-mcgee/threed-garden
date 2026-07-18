@@ -41,10 +41,10 @@ export default function AuthErrorPage() {
           </div>
           <div className="flex flex-col gap-2">
             <Button asChild className="w-full">
-              <Link href="/sign-in">Back to Sign In</Link>
+              <Link href="/auth/sign-in">Back to Sign In</Link>
             </Button>
             <Button asChild variant="outline" className="w-full">
-              <Link href="/sign-up">Create Account</Link>
+              <Link href="/auth/sign-up">Create Account</Link>
             </Button>
           </div>
         </CardContent>

@@ -96,11 +96,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { projectId, name, description, config } = body;
+    const { name, description, config } = body; // ✅ Removed projectId
 
-    if (!projectId || !name) {
+    if (!name) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: projectId, name' },
+        { success: false, error: 'Missing required field: name' },
         { status: 400 }
       );
     }
@@ -108,7 +108,6 @@ export async function POST(request: NextRequest) {
     const [newModule] = await db
       .insert(threed)
       .values({
-        projectId,
         name,
         description: description || '',
         slug: name.toLowerCase().replace(/\s+/g, '-'),

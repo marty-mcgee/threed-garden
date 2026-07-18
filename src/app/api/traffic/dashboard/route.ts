@@ -22,7 +22,7 @@ export async function GET(request: Request) {
         .where(
           showAllRegions 
             ? eq(trafficCaltransLaneClosures.status, 'active')
-            : sql`${trafficCaltransLaneClosures.status} = 'active' AND ${trafficCaltransLaneClosures.district} = 1`
+            : sql`${trafficCaltransLaneClosures.status} = 'active' AND ${trafficCaltransLaneClosures.districtId} = 1`
         )
         .limit(10),
       

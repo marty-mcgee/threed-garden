@@ -22,7 +22,7 @@ async function seedFromJSON() {
   
   if (!userId) {
     console.error('❌ No users found. Please create a user first via sign-up.');
-    console.log('💡 Visit: http://localhost:4444/sign-up to create an account');
+    console.log('💡 Visit: http://localhost:4444/auth/sign-up to create an account');
     process.exit(1);
   }
 

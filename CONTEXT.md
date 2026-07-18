@@ -1,10 +1,103 @@
-Absolutely! Here's your updated `CONTEXT.md` with all the new schema changes documented:
+You're absolutely right! Let me correct the API structure and provide comprehensive CONTEXT.md documentation.
+
+## ✅ Correct API Structure
+
+```
+api/
+├── project/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── modules/
+│       └── route.ts          # GET, POST, DELETE (with ?projectId=1)
+├── threed/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── plants/
+│       └── route.ts          # GET, POST, PUT, PATCH, DELETE (with ?id=1)
+├── traffic/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── chp-cad/
+│       └── route.ts          # GET, POST, PUT, PATCH, DELETE (with ?id=1)
+└── music/
+    ├── route.ts              # GET (list), POST (create)
+    └── albums/
+        └── route.ts          # GET, POST, PUT, PATCH, DELETE (with ?id=1)
+```
+
+### Project Module (Following Same Pattern)
+
+```typescript
+// api/project/route.ts
+GET    /api/project           # List all projects (filtered by userId)
+POST   /api/project           # Create a new project
+PATCH  /api/project?id=1      # Update a project
+DELETE /api/project?id=1      # Delete a project
+
+// api/project/modules/route.ts
+GET    /api/project/modules?projectId=1   # Get modules for a project
+POST   /api/project/modules?projectId=1   # Add a module to a project
+DELETE /api/project/modules?projectId=1   # Remove a module from a project
+```
+
+### ThreeD Module (Same Pattern)
+
+```typescript
+// api/threed/route.ts
+GET    /api/threed             # List all threed modules (filtered by userId)
+POST   /api/threed             # Create a new threed module
+PATCH  /api/threed?id=1        # Update a threed module
+DELETE /api/threed?id=1        # Delete a threed module
+
+// api/threed/plants/route.ts
+GET    /api/threed/plants      # List all plants (filtered by userId)
+GET    /api/threed/plants?id=1 # Get a single plant
+POST   /api/threed/plants      # Create a new plant
+PUT    /api/threed/plants?id=1 # Full update of a plant
+PATCH  /api/threed/plants?id=1 # Partial update of a plant
+DELETE /api/threed/plants?id=1 # Delete a plant
+```
+
+### Traffic Module (Same Pattern)
+
+```typescript
+// api/traffic/route.ts
+GET    /api/traffic             # List all traffic modules (filtered by userId)
+POST   /api/traffic             # Create a new traffic module
+PATCH  /api/traffic?id=1        # Update a traffic module
+DELETE /api/traffic?id=1        # Delete a traffic module
+
+// api/traffic/chp-cad/route.ts
+GET    /api/traffic/chp-cad      # List all incidents (filtered by userId)
+GET    /api/traffic/chp-cad?id=1 # Get a single incident
+POST   /api/traffic/chp-cad      # Create a new incident
+PUT    /api/traffic/chp-cad?id=1 # Full update of an incident
+PATCH  /api/traffic/chp-cad?id=1 # Partial update of an incident
+DELETE /api/traffic/chp-cad?id=1 # Delete an incident
+```
+
+### Music Module (Same Pattern)
+
+```typescript
+// api/music/route.ts
+GET    /api/music               # List all music modules (filtered by userId)
+POST   /api/music               # Create a new music module
+PATCH  /api/music?id=1          # Update a music module
+DELETE /api/music?id=1          # Delete a music module
+
+// api/music/albums/route.ts
+GET    /api/music/albums        # List all albums (filtered by userId)
+GET    /api/music/albums?id=1   # Get a single album
+POST   /api/music/albums        # Create a new album
+PUT    /api/music/albums?id=1   # Full update of an album
+PATCH  /api/music/albums?id=1   # Partial update of an album
+DELETE /api/music/albums?id=1   # Delete an album
+```
 
 ---
 
-# Project Context – threed-garden-neon
+## 📁 Updated CONTEXT.md
 
-**Last Updated:** July 8, 2026 @ 10:30am PST
+### Project Context – threed-garden-neon
+
+**Last Updated:** July 18, 2026 @ 2:00pm PST
 
 ---
 
@@ -21,59 +114,29 @@ Absolutely! Here's your updated `CONTEXT.md` with all the new schema changes doc
 
 ## 🗄️ Database Schema Architecture
 
-### Parent-Child Relationship Pattern
+### Hybrid Approach: Data Ownership + Free-Standing Data
 
-The database follows a **clean parent-child hierarchy** where Projects own Modules, and Modules own their specific data:
+The database follows a clean **hybrid approach** where:
+- All records have `userId` for ownership and audit trails
+- Child data is free-standing (no direct foreign keys to modules)
+- Relationships are handled via junction tables
 
 ```
 User (user)
-  └── Projects (project)
-       ├── ThreeD (threed) ← Main module table
-       │    ├── threed_plants
-       │    ├── threed_beds
-       │    ├── threed_plantings
-       │    ├── threed_farmbots
-       │    ├── threed_models
-       │    ├── threed_characters
-       │    ├── threed_tasks
-       │    ├── threed_harvests
-       │    ├── threed_weather_logs
-       │    ├── threed_watering_schedules
-       │    ├── threed_watering_history
-       │    ├── threed_layers
-       │    ├── threed_markers
-       │    ├── threed_marker_relationships
-       │    └── threed_layer_presets
-       │
-       ├── Traffic (traffic) ← Main module table
-       │    ├── traffic_chp_cad_incidents
-       │    ├── traffic_chp_collisions
-       │    ├── traffic_lane_closures
-       │    ├── traffic_bay_area_511_events
-       │    ├── traffic_calfire_incidents
-       │    ├── traffic_cctv_cameras
-       │    ├── traffic_chp_cad_centers
-       │    ├── traffic_caltrans_districts
-       │    └── traffic_api_request_logs
-       │
-       └── Music (music) ← Main module table
-            ├── music_albums
-            ├── music_tracks
-            ├── music_links
-            ├── music_media
-            ├── music_album_links
-            ├── music_playback_history
-            └── music_polling_logs
+  └── Projects (project) - HAS userId
+       └── (junction: project_threed, project_traffic, project_music)
+            └── Modules (threed, traffic, music) - HAS userId
+                 └── Child Data (plants, beds, albums, incidents) - HAS userId
+                      └── (free-standing, reusable across projects)
 ```
 
 ### Key ID Patterns
 
 | Table Type | ID Type | Foreign Key Type |
 |------------|---------|------------------|
-| `user` (Better Auth) | `text('id')` | N/A |
+| `user` (Auth.js) | `text('id')` | N/A |
 | All other tables | `serial('id')` | `integer` |
 | Tables referencing `user.id` | N/A | `text('user_id')` |
-| Tables referencing other tables | N/A | `integer('*_id')` |
 
 ### Main Tables per Module
 
@@ -86,94 +149,105 @@ User (user)
 | **Traffic** | `traffic` | Traffic monitoring module configuration |
 | **Music** | `music` | Music library module configuration |
 
----
-
-## 🗄️ Complete Database Schema
-
-### Auth Module (`lib/schema/auth/`)
+### Junction Tables (Many-to-Many)
 
 | Table | Purpose |
 |-------|---------|
-| `user` | Main user table (Better Auth) |
-| `user_accounts` | OAuth/Provider accounts |
-| `user_sessions` | User sessions |
-| `user_verifications` | Email/Phone verification |
-| `user_settings_overrides` | User-specific settings |
-| `user_api_keys` | API keys for programmatic access |
-| `user_audit_logs` | User activity audit trail |
+| `project_threed` | Links Projects to ThreeD modules |
+| `project_traffic` | Links Projects to Traffic modules |
+| `project_music` | Links Projects to Music modules |
 
-### Settings Module (`lib/schema/settings/`)
+### Child Tables (Free-Standing)
 
-| Table | Purpose |
-|-------|---------|
-| `settings` | Master settings definitions |
-| `settings_user_overrides` | User-specific setting overrides |
-| `settings_deployment` | Deployment snapshots |
-| `settings_deployment_history` | Deployment audit trail |
-| `settings_audit_logs` | Settings change log |
-
-### Projects Module (`lib/schema/projects/`)
-
-| Table | Purpose |
-|-------|---------|
-| `project` | Main project container |
-
-### ThreeD Module (`lib/schema/threed/`)
-
-| Table | Purpose |
-|-------|---------|
-| `threed` | Main ThreeD module configuration |
-| `threed_plants` | Master plant database |
-| `threed_models` | GLTF model library |
-| `threed_model_files` | Associated files for 3D models |
-| `threed_beds` | Garden layout with 3D positioning |
-| `threed_plantings` | Plants in beds with growth tracking |
-| `threed_watering_schedules` | Automated watering schedules |
-| `threed_watering_history` | Watering execution logs |
-| `threed_harvests` | Harvest logging |
-| `threed_tasks` | Garden tasks/to-do |
-| `threed_weather_logs` | Environmental data |
-| `threed_farmbots` | FarmBot devices |
-| `threed_farmbot_logs` | FarmBot activity logs |
-| `threed_characters` | 3D characters and creatures |
-| `threed_layers` | Groups of 3D objects |
-| `threed_markers` | All 3D objects with positioning |
-| `threed_marker_relationships` | Parent-child marker connections |
-| `threed_layer_presets` | Saved layer configurations |
-| `threed_system_logs` | Application logging |
-
-### Traffic Module (`lib/schema/traffic/`)
-
-| Table | Purpose |
-|-------|---------|
-| `traffic` | Main Traffic module configuration |
-| `traffic_chp_cad_incidents` | Live CHP incidents |
-| `traffic_chp_cad_centers` | CHP communication centers |
-| `traffic_chp_collisions` | Historical collisions |
-| `traffic_lane_closures` | Caltrans lane closures |
-| `traffic_lane_closures_snapshots` | Historical lane closure snapshots |
-| `traffic_bay_area_511_events` | 511.org events |
-| `traffic_cctv_cameras` | Traffic cameras |
-| `traffic_calfire_incidents` | CalFire wildfire incidents |
-| `traffic_caltrans_districts` | Caltrans districts |
-| `traffic_api_request_logs` | API monitoring logs |
-
-### Music Module (`lib/schema/music/`)
-
-| Table | Purpose |
-|-------|---------|
-| `music` | Main Music module configuration |
-| `music_albums` | Album metadata |
-| `music_tracks` | Track metadata |
-| `music_links` | External links (Spotify, social, etc.) |
-| `music_album_links` | Album-track-link associations |
-| `music_media` | Album images and media |
-| `music_playback_history` | User listening history |
-| `music_polling_logs` | Polling service logs |
+| Module | Child Tables | Has `userId` |
+|--------|--------------|--------------|
+| **ThreeD** | `threed_plants`, `threed_beds`, `threed_farmbots`, `threed_characters`, `threed_tasks`, `threed_harvests`, `threed_weather_logs` | ✅ |
+| **Traffic** | `traffic_chp_cad_incidents`, `traffic_lane_closures`, `traffic_bay_area_511_events`, `traffic_calfire_incidents`, `traffic_cctv_cameras` | ✅ |
+| **Music** | `music_albums`, `music_tracks`, `music_links`, `music_media` | ✅ |
 
 ---
 
-## 📡 Data Sources
+## 🔧 API Architecture (Next.js 16)
+
+### Key Pattern: `params` is a Promise
+
+In Next.js 16+, dynamic route parameters are **Promises** that must be awaited:
+
+```typescript
+// ✅ CORRECT - Next.js 16+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  // ... rest of code
+}
+```
+
+### API Structure (All Modules Follow Same Pattern)
+
+```
+api/
+├── project/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── modules/
+│       └── route.ts          # GET, POST, DELETE (with ?projectId=1)
+├── threed/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── plants/
+│       └── route.ts          # GET, POST, PUT, PATCH, DELETE (with ?id=1)
+├── traffic/
+│   ├── route.ts              # GET (list), POST (create)
+│   └── chp-cad/
+│       └── route.ts          # GET, POST, PUT, PATCH, DELETE (with ?id=1)
+└── music/
+    ├── route.ts              # GET (list), POST (create)
+    └── albums/
+        └── route.ts          # GET, POST, PUT, PATCH, DELETE (with ?id=1)
+```
+
+### API Endpoint Reference
+
+| Module | Endpoint | Method | Purpose |
+|--------|----------|--------|---------|
+| **Project** | `/api/project` | GET | List all projects |
+| **Project** | `/api/project` | POST | Create a project |
+| **Project** | `/api/project?id=1` | PATCH | Update a project |
+| **Project** | `/api/project?id=1` | DELETE | Delete a project |
+| **Project Modules** | `/api/project/modules?projectId=1` | GET | Get modules for a project |
+| **Project Modules** | `/api/project/modules?projectId=1` | POST | Add a module to a project |
+| **Project Modules** | `/api/project/modules?projectId=1` | DELETE | Remove a module from a project |
+| **ThreeD** | `/api/threed` | GET | List all ThreeD modules |
+| **ThreeD** | `/api/threed` | POST | Create a ThreeD module |
+| **ThreeD** | `/api/threed?id=1` | PATCH | Update a ThreeD module |
+| **ThreeD** | `/api/threed?id=1` | DELETE | Delete a ThreeD module |
+| **ThreeD Plants** | `/api/threed/plants` | GET | List all plants |
+| **ThreeD Plants** | `/api/threed/plants` | POST | Create a plant |
+| **ThreeD Plants** | `/api/threed/plants?id=1` | PUT | Full update of a plant |
+| **ThreeD Plants** | `/api/threed/plants?id=1` | PATCH | Partial update of a plant |
+| **ThreeD Plants** | `/api/threed/plants?id=1` | DELETE | Delete a plant |
+| **Traffic** | `/api/traffic` | GET | List all Traffic modules |
+| **Traffic** | `/api/traffic` | POST | Create a Traffic module |
+| **Traffic** | `/api/traffic?id=1` | PATCH | Update a Traffic module |
+| **Traffic** | `/api/traffic?id=1` | DELETE | Delete a Traffic module |
+| **Traffic CHP-CAD** | `/api/traffic/chp-cad` | GET | List all incidents |
+| **Traffic CHP-CAD** | `/api/traffic/chp-cad` | POST | Create an incident |
+| **Traffic CHP-CAD** | `/api/traffic/chp-cad?id=1` | PUT | Full update of an incident |
+| **Traffic CHP-CAD** | `/api/traffic/chp-cad?id=1` | PATCH | Partial update of an incident |
+| **Traffic CHP-CAD** | `/api/traffic/chp-cad?id=1` | DELETE | Delete an incident |
+| **Music** | `/api/music` | GET | List all Music modules |
+| **Music** | `/api/music` | POST | Create a Music module |
+| **Music** | `/api/music?id=1` | PATCH | Update a Music module |
+| **Music** | `/api/music?id=1` | DELETE | Delete a Music module |
+| **Music Albums** | `/api/music/albums` | GET | List all albums |
+| **Music Albums** | `/api/music/albums` | POST | Create an album |
+| **Music Albums** | `/api/music/albums?id=1` | PUT | Full update of an album |
+| **Music Albums** | `/api/music/albums?id=1` | PATCH | Partial update of an album |
+| **Music Albums** | `/api/music/albums?id=1` | DELETE | Delete an album |
+
+---
+
+## 📊 Data Sources
 
 | Source | Type | Method | Status |
 |--------|------|--------|--------|
@@ -273,17 +347,77 @@ bun run settings:edit
 
 ---
 
+## 📁 App File Structure
+
+```
+src/
+├── app/
+│   ├── admin/
+│   │   ├── page.tsx                 # Admin dashboard
+│   │   └── projects/
+│   │       ├── new/
+│   │       │   └── page.tsx        # Create new project
+│   │       └── [id]/
+│   │           └── page.tsx        # Project detail with module CRUD
+│   ├── api/
+│   │   ├── project/
+│   │   │   ├── route.ts            # Project CRUD
+│   │   │   └── modules/
+│   │   │       └── route.ts        # Project-module management
+│   │   ├── threed/
+│   │   │   ├── route.ts            # ThreeD module CRUD
+│   │   │   └── plants/
+│   │   │       └── route.ts        # Plant CRUD
+│   │   ├── traffic/
+│   │   │   ├── route.ts            # Traffic module CRUD
+│   │   │   └── chp-cad/
+│   │   │       └── route.ts        # CHP-CAD incident CRUD
+│   │   └── music/
+│   │       ├── route.ts            # Music module CRUD
+│   │       └── albums/
+│   │           └── route.ts        # Album CRUD
+│   ├── dashboard/
+│   │   ├── traffic/                # Traffic dashboard pages
+│   │   ├── threed/                 # ThreeD dashboard pages
+│   │   └── music/                  # Music dashboard pages
+│   └── sign-in/                    # Auth pages
+├── components/
+│   ├── admin/
+│   │   ├── music/
+│   │   │   └── albums/
+│   │   │       └── MusicAlbumCRUD.tsx
+│   │   ├── threed/
+│   │   │   └── plants/
+│   │   │       └── ThreeDPlantsCRUD.tsx
+│   │   └── traffic/
+│   │       └── chp-cad/
+│   │           └── TrafficCHPCADCRUD.tsx
+│   ├── ui/                         # shadcn/ui components
+│   └── navigation/
+├── lib/
+│   ├── schema/
+│   │   ├── auth/                   # Auth.js schema
+│   │   ├── settings/               # Settings schema
+│   │   ├── project/                # Project schema + junction tables
+│   │   ├── threed/                 # ThreeD schema
+│   │   ├── traffic/                # Traffic schema
+│   │   └── music/                  # Music schema
+│   ├── services/                   # Polling services
+│   ├── config/                     # Configuration
+│   ├── db/                         # Database client
+│   └── auth/                       # Auth.js configuration
+└── middleware.ts
+```
+
+---
+
 ## ⚠️ Known Issues & Solutions
 
 | Issue | Solution |
 |-------|----------|
-| Next.js 502 errors on external APIs | Use native fetch instead of axios |
-| CKAN date filtering not supported | Fetch all records, filter client-side |
-| CHP CAD has no coordinates | City-level geocoding as fallback |
-| 511.org coordinates nested | Extract from geography.coordinates |
+| Next.js 16 `params` is a Promise | Use `await params` in dynamic routes |
 | Audio CORS errors | Configure S3 bucket CORS for your domain |
 | Duplicate key errors | Use regular indexes, not unique indexes |
-| Next.js 15 params async | Use await params in dynamic routes |
 | DNS module error in client | Use client-safe settings loader |
 
 ---
@@ -294,6 +428,10 @@ bun run settings:edit
 |-----------|--------|
 | Settings System | ✅ Working |
 | Dynamic Navigation | ✅ Working |
+| Project Module | ✅ Working |
+| ThreeD Module | ✅ Working |
+| Traffic Module | ✅ Working |
+| Music Module | ✅ Working |
 | Weather Poller | ✅ Working |
 | CalFire Poller | ✅ Working |
 | Caltrans Poller | ✅ Working |
@@ -308,1422 +446,69 @@ bun run settings:edit
 
 ---
 
-## 📁 App File Structure
-
-```
-src/
-├── app/
-│   ├── admin/settings/        # Settings admin UI
-│   ├── api/                   # All API routes
-│   ├── dashboard/             # Dashboard pages
-│   │   ├── layout.tsx         # Client layout with NavDropdown
-│   │   ├── music/             # Music module pages
-│   │   ├── threed/            # ThreeD module pages
-│   │   └── traffic/           # Traffic module pages
-│   └── (auth pages)           # sign-in, sign-up
-├── components/
-│   ├── admin/                 # Admin components
-│   │   └── SettingsManager.tsx
-│   ├── navigation/            # Navigation components
-│   │   └── NavDropdown.tsx
-│   ├── music/                 # Music components
-│   ├── threed/                # ThreeD components
-│   └── ui/                    # shadcn/ui components
-├── lib/
-│   ├── config/                # Configuration
-│   │   ├── settings.json
-│   │   ├── settings.ts
-│   │   ├── settings.client.ts
-│   │   └── navigation.client.ts
-│   ├── schema/                # Database schemas
-│   │   ├── user/
-│   │   ├── settings/
-│   │   ├── project/
-│   │   ├── threed/
-│   │   ├── traffic/
-│   │   └── music/
-│   ├── services/              # Polling services
-│   └── types/                 # Type definitions
-└── middleware.ts              # Route protection
-```
+**Version:** v0.5.5 (Hybrid Architecture with Free-Standing Data) 🚀
 
 ---
 
-**Version:** v0.4.0 (Projects & Module Hierarchy) 🚀
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----
-
-**Version:** v0.4.4 (Projects & Module API Hierarchy for Next.js 16) 🚀
-
-Excellent! Let's apply the same proven pattern to the **ThreeD, Traffic, and Music** modules. We'll build a consistent RESTful API for each module, just like we did for Projects.
-
-## 🎯 The Pattern: One API Structure for All Modules
-
-```
-api/[module]/
-├── route.ts              # GET (list), POST (create)
-└── [id]/
-    ├── route.ts          # GET, PATCH, DELETE (single item)
-    └── [child]/
-        └── route.ts      # GET, POST, DELETE (child items)
-```
-
-## 📁 1. ThreeD Module API
-
-### `app/api/threed/route.ts` (List & Create)
-
-```typescript
-// app/api/threed/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threed } from '@/lib/schema/threed';
-import { eq, desc } from 'drizzle-orm';
-
-// GET /api/threed - List all ThreeD modules
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(request.url);
-    const projectId = searchParams.get('projectId');
-
-    let query = db
-      .select()
-      .from(threed)
-      .where(eq(threed.userId, session.user.id))
-      .orderBy(desc(threed.createdAt));
-
-    if (projectId) {
-      query = db
-        .select()
-        .from(threed)
-        .where(
-          and(
-            eq(threed.userId, session.user.id),
-            eq(threed.projectId, parseInt(projectId))
-          )
-        )
-        .orderBy(desc(threed.createdAt));
-    }
-
-    const results = await query;
-    return NextResponse.json({ data: results });
-  } catch (error) {
-    console.error('ThreeD API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/threed - Create a new ThreeD module
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { projectId, name, description, config } = body;
-
-    if (!projectId || !name) {
-      return NextResponse.json(
-        { error: 'Missing required fields: projectId, name' },
-        { status: 400 }
-      );
-    }
-
-    const [newModule] = await db
-      .insert(threed)
-      .values({
-        projectId,
-        name,
-        description: description || '',
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
-        userId: session.user.id,
-        isActive: true,
-        config: config || {},
-      })
-      .returning();
-
-    return NextResponse.json({ data: newModule });
-  } catch (error) {
-    console.error('ThreeD API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create ThreeD module' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-### `app/api/threed/[id]/route.ts` (Get, Update, Delete)
-
-```typescript
-// app/api/threed/[id]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threed } from '@/lib/schema/threed';
-import { eq, and } from 'drizzle-orm';
-
-// GET /api/threed/1 - Get single ThreeD module
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const [result] = await db
-      .select()
-      .from(threed)
-      .where(
-        and(
-          eq(threed.id, moduleId),
-          eq(threed.userId, userId)
-        )
-      );
-
-    if (!result) {
-      return NextResponse.json(
-        { error: 'ThreeD module not found' },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ data: result });
-  } catch (error) {
-    console.error('ThreeD API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// PATCH /api/threed/1 - Update a ThreeD module
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const { name, description, isActive, config } = body;
-
-    const [existing] = await db
-      .select()
-      .from(threed)
-      .where(
-        and(
-          eq(threed.id, moduleId),
-          eq(threed.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'ThreeD module not found' },
-        { status: 404 }
-      );
-    }
-
-    const updateData: any = { updatedAt: new Date() };
-    if (name) {
-      updateData.name = name;
-      updateData.slug = name.toLowerCase().replace(/\s+/g, '-');
-    }
-    if (description !== undefined) updateData.description = description;
-    if (isActive !== undefined) updateData.isActive = isActive;
-    if (config !== undefined) updateData.config = config;
-
-    const [updated] = await db
-      .update(threed)
-      .set(updateData)
-      .where(
-        and(
-          eq(threed.id, moduleId),
-          eq(threed.userId, userId)
-        )
-      )
-      .returning();
-
-    return NextResponse.json({ data: updated });
-  } catch (error) {
-    console.error('ThreeD API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update ThreeD module' },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/threed/1 - Delete a ThreeD module
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const [existing] = await db
-      .select()
-      .from(threed)
-      .where(
-        and(
-          eq(threed.id, moduleId),
-          eq(threed.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'ThreeD module not found' },
-        { status: 404 }
-      );
-    }
-
-    const [deleted] = await db
-      .delete(threed)
-      .where(
-        and(
-          eq(threed.id, moduleId),
-          eq(threed.userId, userId)
-        )
-      )
-      .returning();
-
-    return NextResponse.json({ data: deleted });
-  } catch (error) {
-    console.error('ThreeD API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete ThreeD module' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-### `app/api/threed/[id]/plants/route.ts` (Child Routes - Example)
-
-```typescript
-// app/api/threed/[id]/plants/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threed, threedPlants } from '@/lib/schema/threed';
-import { eq, and } from 'drizzle-orm';
-
-// GET /api/threed/1/plants - Get all plants for a ThreeD module
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const threedId = parseInt(id);
-
-    if (isNaN(threedId)) {
-      return NextResponse.json(
-        { error: 'Invalid ThreeD ID' },
-        { status: 400 }
-      );
-    }
-
-    // Verify ownership
-    const [module] = await db
-      .select()
-      .from(threed)
-      .where(
-        and(
-          eq(threed.id, threedId),
-          eq(threed.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!module) {
-      return NextResponse.json(
-        { error: 'ThreeD module not found' },
-        { status: 404 }
-      );
-    }
-
-    const plants = await db
-      .select()
-      .from(threedPlants)
-      .where(eq(threedPlants.threedId, threedId))
-      .orderBy(threedPlants.commonName);
-
-    return NextResponse.json({ data: plants });
-  } catch (error) {
-    console.error('ThreeD plants API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/threed/1/plants - Create a new plant for a ThreeD module
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const threedId = parseInt(id);
-
-    if (isNaN(threedId)) {
-      return NextResponse.json(
-        { error: 'Invalid ThreeD ID' },
-        { status: 400 }
-      );
-    }
-
-    // Verify ownership
-    const [module] = await db
-      .select()
-      .from(threed)
-      .where(
-        and(
-          eq(threed.id, threedId),
-          eq(threed.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!module) {
-      return NextResponse.json(
-        { error: 'ThreeD module not found' },
-        { status: 404 }
-      );
-    }
-
-    const body = await request.json();
-    const { commonName, scientificName, type, ...rest } = body;
-
-    if (!commonName) {
-      return NextResponse.json(
-        { error: 'Missing required field: commonName' },
-        { status: 400 }
-      );
-    }
-
-    const [newPlant] = await db
-      .insert(threedPlants)
-      .values({
-        threedId,
-        commonName,
-        scientificName: scientificName || '',
-        type: type || 'Vegetable',
-        ...rest,
-      })
-      .returning();
-
-    return NextResponse.json({ data: newPlant });
-  } catch (error) {
-    console.error('ThreeD plants API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create plant' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-## 📁 2. Traffic Module API
-
-### `app/api/traffic/route.ts`
-
-```typescript
-// app/api/traffic/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { traffic } from '@/lib/schema/traffic';
-import { eq, desc, and } from 'drizzle-orm';
-
-// GET /api/traffic - List all Traffic modules
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(request.url);
-    const projectId = searchParams.get('projectId');
-
-    let query = db
-      .select()
-      .from(traffic)
-      .where(eq(traffic.userId, session.user.id))
-      .orderBy(desc(traffic.createdAt));
-
-    if (projectId) {
-      query = db
-        .select()
-        .from(traffic)
-        .where(
-          and(
-            eq(traffic.userId, session.user.id),
-            eq(traffic.projectId, parseInt(projectId))
-          )
-        )
-        .orderBy(desc(traffic.createdAt));
-    }
-
-    const results = await query;
-    return NextResponse.json({ data: results });
-  } catch (error) {
-    console.error('Traffic API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/traffic - Create a new Traffic module
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { projectId, name, description, config } = body;
-
-    if (!projectId || !name) {
-      return NextResponse.json(
-        { error: 'Missing required fields: projectId, name' },
-        { status: 400 }
-      );
-    }
-
-    const [newModule] = await db
-      .insert(traffic)
-      .values({
-        projectId,
-        name,
-        description: description || '',
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
-        userId: session.user.id,
-        isActive: true,
-        config: config || {},
-      })
-      .returning();
-
-    return NextResponse.json({ data: newModule });
-  } catch (error) {
-    console.error('Traffic API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create Traffic module' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-### `app/api/traffic/[id]/route.ts`
-
-```typescript
-// app/api/traffic/[id]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { traffic } from '@/lib/schema/traffic';
-import { eq, and } from 'drizzle-orm';
-
-// GET /api/traffic/1 - Get single Traffic module
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const [result] = await db
-      .select()
-      .from(traffic)
-      .where(
-        and(
-          eq(traffic.id, moduleId),
-          eq(traffic.userId, userId)
-        )
-      );
-
-    if (!result) {
-      return NextResponse.json(
-        { error: 'Traffic module not found' },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ data: result });
-  } catch (error) {
-    console.error('Traffic API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// PATCH /api/traffic/1 - Update a Traffic module
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const { name, description, isActive, config } = body;
-
-    const [existing] = await db
-      .select()
-      .from(traffic)
-      .where(
-        and(
-          eq(traffic.id, moduleId),
-          eq(traffic.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'Traffic module not found' },
-        { status: 404 }
-      );
-    }
-
-    const updateData: any = { updatedAt: new Date() };
-    if (name) {
-      updateData.name = name;
-      updateData.slug = name.toLowerCase().replace(/\s+/g, '-');
-    }
-    if (description !== undefined) updateData.description = description;
-    if (isActive !== undefined) updateData.isActive = isActive;
-    if (config !== undefined) updateData.config = config;
-
-    const [updated] = await db
-      .update(traffic)
-      .set(updateData)
-      .where(
-        and(
-          eq(traffic.id, moduleId),
-          eq(traffic.userId, userId)
-        )
-      )
-      .returning();
-
-    return NextResponse.json({ data: updated });
-  } catch (error) {
-    console.error('Traffic API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update Traffic module' },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/traffic/1 - Delete a Traffic module
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const [existing] = await db
-      .select()
-      .from(traffic)
-      .where(
-        and(
-          eq(traffic.id, moduleId),
-          eq(traffic.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'Traffic module not found' },
-        { status: 404 }
-      );
-    }
-
-    const [deleted] = await db
-      .delete(traffic)
-      .where(
-        and(
-          eq(traffic.id, moduleId),
-          eq(traffic.userId, userId)
-        )
-      )
-      .returning();
-
-    return NextResponse.json({ data: deleted });
-  } catch (error) {
-    console.error('Traffic API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete Traffic module' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-## 📁 3. Music Module API
-
-### `app/api/music/route.ts`
-
-```typescript
-// app/api/music/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { music } from '@/lib/schema/music';
-import { eq, desc, and } from 'drizzle-orm';
-
-// GET /api/music - List all Music modules
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { searchParams } = new URL(request.url);
-    const projectId = searchParams.get('projectId');
-
-    let query = db
-      .select()
-      .from(music)
-      .where(eq(music.userId, session.user.id))
-      .orderBy(desc(music.createdAt));
-
-    if (projectId) {
-      query = db
-        .select()
-        .from(music)
-        .where(
-          and(
-            eq(music.userId, session.user.id),
-            eq(music.projectId, parseInt(projectId))
-          )
-        )
-        .orderBy(desc(music.createdAt));
-    }
-
-    const results = await query;
-    return NextResponse.json({ data: results });
-  } catch (error) {
-    console.error('Music API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/music - Create a new Music module
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { projectId, name, description, config } = body;
-
-    if (!projectId || !name) {
-      return NextResponse.json(
-        { error: 'Missing required fields: projectId, name' },
-        { status: 400 }
-      );
-    }
-
-    const [newModule] = await db
-      .insert(music)
-      .values({
-        projectId,
-        name,
-        description: description || '',
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
-        userId: session.user.id,
-        isActive: true,
-        config: config || {},
-      })
-      .returning();
-
-    return NextResponse.json({ data: newModule });
-  } catch (error) {
-    console.error('Music API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create Music module' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-### `app/api/music/[id]/route.ts`
-
-```typescript
-// app/api/music/[id]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { music } from '@/lib/schema/music';
-import { eq, and } from 'drizzle-orm';
-
-// GET /api/music/1 - Get single Music module
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const [result] = await db
-      .select()
-      .from(music)
-      .where(
-        and(
-          eq(music.id, moduleId),
-          eq(music.userId, userId)
-        )
-      );
-
-    if (!result) {
-      return NextResponse.json(
-        { error: 'Music module not found' },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ data: result });
-  } catch (error) {
-    console.error('Music API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// PATCH /api/music/1 - Update a Music module
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const { name, description, isActive, config } = body;
-
-    const [existing] = await db
-      .select()
-      .from(music)
-      .where(
-        and(
-          eq(music.id, moduleId),
-          eq(music.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'Music module not found' },
-        { status: 404 }
-      );
-    }
-
-    const updateData: any = { updatedAt: new Date() };
-    if (name) {
-      updateData.name = name;
-      updateData.slug = name.toLowerCase().replace(/\s+/g, '-');
-    }
-    if (description !== undefined) updateData.description = description;
-    if (isActive !== undefined) updateData.isActive = isActive;
-    if (config !== undefined) updateData.config = config;
-
-    const [updated] = await db
-      .update(music)
-      .set(updateData)
-      .where(
-        and(
-          eq(music.id, moduleId),
-          eq(music.userId, userId)
-        )
-      )
-      .returning();
-
-    return NextResponse.json({ data: updated });
-  } catch (error) {
-    console.error('Music API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update Music module' },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/music/1 - Delete a Music module
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    const [existing] = await db
-      .select()
-      .from(music)
-      .where(
-        and(
-          eq(music.id, moduleId),
-          eq(music.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'Music module not found' },
-        { status: 404 }
-      );
-    }
-
-    const [deleted] = await db
-      .delete(music)
-      .where(
-        and(
-          eq(music.id, moduleId),
-          eq(music.userId, userId)
-        )
-      )
-      .returning();
-
-    return NextResponse.json({ data: deleted });
-  } catch (error) {
-    console.error('Music API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete Music module' },
-      { status: 500 }
-    );
-  }
-}
-```
-
-## 📁 4. Nested Child Routes Template
-
-For any child routes (like plants, beds, albums, tracks, incidents), use this pattern:
-
-### `app/api/[module]/[id]/[child]/route.ts`
-
-```typescript
-// app/api/[module]/[id]/[child]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { [module] } from '@/lib/schema/[module]';
-import { [child] } from '@/lib/schema/[module]';
-import { eq, and } from 'drizzle-orm';
-
-// GET /api/[module]/1/[child] - List all child items
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    // Verify ownership
-    const [module] = await db
-      .select()
-      .from([module])
-      .where(
-        and(
-          eq([module].id, moduleId),
-          eq([module].userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!module) {
-      return NextResponse.json(
-        { error: 'Module not found' },
-        { status: 404 }
-      );
-    }
-
-    const items = await db
-      .select()
-      .from([child])
-      .where(eq([child].moduleId, moduleId))
-      .orderBy([child].createdAt);
-
-    return NextResponse.json({ data: items });
-  } catch (error) {
-    console.error(`[Module] ${child} API error:`, error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/[module]/1/[child] - Create a new child item
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    // Verify ownership
-    const [module] = await db
-      .select()
-      .from([module])
-      .where(
-        and(
-          eq([module].id, moduleId),
-          eq([module].userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!module) {
-      return NextResponse.json(
-        { error: 'Module not found' },
-        { status: 404 }
-      );
-    }
-
-    const body = await request.json();
-    // Validation for required fields
-    if (!body.name) {
-      return NextResponse.json(
-        { error: 'Missing required field: name' },
-        { status: 400 }
-      );
-    }
-
-    const [newItem] = await db
-      .insert([child])
-      .values({
-        moduleId,
-        ...body,
-      })
-      .returning();
-
-    return NextResponse.json({ data: newItem });
-  } catch (error) {
-    console.error(`[Module] ${child} API error:`, error);
-    return NextResponse.json(
-      { error: `Failed to create ${child}` },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/[module]/1/[child] - Delete a child item (requires itemId in body)
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const moduleId = parseInt(id);
-
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: 'Invalid module ID' },
-        { status: 400 }
-      );
-    }
-
-    // Verify ownership
-    const [module] = await db
-      .select()
-      .from([module])
-      .where(
-        and(
-          eq([module].id, moduleId),
-          eq([module].userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!module) {
-      return NextResponse.json(
-        { error: 'Module not found' },
-        { status: 404 }
-      );
-    }
-
-    const body = await request.json();
-    const { itemId } = body;
-
-    if (!itemId) {
-      return NextResponse.json(
-        { error: 'Missing required field: itemId' },
-        { status: 400 }
-      );
-    }
-
-    // Verify item belongs to module
-    const [item] = await db
-      .select()
-      .from([child])
-      .where(
-        and(
-          eq([child].id, parseInt(itemId)),
-          eq([child].moduleId, moduleId)
-        )
-      )
-      .limit(1);
-
-    if (!item) {
-      return NextResponse.json(
-        { error: 'Item not found in this module' },
-        { status: 404 }
-      );
-    }
-
-    const [deleted] = await db
-      .delete([child])
-      .where(eq([child].id, parseInt(itemId)))
-      .returning();
-
-    return NextResponse.json({ data: deleted });
-  } catch (error) {
-    console.error(`[Module] ${child} API error:`, error);
-    return NextResponse.json(
-      { error: `Failed to delete ${child}` },
-      { status: 500 }
-    );
-  }
-}
-```
-
-## 📊 API Structure Summary (PROPOSED)
-
-api/
-├── project/
-│   ├── route.ts              # GET (list), POST (create)
-│   └── [id]/
-│       ├── route.ts          # GET, PATCH, DELETE
-│       └── modules/
-│           └── route.ts      # GET, POST, DELETE
-├── threed/
-│   ├── route.ts              # GET (list), POST (create)
-│   └── [id]/
-│       ├── route.ts          # GET, PATCH, DELETE
-│       ├── plants/
-│       │   └── route.ts      # GET, POST, DELETE
-│       ├── beds/
-│       │   └── route.ts      # GET, POST, DELETE
-│       └── farmbots/
-│           └── route.ts      # GET, POST, DELETE
-├── traffic/
-│   ├── route.ts              # GET (list), POST (create)
-│   └── [id]/
-│       ├── route.ts          # GET, PATCH, DELETE
-│       ├── incidents/
-│       │   └── route.ts      # GET, POST, DELETE
-│       └── closures/
-│           └── route.ts      # GET, POST, DELETE
-└── music/
-    ├── route.ts              # GET (list), POST (create)
-    └── [id]/
-        ├── route.ts          # GET, PATCH, DELETE
-        ├── albums/
-        │   └── route.ts      # GET, POST, DELETE
-        └── tracks/
-            └── route.ts      # GET, POST, DELETE```
-
-## 🎯 Key Pattern Summary
-
-| Route Type | `params` Type | Access |
-|------------|---------------|--------|
-| `/api/[module]` | No params | `request` only |
-| `/api/[module]/[id]` | `Promise<{ id: string }>` | `await params` |
-| `/api/[module]/[id]/[child]` | `Promise<{ id: string }>` | `await params` |
-
-## 🚀 Test Commands
-
-```bash
-# Test ThreeD
-curl -X GET http://localhost:4444/api/threed
-curl -X GET http://localhost:4444/api/threed/1
-curl -X GET http://localhost:4444/api/threed/1/plants
-
-# Test Traffic
-curl -X GET http://localhost:4444/api/traffic
-curl -X GET http://localhost:4444/api/traffic/1
-curl -X GET http://localhost:4444/api/traffic/1/incidents
-
-# Test Music
-curl -X GET http://localhost:4444/api/music
-curl -X GET http://localhost:4444/api/music/1
-curl -X GET http://localhost:4444/api/music/1/albums
-
-All modules now follow the same clean RESTful pattern with the correct Next.js 16 params handling! 🚀
-
----
-
-**Version:** v0.4.4 (Projects & Module API Hierarchy for Next.js 16) 🚀
+🎉 **CONGRATULATIONS!** 🎉
+
+You're deploying **v0.5.5** to production! This is a massive milestone with significant architectural improvements.
+
+## 🚀 What's in v0.5.5
+
+| Feature | Status |
+|---------|--------|
+| **Hybrid Architecture** | ✅ User ownership + free-standing data |
+| **Next.js 16 Pattern** | ✅ `await params` in all dynamic routes |
+| **Junction Tables** | ✅ `project_threed`, `project_traffic`, `project_music` |
+| **Full CRUD APIs** | ✅ All modules with GET, POST, PUT, PATCH, DELETE |
+| **Admin Dashboard** | ✅ Project + Module + Child CRUD |
+| **ThreeD Module** | ✅ Plants CRUD with full form |
+| **Traffic Module** | ✅ CHP-CAD Incidents CRUD |
+| **Music Module** | ✅ Albums CRUD with tracks |
+
+## 📦 Deployment Checklist
+
+- [x] Schema migrated to production
+- [x] All API routes updated with `await params`
+- [x] Junction tables created
+- [x] Admin pages working
+- [x] CRUD operations tested
+- [x] Environment variables set
+- [x] CONTEXT.md updated
+
+## 🎯 After Deployment
+
+1. **Visit your production URL** and test:
+   - `/admin` - Project dashboard
+   - `/admin/projects/[id]` - Project detail with modules
+   - Creating a new project
+   - Adding modules to a project
+   - Creating child data (plants, albums, incidents)
+
+2. **Verify database** in production:
+   - Check junction tables are populated
+   - Check `userId` is set on all records
+   - Verify data isolation (users see only their data)
+
+3. **Monitor**:
+   - Vercel logs for any errors
+   - API response times
+   - Database performance
+
+## 🎊 Celebrate!
+
+You've built a production-ready, multi-tenant application with:
+- ✅ Clean architecture
+- ✅ Strong security (userId on all records)
+- ✅ Flexible relationships (junction tables)
+- ✅ Consistent API patterns
+- ✅ Modern Next.js 16 patterns
+- ✅ Full CRUD operations
+- ✅ Admin interface
+
+**You're now running v0.5.5 in production!** 🚀
+
+Let me know how the deployment goes and if you need any help! 🙌
 
 ---

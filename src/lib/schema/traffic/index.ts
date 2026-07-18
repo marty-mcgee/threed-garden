@@ -91,6 +91,7 @@ export type NewTraffic = typeof traffic.$inferInsert;
 // ============================================
 export const trafficCaltransDistricts = pgTable('traffic_caltrans_districts', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   districtId: varchar('district_id', { length: 50 }).unique(),
   districtName: varchar('district_name', { length: 100 }),
   region: varchar('region', { length: 50 }),
@@ -106,6 +107,7 @@ export const trafficCaltransDistricts = pgTable('traffic_caltrans_districts', {
 // ============================================
 export const trafficCaltransLaneClosures = pgTable('traffic_caltrans_lane_closures', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   closureId: varchar('closure_id', { length: 50 }).unique(),
   sourceId: varchar('source_id', { length: 100 }).unique(),
@@ -148,7 +150,9 @@ export const trafficCaltransLaneClosures = pgTable('traffic_caltrans_lane_closur
 
 // Snapshots table for analytics
 export const trafficCaltransLaneClosuresSnapshots = pgTable('traffic_caltrans_lane_closures_snapshots', {
-  snapshotId: serial('snapshot_id').primaryKey(),
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  snapshotId: varchar('snapshot_id', { length: 100 }).unique(),
   snapshotTimestamp: timestamp('snapshot_timestamp').defaultNow(),
   districtId: varchar('district_id', { length: 100 }),
   totalClosures: integer('total_closures'),
@@ -177,6 +181,7 @@ export const trafficCaltransDistrictsRelations = relations(trafficCaltransDistri
 // ============================================
 export const trafficCaltransCctvCameras = pgTable('traffic_caltrans_cctv_cameras', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   cameraId: varchar('camera_id', { length: 100 }),
   districtId: varchar('district_id', { length: 100 }),
@@ -208,6 +213,7 @@ export type CaltransDistrict = typeof trafficCaltransDistricts.$inferSelect;
 // CHP CAD Communications Centers table
 export const trafficChpCadCenters = pgTable('traffic_chp_cad_centers', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   centerCode: varchar('center_code', { length: 10 }).unique().notNull(),
   centerName: varchar('center_name', { length: 100 }).notNull(),
   county: varchar('county', { length: 100 }),
@@ -223,6 +229,7 @@ export const trafficChpCadCenters = pgTable('traffic_chp_cad_centers', {
 // CHP CAD Incidents table with foreign key to centers
 export const trafficChpCadIncidents = pgTable('traffic_chp_cad_incidents', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   sourceId: varchar('source_id', { length: 100 }).unique(),
   centerId: integer('center_id').references(() => trafficChpCadCenters.id, { onDelete: 'set null' }),
@@ -262,6 +269,7 @@ export const trafficChpCadIncidentsRelations = relations(trafficChpCadIncidents,
 // ============================================
 export const trafficChpCases = pgTable('traffic_chp_cases', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   caseId: varchar('case_id', { length: 50 }).unique(),
   collisionDate: timestamp('collision_date', { mode: 'date' }),
@@ -294,6 +302,7 @@ export const trafficChpCases = pgTable('traffic_chp_cases', {
 // ============================================
 export const trafficBayArea511Events = pgTable('traffic_bay_area_511_events', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   sourceId: varchar('source_id', { length: 100 }).unique(),
   eventType: varchar('event_type', { length: 100 }),
@@ -326,6 +335,7 @@ export const trafficBayArea511Events = pgTable('traffic_bay_area_511_events', {
 // ============================================
 export const trafficApiRequestLogs = pgTable('traffic_api_request_logs', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   endpoint: text('endpoint'),
   districtId: varchar('district_id', { length: 100 }),
@@ -346,6 +356,7 @@ export const trafficApiRequestLogs = pgTable('traffic_api_request_logs', {
 // ============================================
 export const trafficCalfireIncidents = pgTable('traffic_calfire_incidents', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'set null' }),
   incidentId: varchar('incident_id', { length: 100 }).unique().notNull(),
   name: varchar('name', { length: 200 }).notNull(),

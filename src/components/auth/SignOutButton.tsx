@@ -26,10 +26,10 @@ export function SignOutButton({
     try {
       await signOut({
         redirect: false,
-        callbackUrl: '/sign-in',
+        callbackUrl: '/auth/sign-in',
       });
       showToast('Signed out successfully', 'success');
-      router.push('/sign-in');
+      router.push('/auth/sign-in');
       router.refresh();
     } catch (error) {
       console.error('Sign out error:', error);

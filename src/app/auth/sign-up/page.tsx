@@ -1,4 +1,4 @@
-// app/sign-up/page.tsx
+// app/auth/sign-up/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -130,7 +130,7 @@ export default function SignUpPage() {
           </form>
           <div className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Link href="/sign-in" className="text-primary hover:underline">
+            <Link href="/auth/sign-in" className="text-primary hover:underline">
               Sign in
             </Link>
           </div>

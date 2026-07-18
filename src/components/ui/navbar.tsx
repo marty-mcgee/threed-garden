@@ -59,7 +59,7 @@ export function NavBar() {
           </Button>
         ) : (
           <Button variant="default" asChild>
-            <Link href="/sign-in">Sign In</Link>
+            <Link href="/auth/sign-in">Sign In</Link>
           </Button>
         )}
       </div>

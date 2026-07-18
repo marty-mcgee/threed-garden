@@ -33,7 +33,7 @@ import { project } from '../project';
  */
 export const threed = pgTable('threed', {
   id: serial('id').primaryKey(),
-  
+
   // Owner
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
@@ -91,15 +91,6 @@ export const threedRelations = relations(threed, ({ one, many }) => ({
   layers: many(threedLayers),
   markers: many(threedMarkers),
 }));
-
-
-
-
-
-
-
-
-
 
 
 // ============================================
@@ -209,22 +200,18 @@ export const characterEmoteEnum = pgEnum('threed_character_emote', [
 
 
 
-
-
-
-
-
-
-
-
 // ============================================
 // 1. threed_plants - Master plant database
 // ============================================
 export const threedPlants = pgTable('threed_plants', {
   id: serial('id').primaryKey(),
-  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'set null' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
+  // ✅ Required fields
   plantId: varchar('plant_id', { length: 50 }).unique().notNull(),
   commonName: varchar('common_name', { length: 255 }).notNull(),
+
+  // ✅ Optional fields
   scientificName: varchar('scientific_name', { length: 255 }),
   variety: varchar('variety', { length: 100 }),
   family: varchar('family', { length: 100 }),
@@ -271,10 +258,11 @@ export const threedPlants = pgTable('threed_plants', {
   // Metadata
   source: varchar('source', { length: 100 }),
   rawData: jsonb('raw_data'),
+
+  // Timestamps
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  threedIdx: index('idx_threed_plants_threed_id').on(table.threedId),
   plantIdIdx: uniqueIndex('idx_threed_plants_plant_id').on(table.plantId),
   commonNameIdx: index('idx_threed_plants_common_name').on(table.commonName),
   typeIdx: index('idx_threed_plants_type').on(table.type),
@@ -287,7 +275,7 @@ export const threedPlants = pgTable('threed_plants', {
 // ============================================
 export const threedModels = pgTable('threed_models', {
   id: serial('id').primaryKey(),
-  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'set null' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   // Add these to track what uses this model
   usedByPlants: boolean('used_by_plants').default(false),
@@ -333,7 +321,6 @@ export const threedModels = pgTable('threed_models', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  threedIdx: index('idx_threed_models_threed_id').on(table.threedId),
   modelTypeIdx: index('idx_threed_models_type').on(table.modelType),
   activeIdx: index('idx_threed_models_active').on(table.isActive),
   markerIdx: index('idx_threed_models_marker').on(table.markerId),
@@ -344,6 +331,7 @@ export const threedModels = pgTable('threed_models', {
 // ============================================
 export const threedModelFiles = pgTable('threed_model_files', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   modelId: integer('model_id').references(() => threedModels.id, { onDelete: 'cascade' }),
   
   // File information
@@ -370,7 +358,8 @@ export const threedModelFiles = pgTable('threed_model_files', {
 // ============================================
 export const threedBeds = pgTable('threed_beds', {
   id: serial('id').primaryKey(),
-  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'set null' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
   bedId: varchar('bed_id', { length: 50 }).unique().notNull(),
   name: varchar('name', { length: 100 }).notNull(),
   description: text('description'),
@@ -405,7 +394,6 @@ export const threedBeds = pgTable('threed_beds', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  threedIdx: index('idx_threed_beds_threed_id').on(table.threedId),
   bedIdIdx: uniqueIndex('idx_threed_beds_bed_id').on(table.bedId),
   activeIdx: index('idx_threed_beds_active').on(table.isActive),
   nameIdx: index('idx_threed_beds_name').on(table.name),
@@ -417,7 +405,8 @@ export const threedBeds = pgTable('threed_beds', {
 // ============================================
 export const threedPlantings = pgTable('threed_plantings', {
   id: serial('id').primaryKey(),
-  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'set null' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
   plantingId: varchar('planting_id', { length: 50 }).unique().notNull(),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
   bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'set null' }),
@@ -450,7 +439,6 @@ export const threedPlantings = pgTable('threed_plantings', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  threedIdx: index('idx_threed_plantings_threed_id').on(table.threedId),
   plantingIdIdx: uniqueIndex('idx_threed_plantings_planting_id').on(table.plantingId),
   plantIdx: index('idx_threed_plantings_plant').on(table.plantId),
   bedIdx: index('idx_threed_plantings_bed').on(table.bedId),
@@ -463,6 +451,7 @@ export const threedPlantings = pgTable('threed_plantings', {
 // ============================================
 export const threedWateringSchedules = pgTable('threed_watering_schedules', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   scheduleId: varchar('schedule_id', { length: 50 }).unique().notNull(),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'cascade' }),
   farmbotId: integer('farmbot_id').references(() => threedFarmbots.id, { onDelete: 'set null' }),
@@ -516,6 +505,7 @@ export const threedWateringSchedules = pgTable('threed_watering_schedules', {
 // ============================================
 export const threedWateringHistory = pgTable('threed_watering_history', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   historyId: varchar('history_id', { length: 50 }).unique().notNull(),
   scheduleId: integer('schedule_id').references(() => threedWateringSchedules.id, { onDelete: 'set null' }),
   plantId: integer('plant_id').references(() => threedPlants.id),
@@ -557,7 +547,8 @@ export const threedWateringHistory = pgTable('threed_watering_history', {
 // ============================================
 export const threedHarvests = pgTable('threed_harvests', {
   id: serial('id').primaryKey(),
-  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'set null' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
   harvestId: varchar('harvest_id', { length: 50 }).unique().notNull(),
   plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'set null' }),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
@@ -575,7 +566,6 @@ export const threedHarvests = pgTable('threed_harvests', {
   // Metadata
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
-  threedIdx: index('idx_threed_harvests_threed_id').on(table.threedId),
   harvestIdIdx: uniqueIndex('idx_threed_harvests_harvest_id').on(table.harvestId),
   plantingIdx: index('idx_threed_harvests_planting').on(table.plantingId),
   harvestDateIdx: index('idx_threed_harvests_date').on(table.harvestDate),
@@ -586,7 +576,8 @@ export const threedHarvests = pgTable('threed_harvests', {
 // ============================================
 export const threedTasks = pgTable('threed_tasks', {
   id: serial('id').primaryKey(),
-  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'set null' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
   taskId: varchar('task_id', { length: 50 }).unique().notNull(),
   plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'set null' }),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
@@ -615,7 +606,6 @@ export const threedTasks = pgTable('threed_tasks', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  threedIdx: index('idx_threed_tasks_threed_id').on(table.threedId),
   taskIdIdx: uniqueIndex('idx_threed_tasks_task_id').on(table.taskId),
   plantingIdx: index('idx_threed_tasks_planting').on(table.plantingId),
   dueDateIdx: index('idx_threed_tasks_due_date').on(table.dueDate),
@@ -629,6 +619,7 @@ export const threedTasks = pgTable('threed_tasks', {
 // ============================================
 export const threedWeatherLogs = pgTable('threed_weather_logs', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   recordedAt: timestamp('recorded_at').defaultNow(),
   
   // Weather data
@@ -661,7 +652,8 @@ export const threedWeatherLogs = pgTable('threed_weather_logs', {
 // ============================================
 export const threedFarmbots = pgTable('threed_farmbots', {
   id: serial('id').primaryKey(),
-  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'set null' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
   deviceId: varchar('device_id', { length: 100 }).unique().notNull(),
   name: varchar('name', { length: 100 }).notNull(),
   status: farmbotStatusEnum('status').default('offline'),
@@ -690,7 +682,6 @@ export const threedFarmbots = pgTable('threed_farmbots', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  threedIdx: index('idx_threed_farmbots_threed_id').on(table.threedId),
   deviceIdIdx: uniqueIndex('idx_threed_farmbots_device_id').on(table.deviceId),
   statusIdx: index('idx_threed_farmbots_status').on(table.status),
   markerIdx: index('idx_threed_farmbots_marker').on(table.markerId),
@@ -701,6 +692,7 @@ export const threedFarmbots = pgTable('threed_farmbots', {
 // ============================================
 export const threedFarmbotLogs = pgTable('threed_farmbot_logs', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   farmbotId: integer('farmbot_id').references(() => threedFarmbots.id, { onDelete: 'cascade' }),
   eventType: varchar('event_type', { length: 50 }), // watering, planting, sensor, error, maintenance
   status: varchar('status', { length: 20 }), // success, failed, pending, in_progress
@@ -720,6 +712,7 @@ export const threedFarmbotLogs = pgTable('threed_farmbot_logs', {
 // ============================================
 export const threedSystemLogs = pgTable('threed_system_logs', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   level: varchar('level', { length: 20 }), // info, warning, error, debug
   source: varchar('source', { length: 100 }),
   message: text('message'),
@@ -736,7 +729,8 @@ export const threedSystemLogs = pgTable('threed_system_logs', {
 // ============================================
 export const threedCharacters = pgTable('threed_characters', {
   id: serial('id').primaryKey(),
-  threedId: integer('threed_id').references(() => threed.id, { onDelete: 'set null' }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
   characterId: varchar('character_id', { length: 50 }).unique().notNull(),
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
@@ -810,7 +804,6 @@ export const threedCharacters = pgTable('threed_characters', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  threedIdx: index('idx_threed_characters_threed_id').on(table.threedId),
   characterIdIdx: uniqueIndex('idx_threed_characters_character_id').on(table.characterId),
   nameIdx: index('idx_threed_characters_name').on(table.name),
   typeIdx: index('idx_threed_characters_type').on(table.type),
@@ -827,6 +820,7 @@ export const threedCharacters = pgTable('threed_characters', {
 // ============================================
 export const threedLayers = pgTable('threed_layers', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   // Basic info
   name: text('name').notNull(),
@@ -861,6 +855,7 @@ export const threedLayers = pgTable('threed_layers', {
 // ============================================
 export const threedMarkers = pgTable('threed_markers', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   // Basic info
   name: text('name').notNull(),

@@ -1,4 +1,4 @@
-// app/sign-out/page.tsx
+// app/auth/sign-out/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -20,7 +20,7 @@ export default function SignOutPage() {
   // Redirect to sign-in if not authenticated
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/sign-in');
+      router.push('/auth/sign-in');
     }
   }, [status, router]);
 
@@ -29,11 +29,11 @@ export default function SignOutPage() {
     try {
       await signOut({
         redirect: false,
-        callbackUrl: '/sign-in',
+        callbackUrl: '/auth/sign-in',
       });
       setSignedOut(true);
       showToast('Signed out successfully', 'success');
-      router.push('/sign-in');
+      router.push('/auth/sign-in');
       router.refresh();
     } catch (error) {
       console.error('Sign out error:', error);
@@ -68,7 +68,7 @@ export default function SignOutPage() {
               You have been successfully signed out.
             </p>
             <Button asChild className="w-full">
-              <Link href="/sign-in">Sign In Again</Link>
+              <Link href="/auth/sign-in">Sign In Again</Link>
             </Button>
           </CardContent>
         </Card>

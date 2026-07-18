@@ -2,12 +2,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedPlants } from '@/lib/schema/threed';
+import { threedPlants, threed } from '@/lib/schema/threed';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/threed/plants - List all plants for the user
+// GET /api/threed/plants?threedId=1 - List all plants for a ThreeD module
 // GET /api/threed/plants?id=1 - Get a single plant
 // ============================================
 export async function GET(request: NextRequest) {
@@ -19,10 +19,11 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const threedId = searchParams.get('threedId');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // Get single plant
+    // ✅ Get single plant
     if (id) {
       const [plant] = await db
         .select()
@@ -45,16 +46,42 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: plant });
     }
 
-    // List all plants for the user
+    // ✅ List all plants for a threed module
+    if (!threedId) {
+      return NextResponse.json(
+        { success: false, error: 'Missing threedId parameter' },
+        { status: 400 }
+      );
+    }
+
+    // Verify the threed module belongs to the user
+    const [module] = await db
+      .select()
+      .from(threed)
+      .where(
+        and(
+          eq(threed.id, parseInt(threedId)),
+          eq(threed.userId, session.user.id)
+        )
+      )
+      .limit(1);
+
+    if (!module) {
+      return NextResponse.json(
+        { success: false, error: 'ThreeD module not found' },
+        { status: 404 }
+      );
+    }
+
     let query = db
       .select()
       .from(threedPlants)
-      .where(eq(threedPlants.userId, session.user.id));
+      .where(eq(threedPlants.threedId, parseInt(threedId)));
 
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedPlants)
-      .where(eq(threedPlants.userId, session.user.id));
+      .where(eq(threedPlants.threedId, parseInt(threedId)));
 
     const plants = await query
       .orderBy(desc(threedPlants.createdAt))
@@ -90,74 +117,47 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
-    // ✅ Auto-generate plantId if not provided
-    const plantId = body.plantId || `plant_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-    
-    // ✅ Check for required fields
-    if (!body.commonName) {
+    const { threedId, commonName, scientificName, type, ...rest } = body;
+
+    if (!threedId || !commonName) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: commonName' },
+        { success: false, error: 'Missing required fields: threedId, commonName' },
         { status: 400 }
+      );
+    }
+
+    // Verify the threed module belongs to the user
+    const [module] = await db
+      .select()
+      .from(threed)
+      .where(
+        and(
+          eq(threed.id, parseInt(threedId)),
+          eq(threed.userId, session.user.id)
+        )
+      )
+      .limit(1);
+
+    if (!module) {
+      return NextResponse.json(
+        { success: false, error: 'ThreeD module not found' },
+        { status: 404 }
       );
     }
 
     // ✅ Ensure sequence is in sync
     await ensureTableSequence('threed_plants');
 
-    // ✅ Build insert data with all fields
-    const insertData = {
-      userId: session.user.id,
-      plantId,
-      commonName: body.commonName,
-      scientificName: body.scientificName || null,
-      variety: body.variety || null,
-      family: body.family || null,
-      type: body.type || 'Vegetable',
-      status: body.status || 'active',
-      
-      // Model relationship
-      modelId: body.modelId || null,
-      
-      // Growth parameters
-      growthHabit: body.growthHabit || null,
-      daysToMaturity: body.daysToMaturity ? parseInt(body.daysToMaturity) : null,
-      daysToGermination: body.daysToGermination ? parseInt(body.daysToGermination) : null,
-      daysToHarvest: body.daysToHarvest ? parseInt(body.daysToHarvest) : null,
-      
-      // Spacing
-      spacingInches: body.spacingInches ? parseInt(body.spacingInches) : null,
-      rowSpacingInches: body.rowSpacingInches ? parseInt(body.rowSpacingInches) : null,
-      plantingDepthInches: body.plantingDepthInches ? parseFloat(body.plantingDepthInches) : null,
-      
-      // Environmental
-      sunlight: body.sunlight || 'Full Sun',
-      waterNeeds: body.waterNeeds || 'Medium',
-      soilType: body.soilType || null,
-      soilPH: body.soilPH ? parseFloat(body.soilPH) : null,
-      hardinessZone: body.hardinessZone || null,
-      frostTolerant: body.frostTolerant === 'true' || body.frostTolerant === true,
-      perennial: body.perennial === 'true' || body.perennial === true,
-      
-      // Media
-      imageUrl: body.imageUrl || null,
-      thumbnailUrl: body.thumbnailUrl || null,
-      description: body.description || null,
-      careInstructions: body.careInstructions || null,
-      harvestInstructions: body.harvestInstructions || null,
-      
-      // Companion planting
-      companionPlants: body.companionPlants || null,
-      avoidPlants: body.avoidPlants || null,
-      
-      // Metadata
-      source: body.source || 'manual',
-      rawData: body.rawData || null,
-    };
-
     const [newPlant] = await db
       .insert(threedPlants)
-      .values(insertData)
+      .values({
+        threedId: parseInt(threedId),
+        userId: session.user.id,
+        commonName,
+        scientificName: scientificName || '',
+        type: type || 'Vegetable',
+        ...rest,
+      })
       .returning();
 
     return NextResponse.json({ success: true, data: newPlant });
@@ -191,6 +191,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
+    const { commonName, scientificName, type, ...rest } = body;
 
     // Verify ownership
     const [existing] = await db
@@ -211,48 +212,83 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Build update data
+    const [updated] = await db
+      .update(threedPlants)
+      .set({
+        commonName: commonName || existing.commonName,
+        scientificName: scientificName !== undefined ? scientificName : existing.scientificName,
+        type: type || existing.type,
+        ...rest,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(threedPlants.id, parseInt(id)),
+          eq(threedPlants.userId, session.user.id)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ success: true, data: updated });
+  } catch (error) {
+    console.error('ThreeD plants API error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update plant' },
+      { status: 500 }
+    );
+  }
+}
+
+// ============================================
+// PATCH /api/threed/plants?id=1 - Partial update of a plant
+// ============================================
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Missing plant ID' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { commonName, scientificName, type, ...rest } = body;
+
+    // Verify ownership
+    const [existing] = await db
+      .select()
+      .from(threedPlants)
+      .where(
+        and(
+          eq(threedPlants.id, parseInt(id)),
+          eq(threedPlants.userId, session.user.id)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Plant not found' },
+        { status: 404 }
+      );
+    }
+
     const updateData: any = { updatedAt: new Date() };
-    
-    // Only update fields that are provided
-    if (body.commonName !== undefined) updateData.commonName = body.commonName;
-    if (body.scientificName !== undefined) updateData.scientificName = body.scientificName;
-    if (body.variety !== undefined) updateData.variety = body.variety;
-    if (body.family !== undefined) updateData.family = body.family;
-    if (body.type !== undefined) updateData.type = body.type;
-    if (body.status !== undefined) updateData.status = body.status;
-    if (body.modelId !== undefined) updateData.modelId = body.modelId;
-    
-    // Growth parameters
-    if (body.growthHabit !== undefined) updateData.growthHabit = body.growthHabit;
-    if (body.daysToMaturity !== undefined) updateData.daysToMaturity = body.daysToMaturity ? parseInt(body.daysToMaturity) : null;
-    if (body.daysToGermination !== undefined) updateData.daysToGermination = body.daysToGermination ? parseInt(body.daysToGermination) : null;
-    if (body.daysToHarvest !== undefined) updateData.daysToHarvest = body.daysToHarvest ? parseInt(body.daysToHarvest) : null;
-    
-    // Spacing
-    if (body.spacingInches !== undefined) updateData.spacingInches = body.spacingInches ? parseInt(body.spacingInches) : null;
-    if (body.rowSpacingInches !== undefined) updateData.rowSpacingInches = body.rowSpacingInches ? parseInt(body.rowSpacingInches) : null;
-    if (body.plantingDepthInches !== undefined) updateData.plantingDepthInches = body.plantingDepthInches ? parseFloat(body.plantingDepthInches) : null;
-    
-    // Environmental
-    if (body.sunlight !== undefined) updateData.sunlight = body.sunlight;
-    if (body.waterNeeds !== undefined) updateData.waterNeeds = body.waterNeeds;
-    if (body.soilType !== undefined) updateData.soilType = body.soilType;
-    if (body.soilPH !== undefined) updateData.soilPH = body.soilPH ? parseFloat(body.soilPH) : null;
-    if (body.hardinessZone !== undefined) updateData.hardinessZone = body.hardinessZone;
-    if (body.frostTolerant !== undefined) updateData.frostTolerant = body.frostTolerant === 'true' || body.frostTolerant === true;
-    if (body.perennial !== undefined) updateData.perennial = body.perennial === 'true' || body.perennial === true;
-    
-    // Media
-    if (body.imageUrl !== undefined) updateData.imageUrl = body.imageUrl;
-    if (body.thumbnailUrl !== undefined) updateData.thumbnailUrl = body.thumbnailUrl;
-    if (body.description !== undefined) updateData.description = body.description;
-    if (body.careInstructions !== undefined) updateData.careInstructions = body.careInstructions;
-    if (body.harvestInstructions !== undefined) updateData.harvestInstructions = body.harvestInstructions;
-    
-    // Companion planting
-    if (body.companionPlants !== undefined) updateData.companionPlants = body.companionPlants;
-    if (body.avoidPlants !== undefined) updateData.avoidPlants = body.avoidPlants;
+    if (commonName !== undefined) updateData.commonName = commonName;
+    if (scientificName !== undefined) updateData.scientificName = scientificName;
+    if (type !== undefined) updateData.type = type;
+    // Add other fields as needed
+    Object.keys(rest).forEach(key => {
+      updateData[key] = rest[key];
+    });
 
     const [updated] = await db
       .update(threedPlants)
@@ -273,14 +309,6 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// ============================================
-// PATCH /api/threed/plants?id=1 - Partial update
-// ============================================
-export async function PATCH(request: NextRequest) {
-  // Same as PUT but with partial updates
-  // ... (can reuse PUT logic or implement separately)
 }
 
 // ============================================

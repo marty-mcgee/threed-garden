@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicAlbums, musicTracks, music } from '@/lib/schema/music';
+import { musicAlbums, musicTracks } from '@/lib/schema/music';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 

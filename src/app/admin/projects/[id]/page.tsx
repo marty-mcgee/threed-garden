@@ -1,4 +1,4 @@
-// app/admin/projects/[id]/page.tsx
+// app/admin/projects/[id]/page.tsx - Updated API calls
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -33,12 +33,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/toast';
 
-// ✅ Import the Music Album CRUD component
+// ✅ Import the "Music Album" CRUD component
 import { MusicAlbumCRUD } from '@/components/admin/music/albums/MusicAlbumCRUD';
-
-// Future imports for other module CRUD components
-// import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
-// import { TrafficIncidentsCRUD } from '@/components/admin/traffic/incidents/TrafficIncidentsCRUD';
+// ✅ Import the "ThreeD Plants" CRUD component
+import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
+// ✅ Import the "Traffic CHP-CAD (Live Incidents)" CRUD component
+import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHPCADCRUD';
 
 interface Project {
   id: number;
@@ -98,17 +98,16 @@ export default function ProjectDetailPage() {
     isActive: true,
   });
   
-  // ✅ Track expanded sections for child CRUD components
   const [expandedModules, setExpandedModules] = useState<Record<ModuleType, boolean>>({
     threed: false,
     traffic: false,
-    music: true, // Music expanded by default
+    music: true,
   });
 
   // ✅ Check authentication
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/sign-in');
+      router.push('/auth/sign-in');
     }
   }, [status, router]);
 
@@ -121,17 +120,17 @@ export default function ProjectDetailPage() {
   const fetchProject = async () => {
     if (!session?.user?.id) {
       showToast('You must be signed in', 'error');
-      router.push('/sign-in');
+      router.push('/auth/sign-in');
       return;
     }
 
     setLoading(true);
     try {
-      // ✅ Fetch project - the API will filter by userId from the session
-      const projectRes = await fetch(`/api/project/${projectId}`);
+      // ✅ GET /api/project?id=1 - Get project
+      const projectRes = await fetch(`/api/project?id=${projectId}`);
       if (!projectRes.ok) {
         if (projectRes.status === 401) {
-          router.push('/sign-in');
+          router.push('/auth/sign-in');
           return;
         }
         throw new Error('Failed to fetch project');
@@ -144,7 +143,6 @@ export default function ProjectDetailPage() {
         return;
       }
 
-      // ✅ Verify the project belongs to the current user
       if (projectData.data.userId !== session.user.id) {
         showToast('You do not have permission to view this project', 'error');
         router.push('/admin');
@@ -159,8 +157,8 @@ export default function ProjectDetailPage() {
         isActive: projectData.data.isActive !== false,
       });
 
-      // ✅ Fetch modules - the API will filter by userId from the session
-      const modulesRes = await fetch(`/api/project/${projectId}/modules`);
+      // ✅ GET /api/project/modules?projectId=1 - Get modules
+      const modulesRes = await fetch(`/api/project/modules?projectId=${projectId}`);
       if (!modulesRes.ok) {
         throw new Error('Failed to fetch modules');
       }
@@ -182,7 +180,8 @@ export default function ProjectDetailPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/project/${projectId}`, {
+      // ✅ PATCH /api/project?id=1 - Update project
+      const response = await fetch(`/api/project?id=${projectId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -190,7 +189,7 @@ export default function ProjectDetailPage() {
       
       if (!response.ok) {
         if (response.status === 401) {
-          router.push('/sign-in');
+          router.push('/auth/sign-in');
           return;
         }
         throw new Error('Failed to update project');
@@ -214,7 +213,8 @@ export default function ProjectDetailPage() {
     }
 
     try {
-      const response = await fetch(`/api/${type}/${moduleId}`, {
+      // ✅ PATCH /api/[module]?id=1 - Toggle module status
+      const response = await fetch(`/api/${type}?id=${moduleId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !currentStatus }),
@@ -222,7 +222,7 @@ export default function ProjectDetailPage() {
       
       if (!response.ok) {
         if (response.status === 401) {
-          router.push('/sign-in');
+          router.push('/auth/sign-in');
           return;
         }
         throw new Error('Failed to update module status');
@@ -249,25 +249,40 @@ export default function ProjectDetailPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/project/${projectId}/modules`, {
+      // ✅ STEP 1: Create the module first
+      const createResponse = await fetch(`/api/${newModuleData.type}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: newModuleData.type,
           name: newModuleData.name,
           description: newModuleData.description,
         }),
       });
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/sign-in');
-          return;
-        }
-        throw new Error('Failed to create module');
+
+      if (!createResponse.ok) {
+        const errorData = await createResponse.json();
+        throw new Error(errorData.error || 'Failed to create module');
       }
-      
-      showToast(`${moduleConfig[newModuleData.type].label} module created successfully`, 'success');
+
+      const createData = await createResponse.json();
+      const moduleId = createData.data.id;
+
+      // ✅ STEP 2: Add the module to the project using the junction table
+      const addResponse = await fetch(`/api/project/modules?projectId=${projectId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: newModuleData.type,
+          moduleId: moduleId, // ✅ Now sending the numeric ID, not the name
+        }),
+      });
+
+      if (!addResponse.ok) {
+        const errorData = await addResponse.json();
+        throw new Error(errorData.error || 'Failed to add module to project');
+      }
+
+      showToast(`${moduleConfig[newModuleData.type].label} module created and added successfully`, 'success');
       setShowNewModuleDialog(false);
       setNewModuleData({ type: 'threed', name: '', description: '' });
       await fetchProject();
@@ -288,7 +303,8 @@ export default function ProjectDetailPage() {
     if (!confirm(`Delete "${name}" module? This action cannot be undone.`)) return;
 
     try {
-      const response = await fetch(`/api/project/${projectId}/modules`, {
+      // ✅ DELETE /api/project/modules?projectId=1 - Remove module from project
+      const response = await fetch(`/api/project/modules?projectId=${projectId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, moduleId: id }),
@@ -296,7 +312,7 @@ export default function ProjectDetailPage() {
       
       if (!response.ok) {
         if (response.status === 401) {
-          router.push('/sign-in');
+          router.push('/auth/sign-in');
           return;
         }
         throw new Error('Failed to delete module');
@@ -310,7 +326,6 @@ export default function ProjectDetailPage() {
     }
   };
 
-  // ✅ Toggle module expansion for child CRUD
   const toggleExpand = (type: ModuleType) => {
     setExpandedModules(prev => ({
       ...prev,
@@ -326,7 +341,6 @@ export default function ProjectDetailPage() {
     });
   };
 
-  // ✅ Loading state
   if (status === 'loading' || loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -335,13 +349,12 @@ export default function ProjectDetailPage() {
     );
   }
 
-  // ✅ Unauthenticated state
   if (status === 'unauthenticated') {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <p className="text-muted-foreground">Please sign in to access this page</p>
-          <Button className="mt-4" onClick={() => router.push('/sign-in')}>
+          <Button className="mt-4" onClick={() => router.push('/auth/sign-in')}>
             Sign In
           </Button>
         </div>
@@ -532,7 +545,7 @@ export default function ProjectDetailPage() {
         </Dialog>
       </div>
 
-      {/* Module Tables with Child CRUD Components */}
+      {/* Module Tables */}
       <div className="space-y-6">
         {(['threed', 'traffic', 'music'] as ModuleType[]).map((type) => {
           const config = moduleConfig[type];
@@ -582,7 +595,6 @@ export default function ProjectDetailPage() {
                   </div>
                 ) : (
                   <div>
-                    {/* Module List Table */}
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -647,7 +659,6 @@ export default function ProjectDetailPage() {
                       </TableBody>
                     </Table>
 
-                    {/* ✅ Child CRUD Components - Only show when expanded */}
                     {isExpanded && (
                       <div className="mt-6 pt-6 border-t">
                         {type === 'music' && (
@@ -657,32 +668,44 @@ export default function ProjectDetailPage() {
                                 <h4 className="text-sm font-medium text-muted-foreground mb-4">
                                   Albums for: <span className="text-foreground">{mod.name}</span>
                                 </h4>
-                                {session?.user?.id && (
-                                  <MusicAlbumCRUD
-                                    userId={session.user.id}
-                                    onModuleUpdate={fetchProject}
-                                  />
-                                )}
+                                <MusicAlbumCRUD
+                                  // userId={session.user.id}
+                                  onModuleUpdate={fetchProject}
+                                />
                               </div>
                             ))}
                           </div>
                         )}
                         
-                        {/* Future ThreeD CRUD */}
                         {type === 'threed' && (
-                          <div className="ml-4 pl-4 border-l-2 border-green-200">
-                            <p className="text-sm text-muted-foreground">
-                              ThreeD CRUD components coming soon...
-                            </p>
+                          <div className="space-y-4">
+                            {moduleList.map((mod) => (
+                              <div key={mod.id} className="ml-4 pl-4 border-l-2 border-green-200">
+                                <h4 className="text-sm font-medium text-muted-foreground mb-4">
+                                  Plants for: <span className="text-foreground">{mod.name}</span>
+                                </h4>
+                                <ThreeDPlantsCRUD
+                                  // userId={session.user.id}
+                                  onModuleUpdate={fetchProject}
+                                />
+                              </div>
+                            ))}
                           </div>
                         )}
                         
-                        {/* Future Traffic CRUD */}
                         {type === 'traffic' && (
-                          <div className="ml-4 pl-4 border-l-2 border-blue-200">
-                            <p className="text-sm text-muted-foreground">
-                              Traffic CRUD components coming soon...
-                            </p>
+                          <div className="space-y-4">
+                            {moduleList.map((mod) => (
+                              <div key={mod.id} className="ml-4 pl-4 border-l-2 border-blue-200">
+                                <h4 className="text-sm font-medium text-muted-foreground mb-4">
+                                  CHP-CAD Incidents for: <span className="text-foreground">{mod.name}</span>
+                                </h4>
+                                <TrafficCHPCADCRUD
+                                  // userId={session.user.id}
+                                  onModuleUpdate={fetchProject}
+                                />
+                              </div>
+                            ))}
                           </div>
                         )}
                       </div>
