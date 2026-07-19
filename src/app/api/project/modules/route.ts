@@ -11,6 +11,7 @@ import { eq, and } from 'drizzle-orm';
 // ============================================
 // GET /api/project/modules?projectId=1 - Get all modules for a project
 // ============================================
+// app/api/project/modules/route.ts - GET handler
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify project ownership
+    // ✅ Check if project exists
     const [proj] = await db
       .select()
       .from(project)
@@ -50,11 +51,17 @@ export async function GET(request: NextRequest) {
       )
       .limit(1);
 
+    // ✅ If project doesn't exist, return 200 with empty data (not 404)
     if (!proj) {
-      return NextResponse.json(
-        { success: false, error: 'Project not found' },
-        { status: 404 }
-      );
+      console.log(`ℹ️ Project ${parsedProjectId} not found or doesn't belong to user, returning empty data`);
+      return NextResponse.json({
+        success: true,
+        data: {
+          threed: [],
+          traffic: [],
+          music: [],
+        },
+      });
     }
 
     // Get modules via junction tables
@@ -63,19 +70,34 @@ export async function GET(request: NextRequest) {
         .select()
         .from(threed)
         .innerJoin(projectThreed, eq(projectThreed.threedId, threed.id))
-        .where(eq(projectThreed.projectId, parsedProjectId)),
+        .where(
+          and(
+            eq(projectThreed.projectId, parsedProjectId),
+            eq(projectThreed.userId, userId)
+          )
+        ),
       
       db
         .select()
         .from(traffic)
         .innerJoin(projectTraffic, eq(projectTraffic.trafficId, traffic.id))
-        .where(eq(projectTraffic.projectId, parsedProjectId)),
+        .where(
+          and(
+            eq(projectTraffic.projectId, parsedProjectId),
+            eq(projectTraffic.userId, userId)
+          )
+        ),
       
       db
         .select()
         .from(music)
         .innerJoin(projectMusic, eq(projectMusic.musicId, music.id))
-        .where(eq(projectMusic.projectId, parsedProjectId)),
+        .where(
+          and(
+            eq(projectMusic.projectId, parsedProjectId),
+            eq(projectMusic.userId, userId)
+          )
+        ),
     ]);
 
     return NextResponse.json({
@@ -125,7 +147,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify project ownership
+    // ✅ Verify project ownership
     const [proj] = await db
       .select()
       .from(project)
@@ -203,9 +225,11 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // ✅ Insert with userId
         [result] = await db
           .insert(projectThreed)
           .values({
+            userId: userId, // ✅ Set userId
             projectId: parsedProjectId,
             threedId: parsedModuleId,
           })
@@ -250,9 +274,11 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // ✅ Insert with userId
         [result] = await db
           .insert(projectTraffic)
           .values({
+            userId: userId, // ✅ Set userId
             projectId: parsedProjectId,
             trafficId: parsedModuleId,
           })
@@ -297,9 +323,11 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // ✅ Insert with userId
         [result] = await db
           .insert(projectMusic)
           .values({
+            userId: userId, // ✅ Set userId
             projectId: parsedProjectId,
             musicId: parsedModuleId,
           })
@@ -354,7 +382,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Verify project ownership
+    // ✅ Verify project ownership
     const [proj] = await db
       .select()
       .from(project)
@@ -399,7 +427,8 @@ export async function DELETE(request: NextRequest) {
           .where(
             and(
               eq(projectThreed.projectId, parsedProjectId),
-              eq(projectThreed.threedId, parsedModuleId)
+              eq(projectThreed.threedId, parsedModuleId),
+              eq(projectThreed.userId, userId) // ✅ Check userId
             )
           )
           .returning();
@@ -411,7 +440,8 @@ export async function DELETE(request: NextRequest) {
           .where(
             and(
               eq(projectTraffic.projectId, parsedProjectId),
-              eq(projectTraffic.trafficId, parsedModuleId)
+              eq(projectTraffic.trafficId, parsedModuleId),
+              eq(projectTraffic.userId, userId) // ✅ Check userId
             )
           )
           .returning();
@@ -423,7 +453,8 @@ export async function DELETE(request: NextRequest) {
           .where(
             and(
               eq(projectMusic.projectId, parsedProjectId),
-              eq(projectMusic.musicId, parsedModuleId)
+              eq(projectMusic.musicId, parsedModuleId),
+              eq(projectMusic.userId, userId) // ✅ Check userId
             )
           )
           .returning();

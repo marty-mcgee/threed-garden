@@ -82,16 +82,9 @@ export default function AdminPage() {
     try {
       const response = await fetch(`/api/project/modules?projectId=${projectId}`);
       
-      // ✅ Log the full response for debugging
-      console.log(`📡 Fetching modules for project ${projectId}:`, {
-        status: response.status,
-        statusText: response.statusText,
-      });
-      
+      // ✅ If response is not OK (500, 401, etc.), handle gracefully
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`❌ API error (${response.status}):`, errorText);
-        // ✅ Set counts to 0 but log the error
+        console.warn(`⚠️ Failed to fetch modules for project ${projectId}: ${response.status}`);
         setModuleCounts(prev => ({ 
           ...prev, 
           [projectId]: { threed: 0, traffic: 0, music: 0 } 
@@ -100,17 +93,27 @@ export default function AdminPage() {
       }
       
       const data = await response.json();
-      console.log(`✅ Modules for project ${projectId}:`, data);
+      
+      // ✅ Handle case where data is empty or missing
+      if (!data.success || !data.data) {
+        console.log(`ℹ️ No module data for project ${projectId}`);
+        setModuleCounts(prev => ({ 
+          ...prev, 
+          [projectId]: { threed: 0, traffic: 0, music: 0 } 
+        }));
+        return;
+      }
       
       const counts = {
-        threed: data.data?.threed?.length || 0,
-        traffic: data.data?.traffic?.length || 0,
-        music: data.data?.music?.length || 0,
+        threed: data.data.threed?.length || 0,
+        traffic: data.data.traffic?.length || 0,
+        music: data.data.music?.length || 0,
       };
+      
       setModuleCounts(prev => ({ ...prev, [projectId]: counts }));
     } catch (error) {
-      console.error('Error fetching module counts:', error);
-      // ✅ Set counts to 0 so the UI doesn't break
+      // ✅ Network errors handled gracefully
+      console.warn(`⚠️ Network error fetching modules for project ${projectId}:`, error);
       setModuleCounts(prev => ({ 
         ...prev, 
         [projectId]: { threed: 0, traffic: 0, music: 0 } 

@@ -117,20 +117,21 @@ export default function ProjectDetailPage() {
     }
   }, [projectId, session]);
 
+  // app/admin/projects/[id]/page.tsx - fetchProject function
   const fetchProject = async () => {
     if (!session?.user?.id) {
       showToast('You must be signed in', 'error');
-      router.push('/auth/sign-in');
+      router.push('/sign-in');
       return;
     }
 
     setLoading(true);
     try {
-      // ✅ GET /api/project?id=1 - Get project
+      // Fetch project
       const projectRes = await fetch(`/api/project?id=${projectId}`);
       if (!projectRes.ok) {
         if (projectRes.status === 401) {
-          router.push('/auth/sign-in');
+          router.push('/sign-in');
           return;
         }
         throw new Error('Failed to fetch project');
@@ -157,13 +158,21 @@ export default function ProjectDetailPage() {
         isActive: projectData.data.isActive !== false,
       });
 
-      // ✅ GET /api/project/modules?projectId=1 - Get modules
+      // ✅ Fetch modules - handle empty gracefully
       const modulesRes = await fetch(`/api/project/modules?projectId=${projectId}`);
-      if (!modulesRes.ok) {
-        throw new Error('Failed to fetch modules');
+      
+      // ✅ If 404, just set empty modules
+      if (modulesRes.status === 404) {
+        console.log(`ℹ️ No modules found for project ${projectId}`);
+        setModules({ threed: [], traffic: [], music: [] });
+      } else if (modulesRes.ok) {
+        const modulesData = await modulesRes.json();
+        setModules(modulesData.data || { threed: [], traffic: [], music: [] });
+      } else {
+        // For other errors, also set empty modules
+        console.warn(`⚠️ Failed to fetch modules for project ${projectId}`);
+        setModules({ threed: [], traffic: [], music: [] });
       }
-      const modulesData = await modulesRes.json();
-      setModules(modulesData.data || { threed: [], traffic: [], music: [] });
     } catch (error) {
       console.error('Error fetching project:', error);
       showToast(error instanceof Error ? error.message : 'Failed to load project', 'error');

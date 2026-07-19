@@ -44,6 +44,7 @@ export const project = pgTable('project', {
 
 export const projectThreed = pgTable('project_threed', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
   threedId: integer('threed_id').references(() => threed.id, { onDelete: 'cascade' }),
   config: jsonb('config').default({}),
@@ -62,6 +63,7 @@ export const projectThreed = pgTable('project_threed', {
 
 export const projectTraffic = pgTable('project_traffic', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
   trafficId: integer('traffic_id').references(() => traffic.id, { onDelete: 'cascade' }),
   config: jsonb('config').default({}),
@@ -80,6 +82,7 @@ export const projectTraffic = pgTable('project_traffic', {
 
 export const projectMusic = pgTable('project_music', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
   musicId: integer('music_id').references(() => music.id, { onDelete: 'cascade' }),
   config: jsonb('config').default({}),
@@ -107,6 +110,10 @@ export const projectRelations = relations(project, ({ one, many }) => ({
 }));
 
 export const projectThreedRelations = relations(projectThreed, ({ one }) => ({
+  user: one(user, {
+    fields: [projectThreed.userId],
+    references: [user.id],
+  }),
   project: one(project, {
     fields: [projectThreed.projectId],
     references: [project.id],
@@ -118,6 +125,10 @@ export const projectThreedRelations = relations(projectThreed, ({ one }) => ({
 }));
 
 export const projectTrafficRelations = relations(projectTraffic, ({ one }) => ({
+  user: one(user, {
+    fields: [projectTraffic.userId],
+    references: [user.id],
+  }),
   project: one(project, {
     fields: [projectTraffic.projectId],
     references: [project.id],
@@ -129,6 +140,10 @@ export const projectTrafficRelations = relations(projectTraffic, ({ one }) => ({
 }));
 
 export const projectMusicRelations = relations(projectMusic, ({ one }) => ({
+  user: one(user, {
+    fields: [projectMusic.userId],
+    references: [user.id],
+  }),
   project: one(project, {
     fields: [projectMusic.projectId],
     references: [project.id],
