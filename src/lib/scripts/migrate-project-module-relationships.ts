@@ -133,9 +133,9 @@ async function migrateModuleRelationships() {
   // 1. Migrate ThreeD modules
   // ============================================
   console.log('📦 Processing ThreeD modules...');
-  const threedModules = await getModulesWithProjectId(threed, 'threed');
+  const projectAssetsThreed = await getModulesWithProjectId(threed, 'threed');
   
-  for (const module of threedModules) {
+  for (const module of projectAssetsThreed) {
     const success = await createJunctionRecord(
       projectThreed,
       module.projectId,
@@ -150,9 +150,9 @@ async function migrateModuleRelationships() {
   // 2. Migrate Traffic modules
   // ============================================
   console.log('\n📦 Processing Traffic modules...');
-  const trafficModules = await getModulesWithProjectId(traffic, 'traffic');
+  const projectAssetsTraffic = await getModulesWithProjectId(traffic, 'traffic');
   
-  for (const module of trafficModules) {
+  for (const module of projectAssetsTraffic) {
     const success = await createJunctionRecord(
       projectTraffic,
       module.projectId,
@@ -168,21 +168,21 @@ async function migrateModuleRelationships() {
   // ============================================
   console.log('\n📦 Processing Music modules...');
   
-  const musicModules = await getMusicModules();
+  const projectAssetsMusic = await getMusicModules();
   
-  if (musicModules.length === 0) {
+  if (projectAssetsMusic.length === 0) {
     console.log('ℹ️  No music modules found to migrate.');
   } else {
     // Group music modules by userId
     const modulesByUser: Record<string, MusicModule[]> = {};
-    for (const module of musicModules) {
+    for (const module of projectAssetsMusic) {
       if (!modulesByUser[module.userId]) {
         modulesByUser[module.userId] = [];
       }
       modulesByUser[module.userId].push(module);
     }
 
-    console.log(`📌 Found ${musicModules.length} music modules across ${Object.keys(modulesByUser).length} users.\n`);
+    console.log(`📌 Found ${projectAssetsMusic.length} music modules across ${Object.keys(modulesByUser).length} users.\n`);
 
     // Process each user's modules
     for (const [userId, userModules] of Object.entries(modulesByUser)) {

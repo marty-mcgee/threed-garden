@@ -1,0 +1,4 @@
+ALTER TABLE "project_assets" ALTER COLUMN "asset_type" SET DATA TYPE text;--> statement-breakpoint
+DROP TYPE "public"."asset_type";--> statement-breakpoint
+CREATE TYPE "public"."asset_type" AS ENUM('music_albums', 'music_tracks', 'music_links', 'music_media', 'threed_plants', 'threed_beds', 'threed_layers', 'threed_markers', 'threed_models', 'threed_characters', 'threed_tasks', 'threed_harvests', 'threed_weather_logs', 'threed_farmbots', 'threed_watering_schedules', 'traffic_chp_cad_incidents', 'traffic_chp_cases', 'traffic_caltrans_lane_closures', 'traffic_caltrans_cctv_cameras', 'traffic_bay_area_511_events', 'traffic_calfire_incidents');--> statement-breakpoint
+ALTER TABLE "project_assets" ALTER COLUMN "asset_type" SET DATA TYPE "public"."asset_type" USING "asset_type"::"public"."asset_type";

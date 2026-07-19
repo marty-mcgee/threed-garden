@@ -57,15 +57,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: {
-          threed: [],
-          traffic: [],
-          music: [],
+          modules: {
+            threed: [],
+            traffic: [],
+            music: [],
+          },
         },
       });
     }
 
     // Get modules via junction tables
-    const [threedModules, trafficModules, musicModules] = await Promise.all([
+    const [projectAssetsThreed, projectAssetsTraffic, projectAssetsMusic] = await Promise.all([
       db
         .select()
         .from(threed)
@@ -103,9 +105,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        threed: threedModules.map(row => row.threed),
-        traffic: trafficModules.map(row => row.traffic),
-        music: musicModules.map(row => row.music),
+        threed: projectAssetsThreed.map(row => row.threed),
+        traffic: projectAssetsTraffic.map(row => row.traffic),
+        music: projectAssetsMusic.map(row => row.music),
       },
     });
   } catch (error) {

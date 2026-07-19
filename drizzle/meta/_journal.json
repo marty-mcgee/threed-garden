@@ -50,6 +50,13 @@
       "when": 1784476072495,
       "tag": "0006_absent_gressill",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784480103842,
+      "tag": "0007_lethal_groot",
+      "breakpoints": true
     }
   ]
 }

@@ -1,10 +1,45 @@
 // lib/schema/projects/index.ts
 import { pgTable, pgEnum, text, timestamp, boolean, jsonb, serial, index, uniqueIndex, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+// PROJECT OWNER
 import { user } from '../auth';
+// MODULE RELATIONSHIPS
+import { music } from '../music';
 import { threed } from '../threed';
 import { traffic } from '../traffic';
-import { music } from '../music';
+
+// ============================================
+// ASSET TYPE ENUM
+// ============================================
+
+export const assetTypeEnum = pgEnum('asset_type', [
+  // Music
+  'music_albums',
+  'music_tracks',
+  'music_links',
+  'music_media',
+  
+  // ThreeD
+  'threed_plants',
+  'threed_beds',
+  'threed_layers',
+  'threed_markers',
+  'threed_models',
+  'threed_characters',
+  'threed_tasks',
+  'threed_harvests',
+  'threed_weather_logs',
+  'threed_farmbots',
+  'threed_watering_schedules',
+  
+  // Traffic
+  'traffic_chp_cad_incidents',
+  'traffic_chp_cases',
+  'traffic_caltrans_lane_closures',
+  'traffic_caltrans_cctv_cameras',
+  'traffic_bay_area_511_events',
+  'traffic_calfire_incidents',
+]);
 
 // ============================================
 // PROJECTS TABLE
@@ -99,40 +134,6 @@ export const projectMusic = pgTable('project_music', {
 // SINGLE ASSET JUNCTION TABLE (NEW)
 // ============================================
 
-export const assetTypeEnum = pgEnum('asset_type', [
-  // 'music',
-  'music_album',
-  'music_track',
-  'music_media',
-  'music_link',
-  'music_playback_history',
-  'music_polling_log',
-  // 'music_album_link',
-
-  // 'threed',
-  'threed_plant',
-  'threed_bed',
-  'threed_layer',
-  'threed_marker',
-  'threed_model',
-  'threed_character',
-  'threed_task',
-  'threed_harvest',
-  'threed_weather_log',
-  'threed_farmbot',
-  'threed_watering_schedule',
-  // 'threed_watering_schedule_history',
-  // 'threed_system_log',
-  
-  // 'traffic',
-  'traffic_chp_cad_incident',
-  'traffic_chp_case',
-  'traffic_caltrans_lane_closure',
-  'traffic_caltrans_cctv_camera',
-  'traffic_bay_area_511_event',
-  'traffic_calfire_incident',
-]);
-
 export const projectAssets = pgTable('project_assets', {
   id: serial('id').primaryKey(),
   
@@ -161,7 +162,7 @@ export const projectAssets = pgTable('project_assets', {
 }));
 
 // ============================================
-// RELATIONSHIPS
+// RELATIONS
 // ============================================
 
 export const projectRelations = relations(project, ({ one, many }) => ({
@@ -169,9 +170,25 @@ export const projectRelations = relations(project, ({ one, many }) => ({
     fields: [project.userId],
     references: [user.id],
   }),
-  threedModules: many(projectThreed),
-  trafficModules: many(projectTraffic),
-  musicModules: many(projectMusic),
+  projectAssets: many(projectAssets),
+  // projectModules: many(projectAssets),
+  projectAssetsThreed: many(projectThreed),
+  // threedModules: many(projectThreed),
+  projectAssetsTraffic: many(projectTraffic),
+  // trafficModules: many(projectTraffic),
+  projectAssetsMusic: many(projectMusic),
+  // musicModules: many(projectMusic),
+}));
+
+export const projectAssetsRelations = relations(projectAssets, ({ one }) => ({
+  project: one(project, {
+    fields: [projectAssets.projectId],
+    references: [project.id],
+  }),
+  user: one(user, {
+    fields: [projectAssets.userId],
+    references: [user.id],
+  }),
 }));
 
 export const projectThreedRelations = relations(projectThreed, ({ one }) => ({

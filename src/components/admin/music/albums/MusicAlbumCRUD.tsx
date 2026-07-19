@@ -198,7 +198,7 @@ export function MusicAlbumCRUD({ userId, projectId, onModuleUpdate }: MusicAlbum
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectId,
-          assetType: 'music_album',
+          assetType: 'music_albums',
           assetId: albumId,
         }),
       });
@@ -215,6 +215,59 @@ export function MusicAlbumCRUD({ userId, projectId, onModuleUpdate }: MusicAlbum
       showToast('Failed to add album to project', 'error');
     }
   };
+
+  const handleRemoveFromProject = async (albumId: number) => {
+    if (!projectId) {
+      showToast('No project selected', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/project/assets?projectId=${projectId}&type=music_albums&assetId=${albumId}`,
+        {
+          method: 'DELETE',
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('Album removed from project successfully', 'success');
+        if (onModuleUpdate) onModuleUpdate();
+      } else {
+        showToast(data.error || 'Failed to remove album from project', 'error');
+      }
+    } catch (error) {
+      console.error('Error removing album from project:', error);
+      showToast('Failed to remove album from project', 'error');
+    }
+  };
+
+  // Add the "Add to Project" button in your table row
+  // Example in your table render:
+  const renderActions = (album: any) => (
+    <div className="flex gap-2">
+      {/* Existing actions */}
+      {projectId && (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleAddToProject(album.id)}
+          >
+            Add to Project
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => handleRemoveFromProject(album.id)}
+          >
+            Remove from Project
+          </Button>
+        </>
+      )}
+    </div>
+  );
 
   const viewTracks = async (album: Album) => {
     try {
