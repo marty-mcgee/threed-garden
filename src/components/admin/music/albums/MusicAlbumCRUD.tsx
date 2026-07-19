@@ -52,10 +52,11 @@ interface Track {
 
 interface MusicAlbumCRUDProps {
   userId: string;
+  projectId?: number; // ✅ Optional: for adding assets to projects
   onModuleUpdate?: () => void;
 }
 
-export function MusicAlbumCRUD({ userId, onModuleUpdate }: MusicAlbumCRUDProps) {
+export function MusicAlbumCRUD({ userId, projectId, onModuleUpdate }: MusicAlbumCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [albums, setAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
@@ -182,6 +183,36 @@ export function MusicAlbumCRUD({ userId, onModuleUpdate }: MusicAlbumCRUDProps) 
     } catch (error) {
       console.error('Error deleting album:', error);
       showToast('Failed to delete album', 'error');
+    }
+  };
+
+  const handleAddToProject = async (albumId: number) => {
+    if (!projectId) {
+      showToast('No project selected', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/project/assets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId,
+          assetType: 'music_album',
+          assetId: albumId,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('Album added to project successfully', 'success');
+        if (onModuleUpdate) onModuleUpdate();
+      } else {
+        showToast(data.error || 'Failed to add album to project', 'error');
+      }
+    } catch (error) {
+      console.error('Error adding album to project:', error);
+      showToast('Failed to add album to project', 'error');
     }
   };
 
