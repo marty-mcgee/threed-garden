@@ -28,42 +28,45 @@ The database follows a **clean parent-child hierarchy** where Projects own Modul
 ```
 User (user)
   └── Projects (project)
-       ├── ThreeD (threed) ← Main module table
-       │    ├── threed_plants
-       │    ├── threed_beds
-       │    ├── threed_plantings
-       │    ├── threed_farmbots
-       │    ├── threed_models
-       │    ├── threed_characters
-       │    ├── threed_tasks
-       │    ├── threed_harvests
-       │    ├── threed_weather_logs
-       │    ├── threed_watering_schedules
-       │    ├── threed_watering_history
-       │    ├── threed_layers
-       │    ├── threed_markers
-       │    ├── threed_marker_relationships
-       │    └── threed_layer_presets
-       │
-       ├── Traffic (traffic) ← Main module table
-       │    ├── traffic_chp_cad_incidents
-       │    ├── traffic_chp_collisions
-       │    ├── traffic_lane_closures
-       │    ├── traffic_bay_area_511_events
-       │    ├── traffic_calfire_incidents
-       │    ├── traffic_cctv_cameras
-       │    ├── traffic_chp_cad_centers
-       │    ├── traffic_caltrans_districts
-       │    └── traffic_api_request_logs
-       │
-       └── Music (music) ← Main module table
-            ├── music_albums
-            ├── music_tracks
-            ├── music_links
-            ├── music_media
-            ├── music_album_links
-            ├── music_playback_history
-            └── music_polling_logs
+  └── Project Modules (project_modules)
+  └── Project Assets (project_assets)
+  │
+  ├── ThreeD (threed) ← Main module table
+  │    ├── threed_plants
+  │    ├── threed_beds
+  │    ├── threed_plantings
+  │    ├── threed_farmbots
+  │    ├── threed_models
+  │    ├── threed_characters
+  │    ├── threed_tasks
+  │    ├── threed_harvests
+  │    ├── threed_weather_logs
+  │    ├── threed_watering_schedules
+  │    ├── threed_watering_history
+  │    ├── threed_layers
+  │    ├── threed_markers
+  │    ├── threed_marker_relationships
+  │    └── threed_layer_presets
+  │
+  ├── Traffic (traffic) ← Main module table
+  │    ├── traffic_chp_cad_incidents
+  │    ├── traffic_chp_collisions
+  │    ├── traffic_lane_closures
+  │    ├── traffic_bay_area_511_events
+  │    ├── traffic_calfire_incidents
+  │    ├── traffic_cctv_cameras
+  │    ├── traffic_chp_cad_centers
+  │    ├── traffic_caltrans_districts
+  │    └── traffic_api_request_logs
+  │
+  └── Music (music) ← Main module table
+      ├── music_albums
+      ├── music_tracks
+      ├── music_links
+      ├── music_media
+      ├── music_album_links
+      ├── music_playback_history
+      └── music_polling_logs
 ```
 
 ### Key ID Patterns
