@@ -1,4 +1,4 @@
-// app/admin/projects/[id]/page.tsx - Full Version with CRUD + Asset Management
+// app/admin/projects/[id]/page.tsx
 
 'use client';
 
@@ -6,29 +6,12 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { 
-  ArrowLeft,
-  Plus,
-  Box,
-  Car,
-  Music,
-  Edit,
-  Trash2,
-  Save,
-  X,
-  Loader2,
-  CheckCircle,
-  XCircle,
-  MoreHorizontal,
-  ChevronDown,
-  ChevronRight,
-  FolderOpen,
-  Layers,
-  Sprout,
-  User,
-  AlertTriangle,
-
+  ArrowLeft, Plus, Box, Car, Music, Edit, Trash2, Save, X, Loader2,
+  CheckCircle, XCircle, MoreHorizontal, ChevronDown, ChevronRight,
+  FolderOpen, Layers, Sprout, Package, User, AlertTriangle, Music2,
+  Image, Link2, FileText, Route, Flame, Radio
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -36,20 +19,27 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-// ✅ Import CRUD Components
+// ✅ Import all CRUD Components
 import { MusicAlbumCRUD } from '@/components/admin/music/albums/MusicAlbumCRUD';
+import { MusicTracksCRUD } from '@/components/admin/music/tracks/MusicTracksCRUD';
+import { MusicMediaCRUD } from '@/components/admin/music/media/MusicMediaCRUD';
+import { MusicLinksCRUD } from '@/components/admin/music/links/MusicLinksCRUD';
+
 import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
 import { ThreeDBedsCRUD } from '@/components/admin/threed/beds/ThreeDBedsCRUD';
 import { ThreeDModelsCRUD } from '@/components/admin/threed/models/ThreeDModelsCRUD';
 import { ThreeDCharactersCRUD } from '@/components/admin/threed/characters/ThreeDCharactersCRUD';
-import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHPCADCRUD';
 
-// ✅ Import Asset Manager
+import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHPCADCRUD';
+import { TrafficCHPCasesCRUD } from '@/components/admin/traffic/chp-cases/TrafficCHPCasesCRUD';
+import { TrafficCaltransCRUD } from '@/components/admin/traffic/caltrans/TrafficCaltransCRUD';
+import { TrafficCalfireCRUD } from '@/components/admin/traffic/calfire/TrafficCalfireCRUD';
+import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bayarea511/TrafficBayArea511CRUD';
+
 import { ProjectAssetManager } from '@/components/admin/projects/ProjectAssetManager';
 
 interface Project {
@@ -75,13 +65,12 @@ interface Module {
 
 type ModuleType = 'threed' | 'traffic' | 'music';
 
-// ✅ Updated moduleConfig with all CRUD components
+// ✅ Module configuration with ALL CRUD components listed
 const moduleConfig: Record<ModuleType, { 
   icon: React.ElementType; 
   color: string; 
   label: string; 
   borderColor: string;
-  // ✅ Each module type can have multiple CRUD components
   crudComponents: Array<{
     id: string;
     label: string;
@@ -95,30 +84,10 @@ const moduleConfig: Record<ModuleType, {
     label: 'ThreeD',
     borderColor: 'border-green-200',
     crudComponents: [
-      { 
-        id: 'plants', 
-        label: 'Plants', 
-        component: ThreeDPlantsCRUD,
-        icon: Sprout,
-      },
-      { 
-        id: 'beds', 
-        label: 'Beds', 
-        component: ThreeDBedsCRUD,
-        icon: Box,
-      },
-      { 
-        id: 'models', 
-        label: '3D Models', 
-        component: ThreeDModelsCRUD,
-        icon: Box,
-      },
-      { 
-        id: 'characters', 
-        label: 'Characters', 
-        component: ThreeDCharactersCRUD,
-        icon: User,
-      },
+      { id: 'plants', label: 'Plants', component: ThreeDPlantsCRUD, icon: Sprout },
+      { id: 'beds', label: 'Beds', component: ThreeDBedsCRUD, icon: Box },
+      { id: 'models', label: '3D Models', component: ThreeDModelsCRUD, icon: Package },
+      { id: 'characters', label: 'Characters', component: ThreeDCharactersCRUD, icon: User },
     ],
   },
   traffic: { 
@@ -127,12 +96,11 @@ const moduleConfig: Record<ModuleType, {
     label: 'Traffic',
     borderColor: 'border-blue-200',
     crudComponents: [
-      { 
-        id: 'incidents', 
-        label: 'CHP-CAD Incidents', 
-        component: TrafficCHPCADCRUD,
-        icon: AlertTriangle,
-      },
+      { id: 'chp-cad', label: 'CHP-CAD Incidents', component: TrafficCHPCADCRUD, icon: AlertTriangle },
+      { id: 'chp-cases', label: 'CHP Cases', component: TrafficCHPCasesCRUD, icon: FileText },
+      { id: 'caltrans', label: 'Caltrans Closures', component: TrafficCaltransCRUD, icon: Route },
+      { id: 'calfire', label: 'CalFire Incidents', component: TrafficCalfireCRUD, icon: Flame },
+      { id: 'bayarea511', label: 'Bay Area 511', component: TrafficBayArea511CRUD, icon: Radio },
     ],
   },
   music: { 
@@ -141,17 +109,15 @@ const moduleConfig: Record<ModuleType, {
     label: 'Music',
     borderColor: 'border-purple-200',
     crudComponents: [
-      { 
-        id: 'albums', 
-        label: 'Albums', 
-        component: MusicAlbumCRUD,
-        icon: Music,
-      },
+      { id: 'albums', label: 'Albums', component: MusicAlbumCRUD, icon: Music },
+      { id: 'tracks', label: 'Tracks', component: MusicTracksCRUD, icon: Music2 },
+      { id: 'media', label: 'Media', component: MusicMediaCRUD, icon: Image },
+      { id: 'links', label: 'Links', component: MusicLinksCRUD, icon: Link2 },
     ],
   },
 };
 
-// ✅ Session storage helpers
+// Session storage helpers
 const STORAGE_KEY = 'project_module_expanded';
 
 const getStoredExpandedState = (): Record<string, boolean> => {
@@ -209,7 +175,6 @@ export default function ProjectDetailPage() {
     return getStoredExpandedState();
   });
 
-  // ✅ Track which tab is active for each module
   const [activeModuleTab, setActiveModuleTab] = useState<Record<string, 'assets' | 'create'>>({});
 
   useEffect(() => {
@@ -276,7 +241,6 @@ export default function ProjectDetailPage() {
         const newModules = modulesData.data || { threed: [], traffic: [], music: [] };
         setModules(newModules);
         
-        // Initialize expanded state for modules
         setExpandedModules(prev => {
           const currentState = { ...prev };
           const storedState = getStoredExpandedState();
@@ -294,7 +258,6 @@ export default function ProjectDetailPage() {
             });
           });
           
-          // Remove modules that no longer exist
           const validKeys = new Set<string>();
           Object.entries(newModules).forEach(([type, moduleList]) => {
             (moduleList as Module[]).forEach((mod: Module) => {
@@ -738,7 +701,6 @@ export default function ProjectDetailPage() {
             const Icon = config.icon;
             const isExpanded = expandedModules[uniqueKey] || false;
             const activeTab = getModuleTab(type, module.id);
-            const CrudComponent = config.crudComponent;
 
             return (
               <Card 
@@ -795,21 +757,17 @@ export default function ProjectDetailPage() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                     <Button variant="ghost" size="sm" className="ml-1">
-                      {isExpanded ? (
-                        <ChevronDown className="w-4 h-4" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4" />
-                      )}
+                      {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     </Button>
                   </div>
                 </div>
 
-                {/* Module Content */}
+                {/* ============================================================
+                    ✅ MODULE CONTENT - CRUD COMPONENTS RENDER HERE
+                    ============================================================ */}
                 {isExpanded && (
                   <CardContent className="pt-0">
                     <div className="pt-4 border-t">
-                      
-                      {/* ✅ Tabs: Manage Assets OR Create New */}
                       <Tabs 
                         value={activeTab} 
                         onValueChange={(value) => setModuleTab(type, module.id, value as 'assets' | 'create')}
@@ -836,39 +794,143 @@ export default function ProjectDetailPage() {
                           />
                         </TabsContent>
 
-                        {/* // Inside the module card, update the "Create" tab content: */}
-                        <TabsContent value="create">
-                          <div className="p-4 border rounded-lg bg-muted/10">
-                            <h4 className="text-sm font-medium mb-4">
-                              Create a new {config.label} asset to add to this module
-                            </h4>
+                        {/* ============================================================
+                            ✅ THIS IS WHERE ALL CRUD COMPONENTS ARE RENDERED
+                            ============================================================ */}
+                        {/* <TabsContent value="create">
+                          <div className="space-y-6">
+                            {config.crudComponents.map((crud) => {
+                              const CrudComponent = crud.component;
+                              const CrudIcon = crud.icon;
+                              return (
+                                <div key={crud.id} className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <CrudIcon className="w-4 h-4 text-muted-foreground" />
+                                    <h5 className="text-sm font-medium">{crud.label}</h5>
+                                  </div>
+                                  <CrudComponent onModuleUpdate={fetchProject} />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </TabsContent> */}
+                        
+                        <TabsContent value="create" className="max-h-[70vh] overflow-y-auto">
+                          <div className="space-y-6 pr-2">
                             
-                            {/* ✅ Sub-tabs for each CRUD component */}
-                            <Tabs defaultValue={config.crudComponents[0]?.id} className="w-full">
-                              <TabsList className="mb-4">
-                                {config.crudComponents.map((crud) => {
-                                  const Icon = crud.icon;
-                                  return (
-                                    <TabsTrigger key={crud.id} value={crud.id} className="flex items-center gap-2">
-                                      <Icon className="w-4 h-4" />
-                                      {crud.label}
-                                    </TabsTrigger>
-                                  );
-                                })}
-                              </TabsList>
-                              
-                              {config.crudComponents.map((crud) => {
-                                const CrudComponent = crud.component;
-                                return (
-                                  <TabsContent key={crud.id} value={crud.id}>
-                                    <CrudComponent onModuleUpdate={fetchProject} />
-                                  </TabsContent>
-                                );
-                              })}
-                            </Tabs>
+                            {/* Music Module CRUD Components */}
+                            {type === 'music' && (
+                              <>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Music className="w-4 h-4 text-purple-500" />
+                                    <h5 className="text-sm font-medium">Albums</h5>
+                                  </div>
+                                  <MusicAlbumCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Music2 className="w-4 h-4 text-purple-500" />
+                                    <h5 className="text-sm font-medium">Tracks</h5>
+                                  </div>
+                                  <MusicTracksCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Image className="w-4 h-4 text-purple-500" />
+                                    <h5 className="text-sm font-medium">Media</h5>
+                                  </div>
+                                  <MusicMediaCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Link2 className="w-4 h-4 text-purple-500" />
+                                    <h5 className="text-sm font-medium">Links</h5>
+                                  </div>
+                                  <MusicLinksCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                              </>
+                            )}
+
+                            {/* ThreeD Module CRUD Components */}
+                            {type === 'threed' && (
+                              <>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Sprout className="w-4 h-4 text-green-500" />
+                                    <h5 className="text-sm font-medium">Plants</h5>
+                                  </div>
+                                  <ThreeDPlantsCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Box className="w-4 h-4 text-green-500" />
+                                    <h5 className="text-sm font-medium">Beds</h5>
+                                  </div>
+                                  <ThreeDBedsCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Package className="w-4 h-4 text-green-500" />
+                                    <h5 className="text-sm font-medium">3D Models</h5>
+                                  </div>
+                                  <ThreeDModelsCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <User className="w-4 h-4 text-green-500" />
+                                    <h5 className="text-sm font-medium">Characters</h5>
+                                  </div>
+                                  <ThreeDCharactersCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                              </>
+                            )}
+
+                            {/* Traffic Module CRUD Components */}
+                            {type === 'traffic' && (
+                              <>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <AlertTriangle className="w-4 h-4 text-blue-500" />
+                                    <h5 className="text-sm font-medium">CHP-CAD Incidents</h5>
+                                  </div>
+                                  <TrafficCHPCADCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <FileText className="w-4 h-4 text-blue-500" />
+                                    <h5 className="text-sm font-medium">CHP Cases</h5>
+                                  </div>
+                                  <TrafficCHPCasesCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Route className="w-4 h-4 text-blue-500" />
+                                    <h5 className="text-sm font-medium">Caltrans Closures</h5>
+                                  </div>
+                                  <TrafficCaltransCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Flame className="w-4 h-4 text-blue-500" />
+                                    <h5 className="text-sm font-medium">CalFire Incidents</h5>
+                                  </div>
+                                  <TrafficCalfireCRUD onModuleUpdate={fetchProject} />
+                                </div>
+                                <div className="border rounded-lg p-4 bg-background">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <Radio className="w-4 h-4 text-blue-500" />
+                                    <h5 className="text-sm font-medium">Bay Area 511</h5>
+                                  </div>
+                                  <TrafficBayArea511CRUD onModuleUpdate={fetchProject} />
+                                </div>
+                              </>
+                            )}
                           </div>
                         </TabsContent>
 
+
+                        
                       </Tabs>
                     </div>
                   </CardContent>

@@ -27,6 +27,7 @@ The database follows a **clean parent-child hierarchy** where Projects own Modul
 
 ```
 User (user)
+  │
   └── Projects (project)
   └── Project Modules (project_modules)
   └── Project Assets (project_assets)

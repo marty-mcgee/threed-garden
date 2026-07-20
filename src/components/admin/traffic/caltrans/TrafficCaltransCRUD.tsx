@@ -9,7 +9,7 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  Road,
+  Route,
   MoreHorizontal,
   ExternalLink,
   Calendar,
@@ -226,7 +226,7 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
         size="sm"
         onClick={() => viewClosureDetails(closure)}
       >
-        <Road className="w-4 h-4" />
+        <Route className="w-4 h-4" />
       </Button>
       <Button
         variant="ghost"
@@ -327,7 +327,7 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Road className="w-5 h-5 text-orange-500" />
+          <Route className="w-5 h-5 text-orange-500" />
           <h3 className="text-sm font-semibold">Caltrans Closures</h3>
           <Badge variant="secondary" className="ml-2">
             {closures.length} {closures.length === 1 ? 'closure' : 'closures'}
@@ -533,7 +533,7 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
 
       {closures.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Road className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <Route className="w-12 h-12 mx-auto mb-3 opacity-50" />
           <p>No closures yet</p>
           <Button 
             variant="outline" 

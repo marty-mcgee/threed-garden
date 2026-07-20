@@ -28,7 +28,7 @@ import { useToast } from '@/components/ui/toast';
 
 interface CHPCase {
   id: number;
-  caseNumber: string;
+  caseId: string;
   incidentId: string | null;
   title: string;
   description: string | null;
@@ -60,7 +60,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingCase, setEditingCase] = useState<CHPCase | null>(null);
   const [formData, setFormData] = useState({
-    caseNumber: '',
+    caseId: '',
     incidentId: '',
     title: '',
     description: '',
@@ -100,8 +100,8 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
   };
 
   const handleCreate = async () => {
-    if (!formData.caseNumber || !formData.title) {
-      showToast('Case number and title are required', 'error');
+    if (!formData.caseId || !formData.title) {
+      showToast('Case ID and title are required', 'error');
       return;
     }
 
@@ -111,7 +111,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          caseNumber: formData.caseNumber,
+          caseId: formData.caseId,
           incidentId: formData.incidentId || null,
           title: formData.title,
           description: formData.description || null,
@@ -134,7 +134,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
         showToast('Case created successfully', 'success');
         setShowCreateDialog(false);
         setFormData({
-          caseNumber: '',
+          caseId: '',
           incidentId: '',
           title: '',
           description: '',
@@ -171,7 +171,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          caseNumber: formData.caseNumber,
+          caseId: formData.caseId,
           incidentId: formData.incidentId || null,
           title: formData.title,
           description: formData.description || null,
@@ -206,8 +206,8 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
     }
   };
 
-  const handleDelete = async (id: number, caseNumber: string) => {
-    if (!confirm(`Delete case "${caseNumber}"? This action cannot be undone.`)) return;
+  const handleDelete = async (id: number, caseId: string) => {
+    if (!confirm(`Delete case "${caseId}"? This action cannot be undone.`)) return;
 
     try {
       const response = await fetch(`/api/traffic/chp-cases?id=${id}`, {
@@ -253,7 +253,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             className="text-red-600"
-            onClick={() => handleDelete(chpCase.id, chpCase.caseNumber)}
+            onClick={() => handleDelete(chpCase.id, chpCase.caseId)}
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -265,7 +265,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
 
   const viewCaseDetails = (chpCase: CHPCase) => {
     showToast(
-      `${chpCase.caseNumber} - ${chpCase.title}`,
+      `${chpCase.caseId} - ${chpCase.title}`,
       'info'
     );
   };
@@ -273,7 +273,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
   const openEditDialog = (chpCase: CHPCase) => {
     setEditingCase(chpCase);
     setFormData({
-      caseNumber: chpCase.caseNumber,
+      caseId: chpCase.caseId,
       incidentId: chpCase.incidentId || '',
       title: chpCase.title,
       description: chpCase.description || '',
@@ -348,12 +348,12 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
-                <Label htmlFor="caseNumber">Case Number *</Label>
+                <Label htmlFor="caseId">Case ID *</Label>
                 <Input
-                  id="caseNumber"
+                  id="caseId"
                   placeholder="e.g., CHP-2024-001"
-                  value={formData.caseNumber}
-                  onChange={(e) => setFormData({ ...formData, caseNumber: e.target.value })}
+                  value={formData.caseId}
+                  onChange={(e) => setFormData({ ...formData, caseId: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
@@ -535,7 +535,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Case #</TableHead>
+              <TableHead>Case ID</TableHead>
               <TableHead className="hidden sm:table-cell">Title</TableHead>
               <TableHead className="hidden md:table-cell">Type</TableHead>
               <TableHead className="text-center">Status</TableHead>
@@ -546,7 +546,7 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
             {cases.map((chpCase) => (
               <TableRow key={chpCase.id}>
                 <TableCell className="font-medium">
-                  {chpCase.caseNumber}
+                  {chpCase.caseId}
                   {chpCase.severity && (
                     <Badge className={`ml-2 text-xs ${getSeverityColor(chpCase.severity)}`}>
                       {chpCase.severity.charAt(0).toUpperCase() + chpCase.severity.slice(1)}
@@ -589,11 +589,11 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label htmlFor="edit-caseNumber">Case Number *</Label>
+              <Label htmlFor="edit-caseId">Case ID *</Label>
               <Input
-                id="edit-caseNumber"
-                value={formData.caseNumber}
-                onChange={(e) => setFormData({ ...formData, caseNumber: e.target.value })}
+                id="edit-caseId"
+                value={formData.caseId}
+                onChange={(e) => setFormData({ ...formData, caseId: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
