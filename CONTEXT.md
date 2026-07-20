@@ -1883,3 +1883,9 @@ If you need any additional features or have any questions, feel free to ask!
 **Version:** v0.6.2 (Project Module Assets 'project_assets') 🚀
 
 ---
+
+---
+
+**Version:** v0.6.3 (Project Module Assets 'project_assets') 🚀
+
+---
