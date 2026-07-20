@@ -1,4 +1,4 @@
-// components/admin/music/albums/MusicAlbumCRUD.tsx
+// components/admin/music/albums/MusicAlbumCRUD.tsx - CRUD Only
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,7 +23,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
-// import { useSession } from 'next-auth/react';
 
 interface Album {
   id: number;
@@ -51,12 +50,10 @@ interface Track {
 }
 
 interface MusicAlbumCRUDProps {
-  userId: string;
-  projectId?: number; // ✅ Optional: for adding assets to projects
   onModuleUpdate?: () => void;
 }
 
-export function MusicAlbumCRUD({ userId, projectId, onModuleUpdate }: MusicAlbumCRUDProps) {
+export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [albums, setAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(true);
@@ -186,86 +183,44 @@ export function MusicAlbumCRUD({ userId, projectId, onModuleUpdate }: MusicAlbum
     }
   };
 
-  const handleAddToProject = async (albumId: number) => {
-    if (!projectId) {
-      showToast('No project selected', 'error');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/project/assets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId,
-          assetType: 'music_albums',
-          assetId: albumId,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        showToast('Album added to project successfully', 'success');
-        if (onModuleUpdate) onModuleUpdate();
-      } else {
-        showToast(data.error || 'Failed to add album to project', 'error');
-      }
-    } catch (error) {
-      console.error('Error adding album to project:', error);
-      showToast('Failed to add album to project', 'error');
-    }
-  };
-
-  const handleRemoveFromProject = async (albumId: number) => {
-    if (!projectId) {
-      showToast('No project selected', 'error');
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `/api/project/assets?projectId=${projectId}&type=music_albums&assetId=${albumId}`,
-        {
-          method: 'DELETE',
-        }
-      );
-
-      const data = await response.json();
-      if (data.success) {
-        showToast('Album removed from project successfully', 'success');
-        if (onModuleUpdate) onModuleUpdate();
-      } else {
-        showToast(data.error || 'Failed to remove album from project', 'error');
-      }
-    } catch (error) {
-      console.error('Error removing album from project:', error);
-      showToast('Failed to remove album from project', 'error');
-    }
-  };
-
-  // Add the "Add to Project" button in your table row
-  // Example in your table render:
-  const renderActions = (album: any) => (
-    <div className="flex gap-2">
-      {/* Existing actions */}
-      {projectId && (
-        <>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleAddToProject(album.id)}
-          >
-            Add to Project
+  const renderActions = (album: Album) => (
+    <div className="flex items-center justify-end gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => viewTracks(album)}
+      >
+        <Music className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => openEditDialog(album)}
+      >
+        <Edit className="w-4 h-4" />
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreHorizontal className="w-4 h-4" />
           </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => handleRemoveFromProject(album.id)}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {album.coverArt && (
+            <DropdownMenuItem onClick={() => window.open(album.coverArt, '_blank')}>
+              <ExternalLink className="w-4 h-4 mr-2" />
+              View Cover
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => handleDelete(album.id, album.title)}
           >
-            Remove from Project
-          </Button>
-        </>
-      )}
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 
@@ -285,21 +240,12 @@ export function MusicAlbumCRUD({ userId, projectId, onModuleUpdate }: MusicAlbum
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  // Open edit dialog with album data
   const openEditDialog = (album: Album) => {
     setEditingAlbum(album);
     setFormData({
@@ -476,44 +422,7 @@ export function MusicAlbumCRUD({ userId, projectId, onModuleUpdate }: MusicAlbum
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => viewTracks(album)}
-                    >
-                      <Music className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditDialog(album)}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {album.coverArt && (
-                          <DropdownMenuItem onClick={() => window.open(album.coverArt, '_blank')}>
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            View Cover
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={() => handleDelete(album.id, album.title)}
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  {renderActions(album)}
                 </TableCell>
               </TableRow>
             ))}

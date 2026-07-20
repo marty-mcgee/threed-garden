@@ -1,4 +1,5 @@
-// app/admin/projects/[id]/page.tsx - Updated API calls
+// app/admin/projects/[id]/page.tsx - Full Version with CRUD + Asset Management
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,7 +20,9 @@ import {
   XCircle,
   MoreHorizontal,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  FolderOpen,
+  Layers
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,13 +35,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// ✅ Import the "Music Album" CRUD component
+// ✅ Import CRUD Components
 import { MusicAlbumCRUD } from '@/components/admin/music/albums/MusicAlbumCRUD';
-// ✅ Import the "ThreeD Plants" CRUD component
 import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
-// ✅ Import the "Traffic CHP-CAD (Live Incidents)" CRUD component
 import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHPCADCRUD';
+
+// ✅ Import Asset Manager
+import { ProjectAssetManager } from '@/components/admin/projects/ProjectAssetManager';
 
 interface Project {
   id: number;
@@ -63,10 +68,59 @@ interface Module {
 
 type ModuleType = 'threed' | 'traffic' | 'music';
 
-const moduleConfig: Record<ModuleType, { icon: React.ElementType; color: string; label: string }> = {
-  threed: { icon: Box, color: 'text-green-500', label: 'ThreeD' },
-  traffic: { icon: Car, color: 'text-blue-500', label: 'Traffic' },
-  music: { icon: Music, color: 'text-purple-500', label: 'Music' },
+const moduleConfig: Record<ModuleType, { 
+  icon: React.ElementType; 
+  color: string; 
+  label: string; 
+  borderColor: string;
+  crudComponent: React.ComponentType<{ onModuleUpdate?: () => void }>;
+}> = {
+  threed: { 
+    icon: Box, 
+    color: 'text-green-600', 
+    label: 'ThreeD',
+    borderColor: 'border-green-200',
+    crudComponent: ThreeDPlantsCRUD,
+  },
+  traffic: { 
+    icon: Car, 
+    color: 'text-blue-600', 
+    label: 'Traffic',
+    borderColor: 'border-blue-200',
+    crudComponent: TrafficCHPCADCRUD,
+  },
+  music: { 
+    icon: Music, 
+    color: 'text-purple-600', 
+    label: 'Music',
+    borderColor: 'border-purple-200',
+    crudComponent: MusicAlbumCRUD,
+  },
+};
+
+// ✅ Session storage helpers
+const STORAGE_KEY = 'project_module_expanded';
+
+const getStoredExpandedState = (): Record<string, boolean> => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const stored = sessionStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Error reading from sessionStorage:', error);
+  }
+  return {};
+};
+
+const setStoredExpandedState = (state: Record<string, boolean>) => {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error('Error writing to sessionStorage:', error);
+  }
 };
 
 export default function ProjectDetailPage() {
@@ -98,13 +152,17 @@ export default function ProjectDetailPage() {
     isActive: true,
   });
   
-  const [expandedModules, setExpandedModules] = useState<Record<ModuleType, boolean>>({
-    threed: false,
-    traffic: false,
-    music: true,
+  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>(() => {
+    return getStoredExpandedState();
   });
 
-  // ✅ Check authentication
+  // ✅ Track which tab is active for each module
+  const [activeModuleTab, setActiveModuleTab] = useState<Record<string, 'assets' | 'create'>>({});
+
+  useEffect(() => {
+    setStoredExpandedState(expandedModules);
+  }, [expandedModules]);
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/sign-in');
@@ -117,7 +175,6 @@ export default function ProjectDetailPage() {
     }
   }, [projectId, session]);
 
-  // app/admin/projects/[id]/page.tsx - fetchProject function
   const fetchProject = async () => {
     if (!session?.user?.id) {
       showToast('You must be signed in', 'error');
@@ -127,7 +184,6 @@ export default function ProjectDetailPage() {
 
     setLoading(true);
     try {
-      // Fetch project
       const projectRes = await fetch(`/api/project?id=${projectId}`);
       if (!projectRes.ok) {
         if (projectRes.status === 401) {
@@ -158,19 +214,50 @@ export default function ProjectDetailPage() {
         isActive: projectData.data.isActive !== false,
       });
 
-      // ✅ Fetch modules - handle empty gracefully
       const modulesRes = await fetch(`/api/project/modules?projectId=${projectId}`);
       
-      // ✅ If 404, just set empty modules
       if (modulesRes.status === 404) {
-        console.log(`ℹ️ No modules found for project ${projectId}`);
         setModules({ threed: [], traffic: [], music: [] });
       } else if (modulesRes.ok) {
         const modulesData = await modulesRes.json();
-        setModules(modulesData.data || { threed: [], traffic: [], music: [] });
+        const newModules = modulesData.data || { threed: [], traffic: [], music: [] };
+        setModules(newModules);
+        
+        // Initialize expanded state for modules
+        setExpandedModules(prev => {
+          const currentState = { ...prev };
+          const storedState = getStoredExpandedState();
+          
+          Object.entries(newModules).forEach(([type, moduleList]) => {
+            (moduleList as Module[]).forEach((mod: Module) => {
+              const uniqueKey = `${type}_module_${mod.id}`;
+              if (!(uniqueKey in currentState)) {
+                if (uniqueKey in storedState) {
+                  currentState[uniqueKey] = storedState[uniqueKey];
+                } else {
+                  currentState[uniqueKey] = false;
+                }
+              }
+            });
+          });
+          
+          // Remove modules that no longer exist
+          const validKeys = new Set<string>();
+          Object.entries(newModules).forEach(([type, moduleList]) => {
+            (moduleList as Module[]).forEach((mod: Module) => {
+              validKeys.add(`${type}_module_${mod.id}`);
+            });
+          });
+          
+          Object.keys(currentState).forEach(key => {
+            if (!validKeys.has(key)) {
+              delete currentState[key];
+            }
+          });
+          
+          return currentState;
+        });
       } else {
-        // For other errors, also set empty modules
-        console.warn(`⚠️ Failed to fetch modules for project ${projectId}`);
         setModules({ threed: [], traffic: [], music: [] });
       }
     } catch (error) {
@@ -189,7 +276,6 @@ export default function ProjectDetailPage() {
 
     setIsSubmitting(true);
     try {
-      // ✅ PATCH /api/project?id=1 - Update project
       const response = await fetch(`/api/project?id=${projectId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -222,7 +308,6 @@ export default function ProjectDetailPage() {
     }
 
     try {
-      // ✅ PATCH /api/[module]?id=1 - Toggle module status
       const response = await fetch(`/api/${type}?id=${moduleId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -258,7 +343,6 @@ export default function ProjectDetailPage() {
 
     setIsSubmitting(true);
     try {
-      // ✅ STEP 1: Create the module first
       const createResponse = await fetch(`/api/${newModuleData.type}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -276,13 +360,12 @@ export default function ProjectDetailPage() {
       const createData = await createResponse.json();
       const moduleId = createData.data.id;
 
-      // ✅ STEP 2: Add the module to the project using the junction table
       const addResponse = await fetch(`/api/project/modules?projectId=${projectId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: newModuleData.type,
-          moduleId: moduleId, // ✅ Now sending the numeric ID, not the name
+          moduleId: moduleId,
         }),
       });
 
@@ -312,7 +395,6 @@ export default function ProjectDetailPage() {
     if (!confirm(`Delete "${name}" module? This action cannot be undone.`)) return;
 
     try {
-      // ✅ DELETE /api/project/modules?projectId=1 - Remove module from project
       const response = await fetch(`/api/project/modules?projectId=${projectId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -335,11 +417,25 @@ export default function ProjectDetailPage() {
     }
   };
 
-  const toggleExpand = (type: ModuleType) => {
+  const toggleModuleExpand = (type: ModuleType, moduleId: number) => {
+    const uniqueKey = `${type}_module_${moduleId}`;
     setExpandedModules(prev => ({
       ...prev,
-      [type]: !prev[type],
+      [uniqueKey]: !prev[uniqueKey],
     }));
+  };
+
+  const setModuleTab = (type: ModuleType, moduleId: number, tab: 'assets' | 'create') => {
+    const uniqueKey = `${type}_module_${moduleId}`;
+    setActiveModuleTab(prev => ({
+      ...prev,
+      [uniqueKey]: tab,
+    }));
+  };
+
+  const getModuleTab = (type: ModuleType, moduleId: number): 'assets' | 'create' => {
+    const uniqueKey = `${type}_module_${moduleId}`;
+    return activeModuleTab[uniqueKey] || 'assets';
   };
 
   const formatDate = (dateString: string) => {
@@ -348,6 +444,17 @@ export default function ProjectDetailPage() {
       month: 'short',
       day: 'numeric',
     });
+  };
+
+  const getAllModules = (): { type: ModuleType; module: Module; uniqueKey: string }[] => {
+    const result: { type: ModuleType; module: Module; uniqueKey: string }[] = [];
+    (['threed', 'traffic', 'music'] as ModuleType[]).forEach(type => {
+      (modules[type] || []).forEach(module => {
+        const uniqueKey = `${type}_module_${module.id}`;
+        result.push({ type, module, uniqueKey });
+      });
+    });
+    return result;
   };
 
   if (status === 'loading' || loading) {
@@ -381,6 +488,8 @@ export default function ProjectDetailPage() {
       </div>
     );
   }
+
+  const allModules = getAllModules();
 
   return (
     <div className="space-y-6">
@@ -490,9 +599,9 @@ export default function ProjectDetailPage() {
       {/* Modules Section */}
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Modules</h2>
+          <h2 className="text-2xl font-bold">Project Modules</h2>
           <p className="text-muted-foreground">
-            Manage modules associated with this project
+            {allModules.length} module{allModules.length !== 1 ? 's' : ''} associated with this project
           </p>
         </div>
         <Dialog open={showNewModuleDialog} onOpenChange={setShowNewModuleDialog}>
@@ -554,178 +663,142 @@ export default function ProjectDetailPage() {
         </Dialog>
       </div>
 
-      {/* Module Tables */}
-      <div className="space-y-6">
-        {(['threed', 'traffic', 'music'] as ModuleType[]).map((type) => {
-          const config = moduleConfig[type];
-          const Icon = config.icon;
-          const moduleList = modules[type] || [];
-          const isExpanded = expandedModules[type];
+      {/* Module Cards */}
+      {allModules.length === 0 ? (
+        <Card>
+          <CardContent className="text-center py-12">
+            <FolderOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h3 className="text-lg font-medium mb-2">No Modules Yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Create your first module to start managing assets for this project.
+            </p>
+            <Button onClick={() => setShowNewModuleDialog(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Module
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {allModules.map(({ type, module, uniqueKey }) => {
+            const config = moduleConfig[type];
+            const Icon = config.icon;
+            const isExpanded = expandedModules[uniqueKey] || false;
+            const activeTab = getModuleTab(type, module.id);
+            const CrudComponent = config.crudComponent;
 
-          return (
-            <Card key={type}>
-              <CardHeader 
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() => toggleExpand(type)}
+            return (
+              <Card 
+                key={uniqueKey}
+                className={`border-l-4 ${config.borderColor}`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Icon className={`w-6 h-6 ${config.color}`} />
-                    <CardTitle className="text-lg">{config.label}</CardTitle>
-                    <Badge variant="secondary" className="ml-2">
-                      {moduleList.length} {moduleList.length === 1 ? 'module' : 'modules'}
-                    </Badge>
+                {/* Module Header */}
+                <div 
+                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/30 transition-colors"
+                  onClick={() => toggleModuleExpand(type, module.id)}
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <Icon className={`w-5 h-5 ${config.color} flex-shrink-0`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-semibold truncate">{module.name}</h4>
+                        <Badge variant={module.isActive ? 'default' : 'secondary'} className="flex-shrink-0">
+                          {module.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                        <Badge variant="outline" className="flex-shrink-0">
+                          {config.label}
+                        </Badge>
+                      </div>
+                      {module.description && (
+                        <p className="text-sm text-muted-foreground truncate">{module.description}</p>
+                      )}
+                    </div>
                   </div>
-                  <Button variant="ghost" size="sm">
-                    {isExpanded ? (
-                      <ChevronDown className="w-4 h-4" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {moduleList.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>No {config.label} modules yet</p>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="mt-2"
-                      onClick={() => {
-                        setNewModuleData({ type, name: '', description: '' });
-                        setShowNewModuleDialog(true);
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleModuleStatus(type, module.id, module.isActive);
                       }}
                     >
-                      <Plus className="w-4 h-4 mr-1" />
-                      Add {config.label} Module
+                      {module.isActive ? 'Deactivate' : 'Activate'}
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => deleteModule(type, module.id, module.name)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete Module
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <Button variant="ghost" size="sm" className="ml-1">
+                      {isExpanded ? (
+                        <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
+                      )}
                     </Button>
                   </div>
-                ) : (
-                  <div>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead className="hidden md:table-cell">Description</TableHead>
-                          <TableHead className="hidden sm:table-cell">Created</TableHead>
-                          <TableHead className="text-center">Status</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {moduleList.map((mod) => (
-                          <TableRow key={mod.id}>
-                            <TableCell className="font-medium">{mod.name}</TableCell>
-                            <TableCell className="hidden md:table-cell text-muted-foreground">
-                              {mod.description || '—'}
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell text-muted-foreground">
-                              {formatDate(mod.createdAt)}
-                            </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                {mod.isActive ? (
-                                  <CheckCircle className="w-4 h-4 text-green-500" />
-                                ) : (
-                                  <XCircle className="w-4 h-4 text-red-500" />
-                                )}
-                                <span className="text-sm">
-                                  {mod.isActive ? 'Active' : 'Inactive'}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex items-center justify-end gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleModuleStatus(type, mod.id, mod.isActive)}
-                                >
-                                  {mod.isActive ? 'Deactivate' : 'Activate'}
-                                </Button>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                      <MoreHorizontal className="w-4 h-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem
-                                      className="text-red-600"
-                                      onClick={() => deleteModule(type, mod.id, mod.name)}
-                                    >
-                                      <Trash2 className="w-4 h-4 mr-2" />
-                                      Delete
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                </div>
 
-                    {isExpanded && (
-                      <div className="mt-6 pt-6 border-t">
-                        {type === 'music' && (
-                          <div className="space-y-4">
-                            {moduleList.map((mod) => (
-                              <div key={mod.id} className="ml-4 pl-4 border-l-2 border-purple-200">
-                                <h4 className="text-sm font-medium text-muted-foreground mb-4">
-                                  Albums for: <span className="text-foreground">{mod.name}</span>
-                                </h4>
-                                <MusicAlbumCRUD
-                                  // userId={session.user.id}
-                                  onModuleUpdate={fetchProject}
-                                />
-                              </div>
-                            ))}
+                {/* Module Content */}
+                {isExpanded && (
+                  <CardContent className="pt-0">
+                    <div className="pt-4 border-t">
+                      {/* ✅ Tabs: Manage Assets OR Create New */}
+                      <Tabs 
+                        value={activeTab} 
+                        onValueChange={(value) => setModuleTab(type, module.id, value as 'assets' | 'create')}
+                        className="w-full"
+                      >
+                        <TabsList className="grid w-full grid-cols-2 mb-4">
+                          <TabsTrigger value="assets" className="flex items-center gap-2">
+                            <Layers className="w-4 h-4" />
+                            Manage Assigned Assets
+                          </TabsTrigger>
+                          <TabsTrigger value="create" className="flex items-center gap-2">
+                            <Plus className="w-4 h-4" />
+                            Create New {config.label} Asset
+                          </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="assets">
+                          <ProjectAssetManager
+                            projectId={projectId}
+                            userId={session?.user?.id || ''}
+                            moduleType={type}
+                            moduleId={module.id}
+                            onUpdate={fetchProject}
+                          />
+                        </TabsContent>
+
+                        <TabsContent value="create">
+                          <div className="p-4 border rounded-lg bg-muted/10">
+                            <h4 className="text-sm font-medium mb-4">
+                              Create a new {config.label} asset to add to this module
+                            </h4>
+                            <CrudComponent onModuleUpdate={fetchProject} />
                           </div>
-                        )}
-                        
-                        {type === 'threed' && (
-                          <div className="space-y-4">
-                            {moduleList.map((mod) => (
-                              <div key={mod.id} className="ml-4 pl-4 border-l-2 border-green-200">
-                                <h4 className="text-sm font-medium text-muted-foreground mb-4">
-                                  Plants for: <span className="text-foreground">{mod.name}</span>
-                                </h4>
-                                <ThreeDPlantsCRUD
-                                  // userId={session.user.id}
-                                  onModuleUpdate={fetchProject}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        
-                        {type === 'traffic' && (
-                          <div className="space-y-4">
-                            {moduleList.map((mod) => (
-                              <div key={mod.id} className="ml-4 pl-4 border-l-2 border-blue-200">
-                                <h4 className="text-sm font-medium text-muted-foreground mb-4">
-                                  CHP-CAD Incidents for: <span className="text-foreground">{mod.name}</span>
-                                </h4>
-                                <TrafficCHPCADCRUD
-                                  // userId={session.user.id}
-                                  onModuleUpdate={fetchProject}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                        </TabsContent>
+                      </Tabs>
+                    </div>
+                  </CardContent>
                 )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
