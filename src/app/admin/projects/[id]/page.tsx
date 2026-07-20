@@ -808,6 +808,7 @@ export default function ProjectDetailPage() {
                 {isExpanded && (
                   <CardContent className="pt-0">
                     <div className="pt-4 border-t">
+                      
                       {/* ✅ Tabs: Manage Assets OR Create New */}
                       <Tabs 
                         value={activeTab} 
@@ -835,18 +836,7 @@ export default function ProjectDetailPage() {
                           />
                         </TabsContent>
 
-
                         {/* // Inside the module card, update the "Create" tab content: */}
-
-                        {/* <TabsContent value="create">
-                          <div className="p-4 border rounded-lg bg-muted/10">
-                            <h4 className="text-sm font-medium mb-4">
-                              Create a new {config.label} asset to add to this module
-                            </h4>
-                            <CrudComponent onModuleUpdate={fetchProject} />
-                          </div>
-                        </TabsContent> */}
-
                         <TabsContent value="create">
                           <div className="p-4 border rounded-lg bg-muted/10">
                             <h4 className="text-sm font-medium mb-4">
@@ -878,9 +868,6 @@ export default function ProjectDetailPage() {
                             </Tabs>
                           </div>
                         </TabsContent>
-
-
-
 
                       </Tabs>
                     </div>

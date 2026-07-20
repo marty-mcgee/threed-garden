@@ -1,4 +1,4 @@
-// components/admin/traffic/caltrans/TrafficCaltransCRUD.tsx
+// components/admin/traffic/bayarea511/TrafficBayArea511CRUD.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,7 +9,7 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  Road,
+  Radio,
   MoreHorizontal,
   ExternalLink,
   Calendar,
@@ -27,211 +27,216 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-interface CaltransClosure {
+interface BayArea511Event {
   id: number;
-  closureId: string;
-  route: string;
-  direction: string;
-  location: string;
+  eventId: string;
+  title: string;
   description: string | null;
-  closureType: string;
+  eventType: string;
   status: string;
   severity: string;
+  location: string;
+  route: string | null;
+  direction: string | null;
   latitude: number | null;
   longitude: number | null;
-  startDate: string | null;
-  endDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
   isActive: boolean;
   userId: string;
   createdAt: string;
   updatedAt: string;
 }
 
-interface TrafficCaltransCRUDProps {
+interface TrafficBayArea511CRUDProps {
   onModuleUpdate?: () => void;
 }
 
-export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps) {
+export function TrafficBayArea511CRUD({ onModuleUpdate }: TrafficBayArea511CRUDProps) {
   const { showToast, ToastComponent } = useToast();
-  const [closures, setClosures] = useState<CaltransClosure[]>([]);
+  const [events, setEvents] = useState<BayArea511Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingClosure, setEditingClosure] = useState<CaltransClosure | null>(null);
+  const [editingEvent, setEditingEvent] = useState<BayArea511Event | null>(null);
   const [formData, setFormData] = useState({
-    closureId: '',
-    route: '',
-    direction: 'northbound',
-    location: '',
+    eventId: '',
+    title: '',
     description: '',
-    closureType: 'lane_closure',
+    eventType: 'accident',
     status: 'active',
     severity: 'moderate',
+    location: '',
+    route: '',
+    direction: 'northbound',
     latitude: 37.7749,
     longitude: -122.4194,
-    startDate: '',
-    endDate: '',
+    startTime: '',
+    endTime: '',
     isActive: true,
   });
 
   useEffect(() => {
-    fetchClosures();
+    fetchEvents();
   }, []);
 
-  const fetchClosures = async () => {
+  const fetchEvents = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/traffic/caltrans');
+      const response = await fetch('/api/traffic/bay-area-511');
       const data = await response.json();
       if (data.success) {
-        setClosures(data.data || []);
+        setEvents(data.data || []);
       } else {
-        showToast(data.error || 'Failed to fetch closures', 'error');
+        showToast(data.error || 'Failed to fetch events', 'error');
       }
     } catch (error) {
-      console.error('Error fetching closures:', error);
-      showToast('Failed to fetch closures', 'error');
+      console.error('Error fetching events:', error);
+      showToast('Failed to fetch events', 'error');
     } finally {
       setLoading(false);
     }
   };
 
   const handleCreate = async () => {
-    if (!formData.closureId || !formData.route || !formData.location) {
-      showToast('Closure ID, route, and location are required', 'error');
+    if (!formData.eventId || !formData.title || !formData.location) {
+      showToast('Event ID, title, and location are required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/traffic/caltrans', {
+      const response = await fetch('/api/traffic/bay-area-511', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          closureId: formData.closureId,
-          route: formData.route,
-          direction: formData.direction,
-          location: formData.location,
+          eventId: formData.eventId,
+          title: formData.title,
           description: formData.description || null,
-          closureType: formData.closureType,
+          eventType: formData.eventType,
           status: formData.status,
           severity: formData.severity,
+          location: formData.location,
+          route: formData.route || null,
+          direction: formData.direction || null,
           latitude: formData.latitude || null,
           longitude: formData.longitude || null,
-          startDate: formData.startDate || null,
-          endDate: formData.endDate || null,
+          startTime: formData.startTime || null,
+          endTime: formData.endTime || null,
           isActive: formData.isActive,
         }),
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('Closure created successfully', 'success');
+        showToast('Event created successfully', 'success');
         setShowCreateDialog(false);
         setFormData({
-          closureId: '',
-          route: '',
-          direction: 'northbound',
-          location: '',
+          eventId: '',
+          title: '',
           description: '',
-          closureType: 'lane_closure',
+          eventType: 'accident',
           status: 'active',
           severity: 'moderate',
+          location: '',
+          route: '',
+          direction: 'northbound',
           latitude: 37.7749,
           longitude: -122.4194,
-          startDate: '',
-          endDate: '',
+          startTime: '',
+          endTime: '',
           isActive: true,
         });
-        await fetchClosures();
+        await fetchEvents();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to create closure', 'error');
+        showToast(data.error || 'Failed to create event', 'error');
       }
     } catch (error) {
-      console.error('Error creating closure:', error);
-      showToast('Failed to create closure', 'error');
+      console.error('Error creating event:', error);
+      showToast('Failed to create event', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleUpdate = async () => {
-    if (!editingClosure) return;
+    if (!editingEvent) return;
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/traffic/caltrans?id=${editingClosure.id}`, {
+      const response = await fetch(`/api/traffic/bay-area-511?id=${editingEvent.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          closureId: formData.closureId,
-          route: formData.route,
-          direction: formData.direction,
-          location: formData.location,
+          eventId: formData.eventId,
+          title: formData.title,
           description: formData.description || null,
-          closureType: formData.closureType,
+          eventType: formData.eventType,
           status: formData.status,
           severity: formData.severity,
+          location: formData.location,
+          route: formData.route || null,
+          direction: formData.direction || null,
           latitude: formData.latitude || null,
           longitude: formData.longitude || null,
-          startDate: formData.startDate || null,
-          endDate: formData.endDate || null,
+          startTime: formData.startTime || null,
+          endTime: formData.endTime || null,
           isActive: formData.isActive,
         }),
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('Closure updated successfully', 'success');
-        setEditingClosure(null);
-        await fetchClosures();
+        showToast('Event updated successfully', 'success');
+        setEditingEvent(null);
+        await fetchEvents();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to update closure', 'error');
+        showToast(data.error || 'Failed to update event', 'error');
       }
     } catch (error) {
-      console.error('Error updating closure:', error);
-      showToast('Failed to update closure', 'error');
+      console.error('Error updating event:', error);
+      showToast('Failed to update event', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: number, closureId: string) => {
-    if (!confirm(`Delete closure "${closureId}"? This action cannot be undone.`)) return;
+  const handleDelete = async (id: number, title: string) => {
+    if (!confirm(`Delete event "${title}"? This action cannot be undone.`)) return;
 
     try {
-      const response = await fetch(`/api/traffic/caltrans?id=${id}`, {
+      const response = await fetch(`/api/traffic/bay-area-511?id=${id}`, {
         method: 'DELETE',
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('Closure deleted successfully', 'success');
-        await fetchClosures();
+        showToast('Event deleted successfully', 'success');
+        await fetchEvents();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to delete closure', 'error');
+        showToast(data.error || 'Failed to delete event', 'error');
       }
     } catch (error) {
-      console.error('Error deleting closure:', error);
-      showToast('Failed to delete closure', 'error');
+      console.error('Error deleting event:', error);
+      showToast('Failed to delete event', 'error');
     }
   };
 
-  const renderActions = (closure: CaltransClosure) => (
+  const renderActions = (event: BayArea511Event) => (
     <div className="flex items-center justify-end gap-1">
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => viewClosureDetails(closure)}
+        onClick={() => viewEventDetails(event)}
       >
-        <Road className="w-4 h-4" />
+        <Radio className="w-4 h-4" />
       </Button>
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => openEditDialog(closure)}
+        onClick={() => openEditDialog(event)}
       >
         <Edit className="w-4 h-4" />
       </Button>
@@ -242,10 +247,10 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {closure.latitude && closure.longitude && (
+          {event.latitude && event.longitude && (
             <DropdownMenuItem onClick={() => {
               window.open(
-                `https://www.google.com/maps?q=${closure.latitude},${closure.longitude}`,
+                `https://www.google.com/maps?q=${event.latitude},${event.longitude}`,
                 '_blank'
               );
             }}>
@@ -255,7 +260,7 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
           )}
           <DropdownMenuItem
             className="text-red-600"
-            onClick={() => handleDelete(closure.id, closure.closureId)}
+            onClick={() => handleDelete(event.id, event.title)}
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -265,40 +270,42 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
     </div>
   );
 
-  const viewClosureDetails = (closure: CaltransClosure) => {
+  const viewEventDetails = (event: BayArea511Event) => {
     showToast(
-      `${closure.closureId} - ${closure.route} ${closure.direction}`,
+      `${event.title} - ${event.location}`,
       'info'
     );
   };
 
-  const openEditDialog = (closure: CaltransClosure) => {
-    setEditingClosure(closure);
+  const openEditDialog = (event: BayArea511Event) => {
+    setEditingEvent(event);
     setFormData({
-      closureId: closure.closureId,
-      route: closure.route,
-      direction: closure.direction || 'northbound',
-      location: closure.location,
-      description: closure.description || '',
-      closureType: closure.closureType || 'lane_closure',
-      status: closure.status || 'active',
-      severity: closure.severity || 'moderate',
-      latitude: closure.latitude || 37.7749,
-      longitude: closure.longitude || -122.4194,
-      startDate: closure.startDate || '',
-      endDate: closure.endDate || '',
-      isActive: closure.isActive !== false,
+      eventId: event.eventId,
+      title: event.title,
+      description: event.description || '',
+      eventType: event.eventType || 'accident',
+      status: event.status || 'active',
+      severity: event.severity || 'moderate',
+      location: event.location,
+      route: event.route || '',
+      direction: event.direction || 'northbound',
+      latitude: event.latitude || 37.7749,
+      longitude: event.longitude || -122.4194,
+      startTime: event.startTime || '',
+      endTime: event.endTime || '',
+      isActive: event.isActive !== false,
     });
   };
 
-  const getClosureTypeLabel = (type: string) => {
+  const getEventTypeLabel = (type: string) => {
     const types: Record<string, string> = {
-      lane_closure: 'Lane Closure',
-      road_closure: 'Road Closure',
-      ramp_closure: 'Ramp Closure',
-      shoulder_closure: 'Shoulder Closure',
-      construction: 'Construction',
       accident: 'Accident',
+      hazard: 'Hazard',
+      road_closure: 'Road Closure',
+      construction: 'Construction',
+      special_event: 'Special Event',
+      weather: 'Weather',
+      other: 'Other',
     };
     return types[type] || type;
   };
@@ -327,69 +334,41 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Road className="w-5 h-5 text-orange-500" />
-          <h3 className="text-sm font-semibold">Caltrans Closures</h3>
+          <Radio className="w-5 h-5 text-cyan-500" />
+          <h3 className="text-sm font-semibold">Bay Area 511 Events</h3>
           <Badge variant="secondary" className="ml-2">
-            {closures.length} {closures.length === 1 ? 'closure' : 'closures'}
+            {events.length} {events.length === 1 ? 'event' : 'events'}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus className="w-4 h-4 mr-1" />
-              Add Closure
+              Add Event
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create New Caltrans Closure</DialogTitle>
+              <DialogTitle>Create New 511 Event</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
-                <Label htmlFor="closureId">Closure ID *</Label>
+                <Label htmlFor="eventId">Event ID *</Label>
                 <Input
-                  id="closureId"
-                  placeholder="e.g., CAL-2024-001"
-                  value={formData.closureId}
-                  onChange={(e) => setFormData({ ...formData, closureId: e.target.value })}
+                  id="eventId"
+                  placeholder="e.g., 511-2024-001"
+                  value={formData.eventId}
+                  onChange={(e) => setFormData({ ...formData, eventId: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
               <div>
-                <Label htmlFor="route">Route *</Label>
+                <Label htmlFor="title">Title *</Label>
                 <Input
-                  id="route"
-                  placeholder="e.g., I-80"
-                  value={formData.route}
-                  onChange={(e) => setFormData({ ...formData, route: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="direction">Direction</Label>
-                <Select
-                  value={formData.direction}
-                  onValueChange={(value) => setFormData({ ...formData, direction: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select direction" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="northbound">Northbound</SelectItem>
-                    <SelectItem value="southbound">Southbound</SelectItem>
-                    <SelectItem value="eastbound">Eastbound</SelectItem>
-                    <SelectItem value="westbound">Westbound</SelectItem>
-                    <SelectItem value="both">Both Directions</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="location">Location *</Label>
-                <Input
-                  id="location"
-                  placeholder="e.g., Mile marker 12.5"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  id="title"
+                  placeholder="Event title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
@@ -397,7 +376,7 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  placeholder="Closure description..."
+                  placeholder="Event description..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
@@ -405,23 +384,64 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
                 />
               </div>
               <div>
-                <Label htmlFor="closureType">Closure Type</Label>
+                <Label htmlFor="eventType">Event Type</Label>
                 <Select
-                  value={formData.closureType}
-                  onValueChange={(value) => setFormData({ ...formData, closureType: value })}
+                  value={formData.eventType}
+                  onValueChange={(value) => setFormData({ ...formData, eventType: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select closure type" />
+                    <SelectValue placeholder="Select event type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="lane_closure">Lane Closure</SelectItem>
-                    <SelectItem value="road_closure">Road Closure</SelectItem>
-                    <SelectItem value="ramp_closure">Ramp Closure</SelectItem>
-                    <SelectItem value="shoulder_closure">Shoulder Closure</SelectItem>
-                    <SelectItem value="construction">Construction</SelectItem>
                     <SelectItem value="accident">Accident</SelectItem>
+                    <SelectItem value="hazard">Hazard</SelectItem>
+                    <SelectItem value="road_closure">Road Closure</SelectItem>
+                    <SelectItem value="construction">Construction</SelectItem>
+                    <SelectItem value="special_event">Special Event</SelectItem>
+                    <SelectItem value="weather">Weather</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="location">Location *</Label>
+                <Input
+                  id="location"
+                  placeholder="e.g., I-880 near Oakland"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="route">Route</Label>
+                  <Input
+                    id="route"
+                    placeholder="e.g., I-880"
+                    value={formData.route}
+                    onChange={(e) => setFormData({ ...formData, route: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="direction">Direction</Label>
+                  <Select
+                    value={formData.direction}
+                    onValueChange={(value) => setFormData({ ...formData, direction: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select direction" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="northbound">Northbound</SelectItem>
+                      <SelectItem value="southbound">Southbound</SelectItem>
+                      <SelectItem value="eastbound">Eastbound</SelectItem>
+                      <SelectItem value="westbound">Westbound</SelectItem>
+                      <SelectItem value="both">Both Directions</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -436,7 +456,7 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
                     <SelectContent>
                       <SelectItem value="active">Active</SelectItem>
                       <SelectItem value="cleared">Cleared</SelectItem>
-                      <SelectItem value="scheduled">Scheduled</SelectItem>
+                      <SelectItem value="upcoming">Upcoming</SelectItem>
                       <SelectItem value="cancelled">Cancelled</SelectItem>
                     </SelectContent>
                   </Select>
@@ -461,22 +481,22 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="startDate">Start Date</Label>
+                  <Label htmlFor="startTime">Start Time</Label>
                   <Input
-                    id="startDate"
+                    id="startTime"
                     type="datetime-local"
-                    value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                    value={formData.startTime}
+                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="endDate">End Date</Label>
+                  <Label htmlFor="endTime">End Time</Label>
                   <Input
-                    id="endDate"
+                    id="endTime"
                     type="datetime-local"
-                    value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                    value={formData.endTime}
+                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
@@ -523,7 +543,7 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
                     Creating...
                   </>
                 ) : (
-                  'Create Closure'
+                  'Create Event'
                 )}
               </Button>
             </div>
@@ -531,10 +551,10 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
         </Dialog>
       </div>
 
-      {closures.length === 0 ? (
+      {events.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Road className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>No closures yet</p>
+          <Radio className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <p>No events yet</p>
           <Button 
             variant="outline" 
             size="sm" 
@@ -542,55 +562,60 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
             onClick={() => setShowCreateDialog(true)}
           >
             <Plus className="w-4 h-4 mr-1" />
-            Create your first closure
+            Create your first event
           </Button>
         </div>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Closure ID</TableHead>
-              <TableHead className="hidden sm:table-cell">Route</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead className="hidden sm:table-cell">Location</TableHead>
               <TableHead className="hidden md:table-cell">Type</TableHead>
               <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {closures.map((closure) => (
-              <TableRow key={closure.id}>
+            {events.map((event) => (
+              <TableRow key={event.id}>
                 <TableCell className="font-medium">
-                  {closure.closureId}
-                  {closure.severity && (
-                    <Badge className={`ml-2 text-xs ${getSeverityColor(closure.severity)}`}>
-                      {closure.severity.charAt(0).toUpperCase() + closure.severity.slice(1)}
+                  {event.title}
+                  {event.severity && (
+                    <Badge className={`ml-2 text-xs ${getSeverityColor(event.severity)}`}>
+                      {event.severity.charAt(0).toUpperCase() + event.severity.slice(1)}
                     </Badge>
                   )}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {closure.route} {closure.direction}
+                  {event.location}
+                  {event.route && (
+                    <span className="text-xs text-muted-foreground ml-1">
+                      ({event.route})
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell className="hidden md:table-cell text-muted-foreground">
                   <Badge variant="secondary" className="capitalize">
-                    {getClosureTypeLabel(closure.closureType)}
+                    {getEventTypeLabel(event.eventType)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex items-center justify-center gap-2">
-                    {closure.status === 'active' ? (
+                    {event.status === 'active' ? (
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : closure.status === 'cleared' ? (
+                    ) : event.status === 'cleared' ? (
                       <CheckCircle className="w-4 h-4 text-blue-500" />
                     ) : (
                       <XCircle className="w-4 h-4 text-gray-400" />
                     )}
                     <span className="text-sm capitalize">
-                      {closure.status || 'Unknown'}
+                      {event.status || 'Unknown'}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  {renderActions(closure)}
+                  {renderActions(event)}
                 </TableCell>
               </TableRow>
             ))}
@@ -598,54 +623,27 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
         </Table>
       )}
 
-      <Dialog open={!!editingClosure} onOpenChange={(open) => !open && setEditingClosure(null)}>
+      <Dialog open={!!editingEvent} onOpenChange={(open) => !open && setEditingEvent(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Closure</DialogTitle>
+            <DialogTitle>Edit Event</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label htmlFor="edit-closureId">Closure ID *</Label>
+              <Label htmlFor="edit-eventId">Event ID *</Label>
               <Input
-                id="edit-closureId"
-                value={formData.closureId}
-                onChange={(e) => setFormData({ ...formData, closureId: e.target.value })}
+                id="edit-eventId"
+                value={formData.eventId}
+                onChange={(e) => setFormData({ ...formData, eventId: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
             <div>
-              <Label htmlFor="edit-route">Route *</Label>
+              <Label htmlFor="edit-title">Title *</Label>
               <Input
-                id="edit-route"
-                value={formData.route}
-                onChange={(e) => setFormData({ ...formData, route: e.target.value })}
-                disabled={isSubmitting}
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-direction">Direction</Label>
-              <Select
-                value={formData.direction}
-                onValueChange={(value) => setFormData({ ...formData, direction: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select direction" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="northbound">Northbound</SelectItem>
-                  <SelectItem value="southbound">Southbound</SelectItem>
-                  <SelectItem value="eastbound">Eastbound</SelectItem>
-                  <SelectItem value="westbound">Westbound</SelectItem>
-                  <SelectItem value="both">Both Directions</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="edit-location">Location *</Label>
-              <Input
-                id="edit-location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                id="edit-title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
@@ -660,23 +658,62 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
               />
             </div>
             <div>
-              <Label htmlFor="edit-closureType">Closure Type</Label>
+              <Label htmlFor="edit-eventType">Event Type</Label>
               <Select
-                value={formData.closureType}
-                onValueChange={(value) => setFormData({ ...formData, closureType: value })}
+                value={formData.eventType}
+                onValueChange={(value) => setFormData({ ...formData, eventType: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select closure type" />
+                  <SelectValue placeholder="Select event type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="lane_closure">Lane Closure</SelectItem>
-                  <SelectItem value="road_closure">Road Closure</SelectItem>
-                  <SelectItem value="ramp_closure">Ramp Closure</SelectItem>
-                  <SelectItem value="shoulder_closure">Shoulder Closure</SelectItem>
-                  <SelectItem value="construction">Construction</SelectItem>
                   <SelectItem value="accident">Accident</SelectItem>
+                  <SelectItem value="hazard">Hazard</SelectItem>
+                  <SelectItem value="road_closure">Road Closure</SelectItem>
+                  <SelectItem value="construction">Construction</SelectItem>
+                  <SelectItem value="special_event">Special Event</SelectItem>
+                  <SelectItem value="weather">Weather</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-location">Location *</Label>
+              <Input
+                id="edit-location"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-route">Route</Label>
+                <Input
+                  id="edit-route"
+                  value={formData.route}
+                  onChange={(e) => setFormData({ ...formData, route: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-direction">Direction</Label>
+                <Select
+                  value={formData.direction}
+                  onValueChange={(value) => setFormData({ ...formData, direction: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select direction" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="northbound">Northbound</SelectItem>
+                    <SelectItem value="southbound">Southbound</SelectItem>
+                    <SelectItem value="eastbound">Eastbound</SelectItem>
+                    <SelectItem value="westbound">Westbound</SelectItem>
+                    <SelectItem value="both">Both Directions</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -691,7 +728,7 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
                   <SelectContent>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="cleared">Cleared</SelectItem>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
+                    <SelectItem value="upcoming">Upcoming</SelectItem>
                     <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
@@ -716,22 +753,22 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-startDate">Start Date</Label>
+                <Label htmlFor="edit-startTime">Start Time</Label>
                 <Input
-                  id="edit-startDate"
+                  id="edit-startTime"
                   type="datetime-local"
-                  value={formData.startDate}
-                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  value={formData.startTime}
+                  onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
               <div>
-                <Label htmlFor="edit-endDate">End Date</Label>
+                <Label htmlFor="edit-endTime">End Time</Label>
                 <Input
-                  id="edit-endDate"
+                  id="edit-endTime"
                   type="datetime-local"
-                  value={formData.endDate}
-                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  value={formData.endTime}
+                  onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
