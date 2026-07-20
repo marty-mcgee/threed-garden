@@ -2,9 +2,9 @@ Absolutely! Here's your updated `CONTEXT.md` with all the new schema changes doc
 
 ---
 
-# Project Context – threed-garden-neon
+# Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** July 8, 2026 @ 10:30am PST
+**Last Updated:** July 20, 2026 @ 10:30am PST
 
 ---
 
