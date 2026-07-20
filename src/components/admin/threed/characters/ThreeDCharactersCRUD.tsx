@@ -1,4 +1,4 @@
-// components/admin/threed/beds/ThreeDBedsCRUD.tsx
+// components/admin/threed/characters/ThreeDCharactersCRUD.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,10 +9,10 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  Ruler,
+  User,
   MoreHorizontal,
-  Move3D,
-  Box
+  ExternalLink,
+  Move3D
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,72 +26,70 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-interface Bed {
+interface Character {
   id: number;
   name: string;
   description: string | null;
-  bedType: string;
-  width: number;
-  length: number;
-  height: number | null;
+  characterType: string;
+  modelId: number | null;
   positionX: number;
   positionY: number;
   positionZ: number;
   rotationX: number;
   rotationY: number;
   rotationZ: number;
-  color: string | null;
+  scale: number;
+  animation: string | null;
   isActive: boolean;
   userId: string;
   createdAt: string;
   updatedAt: string;
 }
 
-interface ThreeDBedsCRUDProps {
+interface ThreeDCharactersCRUDProps {
   onModuleUpdate?: () => void;
 }
 
-export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
+export function ThreeDCharactersCRUD({ onModuleUpdate }: ThreeDCharactersCRUDProps) {
   const { showToast, ToastComponent } = useToast();
-  const [beds, setBeds] = useState<Bed[]>([]);
+  const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingBed, setEditingBed] = useState<Bed | null>(null);
+  const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    bedType: 'raised',
-    width: 4,
-    length: 8,
-    height: 1.5,
+    characterType: 'human',
+    modelId: '',
     positionX: 0,
     positionY: 0,
     positionZ: 0,
     rotationX: 0,
     rotationY: 0,
     rotationZ: 0,
-    color: '#8B7355',
+    scale: 1,
+    animation: '',
     isActive: true,
   });
 
   useEffect(() => {
-    fetchBeds();
+    fetchCharacters();
   }, []);
 
-  const fetchBeds = async () => {
+  const fetchCharacters = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/threed/beds');
+      const response = await fetch('/api/threed/characters');
       const data = await response.json();
       if (data.success) {
-        setBeds(data.data || []);
+        setCharacters(data.data || []);
       } else {
-        showToast(data.error || 'Failed to fetch beds', 'error');
+        showToast(data.error || 'Failed to fetch characters', 'error');
       }
     } catch (error) {
-      console.error('Error fetching beds:', error);
-      showToast('Failed to fetch beds', 'error');
+      console.error('Error fetching characters:', error);
+      showToast('Failed to fetch characters', 'error');
     } finally {
       setLoading(false);
     }
@@ -99,143 +97,140 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
 
   const handleCreate = async () => {
     if (!formData.name) {
-      showToast('Bed name is required', 'error');
+      showToast('Character name is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/threed/beds', {
+      const response = await fetch('/api/threed/characters', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
           description: formData.description || null,
-          bedType: formData.bedType,
-          width: formData.width,
-          length: formData.length,
-          height: formData.height || null,
+          characterType: formData.characterType,
+          modelId: formData.modelId ? parseInt(formData.modelId) : null,
           positionX: formData.positionX,
           positionY: formData.positionY,
           positionZ: formData.positionZ,
           rotationX: formData.rotationX,
           rotationY: formData.rotationY,
           rotationZ: formData.rotationZ,
-          color: formData.color || null,
+          scale: formData.scale,
+          animation: formData.animation || null,
           isActive: formData.isActive,
         }),
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('Bed created successfully', 'success');
+        showToast('Character created successfully', 'success');
         setShowCreateDialog(false);
         setFormData({
           name: '',
           description: '',
-          bedType: 'raised',
-          width: 4,
-          length: 8,
-          height: 1.5,
+          characterType: 'human',
+          modelId: '',
           positionX: 0,
           positionY: 0,
           positionZ: 0,
           rotationX: 0,
           rotationY: 0,
           rotationZ: 0,
-          color: '#8B7355',
+          scale: 1,
+          animation: '',
           isActive: true,
         });
-        await fetchBeds();
+        await fetchCharacters();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to create bed', 'error');
+        showToast(data.error || 'Failed to create character', 'error');
       }
     } catch (error) {
-      console.error('Error creating bed:', error);
-      showToast('Failed to create bed', 'error');
+      console.error('Error creating character:', error);
+      showToast('Failed to create character', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleUpdate = async () => {
-    if (!editingBed) return;
+    if (!editingCharacter) return;
     setIsSubmitting(true);
     try {
-      const response = await fetch(`/api/threed/beds?id=${editingBed.id}`, {
+      const response = await fetch(`/api/threed/characters?id=${editingCharacter.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
           description: formData.description || null,
-          bedType: formData.bedType,
-          width: formData.width,
-          length: formData.length,
-          height: formData.height || null,
+          characterType: formData.characterType,
+          modelId: formData.modelId ? parseInt(formData.modelId) : null,
           positionX: formData.positionX,
           positionY: formData.positionY,
           positionZ: formData.positionZ,
           rotationX: formData.rotationX,
           rotationY: formData.rotationY,
           rotationZ: formData.rotationZ,
-          color: formData.color || null,
+          scale: formData.scale,
+          animation: formData.animation || null,
           isActive: formData.isActive,
         }),
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('Bed updated successfully', 'success');
-        setEditingBed(null);
-        await fetchBeds();
+        showToast('Character updated successfully', 'success');
+        setEditingCharacter(null);
+        await fetchCharacters();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to update bed', 'error');
+        showToast(data.error || 'Failed to update character', 'error');
       }
     } catch (error) {
-      console.error('Error updating bed:', error);
-      showToast('Failed to update bed', 'error');
+      console.error('Error updating character:', error);
+      showToast('Failed to update character', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Delete bed "${name}"? This action cannot be undone.`)) return;
+    if (!confirm(`Delete character "${name}"? This action cannot be undone.`)) return;
 
     try {
-      const response = await fetch(`/api/threed/beds?id=${id}`, {
+      const response = await fetch(`/api/threed/characters?id=${id}`, {
         method: 'DELETE',
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('Bed deleted successfully', 'success');
-        await fetchBeds();
+        showToast('Character deleted successfully', 'success');
+        await fetchCharacters();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to delete bed', 'error');
+        showToast(data.error || 'Failed to delete character', 'error');
       }
     } catch (error) {
-      console.error('Error deleting bed:', error);
-      showToast('Failed to delete bed', 'error');
+      console.error('Error deleting character:', error);
+      showToast('Failed to delete character', 'error');
     }
   };
 
-  const renderActions = (bed: Bed) => (
+  const renderActions = (character: Character) => (
     <div className="flex items-center justify-end gap-1">
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => viewBedDetails(bed)}
+        onClick={() => viewCharacterDetails(character)}
       >
-        <Ruler className="w-4 h-4" />
+        <User className="w-4 h-4" />
       </Button>
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => openEditDialog(bed)}
+        onClick={() => openEditDialog(character)}
       >
         <Edit className="w-4 h-4" />
       </Button>
@@ -248,7 +243,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             className="text-red-600"
-            onClick={() => handleDelete(bed.id, bed.name)}
+            onClick={() => handleDelete(character.id, character.name)}
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -258,40 +253,41 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
     </div>
   );
 
-  const viewBedDetails = (bed: Bed) => {
+  const viewCharacterDetails = (character: Character) => {
+    const position = `(${character.positionX}, ${character.positionY}, ${character.positionZ})`;
     showToast(
-      `${bed.name} - ${bed.width}' x ${bed.length}' x ${bed.height || 0}'`,
+      `${character.name} - Position: ${position}`,
       'info'
     );
   };
 
-  const openEditDialog = (bed: Bed) => {
-    setEditingBed(bed);
+  const openEditDialog = (character: Character) => {
+    setEditingCharacter(character);
     setFormData({
-      name: bed.name,
-      description: bed.description || '',
-      bedType: bed.bedType || 'raised',
-      width: bed.width || 4,
-      length: bed.length || 8,
-      height: bed.height || 1.5,
-      positionX: bed.positionX || 0,
-      positionY: bed.positionY || 0,
-      positionZ: bed.positionZ || 0,
-      rotationX: bed.rotationX || 0,
-      rotationY: bed.rotationY || 0,
-      rotationZ: bed.rotationZ || 0,
-      color: bed.color || '#8B7355',
-      isActive: bed.isActive !== false,
+      name: character.name,
+      description: character.description || '',
+      characterType: character.characterType || 'human',
+      modelId: character.modelId ? String(character.modelId) : '',
+      positionX: character.positionX || 0,
+      positionY: character.positionY || 0,
+      positionZ: character.positionZ || 0,
+      rotationX: character.rotationX || 0,
+      rotationY: character.rotationY || 0,
+      rotationZ: character.rotationZ || 0,
+      scale: character.scale || 1,
+      animation: character.animation || '',
+      isActive: character.isActive !== false,
     });
   };
 
-  const getBedTypeLabel = (type: string) => {
+  const getCharacterTypeLabel = (type: string) => {
     const types: Record<string, string> = {
-      raised: 'Raised Bed',
-      ground: 'Ground Bed',
-      container: 'Container',
-      vertical: 'Vertical',
-      hydroponic: 'Hydroponic',
+      human: 'Human',
+      animal: 'Animal',
+      robot: 'Robot',
+      fantasy: 'Fantasy',
+      creature: 'Creature',
+      npc: 'NPC',
     };
     return types[type] || type;
   };
@@ -308,32 +304,31 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
     <div className="space-y-4">
       {ToastComponent}
 
-      {/* Header with count and add button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Box className="w-5 h-5 text-amber-500" />
-          <h3 className="text-sm font-semibold">Beds</h3>
+          <User className="w-5 h-5 text-purple-500" />
+          <h3 className="text-sm font-semibold">Characters</h3>
           <Badge variant="secondary" className="ml-2">
-            {beds.length} {beds.length === 1 ? 'bed' : 'beds'}
+            {characters.length} {characters.length === 1 ? 'character' : 'characters'}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus className="w-4 h-4 mr-1" />
-              Add Bed
+              Add Character
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create New Garden Bed</DialogTitle>
+              <DialogTitle>Create New Character</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
-                <Label htmlFor="name">Bed Name *</Label>
+                <Label htmlFor="name">Character Name *</Label>
                 <Input
                   id="name"
-                  placeholder="e.g., Tomato Bed"
+                  placeholder="e.g., Farmer Joe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={isSubmitting}
@@ -343,7 +338,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  placeholder="Bed description..."
+                  placeholder="Character description..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
@@ -351,85 +346,38 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
                 />
               </div>
               <div>
-                <Label htmlFor="bedType">Bed Type</Label>
+                <Label htmlFor="characterType">Character Type</Label>
                 <Select
-                  value={formData.bedType}
-                  onValueChange={(value) => setFormData({ ...formData, bedType: value })}
+                  value={formData.characterType}
+                  onValueChange={(value) => setFormData({ ...formData, characterType: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select bed type" />
+                    <SelectValue placeholder="Select character type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="raised">Raised Bed</SelectItem>
-                    <SelectItem value="ground">Ground Bed</SelectItem>
-                    <SelectItem value="container">Container</SelectItem>
-                    <SelectItem value="vertical">Vertical</SelectItem>
-                    <SelectItem value="hydroponic">Hydroponic</SelectItem>
+                    <SelectItem value="human">Human</SelectItem>
+                    <SelectItem value="animal">Animal</SelectItem>
+                    <SelectItem value="robot">Robot</SelectItem>
+                    <SelectItem value="fantasy">Fantasy</SelectItem>
+                    <SelectItem value="creature">Creature</SelectItem>
+                    <SelectItem value="npc">NPC</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="width">Width (ft)</Label>
-                  <Input
-                    id="width"
-                    type="number"
-                    step="0.5"
-                    placeholder="4"
-                    value={formData.width}
-                    onChange={(e) => setFormData({ ...formData, width: parseFloat(e.target.value) || 0 })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="length">Length (ft)</Label>
-                  <Input
-                    id="length"
-                    type="number"
-                    step="0.5"
-                    placeholder="8"
-                    value={formData.length}
-                    onChange={(e) => setFormData({ ...formData, length: parseFloat(e.target.value) || 0 })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="height">Height (ft)</Label>
-                  <Input
-                    id="height"
-                    type="number"
-                    step="0.5"
-                    placeholder="1.5"
-                    value={formData.height}
-                    onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 0 })}
-                    disabled={isSubmitting}
-                  />
-                </div>
+              <div>
+                <Label htmlFor="modelId">Model ID (optional)</Label>
+                <Input
+                  id="modelId"
+                  type="number"
+                  placeholder="3D Model ID"
+                  value={formData.modelId}
+                  onChange={(e) => setFormData({ ...formData, modelId: e.target.value })}
+                  disabled={isSubmitting}
+                />
               </div>
               <div>
-                <Label htmlFor="color">Color</Label>
-                <div className="flex items-center gap-4">
-                  <Input
-                    id="color"
-                    type="color"
-                    value={formData.color}
-                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    className="w-20 h-10 p-1"
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    type="text"
-                    value={formData.color}
-                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    className="flex-1"
-                    placeholder="#8B7355"
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label className="mb-2 block">3D Position</Label>
-                <div className="grid grid-cols-3 gap-4">
+                <Label>3D Position</Label>
+                <div className="grid grid-cols-3 gap-4 mt-2">
                   <div>
                     <Label htmlFor="positionX" className="text-xs">X</Label>
                     <Input
@@ -468,6 +416,69 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
                   </div>
                 </div>
               </div>
+              <div>
+                <Label>Rotation</Label>
+                <div className="grid grid-cols-3 gap-4 mt-2">
+                  <div>
+                    <Label htmlFor="rotationX" className="text-xs">RX</Label>
+                    <Input
+                      id="rotationX"
+                      type="number"
+                      step="0.1"
+                      placeholder="0"
+                      value={formData.rotationX}
+                      onChange={(e) => setFormData({ ...formData, rotationX: parseFloat(e.target.value) || 0 })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="rotationY" className="text-xs">RY</Label>
+                    <Input
+                      id="rotationY"
+                      type="number"
+                      step="0.1"
+                      placeholder="0"
+                      value={formData.rotationY}
+                      onChange={(e) => setFormData({ ...formData, rotationY: parseFloat(e.target.value) || 0 })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="rotationZ" className="text-xs">RZ</Label>
+                    <Input
+                      id="rotationZ"
+                      type="number"
+                      step="0.1"
+                      placeholder="0"
+                      value={formData.rotationZ}
+                      onChange={(e) => setFormData({ ...formData, rotationZ: parseFloat(e.target.value) || 0 })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="scale">Scale</Label>
+                <Input
+                  id="scale"
+                  type="number"
+                  step="0.1"
+                  placeholder="1"
+                  value={formData.scale}
+                  onChange={(e) => setFormData({ ...formData, scale: parseFloat(e.target.value) || 1 })}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div>
+                <Label htmlFor="animation">Animation</Label>
+                <Input
+                  id="animation"
+                  placeholder="idle, walking, running"
+                  value={formData.animation}
+                  onChange={(e) => setFormData({ ...formData, animation: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </div>
               <div className="flex items-center gap-2">
                 <Switch
                   id="isActive"
@@ -484,7 +495,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
                     Creating...
                   </>
                 ) : (
-                  'Create Bed'
+                  'Create Character'
                 )}
               </Button>
             </div>
@@ -492,11 +503,10 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
         </Dialog>
       </div>
 
-      {/* Beds Table */}
-      {beds.length === 0 ? (
+      {characters.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Box className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>No beds yet</p>
+          <User className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <p>No characters yet</p>
           <Button 
             variant="outline" 
             size="sm" 
@@ -504,7 +514,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
             onClick={() => setShowCreateDialog(true)}
           >
             <Plus className="w-4 h-4 mr-1" />
-            Create your first bed
+            Create your first character
           </Button>
         </div>
       ) : (
@@ -513,43 +523,42 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead className="hidden sm:table-cell">Type</TableHead>
-              <TableHead className="hidden md:table-cell">Dimensions</TableHead>
+              <TableHead className="hidden md:table-cell">Position</TableHead>
               <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {beds.map((bed) => (
-              <TableRow key={bed.id}>
+            {characters.map((character) => (
+              <TableRow key={character.id}>
                 <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded border"
-                      style={{ backgroundColor: bed.color || '#8B7355' }}
-                    />
-                    {bed.name}
-                  </div>
+                  {character.name}
+                  {character.animation && (
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      {character.animation}
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {getBedTypeLabel(bed.bedType)}
+                  {getCharacterTypeLabel(character.characterType)}
                 </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  {bed.width}' × {bed.length}' × {bed.height || 0}'
+                <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
+                  ({character.positionX}, {character.positionY}, {character.positionZ})
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex items-center justify-center gap-2">
-                    {bed.isActive ? (
+                    {character.isActive ? (
                       <CheckCircle className="w-4 h-4 text-green-500" />
                     ) : (
                       <XCircle className="w-4 h-4 text-gray-400" />
                     )}
                     <span className="text-sm">
-                      {bed.isActive ? 'Active' : 'Inactive'}
+                      {character.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  {renderActions(bed)}
+                  {renderActions(character)}
                 </TableCell>
               </TableRow>
             ))}
@@ -557,15 +566,14 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
         </Table>
       )}
 
-      {/* Edit Dialog */}
-      <Dialog open={!!editingBed} onOpenChange={(open) => !open && setEditingBed(null)}>
+      <Dialog open={!!editingCharacter} onOpenChange={(open) => !open && setEditingCharacter(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Bed</DialogTitle>
+            <DialogTitle>Edit Character</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label htmlFor="edit-name">Bed Name *</Label>
+              <Label htmlFor="edit-name">Character Name *</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
@@ -584,57 +592,33 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
               />
             </div>
             <div>
-              <Label htmlFor="edit-bedType">Bed Type</Label>
+              <Label htmlFor="edit-characterType">Character Type</Label>
               <Select
-                value={formData.bedType}
-                onValueChange={(value) => setFormData({ ...formData, bedType: value })}
+                value={formData.characterType}
+                onValueChange={(value) => setFormData({ ...formData, characterType: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select bed type" />
+                  <SelectValue placeholder="Select character type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="raised">Raised Bed</SelectItem>
-                  <SelectItem value="ground">Ground Bed</SelectItem>
-                  <SelectItem value="container">Container</SelectItem>
-                  <SelectItem value="vertical">Vertical</SelectItem>
-                  <SelectItem value="hydroponic">Hydroponic</SelectItem>
+                  <SelectItem value="human">Human</SelectItem>
+                  <SelectItem value="animal">Animal</SelectItem>
+                  <SelectItem value="robot">Robot</SelectItem>
+                  <SelectItem value="fantasy">Fantasy</SelectItem>
+                  <SelectItem value="creature">Creature</SelectItem>
+                  <SelectItem value="npc">NPC</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="edit-width">Width (ft)</Label>
-                <Input
-                  id="edit-width"
-                  type="number"
-                  step="0.5"
-                  value={formData.width}
-                  onChange={(e) => setFormData({ ...formData, width: parseFloat(e.target.value) || 0 })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-length">Length (ft)</Label>
-                <Input
-                  id="edit-length"
-                  type="number"
-                  step="0.5"
-                  value={formData.length}
-                  onChange={(e) => setFormData({ ...formData, length: parseFloat(e.target.value) || 0 })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-height">Height (ft)</Label>
-                <Input
-                  id="edit-height"
-                  type="number"
-                  step="0.5"
-                  value={formData.height}
-                  onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 0 })}
-                  disabled={isSubmitting}
-                />
-              </div>
+            <div>
+              <Label htmlFor="edit-modelId">Model ID (optional)</Label>
+              <Input
+                id="edit-modelId"
+                type="number"
+                value={formData.modelId}
+                onChange={(e) => setFormData({ ...formData, modelId: e.target.value })}
+                disabled={isSubmitting}
+              />
             </div>
             <div>
               <Label>3D Position</Label>
@@ -675,24 +659,62 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
               </div>
             </div>
             <div>
-              <Label htmlFor="edit-color">Color</Label>
-              <div className="flex items-center gap-4">
-                <Input
-                  id="edit-color"
-                  type="color"
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="w-20 h-10 p-1"
-                  disabled={isSubmitting}
-                />
-                <Input
-                  type="text"
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="flex-1"
-                  disabled={isSubmitting}
-                />
+              <Label>Rotation</Label>
+              <div className="grid grid-cols-3 gap-4 mt-2">
+                <div>
+                  <Label htmlFor="edit-rotationX" className="text-xs">RX</Label>
+                  <Input
+                    id="edit-rotationX"
+                    type="number"
+                    step="0.1"
+                    value={formData.rotationX}
+                    onChange={(e) => setFormData({ ...formData, rotationX: parseFloat(e.target.value) || 0 })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-rotationY" className="text-xs">RY</Label>
+                  <Input
+                    id="edit-rotationY"
+                    type="number"
+                    step="0.1"
+                    value={formData.rotationY}
+                    onChange={(e) => setFormData({ ...formData, rotationY: parseFloat(e.target.value) || 0 })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-rotationZ" className="text-xs">RZ</Label>
+                  <Input
+                    id="edit-rotationZ"
+                    type="number"
+                    step="0.1"
+                    value={formData.rotationZ}
+                    onChange={(e) => setFormData({ ...formData, rotationZ: parseFloat(e.target.value) || 0 })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-scale">Scale</Label>
+              <Input
+                id="edit-scale"
+                type="number"
+                step="0.1"
+                value={formData.scale}
+                onChange={(e) => setFormData({ ...formData, scale: parseFloat(e.target.value) || 1 })}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-animation">Animation</Label>
+              <Input
+                id="edit-animation"
+                value={formData.animation}
+                onChange={(e) => setFormData({ ...formData, animation: e.target.value })}
+                disabled={isSubmitting}
+              />
             </div>
             <div className="flex items-center gap-2">
               <Switch

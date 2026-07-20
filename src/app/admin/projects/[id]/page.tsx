@@ -22,7 +22,11 @@ import {
   ChevronDown,
   ChevronRight,
   FolderOpen,
-  Layers
+  Layers,
+  Sprout,
+  User,
+  AlertTriangle,
+
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,6 +44,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // ✅ Import CRUD Components
 import { MusicAlbumCRUD } from '@/components/admin/music/albums/MusicAlbumCRUD';
 import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
+import { ThreeDBedsCRUD } from '@/components/admin/threed/beds/ThreeDBedsCRUD';
+import { ThreeDModelsCRUD } from '@/components/admin/threed/models/ThreeDModelsCRUD';
+import { ThreeDCharactersCRUD } from '@/components/admin/threed/characters/ThreeDCharactersCRUD';
 import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHPCADCRUD';
 
 // ✅ Import Asset Manager
@@ -68,33 +75,79 @@ interface Module {
 
 type ModuleType = 'threed' | 'traffic' | 'music';
 
+// ✅ Updated moduleConfig with all CRUD components
 const moduleConfig: Record<ModuleType, { 
   icon: React.ElementType; 
   color: string; 
   label: string; 
   borderColor: string;
-  crudComponent: React.ComponentType<{ onModuleUpdate?: () => void }>;
+  // ✅ Each module type can have multiple CRUD components
+  crudComponents: Array<{
+    id: string;
+    label: string;
+    component: React.ComponentType<{ onModuleUpdate?: () => void }>;
+    icon: React.ElementType;
+  }>;
 }> = {
   threed: { 
     icon: Box, 
     color: 'text-green-600', 
     label: 'ThreeD',
     borderColor: 'border-green-200',
-    crudComponent: ThreeDPlantsCRUD,
+    crudComponents: [
+      { 
+        id: 'plants', 
+        label: 'Plants', 
+        component: ThreeDPlantsCRUD,
+        icon: Sprout,
+      },
+      { 
+        id: 'beds', 
+        label: 'Beds', 
+        component: ThreeDBedsCRUD,
+        icon: Box,
+      },
+      { 
+        id: 'models', 
+        label: '3D Models', 
+        component: ThreeDModelsCRUD,
+        icon: Box,
+      },
+      { 
+        id: 'characters', 
+        label: 'Characters', 
+        component: ThreeDCharactersCRUD,
+        icon: User,
+      },
+    ],
   },
   traffic: { 
     icon: Car, 
     color: 'text-blue-600', 
     label: 'Traffic',
     borderColor: 'border-blue-200',
-    crudComponent: TrafficCHPCADCRUD,
+    crudComponents: [
+      { 
+        id: 'incidents', 
+        label: 'CHP-CAD Incidents', 
+        component: TrafficCHPCADCRUD,
+        icon: AlertTriangle,
+      },
+    ],
   },
   music: { 
     icon: Music, 
     color: 'text-purple-600', 
     label: 'Music',
     borderColor: 'border-purple-200',
-    crudComponent: MusicAlbumCRUD,
+    crudComponents: [
+      { 
+        id: 'albums', 
+        label: 'Albums', 
+        component: MusicAlbumCRUD,
+        icon: Music,
+      },
+    ],
   },
 };
 
@@ -782,14 +835,53 @@ export default function ProjectDetailPage() {
                           />
                         </TabsContent>
 
-                        <TabsContent value="create">
+
+                        {/* // Inside the module card, update the "Create" tab content: */}
+
+                        {/* <TabsContent value="create">
                           <div className="p-4 border rounded-lg bg-muted/10">
                             <h4 className="text-sm font-medium mb-4">
                               Create a new {config.label} asset to add to this module
                             </h4>
                             <CrudComponent onModuleUpdate={fetchProject} />
                           </div>
+                        </TabsContent> */}
+
+                        <TabsContent value="create">
+                          <div className="p-4 border rounded-lg bg-muted/10">
+                            <h4 className="text-sm font-medium mb-4">
+                              Create a new {config.label} asset to add to this module
+                            </h4>
+                            
+                            {/* ✅ Sub-tabs for each CRUD component */}
+                            <Tabs defaultValue={config.crudComponents[0]?.id} className="w-full">
+                              <TabsList className="mb-4">
+                                {config.crudComponents.map((crud) => {
+                                  const Icon = crud.icon;
+                                  return (
+                                    <TabsTrigger key={crud.id} value={crud.id} className="flex items-center gap-2">
+                                      <Icon className="w-4 h-4" />
+                                      {crud.label}
+                                    </TabsTrigger>
+                                  );
+                                })}
+                              </TabsList>
+                              
+                              {config.crudComponents.map((crud) => {
+                                const CrudComponent = crud.component;
+                                return (
+                                  <TabsContent key={crud.id} value={crud.id}>
+                                    <CrudComponent onModuleUpdate={fetchProject} />
+                                  </TabsContent>
+                                );
+                              })}
+                            </Tabs>
+                          </div>
                         </TabsContent>
+
+
+
+
                       </Tabs>
                     </div>
                   </CardContent>
