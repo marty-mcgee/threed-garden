@@ -1,4 +1,4 @@
-// app/admin/projects/[id]/page.tsx
+// app/admin/projects/[id]/page.tsx - Updated with Create tabs and session storage
 
 'use client';
 
@@ -119,6 +119,7 @@ const moduleConfig: Record<ModuleType, {
 
 // Session storage helpers
 const STORAGE_KEY = 'project_module_expanded';
+const CREATE_TAB_STORAGE_KEY = 'project_create_tab';
 
 const getStoredExpandedState = (): Record<string, boolean> => {
   if (typeof window === 'undefined') return {};
@@ -137,6 +138,26 @@ const setStoredExpandedState = (state: Record<string, boolean>) => {
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error('Error writing to sessionStorage:', error);
+  }
+};
+
+const getStoredCreateTab = (key: string): string => {
+  if (typeof window === 'undefined') return '';
+  try {
+    const stored = sessionStorage.getItem(`${CREATE_TAB_STORAGE_KEY}_${key}`);
+    return stored || '';
+  } catch (error) {
+    console.error('Error reading from sessionStorage:', error);
+    return '';
+  }
+};
+
+const setStoredCreateTab = (key: string, value: string) => {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(`${CREATE_TAB_STORAGE_KEY}_${key}`, value);
   } catch (error) {
     console.error('Error writing to sessionStorage:', error);
   }
@@ -176,6 +197,7 @@ export default function ProjectDetailPage() {
   });
 
   const [activeModuleTab, setActiveModuleTab] = useState<Record<string, 'assets' | 'create'>>({});
+  const [activeCreateTab, setActiveCreateTab] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setStoredExpandedState(expandedModules);
@@ -203,13 +225,20 @@ export default function ProjectDetailPage() {
     setLoading(true);
     try {
       const projectRes = await fetch(`/api/project?id=${projectId}`);
+      
       if (!projectRes.ok) {
+        if (projectRes.status === 404) {
+          showToast('Project not found or you do not have access to it', 'error');
+          router.push('/admin');
+          return;
+        }
         if (projectRes.status === 401) {
           router.push('/sign-in');
           return;
         }
         throw new Error('Failed to fetch project');
       }
+      
       const projectData = await projectRes.json();
       
       if (!projectData.data) {
@@ -273,12 +302,29 @@ export default function ProjectDetailPage() {
           
           return currentState;
         });
+
+        // ✅ Initialize create tabs from session storage
+        Object.entries(newModules).forEach(([type, moduleList]) => {
+          (moduleList as Module[]).forEach((mod: Module) => {
+            const uniqueKey = `${type}_module_${mod.id}`;
+            const storedTab = getStoredCreateTab(uniqueKey);
+            const config = moduleConfig[type as ModuleType];
+            const defaultTab = config.crudComponents[0]?.id || '';
+            
+            if (storedTab && config.crudComponents.some(c => c.id === storedTab)) {
+              setActiveCreateTab(prev => ({ ...prev, [uniqueKey]: storedTab }));
+            } else if (defaultTab) {
+              setActiveCreateTab(prev => ({ ...prev, [uniqueKey]: defaultTab }));
+            }
+          });
+        });
       } else {
         setModules({ threed: [], traffic: [], music: [] });
       }
     } catch (error) {
       console.error('Error fetching project:', error);
       showToast(error instanceof Error ? error.message : 'Failed to load project', 'error');
+      router.push('/admin');
     } finally {
       setLoading(false);
     }
@@ -454,6 +500,26 @@ export default function ProjectDetailPage() {
     return activeModuleTab[uniqueKey] || 'assets';
   };
 
+  const setCreateTab = (type: ModuleType, moduleId: number, tabId: string) => {
+    const uniqueKey = `${type}_module_${moduleId}`;
+    setActiveCreateTab(prev => ({ ...prev, [uniqueKey]: tabId }));
+    setStoredCreateTab(uniqueKey, tabId);
+  };
+
+  const getCreateTab = (type: ModuleType, moduleId: number): string => {
+    const uniqueKey = `${type}_module_${moduleId}`;
+    const config = moduleConfig[type];
+    const storedTab = activeCreateTab[uniqueKey];
+    
+    // If stored tab exists and is valid, use it
+    if (storedTab && config.crudComponents.some(c => c.id === storedTab)) {
+      return storedTab;
+    }
+    
+    // Otherwise return the first available tab
+    return config.crudComponents[0]?.id || '';
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -496,11 +562,17 @@ export default function ProjectDetailPage() {
 
   if (!project) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Project not found</p>
-        <Button variant="outline" className="mt-4" onClick={() => router.push('/admin')}>
-          Back to Projects
-        </Button>
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <FolderOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+          <h3 className="text-lg font-medium mb-2">Project Not Found</h3>
+          <p className="text-muted-foreground mb-4">
+            The project you're looking for doesn't exist or you don't have access to it.
+          </p>
+          <Button onClick={() => router.push('/admin')}>
+            Back to Projects
+          </Button>
+        </div>
       </div>
     );
   }
@@ -508,7 +580,7 @@ export default function ProjectDetailPage() {
   const allModules = getAllModules();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {ToastComponent}
 
       <Button variant="ghost" size="sm" onClick={() => router.push('/admin')}>
@@ -546,11 +618,11 @@ export default function ProjectDetailPage() {
       {/* Edit Form */}
       {isEditing && (
         <Card>
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-name">Project Name</Label>
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="edit-name" className="text-sm">Project Name</Label>
                   <Input
                     id="edit-name"
                     value={formData.name}
@@ -558,8 +630,8 @@ export default function ProjectDetailPage() {
                     disabled={isSubmitting}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-description">Description</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="edit-description" className="text-sm">Description</Label>
                   <Input
                     id="edit-description"
                     value={formData.description}
@@ -576,7 +648,7 @@ export default function ProjectDetailPage() {
                     onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
                     disabled={isSubmitting}
                   />
-                  <Label htmlFor="edit-public">Public</Label>
+                  <Label htmlFor="edit-public" className="text-sm">Public</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch
@@ -585,11 +657,11 @@ export default function ProjectDetailPage() {
                     onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
                     disabled={isSubmitting}
                   />
-                  <Label htmlFor="edit-active">Active</Label>
+                  <Label htmlFor="edit-active" className="text-sm">Active</Label>
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button onClick={updateProject} disabled={isSubmitting}>
+                <Button onClick={updateProject} disabled={isSubmitting} size="sm">
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -602,7 +674,7 @@ export default function ProjectDetailPage() {
                     </>
                   )}
                 </Button>
-                <Button variant="outline" onClick={() => setIsEditing(false)} disabled={isSubmitting}>
+                <Button variant="outline" onClick={() => setIsEditing(false)} disabled={isSubmitting} size="sm">
                   <X className="w-4 h-4 mr-2" />
                   Cancel
                 </Button>
@@ -613,17 +685,17 @@ export default function ProjectDetailPage() {
       )}
 
       {/* Modules Section */}
-      <div className="flex flex-wrap justify-between items-center gap-4">
+      <div className="flex flex-wrap justify-between items-center gap-2">
         <div>
-          <h2 className="text-2xl font-bold">Project Modules</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-xl font-bold">Project Modules</h2>
+          <p className="text-sm text-muted-foreground">
             {allModules.length} module{allModules.length !== 1 ? 's' : ''} associated with this project
           </p>
         </div>
         <Dialog open={showNewModuleDialog} onOpenChange={setShowNewModuleDialog}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
+            <Button size="sm">
+              <Plus className="w-4 h-4 mr-1" />
               Add Module
             </Button>
           </DialogTrigger>
@@ -682,20 +754,20 @@ export default function ProjectDetailPage() {
       {/* Module Cards */}
       {allModules.length === 0 ? (
         <Card>
-          <CardContent className="text-center py-12">
-            <FolderOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-lg font-medium mb-2">No Modules Yet</h3>
-            <p className="text-muted-foreground mb-4">
+          <CardContent className="text-center py-8">
+            <FolderOpen className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+            <h3 className="text-lg font-medium mb-1">No Modules Yet</h3>
+            <p className="text-sm text-muted-foreground mb-3">
               Create your first module to start managing assets for this project.
             </p>
-            <Button onClick={() => setShowNewModuleDialog(true)}>
-              <Plus className="w-4 h-4 mr-2" />
+            <Button size="sm" onClick={() => setShowNewModuleDialog(true)}>
+              <Plus className="w-4 h-4 mr-1" />
               Create Module
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {allModules.map(({ type, module, uniqueKey }) => {
             const config = moduleConfig[type];
             const Icon = config.icon;
@@ -709,7 +781,7 @@ export default function ProjectDetailPage() {
               >
                 {/* Module Header */}
                 <div 
-                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/30 transition-colors"
+                  className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/30 transition-colors"
                   onClick={() => toggleModuleExpand(type, module.id)}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -729,7 +801,7 @@ export default function ProjectDetailPage() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                  <div className="flex items-center gap-1 flex-shrink-0 ml-4">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -742,7 +814,7 @@ export default function ProjectDetailPage() {
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon" className="h-7 w-7">
                           <MoreHorizontal className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -756,183 +828,76 @@ export default function ProjectDetailPage() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button variant="ghost" size="sm" className="ml-1">
+                    <Button variant="ghost" size="sm" className="ml-0">
                       {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     </Button>
                   </div>
                 </div>
 
-                {/* ============================================================
-                    ✅ MODULE CONTENT - CRUD COMPONENTS RENDER HERE
-                    ============================================================ */}
+                {/* Module Content */}
                 {isExpanded && (
-                  <CardContent className="pt-0">
-                    <div className="pt-4 border-t">
-                      <Tabs 
-                        value={activeTab} 
-                        onValueChange={(value) => setModuleTab(type, module.id, value as 'assets' | 'create')}
-                        className="w-full"
-                      >
-                        <TabsList className="grid w-full grid-cols-2 mb-4">
-                          <TabsTrigger value="assets" className="flex items-center gap-2">
-                            <Layers className="w-4 h-4" />
-                            Manage Assigned Assets
-                          </TabsTrigger>
-                          <TabsTrigger value="create" className="flex items-center gap-2">
-                            <Plus className="w-4 h-4" />
-                            Create New {config.label} Asset
-                          </TabsTrigger>
-                        </TabsList>
+                  <CardContent className="p-3 pt-0">
+                    <Tabs 
+                      value={activeTab} 
+                      onValueChange={(value) => setModuleTab(type, module.id, value as 'assets' | 'create')}
+                      className="w-full"
+                    >
+                      <TabsList className="grid w-full grid-cols-2 mb-2">
+                        <TabsTrigger value="assets" className="flex items-center gap-2 py-1.5 text-sm">
+                          <Layers className="w-4 h-4" />
+                          Manage Assigned Assets
+                        </TabsTrigger>
+                        <TabsTrigger value="create" className="flex items-center gap-2 py-1.5 text-sm">
+                          <Plus className="w-4 h-4" />
+                          Create New {config.label} Asset
+                        </TabsTrigger>
+                      </TabsList>
 
-                        <TabsContent value="assets">
-                          <ProjectAssetManager
-                            projectId={projectId}
-                            userId={session?.user?.id || ''}
-                            moduleType={type}
-                            moduleId={module.id}
-                            onUpdate={fetchProject}
-                          />
-                        </TabsContent>
+                      <TabsContent value="assets" className="mt-0">
+                        <ProjectAssetManager
+                          projectId={projectId}
+                          userId={session?.user?.id || ''}
+                          moduleType={type}
+                          moduleId={module.id}
+                          onUpdate={fetchProject}
+                        />
+                      </TabsContent>
 
-                        {/* ============================================================
-                            ✅ THIS IS WHERE ALL CRUD COMPONENTS ARE RENDERED
-                            ============================================================ */}
-                        {/* <TabsContent value="create">
-                          <div className="space-y-6">
+                      <TabsContent value="create" className="max-h-[70vh] overflow-y-auto pr-1 mt-0">
+                        {/* ✅ CRUD Components with Tabs */}
+                        <Tabs 
+                          value={getCreateTab(type, module.id)} 
+                          onValueChange={(value) => setCreateTab(type, module.id, value)}
+                          className="w-full"
+                        >
+                          <TabsList className="flex flex-wrap gap-1 mb-2">
                             {config.crudComponents.map((crud) => {
-                              const CrudComponent = crud.component;
                               const CrudIcon = crud.icon;
+                              const isActive = getCreateTab(type, module.id) === crud.id;
                               return (
-                                <div key={crud.id} className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <CrudIcon className="w-4 h-4 text-muted-foreground" />
-                                    <h5 className="text-sm font-medium">{crud.label}</h5>
-                                  </div>
-                                  <CrudComponent onModuleUpdate={fetchProject} />
-                                </div>
+                                <TabsTrigger 
+                                  key={crud.id} 
+                                  value={crud.id} 
+                                  className={`text-xs py-1 px-2 ${isActive ? '' : crud.icon}`}
+                                >
+                                  <CrudIcon className="w-3 h-3 mr-1" />
+                                  {crud.label}
+                                </TabsTrigger>
                               );
                             })}
-                          </div>
-                        </TabsContent> */}
-                        
-                        <TabsContent value="create" className="max-h-[70vh] overflow-y-auto">
-                          <div className="space-y-6 pr-2">
-                            
-                            {/* Music Module CRUD Components */}
-                            {type === 'music' && (
-                              <>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Music className="w-4 h-4 text-purple-500" />
-                                    <h5 className="text-sm font-medium">Albums</h5>
-                                  </div>
-                                  <MusicAlbumCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Music2 className="w-4 h-4 text-purple-500" />
-                                    <h5 className="text-sm font-medium">Tracks</h5>
-                                  </div>
-                                  <MusicTracksCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Image className="w-4 h-4 text-purple-500" />
-                                    <h5 className="text-sm font-medium">Media</h5>
-                                  </div>
-                                  <MusicMediaCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Link2 className="w-4 h-4 text-purple-500" />
-                                    <h5 className="text-sm font-medium">Links</h5>
-                                  </div>
-                                  <MusicLinksCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                              </>
-                            )}
-
-                            {/* ThreeD Module CRUD Components */}
-                            {type === 'threed' && (
-                              <>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Sprout className="w-4 h-4 text-green-500" />
-                                    <h5 className="text-sm font-medium">Plants</h5>
-                                  </div>
-                                  <ThreeDPlantsCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Box className="w-4 h-4 text-green-500" />
-                                    <h5 className="text-sm font-medium">Beds</h5>
-                                  </div>
-                                  <ThreeDBedsCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Package className="w-4 h-4 text-green-500" />
-                                    <h5 className="text-sm font-medium">3D Models</h5>
-                                  </div>
-                                  <ThreeDModelsCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <User className="w-4 h-4 text-green-500" />
-                                    <h5 className="text-sm font-medium">Characters</h5>
-                                  </div>
-                                  <ThreeDCharactersCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                              </>
-                            )}
-
-                            {/* Traffic Module CRUD Components */}
-                            {type === 'traffic' && (
-                              <>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <AlertTriangle className="w-4 h-4 text-blue-500" />
-                                    <h5 className="text-sm font-medium">CHP-CAD Incidents</h5>
-                                  </div>
-                                  <TrafficCHPCADCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <FileText className="w-4 h-4 text-blue-500" />
-                                    <h5 className="text-sm font-medium">CHP Cases</h5>
-                                  </div>
-                                  <TrafficCHPCasesCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Route className="w-4 h-4 text-blue-500" />
-                                    <h5 className="text-sm font-medium">Caltrans Closures</h5>
-                                  </div>
-                                  <TrafficCaltransCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Flame className="w-4 h-4 text-blue-500" />
-                                    <h5 className="text-sm font-medium">CalFire Incidents</h5>
-                                  </div>
-                                  <TrafficCalfireCRUD onModuleUpdate={fetchProject} />
-                                </div>
-                                <div className="border rounded-lg p-4 bg-background">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Radio className="w-4 h-4 text-blue-500" />
-                                    <h5 className="text-sm font-medium">Bay Area 511</h5>
-                                  </div>
-                                  <TrafficBayArea511CRUD onModuleUpdate={fetchProject} />
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </TabsContent>
-
-
-                        
-                      </Tabs>
-                    </div>
+                          </TabsList>
+                          
+                          {config.crudComponents.map((crud) => {
+                            const CrudComponent = crud.component;
+                            return (
+                              <TabsContent key={crud.id} value={crud.id} className="mt-0">
+                                <CrudComponent onModuleUpdate={fetchProject} />
+                              </TabsContent>
+                            );
+                          })}
+                        </Tabs>
+                      </TabsContent>
+                    </Tabs>
                   </CardContent>
                 )}
               </Card>

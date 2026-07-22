@@ -291,28 +291,28 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link2 className="w-5 h-5 text-blue-500" />
-          <h3 className="text-sm font-semibold">Links</h3>
-          <Badge variant="secondary" className="ml-2">
-            {links.length} {links.length === 1 ? 'link' : 'links'}
+        <div className="flex items-center gap-2">
+          <Link2 className="w-4 h-4 text-blue-500" />
+          <span className="text-sm font-medium">Links</span>
+          <Badge variant="secondary" className="text-xs">
+            {links.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Link
             </Button>
           </DialogTrigger>
@@ -437,59 +437,61 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
       </div>
 
       {links.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Link2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Link2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No links yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first link
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead className="hidden sm:table-cell">Type</TableHead>
-              <TableHead className="hidden md:table-cell">URL</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {links.map((link) => (
-              <TableRow key={link.id}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    {getIconComponent(link.icon || 'link')}
-                    {link.title}
-                  </div>
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  <Badge variant="outline">
-                    {getTypeLabel(link.type)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground max-w-[150px] truncate">
-                  {link.url}
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge className={getStatusColor(link.status)}>
-                    {link.status || 'Unknown'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(link)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Title</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">URL</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {links.map((link) => (
+                <TableRow key={link.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    <div className="flex items-center gap-2">
+                      {getIconComponent(link.icon || 'link')}
+                      {link.title}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge variant="outline" className="text-[10px]">
+                      {getTypeLabel(link.type)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground max-w-[150px] truncate">
+                    {link.url}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge className={`text-[10px] ${getStatusColor(link.status)}`}>
+                      {link.status || 'Unknown'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(link)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog open={!!editingLink} onOpenChange={(open) => !open && setEditingLink(null)}>

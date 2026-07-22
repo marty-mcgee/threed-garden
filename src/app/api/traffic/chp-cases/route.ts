@@ -1,19 +1,18 @@
-// app/api/traffic/bay-area-511/route.ts
+// app/api/traffic/chp-cases/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { trafficBayArea511Events } from '@/lib/schema/traffic';
+import { trafficChpCases } from '@/lib/schema/traffic';
 import { eq, and, desc } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/traffic/bay-area-511 - List Bay Area 511 events
+// GET /api/traffic/chp-cases - List CHP cases
 // Query Parameters:
-//   - id (optional): Get a single event
-//   - eventId (optional): Filter by event ID
-//   - eventType (optional): Filter by event type
-//   - status (optional): Filter by status
+//   - id (optional): Get a single case
+//   - caseId (optional): Filter by case ID
+//   - county (optional): Filter by county
 // ============================================
 export async function GET(request: NextRequest) {
   try {
@@ -28,71 +27,66 @@ export async function GET(request: NextRequest) {
     const userId = session.user.id;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const eventId = searchParams.get('eventId');
-    const eventType = searchParams.get('eventType');
-    const status = searchParams.get('status');
+    const caseId = searchParams.get('caseId');
+    const county = searchParams.get('county');
 
-    // Get a single event by ID
+    // Get a single case by ID
     if (id) {
-      const [event] = await db
+      const [chpCase] = await db
         .select()
-        .from(trafficBayArea511Events)
+        .from(trafficChpCases)
         .where(
           and(
-            eq(trafficBayArea511Events.id, parseInt(id)),
-            eq(trafficBayArea511Events.userId, userId)
+            eq(trafficChpCases.id, parseInt(id)),
+            eq(trafficChpCases.userId, userId)
           )
         )
         .limit(1);
 
-      if (!event) {
+      if (!chpCase) {
         return NextResponse.json(
-          { success: false, error: 'Event not found' },
+          { success: false, error: 'Case not found' },
           { status: 404 }
         );
       }
 
       return NextResponse.json({
         success: true,
-        data: event,
+        data: chpCase,
       });
     }
 
     // Build query
     let query = db
       .select()
-      .from(trafficBayArea511Events)
-      .where(eq(trafficBayArea511Events.userId, userId));
+      .from(trafficChpCases)
+      .where(eq(trafficChpCases.userId, userId));
 
-    if (eventId) {
-      query = query.where(eq(trafficBayArea511Events.sourceId, eventId));
+    if (caseId) {
+      query = query.where(eq(trafficChpCases.caseId, caseId));
     }
 
-    if (eventType) {
-      query = query.where(eq(trafficBayArea511Events.eventType, eventType));
+    if (county) {
+      query = query.where(eq(trafficChpCases.county, county));
     }
 
-    if (status) {
-      query = query.where(eq(trafficBayArea511Events.status, status));
-    }
-
-    const events = await query.orderBy(desc(trafficBayArea511Events.createdAt));
+    const cases = await query.orderBy(desc(trafficChpCases.collisionDate));
 
     return NextResponse.json({
       success: true,
-      data: events,
+      data: cases,
     });
   } catch (error) {
-    console.error('Error fetching Bay Area 511 events:', error);
+    console.error('Error fetching CHP cases:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch events' },
+      { success: false, error: 'Failed to fetch cases' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// POST /api/traffic/bay-area-511 - Create a new Bay Area 511 event
+// POST /api/traffic/chp-cases - Create a new CHP case
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -105,29 +99,30 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('📝 POST /api/traffic/bay-area-511 - Request body:', body);
+    console.log('📝 POST /api/traffic/chp-cases - Request body:', body);
 
     const {
-      eventId,
+      caseId,
+      incidentId,
       title,
       description,
-      eventType,
+      caseType,
       status,
       severity,
       location,
-      route,
-      direction,
+      city,
+      county,
       latitude,
       longitude,
-      startTime,
-      endTime,
+      reportedDate,
+      resolvedDate,
       isActive,
     } = body;
 
     // Validate required fields
-    if (!eventId) {
+    if (!caseId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: eventId' },
+        { success: false, error: 'Missing required field: caseId' },
         { status: 400 }
       );
     }
@@ -139,74 +134,69 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!location) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: location' },
-        { status: 400 }
-      );
-    }
-
     const userId = session.user.id;
 
-    // Check if eventId already exists
+    // Check if caseId already exists
     const [existing] = await db
       .select()
-      .from(trafficBayArea511Events)
+      .from(trafficChpCases)
       .where(
         and(
-          eq(trafficBayArea511Events.sourceId, eventId),
-          eq(trafficBayArea511Events.userId, userId)
+          eq(trafficChpCases.caseId, caseId),
+          eq(trafficChpCases.userId, userId)
         )
       )
       .limit(1);
 
     if (existing) {
       return NextResponse.json(
-        { success: false, error: 'Event ID already exists' },
+        { success: false, error: 'Case ID already exists' },
         { status: 409 }
       );
     }
 
-    await ensureTableSequence('traffic_bay_area_511_events');
+    await ensureTableSequence('traffic_chp_cases');
 
-    const [newEvent] = await db
-      .insert(trafficBayArea511Events)
+    const [newCase] = await db
+      .insert(trafficChpCases)
       .values({
         userId,
-        sourceId: eventId,
-        eventType: eventType || 'accident',
-        status: status || 'active',
+        caseId,
+        incidentId: incidentId || null,
         title,
         description: description || null,
-        roadwayName: route || null,
-        directionOfTravel: direction || null,
+        caseType: caseType || 'collision',
+        status: status || 'active',
+        severity: severity || 'moderate',
+        location: location || null,
+        city: city || null,
+        county: county || null,
         latitude: latitude || null,
         longitude: longitude || null,
-        location,
-        startTime: startTime || null,
-        endTime: endTime || null,
+        reportedDate: reportedDate || null,
+        resolvedDate: resolvedDate || null,
         isActive: isActive !== false,
       })
       .returning();
 
-    console.log('✅ Bay Area 511 event created:', newEvent);
+    console.log('✅ CHP case created:', newCase);
 
     return NextResponse.json({
       success: true,
-      data: newEvent,
-      message: 'Event created successfully',
+      data: newCase,
+      message: 'Case created successfully',
     });
   } catch (error) {
-    console.error('Error creating Bay Area 511 event:', error);
+    console.error('Error creating CHP case:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create event' },
+      { success: false, error: 'Failed to create case' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// PUT /api/traffic/bay-area-511 - Update a Bay Area 511 event
+// PUT /api/traffic/chp-cases - Update a CHP case
 // ============================================
 export async function PUT(request: NextRequest) {
   try {
@@ -229,91 +219,93 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('📝 PUT /api/traffic/bay-area-511 - Request body:', body);
+    console.log('📝 PUT /api/traffic/chp-cases - Request body:', body);
 
     const {
-      eventId,
+      caseId,
+      incidentId,
       title,
       description,
-      eventType,
+      caseType,
       status,
       severity,
       location,
-      route,
-      direction,
+      city,
+      county,
       latitude,
       longitude,
-      startTime,
-      endTime,
+      reportedDate,
+      resolvedDate,
       isActive,
     } = body;
 
     const userId = session.user.id;
 
-    // Verify event exists
+    // Verify case exists
     const [existing] = await db
       .select()
-      .from(trafficBayArea511Events)
+      .from(trafficChpCases)
       .where(
         and(
-          eq(trafficBayArea511Events.id, parseInt(id)),
-          eq(trafficBayArea511Events.userId, userId)
+          eq(trafficChpCases.id, parseInt(id)),
+          eq(trafficChpCases.userId, userId)
         )
       )
       .limit(1);
 
     if (!existing) {
       return NextResponse.json(
-        { success: false, error: 'Event not found' },
+        { success: false, error: 'Case not found' },
         { status: 404 }
       );
     }
 
-    const [updatedEvent] = await db
-      .update(trafficBayArea511Events)
+    const [updatedCase] = await db
+      .update(trafficChpCases)
       .set({
-        sourceId: eventId || existing.sourceId,
-        eventType: eventType || existing.eventType,
-        status: status || existing.status,
+        caseId: caseId || existing.caseId,
+        incidentId: incidentId !== undefined ? incidentId : existing.incidentId,
         title: title || existing.title,
         description: description !== undefined ? description : existing.description,
-        roadwayName: route !== undefined ? route : existing.roadwayName,
-        directionOfTravel: direction !== undefined ? direction : existing.directionOfTravel,
+        caseType: caseType || existing.caseType,
+        status: status || existing.status,
+        severity: severity || existing.severity,
+        location: location !== undefined ? location : existing.location,
+        city: city !== undefined ? city : existing.city,
+        county: county !== undefined ? county : existing.county,
         latitude: latitude !== undefined ? latitude : existing.latitude,
         longitude: longitude !== undefined ? longitude : existing.longitude,
-        location: location || existing.location,
-        startTime: startTime !== undefined ? startTime : existing.startTime,
-        endTime: endTime !== undefined ? endTime : existing.endTime,
+        reportedDate: reportedDate !== undefined ? reportedDate : existing.reportedDate,
+        resolvedDate: resolvedDate !== undefined ? resolvedDate : existing.resolvedDate,
         isActive: isActive !== undefined ? isActive : existing.isActive,
-        lastUpdated: new Date(),
         updatedAt: new Date(),
       })
       .where(
         and(
-          eq(trafficBayArea511Events.id, parseInt(id)),
-          eq(trafficBayArea511Events.userId, userId)
+          eq(trafficChpCases.id, parseInt(id)),
+          eq(trafficChpCases.userId, userId)
         )
       )
       .returning();
 
-    console.log('✅ Bay Area 511 event updated:', updatedEvent);
+    console.log('✅ CHP case updated:', updatedCase);
 
     return NextResponse.json({
       success: true,
-      data: updatedEvent,
-      message: 'Event updated successfully',
+      data: updatedCase,
+      message: 'Case updated successfully',
     });
   } catch (error) {
-    console.error('Error updating Bay Area 511 event:', error);
+    console.error('Error updating CHP case:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update event' },
+      { success: false, error: 'Failed to update case' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// DELETE /api/traffic/bay-area-511 - Delete a Bay Area 511 event
+// DELETE /api/traffic/chp-cases - Delete a CHP case
 // ============================================
 export async function DELETE(request: NextRequest) {
   try {
@@ -338,18 +330,18 @@ export async function DELETE(request: NextRequest) {
     const userId = session.user.id;
 
     const [deleted] = await db
-      .delete(trafficBayArea511Events)
+      .delete(trafficChpCases)
       .where(
         and(
-          eq(trafficBayArea511Events.id, parseInt(id)),
-          eq(trafficBayArea511Events.userId, userId)
+          eq(trafficChpCases.id, parseInt(id)),
+          eq(trafficChpCases.userId, userId)
         )
       )
       .returning();
 
     if (!deleted) {
       return NextResponse.json(
-        { success: false, error: 'Event not found' },
+        { success: false, error: 'Case not found' },
         { status: 404 }
       );
     }
@@ -357,12 +349,12 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: deleted,
-      message: 'Event deleted successfully',
+      message: 'Case deleted successfully',
     });
   } catch (error) {
-    console.error('Error deleting Bay Area 511 event:', error);
+    console.error('Error deleting CHP case:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete event' },
+      { success: false, error: 'Failed to delete case' },
       { status: 500 }
     );
   }

@@ -9,10 +9,8 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  Ruler,
-  MoreHorizontal,
-  Move3D,
-  Box
+  Box,
+  MoreHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -230,7 +228,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
         size="sm"
         onClick={() => viewBedDetails(bed)}
       >
-        <Ruler className="w-4 h-4" />
+        <Box className="w-4 h-4" />
       </Button>
       <Button
         variant="ghost"
@@ -298,29 +296,28 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
-      {/* Header with count and add button */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Box className="w-5 h-5 text-amber-500" />
-          <h3 className="text-sm font-semibold">Beds</h3>
-          <Badge variant="secondary" className="ml-2">
-            {beds.length} {beds.length === 1 ? 'bed' : 'beds'}
+        <div className="flex items-center gap-2">
+          <Box className="w-4 h-4 text-amber-500" />
+          <span className="text-sm font-medium">Beds</span>
+          <Badge variant="secondary" className="text-xs">
+            {beds.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Bed
             </Button>
           </DialogTrigger>
@@ -492,72 +489,72 @@ export function ThreeDBedsCRUD({ onModuleUpdate }: ThreeDBedsCRUDProps) {
         </Dialog>
       </div>
 
-      {/* Beds Table */}
       {beds.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Box className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Box className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No beds yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first bed
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Type</TableHead>
-              <TableHead className="hidden md:table-cell">Dimensions</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {beds.map((bed) => (
-              <TableRow key={bed.id}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded border"
-                      style={{ backgroundColor: bed.color || '#8B7355' }}
-                    />
-                    {bed.name}
-                  </div>
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {getBedTypeLabel(bed.bedType)}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  {bed.width}' × {bed.length}' × {bed.height || 0}'
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {bed.isActive ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span className="text-sm">
-                      {bed.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(bed)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Name</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Dimensions</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {beds.map((bed) => (
+                <TableRow key={bed.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded border"
+                        style={{ backgroundColor: bed.color || '#8B7355' }}
+                      />
+                      {bed.name}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {getBedTypeLabel(bed.bedType)}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    {bed.width}' × {bed.length}' × {bed.height || 0}'
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {bed.isActive ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-gray-400" />
+                      )}
+                      <span className="text-xs">
+                        {bed.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(bed)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
-      {/* Edit Dialog */}
       <Dialog open={!!editingBed} onOpenChange={(open) => !open && setEditingBed(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>

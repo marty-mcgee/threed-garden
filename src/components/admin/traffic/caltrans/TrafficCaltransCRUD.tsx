@@ -11,8 +11,6 @@ import {
   XCircle,
   Route,
   MoreHorizontal,
-  ExternalLink,
-  Calendar,
   MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -315,28 +313,28 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Route className="w-5 h-5 text-orange-500" />
-          <h3 className="text-sm font-semibold">Caltrans Closures</h3>
-          <Badge variant="secondary" className="ml-2">
-            {closures.length} {closures.length === 1 ? 'closure' : 'closures'}
+        <div className="flex items-center gap-2">
+          <Route className="w-4 h-4 text-orange-500" />
+          <span className="text-sm font-medium">Caltrans Closures</span>
+          <Badge variant="secondary" className="text-xs">
+            {closures.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Closure
             </Button>
           </DialogTrigger>
@@ -532,70 +530,72 @@ export function TrafficCaltransCRUD({ onModuleUpdate }: TrafficCaltransCRUDProps
       </div>
 
       {closures.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Route className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Route className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No closures yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first closure
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Closure ID</TableHead>
-              <TableHead className="hidden sm:table-cell">Route</TableHead>
-              <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {closures.map((closure) => (
-              <TableRow key={closure.id}>
-                <TableCell className="font-medium">
-                  {closure.closureId}
-                  {closure.severity && (
-                    <Badge className={`ml-2 text-xs ${getSeverityColor(closure.severity)}`}>
-                      {closure.severity.charAt(0).toUpperCase() + closure.severity.slice(1)}
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {closure.route} {closure.direction}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  <Badge variant="secondary" className="capitalize">
-                    {getClosureTypeLabel(closure.closureType)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {closure.status === 'active' ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : closure.status === 'cleared' ? (
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span className="text-sm capitalize">
-                      {closure.status || 'Unknown'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(closure)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Closure ID</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Route</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {closures.map((closure) => (
+                <TableRow key={closure.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {closure.closureId}
+                    {closure.severity && (
+                      <Badge className={`ml-2 text-[10px] ${getSeverityColor(closure.severity)}`}>
+                        {closure.severity.charAt(0).toUpperCase() + closure.severity.slice(1)}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {closure.route} {closure.direction}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="text-[10px] capitalize">
+                      {getClosureTypeLabel(closure.closureType)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {closure.status === 'active' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      ) : closure.status === 'cleared' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-blue-500" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-gray-400" />
+                      )}
+                      <span className="text-xs capitalize">
+                        {closure.status || 'Unknown'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(closure)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog open={!!editingClosure} onOpenChange={(open) => !open && setEditingClosure(null)}>

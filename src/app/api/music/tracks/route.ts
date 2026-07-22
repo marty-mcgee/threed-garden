@@ -1,226 +1,330 @@
-// ./src/app/api/music/tracks/route.ts
+// app/api/music/tracks/route.ts - Fixed
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicTracks, musicAlbums } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
-import { TrackStatus } from '@/lib/types/music';
+import { musicTracks, musicAlbums } from '@/lib/schema/music';
+import { eq, and, desc } from 'drizzle-orm';
+import { ensureTableSequence } from '@/lib/db/sequence';
 
-// GET - Fetch tracks
+// ============================================
+// GET /api/music/tracks - List tracks
+// Query Parameters:
+//   - albumId (optional): Filter tracks by album
+//   - id (optional): Get a single track
+// ============================================
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const trackId = searchParams.get('id');
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
     const albumId = searchParams.get('albumId');
 
-    if (trackId) {
-      // Get single track - public if album is public
-      const track = await db.query.musicTracks.findFirst({
-        where: eq(musicTracks.id, parseInt(trackId)),
-        with: { album: true },
-      });
+    // ✅ Get a single track by ID
+    if (id) {
+      const [track] = await db
+        .select()
+        .from(musicTracks)
+        .where(
+          and(
+            eq(musicTracks.id, parseInt(id)),
+            eq(musicTracks.userId, userId)
+          )
+        )
+        .limit(1);
 
       if (!track) {
-        return NextResponse.json({ error: 'Track not found' }, { status: 404 });
+        return NextResponse.json(
+          { success: false, error: 'Track not found' },
+          { status: 404 }
+        );
       }
 
-      // Only return if album is public
-      if (!track.album?.isPublic) {
-        return NextResponse.json({ error: 'Track not available' }, { status: 403 });
-      }
-
-      return NextResponse.json(track);
+      return NextResponse.json({
+        success: true,
+        data: track,
+      });
     }
+
+    // ✅ List tracks (optionally filtered by album)
+    let query = db
+      .select()
+      .from(musicTracks)
+      .where(eq(musicTracks.userId, userId));
 
     if (albumId) {
-      // Get tracks for album - only if album is public
-      const album = await db.query.musicAlbums.findFirst({
-        where: and(
-          eq(musicAlbums.id, parseInt(albumId)),
-          eq(musicAlbums.isPublic, true)
-        ),
-      });
-
-      if (!album) {
-        return NextResponse.json({ error: 'Album not found' }, { status: 404 });
-      }
-
-      const tracks = await db.query.musicTracks.findMany({
-        where: eq(musicTracks.albumId, parseInt(albumId)),
-        orderBy: (tracks, { asc }) => [asc(tracks.trackNumber)],
-      });
-
-      return NextResponse.json(tracks);
+      query = query.where(eq(musicTracks.albumId, parseInt(albumId)));
     }
 
-    return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+    const tracks = await query.orderBy(desc(musicTracks.createdAt));
+
+    return NextResponse.json({
+      success: true,
+      data: tracks,
+    });
   } catch (error) {
     console.error('Error fetching tracks:', error);
-    return NextResponse.json({ error: 'Failed to fetch tracks' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch tracks' },
+      { status: 500 }
+    );
   }
 }
 
-// POST - Create new track
+// ============================================
+// POST /api/music/tracks - Create a new track
+// ============================================
 export async function POST(request: NextRequest) {
   try {
-    // Auth.js: get session
     const session = await auth();
-    
-    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();
-    const { albumId, title, duration, trackNumber, publicUrl, lyrics, metadata } = body;
+    console.log('📝 POST /api/music/tracks - Request body:', body);
 
-    // Validate required fields
-    if (!albumId || !title || !publicUrl) {
-      return NextResponse.json({ 
-        error: 'Missing required fields: albumId, title, and publicUrl are required' 
-      }, { status: 400 });
+    const { title, duration, trackNumber, publicUrl, status, lyrics, albumId } = body;
+
+    // ✅ Validate required fields
+    if (!title) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: title' },
+        { status: 400 }
+      );
     }
 
-    // Verify album ownership
-    const album = await db.query.musicAlbums.findFirst({
-      where: and(
-        eq(musicAlbums.id, albumId),
-        eq(musicAlbums.userId, session.user.id)
-      ),
-    });
-
-    if (!album) {
-      return NextResponse.json({ error: 'Album not found or unauthorized' }, { status: 404 });
+    if (!publicUrl) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: publicUrl' },
+        { status: 400 }
+      );
     }
 
-    const newTrack = await db.insert(musicTracks).values({
-      albumId,
-      title,
-      duration: duration || null,
-      trackNumber: trackNumber || null,
-      publicUrl, // This is required!
-      status: TrackStatus.ACTIVE,
-      lyrics: lyrics || null,
-      metadata: metadata || null,
-      playCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }).returning();
+    const userId = session.user.id;
 
-    return NextResponse.json(newTrack[0], { status: 201 });
-  } catch (error) {
-    console.error('Error creating track:', error);
-    return NextResponse.json({ error: 'Failed to create track' }, { status: 500 });
-  }
-}
+    // ✅ If albumId is provided, verify album exists
+    if (albumId) {
+      const [album] = await db
+        .select()
+        .from(musicAlbums)
+        .where(
+          and(
+            eq(musicAlbums.id, albumId),
+            eq(musicAlbums.userId, userId)
+          )
+        )
+        .limit(1);
 
-// PUT - Update track
-export async function PUT(request: NextRequest) {
-  try {
-    // Auth.js: get session
-    const session = await auth();
-    
-    // Use session user ID, or return 401 if not authenticated
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      if (!album) {
+        return NextResponse.json(
+          { success: false, error: 'Album not found' },
+          { status: 404 }
+        );
+      }
     }
 
-    const body = await request.json();
-    const { id, title, duration, trackNumber, publicUrl, lyrics, status, metadata } = body;
+    await ensureTableSequence('music_tracks');
 
-    if (!id) {
-      return NextResponse.json({ error: 'Track ID required' }, { status: 400 });
-    }
-
-    // Get track and verify ownership
-    const existingTrack = await db.query.musicTracks.findFirst({
-      where: eq(musicTracks.id, id),
-      with: { album: true },
-    });
-
-    if (!existingTrack) {
-      return NextResponse.json({ error: 'Track not found' }, { status: 404 });
-    }
-
-    // Verify album ownership
-    const album = await db.query.musicAlbums.findFirst({
-      where: and(
-        eq(musicAlbums.id, existingTrack.albumId),
-        eq(musicAlbums.userId, session.user.id)
-      ),
-    });
-
-    if (!album) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const updatedTrack = await db.update(musicTracks)
-      .set({
-        title: title || existingTrack.title,
-        duration: duration !== undefined ? duration : existingTrack.duration,
-        trackNumber: trackNumber !== undefined ? trackNumber : existingTrack.trackNumber,
-        publicUrl: publicUrl || existingTrack.publicUrl, // Update if provided
-        lyrics: lyrics !== undefined ? lyrics : existingTrack.lyrics,
-        status: status || existingTrack.status,
-        metadata: metadata || existingTrack.metadata,
-        updatedAt: new Date(),
+    const [newTrack] = await db
+      .insert(musicTracks)
+      .values({
+        userId,
+        title,
+        duration: duration || null,
+        trackNumber: trackNumber || null,
+        publicUrl,
+        status: status || 'active',
+        lyrics: lyrics || null,
+        albumId: albumId || null,
       })
-      .where(eq(musicTracks.id, id))
       .returning();
 
-    return NextResponse.json(updatedTrack[0]);
+    console.log('✅ Track created:', newTrack);
+
+    return NextResponse.json({
+      success: true,
+      data: newTrack,
+      message: 'Track created successfully',
+    });
   } catch (error) {
-    console.error('Error updating track:', error);
-    return NextResponse.json({ error: 'Failed to update track' }, { status: 500 });
+    console.error('Error creating track:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create track' },
+      { status: 500 }
+    );
   }
 }
 
-// DELETE - Delete track
-export async function DELETE(request: NextRequest) {
+// ============================================
+// PUT /api/music/tracks - Update a track
+// ============================================
+export async function PUT(request: NextRequest) {
   try {
-    // Auth.js: get session
     const session = await auth();
-    
-    // Use session user ID, or return 401 if not authenticated
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    const searchParams = request.nextUrl.searchParams;
+    const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'Track ID required' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'Missing id parameter' },
+        { status: 400 }
+      );
     }
 
-    // Get track and verify ownership
-    const existingTrack = await db.query.musicTracks.findFirst({
-      where: eq(musicTracks.id, parseInt(id)),
-      with: { album: true },
+    const body = await request.json();
+    console.log('📝 PUT /api/music/tracks - Request body:', body);
+
+    const { title, duration, trackNumber, publicUrl, status, lyrics, albumId } = body;
+
+    const userId = session.user.id;
+
+    // ✅ Verify track exists
+    const [existing] = await db
+      .select()
+      .from(musicTracks)
+      .where(
+        and(
+          eq(musicTracks.id, parseInt(id)),
+          eq(musicTracks.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Track not found' },
+        { status: 404 }
+      );
+    }
+
+    // ✅ If albumId is provided, verify album exists
+    if (albumId) {
+      const [album] = await db
+        .select()
+        .from(musicAlbums)
+        .where(
+          and(
+            eq(musicAlbums.id, albumId),
+            eq(musicAlbums.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!album) {
+        return NextResponse.json(
+          { success: false, error: 'Album not found' },
+          { status: 404 }
+        );
+      }
+    }
+
+    const [updatedTrack] = await db
+      .update(musicTracks)
+      .set({
+        title: title || existing.title,
+        duration: duration !== undefined ? duration : existing.duration,
+        trackNumber: trackNumber !== undefined ? trackNumber : existing.trackNumber,
+        publicUrl: publicUrl || existing.publicUrl,
+        status: status || existing.status,
+        lyrics: lyrics !== undefined ? lyrics : existing.lyrics,
+        albumId: albumId !== undefined ? albumId : existing.albumId,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(musicTracks.id, parseInt(id)),
+          eq(musicTracks.userId, userId)
+        )
+      )
+      .returning();
+
+    console.log('✅ Track updated:', updatedTrack);
+
+    return NextResponse.json({
+      success: true,
+      data: updatedTrack,
+      message: 'Track updated successfully',
     });
+  } catch (error) {
+    console.error('Error updating track:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update track' },
+      { status: 500 }
+    );
+  }
+}
 
-    if (!existingTrack) {
-      return NextResponse.json({ error: 'Track not found' }, { status: 404 });
+// ============================================
+// DELETE /api/music/tracks - Delete a track
+// ============================================
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
-    // Verify album ownership
-    const album = await db.query.musicAlbums.findFirst({
-      where: and(
-        eq(musicAlbums.id, existingTrack.albumId),
-        eq(musicAlbums.userId, session.user.id)
-      ),
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Missing id parameter' },
+        { status: 400 }
+      );
+    }
+
+    const userId = session.user.id;
+
+    const [deleted] = await db
+      .delete(musicTracks)
+      .where(
+        and(
+          eq(musicTracks.id, parseInt(id)),
+          eq(musicTracks.userId, userId)
+        )
+      )
+      .returning();
+
+    if (!deleted) {
+      return NextResponse.json(
+        { success: false, error: 'Track not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: deleted,
+      message: 'Track deleted successfully',
     });
-
-    if (!album) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    await db.delete(musicTracks).where(eq(musicTracks.id, parseInt(id)));
-
-    return NextResponse.json({ success: true, message: 'Track deleted successfully' });
   } catch (error) {
     console.error('Error deleting track:', error);
-    return NextResponse.json({ error: 'Failed to delete track' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete track' },
+      { status: 500 }
+    );
   }
 }

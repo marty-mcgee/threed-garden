@@ -11,8 +11,6 @@ import {
   XCircle,
   Radio,
   MoreHorizontal,
-  ExternalLink,
-  Calendar,
   MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -322,28 +320,28 @@ export function TrafficBayArea511CRUD({ onModuleUpdate }: TrafficBayArea511CRUDP
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Radio className="w-5 h-5 text-cyan-500" />
-          <h3 className="text-sm font-semibold">Bay Area 511 Events</h3>
-          <Badge variant="secondary" className="ml-2">
-            {events.length} {events.length === 1 ? 'event' : 'events'}
+        <div className="flex items-center gap-2">
+          <Radio className="w-4 h-4 text-cyan-500" />
+          <span className="text-sm font-medium">Bay Area 511 Events</span>
+          <Badge variant="secondary" className="text-xs">
+            {events.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Event
             </Button>
           </DialogTrigger>
@@ -552,75 +550,77 @@ export function TrafficBayArea511CRUD({ onModuleUpdate }: TrafficBayArea511CRUDP
       </div>
 
       {events.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Radio className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Radio className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No events yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first event
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead className="hidden sm:table-cell">Location</TableHead>
-              <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {events.map((event) => (
-              <TableRow key={event.id}>
-                <TableCell className="font-medium">
-                  {event.title}
-                  {event.severity && (
-                    <Badge className={`ml-2 text-xs ${getSeverityColor(event.severity)}`}>
-                      {event.severity.charAt(0).toUpperCase() + event.severity.slice(1)}
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {event.location}
-                  {event.route && (
-                    <span className="text-xs text-muted-foreground ml-1">
-                      ({event.route})
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  <Badge variant="secondary" className="capitalize">
-                    {getEventTypeLabel(event.eventType)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {event.status === 'active' ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : event.status === 'cleared' ? (
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span className="text-sm capitalize">
-                      {event.status || 'Unknown'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(event)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Title</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Location</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {events.map((event) => (
+                <TableRow key={event.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {event.title}
+                    {event.severity && (
+                      <Badge className={`ml-2 text-[10px] ${getSeverityColor(event.severity)}`}>
+                        {event.severity.charAt(0).toUpperCase() + event.severity.slice(1)}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {event.location}
+                    {event.route && (
+                      <span className="text-xs text-muted-foreground ml-1">
+                        ({event.route})
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="text-[10px] capitalize">
+                      {getEventTypeLabel(event.eventType)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {event.status === 'active' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      ) : event.status === 'cleared' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-blue-500" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-gray-400" />
+                      )}
+                      <span className="text-xs capitalize">
+                        {event.status || 'Unknown'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(event)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog open={!!editingEvent} onOpenChange={(open) => !open && setEditingEvent(null)}>

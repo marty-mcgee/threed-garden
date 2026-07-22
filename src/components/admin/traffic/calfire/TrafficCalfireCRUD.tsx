@@ -11,8 +11,6 @@ import {
   XCircle,
   Flame,
   MoreHorizontal,
-  ExternalLink,
-  Calendar,
   MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -326,28 +324,28 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Flame className="w-5 h-5 text-red-500" />
-          <h3 className="text-sm font-semibold">CalFire Incidents</h3>
-          <Badge variant="secondary" className="ml-2">
-            {incidents.length} {incidents.length === 1 ? 'incident' : 'incidents'}
+        <div className="flex items-center gap-2">
+          <Flame className="w-4 h-4 text-red-500" />
+          <span className="text-sm font-medium">CalFire Incidents</span>
+          <Badge variant="secondary" className="text-xs">
+            {incidents.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Incident
             </Button>
           </DialogTrigger>
@@ -560,82 +558,84 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
       </div>
 
       {incidents.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Flame className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Flame className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No incidents yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first incident
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Location</TableHead>
-              <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {incidents.map((incident) => (
-              <TableRow key={incident.id}>
-                <TableCell className="font-medium">
-                  {incident.name}
-                  {incident.severity && (
-                    <Badge className={`ml-2 text-xs ${getSeverityColor(incident.severity)}`}>
-                      {incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1)}
-                    </Badge>
-                  )}
-                  {incident.containment !== null && incident.containment > 0 && (
-                    <Badge variant="outline" className="ml-2 text-xs">
-                      {incident.containment}% Contained
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {incident.location}
-                  {incident.county && (
-                    <span className="text-xs text-muted-foreground ml-1">
-                      ({incident.county})
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  <Badge variant="secondary" className="capitalize">
-                    {getIncidentTypeLabel(incident.incidentType)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {incident.status === 'active' ? (
-                      <CheckCircle className="w-4 h-4 text-red-500" />
-                    ) : incident.status === 'contained' ? (
-                      <CheckCircle className="w-4 h-4 text-yellow-500" />
-                    ) : incident.status === 'controlled' ? (
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                    ) : (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    )}
-                    <span className="text-sm capitalize">
-                      {incident.status || 'Unknown'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(incident)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Name</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Location</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {incidents.map((incident) => (
+                <TableRow key={incident.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {incident.name}
+                    {incident.severity && (
+                      <Badge className={`ml-2 text-[10px] ${getSeverityColor(incident.severity)}`}>
+                        {incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1)}
+                      </Badge>
+                    )}
+                    {incident.containment !== null && incident.containment > 0 && (
+                      <Badge variant="outline" className="ml-2 text-[10px]">
+                        {incident.containment}% Contained
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {incident.location}
+                    {incident.county && (
+                      <span className="text-xs text-muted-foreground ml-1">
+                        ({incident.county})
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="text-[10px] capitalize">
+                      {getIncidentTypeLabel(incident.incidentType)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {incident.status === 'active' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-red-500" />
+                      ) : incident.status === 'contained' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-yellow-500" />
+                      ) : incident.status === 'controlled' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-blue-500" />
+                      ) : (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      )}
+                      <span className="text-xs capitalize">
+                        {incident.status || 'Unknown'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(incident)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog open={!!editingIncident} onOpenChange={(open) => !open && setEditingIncident(null)}>

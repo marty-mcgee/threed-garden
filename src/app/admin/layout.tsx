@@ -39,15 +39,17 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
-      <div className="mb-6 flex justify-between items-center">
+    <div className="container mx-auto py-4 px-4 max-w-7xl">
+      <div className="mb-2 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Signed in as {session.user?.name || session.user?.email}
-          </p>
         </div>
-        <SignOutButton variant="outline" size="sm" />
+        <div>
+          <span className="text-sm text-muted-foreground mr-2">
+            Signed in as {session.user?.name || session.user?.email}
+          </span>
+          <SignOutButton variant="outline" size="sm" />
+        </div>
       </div>
       {children}
     </div>

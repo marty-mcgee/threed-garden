@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { 
   Plus, 
   Folder, 
@@ -41,10 +42,17 @@ interface ModuleCounts {
 export default function AdminPage() {
   const router = useRouter();
   const { showToast, ToastComponent } = useToast();
+  const { data: session, status } = useSession();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [moduleCounts, setModuleCounts] = useState<Record<number, ModuleCounts>>({});
   const [deleting, setDeleting] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchProjects();
+    }
+  }, [status]);
 
   useEffect(() => {
     fetchProjects();
@@ -154,6 +162,55 @@ export default function AdminPage() {
     );
   }
 
+    // ✅ Show loading state while checking auth
+  if (status === 'loading' || loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // ✅ Redirect if not authenticated
+  if (status === 'unauthenticated') {
+    router.push('/auth/sign-in');
+    return null;
+  }
+
+  // ✅ Show empty state if no projects
+  if (projects.length === 0 && !loading) {
+    return (
+      <div className="space-y-6">
+        {ToastComponent}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Projects</h1>
+            <p className="text-muted-foreground">
+              Manage your projects and their modules
+            </p>
+          </div>
+          <Button onClick={() => router.push('/admin/projects/new')}>
+            <Plus className="w-4 h-4 mr-2" />
+            New Project
+          </Button>
+        </div>
+        <Card>
+          <CardContent className="text-center py-12">
+            <Folder className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h3 className="text-lg font-medium mb-2">No Projects Yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Create your first project to start managing assets.
+            </p>
+            <Button onClick={() => router.push('/admin/projects/new')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Project
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {ToastComponent}
@@ -173,7 +230,7 @@ export default function AdminPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 my-2">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -226,98 +283,81 @@ export default function AdminPage() {
 
       {/* Projects List */}
       <Card>
-        <CardHeader>
-          <CardTitle>All Projects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {projects.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Folder className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No projects yet</p>
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => router.push('/admin/projects/new')}
-              >
-                Create your first project
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {projects.map((project) => {
-                const counts = moduleCounts[project.id] || { threed: 0, traffic: 0, music: 0 };
-                const totalModules = counts.threed + counts.traffic + counts.music;
-                
-                return (
-                  <div 
-                    key={project.id}
-                    className={`flex items-center justify-between p-4 border rounded-lg transition-colors ${
-                      project.isActive ? 'hover:bg-muted/50' : 'opacity-60 bg-muted/20'
-                    }`}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3">
-                        <Folder className={`w-5 h-5 flex-shrink-0 ${project.isActive ? 'text-blue-500' : 'text-gray-400'}`} />
-                        <div className="min-w-0">
-                          <h3 className="font-semibold flex items-center gap-2 truncate">
-                            {project.name}
-                            {!project.isActive && (
-                              <Badge variant="secondary" className="text-xs flex-shrink-0">Inactive</Badge>
-                            )}
-                            {project.isPublic && (
-                              <Badge variant="outline" className="text-xs flex-shrink-0">Public</Badge>
-                            )}
-                          </h3>
-                          <p className="text-sm text-muted-foreground truncate">
-                            {project.description || 'No description'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 mt-2 flex-wrap">
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Box className="w-3 h-3" />
-                          {counts.threed} ThreeD
-                        </Badge>
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Car className="w-3 h-3" />
-                          {counts.traffic} Traffic
-                        </Badge>
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Music className="w-3 h-3" />
-                          {counts.music} Music
-                        </Badge>
-                        <Badge variant="secondary">
-                          {totalModules} total modules
-                        </Badge>
+        <CardContent className="p-0">
+          <div className="space-y-2 p-4">
+            {projects.map((project) => {
+              const counts = moduleCounts[project.id] || { threed: 0, traffic: 0, music: 0 };
+              const totalModules = counts.threed + counts.traffic + counts.music;
+              
+              return (
+                <div 
+                  key={project.id}
+                  className={`flex items-center justify-between p-4 border rounded-lg transition-colors ${
+                    project.isActive ? 'bg-muted/40 hover:bg-muted/70' : 'opacity-60 bg-muted/20'
+                  }`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3">
+                      <Folder className={`w-5 h-5 flex-shrink-0 ${project.isActive ? 'text-blue-500' : 'text-gray-400'}`} />
+                      <div className="min-w-0">
+                        <h3 className="font-semibold flex items-center gap-2 truncate">
+                          {project.name}
+                          {!project.isActive && (
+                            <Badge variant="secondary" className="text-xs flex-shrink-0">Inactive</Badge>
+                          )}
+                          {project.isPublic && (
+                            <Badge variant="outline" className="text-xs flex-shrink-0">Public</Badge>
+                          )}
+                        </h3>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {project.description || 'No description'}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => router.push(`/admin/projects/${project.id}`)}
-                      >
-                        Manage
-                        <ChevronRight className="w-4 h-4 ml-1" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        onClick={() => deleteProject(project.id)}
-                        disabled={deleting === project.id}
-                      >
-                        {deleting === project.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        )}
-                      </Button>
+                    <div className="flex items-center gap-3 mt-2 flex-wrap">
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <Box className="w-3 h-3" />
+                        {counts.threed} ThreeD
+                      </Badge>
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <Car className="w-3 h-3" />
+                        {counts.traffic} Traffic
+                      </Badge>
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <Music className="w-3 h-3" />
+                        {counts.music} Music
+                      </Badge>
+                      <Badge variant="secondary">
+                        {totalModules} total modules
+                      </Badge>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => router.push(`/admin/projects/${project.id}`)}
+                    >
+                      Manage
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => deleteProject(project.id)}
+                      disabled={deleting === project.id}
+                    >
+                      {deleting === project.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
     </div>

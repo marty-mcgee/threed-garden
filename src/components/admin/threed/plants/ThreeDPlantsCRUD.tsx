@@ -1,4 +1,5 @@
-// components/admin/threed/plants/ThreeDPlantsCRUD.tsx - Updated with correct field names
+// components/admin/threed/plants/ThreeDPlantsCRUD.tsx - Consistent UI
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,9 +11,7 @@ import {
   CheckCircle,
   XCircle,
   Sprout,
-  MoreHorizontal,
-  ExternalLink,
-  X
+  MoreHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,8 +21,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
 interface Plant {
@@ -103,7 +102,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate }: ThreeDPlantsCRUDProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          commonName: formData.commonName, // ✅ Changed from 'name' to 'commonName'
+          commonName: formData.commonName,
           scientificName: formData.scientificName || null,
           variety: formData.variety || null,
           growthStage: formData.growthStage,
@@ -155,7 +154,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate }: ThreeDPlantsCRUDProps) {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          commonName: formData.commonName, // ✅ Changed from 'name' to 'commonName'
+          commonName: formData.commonName,
           scientificName: formData.scientificName || null,
           variety: formData.variety || null,
           growthStage: formData.growthStage,
@@ -269,29 +268,28 @@ export function ThreeDPlantsCRUD({ onModuleUpdate }: ThreeDPlantsCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
-      {/* Header with count and add button */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Sprout className="w-5 h-5 text-green-500" />
-          <h3 className="text-sm font-semibold">Plants</h3>
-          <Badge variant="secondary" className="ml-2">
-            {plants.length} {plants.length === 1 ? 'plant' : 'plants'}
+        <div className="flex items-center gap-2">
+          <Sprout className="w-4 h-4 text-green-500" />
+          <span className="text-sm font-medium">Plants</span>
+          <Badge variant="secondary" className="text-xs">
+            {plants.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Plant
             </Button>
           </DialogTrigger>
@@ -467,74 +465,74 @@ export function ThreeDPlantsCRUD({ onModuleUpdate }: ThreeDPlantsCRUDProps) {
         </Dialog>
       </div>
 
-      {/* Plants Table */}
       {plants.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Sprout className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Sprout className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No plants yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first plant
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Scientific Name</TableHead>
-              <TableHead className="hidden md:table-cell">Growth Stage</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {plants.map((plant) => (
-              <TableRow key={plant.id}>
-                <TableCell className="font-medium">
-                  {plant.commonName}
-                  {plant.isEdible && (
-                    <Badge variant="outline" className="ml-2 text-xs">Edible</Badge>
-                  )}
-                  {plant.isPerennial && (
-                    <Badge variant="outline" className="ml-1 text-xs">Perennial</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground italic">
-                  {plant.scientificName || '—'}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  <Badge variant="secondary" className="capitalize">
-                    {plant.growthStage || 'Unknown'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {plant.status === 'active' ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span className="text-sm capitalize">
-                      {plant.status || 'Unknown'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(plant)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Name</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Scientific Name</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Growth Stage</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {plants.map((plant) => (
+                <TableRow key={plant.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {plant.commonName}
+                    {plant.isEdible && (
+                      <Badge variant="outline" className="ml-2 text-[10px]">Edible</Badge>
+                    )}
+                    {plant.isPerennial && (
+                      <Badge variant="outline" className="ml-1 text-[10px]">Perennial</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground italic">
+                    {plant.scientificName || '—'}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="text-[10px] capitalize">
+                      {plant.growthStage || 'Unknown'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {plant.status === 'active' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-gray-400" />
+                      )}
+                      <span className="text-xs capitalize">
+                        {plant.status || 'Unknown'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(plant)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
-      {/* Edit Dialog */}
       <Dialog open={!!editingPlant} onOpenChange={(open) => !open && setEditingPlant(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>

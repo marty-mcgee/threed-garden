@@ -1,4 +1,5 @@
-// components/admin/traffic/chp-cad/TrafficCHPCADCRUD.tsx - Fixed with correct schema fields
+// components/admin/traffic/chp-cad/TrafficCHPCADCRUD.tsx - Consistent UI
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,8 +12,6 @@ import {
   XCircle,
   AlertTriangle,
   MoreHorizontal,
-  ExternalLink,
-  X,
   MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,27 +23,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-// ✅ Match the schema exactly
 interface Incident {
   id: number;
-  sourceId: string;           // ✅ This is the unique identifier (was incidentId)
-  trafficId: number | null;
-  centerId: number | null;
-  incidentType: string | null;
-  location: string | null;
-  city: string | null;
-  county: string | null;
+  sourceId: string;
+  incidentType: string;
+  location: string;
+  details: string | null;
+  severity: string;
+  status: string;
   latitude: number | null;
   longitude: number | null;
-  logTime: string | null;
-  details: string | null;
-  status: string;
-  fetchedAt: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
-  userId: string;
 }
 
 interface TrafficCHPCADCRUDProps {
@@ -59,16 +53,15 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingIncident, setEditingIncident] = useState<Incident | null>(null);
   const [formData, setFormData] = useState({
-    sourceId: '',              // ✅ Changed from incidentId
+    sourceId: '',
     incidentType: 'traffic_collision',
     location: '',
-    city: '',
-    county: '',
     details: '',
+    severity: 'moderate',
     status: 'active',
     latitude: 37.7749,
     longitude: -122.4194,
-    logTime: '',
+    isActive: true,
   });
 
   useEffect(() => {
@@ -80,18 +73,8 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
     try {
       const response = await fetch('/api/traffic/chp-cad');
       const data = await response.json();
-      
-      console.log('📦 Raw API response for incidents:', data);
-      
       if (data.success) {
-        // ✅ Map the data to match our interface
-        const mappedIncidents = (data.data || []).map((incident: any) => ({
-          ...incident,
-          sourceId: incident.sourceId || incident.source_id || `CHP-${incident.id}`,
-          latitude: incident.latitude ? parseFloat(incident.latitude) : null,
-          longitude: incident.longitude ? parseFloat(incident.longitude) : null,
-        }));
-        setIncidents(mappedIncidents);
+        setIncidents(data.data || []);
       } else {
         showToast(data.error || 'Failed to fetch incidents', 'error');
       }
@@ -104,43 +87,30 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
   };
 
   const handleCreate = async () => {
-    // ✅ Validate required fields
-    if (!formData.sourceId) {
-      showToast('Source ID is required', 'error');
-      return;
-    }
-    if (!formData.location && !formData.city) {
-      showToast('Location or City is required', 'error');
+    if (!formData.sourceId || !formData.location) {
+      showToast('Source ID and location are required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      // ✅ Match the schema exactly
-      const payload = {
-        sourceId: formData.sourceId,
-        incidentType: formData.incidentType,
-        location: formData.location || null,
-        city: formData.city || null,
-        county: formData.county || null,
-        details: formData.details || null,
-        status: formData.status,
-        latitude: formData.latitude || null,
-        longitude: formData.longitude || null,
-        logTime: formData.logTime || null,
-      };
-
-      console.log('📝 Creating incident with payload:', payload);
-
       const response = await fetch('/api/traffic/chp-cad', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          sourceId: formData.sourceId,
+          incidentType: formData.incidentType,
+          location: formData.location,
+          details: formData.details || null,
+          severity: formData.severity,
+          status: formData.status,
+          latitude: formData.latitude || null,
+          longitude: formData.longitude || null,
+          isActive: formData.isActive,
+        }),
       });
 
       const data = await response.json();
-      console.log('📝 Create response:', data);
-      
       if (data.success) {
         showToast('Incident created successfully', 'success');
         setShowCreateDialog(false);
@@ -148,13 +118,12 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
           sourceId: '',
           incidentType: 'traffic_collision',
           location: '',
-          city: '',
-          county: '',
           details: '',
+          severity: 'moderate',
           status: 'active',
           latitude: 37.7749,
           longitude: -122.4194,
-          logTime: '',
+          isActive: true,
         });
         await fetchIncidents();
         if (onModuleUpdate) onModuleUpdate();
@@ -173,25 +142,20 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
     if (!editingIncident) return;
     setIsSubmitting(true);
     try {
-      const payload = {
-        sourceId: formData.sourceId,
-        incidentType: formData.incidentType,
-        location: formData.location || null,
-        city: formData.city || null,
-        county: formData.county || null,
-        details: formData.details || null,
-        status: formData.status,
-        latitude: formData.latitude || null,
-        longitude: formData.longitude || null,
-        logTime: formData.logTime || null,
-      };
-
-      console.log('📝 Updating incident with payload:', payload);
-
       const response = await fetch(`/api/traffic/chp-cad?id=${editingIncident.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          sourceId: formData.sourceId,
+          incidentType: formData.incidentType,
+          location: formData.location,
+          details: formData.details || null,
+          severity: formData.severity,
+          status: formData.status,
+          latitude: formData.latitude || null,
+          longitude: formData.longitude || null,
+          isActive: formData.isActive,
+        }),
       });
 
       const data = await response.json();
@@ -280,9 +244,8 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
   );
 
   const viewIncidentDetails = (incident: Incident) => {
-    const location = incident.location || incident.city || 'Unknown location';
     showToast(
-      `${incident.sourceId} - ${location}`,
+      `${incident.sourceId} - ${incident.location}`,
       'info'
     );
   };
@@ -293,13 +256,12 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
       sourceId: incident.sourceId || '',
       incidentType: incident.incidentType || 'traffic_collision',
       location: incident.location || '',
-      city: incident.city || '',
-      county: incident.county || '',
       details: incident.details || '',
+      severity: incident.severity || 'moderate',
       status: incident.status || 'active',
       latitude: incident.latitude || 37.7749,
       longitude: incident.longitude || -122.4194,
-      logTime: incident.logTime ? new Date(incident.logTime).toISOString().slice(0, 16) : '',
+      isActive: incident.isActive !== false,
     });
   };
 
@@ -314,7 +276,6 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
   };
 
   const getIncidentTypeLabel = (type: string) => {
-    if (!type) return 'Other';
     return type.split('_').map(word => 
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
@@ -322,49 +283,45 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
-      {/* Header with count and add button */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-blue-500" />
-          <h3 className="text-sm font-semibold">CHP-CAD Incidents</h3>
-          <Badge variant="secondary" className="ml-2">
-            {incidents.length} {incidents.length === 1 ? 'incident' : 'incidents'}
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-blue-500" />
+          <span className="text-sm font-medium">CHP-CAD Incidents</span>
+          <Badge variant="secondary" className="text-xs">
+            {incidents.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Incident
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create New CHP-CAD Incident</DialogTitle>
+              <DialogTitle>Create New Incident</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
                 <Label htmlFor="sourceId">Source ID *</Label>
                 <Input
                   id="sourceId"
-                  placeholder="e.g., TEST-CHP-INCIDENT-001"
+                  placeholder="e.g., CHP-2024-001"
                   value={formData.sourceId}
                   onChange={(e) => setFormData({ ...formData, sourceId: e.target.value })}
                   disabled={isSubmitting}
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Unique identifier for this incident (e.g., TEST-CHP-INCIDENT-001)
-                </p>
               </div>
               <div>
                 <Label htmlFor="incidentType">Incident Type</Label>
@@ -387,7 +344,7 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="location">Location *</Label>
                 <Input
                   id="location"
                   placeholder="e.g., I-80 near Berkeley"
@@ -395,28 +352,6 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   disabled={isSubmitting}
                 />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    placeholder="e.g., Berkeley"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="county">County</Label>
-                  <Input
-                    id="county"
-                    placeholder="e.g., Alameda"
-                    value={formData.county}
-                    onChange={(e) => setFormData({ ...formData, county: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
               </div>
               <div>
                 <Label htmlFor="details">Details</Label>
@@ -430,6 +365,23 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="severity">Severity</Label>
+                  <Select
+                    value={formData.severity}
+                    onValueChange={(value) => setFormData({ ...formData, severity: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select severity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="critical">Critical</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="moderate">Moderate</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div>
                   <Label htmlFor="status">Status</Label>
                   <Select
@@ -446,16 +398,6 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
                       <SelectItem value="pending">Pending</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                <div>
-                  <Label htmlFor="logTime">Log Time</Label>
-                  <Input
-                    id="logTime"
-                    type="datetime-local"
-                    value={formData.logTime}
-                    onChange={(e) => setFormData({ ...formData, logTime: e.target.value })}
-                    disabled={isSubmitting}
-                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -499,73 +441,75 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
         </Dialog>
       </div>
 
-      {/* Incidents Table */}
       {incidents.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <AlertTriangle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No incidents yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first incident
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Source ID</TableHead>
-              <TableHead className="hidden sm:table-cell">Location</TableHead>
-              <TableHead className="hidden md:table-cell">City</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {incidents.map((incident) => (
-              <TableRow key={incident.id}>
-                <TableCell className="font-medium">
-                  {incident.sourceId}
-                  {incident.logTime && (
-                    <Badge variant="outline" className="ml-2 text-xs">
-                      {new Date(incident.logTime).toLocaleDateString()}
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {incident.location || 'Unknown'}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  {incident.city || '—'}
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {incident.status === 'active' ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : incident.status === 'cleared' ? (
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span className="text-sm capitalize">
-                      {incident.status || 'Unknown'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(incident)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Source ID</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Location</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {incidents.map((incident) => (
+                <TableRow key={incident.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {incident.sourceId}
+                    {incident.severity && (
+                      <Badge className={`ml-2 text-[10px] ${getSeverityColor(incident.severity)}`}>
+                        {incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1)}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {incident.location || 'Unknown'}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="text-[10px] capitalize">
+                      {getIncidentTypeLabel(incident.incidentType)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {incident.status === 'active' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      ) : incident.status === 'cleared' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-blue-500" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-gray-400" />
+                      )}
+                      <span className="text-xs capitalize">
+                        {incident.status || 'Unknown'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(incident)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
-      {/* Edit Dialog */}
       <Dialog open={!!editingIncident} onOpenChange={(open) => !open && setEditingIncident(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -576,7 +520,6 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
               <Label htmlFor="edit-sourceId">Source ID *</Label>
               <Input
                 id="edit-sourceId"
-                placeholder="e.g., TEST-CHP-INCIDENT-001"
                 value={formData.sourceId}
                 onChange={(e) => setFormData({ ...formData, sourceId: e.target.value })}
                 disabled={isSubmitting}
@@ -603,33 +546,13 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
               </Select>
             </div>
             <div>
-              <Label htmlFor="edit-location">Location</Label>
+              <Label htmlFor="edit-location">Location *</Label>
               <Input
                 id="edit-location"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 disabled={isSubmitting}
               />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-city">City</Label>
-                <Input
-                  id="edit-city"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-county">County</Label>
-                <Input
-                  id="edit-county"
-                  value={formData.county}
-                  onChange={(e) => setFormData({ ...formData, county: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
             </div>
             <div>
               <Label htmlFor="edit-details">Details</Label>
@@ -642,6 +565,23 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-severity">Severity</Label>
+                <Select
+                  value={formData.severity}
+                  onValueChange={(value) => setFormData({ ...formData, severity: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select severity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="critical">Critical</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="moderate">Moderate</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div>
                 <Label htmlFor="edit-status">Status</Label>
                 <Select
@@ -659,16 +599,6 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="edit-logTime">Log Time</Label>
-                <Input
-                  id="edit-logTime"
-                  type="datetime-local"
-                  value={formData.logTime}
-                  onChange={(e) => setFormData({ ...formData, logTime: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -677,7 +607,6 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
                   id="edit-latitude"
                   type="number"
                   step="0.000001"
-                  placeholder="37.7749"
                   value={formData.latitude}
                   onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })}
                   disabled={isSubmitting}
@@ -689,7 +618,6 @@ export function TrafficCHPCADCRUD({ onModuleUpdate }: TrafficCHPCADCRUDProps) {
                   id="edit-longitude"
                   type="number"
                   step="0.000001"
-                  placeholder="-122.4194"
                   value={formData.longitude}
                   onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })}
                   disabled={isSubmitting}

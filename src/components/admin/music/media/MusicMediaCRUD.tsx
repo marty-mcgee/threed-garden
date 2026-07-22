@@ -103,14 +103,19 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
 
     setIsSubmitting(true);
     try {
-      const payload = {
+      const payload: any = {
         fileName: formData.fileName,
         fileUrl: formData.fileUrl,
         fileType: formData.fileType,
-        fileSize: formData.fileSize || null,
         isPrimary: formData.isPrimary,
-        albumId: formData.albumId ? parseInt(formData.albumId) : null,
       };
+
+      if (formData.fileSize && formData.fileSize > 0) {
+        payload.fileSize = formData.fileSize;
+      }
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
 
       const response = await fetch('/api/music/media', {
         method: 'POST',
@@ -147,14 +152,19 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
     if (!editingMedia) return;
     setIsSubmitting(true);
     try {
-      const payload = {
+      const payload: any = {
         fileName: formData.fileName,
         fileUrl: formData.fileUrl,
         fileType: formData.fileType,
-        fileSize: formData.fileSize || null,
         isPrimary: formData.isPrimary,
-        albumId: formData.albumId ? parseInt(formData.albumId) : null,
       };
+
+      if (formData.fileSize && formData.fileSize > 0) {
+        payload.fileSize = formData.fileSize;
+      }
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
 
       const response = await fetch(`/api/music/media?id=${editingMedia.id}`, {
         method: 'PUT',
@@ -258,28 +268,28 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Image className="w-5 h-5 text-pink-500" />
-          <h3 className="text-sm font-semibold">Media</h3>
-          <Badge variant="secondary" className="ml-2">
-            {media.length} {media.length === 1 ? 'file' : 'files'}
+        <div className="flex items-center gap-2">
+          <Image className="w-4 h-4 text-pink-500" />
+          <span className="text-sm font-medium">Media</span>
+          <Badge variant="secondary" className="text-xs">
+            {media.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Media
             </Button>
           </DialogTrigger>
@@ -311,14 +321,14 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
               <div>
                 <Label htmlFor="albumId">Album</Label>
                 <Select
-                  value={formData.albumId}
-                  onValueChange={(value) => setFormData({ ...formData, albumId: value })}
+                  value={formData.albumId || 'none'}
+                  onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select album" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {albums.map((album) => (
                       <SelectItem key={album.id} value={String(album.id)}>
                         {album.title}
@@ -385,61 +395,63 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
       </div>
 
       {media.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Image className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No media files yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Add your first media file
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>File Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Type</TableHead>
-              <TableHead className="hidden md:table-cell">Size</TableHead>
-              <TableHead className="text-center">Primary</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {media.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium">
-                  {item.fileName}
-                  {item.albumId && (
-                    <Badge variant="outline" className="ml-2 text-xs">
-                      Album Media
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {item.fileType}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  {formatFileSize(item.fileSize)}
-                </TableCell>
-                <TableCell className="text-center">
-                  {item.isPrimary ? (
-                    <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
-                  ) : (
-                    <XCircle className="w-4 h-4 text-gray-300 mx-auto" />
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(item)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">File Name</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Size</TableHead>
+                <TableHead className="text-center text-xs py-1">Primary</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {media.map((item) => (
+                <TableRow key={item.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {item.fileName}
+                    {item.albumId && (
+                      <Badge variant="outline" className="ml-2 text-[10px]">
+                        Album Media
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {item.fileType}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    {formatFileSize(item.fileSize)}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    {item.isPrimary ? (
+                      <CheckCircle className="w-3.5 h-3.5 text-green-500 mx-auto" />
+                    ) : (
+                      <XCircle className="w-3.5 h-3.5 text-gray-300 mx-auto" />
+                    )}
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(item)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog open={!!editingMedia} onOpenChange={(open) => !open && setEditingMedia(null)}>
@@ -469,14 +481,14 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
             <div>
               <Label htmlFor="edit-albumId">Album</Label>
               <Select
-                value={formData.albumId}
-                onValueChange={(value) => setFormData({ ...formData, albumId: value })}
+                value={formData.albumId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select album" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {albums.map((album) => (
                     <SelectItem key={album.id} value={String(album.id)}>
                       {album.title}

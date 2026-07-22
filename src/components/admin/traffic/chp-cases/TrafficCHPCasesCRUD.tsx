@@ -10,9 +10,7 @@ import {
   CheckCircle,
   XCircle,
   FileText,
-  MoreHorizontal,
-  ExternalLink,
-  Calendar
+  MoreHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -317,28 +315,28 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <FileText className="w-5 h-5 text-indigo-500" />
-          <h3 className="text-sm font-semibold">CHP Cases</h3>
-          <Badge variant="secondary" className="ml-2">
-            {cases.length} {cases.length === 1 ? 'case' : 'cases'}
+        <div className="flex items-center gap-2">
+          <FileText className="w-4 h-4 text-indigo-500" />
+          <span className="text-sm font-medium">CHP Cases</span>
+          <Badge variant="secondary" className="text-xs">
+            {cases.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Case
             </Button>
           </DialogTrigger>
@@ -518,68 +516,70 @@ export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps
       </div>
 
       {cases.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No cases yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first case
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Case ID</TableHead>
-              <TableHead className="hidden sm:table-cell">Title</TableHead>
-              <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {cases.map((chpCase) => (
-              <TableRow key={chpCase.id}>
-                <TableCell className="font-medium">
-                  {chpCase.caseId}
-                  {chpCase.severity && (
-                    <Badge className={`ml-2 text-xs ${getSeverityColor(chpCase.severity)}`}>
-                      {chpCase.severity.charAt(0).toUpperCase() + chpCase.severity.slice(1)}
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {chpCase.title}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  <Badge variant="secondary" className="capitalize">
-                    {getCaseTypeLabel(chpCase.caseType)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {chpCase.status === 'active' || chpCase.status === 'investigating' ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span className="text-sm capitalize">
-                      {chpCase.status || 'Unknown'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(chpCase)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Case ID</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Title</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {cases.map((chpCase) => (
+                <TableRow key={chpCase.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {chpCase.caseId}
+                    {chpCase.severity && (
+                      <Badge className={`ml-2 text-[10px] ${getSeverityColor(chpCase.severity)}`}>
+                        {chpCase.severity.charAt(0).toUpperCase() + chpCase.severity.slice(1)}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {chpCase.title}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="text-[10px] capitalize">
+                      {getCaseTypeLabel(chpCase.caseType)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {chpCase.status === 'active' || chpCase.status === 'investigating' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-gray-400" />
+                      )}
+                      <span className="text-xs capitalize">
+                        {chpCase.status || 'Unknown'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(chpCase)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog open={!!editingCase} onOpenChange={(open) => !open && setEditingCase(null)}>

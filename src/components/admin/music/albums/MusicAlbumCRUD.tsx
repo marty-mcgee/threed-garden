@@ -1,4 +1,5 @@
-// components/admin/music/albums/MusicAlbumCRUD.tsx - CRUD Only
+// components/admin/music/albums/MusicAlbumCRUD.tsx - Consistent UI
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -261,29 +262,29 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       {/* Header with count and add button */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Music className="w-5 h-5 text-purple-500" />
-          <h3 className="text-sm font-semibold">Albums</h3>
-          <Badge variant="secondary" className="ml-2">
-            {albums.length} {albums.length === 1 ? 'album' : 'albums'}
+        <div className="flex items-center gap-2">
+          <Music className="w-4 h-4 text-purple-500" />
+          <span className="text-sm font-medium">Albums</span>
+          <Badge variant="secondary" className="text-xs">
+            {albums.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Album
             </Button>
           </DialogTrigger>
@@ -370,64 +371,66 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
 
       {/* Albums Table */}
       {albums.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Music className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Music className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No albums yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first album
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead className="hidden sm:table-cell">Artist</TableHead>
-              <TableHead className="hidden md:table-cell">Year</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {albums.map((album) => (
-              <TableRow key={album.id}>
-                <TableCell className="font-medium">
-                  {album.title}
-                  {album.isPublic && (
-                    <Badge variant="outline" className="ml-2 text-xs">Public</Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  {album.artist}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  {album.releaseYear}
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {album.status === 'published' ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-yellow-500" />
-                    )}
-                    <span className="text-sm">
-                      {album.status === 'published' ? 'Published' : 'Draft'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(album)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Title</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Artist</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Year</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {albums.map((album) => (
+                <TableRow key={album.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {album.title}
+                    {album.isPublic && (
+                      <Badge variant="outline" className="ml-2 text-[10px]">Public</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {album.artist}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    {album.releaseYear}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {album.status === 'published' ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-yellow-500" />
+                      )}
+                      <span className="text-xs">
+                        {album.status === 'published' ? 'Published' : 'Draft'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(album)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {/* Edit Dialog */}
@@ -525,20 +528,20 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-12">#</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead className="text-right">Duration</TableHead>
-                    <TableHead className="text-center">Status</TableHead>
-                    <TableHead className="text-right">Plays</TableHead>
+                    <TableHead className="w-12 text-xs py-1">#</TableHead>
+                    <TableHead className="text-xs py-1">Title</TableHead>
+                    <TableHead className="text-right text-xs py-1">Duration</TableHead>
+                    <TableHead className="text-center text-xs py-1">Status</TableHead>
+                    <TableHead className="text-right text-xs py-1">Plays</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {selectedAlbum.tracks.map((track) => (
                     <TableRow key={track.id}>
-                      <TableCell className="text-center text-muted-foreground">
+                      <TableCell className="text-center text-muted-foreground py-1 text-sm">
                         {track.trackNumber}
                       </TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="py-1 text-sm font-medium">
                         {track.title}
                         {track.publicUrl && (
                           <Button
@@ -551,15 +554,15 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                           </Button>
                         )}
                       </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
+                      <TableCell className="text-right text-muted-foreground py-1 text-sm">
                         {formatDuration(track.duration)}
                       </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant={track.status === 'active' ? 'default' : 'secondary'}>
+                      <TableCell className="text-center py-1">
+                        <Badge variant={track.status === 'active' ? 'default' : 'secondary'} className="text-[10px]">
                           {track.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
+                      <TableCell className="text-right text-muted-foreground py-1 text-sm">
                         {track.playCount}
                       </TableCell>
                     </TableRow>

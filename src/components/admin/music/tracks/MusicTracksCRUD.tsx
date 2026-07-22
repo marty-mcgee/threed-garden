@@ -24,7 +24,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
 interface Track {
@@ -108,15 +107,24 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
 
     setIsSubmitting(true);
     try {
-      const payload = {
+      const payload: any = {
         title: formData.title,
-        duration: formData.duration || null,
-        trackNumber: formData.trackNumber || null,
         publicUrl: formData.publicUrl,
         status: formData.status,
-        lyrics: formData.lyrics || null,
-        albumId: formData.albumId ? parseInt(formData.albumId) : null,
       };
+
+      if (formData.duration && formData.duration > 0) {
+        payload.duration = formData.duration;
+      }
+      if (formData.trackNumber && formData.trackNumber > 0) {
+        payload.trackNumber = formData.trackNumber;
+      }
+      if (formData.lyrics && formData.lyrics.trim()) {
+        payload.lyrics = formData.lyrics;
+      }
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
 
       const response = await fetch('/api/music/tracks', {
         method: 'POST',
@@ -154,15 +162,24 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
     if (!editingTrack) return;
     setIsSubmitting(true);
     try {
-      const payload = {
+      const payload: any = {
         title: formData.title,
-        duration: formData.duration || null,
-        trackNumber: formData.trackNumber || null,
         publicUrl: formData.publicUrl,
         status: formData.status,
-        lyrics: formData.lyrics || null,
-        albumId: formData.albumId ? parseInt(formData.albumId) : null,
       };
+
+      if (formData.duration && formData.duration > 0) {
+        payload.duration = formData.duration;
+      }
+      if (formData.trackNumber && formData.trackNumber > 0) {
+        payload.trackNumber = formData.trackNumber;
+      }
+      if (formData.lyrics && formData.lyrics.trim()) {
+        payload.lyrics = formData.lyrics;
+      }
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
 
       const response = await fetch(`/api/music/tracks?id=${editingTrack.id}`, {
         method: 'PUT',
@@ -278,28 +295,28 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Music2 className="w-5 h-5 text-indigo-500" />
-          <h3 className="text-sm font-semibold">Tracks</h3>
-          <Badge variant="secondary" className="ml-2">
-            {tracks.length} {tracks.length === 1 ? 'track' : 'tracks'}
+        <div className="flex items-center gap-2">
+          <Music2 className="w-4 h-4 text-indigo-500" />
+          <span className="text-sm font-medium">Tracks</span>
+          <Badge variant="secondary" className="text-xs">
+            {tracks.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Track
             </Button>
           </DialogTrigger>
@@ -321,14 +338,14 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
               <div>
                 <Label htmlFor="albumId">Album</Label>
                 <Select
-                  value={formData.albumId}
-                  onValueChange={(value) => setFormData({ ...formData, albumId: value })}
+                  value={formData.albumId || 'none'}
+                  onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select album" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {albums.map((album) => (
                       <SelectItem key={album.id} value={String(album.id)}>
                         {album.title}
@@ -417,66 +434,68 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
       </div>
 
       {tracks.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Music2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Music2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No tracks yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first track
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>#</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead className="hidden sm:table-cell">Duration</TableHead>
-              <TableHead className="hidden md:table-cell">Status</TableHead>
-              <TableHead className="text-center">Plays</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {tracks.map((track) => (
-              <TableRow key={track.id}>
-                <TableCell className="text-center text-muted-foreground">
-                  {track.trackNumber || '—'}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {track.title}
-                  {track.albumId && (
-                    <Badge variant="outline" className="ml-2 text-xs">
-                      Album Track
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {formatDuration(track.duration)}
-                  </div>
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <Badge variant={track.status === 'active' ? 'default' : 'secondary'}>
-                    {track.status || 'Unknown'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center text-muted-foreground">
-                  {track.playCount || 0}
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(track)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-8 text-xs py-1">#</TableHead>
+                <TableHead className="text-xs py-1">Title</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Duration</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Status</TableHead>
+                <TableHead className="text-center text-xs py-1">Plays</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {tracks.map((track) => (
+                <TableRow key={track.id} className="hover:bg-muted/50">
+                  <TableCell className="text-center text-muted-foreground py-1 text-sm">
+                    {track.trackNumber || '—'}
+                  </TableCell>
+                  <TableCell className="py-1 text-sm font-medium">
+                    {track.title}
+                    {track.albumId && (
+                      <Badge variant="outline" className="ml-2 text-[10px]">
+                        Album Track
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {formatDuration(track.duration)}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1">
+                    <Badge variant={track.status === 'active' ? 'default' : 'secondary'} className="text-[10px]">
+                      {track.status || 'Unknown'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center text-muted-foreground py-1 text-sm">
+                    {track.playCount || 0}
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(track)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog open={!!editingTrack} onOpenChange={(open) => !open && setEditingTrack(null)}>
@@ -497,14 +516,14 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
             <div>
               <Label htmlFor="edit-albumId">Album</Label>
               <Select
-                value={formData.albumId}
-                onValueChange={(value) => setFormData({ ...formData, albumId: value })}
+                value={formData.albumId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select album" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {albums.map((album) => (
                     <SelectItem key={album.id} value={String(album.id)}>
                       {album.title}

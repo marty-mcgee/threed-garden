@@ -9,7 +9,7 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
-  Box,
+  Package,
   MoreHorizontal,
   ExternalLink,
   Download
@@ -28,7 +28,7 @@ import { useToast } from '@/components/ui/toast';
 
 interface Model {
   id: number;
-  name: string;
+  modelName: string;
   description: string | null;
   modelType: string;
   filePath: string | null;
@@ -54,7 +54,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
+    modelName: '',
     description: '',
     modelType: 'gltf',
     filePath: '',
@@ -88,7 +88,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
   };
 
   const handleCreate = async () => {
-    if (!formData.name) {
+    if (!formData.modelName) {
       showToast('Model name is required', 'error');
       return;
     }
@@ -99,7 +99,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formData.name,
+          modelName: formData.modelName,
           description: formData.description || null,
           modelType: formData.modelType,
           filePath: formData.filePath || null,
@@ -116,7 +116,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
         showToast('Model created successfully', 'success');
         setShowCreateDialog(false);
         setFormData({
-          name: '',
+          modelName: '',
           description: '',
           modelType: 'gltf',
           filePath: '',
@@ -147,7 +147,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formData.name,
+          modelName: formData.modelName,
           description: formData.description || null,
           modelType: formData.modelType,
           filePath: formData.filePath || null,
@@ -176,8 +176,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
     }
   };
 
-  const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Delete model "${name}"? This action cannot be undone.`)) return;
+  const handleDelete = async (id: number, modelName: string) => {
+    if (!confirm(`Delete model "${modelName}"? This action cannot be undone.`)) return;
 
     try {
       const response = await fetch(`/api/threed/models?id=${id}`, {
@@ -231,7 +231,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
           )}
           <DropdownMenuItem
             className="text-red-600"
-            onClick={() => handleDelete(model.id, model.name)}
+            onClick={() => handleDelete(model.id, model.modelName)}
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -244,7 +244,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
   const openEditDialog = (model: Model) => {
     setEditingModel(model);
     setFormData({
-      name: model.name,
+      modelName: model.modelName,
       description: model.description || '',
       modelType: model.modelType || 'gltf',
       filePath: model.filePath || '',
@@ -273,28 +273,28 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {ToastComponent}
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Box className="w-5 h-5 text-blue-500" />
-          <h3 className="text-sm font-semibold">3D Models</h3>
-          <Badge variant="secondary" className="ml-2">
-            {models.length} {models.length === 1 ? 'model' : 'models'}
+        <div className="flex items-center gap-2">
+          <Package className="w-4 h-4 text-blue-500" />
+          <span className="text-sm font-medium">3D Models</span>
+          <Badge variant="secondary" className="text-xs">
+            {models.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Model
             </Button>
           </DialogTrigger>
@@ -304,12 +304,12 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
-                <Label htmlFor="name">Model Name *</Label>
+                <Label htmlFor="modelName">Model Name *</Label>
                 <Input
-                  id="name"
+                  id="modelName"
                   placeholder="e.g., Tomato Plant"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  value={formData.modelName}
+                  onChange={(e) => setFormData({ ...formData, modelName: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
@@ -432,75 +432,77 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
       </div>
 
       {models.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Box className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No 3D models yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-3 h-3 mr-1" />
             Create your first model
           </Button>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden sm:table-cell">Type</TableHead>
-              <TableHead className="hidden md:table-cell">Category</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {models.map((model) => (
-              <TableRow key={model.id}>
-                <TableCell className="font-medium">
-                  {model.name}
-                  {model.tags && model.tags.length > 0 && (
-                    <div className="flex gap-1 mt-1 flex-wrap">
-                      {model.tags.slice(0, 3).map((tag, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                      {model.tags.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{model.tags.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell className="hidden sm:table-cell text-muted-foreground uppercase">
-                  {model.modelType}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  {getCategoryLabel(model.category)}
-                </TableCell>
-                <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    {model.isActive ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-gray-400" />
-                    )}
-                    <span className="text-sm">
-                      {model.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {renderActions(model)}
-                </TableCell>
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">Name</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Category</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {models.map((model) => (
+                <TableRow key={model.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {model.modelName}
+                    {model.tags && model.tags.length > 0 && (
+                      <div className="flex gap-1 mt-1 flex-wrap">
+                        {model.tags.slice(0, 3).map((tag, i) => (
+                          <Badge key={i} variant="outline" className="text-[10px]">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {model.tags.length > 3 && (
+                          <Badge variant="outline" className="text-[10px]">
+                            +{model.tags.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground uppercase">
+                    {model.modelType}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    {getCategoryLabel(model.category)}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {model.isActive ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                      ) : (
+                        <XCircle className="w-3.5 h-3.5 text-gray-400" />
+                      )}
+                      <span className="text-xs">
+                        {model.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(model)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <Dialog open={!!editingModel} onOpenChange={(open) => !open && setEditingModel(null)}>
@@ -510,11 +512,11 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: ThreeDModelsCRUDProps) {
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label htmlFor="edit-name">Model Name *</Label>
+              <Label htmlFor="edit-modelName">Model Name *</Label>
               <Input
-                id="edit-name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                id="edit-modelName"
+                value={formData.modelName}
+                onChange={(e) => setFormData({ ...formData, modelName: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
