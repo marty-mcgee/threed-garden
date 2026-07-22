@@ -1,5 +1,4 @@
-// components/admin/music/albums/MusicAlbumCRUD.tsx - Consistent UI
-
+// components/admin/music/albums/MusicAlbumCRUD.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -83,13 +82,16 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
       const response = await fetch('/api/music/albums');
       const data = await response.json();
       if (data.success) {
-        setAlbums(data.data || []);
+        // ✅ Ensure albums is always an array
+        setAlbums(Array.isArray(data.data) ? data.data : []);
       } else {
         showToast(data.error || 'Failed to fetch albums', 'error');
+        setAlbums([]); // ✅ Set to empty array on error
       }
     } catch (error) {
       console.error('Error fetching albums:', error);
       showToast('Failed to fetch albums', 'error');
+      setAlbums([]); // ✅ Set to empty array on error
     } finally {
       setLoading(false);
     }
@@ -268,17 +270,20 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
     );
   }
 
+  // ✅ Ensure albums is always an array before rendering
+  const albumList = Array.isArray(albums) ? albums : [];
+
   return (
     <div className="space-y-2">
       {ToastComponent}
 
-      {/* Header with count and add button */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Music className="w-4 h-4 text-purple-500" />
           <span className="text-sm font-medium">Albums</span>
           <Badge variant="secondary" className="text-xs">
-            {albums.length}
+            {albumList.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -370,7 +375,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
       </div>
 
       {/* Albums Table */}
-      {albums.length === 0 ? (
+      {albumList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Music className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No albums yet</p>
@@ -397,7 +402,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {albums.map((album) => (
+              {albumList.map((album) => (
                 <TableRow key={album.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     {album.title}

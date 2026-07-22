@@ -11,8 +11,7 @@ import {
   XCircle,
   Image,
   MoreHorizontal,
-  ExternalLink,
-  Upload
+  ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -43,6 +42,7 @@ interface MusicMediaCRUDProps {
   onModuleUpdate?: () => void;
 }
 
+// ✅ Named export - matches the import in page.tsx
 export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [media, setMedia] = useState<Media[]>([]);
@@ -71,13 +71,15 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
       const response = await fetch('/api/music/media');
       const data = await response.json();
       if (data.success) {
-        setMedia(data.data || []);
+        setMedia(Array.isArray(data.data) ? data.data : []);
       } else {
         showToast(data.error || 'Failed to fetch media', 'error');
+        setMedia([]);
       }
     } catch (error) {
       console.error('Error fetching media:', error);
       showToast('Failed to fetch media', 'error');
+      setMedia([]);
     } finally {
       setLoading(false);
     }
@@ -88,7 +90,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
       const response = await fetch('/api/music/albums');
       const data = await response.json();
       if (data.success) {
-        setAlbums(data.data || []);
+        setAlbums(Array.isArray(data.data) ? data.data : []);
       }
     } catch (error) {
       console.error('Error fetching albums:', error);
@@ -266,6 +268,10 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
     return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
   };
 
+  // ✅ Ensure media is always an array before rendering
+  const mediaList = Array.isArray(media) ? media : [];
+  const albumList = Array.isArray(albums) ? albums : [];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
@@ -283,7 +289,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
           <Image className="w-4 h-4 text-pink-500" />
           <span className="text-sm font-medium">Media</span>
           <Badge variant="secondary" className="text-xs">
-            {media.length}
+            {mediaList.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -329,7 +335,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    {albums.map((album) => (
+                    {albumList.map((album) => (
                       <SelectItem key={album.id} value={String(album.id)}>
                         {album.title}
                       </SelectItem>
@@ -394,7 +400,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
         </Dialog>
       </div>
 
-      {media.length === 0 ? (
+      {mediaList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No media files yet</p>
@@ -421,7 +427,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {media.map((item) => (
+              {mediaList.map((item) => (
                 <TableRow key={item.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     {item.fileName}
@@ -489,7 +495,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
-                  {albums.map((album) => (
+                  {albumList.map((album) => (
                     <SelectItem key={album.id} value={String(album.id)}>
                       {album.title}
                     </SelectItem>

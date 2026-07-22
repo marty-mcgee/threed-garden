@@ -4,9 +4,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { SignOutButton } from '@/components/auth/SignOutButton';
+import { AdminLayout } from '@/components/admin/layout/AdminLayout';
+import { Loader2 } from 'lucide-react';
 
-export default function AdminLayout({
+export default function AdminPageLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -25,33 +26,23 @@ export default function AdminLayout({
     }
   }, [status, router]);
 
-  // ✅ Simple CSS spinner - no hydration issues
+  // Loading state with suppressHydrationWarning
   if (!mounted || status === 'loading') {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <Loader2 
+          className="w-8 h-8 animate-spin text-primary" 
+          suppressHydrationWarning 
+        />
       </div>
     );
   }
 
+  // Redirect if not authenticated
   if (!session) {
     return null;
   }
 
-  return (
-    <div className="container mx-auto py-4 px-4 max-w-7xl">
-      <div className="mb-2 flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        </div>
-        <div>
-          <span className="text-sm text-muted-foreground mr-2">
-            Signed in as {session.user?.name || session.user?.email}
-          </span>
-          <SignOutButton variant="outline" size="sm" />
-        </div>
-      </div>
-      {children}
-    </div>
-  );
+  // Render the new AdminLayout
+  return <AdminLayout>{children}</AdminLayout>;
 }

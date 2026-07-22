@@ -1,377 +1,570 @@
+// components/admin/music/media/MediaManager.tsx
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
+import { 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Loader2,
+  CheckCircle,
+  XCircle,
+  Image,
+  MoreHorizontal,
+  ExternalLink,
+  Upload
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, Image, Star, ExternalLink, Upload, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/components/ui/toast';
 
 interface Media {
   id: number;
-  albumId: number;
   fileName: string;
   fileUrl: string;
   fileType: string;
   fileSize: number | null;
   isPrimary: boolean;
   metadata: any;
+  albumId: number | null;
+  userId: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface MediaManagerProps {
-  albumId: number;
-  albumTitle: string;
+  albumId?: number;
+  albumTitle?: string;
   onMediaChange?: () => void;
 }
 
 export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManagerProps) {
+  const { showToast, ToastComponent } = useToast();
   const [media, setMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingMedia, setEditingMedia] = useState<Media | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [albums, setAlbums] = useState<{ id: number; title: string }[]>([]);
   const [formData, setFormData] = useState({
     fileName: '',
     fileUrl: '',
     fileType: 'image/jpeg',
+    fileSize: 0,
     isPrimary: false,
+    albumId: albumId ? String(albumId) : '',
   });
 
   useEffect(() => {
     fetchMedia();
+    fetchAlbums();
   }, [albumId]);
 
   const fetchMedia = async () => {
-    const response = await fetch(`/api/music/media?albumId=${albumId}`);
-    if (response.ok) {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/music/media');
       const data = await response.json();
-      setMedia(data);
+      if (data.success) {
+        setMedia(Array.isArray(data.data) ? data.data : []);
+      } else {
+        showToast(data.error || 'Failed to fetch media', 'error');
+        setMedia([]);
+      }
+    } catch (error) {
+      console.error('Error fetching media:', error);
+      showToast('Failed to fetch media', 'error');
+      setMedia([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    const uploadFormData = new FormData();
-    uploadFormData.append('file', file);
-    uploadFormData.append('albumId', albumId.toString());
-    uploadFormData.append('isPrimary', formData.isPrimary.toString());
-
+  const fetchAlbums = async () => {
     try {
+      const response = await fetch('/api/music/albums');
+      const data = await response.json();
+      if (data.success) {
+        // ✅ Ensure albums is always an array
+        setAlbums(Array.isArray(data.data) ? data.data : []);
+      } else {
+        setAlbums([]);
+      }
+    } catch (error) {
+      console.error('Error fetching albums:', error);
+      setAlbums([]);
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!formData.fileName || !formData.fileUrl) {
+      showToast('File name and URL are required', 'error');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload: any = {
+        fileName: formData.fileName,
+        fileUrl: formData.fileUrl,
+        fileType: formData.fileType,
+        isPrimary: formData.isPrimary,
+      };
+
+      if (formData.fileSize && formData.fileSize > 0) {
+        payload.fileSize = formData.fileSize;
+      }
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
+
       const response = await fetch('/api/music/media', {
         method: 'POST',
-        body: uploadFormData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error('Upload failed');
-
-      const newMedia = await response.json();
-      toast.success('Media uploaded successfully');
-      setIsDialogOpen(false);
-      fetchMedia();
-      onMediaChange?.();
-      resetForm();
-    } catch (error) {
-      toast.error('Failed to upload media');
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const url = '/api/music/media';
-    const method = editingMedia ? 'PUT' : 'POST';
-    const body = editingMedia
-      ? {
-          id: editingMedia.id,
-          ...formData,
-        }
-      : {
-          albumId,
-          ...formData,
+      const data = await response.json();
+      if (data.success) {
+        showToast('Media created successfully', 'success');
+        setShowCreateDialog(false);
+        setFormData({
+          fileName: '',
+          fileUrl: '',
+          fileType: 'image/jpeg',
           fileSize: 0,
-        };
-
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-
-    if (response.ok) {
-      toast.success(editingMedia ? 'Media updated' : 'Media added');
-      setIsDialogOpen(false);
-      fetchMedia();
-      onMediaChange?.();
-      resetForm();
-    } else {
-      toast.error('Failed to save media');
+          isPrimary: false,
+          albumId: albumId ? String(albumId) : '',
+        });
+        await fetchMedia();
+        if (onMediaChange) onMediaChange();
+      } else {
+        showToast(data.error || 'Failed to create media', 'error');
+      }
+    } catch (error) {
+      console.error('Error creating media:', error);
+      showToast('Failed to create media', 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Delete this media?')) return;
-    
-    const response = await fetch(`/api/music/media?id=${id}`, { method: 'DELETE' });
-    if (response.ok) {
-      toast.success('Media deleted');
-      fetchMedia();
-      onMediaChange?.();
-    } else {
-      toast.error('Failed to delete media');
+  const handleUpdate = async () => {
+    if (!editingMedia) return;
+    setIsSubmitting(true);
+    try {
+      const payload: any = {
+        fileName: formData.fileName,
+        fileUrl: formData.fileUrl,
+        fileType: formData.fileType,
+        isPrimary: formData.isPrimary,
+      };
+
+      if (formData.fileSize && formData.fileSize > 0) {
+        payload.fileSize = formData.fileSize;
+      }
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
+
+      const response = await fetch(`/api/music/media?id=${editingMedia.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('Media updated successfully', 'success');
+        setEditingMedia(null);
+        await fetchMedia();
+        if (onMediaChange) onMediaChange();
+      } else {
+        showToast(data.error || 'Failed to update media', 'error');
+      }
+    } catch (error) {
+      console.error('Error updating media:', error);
+      showToast('Failed to update media', 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleSetPrimary = async (id: number) => {
-    const response = await fetch('/api/music/media', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id,
-        isPrimary: true,
-      }),
-    });
+  const handleDelete = async (id: number, fileName: string) => {
+    if (!confirm(`Delete media "${fileName}"? This action cannot be undone.`)) return;
 
-    if (response.ok) {
-      toast.success('Primary media updated');
-      fetchMedia();
-      onMediaChange?.();
-    } else {
-      toast.error('Failed to update primary');
+    try {
+      const response = await fetch(`/api/music/media?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('Media deleted successfully', 'success');
+        await fetchMedia();
+        if (onMediaChange) onMediaChange();
+      } else {
+        showToast(data.error || 'Failed to delete media', 'error');
+      }
+    } catch (error) {
+      console.error('Error deleting media:', error);
+      showToast('Failed to delete media', 'error');
     }
   };
 
-  const resetForm = () => {
+  const renderActions = (media: Media) => (
+    <div className="flex items-center justify-end gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => window.open(media.fileUrl, '_blank')}
+      >
+        <ExternalLink className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => openEditDialog(media)}
+      >
+        <Edit className="w-4 h-4" />
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreHorizontal className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => handleDelete(media.id, media.fileName)}
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
+  const openEditDialog = (media: Media) => {
+    setEditingMedia(media);
     setFormData({
-      fileName: '',
-      fileUrl: '',
-      fileType: 'image/jpeg',
-      isPrimary: false,
+      fileName: media.fileName,
+      fileUrl: media.fileUrl,
+      fileType: media.fileType || 'image/jpeg',
+      fileSize: media.fileSize || 0,
+      isPrimary: media.isPrimary || false,
+      albumId: media.albumId ? String(media.albumId) : '',
     });
-    setEditingMedia(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const openEdit = (item: Media) => {
-    setEditingMedia(item);
-    setFormData({
-      fileName: item.fileName,
-      fileUrl: item.fileUrl,
-      fileType: item.fileType,
-      isPrimary: item.isPrimary,
-    });
-    setIsDialogOpen(true);
+  const formatFileSize = (bytes: number | null) => {
+    if (!bytes) return 'Unknown';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
   };
+
+  // ✅ Ensure media is always an array before rendering
+  const mediaList = Array.isArray(media) ? media : [];
+  // ✅ Ensure albums is always an array before rendering
+  const albumList = Array.isArray(albums) ? albums : [];
 
   if (loading) {
-    return <div className="text-center py-4">Loading media...</div>;
+    return (
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
-  const primaryMedia = media.find(m => m.isPrimary);
-  const otherMedia = media.filter(m => !m.isPrimary);
-
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-lg font-semibold">Album Media</h3>
-          <p className="text-sm text-muted-foreground">Manage images for {albumTitle}</p>
+    <div className="space-y-2">
+      {ToastComponent}
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Image className="w-4 h-4 text-pink-500" />
+          <span className="text-sm font-medium">Media</span>
+          <Badge variant="secondary" className="text-xs">
+            {mediaList.length}
+          </Badge>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" onClick={resetForm}>
-              <Plus className="h-4 w-4 mr-2" />
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
               Add Media
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingMedia ? 'Edit Media' : 'Upload Media'}</DialogTitle>
+              <DialogTitle>Add Media File</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4 pt-4">
               <div>
-                <Label>Upload Image File</Label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  onChange={handleFileUpload}
-                  className="mt-1 block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90"
-                  disabled={isUploading}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  JPEG, PNG, WebP, or GIF up to 10MB
-                </p>
-              </div>
-              
-              <div>
-                <Label>File Name</Label>
+                <Label htmlFor="fileName">File Name *</Label>
                 <Input
+                  id="fileName"
+                  placeholder="cover-art.jpg"
                   value={formData.fileName}
                   onChange={(e) => setFormData({ ...formData, fileName: e.target.value })}
-                  placeholder="image-name.jpg"
+                  disabled={isSubmitting}
                 />
               </div>
-              
               <div>
-                <Label>File URL (or use upload above)</Label>
+                <Label htmlFor="fileUrl">File URL *</Label>
                 <Input
+                  id="fileUrl"
+                  placeholder="https://example.com/image.jpg"
                   value={formData.fileUrl}
                   onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
+                  disabled={isSubmitting}
                 />
               </div>
-              
               <div>
-                <Label>File Type</Label>
-                <select
-                  className="w-full p-2 border rounded-md"
-                  value={formData.fileType}
-                  onChange={(e) => setFormData({ ...formData, fileType: e.target.value })}
+                <Label htmlFor="albumId">Album</Label>
+                <Select
+                  value={formData.albumId || 'none'}
+                  onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
                 >
-                  <option value="image/jpeg">JPEG</option>
-                  <option value="image/png">PNG</option>
-                  <option value="image/webp">WebP</option>
-                  <option value="image/gif">GIF</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select album" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {/* ✅ Use albumList instead of albums */}
+                    {albumList.map((album) => (
+                      <SelectItem key={album.id} value={String(album.id)}>
+                        {album.title} - {album.artist}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              
               <div>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.isPrimary}
-                    onChange={(e) => setFormData({ ...formData, isPrimary: e.target.checked })}
-                  />
-                  Set as primary album cover
-                </label>
+                <Label htmlFor="fileType">File Type</Label>
+                <Select
+                  value={formData.fileType}
+                  onValueChange={(value) => setFormData({ ...formData, fileType: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select file type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="image/jpeg">JPEG</SelectItem>
+                    <SelectItem value="image/png">PNG</SelectItem>
+                    <SelectItem value="image/webp">WebP</SelectItem>
+                    <SelectItem value="image/svg+xml">SVG</SelectItem>
+                    <SelectItem value="image/gif">GIF</SelectItem>
+                    <SelectItem value="audio/mpeg">MP3</SelectItem>
+                    <SelectItem value="audio/wav">WAV</SelectItem>
+                    <SelectItem value="audio/flac">FLAC</SelectItem>
+                    <SelectItem value="video/mp4">MP4</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              
-              {isUploading && (
-                <div className="flex items-center justify-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Uploading...</span>
-                </div>
-              )}
-              
-              <div className="flex gap-2">
-                <Button type="submit" disabled={isUploading}>
-                  {editingMedia ? 'Update' : 'Add'}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Cancel
-                </Button>
+              <div>
+                <Label htmlFor="fileSize">File Size (bytes)</Label>
+                <Input
+                  id="fileSize"
+                  type="number"
+                  placeholder="1024"
+                  value={formData.fileSize}
+                  onChange={(e) => setFormData({ ...formData, fileSize: parseInt(e.target.value) || 0 })}
+                  disabled={isSubmitting}
+                />
               </div>
-            </form>
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="isPrimary"
+                  checked={formData.isPrimary}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: checked })}
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="isPrimary">Primary Media</Label>
+              </div>
+              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  'Add Media'
+                )}
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Primary Media Display */}
-      {primaryMedia && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-start gap-4">
-              <div className="w-32 h-32 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                <img
-                  src={primaryMedia.fileUrl}
-                  alt={primaryMedia.fileName}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <h4 className="font-semibold">Primary Cover</h4>
-                </div>
-                <p className="text-sm mt-1">{primaryMedia.fileName}</p>
-                <p className="text-xs text-muted-foreground">{primaryMedia.fileType}</p>
-                {primaryMedia.fileSize && (
-                  <p className="text-xs text-muted-foreground">
-                    {(primaryMedia.fileSize / 1024).toFixed(1)} KB
-                  </p>
-                )}
-                <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline" asChild>
-                    <a href={primaryMedia.fileUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-3 w-3 mr-1" />
-                      View
-                    </a>
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => openEdit(primaryMedia)}>
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
+      {mediaList.length === 0 ? (
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <p>No media files yet</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="mt-2 h-7 px-2 text-xs"
+            onClick={() => setShowCreateDialog(true)}
+          >
+            <Plus className="w-3 h-3 mr-1" />
+            Add your first media file
+          </Button>
+        </div>
+      ) : (
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs py-1">File Name</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Size</TableHead>
+                <TableHead className="text-center text-xs py-1">Primary</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {mediaList.map((item) => (
+                <TableRow key={item.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-sm font-medium">
+                    {item.fileName}
+                    {item.albumId && (
+                      <Badge variant="outline" className="ml-2 text-[10px]">
+                        Album Media
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {item.fileType}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    {formatFileSize(item.fileSize)}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    {item.isPrimary ? (
+                      <CheckCircle className="w-3.5 h-3.5 text-green-500 mx-auto" />
+                    ) : (
+                      <XCircle className="w-3.5 h-3.5 text-gray-300 mx-auto" />
+                    )}
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(item)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      <Dialog open={!!editingMedia} onOpenChange={(open) => !open && setEditingMedia(null)}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Media</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div>
+              <Label htmlFor="edit-fileName">File Name *</Label>
+              <Input
+                id="edit-fileName"
+                value={formData.fileName}
+                onChange={(e) => setFormData({ ...formData, fileName: e.target.value })}
+                disabled={isSubmitting}
+              />
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Other Media */}
-      {otherMedia.length > 0 && (
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium">Additional Images ({otherMedia.length})</h4>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {otherMedia.map((item) => (
-              <Card key={item.id} className="group">
-                <CardContent className="p-3">
-                  <div className="aspect-square rounded-md overflow-hidden bg-muted mb-2 relative">
-                    <img
-                      src={item.fileUrl}
-                      alt={item.fileName}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="h-7 w-7 p-0"
-                        onClick={() => handleSetPrimary(item.id)}
-                        title="Set as primary"
-                      >
-                        <Star className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="h-7 w-7 p-0"
-                        onClick={() => openEdit(item)}
-                      >
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="h-7 w-7 p-0"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  <p className="text-xs font-medium truncate">{item.fileName}</p>
-                </CardContent>
-              </Card>
-            ))}
+            <div>
+              <Label htmlFor="edit-fileUrl">File URL *</Label>
+              <Input
+                id="edit-fileUrl"
+                value={formData.fileUrl}
+                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-albumId">Album</Label>
+              <Select
+                value={formData.albumId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select album" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {albumList.map((album) => (
+                    <SelectItem key={album.id} value={String(album.id)}>
+                      {album.title} - {album.artist}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-fileType">File Type</Label>
+              <Select
+                value={formData.fileType}
+                onValueChange={(value) => setFormData({ ...formData, fileType: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select file type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="image/jpeg">JPEG</SelectItem>
+                  <SelectItem value="image/png">PNG</SelectItem>
+                  <SelectItem value="image/webp">WebP</SelectItem>
+                  <SelectItem value="image/svg+xml">SVG</SelectItem>
+                  <SelectItem value="image/gif">GIF</SelectItem>
+                  <SelectItem value="audio/mpeg">MP3</SelectItem>
+                  <SelectItem value="audio/wav">WAV</SelectItem>
+                  <SelectItem value="audio/flac">FLAC</SelectItem>
+                  <SelectItem value="video/mp4">MP4</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-fileSize">File Size (bytes)</Label>
+              <Input
+                id="edit-fileSize"
+                type="number"
+                value={formData.fileSize}
+                onChange={(e) => setFormData({ ...formData, fileSize: parseInt(e.target.value) || 0 })}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                id="edit-isPrimary"
+                checked={formData.isPrimary}
+                onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: checked })}
+                disabled={isSubmitting}
+              />
+              <Label htmlFor="edit-isPrimary">Primary Media</Label>
+            </div>
+            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
           </div>
-        </div>
-      )}
-
-      {media.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground border rounded-lg">
-          <Image className="h-12 w-12 mx-auto mb-2 opacity-50" />
-          <p>No media yet. Click "Add Media" to upload images.</p>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -50,6 +50,7 @@ interface MusicLinksCRUDProps {
   onModuleUpdate?: () => void;
 }
 
+// ✅ Named export - matches the import in page.tsx
 export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [links, setLinks] = useState<Link[]>([]);
@@ -96,13 +97,15 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
       const response = await fetch('/api/music/links');
       const data = await response.json();
       if (data.success) {
-        setLinks(data.data || []);
+        setLinks(Array.isArray(data.data) ? data.data : []);
       } else {
         showToast(data.error || 'Failed to fetch links', 'error');
+        setLinks([]);
       }
     } catch (error) {
       console.error('Error fetching links:', error);
       showToast('Failed to fetch links', 'error');
+      setLinks([]);
     } finally {
       setLoading(false);
     }
@@ -289,6 +292,9 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
     }
   };
 
+  // ✅ Ensure links is always an array before rendering
+  const linkList = Array.isArray(links) ? links : [];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
@@ -306,7 +312,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
           <Link2 className="w-4 h-4 text-blue-500" />
           <span className="text-sm font-medium">Links</span>
           <Badge variant="secondary" className="text-xs">
-            {links.length}
+            {linkList.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -436,7 +442,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
         </Dialog>
       </div>
 
-      {links.length === 0 ? (
+      {linkList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Link2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No links yet</p>
@@ -463,7 +469,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {links.map((link) => (
+              {linkList.map((link) => (
                 <TableRow key={link.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
