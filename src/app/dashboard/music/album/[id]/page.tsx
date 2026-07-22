@@ -1,122 +1,156 @@
+// app/dashboard/music/album/[id]/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Play } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Music, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
-export default function AlbumPage() {
+interface Album {
+  id: number;
+  title: string;
+  artist: string;
+  coverArt: string;
+  releaseYear: number | null;
+  description: string | null;
+  tracks?: Track[];
+}
+
+interface Track {
+  id: number;
+  title: string;
+  duration: number | null;
+  trackNumber: number | null;
+  publicUrl: string;
+}
+
+export default function AlbumDetailPage() {
   const params = useParams();
-  const albumId = params?.id as string;
+  const albumId = parseInt(params.id as string);
   
-  const [album, setAlbum] = useState<any>(null);
+  const [album, setAlbum] = useState<Album | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (albumId) {
-      fetchAlbum();
-    }
+    fetchAlbum();
   }, [albumId]);
 
   const fetchAlbum = async () => {
     try {
       const response = await fetch(`/api/music/albums?id=${albumId}&includeTracks=true`);
-      if (response.ok) {
-        const data = await response.json();
-        setAlbum(data);
+      const data = await response.json();
+      
+      if (data.success) {
+        setAlbum(data.data);
+      } else {
+        setError(data.error || 'Failed to fetch album');
       }
     } catch (error) {
       console.error('Error fetching album:', error);
+      setError('Failed to load album');
     } finally {
       setLoading(false);
     }
   };
 
-  const formatTime = (seconds: number | null) => {
+  const formatDuration = (seconds: number | null) => {
     if (!seconds) return '--:--';
-    const minutes = Math.floor(seconds / 60);
+    const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+        <span className="ml-2">Loading album...</span>
       </div>
     );
   }
 
-  if (!album) {
+  if (error || !album) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-xl font-semibold mb-2">Album Not Found</h2>
-            <Button asChild>
-              <Link href="/dashboard/music">Back to Music Library</Link>
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="text-center py-12">
+        <Music className="w-12 h-12 mx-auto text-muted-foreground opacity-50" />
+        <p className="text-muted-foreground mt-4">{error || 'Album not found'}</p>
+        <Link href="/dashboard/music">
+          <Button variant="outline" className="mt-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Music
+          </Button>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-      <div className="container mx-auto px-4 py-4">
-        <Button variant="ghost" asChild className="mb-6">
-          <Link href="/dashboard/music">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Library
-          </Link>
+    <div className="space-y-6">
+      <Link href="/dashboard/music">
+        <Button variant="ghost" size="sm">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Music
         </Button>
+      </Link>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Album Art */}
-          <div className="md:col-span-1">
-            <div className="sticky top-8">
-              <img
-                src={album.coverArt}
-                alt={album.title}
-                className="w-full rounded-lg shadow-xl"
-              />
-            </div>
-          </div>
+      <div className="grid md:grid-cols-3 gap-6">
+        {/* Album Cover */}
+        <Card>
+          <CardContent className="p-4">
+            <img
+              src={album.coverArt}
+              alt={album.title}
+              className="w-full rounded-lg shadow-lg"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/placeholder-album.jpg';
+              }}
+            />
+          </CardContent>
+        </Card>
 
-          {/* Track List */}
-          <div className="md:col-span-2">
-            <h1 className="text-3xl font-bold mb-2">{album.title}</h1>
-            <p className="text-xl text-muted-foreground mb-4">{album.artist}</p>
+        {/* Album Info & Tracks */}
+        <div className="md:col-span-2 space-y-4">
+          <div>
+            <h1 className="text-3xl font-bold">{album.title}</h1>
+            <p className="text-xl text-muted-foreground">{album.artist}</p>
             {album.releaseYear && (
-              <p className="text-sm text-muted-foreground mb-6">Released: {album.releaseYear}</p>
+              <p className="text-sm text-muted-foreground mt-1">Released: {album.releaseYear}</p>
             )}
             {album.description && (
-              <p className="text-muted-foreground mb-6">{album.description}</p>
+              <p className="mt-2 text-muted-foreground">{album.description}</p>
             )}
-
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold mb-3">Track List</h2>
-              {album.tracks?.map((track: any, index: number) => (
-                <Link
-                  key={track.id}
-                  href={`/dashboard/music/track/${track.id}`}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-accent transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-muted-foreground w-8">{track.trackNumber || index + 1}</span>
-                    <span className="font-medium">{track.title}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground">{formatTime(track.duration)}</span>
-                    <Play className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                </Link>
-              ))}
-            </div>
           </div>
+
+          <Card>
+            <CardContent className="p-4">
+              <h2 className="font-semibold mb-3">Tracks</h2>
+              {album.tracks && album.tracks.length > 0 ? (
+                <div className="space-y-2">
+                  {album.tracks.map((track) => (
+                    <div
+                      key={track.id}
+                      className="flex items-center justify-between p-2 rounded hover:bg-muted/50"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground w-6 text-right">
+                          {track.trackNumber || '—'}
+                        </span>
+                        <span>{track.title}</span>
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {formatDuration(track.duration)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">No tracks available</p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
