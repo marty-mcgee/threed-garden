@@ -1,4 +1,4 @@
-// components/music/MusicContent.tsx
+// components/music/MusicContent.tsx - Fixed version
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -85,15 +85,12 @@ export default function MusicContent() {
         const isLastTrack = currentTrackIndex === tracks.length - 1;
         
         if (isLastTrack) {
-          // Last track ended - find and load next album
           const currentAlbumIndex = albums.findIndex(a => a.id === selectedAlbum?.id);
           const nextAlbum = albums[currentAlbumIndex + 1];
           
           if (nextAlbum) {
-            // Load next album and auto-play
             fetchFullAlbum(nextAlbum.id);
           } else {
-            // No more albums, just stop
             setIsPlaying(false);
             setCurrentTime(0);
             if (audioElement) {
@@ -101,7 +98,6 @@ export default function MusicContent() {
             }
           }
         } else {
-          // Not last track - play next track in same album
           const nextIndex = currentTrackIndex + 1;
           setCurrentTrackIndex(nextIndex);
           setIsPlaying(true);
@@ -126,23 +122,21 @@ export default function MusicContent() {
       if (response.ok) {
         const data = await response.json();
         if (data.success && Array.isArray(data.data)) {
-          // Filter to only show published albums
           const publishedAlbums = data.data.filter((album: any) => 
             album.status === 'published' && album.isPublic === true
           );
           setAlbums(publishedAlbums);
           
-          // ✅ Select the first album automatically
           if (publishedAlbums.length > 0 && !selectedAlbum) {
             const firstAlbum = publishedAlbums[0];
-            // ✅ Use the full album data (which already includes tracks from the API)
-            if (firstAlbum.tracks) {
+            // ✅ Use the tracks from the API response
+            if (firstAlbum.tracks && firstAlbum.tracks.length > 0) {
               setSelectedAlbum(firstAlbum);
               setTracks(firstAlbum.tracks);
               setCurrentTrackIndex(0);
             } else {
-              // Fallback: fetch full album details
-              await fetchFullAlbum(firstAlbum.id);
+              // ✅ Only fetch tracks separately if not included in the album response
+              await fetchTracksForAlbum(firstAlbum.id);
             }
           }
         } else {
@@ -158,22 +152,61 @@ export default function MusicContent() {
     }
   };
 
-  // ✅ FIX: Properly fetch full album details
+  // ✅ Renamed and fixed: fetch tracks for a specific album
+  const fetchTracksForAlbum = async (albumId: number) => {
+    setLoadingAlbum(true);
+    try {
+      console.log(`🎵 Fetching tracks for album ${albumId}`);
+      const response = await fetch(`/api/music/tracks?albumId=${albumId}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`🎵 Tracks response:`, data);
+        if (data.success && Array.isArray(data.data)) {
+          setTracks(data.data);
+          setCurrentTrackIndex(0);
+          // ✅ Also update the album in the albums list with its tracks
+          setAlbums(prev => prev.map(album => 
+            album.id === albumId ? { ...album, tracks: data.data } : album
+          ));
+        } else {
+          console.error('Unexpected tracks response:', data);
+          setTracks([]);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching tracks:', error);
+      setTracks([]);
+    } finally {
+      setLoadingAlbum(false);
+    }
+  };
+
+  // ✅ Fixed: fetch full album details
   const fetchFullAlbum = useCallback(async (albumId: number) => {
     setLoadingAlbum(true);
     try {
+      console.log(`📀 Fetching album ${albumId} with details`);
       const response = await fetch(`/api/music/albums?id=${albumId}&includeTracks=true&includeLinks=true&includeMedia=true`);
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data) {
           const fullAlbum = data.data;
-          // ✅ Update selected album with full data
+          console.log(`📀 Album data:`, fullAlbum);
+          
           setSelectedAlbum(fullAlbum);
+          
+          // ✅ Use tracks from the album response
           if (fullAlbum.tracks && fullAlbum.tracks.length > 0) {
+            console.log(`🎵 Setting ${fullAlbum.tracks.length} tracks from album response`);
             setTracks(fullAlbum.tracks);
             setCurrentTrackIndex(0);
+          } else {
+            // ✅ Fallback: fetch tracks separately
+            console.log(`🎵 No tracks in album response, fetching separately`);
+            await fetchTracksForAlbum(albumId);
           }
-          // ✅ Reset player state
+          
+          // Reset player
           setIsPlaying(false);
           setCurrentTime(0);
           if (audioElement) {
@@ -191,12 +224,14 @@ export default function MusicContent() {
     }
   }, [audioElement]);
 
-  // ✅ FIX: Handle album selection
+  // ✅ Fixed: handle album selection
   const handleSelectAlbum = (id: number) => {
-    // ✅ Find the album in the existing list first
+    console.log(`🔄 Selecting album ${id}`);
+    
+    // Find the album in the existing list first
     const existingAlbum = albums.find(a => a.id === id);
     if (existingAlbum && existingAlbum.tracks) {
-      // ✅ Use the cached album data
+      console.log(`📀 Using cached album with ${existingAlbum.tracks.length} tracks`);
       setSelectedAlbum(existingAlbum);
       setTracks(existingAlbum.tracks);
       setCurrentTrackIndex(0);
@@ -207,7 +242,7 @@ export default function MusicContent() {
         audioElement.currentTime = 0;
       }
     } else {
-      // ✅ Fetch full album details
+      console.log(`📀 Fetching full album ${id}`);
       fetchFullAlbum(id);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -263,8 +298,6 @@ export default function MusicContent() {
         }
       } else {
         fetchFullAlbum(albumId);
-        // We'll let fetchFullAlbum handle the player state
-        // after it loads the tracks
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -291,17 +324,14 @@ export default function MusicContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       <div className="container mx-auto px-4 py-4">
-        {/* Simple Header */}
         <h1 className="text-3xl font-bold mb-6">Music Library</h1>
 
-        {/* Loading indicator for album switching */}
         {loadingAlbum && (
           <div className="mb-4 p-2 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground">
             Loading album...
           </div>
         )}
 
-        {/* Music Player */}
         {selectedAlbum && currentTrack && (
           <div id="music-player" className="mb-8">
             <MusicPlayer
@@ -325,7 +355,6 @@ export default function MusicContent() {
           </div>
         )}
 
-        {/* Album Grid */}
         <AlbumGrid
           albums={albums}
           onSelectAlbum={handleSelectAlbum}
