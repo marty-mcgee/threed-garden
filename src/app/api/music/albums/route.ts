@@ -35,13 +35,11 @@ export async function GET(request: NextRequest) {
 
     // Get a single album by ID
     if (id) {
-      // ✅ Build query with user filtering
       let query = db
         .select()
         .from(musicAlbums)
         .where(eq(musicAlbums.id, parseInt(id)));
 
-      // ✅ If no user, only show public published albums
       if (!userId) {
         query = query.where(
           and(
@@ -50,7 +48,6 @@ export async function GET(request: NextRequest) {
           )
         );
       } else {
-        // ✅ If user, show their albums OR public albums
         query = query.where(
           or(
             eq(musicAlbums.userId, userId),
@@ -62,11 +59,6 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // ✅ Filter by music module if provided
-      if (musicId) {
-        query = query.where(eq(musicAlbums.musicId, parseInt(musicId)));
-      }
-
       const [album] = await query.limit(1);
 
       if (!album) {
@@ -76,7 +68,6 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // ✅ Build response with optional includes
       const response: any = { ...album };
 
       if (includeTracks) {
@@ -85,7 +76,6 @@ export async function GET(request: NextRequest) {
           .from(musicTracks)
           .where(eq(musicTracks.albumId, album.id));
 
-        // ✅ Only show active tracks to public users
         if (!userId) {
           tracksQuery = tracksQuery.where(eq(musicTracks.status, 'active'));
         }
@@ -104,7 +94,6 @@ export async function GET(request: NextRequest) {
           )
           .where(eq(musicAlbumLinks.albumId, album.id));
 
-        // ✅ Only show active links to public users
         if (!userId) {
           linksQuery = linksQuery.where(eq(musicLinks.status, 'active'));
         }
@@ -127,13 +116,12 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query with user filtering
+    // ✅ List all albums with proper filtering
     let query = db
       .select()
       .from(musicAlbums)
       .$dynamic();
 
-    // ✅ If no user, only show public published albums
     if (!userId) {
       query = query.where(
         and(
@@ -142,7 +130,6 @@ export async function GET(request: NextRequest) {
         )
       );
     } else {
-      // ✅ If user, show their albums OR public albums
       query = query.where(
         or(
           eq(musicAlbums.userId, userId),
@@ -154,32 +141,25 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // ✅ Filter by music module if provided
     if (musicId) {
       query = query.where(eq(musicAlbums.musicId, parseInt(musicId)));
     }
 
-    // ✅ Filter by status if provided
     if (status) {
       query = query.where(eq(musicAlbums.status, status));
     }
 
-    // ✅ Get total count for pagination
-    const countQuery = db
+    const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(musicAlbums)
       .where(query._where);
 
-    const [countResult] = await countQuery;
-    const total = countResult?.count || 0;
-
-    // ✅ Get paginated results
     const albums = await query
       .orderBy(desc(musicAlbums.createdAt))
       .limit(limit)
       .offset(offset);
 
-    // ✅ If includeTracks is true, fetch tracks for each album
+    // ✅ CORRECTLY fetch tracks for EACH album individually
     if (includeTracks) {
       const albumsWithTracks = await Promise.all(
         albums.map(async (album) => {
@@ -188,20 +168,21 @@ export async function GET(request: NextRequest) {
             .from(musicTracks)
             .where(eq(musicTracks.albumId, album.id));
 
-          // ✅ Only show active tracks to public users
           if (!userId) {
             tracksQuery = tracksQuery.where(eq(musicTracks.status, 'active'));
           }
 
           const tracks = await tracksQuery.orderBy(musicTracks.trackNumber);
+          
+          // ✅ Return album with its OWN tracks
           return {
             ...album,
-            tracks,
+            tracks: tracks || [],
           };
         })
       );
 
-      // ✅ Include links if requested
+      // ✅ Optionally include links
       if (includeLinks) {
         const albumsWithLinks = await Promise.all(
           albumsWithTracks.map(async (album) => {
@@ -222,7 +203,7 @@ export async function GET(request: NextRequest) {
             const links = results.map((row) => row.musicLinks);
             return {
               ...album,
-              links,
+              links: links || [],
             };
           })
         );
@@ -230,21 +211,21 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           success: true,
           data: albumsWithLinks,
-          pagination: { limit, offset, total },
+          pagination: { limit, offset, total: countResult[0]?.count || 0 },
         });
       }
 
       return NextResponse.json({
         success: true,
         data: albumsWithTracks,
-        pagination: { limit, offset, total },
+        pagination: { limit, offset, total: countResult[0]?.count || 0 },
       });
     }
 
     return NextResponse.json({
       success: true,
       data: albums,
-      pagination: { limit, offset, total },
+      pagination: { limit, offset, total: countResult[0]?.count || 0 },
     });
   } catch (error) {
     console.error('Error fetching albums:', error);
