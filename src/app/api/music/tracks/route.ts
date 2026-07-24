@@ -1,8 +1,8 @@
-// app/api/music/tracks/route.ts
+// app/api/music/tracks/route.ts - Fixed version
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicTracks, musicAlbums, music } from '@/lib/schema/music';
+import { musicTracks, musicAlbums } from '@/lib/schema/music';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
@@ -80,44 +80,44 @@ export async function GET(request: NextRequest) {
 
     // ✅ List tracks by album
     if (albumId) {
+      // ✅ First, get the album to check if it's public or owned by the user
+      const [album] = await db
+        .select()
+        .from(musicAlbums)
+        .where(eq(musicAlbums.id, parseInt(albumId)))
+        .limit(1);
+
+      if (!album) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+        });
+      }
+
+      // ✅ Determine if the user can see all tracks or only active ones
+      const canSeeAllTracks = userId && (
+        album.userId === userId || // User owns the album
+        (album.isPublic && album.status === 'published') // Album is public
+      );
+
+      // ✅ Build the query
       let query = db
         .select()
         .from(musicTracks)
         .where(eq(musicTracks.albumId, parseInt(albumId)));
 
-      // ✅ If no user, only show active tracks
-      if (!userId) {
+      // ✅ If user can't see all tracks, only show active tracks
+      if (!canSeeAllTracks) {
         query = query.where(eq(musicTracks.status, 'active'));
       }
 
-      // ✅ Filter by status if provided
-      if (status) {
+      // ✅ Filter by status if provided and user has permissions
+      if (status && canSeeAllTracks) {
         query = query.where(eq(musicTracks.status, status));
       }
 
+      // ✅ Order by track number
       const tracks = await query.orderBy(musicTracks.trackNumber);
-
-      // ✅ If no user, verify the album is public
-      if (!userId) {
-        const [album] = await db
-          .select()
-          .from(musicAlbums)
-          .where(
-            and(
-              eq(musicAlbums.id, parseInt(albumId)),
-              eq(musicAlbums.isPublic, true),
-              eq(musicAlbums.status, 'published')
-            )
-          )
-          .limit(1);
-
-        if (!album) {
-          return NextResponse.json({
-            success: true,
-            data: [],
-          });
-        }
-      }
 
       return NextResponse.json({
         success: true,
@@ -125,16 +125,15 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
+    // ✅ List all tracks (for global view)
     let query = db
       .select()
       .from(musicTracks)
       .$dynamic();
 
-    // ✅ Apply user filtering
+    // ✅ For authenticated users, show all their tracks + active public tracks
     if (userId) {
-      // ✅ Show user's tracks + active tracks from public albums
-      // First get user's albums
+      // Get user's album IDs
       const userAlbums = await db
         .select({ id: musicAlbums.id })
         .from(musicAlbums)
@@ -155,7 +154,7 @@ export async function GET(request: NextRequest) {
 
       const publicAlbumIds = publicAlbums.map(a => a.id);
 
-      // Combine: user's albums OR public albums with active tracks
+      // Combine: user's albums OR public albums
       const allAlbumIds = [...new Set([...userAlbumIds, ...publicAlbumIds])];
 
       if (allAlbumIds.length === 0) {
@@ -165,10 +164,19 @@ export async function GET(request: NextRequest) {
         });
       }
 
+      // ✅ Show tracks from user's albums (all) + public albums (active only)
+      // We need to handle this with a more complex query
+      // For simplicity, we'll use a union approach with raw SQL or multiple queries
+      // Let's use a combination of conditions
       query = query.where(
-        and(
-          sql`${musicTracks.albumId} IN (${allAlbumIds.join(',')})`,
-          eq(musicTracks.status, 'active')
+        or(
+          // User's own albums - all tracks
+          sql`${musicTracks.albumId} IN (${userAlbumIds.join(',')})`,
+          // Public albums - only active tracks
+          and(
+            sql`${musicTracks.albumId} IN (${publicAlbumIds.join(',')})`,
+            eq(musicTracks.status, 'active')
+          )
         )
       );
     } else {
@@ -202,7 +210,6 @@ export async function GET(request: NextRequest) {
 
     // ✅ Filter by music module if provided
     if (musicId) {
-      // Join with albums to filter by music module
       query = query.where(eq(musicTracks.musicId, parseInt(musicId)));
     }
 
@@ -264,7 +271,7 @@ export async function POST(request: NextRequest) {
       publicUrl, 
       status, 
       lyrics,
-      musicId  // ✅ Include music module reference
+      musicId
     } = body;
 
     // ✅ Validate required fields
