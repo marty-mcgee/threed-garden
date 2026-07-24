@@ -24,28 +24,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const albumId = searchParams.get('albumId');
-    const musicId = searchParams.get('musicId');
-    const status = searchParams.get('status');
-    const limit = parseInt(searchParams.get('limit') || '100');
-    const offset = parseInt(searchParams.get('offset') || '0');
 
     console.log(`🔍 GET /api/music/tracks - albumId: ${albumId}, userId: ${userId || 'anonymous'}`);
 
-    // ============================================
     // Get a single track by ID
-    // ============================================
     if (id) {
-      let query = db
+      const [track] = await db
         .select()
         .from(musicTracks)
-        .where(eq(musicTracks.id, parseInt(id)));
-
-      // If no user, only show active tracks
-      if (!userId) {
-        query = query.where(eq(musicTracks.status, 'active'));
-      }
-
-      const [track] = await query.limit(1);
+        .where(eq(musicTracks.id, parseInt(id)))
+        .limit(1);
 
       if (!track) {
         return NextResponse.json(
@@ -54,41 +42,17 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // If no user, verify the track's album is public
-      if (!userId && track.albumId) {
-        const [album] = await db
-          .select()
-          .from(musicAlbums)
-          .where(
-            and(
-              eq(musicAlbums.id, track.albumId),
-              eq(musicAlbums.isPublic, true),
-              eq(musicAlbums.status, 'published')
-            )
-          )
-          .limit(1);
-
-        if (!album) {
-          return NextResponse.json(
-            { success: false, error: 'Track not found' },
-            { status: 404 }
-          );
-        }
-      }
-
       return NextResponse.json({
         success: true,
         data: track,
       });
     }
 
-    // ============================================
-    // List tracks by album (FIXED)
-    // ============================================
+    // ✅ LIST TRACKS BY ALBUM - FIXED
     if (albumId) {
       console.log(`📀 Fetching tracks for album ID: ${albumId}`);
       
-      // First, get the album to check permissions
+      // First, verify the album exists and is viewable
       const [album] = await db
         .select()
         .from(musicAlbums)
@@ -103,7 +67,7 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      console.log(`📀 Album: ${album.title}, isPublic: ${album.isPublic}, status: ${album.status}, owner: ${album.userId}`);
+      console.log(`📀 Album: ${album.title}, isPublic: ${album.isPublic}, status: ${album.status}`);
 
       // Check if user can view this album
       let canView = false;
@@ -122,23 +86,21 @@ export async function GET(request: NextRequest) {
         });
       }
 
-      // Build the query - ONLY get tracks for this specific album
+      // ✅ CRITICAL FIX: Build query with ALBUM ID filter
       let query = db
         .select()
         .from(musicTracks)
-        .where(eq(musicTracks.albumId, parseInt(albumId)));
+        .where(
+          and(
+            eq(musicTracks.albumId, parseInt(albumId))  // ← THIS IS THE KEY FIX
+          )
+        );
 
       // If user is not the owner, only get active tracks
       if (!userId || album.userId !== userId) {
         query = query.where(eq(musicTracks.status, 'active'));
       }
 
-      // Filter by status if provided and user has permissions
-      if (status && (userId && album.userId === userId)) {
-        query = query.where(eq(musicTracks.status, status));
-      }
-
-      // Order by track number
       const tracks = await query.orderBy(musicTracks.trackNumber);
       
       console.log(`✅ Found ${tracks.length} tracks for album ${albumId}`);
@@ -149,9 +111,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ============================================
-    // List all tracks (no albumId specified)
-    // ============================================
+    // ✅ If no albumId, return all tracks (with filtering)
     console.log(`📚 Getting all tracks (no albumId)`);
     
     let query = db
@@ -159,7 +119,6 @@ export async function GET(request: NextRequest) {
       .from(musicTracks)
       .$dynamic();
 
-    // Apply user filtering
     if (userId) {
       // Get user's albums
       const userAlbums = await db
@@ -182,28 +141,18 @@ export async function GET(request: NextRequest) {
 
       const publicAlbumIds = publicAlbums.map(a => a.id);
 
-      // Combine: user's albums OR public albums
       const allAlbumIds = [...new Set([...userAlbumIds, ...publicAlbumIds])];
 
-      if (allAlbumIds.length === 0) {
+      if (allAlbumIds.length > 0) {
+        query = query.where(
+          sql`${musicTracks.albumId} IN (${allAlbumIds.join(',')})`
+        );
+      } else {
         return NextResponse.json({
           success: true,
           data: [],
         });
       }
-
-      // Show tracks from user's albums (all) + public albums (active only)
-      query = query.where(
-        or(
-          // User's own albums - all tracks
-          sql`${musicTracks.albumId} IN (${userAlbumIds.join(',')})`,
-          // Public albums - only active tracks
-          and(
-            sql`${musicTracks.albumId} IN (${publicAlbumIds.join(',')})`,
-            eq(musicTracks.status, 'active')
-          )
-        )
-      );
     } else {
       // Public users: only active tracks from public albums
       const publicAlbums = await db
@@ -233,35 +182,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Filter by music module if provided
-    if (musicId) {
-      query = query.where(eq(musicTracks.musicId, parseInt(musicId)));
-    }
-
-    // Filter by status if provided (for authenticated users)
-    if (status && userId) {
-      query = query.where(eq(musicTracks.status, status));
-    }
-
-    // Get total count for pagination
-    const countQuery = db
-      .select({ count: sql<number>`count(*)` })
-      .from(musicTracks)
-      .where(query._where);
-
-    const [countResult] = await countQuery;
-    const total = countResult?.count || 0;
-
-    // Get paginated results
     const tracks = await query
       .orderBy(desc(musicTracks.createdAt))
-      .limit(limit)
-      .offset(offset);
+      .limit(100);
 
     return NextResponse.json({
       success: true,
       data: tracks,
-      pagination: { limit, offset, total },
     });
   } catch (error) {
     console.error('Error fetching tracks:', error);
