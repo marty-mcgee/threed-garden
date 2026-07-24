@@ -1,4 +1,4 @@
-// app/api/music/tracks/route.ts - SIMPLIFIED WORKING VERSION
+// app/api/music/tracks/route.ts - WITH DEBUG LOGGING
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
@@ -8,6 +8,13 @@ import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
 // GET /api/music/tracks - List tracks (PUBLIC)
+// Query Parameters:
+//   - albumId (optional): Filter tracks by album
+//   - id (optional): Get a single track
+//   - musicId (optional): Filter by music module
+//   - status (optional): Filter by status
+//   - limit (optional): Number of records to return (default: 100)
+//   - offset (optional): Number of records to skip (default: 0)
 // ============================================
 export async function GET(request: NextRequest) {
   try {
@@ -17,10 +24,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const albumId = searchParams.get('albumId');
-    const limit = parseInt(searchParams.get('limit') || '100');
-    const offset = parseInt(searchParams.get('offset') || '0');
 
-    console.log(`🔍 GET /api/music/tracks - albumId: ${albumId}`);
+    // ✅ DEBUG: Log everything
+    console.log('========================================');
+    console.log('🔍 GET /api/music/tracks');
+    console.log(`📝 albumId parameter: "${albumId}"`);
+    console.log(`📝 albumId type: ${typeof albumId}`);
+    console.log(`📝 userId: ${userId || 'anonymous'}`);
+    console.log(`📝 Full URL: ${request.url}`);
+    console.log('========================================');
 
     // Get a single track by ID
     if (id) {
@@ -44,29 +56,31 @@ export async function GET(request: NextRequest) {
     }
 
     // ============================================
-    // LIST TRACKS BY ALBUM - SIMPLIFIED
+    // LIST TRACKS BY ALBUM
     // ============================================
     if (albumId) {
-      console.log(`📀 Fetching tracks for album ID: ${albumId}`);
+      console.log(`📀 Processing albumId: "${albumId}"`);
       
-      // Convert albumId to number
       const albumIdNum = parseInt(albumId);
-      
-      // ✅ SIMPLE QUERY - JUST FILTER BY ALBUM ID
+      console.log(`📀 Parsed albumId: ${albumIdNum}`);
+
+      if (isNaN(albumIdNum)) {
+        console.log(`❌ Invalid albumId: "${albumId}"`);
+        return NextResponse.json({
+          success: false,
+          error: 'Invalid albumId',
+        }, { status: 400 });
+      }
+
+      // ✅ Build query with albumId filter
       const tracks = await db
         .select()
         .from(musicTracks)
-        .where(
-          and(
-            eq(musicTracks.albumId, albumIdNum)
-          )
-        )
+        .where(eq(musicTracks.albumId, albumIdNum))
         .orderBy(musicTracks.trackNumber);
 
       console.log(`✅ Found ${tracks.length} tracks for album ${albumIdNum}`);
-      
-      // Log the album IDs of the returned tracks to verify
-      console.log(`📝 Album IDs in result:`, tracks.map(t => t.albumId));
+      console.log(`📝 Track album IDs:`, tracks.map(t => `[${t.id}: albumId=${t.albumId}]`).join(', '));
 
       return NextResponse.json({
         success: true,
@@ -82,9 +96,7 @@ export async function GET(request: NextRequest) {
     const allTracks = await db
       .select()
       .from(musicTracks)
-      .orderBy(desc(musicTracks.createdAt))
-      .limit(limit)
-      .offset(offset);
+      .orderBy(desc(musicTracks.createdAt));
 
     console.log(`📚 Found ${allTracks.length} total tracks`);
 

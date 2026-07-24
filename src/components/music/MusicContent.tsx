@@ -1,4 +1,4 @@
-// components/music/MusicContent.tsx - COMPLETE FIX
+// components/music/MusicContent.tsx - FETCH TRACKS FOR ALL ALBUMS
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -89,7 +89,7 @@ export default function MusicContent() {
           const nextAlbum = albums[currentAlbumIndex + 1];
           
           if (nextAlbum) {
-            fetchFullAlbum(nextAlbum.id);
+            handleSelectAlbum(nextAlbum.id);
           } else {
             setIsPlaying(false);
             setCurrentTime(0);
@@ -119,22 +119,29 @@ export default function MusicContent() {
   const fetchAlbums = async () => {
     try {
       console.log('📀 Fetching albums...');
-      const response = await fetch('/api/music/albums?includeTracks=false'); // ✅ Don't include tracks here
+      const response = await fetch('/api/music/albums?includeTracks=false');
       if (response.ok) {
         const data = await response.json();
         if (data.success && Array.isArray(data.data)) {
           const publishedAlbums = data.data.filter((album: any) => 
             album.status === 'published' && album.isPublic === true
           );
-          console.log(`📀 Found ${publishedAlbums.length} albums`);
+          console.log(`📀 Found ${publishedAlbums.length} published albums`);
+          
+          // ✅ Store albums without tracks initially
           setAlbums(publishedAlbums);
+          
+          // ✅ Fetch tracks for ALL albums
+          await fetchTracksForAllAlbums(publishedAlbums);
           
           if (publishedAlbums.length > 0 && !selectedAlbum) {
             const firstAlbum = publishedAlbums[0];
             console.log(`📀 Selecting first album: ${firstAlbum.title} (ID: ${firstAlbum.id})`);
-            // ✅ Always fetch tracks separately
-            await fetchTracksForAlbum(firstAlbum.id);
             setSelectedAlbum(firstAlbum);
+            // ✅ Set tracks for the first album
+            const firstAlbumTracks = firstAlbum.tracks || [];
+            setTracks(firstAlbumTracks);
+            setCurrentTrackIndex(0);
           }
         } else {
           console.error('Unexpected API response format:', data);
@@ -149,7 +156,37 @@ export default function MusicContent() {
     }
   };
 
-  // ✅ Fetch tracks for a specific album
+  // ✅ NEW: Fetch tracks for ALL albums
+  const fetchTracksForAllAlbums = async (albumList: any[]) => {
+    console.log(`🎵 Fetching tracks for ${albumList.length} albums...`);
+    
+    // Fetch tracks for each album in parallel
+    const albumPromises = albumList.map(async (album) => {
+      try {
+        const response = await fetch(`/api/music/tracks?albumId=${album.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && Array.isArray(data.data)) {
+            console.log(`🎵 Found ${data.data.length} tracks for album ${album.id} (${album.title})`);
+            return { ...album, tracks: data.data };
+          }
+        }
+        return { ...album, tracks: [] };
+      } catch (error) {
+        console.error(`Error fetching tracks for album ${album.id}:`, error);
+        return { ...album, tracks: [] };
+      }
+    });
+
+    const albumsWithTracks = await Promise.all(albumPromises);
+    
+    // ✅ Update albums state with tracks
+    setAlbums(albumsWithTracks);
+    
+    console.log(`✅ Finished fetching tracks for all albums`);
+  };
+
+  // ✅ Fetch tracks for a specific album (used when selecting an album)
   const fetchTracksForAlbum = async (albumId: number) => {
     setLoadingAlbum(true);
     try {
@@ -157,12 +194,27 @@ export default function MusicContent() {
       const response = await fetch(`/api/music/tracks?albumId=${albumId}`);
       if (response.ok) {
         const data = await response.json();
-        console.log(`🎵 Tracks response:`, data);
         if (data.success && Array.isArray(data.data)) {
-          console.log(`🎵 Found ${data.data.length} tracks for album ${albumId}`);
-          setTracks(data.data);
+          const fetchedTracks = data.data;
+          console.log(`🎵 Found ${fetchedTracks.length} tracks for album ${albumId}`);
+          
+          // ✅ Update the albums array with tracks
+          setAlbums(prevAlbums => 
+            prevAlbums.map(album => 
+              album.id === albumId 
+                ? { ...album, tracks: fetchedTracks }
+                : album
+            )
+          );
+          
+          // ✅ Update selected album if it's the current one
+          if (selectedAlbum?.id === albumId) {
+            setSelectedAlbum(prev => ({ ...prev, tracks: fetchedTracks }));
+          }
+          
+          setTracks(fetchedTracks);
           setCurrentTrackIndex(0);
-          return data.data;
+          return fetchedTracks;
         } else {
           console.error('Unexpected tracks response:', data);
           setTracks([]);
@@ -178,42 +230,8 @@ export default function MusicContent() {
     }
   };
 
-  // ✅ Fetch full album details (without tracks)
-  const fetchFullAlbum = useCallback(async (albumId: number) => {
-    setLoadingAlbum(true);
-    try {
-      console.log(`📀 Fetching album ${albumId} details`);
-      const response = await fetch(`/api/music/albums?id=${albumId}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.data) {
-          const fullAlbum = data.data;
-          console.log(`📀 Album: ${fullAlbum.title}`);
-          setSelectedAlbum(fullAlbum);
-          
-          // ✅ Always fetch tracks separately
-          await fetchTracksForAlbum(albumId);
-          
-          // Reset player
-          setIsPlaying(false);
-          setCurrentTime(0);
-          if (audioElement) {
-            audioElement.pause();
-            audioElement.currentTime = 0;
-          }
-        } else {
-          console.error('Unexpected album detail response:', data);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching full album:', error);
-    } finally {
-      setLoadingAlbum(false);
-    }
-  }, [audioElement]);
-
-  // ✅ Handle album selection - ALWAYS fetch fresh tracks
-  const handleSelectAlbum = (id: number) => {
+  // ✅ Handle album selection
+  const handleSelectAlbum = async (id: number) => {
     console.log(`🔄 Selecting album ${id}`);
     
     // Find the album in the list
@@ -221,10 +239,20 @@ export default function MusicContent() {
     if (album) {
       console.log(`📀 Album found: ${album.title}`);
       setSelectedAlbum(album);
+      
+      // ✅ Check if album already has tracks
+      if (album.tracks && album.tracks.length > 0) {
+        console.log(`🎵 Using cached tracks for ${album.title}`);
+        setTracks(album.tracks);
+        setCurrentTrackIndex(0);
+      } else {
+        // ✅ Fetch tracks if not cached
+        await fetchTracksForAlbum(id);
+      }
+    } else {
+      // ✅ Fallback: fetch tracks if album not found
+      await fetchTracksForAlbum(id);
     }
-    
-    // ✅ ALWAYS fetch fresh tracks for this album
-    fetchTracksForAlbum(id);
     
     // Reset player
     setIsPlaying(false);
@@ -273,12 +301,19 @@ export default function MusicContent() {
     setIsPlaying(true);
   };
 
-  const handlePlayAlbum = (albumId: number) => {
+  const handlePlayAlbum = async (albumId: number) => {
     const album = albums.find(a => a.id === albumId);
     if (album) {
       setSelectedAlbum(album);
-      // ✅ Always fetch fresh tracks
-      fetchTracksForAlbum(albumId);
+      
+      // Check if album already has tracks
+      if (album.tracks && album.tracks.length > 0) {
+        setTracks(album.tracks);
+        setCurrentTrackIndex(0);
+      } else {
+        await fetchTracksForAlbum(albumId);
+      }
+      
       setIsPlaying(true);
       setCurrentTime(0);
       if (audioElement) {
