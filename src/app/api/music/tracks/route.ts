@@ -1,8 +1,8 @@
-// app/api/music/tracks/route.ts - Fixed version
+// app/api/music/tracks/route.ts - Fixed for public access
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicTracks, musicAlbums } from '@/lib/schema/music';
+import { musicTracks, musicAlbums, music } from '@/lib/schema/music';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
 
     // ✅ List tracks by album
     if (albumId) {
-      // ✅ First, get the album to check if it's public or owned by the user
+      // ✅ First, verify the album exists
       const [album] = await db
         .select()
         .from(musicAlbums)
@@ -91,14 +91,28 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           success: true,
           data: [],
+          error: 'Album not found',
         });
       }
 
-      // ✅ Determine if the user can see all tracks or only active ones
-      const canSeeAllTracks = userId && (
-        album.userId === userId || // User owns the album
-        (album.isPublic && album.status === 'published') // Album is public
-      );
+      // ✅ Determine if the user can see the album
+      let canViewAlbum = false;
+      
+      if (userId) {
+        // Authenticated users can view if they own it OR if it's public
+        canViewAlbum = album.userId === userId || (album.isPublic && album.status === 'published');
+      } else {
+        // Public users can only view if it's public and published
+        canViewAlbum = album.isPublic === true && album.status === 'published';
+      }
+
+      // ✅ If user can't view the album, return empty
+      if (!canViewAlbum) {
+        return NextResponse.json({
+          success: true,
+          data: [],
+        });
+      }
 
       // ✅ Build the query
       let query = db
@@ -106,14 +120,9 @@ export async function GET(request: NextRequest) {
         .from(musicTracks)
         .where(eq(musicTracks.albumId, parseInt(albumId)));
 
-      // ✅ If user can't see all tracks, only show active tracks
-      if (!canSeeAllTracks) {
+      // ✅ If user is not the owner, only show active tracks
+      if (!userId || album.userId !== userId) {
         query = query.where(eq(musicTracks.status, 'active'));
-      }
-
-      // ✅ Filter by status if provided and user has permissions
-      if (status && canSeeAllTracks) {
-        query = query.where(eq(musicTracks.status, status));
       }
 
       // ✅ Order by track number
@@ -165,9 +174,6 @@ export async function GET(request: NextRequest) {
       }
 
       // ✅ Show tracks from user's albums (all) + public albums (active only)
-      // We need to handle this with a more complex query
-      // For simplicity, we'll use a union approach with raw SQL or multiple queries
-      // Let's use a combination of conditions
       query = query.where(
         or(
           // User's own albums - all tracks
