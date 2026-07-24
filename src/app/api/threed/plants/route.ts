@@ -3,37 +3,39 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedPlants } from '@/lib/schema/threed';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { eq, desc, and, sql, or } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/threed/plants - List all plants for the user
+// GET /api/threed/plants - List all plants (PUBLIC)
 // GET /api/threed/plants?id=1 - Get a single plant
 // ============================================
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
+    const userId = session?.user?.id;
+    
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
+    const status = searchParams.get('status');
+    const type = searchParams.get('type');
+    const plantId = searchParams.get('plantId');
 
     // Get single plant
     if (id) {
-      const [plant] = await db
+      let query = db
         .select()
         .from(threedPlants)
-        .where(
-          and(
-            eq(threedPlants.id, parseInt(id)),
-            eq(threedPlants.userId, session.user.id)
-          )
-        )
-        .limit(1);
+        .where(eq(threedPlants.id, parseInt(id)));
+
+      // Public users only see active plants
+      if (!userId) {
+        query = query.where(eq(threedPlants.status, 'active'));
+      }
+
+      const [plant] = await query.limit(1);
 
       if (!plant) {
         return NextResponse.json(
@@ -45,16 +47,41 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: plant });
     }
 
-    // List all plants for the user
+    // List all plants
     let query = db
       .select()
       .from(threedPlants)
-      .where(eq(threedPlants.userId, session.user.id));
+      .$dynamic();
 
+    // Public users only see active plants
+    if (!userId) {
+      query = query.where(eq(threedPlants.status, 'active'));
+    } else {
+      // Authenticated users see their plants + active public plants
+      query = query.where(
+        or(
+          eq(threedPlants.userId, userId),
+          eq(threedPlants.status, 'active')
+        )
+      );
+    }
+
+    // Apply filters
+    if (status) {
+      query = query.where(eq(threedPlants.status, status));
+    }
+    if (type) {
+      query = query.where(eq(threedPlants.type, type));
+    }
+    if (plantId) {
+      query = query.where(eq(threedPlants.plantId, plantId));
+    }
+
+    // Get total count
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedPlants)
-      .where(eq(threedPlants.userId, session.user.id));
+      .where(query._where);
 
     const plants = await query
       .orderBy(desc(threedPlants.createdAt))
@@ -80,7 +107,7 @@ export async function GET(request: NextRequest) {
 }
 
 // ============================================
-// POST /api/threed/plants - Create a new plant
+// POST /api/threed/plants - Create a new plant (ADMIN ONLY)
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -171,7 +198,7 @@ export async function POST(request: NextRequest) {
 }
 
 // ============================================
-// PUT /api/threed/plants?id=1 - Full update of a plant
+// PUT /api/threed/plants?id=1 - Full update (ADMIN ONLY)
 // ============================================
 export async function PUT(request: NextRequest) {
   try {
@@ -276,15 +303,7 @@ export async function PUT(request: NextRequest) {
 }
 
 // ============================================
-// PATCH /api/threed/plants?id=1 - Partial update
-// ============================================
-export async function PATCH(request: NextRequest) {
-  // Same as PUT but with partial updates
-  // ... (can reuse PUT logic or implement separately)
-}
-
-// ============================================
-// DELETE /api/threed/plants?id=1 - Delete a plant
+// DELETE /api/threed/plants?id=1 - Delete a plant (ADMIN ONLY)
 // ============================================
 export async function DELETE(request: NextRequest) {
   try {

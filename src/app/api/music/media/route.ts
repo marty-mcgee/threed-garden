@@ -1,5 +1,4 @@
-// app/api/music/media/route.ts - Fixed
-
+// app/api/music/media/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
@@ -8,7 +7,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/music/media - List media
+// GET /api/music/media - List media (PUBLIC)
 // Query Parameters:
 //   - albumId (optional): Filter media by album
 //   - id (optional): Get a single media item
@@ -16,29 +15,18 @@ import { ensureTableSequence } from '@/lib/db/sequence';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const userId = session.user.id;
+    const userId = session?.user?.id;
+    
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const albumId = searchParams.get('albumId');
 
-    // ✅ Get a single media item by ID
+    // Get a single media item by ID
     if (id) {
       const [media] = await db
         .select()
         .from(musicMedia)
-        .where(
-          and(
-            eq(musicMedia.id, parseInt(id)),
-            eq(musicMedia.userId, userId)
-          )
-        )
+        .where(eq(musicMedia.id, parseInt(id)))
         .limit(1);
 
       if (!media) {
@@ -54,22 +42,52 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ List media (optionally filtered by album)
-    let query = db
-      .select()
-      .from(musicMedia)
-      .where(eq(musicMedia.userId, userId));
-
-    // ✅ albumId is optional - don't require it
+    // List media by album
     if (albumId) {
-      query = query.where(eq(musicMedia.albumId, parseInt(albumId)));
+      let query = db
+        .select()
+        .from(musicMedia)
+        .where(eq(musicMedia.albumId, parseInt(albumId)));
+
+      const media = await query.orderBy(desc(musicMedia.createdAt));
+
+      // Verify album is public if no user
+      if (!userId) {
+        const [album] = await db
+          .select()
+          .from(musicAlbums)
+          .where(
+            and(
+              eq(musicAlbums.id, parseInt(albumId)),
+              eq(musicAlbums.isPublic, true),
+              eq(musicAlbums.status, 'published')
+            )
+          )
+          .limit(1);
+
+        if (!album) {
+          return NextResponse.json({
+            success: true,
+            data: [],
+          });
+        }
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: media,
+      });
     }
 
-    const mediaList = await query.orderBy(desc(musicMedia.createdAt));
+    // List all media
+    const media = await db
+      .select()
+      .from(musicMedia)
+      .orderBy(desc(musicMedia.createdAt));
 
     return NextResponse.json({
       success: true,
-      data: mediaList,
+      data: media,
     });
   } catch (error) {
     console.error('Error fetching media:', error);
@@ -81,7 +99,7 @@ export async function GET(request: NextRequest) {
 }
 
 // ============================================
-// POST /api/music/media - Create new media
+// POST /api/music/media - Create media (ADMIN ONLY)
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -94,35 +112,18 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('📝 POST /api/music/media - Request body:', body);
+    const { albumId, fileName, fileUrl, fileType, fileSize, isPrimary } = body;
 
-    const { fileName, fileUrl, fileType, fileSize, isPrimary, albumId } = body;
-
-    // ✅ Validate required fields
-    if (!fileName) {
+    if (!fileName || !fileUrl || !fileType) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: fileName' },
-        { status: 400 }
-      );
-    }
-
-    if (!fileUrl) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: fileUrl' },
-        { status: 400 }
-      );
-    }
-
-    if (!fileType) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: fileType' },
+        { success: false, error: 'Missing required fields: fileName, fileUrl, fileType' },
         { status: 400 }
       );
     }
 
     const userId = session.user.id;
 
-    // ✅ If albumId is provided, verify album exists
+    // Verify album belongs to user
     if (albumId) {
       const [album] = await db
         .select()
@@ -145,19 +146,6 @@ export async function POST(request: NextRequest) {
 
     await ensureTableSequence('music_media');
 
-    // ✅ If this media is primary, unset any existing primary for this album
-    if (isPrimary && albumId) {
-      await db
-        .update(musicMedia)
-        .set({ isPrimary: false })
-        .where(
-          and(
-            eq(musicMedia.albumId, albumId),
-            eq(musicMedia.userId, userId)
-          )
-        );
-    }
-
     const [newMedia] = await db
       .insert(musicMedia)
       .values({
@@ -170,8 +158,6 @@ export async function POST(request: NextRequest) {
         isPrimary: isPrimary || false,
       })
       .returning();
-
-    console.log('✅ Media created:', newMedia);
 
     return NextResponse.json({
       success: true,
@@ -188,7 +174,7 @@ export async function POST(request: NextRequest) {
 }
 
 // ============================================
-// PUT /api/music/media - Update media
+// PUT /api/music/media - Update media (ADMIN ONLY)
 // ============================================
 export async function PUT(request: NextRequest) {
   try {
@@ -211,13 +197,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('📝 PUT /api/music/media - Request body:', body);
-
     const { fileName, fileUrl, fileType, fileSize, isPrimary, albumId } = body;
 
     const userId = session.user.id;
 
-    // ✅ Verify media exists
     const [existing] = await db
       .select()
       .from(musicMedia)
@@ -234,41 +217,6 @@ export async function PUT(request: NextRequest) {
         { success: false, error: 'Media not found' },
         { status: 404 }
       );
-    }
-
-    // ✅ If albumId is provided, verify album exists
-    if (albumId) {
-      const [album] = await db
-        .select()
-        .from(musicAlbums)
-        .where(
-          and(
-            eq(musicAlbums.id, albumId),
-            eq(musicAlbums.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!album) {
-        return NextResponse.json(
-          { success: false, error: 'Album not found' },
-          { status: 404 }
-        );
-      }
-    }
-
-    // ✅ If this media is primary, unset any existing primary for this album
-    if (isPrimary && albumId) {
-      await db
-        .update(musicMedia)
-        .set({ isPrimary: false })
-        .where(
-          and(
-            eq(musicMedia.albumId, albumId),
-            eq(musicMedia.userId, userId),
-            eq(musicMedia.isPrimary, true)
-          )
-        );
     }
 
     const [updatedMedia] = await db
@@ -290,8 +238,6 @@ export async function PUT(request: NextRequest) {
       )
       .returning();
 
-    console.log('✅ Media updated:', updatedMedia);
-
     return NextResponse.json({
       success: true,
       data: updatedMedia,
@@ -307,7 +253,7 @@ export async function PUT(request: NextRequest) {
 }
 
 // ============================================
-// DELETE /api/music/media - Delete media
+// DELETE /api/music/media - Delete media (ADMIN ONLY)
 // ============================================
 export async function DELETE(request: NextRequest) {
   try {

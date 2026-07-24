@@ -1,14 +1,21 @@
-// src/app/api/threed/models/route.ts
+// app/api/threed/models/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedModels, threedPlants, threedModelFiles, threedCharacters } from '@/lib/schema';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { threedModels, threedPlants, threedModelFiles, threedCharacters } from '@/lib/schema/threed';
+import { eq, and, desc, sql, or } from 'drizzle-orm';
 import { put, del } from '@vercel/blob';
 
-// GET /api/threed/models - Fetch models with optional filtering
+// ============================================
+// GET /api/threed/models - Fetch models (PUBLIC)
+// ============================================
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    
     const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get('id');
     const plantId = searchParams.get('plantId');
     const characterId = searchParams.get('characterId');
     const modelType = searchParams.get('modelType');
@@ -16,56 +23,71 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // Start with base query from threedModels
-    let query = db.select({
-      id: threedModels.id,
-      modelName: threedModels.modelName,
-      modelType: threedModels.modelType,
-      filePath: threedModels.filePath,
-      fileSize: threedModels.fileSize,
-      scale: threedModels.scale,
-      rotationY: threedModels.rotationY,
-      offsetX: threedModels.offsetX,
-      offsetY: threedModels.offsetY,
-      offsetZ: threedModels.offsetZ,
-      hasLOD: threedModels.hasLOD,
-      lodLevels: threedModels.lodLevels,
-      animations: threedModels.animations,
-      defaultAnimation: threedModels.defaultAnimation,
-      hasExternalFiles: threedModels.hasExternalFiles,
-      textureCount: threedModels.textureCount,
-      isActive: threedModels.isActive,
-      isDefault: threedModels.isDefault,
-      usedByPlants: threedModels.usedByPlants,
-      usedByCharacters: threedModels.usedByCharacters,
-      metadata: threedModels.metadata,
-      createdAt: threedModels.createdAt,
-      updatedAt: threedModels.updatedAt,
-      // Left join with plants to get plant info if used by a plant
-      plant: {
-        id: threedPlants.id,
-        commonName: threedPlants.commonName,
-        scientificName: threedPlants.scientificName,
-        plantId: threedPlants.plantId,
-      },
-      // Left join with characters to get character info if used by a character
-      character: {
-        id: threedCharacters.id,
-        name: threedCharacters.name,
-        characterId: threedCharacters.characterId,
-        type: threedCharacters.type,
+    // Get single model
+    if (id) {
+      let query = db
+        .select()
+        .from(threedModels)
+        .where(eq(threedModels.id, parseInt(id)));
+
+      // Public users only see active models
+      if (!userId) {
+        query = query.where(eq(threedModels.isActive, true));
       }
-    })
-    .from(threedModels)
-    .leftJoin(threedPlants, eq(threedPlants.modelId, threedModels.id))
-    .leftJoin(threedCharacters, eq(threedCharacters.modelId, threedModels.id));
+
+      const [model] = await query.limit(1);
+
+      if (!model) {
+        return NextResponse.json(
+          { success: false, error: 'Model not found' },
+          { status: 404 }
+        );
+      }
+
+      // Get associated files
+      const files = await db
+        .select()
+        .from(threedModelFiles)
+        .where(eq(threedModelFiles.modelId, model.id))
+        .orderBy(threedModelFiles.loadOrder);
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          ...model,
+          files,
+          mainModelFile: files.find(f => f.fileType === 'model'),
+          textures: files.filter(f => f.fileType === 'texture'),
+          binaries: files.filter(f => f.fileType === 'binary'),
+        },
+      });
+    }
+
+    // Build query
+    let query = db
+      .select()
+      .from(threedModels)
+      .$dynamic();
+
+    // Public users only see active models
+    if (!userId) {
+      query = query.where(eq(threedModels.isActive, true));
+    } else {
+      // Authenticated users see their models + active public models
+      query = query.where(
+        or(
+          eq(threedModels.userId, userId),
+          eq(threedModels.isActive, true)
+        )
+      );
+    }
 
     // Apply filters
     if (plantId) {
-      query = query.where(eq(threedPlants.id, parseInt(plantId)));
+      query = query.where(eq(threedModels.usedByPlants, true));
     }
     if (characterId) {
-      query = query.where(eq(threedCharacters.id, parseInt(characterId)));
+      query = query.where(eq(threedModels.usedByCharacters, true));
     }
     if (modelType) {
       query = query.where(eq(threedModels.modelType, modelType));
@@ -74,11 +96,12 @@ export async function GET(request: NextRequest) {
       query = query.where(eq(threedModels.isActive, isActive === 'true'));
     }
 
-    // Get total count for pagination
-    const countResult = await db.select({ count: sql<number>`count(*)` })
-      .from(threedModels);
-    const total = countResult[0];
-    
+    // Get total count
+    const countResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(threedModels)
+      .where(query._where);
+
     // Apply pagination and ordering
     const models = await query
       .orderBy(desc(threedModels.createdAt))
@@ -87,7 +110,8 @@ export async function GET(request: NextRequest) {
 
     // For each model, get associated files
     const modelsWithFiles = await Promise.all(models.map(async (model) => {
-      const files = await db.select()
+      const files = await db
+        .select()
         .from(threedModelFiles)
         .where(eq(threedModelFiles.modelId, model.id))
         .orderBy(threedModelFiles.loadOrder);
@@ -107,7 +131,7 @@ export async function GET(request: NextRequest) {
       pagination: {
         limit,
         offset,
-        total: total?.count || 0,
+        total: countResult[0]?.count || 0,
       },
     });
   } catch (error) {
@@ -119,9 +143,19 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/threed/models - Upload a new GLTF model with multiple files
+// ============================================
+// POST /api/threed/models - Upload model (ADMIN ONLY)
+// ============================================
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
     const associationType = formData.get('associationType') as string;
@@ -172,6 +206,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
+
     // Validate association based on type
     if (associationType === 'plant') {
       if (!plantId) {
@@ -181,10 +217,16 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      // Check if plant exists
-      const plant = await db.select()
+      // Check if plant exists and belongs to user
+      const plant = await db
+        .select()
         .from(threedPlants)
-        .where(eq(threedPlants.id, parseInt(plantId)))
+        .where(
+          and(
+            eq(threedPlants.id, parseInt(plantId)),
+            eq(threedPlants.userId, userId)
+          )
+        )
         .limit(1);
 
       if (plant.length === 0) {
@@ -201,10 +243,16 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      // Check if character exists
-      const character = await db.select()
+      // Check if character exists and belongs to user
+      const character = await db
+        .select()
         .from(threedCharacters)
-        .where(eq(threedCharacters.id, parseInt(characterId)))
+        .where(
+          and(
+            eq(threedCharacters.id, parseInt(characterId)),
+            eq(threedCharacters.userId, userId)
+          )
+        )
         .limit(1);
 
       if (character.length === 0) {
@@ -214,7 +262,6 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-    // If associationType is 'none', no validation needed
 
     // Validate main model file type
     const validExtensions = ['.gltf', '.glb', '.fbx', '.obj'];
@@ -259,66 +306,38 @@ export async function POST(request: NextRequest) {
       console.warn('Invalid metadata JSON');
     }
 
-    // Create model record (no plantId in threedModels anymore)
+    // Create model record
     const timestamp = Date.now();
-    const [newModel] = await db.insert(threedModels).values({
-      modelName,
-      modelType: modelType || fileExtension.substring(1),
-      filePath: '', // Will update after upload
-      fileSize: mainModelFile.size,
-      scale: scale.toString(),
-      rotationY: rotationY.toString(),
-      offsetX: offsetX.toString(),
-      offsetY: offsetY.toString(),
-      offsetZ: offsetZ.toString(),
-      hasLOD,
-      lodLevels,
-      animations,
-      defaultAnimation,
-      hasExternalFiles: textureFiles.length > 0 || binaryFiles.length > 0,
-      textureCount: textureFiles.length,
-      isActive: true,
-      isDefault: false,
-      usedByPlants: associationType === 'plant',
-      usedByCharacters: associationType === 'character',
-      uploadedBy: 'system',
-      metadata,
-      uploadedAt: new Date(),
-    }).returning();;
+    const [newModel] = await db
+      .insert(threedModels)
+      .values({
+        userId,
+        modelName,
+        modelType: modelType || fileExtension.substring(1),
+        filePath: '', // Will update after upload
+        fileSize: mainModelFile.size,
+        scale: scale.toString(),
+        rotationY: rotationY.toString(),
+        offsetX: offsetX.toString(),
+        offsetY: offsetY.toString(),
+        offsetZ: offsetZ.toString(),
+        hasLOD,
+        lodLevels,
+        animations,
+        defaultAnimation,
+        hasExternalFiles: textureFiles.length > 0 || binaryFiles.length > 0,
+        textureCount: textureFiles.length,
+        isActive: true,
+        isDefault: false,
+        usedByPlants: associationType === 'plant',
+        usedByCharacters: associationType === 'character',
+        uploadedBy: session.user.email || 'system',
+        metadata,
+        uploadedAt: new Date(),
+      })
+      .returning();
 
     console.log(`📝 Created model record: ${newModel.id}`);
-
-    // // After creating the model, handle association:
-    // if (associationType === 'plant' && plantId) {
-    //   // Update the plant to use this model
-    //   await db.update(threedPlants)
-    //     .set({
-    //       modelId: newModel.id,
-    //       updatedAt: new Date(),
-    //     })
-    //     .where(eq(threedPlants.id, parseInt(plantId)));
-      
-    //   // Update usage tracking
-    //   await db.update(threedModels)
-    //     .set({ usedByPlants: true })
-    //     .where(eq(threedModels.id, newModel.id));
-      
-    //   // If set as default, also update plant's modelId (already done above)
-      
-    // } else if (associationType === 'character' && characterId) {
-    //   // Update the character to use this model
-    //   await db.update(threedCharacters)
-    //     .set({
-    //       modelId: newModel.id,
-    //       updatedAt: new Date(),
-    //     })
-    //     .where(eq(threedCharacters.id, parseInt(characterId)));
-      
-    //   // Update usage tracking
-    //   await db.update(threedModels)
-    //     .set({ usedByCharacters: true })
-    //     .where(eq(threedModels.id, newModel.id));
-    // }
 
     // Upload main model file
     const mainFileName = `${timestamp}-${mainModelFile.name}`;
@@ -330,17 +349,22 @@ export async function POST(request: NextRequest) {
     console.log(`✅ Uploaded main model to: ${mainBlob.url}`);
 
     // Create model file record for main file
-    const [mainFileRecord] = await db.insert(threedModelFiles).values({
-      modelId: newModel.id,
-      fileName: mainModelFile.name,
-      fileType: 'model',
-      filePath: mainBlob.url,
-      fileSize: mainModelFile.size,
-      loadOrder: 0,
-    }).returning();
+    const [mainFileRecord] = await db
+      .insert(threedModelFiles)
+      .values({
+        userId,
+        modelId: newModel.id,
+        fileName: mainModelFile.name,
+        fileType: 'model',
+        filePath: mainBlob.url,
+        fileSize: mainModelFile.size,
+        loadOrder: 0,
+      })
+      .returning();
 
     // Update model with main file path
-    await db.update(threedModels)
+    await db
+      .update(threedModels)
       .set({
         filePath: mainBlob.url,
         mainModelFileId: mainFileRecord.id,
@@ -365,15 +389,18 @@ export async function POST(request: NextRequest) {
       else if (lowerName.includes('occlusion')) textureType = 'occlusion';
       else if (lowerName.includes('ao')) textureType = 'occlusion';
       
-      return db.insert(threedModelFiles).values({
-        modelId: newModel.id,
-        fileName: file.name,
-        fileType: 'texture',
-        textureType,
-        filePath: blob.url,
-        fileSize: file.size,
-        loadOrder: index + 1,
-      });
+      return db
+        .insert(threedModelFiles)
+        .values({
+          userId,
+          modelId: newModel.id,
+          fileName: file.name,
+          fileType: 'texture',
+          textureType,
+          filePath: blob.url,
+          fileSize: file.size,
+          loadOrder: index + 1,
+        });
     });
     
     // Upload binary files
@@ -384,46 +411,51 @@ export async function POST(request: NextRequest) {
         addRandomSuffix: false,
       });
       
-      return db.insert(threedModelFiles).values({
-        modelId: newModel.id,
-        fileName: file.name,
-        fileType: 'binary',
-        filePath: blob.url,
-        fileSize: file.size,
-        isBinaryBuffer: true,
-        loadOrder: index + 100,
-      });
+      return db
+        .insert(threedModelFiles)
+        .values({
+          userId,
+          modelId: newModel.id,
+          fileName: file.name,
+          fileType: 'binary',
+          filePath: blob.url,
+          fileSize: file.size,
+          isBinaryBuffer: true,
+          loadOrder: index + 100,
+        });
     });
     
     await Promise.all([...textureUploads, ...binaryUploads]);
 
-
-
     // Associate with plant or character
     if (associationType === 'plant' && plantId) {
       if (isDefault) {
-        await db.update(threedPlants)
+        await db
+          .update(threedPlants)
           .set({
             modelId: newModel.id,
             updatedAt: new Date(),
           })
           .where(eq(threedPlants.id, parseInt(plantId)));
       }
-      await db.update(threedModels)
+      await db
+        .update(threedModels)
         .set({ usedByPlants: true })
         .where(eq(threedModels.id, newModel.id));
       
       console.log(`🔗 Associated model ${newModel.id} with plant ${plantId}`);
       
     } else if (associationType === 'character' && characterId) {
-      await db.update(threedCharacters)
+      await db
+        .update(threedCharacters)
         .set({
           modelId: newModel.id,
           updatedAt: new Date(),
         })
         .where(eq(threedCharacters.id, parseInt(characterId)));
       
-      await db.update(threedModels)
+      await db
+        .update(threedModels)
         .set({ usedByCharacters: true })
         .where(eq(threedModels.id, newModel.id));
       
@@ -431,7 +463,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Get all uploaded files for response
-    const allFiles = await db.select()
+    const allFiles = await db
+      .select()
       .from(threedModelFiles)
       .where(eq(threedModelFiles.modelId, newModel.id));
 
@@ -462,9 +495,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE /api/threed/models - Bulk delete models
+// ============================================
+// DELETE /api/threed/models - Bulk delete models (ADMIN ONLY)
+// ============================================
 export async function DELETE(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const ids = searchParams.get('ids')?.split(',') || [];
     
@@ -480,20 +523,34 @@ export async function DELETE(request: NextRequest) {
 
     for (const id of ids) {
       try {
-        // Get model info first
-        const [model] = await db.select()
+        // Verify ownership
+        const [model] = await db
+          .select()
           .from(threedModels)
-          .where(eq(threedModels.id, parseInt(id)))
+          .where(
+            and(
+              eq(threedModels.id, parseInt(id)),
+              eq(threedModels.userId, session.user.id)
+            )
+          )
           .limit(1);
 
         if (model) {
           // First, remove the model reference from any plants that use it
-          await db.update(threedPlants)
+          await db
+            .update(threedPlants)
             .set({ modelId: null, updatedAt: new Date() })
             .where(eq(threedPlants.modelId, parseInt(id)));
 
+          // Remove from characters
+          await db
+            .update(threedCharacters)
+            .set({ modelId: null, updatedAt: new Date() })
+            .where(eq(threedCharacters.modelId, parseInt(id)));
+
           // Get all associated files
-          const files = await db.select()
+          const files = await db
+            .select()
             .from(threedModelFiles)
             .where(eq(threedModelFiles.modelId, parseInt(id)));
 
@@ -507,14 +564,18 @@ export async function DELETE(request: NextRequest) {
           }
 
           // Delete model files from database
-          await db.delete(threedModelFiles)
+          await db
+            .delete(threedModelFiles)
             .where(eq(threedModelFiles.modelId, parseInt(id)));
 
           // Delete model from database
-          await db.delete(threedModels)
+          await db
+            .delete(threedModels)
             .where(eq(threedModels.id, parseInt(id)));
           
           deletedModels.push(id);
+        } else {
+          errors.push({ id, error: 'Model not found or not owned by user' });
         }
       } catch (error) {
         errors.push({ id, error: error.message });

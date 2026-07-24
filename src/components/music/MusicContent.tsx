@@ -1,6 +1,7 @@
+// components/music/MusicContent.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AlbumGrid } from '@/components/music/AlbumGrid';
 import { MusicPlayer } from '@/components/music/MusicPlayer';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,6 +11,7 @@ export default function MusicContent() {
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
   const [tracks, setTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingAlbum, setLoadingAlbum] = useState(false);
   
   // Player state
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -36,17 +38,6 @@ export default function MusicContent() {
       audio.src = '';
     };
   }, []);
-
-  // Load tracks when album is selected (but don't auto-play)
-  useEffect(() => {
-    if (selectedAlbum) {
-      fetchTracks(selectedAlbum.id);
-      // Reset playing state - user must press play
-      setIsPlaying(false);
-      setCurrentTrackIndex(0);
-      setCurrentTime(0);
-    }
-  }, [selectedAlbum]);
 
   // Handle audio source changes
   useEffect(() => {
@@ -100,9 +91,7 @@ export default function MusicContent() {
           
           if (nextAlbum) {
             // Load next album and auto-play
-            setSelectedAlbum(nextAlbum);
-            // Scroll to top to show the new album
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            fetchFullAlbum(nextAlbum.id);
           } else {
             // No more albums, just stop
             setIsPlaying(false);
@@ -136,57 +125,92 @@ export default function MusicContent() {
       const response = await fetch('/api/music/albums?includeTracks=true');
       if (response.ok) {
         const data = await response.json();
-        setAlbums(data);
-        if (data.length > 0 && !selectedAlbum) {
-          // setSelectedAlbum(data[0]);
-          // Fetch full album data with links for the first album
-          fetchFullAlbum(data[0].id);
+        if (data.success && Array.isArray(data.data)) {
+          // Filter to only show published albums
+          const publishedAlbums = data.data.filter((album: any) => 
+            album.status === 'published' && album.isPublic === true
+          );
+          setAlbums(publishedAlbums);
+          
+          // ✅ Select the first album automatically
+          if (publishedAlbums.length > 0 && !selectedAlbum) {
+            const firstAlbum = publishedAlbums[0];
+            // ✅ Use the full album data (which already includes tracks from the API)
+            if (firstAlbum.tracks) {
+              setSelectedAlbum(firstAlbum);
+              setTracks(firstAlbum.tracks);
+              setCurrentTrackIndex(0);
+            } else {
+              // Fallback: fetch full album details
+              await fetchFullAlbum(firstAlbum.id);
+            }
+          }
+        } else {
+          console.error('Unexpected API response format:', data);
+          setAlbums([]);
         }
       }
     } catch (error) {
       console.error('Error fetching albums:', error);
+      setAlbums([]);
     } finally {
       setLoading(false);
     }
   };
 
-    // NEW: Fetch full album details including links
-  const fetchFullAlbum = async (albumId: number) => {
+  // ✅ FIX: Properly fetch full album details
+  const fetchFullAlbum = useCallback(async (albumId: number) => {
+    setLoadingAlbum(true);
     try {
-      const response = await fetch(`/api/music/albums?id=${albumId}`);
+      const response = await fetch(`/api/music/albums?id=${albumId}&includeTracks=true&includeLinks=true&includeMedia=true`);
       if (response.ok) {
-        const fullAlbum = await response.json();
-        setSelectedAlbum(fullAlbum);
-        // Also update tracks from the full album data
-        if (fullAlbum.tracks) {
-          setTracks(fullAlbum.tracks);
-          setCurrentTrackIndex(0);
+        const data = await response.json();
+        if (data.success && data.data) {
+          const fullAlbum = data.data;
+          // ✅ Update selected album with full data
+          setSelectedAlbum(fullAlbum);
+          if (fullAlbum.tracks && fullAlbum.tracks.length > 0) {
+            setTracks(fullAlbum.tracks);
+            setCurrentTrackIndex(0);
+          }
+          // ✅ Reset player state
+          setIsPlaying(false);
+          setCurrentTime(0);
+          if (audioElement) {
+            audioElement.pause();
+            audioElement.currentTime = 0;
+          }
+        } else {
+          console.error('Unexpected album detail response:', data);
         }
       }
     } catch (error) {
       console.error('Error fetching full album:', error);
+    } finally {
+      setLoadingAlbum(false);
     }
-  };
+  }, [audioElement]);
 
-  // Update the onSelectAlbum handler
+  // ✅ FIX: Handle album selection
   const handleSelectAlbum = (id: number) => {
-    fetchFullAlbum(id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const fetchTracks = async (albumId: number) => {
-    try {
-      const response = await fetch(`/api/music/tracks?albumId=${albumId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setTracks(data);
-        setCurrentTrackIndex(0);
-        // User must press play - no auto-play
-        setIsPlaying(false);
+    // ✅ Find the album in the existing list first
+    const existingAlbum = albums.find(a => a.id === id);
+    if (existingAlbum && existingAlbum.tracks) {
+      // ✅ Use the cached album data
+      setSelectedAlbum(existingAlbum);
+      setTracks(existingAlbum.tracks);
+      setCurrentTrackIndex(0);
+      setIsPlaying(false);
+      setCurrentTime(0);
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.currentTime = 0;
       }
-    } catch (error) {
-      console.error('Error fetching tracks:', error);
+    } else {
+      // ✅ Fetch full album details
+      fetchFullAlbum(id);
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePlayPause = () => {
@@ -228,10 +252,20 @@ export default function MusicContent() {
   const handlePlayAlbum = (albumId: number) => {
     const album = albums.find(a => a.id === albumId);
     if (album) {
-      // setSelectedAlbum(album);
-      fetchFullAlbum(albumId);
-      // User must press play - no auto-play
-      setIsPlaying(false);
+      if (album.tracks) {
+        setSelectedAlbum(album);
+        setTracks(album.tracks);
+        setCurrentTrackIndex(0);
+        setIsPlaying(true);
+        setCurrentTime(0);
+        if (audioElement) {
+          audioElement.currentTime = 0;
+        }
+      } else {
+        fetchFullAlbum(albumId);
+        // We'll let fetchFullAlbum handle the player state
+        // after it loads the tracks
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -259,6 +293,13 @@ export default function MusicContent() {
       <div className="container mx-auto px-4 py-4">
         {/* Simple Header */}
         <h1 className="text-3xl font-bold mb-6">Music Library</h1>
+
+        {/* Loading indicator for album switching */}
+        {loadingAlbum && (
+          <div className="mb-4 p-2 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground">
+            Loading album...
+          </div>
+        )}
 
         {/* Music Player */}
         {selectedAlbum && currentTrack && (
