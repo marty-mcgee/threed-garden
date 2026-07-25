@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -60,7 +60,8 @@
     "react-leaflet": "^5.0.0",
     "shadcn": "^3.8.4",
     "sonner": "^1.3.1",
-    "three": "^0.185.1"
+    "three": "^0.185.1",
+    "wavesurfer.js": "^7.12.11"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

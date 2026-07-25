@@ -26,13 +26,13 @@ export async function GET(request: NextRequest) {
     const albumId = searchParams.get('albumId');
 
     // ✅ DEBUG: Log everything
-    console.log('========================================');
-    console.log('🔍 GET /api/music/tracks');
-    console.log(`📝 albumId parameter: "${albumId}"`);
-    console.log(`📝 albumId type: ${typeof albumId}`);
-    console.log(`📝 userId: ${userId || 'anonymous'}`);
-    console.log(`📝 Full URL: ${request.url}`);
-    console.log('========================================');
+    // console.log('========================================');
+    // console.log('🔍 GET /api/music/tracks');
+    // console.log(`📝 albumId parameter: "${albumId}"`);
+    // console.log(`📝 albumId type: ${typeof albumId}`);
+    // console.log(`📝 userId: ${userId || 'anonymous'}`);
+    // console.log(`📝 Full URL: ${request.url}`);
+    // console.log('========================================');
 
     // Get a single track by ID
     if (id) {

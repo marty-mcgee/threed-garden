@@ -1,13 +1,13 @@
+// src/components/music/WaveformVisualizer.tsx
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface WaveformVisualizerProps {
   audioUrl: string;
   isPlaying: boolean;
-  currentTime?: number;
-  duration?: number;
+  onTimeUpdate?: (time: number) => void;
   className?: string;
   height?: number;
 }
@@ -15,130 +15,159 @@ interface WaveformVisualizerProps {
 export function WaveformVisualizer({
   audioUrl,
   isPlaying,
-  currentTime = 0,
-  duration = 0,
+  onTimeUpdate,
   className,
-  height = 100,
+  height = 48,
 }: WaveformVisualizerProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [waveformData, setWaveformData] = useState<number[] | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const wavesurferRef = useRef<any>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Generate waveform pattern based on audio URL (deterministic)
   useEffect(() => {
-    if (!audioUrl) return;
+    let isMounted = true;
 
-    // Create a unique but consistent waveform based on the URL
-    const generateConsistentWaveform = () => {
-      const bars = 60;
-      const waveform: number[] = [];
+    const initWaveSurfer = async () => {
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Use the URL to create a deterministic pattern
-      let hash = 0;
-      for (let i = 0; i < audioUrl.length; i++) {
-        hash = ((hash << 5) - hash) + audioUrl.charCodeAt(i);
-        hash |= 0;
+      if (!containerRef.current) {
+        return;
       }
-      
-      // Generate waveform that looks like real audio
-      for (let i = 0; i < bars; i++) {
-        // Create a realistic-looking waveform pattern
-        const position = i / bars;
-        // Bell curve shape with some randomness based on hash
-        const bellCurve = Math.sin(position * Math.PI);
-        const randomFactor = ((hash >> (i % 20)) & 0xFF) / 255;
-        const value = Math.max(0.15, Math.min(0.85, bellCurve * 0.6 + randomFactor * 0.4));
-        waveform.push(value);
+
+      if (!audioUrl) {
+        setIsLoading(false);
+        setError('No audio URL');
+        return;
       }
-      
-      setWaveformData(waveform);
+
+      if (wavesurferRef.current) {
+        wavesurferRef.current.destroy();
+        wavesurferRef.current = null;
+      }
+
+      setIsLoading(true);
+      setIsReady(false);
+      setError(null);
+
+      try {
+        const WaveSurfer = (await import('wavesurfer.js')).default;
+
+        // ✅ Thin bars with vibrant colors
+        const wavesurfer = WaveSurfer.create({
+          container: containerRef.current,
+          // ✅ Wave color - visible in both modes
+          waveColor: 'rgba(99, 102, 241, 0.3)',
+          // ✅ Progress color - bright and vibrant
+          progressColor: 'rgba(99, 102, 241, 0.8)',
+          cursorColor: 'rgba(255, 255, 255, 0.5)',
+          // ✅ Thin bars for detailed waveform
+          barWidth: 2,
+          barGap: 1,
+          barRadius: 2,
+          height: height,
+          normalize: true,
+          responsive: true,
+          hideScrollbar: true,
+          interact: true,
+          backend: 'WebAudio',
+        });
+
+        wavesurferRef.current = wavesurfer;
+
+        wavesurfer.on('ready', () => {
+          if (isMounted) {
+            setIsLoading(false);
+            setIsReady(true);
+            if (isPlaying) {
+              wavesurfer.play();
+            }
+          }
+        });
+
+        wavesurfer.on('audioprocess', () => {
+          if (isMounted && onTimeUpdate) {
+            onTimeUpdate(wavesurfer.getCurrentTime());
+          }
+        });
+
+        wavesurfer.on('seek', () => {
+          if (isMounted && onTimeUpdate) {
+            onTimeUpdate(wavesurfer.getCurrentTime());
+          }
+        });
+
+        wavesurfer.on('loading', (percent: number) => {
+          if (isMounted) {
+            setIsLoading(percent < 100);
+          }
+        });
+
+        wavesurfer.on('error', (err: any) => {
+          console.error('[Waveform] ❌ ERROR:', err);
+          if (isMounted) {
+            setError(err.message || 'Failed to load audio');
+            setIsLoading(false);
+          }
+        });
+
+        wavesurfer.load(audioUrl);
+
+      } catch (error) {
+        console.error('[Waveform] ❌ Init error:', error);
+        if (isMounted) {
+          setError(error instanceof Error ? error.message : 'Failed to initialize');
+          setIsLoading(false);
+        }
+      }
     };
-    
-    generateConsistentWaveform();
-  }, [audioUrl]);
 
-  // Draw waveform on canvas
-  useEffect(() => {
-    if (!canvasRef.current || !waveformData) return;
+    initWaveSurfer();
 
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Get container width
-    const container = canvas.parentElement;
-    const width = container?.clientWidth || 600;
-    const barCount = waveformData.length;
-    const barWidth = Math.max(2, (width / barCount) - 2);
-    
-    // Set canvas size
-    canvas.width = width;
-    canvas.height = height;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-    
-    // Calculate progress (which bars have been played)
-    const progressPercent = duration > 0 ? currentTime / duration : 0;
-    const playedBarCount = Math.floor(progressPercent * barCount);
-    
-    // Draw each bar
-    for (let i = 0; i < barCount; i++) {
-      const barHeight = Math.max(3, waveformData[i] * height);
-      const x = i * (barWidth + 2);
-      const y = (height - barHeight) / 2;
-      
-      // Color based on whether this portion has been played
-      if (i <= playedBarCount) {
-        // Played portion - gradient purple
-        const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
-        gradient.addColorStop(0, '#8b5cf6');
-        gradient.addColorStop(1, '#a855f7');
-        ctx.fillStyle = gradient;
-      } else {
-        // Unplayed portion - dark gray
-        ctx.fillStyle = '#374151';
+    return () => {
+      isMounted = false;
+      if (wavesurferRef.current) {
+        wavesurferRef.current.destroy();
+        wavesurferRef.current = null;
       }
-      
-      // Draw rounded rectangle
-      ctx.beginPath();
-      const radius = Math.min(barWidth / 2, 4);
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + barWidth - radius, y);
-      ctx.quadraticCurveTo(x + barWidth, y, x + barWidth, y + radius);
-      ctx.lineTo(x + barWidth, y + barHeight - radius);
-      ctx.quadraticCurveTo(x + barWidth, y + barHeight, x + barWidth - radius, y + barHeight);
-      ctx.lineTo(x + radius, y + barHeight);
-      ctx.quadraticCurveTo(x, y + barHeight, x, y + barHeight - radius);
-      ctx.lineTo(x, y + radius);
-      ctx.quadraticCurveTo(x, y, x + radius, y);
-      ctx.closePath();
-      ctx.fill();
-    }
-  }, [waveformData, currentTime, duration, height]);
+    };
+  }, [audioUrl, height, onTimeUpdate]);
 
-  if (!waveformData) {
-    return (
-      <div className={cn("flex items-center justify-center bg-black/20 rounded-lg", className)} style={{ height }}>
-        <div className="flex gap-1">
-          <div className="w-1 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-1 h-3 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-1 h-4 bg-purple-500 rounded-full animate-bounce"></div>
-          <div className="w-1 h-3 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-1 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!wavesurferRef.current || !isReady) return;
+    
+    if (isPlaying) {
+      wavesurferRef.current.play();
+    } else {
+      wavesurferRef.current.pause();
+    }
+  }, [isPlaying, isReady]);
 
   return (
-    <div className={cn("bg-black/20 rounded-lg overflow-hidden", className)}>
-      <canvas
-        ref={canvasRef}
-        className="w-full"
-        style={{ height: `${height}px`, display: 'block' }}
+    <div 
+      className={cn(
+        "relative w-full rounded-md overflow-hidden",
+        "bg-muted/5",
+        className
+      )} 
+      style={{ height }}
+    >
+      <div 
+        ref={containerRef} 
+        className="absolute inset-0 w-full h-full"
       />
+      
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+          <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      )}
+      
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-destructive/10 text-destructive text-xs">
+          <span>⚠️ {error}</span>
+        </div>
+      )}
     </div>
   );
 }

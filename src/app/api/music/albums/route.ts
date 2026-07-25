@@ -33,44 +33,68 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // Get a single album by ID
-    if (id) {
-      let query = db
-        .select()
-        .from(musicAlbums)
-        .where(eq(musicAlbums.id, parseInt(id)));
+    console.log('[API] 🔍 Request params:', { id, includeTracks, musicId, status, limit, offset });
 
-      if (!userId) {
-        query = query.where(
-          and(
-            eq(musicAlbums.isPublic, true),
-            eq(musicAlbums.status, 'published')
-          )
-        );
-      } else {
-        query = query.where(
-          or(
-            eq(musicAlbums.userId, userId),
-            and(
-              eq(musicAlbums.isPublic, true),
-              eq(musicAlbums.status, 'published')
-            )
-          )
+    // ✅ Get a single album by ID
+    if (id) {
+      const parsedId = parseInt(id);
+      if (isNaN(parsedId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid album ID' },
+          { status: 400 }
         );
       }
 
-      const [album] = await query.limit(1);
+      console.log('[API] 🔍 Fetching album with ID:', parsedId);
+
+      // ✅ FIX: Use a simpler query approach - first get the album by ID
+      // Don't combine with permission filters in the same where clause
+      let albumQuery = db
+        .select()
+        .from(musicAlbums)
+        .where(eq(musicAlbums.id, parsedId));
+
+      const [album] = await albumQuery;
 
       if (!album) {
+        console.log('[API] ❌ Album not found with ID:', parsedId);
         return NextResponse.json(
           { success: false, error: 'Album not found' },
           { status: 404 }
         );
       }
 
+      // ✅ Check permissions after fetching
+      const isOwner = album.userId === userId;
+      const isPublic = album.isPublic && album.status === 'published';
+      
+      if (!userId) {
+        // Not logged in - must be public
+        if (!isPublic) {
+          console.log('[API] ❌ Album is not public:', parsedId);
+          return NextResponse.json(
+            { success: false, error: 'Album not found' },
+            { status: 404 }
+          );
+        }
+      } else {
+        // Logged in - must own it OR it's public
+        if (!isOwner && !isPublic) {
+          console.log('[API] ❌ Album not accessible:', parsedId);
+          return NextResponse.json(
+            { success: false, error: 'Album not found' },
+            { status: 404 }
+          );
+        }
+      }
+
+      console.log('[API] ✅ Found album:', album.id, album.title);
+
       const response: any = { ...album };
 
+      // ✅ Fetch tracks for this specific album
       if (includeTracks) {
+        console.log('[API] 🎵 Fetching tracks for album:', album.id);
         let tracksQuery = db
           .select()
           .from(musicTracks)
@@ -81,6 +105,7 @@ export async function GET(request: NextRequest) {
         }
 
         const tracks = await tracksQuery.orderBy(musicTracks.trackNumber);
+        console.log('[API] 🎵 Found', tracks.length, 'tracks for album:', album.id);
         response.tracks = tracks;
       }
 
@@ -116,12 +141,16 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ List all albums with proper filtering
+    // ✅ LIST ALL ALBUMS (only when no ID is provided)
+    console.log('[API] 📋 Listing all albums');
+
+    // Build the base query
     let query = db
       .select()
       .from(musicAlbums)
       .$dynamic();
 
+    // Apply permission filters
     if (!userId) {
       query = query.where(
         and(
@@ -141,6 +170,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Apply additional filters
     if (musicId) {
       query = query.where(eq(musicAlbums.musicId, parseInt(musicId)));
     }
@@ -149,17 +179,21 @@ export async function GET(request: NextRequest) {
       query = query.where(eq(musicAlbums.status, status));
     }
 
+    // Get total count
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(musicAlbums)
       .where(query._where);
 
+    // Get paginated results
     const albums = await query
       .orderBy(desc(musicAlbums.createdAt))
       .limit(limit)
       .offset(offset);
 
-    // ✅ CORRECTLY fetch tracks for EACH album individually
+    console.log('[API] 📋 Found', albums.length, 'albums');
+
+    // Fetch tracks for each album if requested
     if (includeTracks) {
       const albumsWithTracks = await Promise.all(
         albums.map(async (album) => {
@@ -174,7 +208,6 @@ export async function GET(request: NextRequest) {
 
           const tracks = await tracksQuery.orderBy(musicTracks.trackNumber);
           
-          // ✅ Return album with its OWN tracks
           return {
             ...album,
             tracks: tracks || [],
@@ -182,7 +215,6 @@ export async function GET(request: NextRequest) {
         })
       );
 
-      // ✅ Optionally include links
       if (includeLinks) {
         const albumsWithLinks = await Promise.all(
           albumsWithTracks.map(async (album) => {
@@ -228,7 +260,7 @@ export async function GET(request: NextRequest) {
       pagination: { limit, offset, total: countResult[0]?.count || 0 },
     });
   } catch (error) {
-    console.error('Error fetching albums:', error);
+    console.error('[API] ❌ Error fetching albums:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch albums' },
       { status: 500 }
@@ -261,10 +293,9 @@ export async function POST(request: NextRequest) {
       status, 
       isPublic, 
       sortOrder,
-      musicId  // ✅ Include music module reference
+      musicId
     } = body;
 
-    // ✅ Validate required fields
     if (!title) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: title' },
@@ -288,7 +319,6 @@ export async function POST(request: NextRequest) {
 
     const userId = session.user.id;
 
-    // ✅ Verify music module exists if provided
     if (musicId) {
       const [module] = await db
         .select()
@@ -383,7 +413,6 @@ export async function PUT(request: NextRequest) {
 
     const userId = session.user.id;
 
-    // ✅ Verify album exists and belongs to user
     const [existing] = await db
       .select()
       .from(musicAlbums)
@@ -402,7 +431,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // ✅ Verify music module exists if provided
     if (musicId) {
       const [module] = await db
         .select()

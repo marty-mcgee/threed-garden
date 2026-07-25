@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
     // your project has type errors.
     ignoreBuildErrors: true,
   },
+  images: {
+    remotePatterns: [new URL('https://threedpublic.s3.us-west-2.amazonaws.com/**')],
+  },
   async rewrites() {
     return [
       {
