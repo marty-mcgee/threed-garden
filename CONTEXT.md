@@ -1,12 +1,12 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** July 24, 2026 @ 5:30am PST
+**Last Updated:** July 25, 2026 @ 11:11am PST
 
 ---
 
 ## 🧱 Tech Stack
 
-- **Framework:** Next.js 16.2.10 (App Router), TypeScript, React
+- **Framework:** Next.js 16.2.11 (App Router), TypeScript, React
 - **Database:** Neon Postgres + Drizzle ORM
 - **UI:** shadcn/ui, Tailwind, Three.JS, React Three Fiber, Leaflet (OpenStreetMaps)
 - **Music Streaming:** AWS S3, Vercel Blob Storage
