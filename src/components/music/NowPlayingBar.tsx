@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useMusicPlayer } from '@/lib/stores/music-player-store';
-import { WaveformVisualizer } from '@/components/music/WaveformVisualizer';
+// import { WaveformVisualizer } from '@/components/music/WaveformVisualizer';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { 
@@ -232,7 +232,7 @@ export function NowPlayingBar({ className }: NowPlayingBarProps) {
         )}
 
         {/* ✅ Waveform Visualization (adds visual flair without affecting audio) */}
-        {true && currentTrack && (
+        {/* {true && currentTrack && (
           <div className="px-4 pt-1 pb-0">
             <WaveformVisualizer
               audioUrl={currentTrack.s3Url}
@@ -242,7 +242,7 @@ export function NowPlayingBar({ className }: NowPlayingBarProps) {
               className="w-full rounded-md overflow-hidden"
             />
           </div>
-        )}
+        )} */}
 
         <div className="container max-w-7xl mx-auto px-4 h-20 flex items-center gap-4">
           {/* Track Info */}
