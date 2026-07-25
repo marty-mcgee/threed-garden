@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicAlbums, musicTracks, musicLinks, musicAlbumLinks, musicMedia, music } from '@/lib/schema/music';
+import { musicAlbums, musicTracks, musicLinks, musicMedia, music } from '@/lib/schema/music';
 import { eq, and, desc, sql, or } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    console.log('[API] 🔍 Request params:', { id, includeTracks, musicId, status, limit, offset });
+    console.log('[API] 🔍 Request params:', { id, includeTracks, includeLinks, includeMedia, musicId, status, limit, offset });
 
     // ✅ Get a single album by ID
     if (id) {
@@ -47,8 +47,7 @@ export async function GET(request: NextRequest) {
 
       console.log('[API] 🔍 Fetching album with ID:', parsedId);
 
-      // ✅ FIX: Use a simpler query approach - first get the album by ID
-      // Don't combine with permission filters in the same where clause
+      // ✅ Get album by ID
       let albumQuery = db
         .select()
         .from(musicAlbums)
@@ -69,7 +68,6 @@ export async function GET(request: NextRequest) {
       const isPublic = album.isPublic && album.status === 'published';
       
       if (!userId) {
-        // Not logged in - must be public
         if (!isPublic) {
           console.log('[API] ❌ Album is not public:', parsedId);
           return NextResponse.json(
@@ -78,7 +76,6 @@ export async function GET(request: NextRequest) {
           );
         }
       } else {
-        // Logged in - must own it OR it's public
         if (!isOwner && !isPublic) {
           console.log('[API] ❌ Album not accessible:', parsedId);
           return NextResponse.json(
@@ -109,29 +106,44 @@ export async function GET(request: NextRequest) {
         response.tracks = tracks;
       }
 
+      // ✅ Fetch links for this album (now directly on music_links table)
       if (includeLinks) {
+        console.log('[API] 🔗 Fetching links for album:', album.id);
         let linksQuery = db
           .select()
           .from(musicLinks)
-          .innerJoin(
-            musicAlbumLinks,
-            eq(musicAlbumLinks.linkId, musicLinks.id)
-          )
-          .where(eq(musicAlbumLinks.albumId, album.id));
+          .where(
+            and(
+              eq(musicLinks.albumId, album.id),
+              eq(musicLinks.userId, userId || '')
+            )
+          );
 
         if (!userId) {
           linksQuery = linksQuery.where(eq(musicLinks.status, 'active'));
         }
 
-        const results = await linksQuery;
-        response.links = results.map((row) => row.musicLinks);
+        const links = await linksQuery.orderBy(musicLinks.displayOrder);
+        console.log('[API] 🔗 Found', links.length, 'links');
+        response.links = links;
       }
 
+      // ✅ Fetch media for this album
       if (includeMedia) {
-        const media = await db
+        console.log('[API] 🖼️ Fetching media for album:', album.id);
+        let mediaQuery = db
           .select()
           .from(musicMedia)
           .where(eq(musicMedia.albumId, album.id));
+
+        if (!userId) {
+          // For public access, only return media that's publicly available
+          // (you might want to add a isPublic field to media table)
+          mediaQuery = mediaQuery.where(eq(musicMedia.isPrimary, true));
+        }
+
+        const media = await mediaQuery;
+        console.log('[API] 🖼️ Found', media.length, 'media items');
         response.media = media;
       }
 
@@ -144,13 +156,11 @@ export async function GET(request: NextRequest) {
     // ✅ LIST ALL ALBUMS (only when no ID is provided)
     console.log('[API] 📋 Listing all albums');
 
-    // Build the base query
     let query = db
       .select()
       .from(musicAlbums)
       .$dynamic();
 
-    // Apply permission filters
     if (!userId) {
       query = query.where(
         and(
@@ -170,7 +180,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Apply additional filters
     if (musicId) {
       query = query.where(eq(musicAlbums.musicId, parseInt(musicId)));
     }
@@ -179,13 +188,11 @@ export async function GET(request: NextRequest) {
       query = query.where(eq(musicAlbums.status, status));
     }
 
-    // Get total count
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(musicAlbums)
       .where(query._where);
 
-    // Get paginated results
     const albums = await query
       .orderBy(desc(musicAlbums.createdAt))
       .limit(limit)
@@ -193,63 +200,69 @@ export async function GET(request: NextRequest) {
 
     console.log('[API] 📋 Found', albums.length, 'albums');
 
-    // Fetch tracks for each album if requested
-    if (includeTracks) {
-      const albumsWithTracks = await Promise.all(
+    // ✅ Fetch tracks, links, and media for each album if requested
+    if (includeTracks || includeLinks || includeMedia) {
+      const albumsWithData = await Promise.all(
         albums.map(async (album) => {
-          let tracksQuery = db
-            .select()
-            .from(musicTracks)
-            .where(eq(musicTracks.albumId, album.id));
+          const result: any = { ...album };
 
-          if (!userId) {
-            tracksQuery = tracksQuery.where(eq(musicTracks.status, 'active'));
+          // Fetch tracks if requested
+          if (includeTracks) {
+            let tracksQuery = db
+              .select()
+              .from(musicTracks)
+              .where(eq(musicTracks.albumId, album.id));
+
+            if (!userId) {
+              tracksQuery = tracksQuery.where(eq(musicTracks.status, 'active'));
+            }
+
+            const tracks = await tracksQuery.orderBy(musicTracks.trackNumber);
+            result.tracks = tracks || [];
           }
 
-          const tracks = await tracksQuery.orderBy(musicTracks.trackNumber);
-          
-          return {
-            ...album,
-            tracks: tracks || [],
-          };
-        })
-      );
-
-      if (includeLinks) {
-        const albumsWithLinks = await Promise.all(
-          albumsWithTracks.map(async (album) => {
+          // ✅ Fetch links if requested (simplified - direct query)
+          if (includeLinks) {
             let linksQuery = db
               .select()
               .from(musicLinks)
-              .innerJoin(
-                musicAlbumLinks,
-                eq(musicAlbumLinks.linkId, musicLinks.id)
-              )
-              .where(eq(musicAlbumLinks.albumId, album.id));
+              .where(
+                and(
+                  eq(musicLinks.albumId, album.id),
+                  eq(musicLinks.userId, userId || '')
+                )
+              );
 
             if (!userId) {
               linksQuery = linksQuery.where(eq(musicLinks.status, 'active'));
             }
 
-            const results = await linksQuery;
-            const links = results.map((row) => row.musicLinks);
-            return {
-              ...album,
-              links: links || [],
-            };
-          })
-        );
+            const links = await linksQuery.orderBy(musicLinks.displayOrder);
+            result.links = links || [];
+          }
 
-        return NextResponse.json({
-          success: true,
-          data: albumsWithLinks,
-          pagination: { limit, offset, total: countResult[0]?.count || 0 },
-        });
-      }
+          // ✅ Fetch media if requested
+          if (includeMedia) {
+            let mediaQuery = db
+              .select()
+              .from(musicMedia)
+              .where(eq(musicMedia.albumId, album.id));
+
+            if (!userId) {
+              mediaQuery = mediaQuery.where(eq(musicMedia.isPrimary, true));
+            }
+
+            const media = await mediaQuery;
+            result.media = media || [];
+          }
+
+          return result;
+        })
+      );
 
       return NextResponse.json({
         success: true,
-        data: albumsWithTracks,
+        data: albumsWithData,
         pagination: { limit, offset, total: countResult[0]?.count || 0 },
       });
     }

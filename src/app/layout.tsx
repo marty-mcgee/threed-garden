@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "./providers";
 import "./globals.css";
 import { inter } from "./fonts";
-import { NowPlayingBar } from '@/components/music/NowPlayingBar';
+// import { NowPlayingBar } from '@/components/music/NowPlayingBar';
 
 export const metadata: Metadata = {
   title: "Marty McGee Dashboard",
@@ -22,7 +22,7 @@ export default function RootLayout({
           {children}
 
           {/* Global player - always visible */}
-          <NowPlayingBar />
+          {/* <NowPlayingBar /> */}
         </Providers>
       </body>
     </html>

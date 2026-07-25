@@ -6,10 +6,26 @@ import { useParams } from 'next/navigation';
 import { useMusicPlayer, Track } from '@/lib/stores/music-player-store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Pause, Heart, Share2, Clock } from 'lucide-react';
+import { Play, Pause, Heart, Share2, Clock, Link2, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { formatTime, cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/toast';
+
+interface Link {
+  id: number;
+  title: string;
+  url: string;
+  type: string;
+  icon?: string;
+}
+
+interface Media {
+  id: number;
+  url: string;
+  type: string;
+  isPrimary?: boolean;
+  title?: string;
+}
 
 interface Album {
   id: number;
@@ -21,6 +37,8 @@ interface Album {
   status: string;
   isPublic: boolean;
   tracks?: Track[];
+  links?: Link[];
+  media?: Media[];
   description?: string;
 }
 
@@ -35,12 +53,10 @@ export default function AlbumDetailPage() {
   const { showToast, ToastComponent } = useToast();
 
   useEffect(() => {
-    // Reset album state when albumId changes
     setAlbum(null);
     setIsLoading(true);
 
     if (!albumId) {
-      console.error('[Album Detail] No album ID provided');
       setIsLoading(false);
       return;
     }
@@ -50,8 +66,10 @@ export default function AlbumDetailPage() {
         const parsedAlbumId = parseInt(albumId);
         console.log('[Album Detail] 🔍 Fetching album with ID:', parsedAlbumId);
         
-        // ✅ Fetch album with tracks included
-        const response = await fetch(`/api/music/albums?id=${albumId}&includeTracks=true`);
+        // ✅ Include links and media in the request
+        const response = await fetch(
+          `/api/music/albums?id=${albumId}&includeTracks=true&includeLinks=true&includeMedia=true`
+        );
         const data = await response.json();
         
         console.log('[Album Detail] 📦 Raw API response:', data);
@@ -63,20 +81,15 @@ export default function AlbumDetailPage() {
             id: albumData.id,
             title: albumData.title,
             artist: albumData.artist,
-            tracksCount: albumData.tracks?.length || 0
+            tracksCount: albumData.tracks?.length || 0,
+            linksCount: albumData.links?.length || 0,
+            mediaCount: albumData.media?.length || 0,
           });
           
-          // ✅ CRITICAL: Filter tracks to ONLY include those with matching albumId
+          // ✅ Filter tracks to only include those with matching albumId
           let validTracks: Track[] = [];
           
           if (albumData.tracks && albumData.tracks.length > 0) {
-            console.log('[Album Detail] 📋 Raw tracks:', albumData.tracks.map((t: any) => ({
-              id: t.id,
-              title: t.title,
-              albumId: t.albumId
-            })));
-            
-            // ✅ Only keep tracks that belong to this album
             validTracks = albumData.tracks
               .filter((track: any) => track.albumId === albumData.id)
               .map((track: any) => ({
@@ -87,22 +100,14 @@ export default function AlbumDetailPage() {
                 artist: track.artist || albumData.artist,
               }));
             
-            console.log('[Album Detail] ✅ Valid tracks (matching album ID):', validTracks.length);
-            
-            if (validTracks.length === 0 && albumData.tracks.length > 0) {
-              console.warn('[Album Detail] ⚠️ All tracks have mismatched album IDs!');
-              console.warn('[Album Detail] Expected album ID:', albumData.id);
-              console.warn('[Album Detail] Track album IDs:', albumData.tracks.map((t: any) => t.albumId));
-              showToast('This album has no valid tracks', 'warning');
-            }
-          } else {
-            console.warn('[Album Detail] ℹ️ No tracks found for this album');
+            console.log('[Album Detail] ✅ Valid tracks:', validTracks.length);
           }
           
-          // ✅ Set album with ONLY valid tracks
           setAlbum({
             ...albumData,
-            tracks: validTracks
+            tracks: validTracks,
+            links: albumData.links || [],
+            media: albumData.media || [],
           });
         } else {
           console.error('[Album Detail] ❌ Failed to fetch album:', data.error);
@@ -125,7 +130,6 @@ export default function AlbumDetailPage() {
       return;
     }
 
-    // Create tracks with proper album info
     const tracksWithUrls = album.tracks.map(track => ({
       ...track,
       s3Url: track.s3Url || '',
@@ -136,20 +140,13 @@ export default function AlbumDetailPage() {
 
     const playableTracks = tracksWithUrls.filter(t => t.s3Url && t.s3Url.length > 0);
     
-    console.log('[Album Detail] 🎵 Total valid tracks:', tracksWithUrls.length);
-    console.log('[Album Detail] 🎵 Playable tracks:', playableTracks.length);
-    
     if (playableTracks.length === 0) {
       showToast('None of the tracks have audio files available', 'error');
       return;
     }
 
-    // Reset player BEFORE playing new album
     resetPlayer();
-    
-    // Use setTimeout to ensure reset completes before playing
     setTimeout(() => {
-      console.log('[Album Detail] ▶️ Playing album:', album.title, 'with', playableTracks.length, 'tracks');
       playAlbum(playableTracks);
       showToast(`Playing "${album.title}"`, 'success');
     }, 50);
@@ -169,13 +166,7 @@ export default function AlbumDetailPage() {
       return;
     }
 
-    console.log('[Album Detail] ▶️ Playing track:', trackToPlay.title);
-    console.log('[Album Detail] 🔗 Track URL:', trackToPlay.s3Url);
-    
-    // Reset player BEFORE playing new track
     resetPlayer();
-    
-    // Use setTimeout to ensure reset completes before playing
     setTimeout(() => {
       playTrack(trackToPlay);
       showToast(`Playing "${trackToPlay.title}"`, 'info');
@@ -238,6 +229,9 @@ export default function AlbumDetailPage() {
               {album.year && <span>{album.year}</span>}
               {album.genre && <span>• {album.genre}</span>}
               <span>• {album.tracks?.length || 0} tracks</span>
+              {album.links && album.links.length > 0 && (
+                <span>• {album.links.length} links</span>
+              )}
             </div>
             {album.description && (
               <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{album.description}</p>
@@ -347,22 +341,80 @@ export default function AlbumDetailPage() {
         </div>
       </div>
 
-      {/* Media Gallery */}
-      {album.coverArt && (
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="text-sm font-medium mb-4">Gallery</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="aspect-square rounded-lg overflow-hidden relative">
-              <Image
-                src={album.coverArt}
-                alt={`${album.title} cover`}
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
+      {/* ✅ Links Section - Debug Version */}
+      <div className="rounded-xl border bg-card">
+        <div className="p-4 border-b">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Link2 className="h-4 w-4" />
+            Links ({album.links?.length || 0})
+          </h2>
         </div>
-      )}
+        <div className="p-4">
+          {album.links && album.links.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {album.links.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors group"
+                >
+                  <Link2 className="h-4 w-4 text-muted-foreground" />
+                  <span className="flex-1 text-sm truncate group-hover:text-primary transition-colors">
+                    {link.title || link.url}
+                  </span>
+                  <span className="text-xs text-muted-foreground">↗</span>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No links available for this album.</p>
+          )}
+        </div>
+      </div>
+
+      {/* ✅ Media Gallery - Debug Version */}
+      <div className="rounded-xl border bg-card">
+        <div className="p-4 border-b">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <ImageIcon className="h-4 w-4" />
+            Media Gallery ({album.media?.length || 0})
+          </h2>
+        </div>
+        <div className="p-4">
+          {album.media && album.media.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {album.media.map((media) => (
+                <div
+                  key={media.id}
+                  className="aspect-square rounded-lg overflow-hidden relative group"
+                >
+                  {media.url ? (
+                    <Image
+                      src={media.url}
+                      alt={media.title || 'Media'}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-muted flex items-center justify-center text-muted-foreground">
+                      <ImageIcon className="h-8 w-8" />
+                    </div>
+                  )}
+                  {media.isPrimary && (
+                    <Badge className="absolute top-2 right-2 text-xs">
+                      Primary
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No media available for this album.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

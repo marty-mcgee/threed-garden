@@ -7,8 +7,6 @@ import {
   Edit, 
   Trash2, 
   Loader2,
-  CheckCircle,
-  XCircle,
   Link2,
   MoreHorizontal,
   ExternalLink,
@@ -30,42 +28,31 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/toast';
-
-interface Link {
-  id: number;
-  title: string;
-  url: string;
-  type: string;
-  icon: string | null;
-  description: string | null;
-  status: string;
-  displayOrder: number;
-  metadata: any;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { MusicLink } from '@/lib/types/music';
 
 interface MusicLinksCRUDProps {
   onModuleUpdate?: () => void;
 }
 
-// ✅ Named export - matches the import in page.tsx
+// ✅ Export named - matches import in page.tsx
 export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
   const { showToast, ToastComponent } = useToast();
-  const [links, setLinks] = useState<Link[]>([]);
+  const [links, setLinks] = useState<MusicLink[]>([]);
+  const [albums, setAlbums] = useState<{ id: number; title: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingLink, setEditingLink] = useState<Link | null>(null);
+  const [editingLink, setEditingLink] = useState<MusicLink | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     url: '',
     type: 'external',
-    icon: 'link',
+    icon: '',
     description: '',
     status: 'active',
     displayOrder: 0,
+    albumId: '',
+    trackId: '',
   });
 
   const iconOptions = [
@@ -87,8 +74,16 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
     { value: 'video', label: 'Video' },
   ];
 
+  const statusOptions = [
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'expired', label: 'Expired' },
+  ];
+
   useEffect(() => {
     fetchLinks();
+    fetchAlbums();
   }, []);
 
   const fetchLinks = async () => {
@@ -111,6 +106,18 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
     }
   };
 
+  const fetchAlbums = async () => {
+    try {
+      const response = await fetch('/api/music/albums');
+      const data = await response.json();
+      if (data.success) {
+        setAlbums(Array.isArray(data.data) ? data.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching albums:', error);
+    }
+  };
+
   const handleCreate = async () => {
     if (!formData.title || !formData.url) {
       showToast('Title and URL are required', 'error');
@@ -119,15 +126,23 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
 
     setIsSubmitting(true);
     try {
-      const payload = {
+      const payload: any = {
         title: formData.title,
         url: formData.url,
-        type: formData.type,
+        type: formData.type || 'external',
         icon: formData.icon || null,
         description: formData.description || null,
-        status: formData.status,
+        status: formData.status || 'active',
         displayOrder: formData.displayOrder || 0,
       };
+
+      // ✅ Include albumId and trackId if provided
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
+      if (formData.trackId && formData.trackId !== '') {
+        payload.trackId = parseInt(formData.trackId);
+      }
 
       const response = await fetch('/api/music/links', {
         method: 'POST',
@@ -139,15 +154,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
       if (data.success) {
         showToast('Link created successfully', 'success');
         setShowCreateDialog(false);
-        setFormData({
-          title: '',
-          url: '',
-          type: 'external',
-          icon: 'link',
-          description: '',
-          status: 'active',
-          displayOrder: 0,
-        });
+        resetForm();
         await fetchLinks();
         if (onModuleUpdate) onModuleUpdate();
       } else {
@@ -165,15 +172,27 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
     if (!editingLink) return;
     setIsSubmitting(true);
     try {
-      const payload = {
+      const payload: any = {
         title: formData.title,
         url: formData.url,
-        type: formData.type,
+        type: formData.type || 'external',
         icon: formData.icon || null,
         description: formData.description || null,
-        status: formData.status,
+        status: formData.status || 'active',
         displayOrder: formData.displayOrder || 0,
       };
+
+      // ✅ Include albumId and trackId if provided
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      } else {
+        payload.albumId = null;
+      }
+      if (formData.trackId && formData.trackId !== '') {
+        payload.trackId = parseInt(formData.trackId);
+      } else {
+        payload.trackId = null;
+      }
 
       const response = await fetch(`/api/music/links?id=${editingLink.id}`, {
         method: 'PUT',
@@ -220,7 +239,60 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
     }
   };
 
-  const renderActions = (link: Link) => (
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      url: '',
+      type: 'external',
+      icon: '',
+      description: '',
+      status: 'active',
+      displayOrder: 0,
+      albumId: '',
+      trackId: '',
+    });
+  };
+
+  const openEditDialog = (link: MusicLink) => {
+    setEditingLink(link);
+    setFormData({
+      title: link.title,
+      url: link.url,
+      type: link.type || 'external',
+      icon: link.icon || '',
+      description: link.description || '',
+      status: link.status || 'active',
+      displayOrder: link.displayOrder || 0,
+      albumId: link.albumId ? String(link.albumId) : '',
+      trackId: link.trackId ? String(link.trackId) : '',
+    });
+  };
+
+  const getTypeLabel = (type: string) => {
+    const option = typeOptions.find(t => t.value === type);
+    return option ? option.label : type;
+  };
+
+  const getIconComponent = (iconName: string) => {
+    const option = iconOptions.find(i => i.value === iconName);
+    if (option) {
+      const IconComponent = option.icon;
+      return <IconComponent className="w-4 h-4" />;
+    }
+    return <Link2 className="w-4 h-4" />;
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-700';
+      case 'inactive': return 'bg-gray-100 text-gray-700';
+      case 'pending': return 'bg-yellow-100 text-yellow-700';
+      case 'expired': return 'bg-red-100 text-red-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  };
+
+  const renderActions = (link: MusicLink) => (
     <div className="flex items-center justify-end gap-1">
       <Button
         variant="ghost"
@@ -255,46 +327,6 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
     </div>
   );
 
-  const openEditDialog = (link: Link) => {
-    setEditingLink(link);
-    setFormData({
-      title: link.title,
-      url: link.url,
-      type: link.type || 'external',
-      icon: link.icon || 'link',
-      description: link.description || '',
-      status: link.status || 'active',
-      displayOrder: link.displayOrder || 0,
-    });
-  };
-
-  const getTypeLabel = (type: string) => {
-    const option = typeOptions.find(t => t.value === type);
-    return option ? option.label : type;
-  };
-
-  const getIconComponent = (iconName: string) => {
-    const option = iconOptions.find(i => i.value === iconName);
-    if (option) {
-      const IconComponent = option.icon;
-      return <IconComponent className="w-4 h-4" />;
-    }
-    return <Link2 className="w-4 h-4" />;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-700';
-      case 'inactive': return 'bg-gray-100 text-gray-700';
-      case 'pending': return 'bg-yellow-100 text-yellow-700';
-      case 'expired': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
-    }
-  };
-
-  // ✅ Ensure links is always an array before rendering
-  const linkList = Array.isArray(links) ? links : [];
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
@@ -303,10 +335,13 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
     );
   }
 
+  const linkList = Array.isArray(links) ? links : [];
+
   return (
     <div className="space-y-2">
       {ToastComponent}
 
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link2 className="w-4 h-4 text-blue-500" />
@@ -327,6 +362,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
               <DialogTitle>Create New Link</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
+              {/* Title */}
               <div>
                 <Label htmlFor="title">Title *</Label>
                 <Input
@@ -337,6 +373,8 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                   disabled={isSubmitting}
                 />
               </div>
+
+              {/* URL */}
               <div>
                 <Label htmlFor="url">URL *</Label>
                 <Input
@@ -347,6 +385,8 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                   disabled={isSubmitting}
                 />
               </div>
+
+              {/* Type */}
               <div>
                 <Label htmlFor="type">Link Type</Label>
                 <Select
@@ -365,6 +405,8 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Icon */}
               <div>
                 <Label htmlFor="icon">Icon</Label>
                 <Select
@@ -386,6 +428,29 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* ✅ Album Association */}
+              <div>
+                <Label htmlFor="albumId">Associate with Album (Optional)</Label>
+                <Select
+                  value={formData.albumId || 'none'}
+                  onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select album" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {albums.map((album) => (
+                      <SelectItem key={album.id} value={String(album.id)}>
+                        {album.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Description */}
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -397,6 +462,8 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                   disabled={isSubmitting}
                 />
               </div>
+
+              {/* Status & Display Order */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="status">Status</Label>
@@ -408,10 +475,11 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="expired">Expired</SelectItem>
+                      {statusOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -427,6 +495,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                   />
                 </div>
               </div>
+
               <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
@@ -442,6 +511,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
         </Dialog>
       </div>
 
+      {/* Links Table */}
       {linkList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Link2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -463,7 +533,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-xs py-1">Title</TableHead>
                 <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">URL</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Album</TableHead>
                 <TableHead className="text-center text-xs py-1">Status</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
@@ -482,8 +552,14 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                       {getTypeLabel(link.type)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground max-w-[150px] truncate">
-                    {link.url}
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    {link.albumId ? (
+                      <Badge variant="secondary" className="text-[10px]">
+                        Album #{link.albumId}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">None</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-center py-1">
                     <Badge className={`text-[10px] ${getStatusColor(link.status)}`}>
@@ -500,6 +576,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
         </div>
       )}
 
+      {/* Edit Dialog */}
       <Dialog open={!!editingLink} onOpenChange={(open) => !open && setEditingLink(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -564,6 +641,25 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
               </Select>
             </div>
             <div>
+              <Label htmlFor="edit-albumId">Associate with Album (Optional)</Label>
+              <Select
+                value={formData.albumId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select album" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {albums.map((album) => (
+                    <SelectItem key={album.id} value={String(album.id)}>
+                      {album.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label htmlFor="edit-description">Description</Label>
               <Textarea
                 id="edit-description"
@@ -584,10 +680,11 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="expired">Expired</SelectItem>
+                    {statusOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

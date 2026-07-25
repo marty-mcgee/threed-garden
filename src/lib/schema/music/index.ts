@@ -132,6 +132,7 @@ export const musicTracks = pgTable('music_tracks', {
   statusIdx: index('music_tracks_status_idx').on(table.status),
 }));
 
+// ✅ SIMPLIFIED: music_links - no junction table needed
 export const musicLinks = pgTable('music_links', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
@@ -143,26 +144,22 @@ export const musicLinks = pgTable('music_links', {
   status: musicLinkStatusEnum('status').default('active'),
   displayOrder: integer('display_order').default(0),
   metadata: jsonb('metadata'),
+  
+  // ✅ Direct relationships (optional) - like music_media
+  albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }),
+  trackId: integer('track_id').references(() => musicTracks.id, { onDelete: 'cascade' }),
+  
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
   userIdIdx: index('music_links_user_id_idx').on(table.userId),
   typeIdx: index('music_links_type_idx').on(table.type),
+  albumIdIdx: index('music_links_album_id_idx').on(table.albumId),
+  trackIdIdx: index('music_links_track_id_idx').on(table.trackId),
+  statusIdx: index('music_links_status_idx').on(table.status),
 }));
 
-export const musicAlbumLinks = pgTable('music_album_links', {
-  id: serial('id').primaryKey(),
-  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
-  albumId: integer('album_id').references(() => musicAlbums.id, { onDelete: 'cascade' }),
-  linkId: integer('link_id').references(() => musicLinks.id, { onDelete: 'cascade' }),
-  linkType: text('link_type').notNull(),
-  trackId: integer('track_id').references(() => musicTracks.id, { onDelete: 'cascade' }),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
-}, (table) => ({
-  albumLinkIdx: index('album_links_album_link_idx').on(table.albumId, table.linkId),
-  trackLinkIdx: index('album_links_track_link_idx').on(table.trackId, table.linkId),
-}));
+// ❌ REMOVED: music_album_links table (no longer needed)
 
 export const musicPollingLogs = pgTable('music_polling_logs', {
   id: serial('id').primaryKey(),
@@ -220,8 +217,12 @@ export const musicAlbumsRelations = relations(musicAlbums, ({ many, one }) => ({
     references: [user.id],
   }),
   tracks: many(musicTracks),
-  musicAlbumLinks: many(musicAlbumLinks),
-  media: many(musicMedia),
+  links: many(musicLinks, {
+    relationName: 'albumLinks',
+  }),
+  media: many(musicMedia, {
+    relationName: 'albumMedia',
+  }),
 }));
 
 export const musicMediaRelations = relations(musicMedia, ({ one }) => ({
@@ -244,35 +245,30 @@ export const musicTracksRelations = relations(musicTracks, ({ one, many }) => ({
     fields: [musicTracks.userId],
     references: [user.id],
   }),
-  trackLinks: many(musicAlbumLinks),
+  links: many(musicLinks, {
+    relationName: 'trackLinks',
+  }),
 }));
 
-export const musicLinksRelations = relations(musicLinks, ({ many, one }) => ({
+// ✅ Simplified musicLinksRelations
+export const musicLinksRelations = relations(musicLinks, ({ one, many }) => ({
   user: one(user, {
     fields: [musicLinks.userId],
     references: [user.id],
   }),
-  musicAlbumLinks: many(musicAlbumLinks),
-}));
-
-export const musicAlbumLinksRelations = relations(musicAlbumLinks, ({ one }) => ({
-  user: one(user, {
-    fields: [musicAlbumLinks.userId],
-    references: [user.id],
-  }),
   album: one(musicAlbums, {
-    fields: [musicAlbumLinks.albumId],
+    fields: [musicLinks.albumId],
     references: [musicAlbums.id],
-  }),
-  link: one(musicLinks, {
-    fields: [musicAlbumLinks.linkId],
-    references: [musicLinks.id],
+    relationName: 'albumLinks',
   }),
   track: one(musicTracks, {
-    fields: [musicAlbumLinks.trackId],
+    fields: [musicLinks.trackId],
     references: [musicTracks.id],
+    relationName: 'trackLinks',
   }),
 }));
+
+// ❌ REMOVED: musicAlbumLinksRelations (no longer needed)
 
 export const musicPollingLogsRelations = relations(musicPollingLogs, ({}) => ({}));
 
@@ -303,8 +299,6 @@ export type MusicTrack = typeof musicTracks.$inferSelect;
 export type NewMusicTrack = typeof musicTracks.$inferInsert;
 export type MusicLink = typeof musicLinks.$inferSelect;
 export type NewMusicLink = typeof musicLinks.$inferInsert;
-export type MusicAlbumLink = typeof musicAlbumLinks.$inferSelect;
-export type NewMusicAlbumLink = typeof musicAlbumLinks.$inferInsert;
 export type MusicMedia = typeof musicMedia.$inferSelect;
 export type NewMusicMedia = typeof musicMedia.$inferInsert;
 export type MusicPollingLog = typeof musicPollingLogs.$inferSelect;

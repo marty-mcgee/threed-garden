@@ -33,6 +33,9 @@ export enum MusicPollingType {
 }
 
 // Interfaces
+
+
+
 export interface MusicAlbum {
   id: number;
   userId: string;
@@ -43,15 +46,30 @@ export interface MusicAlbum {
   description: string | null;
   status: AlbumStatus;
   isPublic: boolean;
+  sortOrder: number;
   metadata: MusicAlbumMetadata | null;
   createdAt: Date;
   updatedAt: Date;
   tracks?: MusicTrack[];
   links?: MusicLink[];
+  media?: MusicMedia[];
 }
+
+export interface MusicAlbumMetadata {
+  genre?: string[];
+  mood?: string[];
+  composer?: string[];
+  lyricist?: string[];
+  isrc?: string;
+  explicit?: boolean;
+  instrumental?: boolean;
+}
+
+
 
 export interface MusicTrack {
   id: number;
+  userId: string;
   albumId: number;
   title: string;
   duration: number | null;
@@ -66,48 +84,6 @@ export interface MusicTrack {
   links?: MusicLink[];
 }
 
-export interface MusicLink {
-  id: number;
-  userId: string;
-  title: string;
-  url: string;
-  type: MusicLinkType;
-  icon: string | null;
-  description: string | null;
-  status: MusicLinkStatus;
-  displayOrder: number;
-  metadata: MusicLinkMetadata | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface AlbumLink {
-  id: number;
-  albumId: number | null;
-  linkId: number;
-  linkType: 'album' | 'track';
-  trackId: number | null;
-  createdAt: Date;
-  link?: MusicLink;
-  album?: MusicAlbum;
-  track?: MusicTrack;
-}
-
-// Metadata interfaces
-export interface MusicAlbumMetadata {
-  genre?: string[];
-  mood?: string[];
-  bpm?: number;
-  key?: string;
-  label?: string;
-  producer?: string[];
-  engineer?: string[];
-  recordingLocation?: string;
-  artworkCredit?: string;
-  upc?: string;
-  isrc?: string;
-}
-
 export interface MusicTrackMetadata {
   genre?: string[];
   mood?: string[];
@@ -120,6 +96,25 @@ export interface MusicTrackMetadata {
   instrumental?: boolean;
 }
 
+
+
+export interface MusicLink {
+  id: number;
+  userId: string;
+  albumId: number | null;
+  trackId: number | null;
+  title: string;
+  url: string;
+  type: MusicLinkType;
+  icon: string | null;
+  description: string | null;
+  status: MusicLinkStatus;
+  displayOrder: number;
+  metadata: MusicLinkMetadata | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface MusicLinkMetadata {
   analyticsId?: string;
   campaign?: string;
@@ -128,6 +123,32 @@ export interface MusicLinkMetadata {
   embedCode?: string;
   thumbnail?: string;
 }
+
+
+export interface MusicMedia {
+  id: number;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number | null;
+  isPrimary: boolean;
+  albumId: number | null;
+  userId: string;
+  metadata: MusicMediaMetadata | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MusicMediaMetadata {
+  analyticsId?: string;
+  campaign?: string;
+  medium?: string;
+  source?: string;
+  embedCode?: string;
+  thumbnail?: string;
+}
+
+
 
 // Poller stats interfaces
 export interface MusicPollStats {
@@ -153,126 +174,129 @@ export interface MusicMetadataSyncResult {
   timestamp: Date;
 }
 
-// DTOs for API
-export interface CreateMusicAlbumDTO {
-  title: string;
-  artist: string;
-  coverArt: string;
-  releaseYear?: number;
-  description?: string;
-  isPublic?: boolean;
-  metadata?: MusicAlbumMetadata;
-}
-
-export interface UpdateMusicAlbumDTO extends Partial<CreateMusicAlbumDTO> {
-  status?: AlbumStatus;
-}
-
-export interface CreateMusicTrackDTO {
-  albumId: number;
-  title: string;
-  duration?: number;
-  trackNumber?: number;
-  publicUrl: string;
-  lyrics?: string;
-  metadata?: MusicTrackMetadata;
-}
-
-export interface UpdateMusicTrackDTO extends Partial<CreateMusicTrackDTO> {
-  status?: TrackStatus;
-  playCount?: number;
-}
-
-export interface CreateMusicLinkDTO {
-  title: string;
-  url: string;
-  type: MusicLinkType;
-  icon?: string;
-  description?: string;
-  displayOrder?: number;
-  metadata?: MusicLinkMetadata;
-}
-
-export interface UpdateMusicLinkDTO extends Partial<CreateMusicLinkDTO> {
-  status?: MusicLinkStatus;
-}
-
-// Query filters
-export interface MusicAlbumFilters {
-  status?: AlbumStatus;
-  isPublic?: boolean;
-  userId?: string;
-  search?: string;
-  genre?: string;
-  yearStart?: number;
-  yearEnd?: number;
-}
-
-export interface MusicTrackFilters {
-  albumId?: number;
-  status?: TrackStatus;
-  search?: string;
-  minDuration?: number;
-  maxDuration?: number;
-}
-
-export interface MusicLinkFilters {
-  type?: MusicLinkType;
-  status?: MusicLinkStatus;
-  userId?: string;
-  associatedOnly?: boolean;
-  independentOnly?: boolean;
-}
-
-// Poller configuration
-export interface MusicPollerConfig {
-  pollInterval: number; // in milliseconds
-  autoSyncMetadata: boolean;
-  metadataSyncInterval: number;
-  maxRetries: number;
-  retryDelay: number;
-  s3Bucket: string;
-  s3Region: string;
-}
-
-// Events
-export interface MusicEvent {
-  type: 'album_created' | 'album_updated' | 'album_deleted' |
-         'track_created' | 'track_updated' | 'track_deleted' |
-         'track_played' | 'link_created' | 'link_updated' | 'link_deleted' |
-         'metadata_synced' | 'poll_completed' | 'poll_error';
-  data: any;
-  timestamp: Date;
-  userId?: string;
-}
 
 
 
 
+// NOT USED (YET)
+
+// // DTOs for API
+// export interface CreateMusicAlbumDTO {
+//   title: string;
+//   artist: string;
+//   coverArt: string;
+//   releaseYear?: number;
+//   description?: string;
+//   isPublic?: boolean;
+//   metadata?: MusicAlbumMetadata;
+// }
+
+// export interface UpdateMusicAlbumDTO extends Partial<CreateMusicAlbumDTO> {
+//   status?: AlbumStatus;
+// }
+
+// export interface CreateMusicTrackDTO {
+//   albumId: number;
+//   title: string;
+//   duration?: number;
+//   trackNumber?: number;
+//   publicUrl: string;
+//   lyrics?: string;
+//   metadata?: MusicTrackMetadata;
+// }
+
+// export interface UpdateMusicTrackDTO extends Partial<CreateMusicTrackDTO> {
+//   status?: TrackStatus;
+//   playCount?: number;
+// }
+
+// export interface CreateMusicLinkDTO {
+//   title: string;
+//   url: string;
+//   type: MusicLinkType;
+//   icon?: string;
+//   description?: string;
+//   displayOrder?: number;
+//   metadata?: MusicLinkMetadata;
+// }
+
+// export interface UpdateMusicLinkDTO extends Partial<CreateMusicLinkDTO> {
+//   status?: MusicLinkStatus;
+// }
+
+// // Query filters
+// export interface MusicAlbumFilters {
+//   status?: AlbumStatus;
+//   isPublic?: boolean;
+//   userId?: string;
+//   search?: string;
+//   genre?: string;
+//   yearStart?: number;
+//   yearEnd?: number;
+// }
+
+// export interface MusicTrackFilters {
+//   albumId?: number;
+//   status?: TrackStatus;
+//   search?: string;
+//   minDuration?: number;
+//   maxDuration?: number;
+// }
+
+// export interface MusicLinkFilters {
+//   type?: MusicLinkType;
+//   status?: MusicLinkStatus;
+//   userId?: string;
+//   associatedOnly?: boolean;
+//   independentOnly?: boolean;
+// }
+
+// // Poller configuration
+// export interface MusicPollerConfig {
+//   pollInterval: number; // in milliseconds
+//   autoSyncMetadata: boolean;
+//   metadataSyncInterval: number;
+//   maxRetries: number;
+//   retryDelay: number;
+//   s3Bucket: string;
+//   s3Region: string;
+// }
+
+// // Events
+// export interface MusicEvent {
+//   type: 'album_created' | 'album_updated' | 'album_deleted' |
+//          'track_created' | 'track_updated' | 'track_deleted' |
+//          'track_played' | 'link_created' | 'link_updated' | 'link_deleted' |
+//          'metadata_synced' | 'poll_completed' | 'poll_error';
+//   data: any;
+//   timestamp: Date;
+//   userId?: string;
+// }
 
 
 
-// lib/types/music.ts - Add these interfaces
 
-export interface PlaylistQueue {
-  id: string;
-  tracks: MusicTrack[];
-  currentIndex: number;
-  createdAt: Date;
-}
+// // lib/types/music.ts - Add these interfaces
 
-export interface RecentlyPlayed {
-  trackId: number;
-  playedAt: Date;
-  track: MusicTrack;
-}
+// export interface PlaylistQueue {
+//   id: string;
+//   tracks: MusicTrack[];
+//   currentIndex: number;
+//   createdAt: Date;
+// }
 
-export interface FavoriteTrack {
-  userId: string;
-  trackId: number;
-  createdAt: Date;
-  track?: MusicTrack;
-}
+// export interface RecentlyPlayed {
+//   trackId: number;
+//   playedAt: Date;
+//   track: MusicTrack;
+// }
+
+// export interface FavoriteTrack {
+//   userId: string;
+//   trackId: number;
+//   createdAt: Date;
+//   track?: MusicTrack;
+// }
 
 
 

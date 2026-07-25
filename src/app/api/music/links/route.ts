@@ -1,41 +1,56 @@
-// app/api/music/links/route.ts - COMPLETE VERSION
+// app/api/music/links/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicLinks, musicAlbumLinks, musicAlbums, music } from '@/lib/schema/music';
-import { eq, and, desc, or, sql } from 'drizzle-orm';
+import { musicLinks } from '@/lib/schema/music';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/music/links - List links (PUBLIC)
+// GET /api/music/links
 // Query Parameters:
-//   - albumId (optional): Filter links by album
 //   - id (optional): Get a single link
-//   - musicId (optional): Filter by music module
+//   - albumId (optional): Get links for a specific album
+//   - trackId (optional): Get links for a specific track
+//   - independent (optional): Get links not linked to any album or track
 // ============================================
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    const userId = session?.user?.id;
-    
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const albumId = searchParams.get('albumId');
-    const musicId = searchParams.get('musicId');
+    const trackId = searchParams.get('trackId');
+    const independent = searchParams.get('independent') === 'true';
 
-    // Get a single link by ID
+    // ✅ Get a single link by ID
     if (id) {
-      let query = db
-        .select()
-        .from(musicLinks)
-        .where(eq(musicLinks.id, parseInt(id)));
-
-      // ✅ If no user, only show active links
-      if (!userId) {
-        query = query.where(eq(musicLinks.status, 'active'));
+      const parsedId = parseInt(id);
+      if (isNaN(parsedId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid link ID' },
+          { status: 400 }
+        );
       }
 
-      const [link] = await query.limit(1);
+      const [link] = await db
+        .select()
+        .from(musicLinks)
+        .where(
+          and(
+            eq(musicLinks.id, parsedId),
+            eq(musicLinks.userId, userId)
+          )
+        )
+        .limit(1);
 
       if (!link) {
         return NextResponse.json(
@@ -44,92 +59,62 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      return NextResponse.json({
-        success: true,
-        data: link,
-      });
+      return NextResponse.json({ success: true, data: link });
     }
 
-    // List links by album
-    if (albumId) {
-      let query = db
-        .select()
-        .from(musicLinks)
-        .innerJoin(
-          musicAlbumLinks,
-          eq(musicAlbumLinks.linkId, musicLinks.id)
-        )
-        .where(eq(musicAlbumLinks.albumId, parseInt(albumId)));
-
-      // ✅ If no user, only show active links
-      if (!userId) {
-        query = query.where(eq(musicLinks.status, 'active'));
-      }
-
-      const results = await query;
-      const links = results.map((row) => row.musicLinks);
-
-      // ✅ If no user, verify the album is public
-      if (!userId) {
-        const [album] = await db
-          .select()
-          .from(musicAlbums)
-          .where(
-            and(
-              eq(musicAlbums.id, parseInt(albumId)),
-              eq(musicAlbums.isPublic, true),
-              eq(musicAlbums.status, 'published')
-            )
-          )
-          .limit(1);
-
-        if (!album) {
-          return NextResponse.json({
-            success: true,
-            data: [],
-          });
-        }
-      }
-
-      return NextResponse.json({
-        success: true,
-        data: links,
-      });
-    }
-
-    // ✅ Build base query with user filtering
+    // ✅ Build query
     let query = db
       .select()
       .from(musicLinks)
-      .$dynamic();
+      .where(eq(musicLinks.userId, userId));
 
-    // ✅ If authenticated user, show their links + public links
-    if (userId) {
+    // ✅ Filter by album
+    if (albumId) {
+      const parsedAlbumId = parseInt(albumId);
+      if (isNaN(parsedAlbumId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid album ID' },
+          { status: 400 }
+        );
+      }
+      query = query.where(eq(musicLinks.albumId, parsedAlbumId));
+    }
+
+    // ✅ Filter by track
+    if (trackId) {
+      const parsedTrackId = parseInt(trackId);
+      if (isNaN(parsedTrackId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid track ID' },
+          { status: 400 }
+        );
+      }
+      query = query.where(eq(musicLinks.trackId, parsedTrackId));
+    }
+
+    // ✅ Filter by independent (not linked to any album or track)
+    if (independent) {
       query = query.where(
-        or(
-          eq(musicLinks.userId, userId),
-          eq(musicLinks.status, 'active')
+        and(
+          sql`${musicLinks.albumId} IS NULL`,
+          sql`${musicLinks.trackId} IS NULL`
         )
       );
-    } else {
-      // ✅ If no user, only show active links
-      query = query.where(eq(musicLinks.status, 'active'));
     }
 
-    // ✅ Filter by music module if provided
-    if (musicId) {
-      // Join with music module table if needed
-      query = query.where(eq(musicLinks.musicId, parseInt(musicId)));
-    }
-
-    const links = await query.orderBy(desc(musicLinks.createdAt));
+    // ✅ Order by display order
+    const links = await query.orderBy(
+      desc(musicLinks.displayOrder),
+      desc(musicLinks.createdAt)
+    );
 
     return NextResponse.json({
       success: true,
       data: links,
+      count: links.length,
     });
   } catch (error) {
-    console.error('Error fetching links:', error);
+    console.error('[Links] GET error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch links' },
       { status: 500 }
@@ -138,7 +123,7 @@ export async function GET(request: NextRequest) {
 }
 
 // ============================================
-// POST /api/music/links - Create a link (ADMIN ONLY)
+// POST /api/music/links - Create a new link
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -150,18 +135,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
     const body = await request.json();
-    console.log('📝 POST /api/music/links - Request body:', body);
 
-    const { 
-      title, 
-      url, 
-      type, 
-      icon, 
-      description, 
-      status, 
+    const {
+      title,
+      url,
+      type,
+      icon,
+      description,
+      status,
       displayOrder,
-      musicId  // ✅ Include music module reference
+      albumId,
+      trackId,
     } = body;
 
     // ✅ Validate required fields
@@ -179,36 +165,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
-
-    // ✅ Verify music module exists if provided
-    if (musicId) {
-      const [module] = await db
-        .select()
-        .from(music)
-        .where(
-          and(
-            eq(music.id, parseInt(musicId)),
-            eq(music.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!module) {
-        return NextResponse.json(
-          { success: false, error: 'Music module not found' },
-          { status: 404 }
-        );
-      }
-    }
-
+    // ✅ Ensure sequence
     await ensureTableSequence('music_links');
 
+    // ✅ Create the link
     const [newLink] = await db
       .insert(musicLinks)
       .values({
         userId,
-        musicId: musicId || null,
         title,
         url,
         type: type || 'external',
@@ -216,10 +180,13 @@ export async function POST(request: NextRequest) {
         description: description || null,
         status: status || 'active',
         displayOrder: displayOrder || 0,
+        albumId: albumId ? parseInt(albumId) : null,
+        trackId: trackId ? parseInt(trackId) : null,
+        metadata: {},
       })
       .returning();
 
-    console.log('✅ Link created:', newLink);
+    console.log('[Links] Created link:', newLink.id, newLink.title);
 
     return NextResponse.json({
       success: true,
@@ -227,7 +194,7 @@ export async function POST(request: NextRequest) {
       message: 'Link created successfully',
     });
   } catch (error) {
-    console.error('Error creating link:', error);
+    console.error('[Links] POST error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create link' },
       { status: 500 }
@@ -236,7 +203,7 @@ export async function POST(request: NextRequest) {
 }
 
 // ============================================
-// PUT /api/music/links - Update a link (ADMIN ONLY)
+// PUT /api/music/links - Update a link
 // ============================================
 export async function PUT(request: NextRequest) {
   try {
@@ -248,39 +215,35 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Missing id parameter' },
+        { success: false, error: 'Missing link ID' },
+        { status: 400 }
+      );
+    }
+
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid link ID' },
         { status: 400 }
       );
     }
 
     const body = await request.json();
-    console.log('📝 PUT /api/music/links - Request body:', body);
+    const { title, url, type, icon, description, status, displayOrder, albumId, trackId } = body;
 
-    const { 
-      title, 
-      url, 
-      type, 
-      icon, 
-      description, 
-      status, 
-      displayOrder,
-      musicId
-    } = body;
-
-    const userId = session.user.id;
-
-    // ✅ Verify link exists and belongs to user
+    // ✅ Check if link exists and belongs to user
     const [existing] = await db
       .select()
       .from(musicLinks)
       .where(
         and(
-          eq(musicLinks.id, parseInt(id)),
+          eq(musicLinks.id, parsedId),
           eq(musicLinks.userId, userId)
         )
       )
@@ -293,28 +256,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // ✅ Verify music module exists if provided
-    if (musicId) {
-      const [module] = await db
-        .select()
-        .from(music)
-        .where(
-          and(
-            eq(music.id, parseInt(musicId)),
-            eq(music.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!module) {
-        return NextResponse.json(
-          { success: false, error: 'Music module not found' },
-          { status: 404 }
-        );
-      }
-    }
-
-    const [updatedLink] = await db
+    // ✅ Update the link
+    const [updated] = await db
       .update(musicLinks)
       .set({
         title: title || existing.title,
@@ -324,26 +267,27 @@ export async function PUT(request: NextRequest) {
         description: description !== undefined ? description : existing.description,
         status: status || existing.status,
         displayOrder: displayOrder !== undefined ? displayOrder : existing.displayOrder,
-        musicId: musicId !== undefined ? musicId : existing.musicId,
+        albumId: albumId !== undefined ? (albumId ? parseInt(albumId) : null) : existing.albumId,
+        trackId: trackId !== undefined ? (trackId ? parseInt(trackId) : null) : existing.trackId,
         updatedAt: new Date(),
       })
       .where(
         and(
-          eq(musicLinks.id, parseInt(id)),
+          eq(musicLinks.id, parsedId),
           eq(musicLinks.userId, userId)
         )
       )
       .returning();
 
-    console.log('✅ Link updated:', updatedLink);
+    console.log('[Links] Updated link:', updated.id, updated.title);
 
     return NextResponse.json({
       success: true,
-      data: updatedLink,
+      data: updated,
       message: 'Link updated successfully',
     });
   } catch (error) {
-    console.error('Error updating link:', error);
+    console.error('[Links] PUT error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update link' },
       { status: 500 }
@@ -352,7 +296,7 @@ export async function PUT(request: NextRequest) {
 }
 
 // ============================================
-// DELETE /api/music/links - Delete a link (ADMIN ONLY)
+// DELETE /api/music/links - Delete a link
 // ============================================
 export async function DELETE(request: NextRequest) {
   try {
@@ -364,34 +308,56 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Missing id parameter' },
+        { success: false, error: 'Missing link ID' },
         { status: 400 }
       );
     }
 
-    const userId = session.user.id;
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid link ID' },
+        { status: 400 }
+      );
+    }
 
-    const [deleted] = await db
-      .delete(musicLinks)
+    // ✅ Check if link exists and belongs to user
+    const [existing] = await db
+      .select()
+      .from(musicLinks)
       .where(
         and(
-          eq(musicLinks.id, parseInt(id)),
+          eq(musicLinks.id, parsedId),
           eq(musicLinks.userId, userId)
         )
       )
-      .returning();
+      .limit(1);
 
-    if (!deleted) {
+    if (!existing) {
       return NextResponse.json(
         { success: false, error: 'Link not found' },
         { status: 404 }
       );
     }
+
+    // ✅ Delete the link
+    const [deleted] = await db
+      .delete(musicLinks)
+      .where(
+        and(
+          eq(musicLinks.id, parsedId),
+          eq(musicLinks.userId, userId)
+        )
+      )
+      .returning();
+
+    console.log('[Links] Deleted link:', deleted.id, deleted.title);
 
     return NextResponse.json({
       success: true,
@@ -399,7 +365,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Link deleted successfully',
     });
   } catch (error) {
-    console.error('Error deleting link:', error);
+    console.error('[Links] DELETE error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete link' },
       { status: 500 }

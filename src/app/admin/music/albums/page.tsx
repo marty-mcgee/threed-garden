@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -245,13 +246,15 @@ export default function AlbumsManagementPage() {
             <Card key={album.id} className="group overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative">
-                  <img
+                  <Image
                     src={album.coverArt}
                     alt={album.title}
+                    width={300}
+                    height={300}
                     className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/placeholder-album.jpg';
-                    }}
+                    // onError={(e) => {
+                    //   (e.target as HTMLImageElement).src = '/placeholder-album.jpg';
+                    // }}
                   />
                   <Badge className={`absolute top-2 right-2 ${getStatusVariant(album.status)}`}>
                     {album.status}

@@ -22,32 +22,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/toast';
-
-interface Album {
-  id: number;
-  title: string;
-  artist: string;
-  coverArt: string;
-  releaseYear: number;
-  description: string;
-  status: string;
-  isPublic: boolean;
-  sortOrder: number;
-  createdAt: string;
-  userId: string;
-  tracks?: Track[];
-}
-
-interface Track {
-  id: number;
-  title: string;
-  duration: number;
-  trackNumber: number;
-  publicUrl: string;
-  status: string;
-  playCount: number;
-}
+import { LinksManager } from '../links/LinksManager';
+import { MediaManager } from '../media/MediaManager';
+import { MusicAlbum, MusicLink, MusicMedia } from '@/lib/types/music';
 
 interface MusicAlbumCRUDProps {
   onModuleUpdate?: () => void;
@@ -55,13 +34,12 @@ interface MusicAlbumCRUDProps {
 
 export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
   const { showToast, ToastComponent } = useToast();
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albums, setAlbums] = useState<MusicAlbum[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
-  const [showTracksDialog, setShowTracksDialog] = useState(false);
-  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
+  const [editingAlbum, setEditingAlbum] = useState<MusicAlbum | null>(null);
+  const [selectedAlbum, setSelectedAlbum] = useState<MusicAlbum | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     artist: '',
@@ -79,19 +57,18 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
   const fetchAlbums = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/music/albums');
+      const response = await fetch('/api/music/albums?includeTracks=true&includeLinks=true&includeMedia=true');
       const data = await response.json();
       if (data.success) {
-        // ✅ Ensure albums is always an array
         setAlbums(Array.isArray(data.data) ? data.data : []);
       } else {
         showToast(data.error || 'Failed to fetch albums', 'error');
-        setAlbums([]); // ✅ Set to empty array on error
+        setAlbums([]);
       }
     } catch (error) {
       console.error('Error fetching albums:', error);
       showToast('Failed to fetch albums', 'error');
-      setAlbums([]); // ✅ Set to empty array on error
+      setAlbums([]);
     } finally {
       setLoading(false);
     }
@@ -186,70 +163,15 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
     }
   };
 
-  const renderActions = (album: Album) => (
-    <div className="flex items-center justify-end gap-1">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => viewTracks(album)}
-      >
-        <Music className="w-4 h-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => openEditDialog(album)}
-      >
-        <Edit className="w-4 h-4" />
-      </Button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {album.coverArt && (
-            <DropdownMenuItem onClick={() => window.open(album.coverArt, '_blank')}>
-              <ExternalLink className="w-4 h-4 mr-2" />
-              View Cover
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem
-            className="text-red-600"
-            onClick={() => handleDelete(album.id, album.title)}
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-
-  const viewTracks = async (album: Album) => {
-    try {
-      const response = await fetch(`/api/music/albums?id=${album.id}&includeTracks=true`);
-      const data = await response.json();
-      if (data.success) {
-        setSelectedAlbum(data.data);
-        setShowTracksDialog(true);
-      } else {
-        showToast('Failed to load tracks', 'error');
-      }
-    } catch (error) {
-      console.error('Error fetching tracks:', error);
-      showToast('Failed to load tracks', 'error');
+  const openAlbumDetail = async (album: MusicAlbum) => {
+    const response = await fetch(`/api/music/albums?id=${album.id}&includeTracks=true&includeLinks=true&includeMedia=true`);
+    const data = await response.json();
+    if (data.success) {
+      setSelectedAlbum(data.data);
     }
   };
 
-  const formatDuration = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
-  const openEditDialog = (album: Album) => {
+  const openEditDialog = (album: MusicAlbum) => {
     setEditingAlbum(album);
     setFormData({
       title: album.title,
@@ -264,17 +186,16 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
-  // ✅ Ensure albums is always an array before rendering
   const albumList = Array.isArray(albums) ? albums : [];
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       {ToastComponent}
 
       {/* Header */}
@@ -288,8 +209,8 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-xs">
-              <Plus className="w-3 h-3 mr-1" />
+            <Button size="sm" className="h-8 gap-1">
+              <Plus className="w-3.5 h-3.5" />
               Add Album
             </Button>
           </DialogTrigger>
@@ -376,13 +297,13 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
 
       {/* Albums Table */}
       {albumList.length === 0 ? (
-        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <Music className="w-8 h-8 mx-auto mb-2 opacity-50" />
+        <div className="text-center py-8 text-muted-foreground border rounded-lg">
+          <Music className="w-12 h-12 mx-auto mb-3 opacity-50" />
           <p>No albums yet</p>
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-2 h-7 px-2 text-xs"
+            className="mt-2"
             onClick={() => setShowCreateDialog(true)}
           >
             <Plus className="w-3 h-3 mr-1" />
@@ -393,30 +314,44 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
         <div className="border rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="hover:bg-transparent">
+              <TableRow>
                 <TableHead className="text-xs py-1">Title</TableHead>
                 <TableHead className="hidden sm:table-cell text-xs py-1">Artist</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Year</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Tracks</TableHead>
                 <TableHead className="text-center text-xs py-1">Status</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {albumList.map((album) => (
-                <TableRow key={album.id} className="hover:bg-muted/50">
-                  <TableCell className="py-1 text-sm font-medium">
+                <TableRow 
+                  key={album.id} 
+                  className="hover:bg-muted/50 cursor-pointer"
+                  onClick={() => openAlbumDetail(album)}
+                >
+                  <TableCell className="py-1.5 text-sm font-medium">
                     {album.title}
                     {album.isPublic && (
                       <Badge variant="outline" className="ml-2 text-[10px]">Public</Badge>
                     )}
+                    {(album.links?.length || 0) > 0 && (
+                      <span className="ml-1 text-[10px] text-muted-foreground">
+                        🔗{album.links?.length}
+                      </span>
+                    )}
+                    {(album.media?.length || 0) > 0 && (
+                      <span className="ml-1 text-[10px] text-muted-foreground">
+                        🖼️{album.media?.length}
+                      </span>
+                    )}
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                  <TableCell className="hidden sm:table-cell py-1.5 text-sm text-muted-foreground">
                     {album.artist}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
-                    {album.releaseYear}
+                  <TableCell className="hidden md:table-cell py-1.5 text-sm text-muted-foreground">
+                    {album.tracks?.length || 0}
                   </TableCell>
-                  <TableCell className="text-center py-1">
+                  <TableCell className="text-center py-1.5">
                     <div className="flex items-center justify-center gap-1.5">
                       {album.status === 'published' ? (
                         <CheckCircle className="w-3.5 h-3.5 text-green-500" />
@@ -428,8 +363,23 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="py-1 text-right">
-                    {renderActions(album)}
+                  <TableCell className="py-1.5 text-right" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => openAlbumDetail(album)}>
+                        <Music className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => openEditDialog(album)}>
+                        <Edit className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 px-2 text-destructive hover:text-destructive"
+                        onClick={() => handleDelete(album.id, album.title)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -437,6 +387,160 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
           </Table>
         </div>
       )}
+
+      {/* Album Detail Dialog */}
+      <Dialog open={!!selectedAlbum} onOpenChange={(open) => !open && setSelectedAlbum(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {selectedAlbum?.title}
+              <Badge variant={selectedAlbum?.status === 'published' ? 'default' : 'secondary'}>
+                {selectedAlbum?.status}
+              </Badge>
+            </DialogTitle>
+            {selectedAlbum?.artist && (
+              <p className="text-sm text-muted-foreground">by {selectedAlbum.artist}</p>
+            )}
+          </DialogHeader>
+
+          <Tabs defaultValue="details" className="mt-4">
+            <TabsList className="grid grid-cols-4">
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="tracks">
+                Tracks ({selectedAlbum?.tracks?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="links">
+                Links ({selectedAlbum?.links?.length || 0})
+              </TabsTrigger>
+              <TabsTrigger value="media">
+                Media ({selectedAlbum?.media?.length || 0})
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="details" className="space-y-4 pt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Title</Label>
+                  <p className="text-sm font-medium">{selectedAlbum?.title}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Artist</Label>
+                  <p className="text-sm font-medium">{selectedAlbum?.artist}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Release Year</Label>
+                  <p className="text-sm">{selectedAlbum?.releaseYear}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Status</Label>
+                  <Badge variant={selectedAlbum?.status === 'published' ? 'default' : 'secondary'}>
+                    {selectedAlbum?.status}
+                  </Badge>
+                </div>
+                <div className="col-span-2">
+                  <Label className="text-xs text-muted-foreground">Description</Label>
+                  <p className="text-sm">{selectedAlbum?.description || 'No description'}</p>
+                </div>
+                {selectedAlbum?.coverArt && (
+                  <div className="col-span-2">
+                    <Label className="text-xs text-muted-foreground">Cover Art</Label>
+                    <div className="mt-1 relative w-32 h-32 rounded-lg overflow-hidden border">
+                      <img
+                        src={selectedAlbum.coverArt}
+                        alt={selectedAlbum.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="tracks" className="pt-4">
+              {selectedAlbum?.tracks && selectedAlbum.tracks.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12 text-xs">#</TableHead>
+                      <TableHead className="text-xs">Title</TableHead>
+                      <TableHead className="text-right text-xs">Duration</TableHead>
+                      <TableHead className="text-center text-xs">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedAlbum.tracks.map((track) => (
+                      <TableRow key={track.id}>
+                        <TableCell className="text-center text-muted-foreground text-sm">
+                          {track.trackNumber}
+                        </TableCell>
+                        <TableCell className="text-sm font-medium">{track.title}</TableCell>
+                        <TableCell className="text-right text-muted-foreground text-sm">
+                          {track.duration ? `${Math.floor(track.duration / 60)}:${String(track.duration % 60).padStart(2, '0')}` : '--'}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant={track.status === 'active' ? 'default' : 'secondary'} className="text-[10px]">
+                            {track.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Music className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No tracks for this album</p>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Links Tab - uses existing LinksManager component */}
+            <TabsContent value="links" className="pt-4">
+              {selectedAlbum && (
+                <LinksManager 
+                  albumId={selectedAlbum.id}
+                  onLinkAdded={() => {
+                    // Refresh the selected album data
+                    if (selectedAlbum) {
+                      fetch(`/api/music/albums?id=${selectedAlbum.id}&includeLinks=true`)
+                        .then(res => res.json())
+                        .then(data => {
+                          if (data.success) {
+                            setSelectedAlbum(data.data);
+                          }
+                        });
+                    }
+                    fetchAlbums();
+                  }}
+                />
+              )}
+            </TabsContent>
+
+            {/* Media Tab - uses existing MediaManager component */}
+            <TabsContent value="media" className="pt-4">
+              {selectedAlbum && (
+                <MediaManager 
+                  albumId={selectedAlbum.id}
+                  albumTitle={selectedAlbum.title}
+                  onMediaChange={() => {
+                    // Refresh the selected album data
+                    if (selectedAlbum) {
+                      fetch(`/api/music/albums?id=${selectedAlbum.id}&includeMedia=true`)
+                        .then(res => res.json())
+                        .then(data => {
+                          if (data.success) {
+                            setSelectedAlbum(data.data);
+                          }
+                        });
+                    }
+                    fetchAlbums();
+                  }}
+                />
+              )}
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingAlbum} onOpenChange={(open) => !open && setEditingAlbum(null)}>
@@ -446,36 +550,32 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label htmlFor="edit-title">Title *</Label>
+              <Label>Title *</Label>
               <Input
-                id="edit-title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
             <div>
-              <Label htmlFor="edit-artist">Artist *</Label>
+              <Label>Artist *</Label>
               <Input
-                id="edit-artist"
                 value={formData.artist}
                 onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
             <div>
-              <Label htmlFor="edit-coverArt">Cover Art URL</Label>
+              <Label>Cover Art URL</Label>
               <Input
-                id="edit-coverArt"
                 value={formData.coverArt}
                 onChange={(e) => setFormData({ ...formData, coverArt: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
             <div>
-              <Label htmlFor="edit-releaseYear">Release Year</Label>
+              <Label>Release Year</Label>
               <Input
-                id="edit-releaseYear"
                 type="number"
                 value={formData.releaseYear}
                 onChange={(e) => setFormData({ ...formData, releaseYear: parseInt(e.target.value) || new Date().getFullYear() })}
@@ -483,9 +583,8 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
               />
             </div>
             <div>
-              <Label htmlFor="edit-description">Description</Label>
+              <Label>Description</Label>
               <Textarea
-                id="edit-description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
@@ -494,12 +593,11 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
             </div>
             <div className="flex items-center gap-2">
               <Switch
-                id="edit-isPublic"
                 checked={formData.isPublic}
                 onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
                 disabled={isSubmitting}
               />
-              <Label htmlFor="edit-isPublic">Make public</Label>
+              <Label>Make public</Label>
             </div>
             <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
@@ -511,75 +609,6 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                 'Save Changes'
               )}
             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Tracks Dialog */}
-      <Dialog open={showTracksDialog} onOpenChange={setShowTracksDialog}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              Tracks for "{selectedAlbum?.title}"
-              {selectedAlbum?.artist && (
-                <span className="text-sm font-normal text-muted-foreground ml-2">
-                  by {selectedAlbum.artist}
-                </span>
-              )}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="pt-4">
-            {selectedAlbum?.tracks && selectedAlbum.tracks.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12 text-xs py-1">#</TableHead>
-                    <TableHead className="text-xs py-1">Title</TableHead>
-                    <TableHead className="text-right text-xs py-1">Duration</TableHead>
-                    <TableHead className="text-center text-xs py-1">Status</TableHead>
-                    <TableHead className="text-right text-xs py-1">Plays</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {selectedAlbum.tracks.map((track) => (
-                    <TableRow key={track.id}>
-                      <TableCell className="text-center text-muted-foreground py-1 text-sm">
-                        {track.trackNumber}
-                      </TableCell>
-                      <TableCell className="py-1 text-sm font-medium">
-                        {track.title}
-                        {track.publicUrl && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 ml-2"
-                            onClick={() => window.open(track.publicUrl, '_blank')}
-                          >
-                            <ExternalLink className="w-3 h-3" />
-                          </Button>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground py-1 text-sm">
-                        {formatDuration(track.duration)}
-                      </TableCell>
-                      <TableCell className="text-center py-1">
-                        <Badge variant={track.status === 'active' ? 'default' : 'secondary'} className="text-[10px]">
-                          {track.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground py-1 text-sm">
-                        {track.playCount}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Music className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No tracks found for this album</p>
-              </div>
-            )}
           </div>
         </DialogContent>
       </Dialog>
