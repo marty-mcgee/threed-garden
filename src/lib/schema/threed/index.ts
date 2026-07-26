@@ -1,23 +1,8 @@
 // @/lib/schema/threed/index
 import { 
-  pgTable, 
-  text, 
-  timestamp, 
-  boolean,
-  index,
-  serial, 
-  varchar, 
-  integer, 
-  decimal, 
-  numeric,
-  jsonb,
-  uniqueIndex,
-  foreignKey,
-  pgSchema,
-  pgEnum,
-  time,
-  AnyPgColumn,
-  real,
+  pgTable, text, timestamp, boolean, index, serial, varchar, 
+  integer, decimal, numeric, jsonb, uniqueIndex, foreignKey,
+  pgSchema, pgEnum, time, AnyPgColumn, real,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';

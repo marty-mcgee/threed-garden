@@ -12,7 +12,7 @@ export default function ThreeDBedsPage() {
         <div>
           <h1 className="text-2xl font-bold">Garden Beds</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your garden bed layouts
+            Manage your garden beds with 3D positioning and layout
           </p>
         </div>
       </div>
