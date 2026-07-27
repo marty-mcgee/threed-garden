@@ -1,69 +1,120 @@
 // lib/services/traffic/TrafficService.ts
 import { db } from '@/lib/db/client';
-import { 
+import {
+  traffic,
   trafficChpCadIncidents,
+  trafficChpCases,
   trafficCaltransLaneClosures,
   trafficBayArea511Events,
   trafficCalfireIncidents,
-  trafficCaltransCctvCameras ,
-  trafficChpCases,
 } from '@/lib/schema/traffic';
-import { eq } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 
-// ============================================
-// FETCH ALL TRAFFIC DATA FOR A PROJECT
-// ============================================
+export class TrafficService {
+  private userId: string;
 
-export async function fetchTrafficData(projectId: number) {
-  try {
-    const [chpCad, caltrans, bayArea, calfire, cctv, chpCollisions] = await Promise.all([
-      db.select().from(trafficChpCadIncidents).where(eq(trafficChpCadIncidents.trafficId, projectId)),
-      db.select().from(trafficCaltransLaneClosures).where(eq(trafficCaltransLaneClosures.trafficId, projectId)),
-      db.select().from(trafficBayArea511Events).where(eq(trafficBayArea511Events.trafficId, projectId)),
-      db.select().from(trafficCalfireIncidents).where(eq(trafficCalfireIncidents.trafficId, projectId)),
-      db.select().from(trafficCaltransCctvCameras ).where(eq(trafficCaltransCctvCameras .trafficId, projectId)),
-      db.select().from(trafficChpCases).where(eq(trafficChpCases.trafficId, projectId)),
-    ]);
+  constructor(userId: string) {
+    this.userId = userId;
+  }
+
+  async getDashboardStats() {
+    const [incidentCounts] = await db
+      .select({
+        total: sql<number>`count(*)`,
+        active: sql<number>`count(case when status = 'active' then 1 end)`,
+      })
+      .from(trafficChpCadIncidents)
+      .where(eq(trafficChpCadIncidents.userId, this.userId));
+
+    const [closureCount] = await db
+      .select({ active: sql<number>`count(*)` })
+      .from(trafficCaltransLaneClosures)
+      .where(
+        sql`${trafficCaltransLaneClosures.userId} = ${this.userId} AND ${trafficCaltransLaneClosures.status} = 'active'`
+      );
+
+    const [fireCount] = await db
+      .select({ active: sql<number>`count(*)` })
+      .from(trafficCalfireIncidents)
+      .where(
+        sql`${trafficCalfireIncidents.userId} = ${this.userId} AND ${trafficCalfireIncidents.status} = 'active'`
+      );
 
     return {
-      chpCad,
-      caltrans,
-      bayArea,
-      calfire,
-      cctv,
-      chpCollisions,
-      total: chpCad.length + caltrans.length + bayArea.length + calfire.length + cctv.length + chpCollisions.length,
+      activeIncidents: incidentCounts?.active || 0,
+      activeClosures: closureCount?.active || 0,
+      activeFires: fireCount?.active || 0,
+      totalIncidents: incidentCounts?.total || 0,
     };
-  } catch (error) {
-    console.error('Error fetching traffic data:', error);
-    throw error;
   }
-}
 
-// ============================================
-// FETCH SPECIFIC TRAFFIC DATA TYPES
-// ============================================
+  async getActiveIncidents(limit = 50) {
+    return db
+      .select()
+      .from(trafficChpCadIncidents)
+      .where(
+        and(
+          eq(trafficChpCadIncidents.userId, this.userId),
+          eq(trafficChpCadIncidents.status, 'active')
+        )
+      )
+      .orderBy(desc(trafficChpCadIncidents.reportedAt))
+      .limit(limit);
+  }
 
-export async function fetchTrafficChpCadIncidents(projectId: number) {
-  return db.select().from(trafficChpCadIncidents).where(eq(trafficChpCadIncidents.trafficId, projectId));
-}
+  async getActiveClosures(limit = 50) {
+    return db
+      .select()
+      .from(trafficCaltransLaneClosures)
+      .where(
+        and(
+          eq(trafficCaltransLaneClosures.userId, this.userId),
+          eq(trafficCaltransLaneClosures.status, 'active')
+        )
+      )
+      .orderBy(desc(trafficCaltransLaneClosures.startDate))
+      .limit(limit);
+  }
 
-export async function fetchTrafficCaltransClosures(projectId: number) {
-  return db.select().from(trafficCaltransLaneClosures).where(eq(trafficCaltransLaneClosures.trafficId, projectId));
-}
+  async getIncidentsByCounty(county: string) {
+    return db
+      .select()
+      .from(trafficChpCadIncidents)
+      .where(
+        and(
+          eq(trafficChpCadIncidents.userId, this.userId),
+          eq(trafficChpCadIncidents.county, county)
+        )
+      )
+      .orderBy(desc(trafficChpCadIncidents.reportedAt));
+  }
 
-export async function fetchTrafficBayArea511Events(projectId: number) {
-  return db.select().from(trafficBayArea511Events).where(eq(trafficBayArea511Events.trafficId, projectId));
-}
+  async getRecentEvents(limit = 100) {
+    const incidents = await db
+      .select()
+      .from(trafficChpCadIncidents)
+      .where(eq(trafficChpCadIncidents.userId, this.userId))
+      .orderBy(desc(trafficChpCadIncidents.reportedAt))
+      .limit(limit);
 
-export async function fetchTrafficCalfireIncidents(projectId: number) {
-  return db.select().from(trafficCalfireIncidents).where(eq(trafficCalfireIncidents.trafficId, projectId));
-}
+    const closures = await db
+      .select()
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.userId, this.userId))
+      .orderBy(desc(trafficCaltransLaneClosures.startDate))
+      .limit(limit);
 
-export async function fetchtrafficCaltransCctvCameras (projectId: number) {
-  return db.select().from(trafficCaltransCctvCameras ).where(eq(trafficCaltransCctvCameras .trafficId, projectId));
-}
+    const fires = await db
+      .select()
+      .from(trafficCalfireIncidents)
+      .where(eq(trafficCalfireIncidents.userId, this.userId))
+      .orderBy(desc(trafficCalfireIncidents.startedAt))
+      .limit(limit);
 
-export async function fetchTrafficChpCases(projectId: number) {
-  return db.select().from(trafficChpCases).where(eq(trafficChpCases.trafficId, projectId));
+    return {
+      incidents,
+      closures,
+      fires,
+    };
+  }
 }

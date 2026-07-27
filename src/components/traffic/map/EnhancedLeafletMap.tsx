@@ -41,7 +41,7 @@ export interface TrafficIncident {
 interface EnhancedLeafletMapProps {
   incidents: TrafficIncident[];
   onRefresh?: () => void;
-  autoRefreshInterval?: number;
+  // autoRefreshInterval?: number;
   height?: string;
   center?: [number, number];
   zoom?: number;
@@ -249,7 +249,7 @@ function MapLegend() {
 export function EnhancedLeafletMap({
   incidents,
   onRefresh,
-  autoRefreshInterval = 60000,
+  // autoRefreshInterval = 60000,
   height = '600px',
   center = [37.3, -119.5],
   zoom = 5,
@@ -258,15 +258,15 @@ export function EnhancedLeafletMap({
   const [incidentCount, setIncidentCount] = useState(incidents.length);
 
   // Auto-refresh
-  useEffect(() => {
-    if (!onRefresh) return;
+  // useEffect(() => {
+  //   if (!onRefresh) return;
 
-    const interval = setInterval(async () => {
-      await handleRefresh();
-    }, autoRefreshInterval);
+  //   const interval = setInterval(async () => {
+  //     await handleRefresh();
+  //   }, autoRefreshInterval);
 
-    return () => clearInterval(interval);
-  }, [autoRefreshInterval, onRefresh]);
+  //   return () => clearInterval(interval);
+  // }, [autoRefreshInterval, onRefresh]);
 
   const handleRefresh = async () => {
     if (!onRefresh) return;

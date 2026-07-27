@@ -1,103 +1,74 @@
-// app/api/dashboard/stats/route.ts
-import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
-import { trafficCaltransLaneClosures } from '@/lib/schema';
+// app/api/traffic/stats/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/lib/db/client';
+import {
+  trafficChpCadIncidents,
+  trafficChpCases,
+  trafficCaltransLaneClosures,
+  trafficBayArea511Events,
+} from '@/lib/schema/traffic';
 import { eq, sql } from 'drizzle-orm';
 
-export const dynamic = 'force-dynamic';
-
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const connectionString = process.env.DATABASE_URL!;
-    const sqlClient = neon(connectionString);
-    const db = drizzle(sqlClient);
-    
-    // Get all stats in parallel using Promise.all for better performance
-    const [
-      totalActive,
-      totalCompleted,
-      uniqueRoutes,
-      closuresLast24h,
-      districtStats,
-      recentActivity
-    ] = await Promise.all([
-      // Total active closures
-      db
-        .select({ count: sql<number>`COUNT(*)` })
-        .from(trafficCaltransLaneClosures)
-        .where(eq(trafficCaltransLaneClosures.status, 'active')),
-      
-      // Total completed closures
-      db
-        .select({ count: sql<number>`COUNT(*)` })
-        .from(trafficCaltransLaneClosures)
-        .where(eq(trafficCaltransLaneClosures.status, 'completed')),
-      
-      // Unique routes with active closures
-      db
-        .select({ count: sql<number>`COUNT(DISTINCT ${trafficCaltransLaneClosures.route})` })
-        .from(trafficCaltransLaneClosures)
-        .where(eq(trafficCaltransLaneClosures.status, 'active')),
-      
-      // New closures in last 24 hours
-      db
-        .select({ count: sql<number>`COUNT(*)` })
-        .from(trafficCaltransLaneClosures)
-        .where(sql`${trafficCaltransLaneClosures.createdAt} > NOW() - INTERVAL '24 hours'`),
-      
-      // Stats by district
-      db
-        .select({
-          district: trafficCaltransLaneClosures.district,
-          total: sql<number>`COUNT(*)`,
-          active: sql<number>`COUNT(CASE WHEN ${trafficCaltransLaneClosures.status} = 'active' THEN 1 END)`,
-        })
-        .from(trafficCaltransLaneClosures)
-        .groupBy(trafficCaltransLaneClosures.district)
-        .orderBy(trafficCaltransLaneClosures.district),
-      
-      // Weekly trend (last 7 days)
-      db
-        .select({
-          date: sql<Date>`DATE(${trafficCaltransLaneClosures.createdAt})`,
-          newClosures: sql<number>`COUNT(*)`,
-        })
-        .from(trafficCaltransLaneClosures)
-        .where(sql`${trafficCaltransLaneClosures.createdAt} > NOW() - INTERVAL '7 days'`)
-        .groupBy(sql`DATE(${trafficCaltransLaneClosures.createdAt})`)
-        .orderBy(sql`date DESC`)
-    ]);
-    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+
+    // Get CHP-CAD incidents count
+    const [incidentCounts] = await db
+      .select({
+        total: sql<number>`count(*)`,
+        active: sql<number>`count(case when status = 'active' then 1 end)`,
+        cleared: sql<number>`count(case when status = 'cleared' then 1 end)`,
+      })
+      .from(trafficChpCadIncidents)
+      .where(eq(trafficChpCadIncidents.userId, userId));
+
+    // Get CHP cases count
+    const [caseCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(trafficChpCases)
+      .where(eq(trafficChpCases.userId, userId));
+
+    // Get active closures count
+    const [closureCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(trafficCaltransLaneClosures)
+      .where(
+        sql`${trafficCaltransLaneClosures.userId} = ${userId} AND ${trafficCaltransLaneClosures.status} = 'active'`
+      );
+
+    // Get 511 events count
+    const [eventCount] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(trafficBayArea511Events)
+      .where(
+        sql`${trafficBayArea511Events.userId} = ${userId} AND ${trafficBayArea511Events.status} = 'active'`
+      );
+
     return NextResponse.json({
       success: true,
       data: {
-        overview: {
-          total_active: Number(totalActive[0]?.count || 0),
-          total_completed: Number(totalCompleted[0]?.count || 0),
-          unique_routes: Number(uniqueRoutes[0]?.count || 0),
-          new_last_24h: Number(closuresLast24h[0]?.count || 0),
-        },
-        by_district: districtStats.map(d => ({
-          district: d.district,
-          total: Number(d.total),
-          active: Number(d.active)
-        })),
-        weekly_trend: recentActivity.map(day => ({
-          date: day.date,
-          new_closures: Number(day.newClosures)
-        })),
+        totalIncidents: incidentCounts?.total || 0,
+        activeIncidents: incidentCounts?.active || 0,
+        clearedIncidents: incidentCounts?.cleared || 0,
+        totalCases: caseCount?.count || 0,
+        activeClosures: closureCount?.count || 0,
+        totalEvents: eventCount?.count || 0,
       },
-      timestamp: new Date().toISOString()
     });
-    
   } catch (error) {
-    console.error('Dashboard stats error:', error);
+    console.error('Error fetching traffic stats:', error);
     return NextResponse.json(
-      { 
-        error: 'Failed to fetch dashboard stats',
-        details: error instanceof Error ? error.message : String(error)
-      },
+      { success: false, error: 'Failed to fetch stats' },
       { status: 500 }
     );
   }

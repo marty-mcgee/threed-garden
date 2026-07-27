@@ -1,1 +1,0 @@
-ALTER TABLE "threed_plantings" ALTER COLUMN "updated_at" SET NOT NULL;

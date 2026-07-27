@@ -1,10 +1,10 @@
-// services/CCTVPoller.ts
+// lib/services/traffic/CaltransCCTVPoller.ts
 import axios from 'axios';
 import { db } from '@/lib/db/client';
 import { trafficCaltransCctvCameras  } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
-export class CCTVPoller {
+export class CaltransCCTVPoller {
   async fetchDistrictCameras(district: number) {
     const url = `https://cwwp2.dot.ca.gov/data/d${district}/cctv/cctv.json`;
     

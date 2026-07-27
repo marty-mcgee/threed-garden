@@ -87,7 +87,7 @@ export function TrafficMapDashboard() {
               <EnhancedLeafletMap
                 incidents={incidents}
                 onRefresh={handleRefresh}
-                autoRefreshInterval={60000}
+                // autoRefreshInterval={60000}
                 height="600px"
                 center={[37.3, -119.5]}
                 zoom={5}
