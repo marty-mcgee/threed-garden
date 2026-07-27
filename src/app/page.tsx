@@ -199,11 +199,13 @@ export default function HomePage() {
   ];
 
   const techStack = [
-    { name: "Next.js 15", url: "https://nextjs.org" },
+    { name: "Next.js", url: "https://nextjs.org" },
     { name: "TypeScript", url: "https://www.typescriptlang.org" },
     { name: "Neon", url: "https://neon.tech" },
-    { name: "Drizzle", url: "https://orm.drizzle.team" },
+    { name: "Drizzle ORM", url: "https://orm.drizzle.team" },
     { name: "Three.js", url: "https://threejs.org" },
+    { name: "React", url: "https://react.org" },
+    { name: "ThreeDFiber", url: "https://threejs.org" },
     { name: "Tailwind", url: "https://tailwindcss.com" },
     { name: "AWS S3", url: "https://aws.amazon.com/s3" },
     { name: "Vercel", url: "https://vercel.com" },
