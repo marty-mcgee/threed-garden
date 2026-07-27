@@ -11,7 +11,7 @@ export function AdminFooter() {
       <div className="flex items-center gap-2">
         <span>© {currentYear} Marty McGee</span>
         <span className="hidden sm:inline">•</span>
-        <span className="hidden sm:inline">v0.7.0</span>
+        <span className="hidden sm:inline">v0.9.0</span>
       </div>
       <div className="flex items-center gap-4">
         <a 

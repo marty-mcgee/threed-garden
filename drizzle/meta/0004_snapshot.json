@@ -1,6 +1,6 @@
 {
-  "id": "69506614-2d85-417e-acdc-dbb8f3b81be6",
-  "prevId": "c1b8d73a-9bf1-4048-ae0a-55ed085ca3c6",
+  "id": "de3a297b-742c-4ffb-adf3-f8a2cac812c1",
+  "prevId": "6b0fdc4a-4259-4f87-a3df-1c0ee99e851d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -650,165 +650,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.music_album_links": {
-      "name": "music_album_links",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "album_id": {
-          "name": "album_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "link_id": {
-          "name": "link_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "link_type": {
-          "name": "link_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "track_id": {
-          "name": "track_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "album_links_album_link_idx": {
-          "name": "album_links_album_link_idx",
-          "columns": [
-            {
-              "expression": "album_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "link_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "album_links_track_link_idx": {
-          "name": "album_links_track_link_idx",
-          "columns": [
-            {
-              "expression": "track_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "link_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "music_album_links_user_id_user_id_fk": {
-          "name": "music_album_links_user_id_user_id_fk",
-          "tableFrom": "music_album_links",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "music_album_links_album_id_music_albums_id_fk": {
-          "name": "music_album_links_album_id_music_albums_id_fk",
-          "tableFrom": "music_album_links",
-          "tableTo": "music_albums",
-          "columnsFrom": [
-            "album_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "music_album_links_link_id_music_links_id_fk": {
-          "name": "music_album_links_link_id_music_links_id_fk",
-          "tableFrom": "music_album_links",
-          "tableTo": "music_links",
-          "columnsFrom": [
-            "link_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "music_album_links_track_id_music_tracks_id_fk": {
-          "name": "music_album_links_track_id_music_tracks_id_fk",
-          "tableFrom": "music_album_links",
-          "tableTo": "music_tracks",
-          "columnsFrom": [
-            "track_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.music_albums": {
       "name": "music_albums",
       "schema": "",
@@ -1035,6 +876,18 @@
           "primaryKey": false,
           "notNull": false
         },
+        "album_id": {
+          "name": "album_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "track_id": {
+          "name": "track_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -1080,6 +933,51 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "music_links_album_id_idx": {
+          "name": "music_links_album_id_idx",
+          "columns": [
+            {
+              "expression": "album_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "music_links_track_id_idx": {
+          "name": "music_links_track_id_idx",
+          "columns": [
+            {
+              "expression": "track_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "music_links_status_idx": {
+          "name": "music_links_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -1089,6 +987,32 @@
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "music_links_album_id_music_albums_id_fk": {
+          "name": "music_links_album_id_music_albums_id_fk",
+          "tableFrom": "music_links",
+          "tableTo": "music_albums",
+          "columnsFrom": [
+            "album_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "music_links_track_id_music_tracks_id_fk": {
+          "name": "music_links_track_id_music_tracks_id_fk",
+          "tableFrom": "music_links",
+          "tableTo": "music_tracks",
+          "columnsFrom": [
+            "track_id"
           ],
           "columnsTo": [
             "id"
@@ -1850,6 +1774,229 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.project_assets": {
+      "name": "project_assets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "module_id": {
+          "name": "module_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "module_type": {
+          "name": "module_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "asset_type": {
+          "name": "asset_type",
+          "type": "asset_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "asset_id": {
+          "name": "asset_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_project_assets_project_id": {
+          "name": "idx_project_assets_project_id",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_assets_module_id": {
+          "name": "idx_project_assets_module_id",
+          "columns": [
+            {
+              "expression": "module_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_assets_asset_type": {
+          "name": "idx_project_assets_asset_type",
+          "columns": [
+            {
+              "expression": "asset_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_assets_composite": {
+          "name": "idx_project_assets_composite",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "module_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "asset_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "asset_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_assets_unique": {
+          "name": "idx_project_assets_unique",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "module_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "asset_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "asset_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "project_assets_user_id_user_id_fk": {
+          "name": "project_assets_user_id_user_id_fk",
+          "tableFrom": "project_assets",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_assets_project_id_project_id_fk": {
+          "name": "project_assets_project_id_project_id_fk",
+          "tableFrom": "project_assets",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.project_music": {
       "name": "project_music",
       "schema": "",
@@ -1859,6 +2006,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "project_id": {
           "name": "project_id",
@@ -1955,6 +2108,19 @@
         }
       },
       "foreignKeys": {
+        "project_music_user_id_user_id_fk": {
+          "name": "project_music_user_id_user_id_fk",
+          "tableFrom": "project_music",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "project_music_project_id_project_id_fk": {
           "name": "project_music_project_id_project_id_fk",
           "tableFrom": "project_music",
@@ -1997,6 +2163,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "project_id": {
           "name": "project_id",
@@ -2093,6 +2265,19 @@
         }
       },
       "foreignKeys": {
+        "project_threed_user_id_user_id_fk": {
+          "name": "project_threed_user_id_user_id_fk",
+          "tableFrom": "project_threed",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "project_threed_project_id_project_id_fk": {
           "name": "project_threed_project_id_project_id_fk",
           "tableFrom": "project_threed",
@@ -2135,6 +2320,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "project_id": {
           "name": "project_id",
@@ -2231,6 +2422,19 @@
         }
       },
       "foreignKeys": {
+        "project_traffic_user_id_user_id_fk": {
+          "name": "project_traffic_user_id_user_id_fk",
+          "tableFrom": "project_traffic",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "project_traffic_project_id_project_id_fk": {
           "name": "project_traffic_project_id_project_id_fk",
           "tableFrom": "project_traffic",
@@ -3514,6 +3718,163 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.threed_character_models": {
+      "name": "threed_character_models",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "character_id": {
+          "name": "character_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_threed_character_models_character_id": {
+          "name": "idx_threed_character_models_character_id",
+          "columns": [
+            {
+              "expression": "character_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_character_models_model_id": {
+          "name": "idx_threed_character_models_model_id",
+          "columns": [
+            {
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_character_models_unique": {
+          "name": "idx_threed_character_models_unique",
+          "columns": [
+            {
+              "expression": "character_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "threed_character_models_user_id_user_id_fk": {
+          "name": "threed_character_models_user_id_user_id_fk",
+          "tableFrom": "threed_character_models",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "threed_character_models_character_id_threed_characters_id_fk": {
+          "name": "threed_character_models_character_id_threed_characters_id_fk",
+          "tableFrom": "threed_character_models",
+          "tableTo": "threed_characters",
+          "columnsFrom": [
+            "character_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "threed_character_models_model_id_threed_models_id_fk": {
+          "name": "threed_character_models_model_id_threed_models_id_fk",
+          "tableFrom": "threed_character_models",
+          "tableTo": "threed_models",
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.threed_characters": {
       "name": "threed_characters",
       "schema": "",
@@ -4087,6 +4448,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {
@@ -4470,6 +4838,13 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -4872,6 +5247,13 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -5299,6 +5681,13 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -5799,7 +6188,7 @@
           "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -6364,6 +6753,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {
@@ -6441,30 +6837,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "planting_id": {
-          "name": "planting_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "plant_id": {
-          "name": "plant_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "bed_id": {
-          "name": "bed_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "watering_schedule_id": {
-          "name": "watering_schedule_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "title": {
           "name": "title",
           "type": "varchar(200)",
@@ -6511,6 +6883,30 @@
           "primaryKey": false,
           "notNull": false
         },
+        "planting_id": {
+          "name": "planting_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plant_id": {
+          "name": "plant_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bed_id": {
+          "name": "bed_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "watering_schedule_id": {
+          "name": "watering_schedule_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "marker_id": {
           "name": "marker_id",
           "type": "integer",
@@ -6545,6 +6941,21 @@
         }
       },
       "indexes": {
+        "idx_threed_tasks_user_id": {
+          "name": "idx_threed_tasks_user_id",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "idx_threed_tasks_task_id": {
           "name": "idx_threed_tasks_task_id",
           "columns": [
@@ -6556,21 +6967,6 @@
             }
           ],
           "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_tasks_planting": {
-          "name": "idx_threed_tasks_planting",
-          "columns": [
-            {
-              "expression": "planting_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -6590,11 +6986,71 @@
           "method": "btree",
           "with": {}
         },
+        "idx_threed_tasks_priority": {
+          "name": "idx_threed_tasks_priority",
+          "columns": [
+            {
+              "expression": "priority",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "idx_threed_tasks_status": {
           "name": "idx_threed_tasks_status",
           "columns": [
             {
               "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_tasks_planting": {
+          "name": "idx_threed_tasks_planting",
+          "columns": [
+            {
+              "expression": "planting_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_tasks_plant": {
+          "name": "idx_threed_tasks_plant",
+          "columns": [
+            {
+              "expression": "plant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_tasks_bed": {
+          "name": "idx_threed_tasks_bed",
+          "columns": [
+            {
+              "expression": "bed_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -6849,6 +7305,13 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -7179,7 +7642,7 @@
           "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -7466,6 +7929,13 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
           "default": "now()"
         }
       },
@@ -9717,6 +10187,33 @@
         "draft",
         "published",
         "archived"
+      ]
+    },
+    "public.asset_type": {
+      "name": "asset_type",
+      "schema": "public",
+      "values": [
+        "music_albums",
+        "music_tracks",
+        "music_links",
+        "music_media",
+        "threed_plants",
+        "threed_beds",
+        "threed_layers",
+        "threed_markers",
+        "threed_models",
+        "threed_characters",
+        "threed_tasks",
+        "threed_harvests",
+        "threed_weather_logs",
+        "threed_farmbots",
+        "threed_watering_schedules",
+        "traffic_chp_cad_incidents",
+        "traffic_chp_cases",
+        "traffic_caltrans_lane_closures",
+        "traffic_caltrans_cctv_cameras",
+        "traffic_bay_area_511_events",
+        "traffic_calfire_incidents"
       ]
     },
     "public.threed_bed_shape": {

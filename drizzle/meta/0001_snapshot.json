@@ -1,6 +1,6 @@
 {
-  "id": "8372d42d-cce7-4e1e-8792-3a4fc287fa9f",
-  "prevId": "d911770d-d1c3-4b5a-821e-2e70e2552d4e",
+  "id": "ad9ff201-a162-4999-88bc-623beba41f48",
+  "prevId": "37666c8d-4ef6-4567-815f-6887537534a8",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -650,165 +650,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.music_album_links": {
-      "name": "music_album_links",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "album_id": {
-          "name": "album_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "link_id": {
-          "name": "link_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "link_type": {
-          "name": "link_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "track_id": {
-          "name": "track_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "album_links_album_link_idx": {
-          "name": "album_links_album_link_idx",
-          "columns": [
-            {
-              "expression": "album_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "link_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "album_links_track_link_idx": {
-          "name": "album_links_track_link_idx",
-          "columns": [
-            {
-              "expression": "track_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "link_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "music_album_links_user_id_user_id_fk": {
-          "name": "music_album_links_user_id_user_id_fk",
-          "tableFrom": "music_album_links",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "music_album_links_album_id_music_albums_id_fk": {
-          "name": "music_album_links_album_id_music_albums_id_fk",
-          "tableFrom": "music_album_links",
-          "tableTo": "music_albums",
-          "columnsFrom": [
-            "album_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "music_album_links_link_id_music_links_id_fk": {
-          "name": "music_album_links_link_id_music_links_id_fk",
-          "tableFrom": "music_album_links",
-          "tableTo": "music_links",
-          "columnsFrom": [
-            "link_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "music_album_links_track_id_music_tracks_id_fk": {
-          "name": "music_album_links_track_id_music_tracks_id_fk",
-          "tableFrom": "music_album_links",
-          "tableTo": "music_tracks",
-          "columnsFrom": [
-            "track_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.music_albums": {
       "name": "music_albums",
       "schema": "",
@@ -1035,6 +876,18 @@
           "primaryKey": false,
           "notNull": false
         },
+        "album_id": {
+          "name": "album_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "track_id": {
+          "name": "track_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -1080,6 +933,51 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "music_links_album_id_idx": {
+          "name": "music_links_album_id_idx",
+          "columns": [
+            {
+              "expression": "album_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "music_links_track_id_idx": {
+          "name": "music_links_track_id_idx",
+          "columns": [
+            {
+              "expression": "track_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "music_links_status_idx": {
+          "name": "music_links_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -1089,6 +987,32 @@
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "music_links_album_id_music_albums_id_fk": {
+          "name": "music_links_album_id_music_albums_id_fk",
+          "tableFrom": "music_links",
+          "tableTo": "music_albums",
+          "columnsFrom": [
+            "album_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "music_links_track_id_music_tracks_id_fk": {
+          "name": "music_links_track_id_music_tracks_id_fk",
+          "tableFrom": "music_links",
+          "tableTo": "music_tracks",
+          "columnsFrom": [
+            "track_id"
           ],
           "columnsTo": [
             "id"
@@ -1850,6 +1774,229 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.project_assets": {
+      "name": "project_assets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "module_id": {
+          "name": "module_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "module_type": {
+          "name": "module_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "asset_type": {
+          "name": "asset_type",
+          "type": "asset_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "asset_id": {
+          "name": "asset_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_project_assets_project_id": {
+          "name": "idx_project_assets_project_id",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_assets_module_id": {
+          "name": "idx_project_assets_module_id",
+          "columns": [
+            {
+              "expression": "module_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_assets_asset_type": {
+          "name": "idx_project_assets_asset_type",
+          "columns": [
+            {
+              "expression": "asset_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_assets_composite": {
+          "name": "idx_project_assets_composite",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "module_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "asset_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "asset_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_project_assets_unique": {
+          "name": "idx_project_assets_unique",
+          "columns": [
+            {
+              "expression": "project_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "module_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "asset_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "asset_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "project_assets_user_id_user_id_fk": {
+          "name": "project_assets_user_id_user_id_fk",
+          "tableFrom": "project_assets",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "project_assets_project_id_project_id_fk": {
+          "name": "project_assets_project_id_project_id_fk",
+          "tableFrom": "project_assets",
+          "tableTo": "project",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.project_music": {
       "name": "project_music",
       "schema": "",
@@ -1859,6 +2006,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "project_id": {
           "name": "project_id",
@@ -1955,6 +2108,19 @@
         }
       },
       "foreignKeys": {
+        "project_music_user_id_user_id_fk": {
+          "name": "project_music_user_id_user_id_fk",
+          "tableFrom": "project_music",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "project_music_project_id_project_id_fk": {
           "name": "project_music_project_id_project_id_fk",
           "tableFrom": "project_music",
@@ -1997,6 +2163,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "project_id": {
           "name": "project_id",
@@ -2093,6 +2265,19 @@
         }
       },
       "foreignKeys": {
+        "project_threed_user_id_user_id_fk": {
+          "name": "project_threed_user_id_user_id_fk",
+          "tableFrom": "project_threed",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "project_threed_project_id_project_id_fk": {
           "name": "project_threed_project_id_project_id_fk",
           "tableFrom": "project_threed",
@@ -2135,6 +2320,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "project_id": {
           "name": "project_id",
@@ -2231,6 +2422,19 @@
         }
       },
       "foreignKeys": {
+        "project_traffic_user_id_user_id_fk": {
+          "name": "project_traffic_user_id_user_id_fk",
+          "tableFrom": "project_traffic",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "project_traffic_project_id_project_id_fk": {
           "name": "project_traffic_project_id_project_id_fk",
           "tableFrom": "project_traffic",
@@ -3265,9 +3469,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "threed_id": {
-          "name": "threed_id",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -3411,21 +3615,6 @@
         }
       },
       "indexes": {
-        "idx_threed_beds_threed_id": {
-          "name": "idx_threed_beds_threed_id",
-          "columns": [
-            {
-              "expression": "threed_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_beds_bed_id": {
           "name": "idx_threed_beds_bed_id",
           "columns": [
@@ -3488,17 +3677,17 @@
         }
       },
       "foreignKeys": {
-        "threed_beds_threed_id_threed_id_fk": {
-          "name": "threed_beds_threed_id_threed_id_fk",
+        "threed_beds_user_id_user_id_fk": {
+          "name": "threed_beds_user_id_user_id_fk",
           "tableFrom": "threed_beds",
-          "tableTo": "threed",
+          "tableTo": "user",
           "columnsFrom": [
-            "threed_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "threed_beds_marker_id_threed_markers_id_fk": {
@@ -3529,6 +3718,163 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.threed_character_models": {
+      "name": "threed_character_models",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "character_id": {
+          "name": "character_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_threed_character_models_character_id": {
+          "name": "idx_threed_character_models_character_id",
+          "columns": [
+            {
+              "expression": "character_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_character_models_model_id": {
+          "name": "idx_threed_character_models_model_id",
+          "columns": [
+            {
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_character_models_unique": {
+          "name": "idx_threed_character_models_unique",
+          "columns": [
+            {
+              "expression": "character_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "threed_character_models_user_id_user_id_fk": {
+          "name": "threed_character_models_user_id_user_id_fk",
+          "tableFrom": "threed_character_models",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "threed_character_models_character_id_threed_characters_id_fk": {
+          "name": "threed_character_models_character_id_threed_characters_id_fk",
+          "tableFrom": "threed_character_models",
+          "tableTo": "threed_characters",
+          "columnsFrom": [
+            "character_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "threed_character_models_model_id_threed_models_id_fk": {
+          "name": "threed_character_models_model_id_threed_models_id_fk",
+          "tableFrom": "threed_character_models",
+          "tableTo": "threed_models",
+          "columnsFrom": [
+            "model_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.threed_characters": {
       "name": "threed_characters",
       "schema": "",
@@ -3539,9 +3885,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "threed_id": {
-          "name": "threed_id",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -3833,21 +4179,6 @@
         }
       },
       "indexes": {
-        "idx_threed_characters_threed_id": {
-          "name": "idx_threed_characters_threed_id",
-          "columns": [
-            {
-              "expression": "threed_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_characters_character_id": {
           "name": "idx_threed_characters_character_id",
           "columns": [
@@ -3985,17 +4316,17 @@
         }
       },
       "foreignKeys": {
-        "threed_characters_threed_id_threed_id_fk": {
-          "name": "threed_characters_threed_id_threed_id_fk",
+        "threed_characters_user_id_user_id_fk": {
+          "name": "threed_characters_user_id_user_id_fk",
           "tableFrom": "threed_characters",
-          "tableTo": "threed",
+          "tableTo": "user",
           "columnsFrom": [
-            "threed_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "threed_characters_model_id_threed_models_id_fk": {
@@ -4061,6 +4392,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "farmbot_id": {
           "name": "farmbot_id",
@@ -4161,6 +4498,19 @@
         }
       },
       "foreignKeys": {
+        "threed_farmbot_logs_user_id_user_id_fk": {
+          "name": "threed_farmbot_logs_user_id_user_id_fk",
+          "tableFrom": "threed_farmbot_logs",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "threed_farmbot_logs_farmbot_id_threed_farmbots_id_fk": {
           "name": "threed_farmbot_logs_farmbot_id_threed_farmbots_id_fk",
           "tableFrom": "threed_farmbot_logs",
@@ -4191,9 +4541,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "threed_id": {
-          "name": "threed_id",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -4306,21 +4656,6 @@
         }
       },
       "indexes": {
-        "idx_threed_farmbots_threed_id": {
-          "name": "idx_threed_farmbots_threed_id",
-          "columns": [
-            {
-              "expression": "threed_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_farmbots_device_id": {
           "name": "idx_threed_farmbots_device_id",
           "columns": [
@@ -4368,17 +4703,17 @@
         }
       },
       "foreignKeys": {
-        "threed_farmbots_threed_id_threed_id_fk": {
-          "name": "threed_farmbots_threed_id_threed_id_fk",
+        "threed_farmbots_user_id_user_id_fk": {
+          "name": "threed_farmbots_user_id_user_id_fk",
           "tableFrom": "threed_farmbots",
-          "tableTo": "threed",
+          "tableTo": "user",
           "columnsFrom": [
-            "threed_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "threed_farmbots_bed_id_threed_beds_id_fk": {
@@ -4432,9 +4767,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "threed_id": {
-          "name": "threed_id",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -4503,21 +4838,6 @@
         }
       },
       "indexes": {
-        "idx_threed_harvests_threed_id": {
-          "name": "idx_threed_harvests_threed_id",
-          "columns": [
-            {
-              "expression": "threed_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_harvests_harvest_id": {
           "name": "idx_threed_harvests_harvest_id",
           "columns": [
@@ -4565,17 +4885,17 @@
         }
       },
       "foreignKeys": {
-        "threed_harvests_threed_id_threed_id_fk": {
-          "name": "threed_harvests_threed_id_threed_id_fk",
+        "threed_harvests_user_id_user_id_fk": {
+          "name": "threed_harvests_user_id_user_id_fk",
           "tableFrom": "threed_harvests",
-          "tableTo": "threed",
+          "tableTo": "user",
           "columnsFrom": [
-            "threed_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "threed_harvests_planting_id_threed_plantings_id_fk": {
@@ -4722,6 +5042,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
           "type": "text",
@@ -4756,12 +5082,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'public'"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "icon": {
           "name": "icon",
@@ -4995,6 +5315,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
           "type": "text",
@@ -5025,12 +5351,6 @@
         "layer_id": {
           "name": "layer_id",
           "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -5239,12 +5559,12 @@
         }
       },
       "foreignKeys": {
-        "threed_markers_layer_id_threed_layers_id_fk": {
-          "name": "threed_markers_layer_id_threed_layers_id_fk",
+        "threed_markers_user_id_user_id_fk": {
+          "name": "threed_markers_user_id_user_id_fk",
           "tableFrom": "threed_markers",
-          "tableTo": "threed_layers",
+          "tableTo": "user",
           "columnsFrom": [
-            "layer_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -5252,12 +5572,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "threed_markers_user_id_user_id_fk": {
-          "name": "threed_markers_user_id_user_id_fk",
+        "threed_markers_layer_id_threed_layers_id_fk": {
+          "name": "threed_markers_layer_id_threed_layers_id_fk",
           "tableFrom": "threed_markers",
-          "tableTo": "user",
+          "tableTo": "threed_layers",
           "columnsFrom": [
-            "user_id"
+            "layer_id"
           ],
           "columnsTo": [
             "id"
@@ -5281,6 +5601,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "model_id": {
           "name": "model_id",
@@ -5373,6 +5699,19 @@
         }
       },
       "foreignKeys": {
+        "threed_model_files_user_id_user_id_fk": {
+          "name": "threed_model_files_user_id_user_id_fk",
+          "tableFrom": "threed_model_files",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "threed_model_files_model_id_threed_models_id_fk": {
           "name": "threed_model_files_model_id_threed_models_id_fk",
           "tableFrom": "threed_model_files",
@@ -5403,9 +5742,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "threed_id": {
-          "name": "threed_id",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -5592,21 +5931,6 @@
         }
       },
       "indexes": {
-        "idx_threed_models_threed_id": {
-          "name": "idx_threed_models_threed_id",
-          "columns": [
-            {
-              "expression": "threed_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_models_type": {
           "name": "idx_threed_models_type",
           "columns": [
@@ -5654,17 +5978,17 @@
         }
       },
       "foreignKeys": {
-        "threed_models_threed_id_threed_id_fk": {
-          "name": "threed_models_threed_id_threed_id_fk",
+        "threed_models_user_id_user_id_fk": {
+          "name": "threed_models_user_id_user_id_fk",
           "tableFrom": "threed_models",
-          "tableTo": "threed",
+          "tableTo": "user",
           "columnsFrom": [
-            "threed_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "threed_models_marker_id_threed_markers_id_fk": {
@@ -5697,9 +6021,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "threed_id": {
-          "name": "threed_id",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -5841,21 +6165,6 @@
         }
       },
       "indexes": {
-        "idx_threed_plantings_threed_id": {
-          "name": "idx_threed_plantings_threed_id",
-          "columns": [
-            {
-              "expression": "threed_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_plantings_planting_id": {
           "name": "idx_threed_plantings_planting_id",
           "columns": [
@@ -5933,17 +6242,17 @@
         }
       },
       "foreignKeys": {
-        "threed_plantings_threed_id_threed_id_fk": {
-          "name": "threed_plantings_threed_id_threed_id_fk",
+        "threed_plantings_user_id_user_id_fk": {
+          "name": "threed_plantings_user_id_user_id_fk",
           "tableFrom": "threed_plantings",
-          "tableTo": "threed",
+          "tableTo": "user",
           "columnsFrom": [
-            "threed_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "threed_plantings_plant_id_threed_plants_id_fk": {
@@ -6010,9 +6319,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "threed_id": {
-          "name": "threed_id",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -6232,21 +6541,6 @@
         }
       },
       "indexes": {
-        "idx_threed_plants_threed_id": {
-          "name": "idx_threed_plants_threed_id",
-          "columns": [
-            {
-              "expression": "threed_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_plants_plant_id": {
           "name": "idx_threed_plants_plant_id",
           "columns": [
@@ -6324,17 +6618,17 @@
         }
       },
       "foreignKeys": {
-        "threed_plants_threed_id_threed_id_fk": {
-          "name": "threed_plants_threed_id_threed_id_fk",
+        "threed_plants_user_id_user_id_fk": {
+          "name": "threed_plants_user_id_user_id_fk",
           "tableFrom": "threed_plants",
-          "tableTo": "threed",
+          "tableTo": "user",
           "columnsFrom": [
-            "threed_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "threed_plants_model_id_threed_models_id_fk": {
@@ -6387,6 +6681,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "level": {
           "name": "level",
@@ -6459,7 +6759,21 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "threed_system_logs_user_id_user_id_fk": {
+          "name": "threed_system_logs_user_id_user_id_fk",
+          "tableFrom": "threed_system_logs",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -6476,9 +6790,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "threed_id": {
-          "name": "threed_id",
-          "type": "integer",
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -6487,30 +6801,6 @@
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
-        },
-        "planting_id": {
-          "name": "planting_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "plant_id": {
-          "name": "plant_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "bed_id": {
-          "name": "bed_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "watering_schedule_id": {
-          "name": "watering_schedule_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
         },
         "title": {
           "name": "title",
@@ -6558,6 +6848,30 @@
           "primaryKey": false,
           "notNull": false
         },
+        "planting_id": {
+          "name": "planting_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plant_id": {
+          "name": "plant_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bed_id": {
+          "name": "bed_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "watering_schedule_id": {
+          "name": "watering_schedule_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "marker_id": {
           "name": "marker_id",
           "type": "integer",
@@ -6592,11 +6906,11 @@
         }
       },
       "indexes": {
-        "idx_threed_tasks_threed_id": {
-          "name": "idx_threed_tasks_threed_id",
+        "idx_threed_tasks_user_id": {
+          "name": "idx_threed_tasks_user_id",
           "columns": [
             {
-              "expression": "threed_id",
+              "expression": "user_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -6622,21 +6936,6 @@
           "method": "btree",
           "with": {}
         },
-        "idx_threed_tasks_planting": {
-          "name": "idx_threed_tasks_planting",
-          "columns": [
-            {
-              "expression": "planting_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_tasks_due_date": {
           "name": "idx_threed_tasks_due_date",
           "columns": [
@@ -6652,11 +6951,71 @@
           "method": "btree",
           "with": {}
         },
+        "idx_threed_tasks_priority": {
+          "name": "idx_threed_tasks_priority",
+          "columns": [
+            {
+              "expression": "priority",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "idx_threed_tasks_status": {
           "name": "idx_threed_tasks_status",
           "columns": [
             {
               "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_tasks_planting": {
+          "name": "idx_threed_tasks_planting",
+          "columns": [
+            {
+              "expression": "planting_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_tasks_plant": {
+          "name": "idx_threed_tasks_plant",
+          "columns": [
+            {
+              "expression": "plant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_tasks_bed": {
+          "name": "idx_threed_tasks_bed",
+          "columns": [
+            {
+              "expression": "bed_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -6699,17 +7058,17 @@
         }
       },
       "foreignKeys": {
-        "threed_tasks_threed_id_threed_id_fk": {
-          "name": "threed_tasks_threed_id_threed_id_fk",
+        "threed_tasks_user_id_user_id_fk": {
+          "name": "threed_tasks_user_id_user_id_fk",
           "tableFrom": "threed_tasks",
-          "tableTo": "threed",
+          "tableTo": "user",
           "columnsFrom": [
-            "threed_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "threed_tasks_planting_id_threed_plantings_id_fk": {
@@ -6801,6 +7160,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "history_id": {
           "name": "history_id",
@@ -6986,6 +7351,19 @@
         }
       },
       "foreignKeys": {
+        "threed_watering_history_user_id_user_id_fk": {
+          "name": "threed_watering_history_user_id_user_id_fk",
+          "tableFrom": "threed_watering_history",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "threed_watering_history_schedule_id_threed_watering_schedules_id_fk": {
           "name": "threed_watering_history_schedule_id_threed_watering_schedules_id_fk",
           "tableFrom": "threed_watering_history",
@@ -7062,6 +7440,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "schedule_id": {
           "name": "schedule_id",
@@ -7319,6 +7703,19 @@
         }
       },
       "foreignKeys": {
+        "threed_watering_schedules_user_id_user_id_fk": {
+          "name": "threed_watering_schedules_user_id_user_id_fk",
+          "tableFrom": "threed_watering_schedules",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "threed_watering_schedules_plant_id_threed_plants_id_fk": {
           "name": "threed_watering_schedules_plant_id_threed_plants_id_fk",
           "tableFrom": "threed_watering_schedules",
@@ -7395,6 +7792,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "recorded_at": {
           "name": "recorded_at",
@@ -7520,6 +7923,19 @@
         }
       },
       "foreignKeys": {
+        "threed_weather_logs_user_id_user_id_fk": {
+          "name": "threed_weather_logs_user_id_user_id_fk",
+          "tableFrom": "threed_weather_logs",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "threed_weather_logs_marker_id_threed_markers_id_fk": {
           "name": "threed_weather_logs_marker_id_threed_markers_id_fk",
           "tableFrom": "threed_weather_logs",
@@ -7744,6 +8160,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "traffic_id": {
           "name": "traffic_id",
           "type": "integer",
@@ -7840,6 +8262,19 @@
         }
       },
       "foreignKeys": {
+        "traffic_api_request_logs_user_id_user_id_fk": {
+          "name": "traffic_api_request_logs_user_id_user_id_fk",
+          "tableFrom": "traffic_api_request_logs",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "traffic_api_request_logs_traffic_id_traffic_id_fk": {
           "name": "traffic_api_request_logs_traffic_id_traffic_id_fk",
           "tableFrom": "traffic_api_request_logs",
@@ -7869,6 +8304,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "traffic_id": {
           "name": "traffic_id",
@@ -8058,6 +8499,19 @@
         }
       },
       "foreignKeys": {
+        "traffic_bay_area_511_events_user_id_user_id_fk": {
+          "name": "traffic_bay_area_511_events_user_id_user_id_fk",
+          "tableFrom": "traffic_bay_area_511_events",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "traffic_bay_area_511_events_traffic_id_traffic_id_fk": {
           "name": "traffic_bay_area_511_events_traffic_id_traffic_id_fk",
           "tableFrom": "traffic_bay_area_511_events",
@@ -8095,6 +8549,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "traffic_id": {
           "name": "traffic_id",
@@ -8292,6 +8752,19 @@
         }
       },
       "foreignKeys": {
+        "traffic_calfire_incidents_user_id_user_id_fk": {
+          "name": "traffic_calfire_incidents_user_id_user_id_fk",
+          "tableFrom": "traffic_calfire_incidents",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "traffic_calfire_incidents_traffic_id_traffic_id_fk": {
           "name": "traffic_calfire_incidents_traffic_id_traffic_id_fk",
           "tableFrom": "traffic_calfire_incidents",
@@ -8329,6 +8802,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "traffic_id": {
           "name": "traffic_id",
@@ -8424,6 +8903,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "traffic_caltrans_cctv_cameras_user_id_user_id_fk": {
+          "name": "traffic_caltrans_cctv_cameras_user_id_user_id_fk",
+          "tableFrom": "traffic_caltrans_cctv_cameras",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "traffic_caltrans_cctv_cameras_traffic_id_traffic_id_fk": {
           "name": "traffic_caltrans_cctv_cameras_traffic_id_traffic_id_fk",
           "tableFrom": "traffic_caltrans_cctv_cameras",
@@ -8453,6 +8945,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "district_id": {
           "name": "district_id",
@@ -8518,7 +9016,21 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "traffic_caltrans_districts_user_id_user_id_fk": {
+          "name": "traffic_caltrans_districts_user_id_user_id_fk",
+          "tableFrom": "traffic_caltrans_districts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "traffic_caltrans_districts_district_id_unique": {
@@ -8542,6 +9054,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "traffic_id": {
           "name": "traffic_id",
@@ -8836,6 +9354,19 @@
         }
       },
       "foreignKeys": {
+        "traffic_caltrans_lane_closures_user_id_user_id_fk": {
+          "name": "traffic_caltrans_lane_closures_user_id_user_id_fk",
+          "tableFrom": "traffic_caltrans_lane_closures",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "traffic_caltrans_lane_closures_traffic_id_traffic_id_fk": {
           "name": "traffic_caltrans_lane_closures_traffic_id_traffic_id_fk",
           "tableFrom": "traffic_caltrans_lane_closures",
@@ -8875,11 +9406,23 @@
       "name": "traffic_caltrans_lane_closures_snapshots",
       "schema": "",
       "columns": {
-        "snapshot_id": {
-          "name": "snapshot_id",
+        "id": {
+          "name": "id",
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "snapshot_id": {
+          "name": "snapshot_id",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
         },
         "snapshot_timestamp": {
           "name": "snapshot_timestamp",
@@ -8951,9 +9494,31 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "traffic_caltrans_lane_closures_snapshots_user_id_user_id_fk": {
+          "name": "traffic_caltrans_lane_closures_snapshots_user_id_user_id_fk",
+          "tableFrom": "traffic_caltrans_lane_closures_snapshots",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "traffic_caltrans_lane_closures_snapshots_snapshot_id_unique": {
+          "name": "traffic_caltrans_lane_closures_snapshots_snapshot_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "snapshot_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -8967,6 +9532,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "center_code": {
           "name": "center_code",
@@ -9046,7 +9617,21 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "traffic_chp_cad_centers_user_id_user_id_fk": {
+          "name": "traffic_chp_cad_centers_user_id_user_id_fk",
+          "tableFrom": "traffic_chp_cad_centers",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "traffic_chp_cad_centers_center_code_unique": {
@@ -9070,6 +9655,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "traffic_id": {
           "name": "traffic_id",
@@ -9229,6 +9820,19 @@
         }
       },
       "foreignKeys": {
+        "traffic_chp_cad_incidents_user_id_user_id_fk": {
+          "name": "traffic_chp_cad_incidents_user_id_user_id_fk",
+          "tableFrom": "traffic_chp_cad_incidents",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "traffic_chp_cad_incidents_traffic_id_traffic_id_fk": {
           "name": "traffic_chp_cad_incidents_traffic_id_traffic_id_fk",
           "tableFrom": "traffic_chp_cad_incidents",
@@ -9279,6 +9883,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "traffic_id": {
           "name": "traffic_id",
@@ -9478,6 +10088,19 @@
         }
       },
       "foreignKeys": {
+        "traffic_chp_cases_user_id_user_id_fk": {
+          "name": "traffic_chp_cases_user_id_user_id_fk",
+          "tableFrom": "traffic_chp_cases",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "traffic_chp_cases_traffic_id_traffic_id_fk": {
           "name": "traffic_chp_cases_traffic_id_traffic_id_fk",
           "tableFrom": "traffic_chp_cases",
@@ -9515,6 +10138,33 @@
         "draft",
         "published",
         "archived"
+      ]
+    },
+    "public.asset_type": {
+      "name": "asset_type",
+      "schema": "public",
+      "values": [
+        "music_albums",
+        "music_tracks",
+        "music_links",
+        "music_media",
+        "threed_plants",
+        "threed_beds",
+        "threed_layers",
+        "threed_markers",
+        "threed_models",
+        "threed_characters",
+        "threed_tasks",
+        "threed_harvests",
+        "threed_weather_logs",
+        "threed_farmbots",
+        "threed_watering_schedules",
+        "traffic_chp_cad_incidents",
+        "traffic_chp_cases",
+        "traffic_caltrans_lane_closures",
+        "traffic_caltrans_cctv_cameras",
+        "traffic_bay_area_511_events",
+        "traffic_calfire_incidents"
       ]
     },
     "public.threed_bed_shape": {

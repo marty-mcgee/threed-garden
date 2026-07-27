@@ -2,49 +2,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedCharacters, threedModels, threedBeds } from '@/lib/schema/threed';
-import { eq, and, desc, sql, or } from 'drizzle-orm';
+import { threedCharacters, threedModels } from '@/lib/schema/threed';
+import { projectAssets } from '@/lib/schema/project';
+import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
-// Helper function to safely handle enum values
-function safeEnumValue<T>(value: T | null | undefined, defaultValue: T): T {
-  if (value === null || value === undefined || value === '') {
-    return defaultValue;
-  }
-  return value;
-}
-
 // ============================================
-// GET /api/threed/characters - Fetch characters (PUBLIC)
+// GET /api/threed/characters
+// Query Parameters:
+//   - id: Get a single character with its model associations
+//   - moduleId: Get characters associated with a specific ThreeD module
+//   - isActive: Filter by active status
+//   - limit, offset: Pagination
 // ============================================
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
-    
-    const searchParams = request.nextUrl.searchParams;
+
+    const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const type = searchParams.get('type');
-    const status = searchParams.get('status');
-    const movementType = searchParams.get('movementType');
-    const bedId = searchParams.get('bedId');
-    const visible = searchParams.get('visible');
-    const weatherSensitivity = searchParams.get('weatherSensitivity');
-    const interactable = searchParams.get('interactable');
-    const includeModel = searchParams.get('includeModel') !== 'false';
+    const moduleId = searchParams.get('moduleId');
+    const isActive = searchParams.get('isActive');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // Get single character
+    // ✅ Get a single character by ID with associations
     if (id) {
+      const parsedId = parseInt(id);
+      if (isNaN(parsedId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid character ID' },
+          { status: 400 }
+        );
+      }
+
       let query = db
         .select()
         .from(threedCharacters)
-        .where(eq(threedCharacters.id, parseInt(id)));
+        .where(eq(threedCharacters.id, parsedId));
 
-      // Public users only see active characters
       if (!userId) {
-        query = query.where(eq(threedCharacters.status, 'active'));
+        query = query.where(eq(threedCharacters.isActive, true));
+      } else {
+        query = query.where(
+          or(
+            eq(threedCharacters.userId, userId),
+            eq(threedCharacters.isActive, true)
+          )
+        );
       }
 
       const [character] = await query.limit(1);
@@ -56,84 +62,144 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // If includeModel, fetch model details
-      if (includeModel && character.modelId) {
-        const [model] = await db
+      // ✅ Get model associations
+      const modelAssociations = await db
+        .select()
+        .from(projectAssets)
+        .where(
+          and(
+            eq(projectAssets.moduleId, character.id),
+            eq(projectAssets.moduleType, 'threed_character'),
+            eq(projectAssets.assetType, 'threed_models'),
+            eq(projectAssets.userId, userId || '')
+          )
+        )
+        .orderBy(projectAssets.createdAt);
+
+      // ✅ Get the actual models
+      const modelIds = modelAssociations.map((assoc) => assoc.assetId);
+      let models: any[] = [];
+      if (modelIds.length > 0) {
+        models = await db
           .select()
           .from(threedModels)
-          .where(eq(threedModels.id, character.modelId))
-          .limit(1);
-        return NextResponse.json({
-          success: true,
-          data: { ...character, model },
-        });
+          .where(sql`${threedModels.id} IN (${sql.join(modelIds)})`);
       }
+
+      // ✅ Build response
+      const responseData = {
+        ...character,
+        modelAssociations: modelAssociations.map((assoc) => ({
+          ...assoc,
+          model: models.find((m) => m.id === assoc.assetId) || null,
+        })),
+      };
 
       return NextResponse.json({
         success: true,
-        data: character,
+        data: responseData,
       });
     }
 
-    // Build query
-    let query: any = db
+    // ✅ List all characters
+    let query = db
       .select()
       .from(threedCharacters)
       .$dynamic();
 
-    // Public users only see active characters
     if (!userId) {
-      query = query.where(eq(threedCharacters.status, 'active'));
+      query = query.where(eq(threedCharacters.isActive, true));
     } else {
-      // Authenticated users see their characters + active public characters
       query = query.where(
         or(
           eq(threedCharacters.userId, userId),
-          eq(threedCharacters.status, 'active')
+          eq(threedCharacters.isActive, true)
         )
       );
     }
 
-    // Apply filters
-    if (type) query = query.where(eq(threedCharacters.type, type as any));
-    if (status) query = query.where(eq(threedCharacters.status, status as any));
-    if (movementType) query = query.where(eq(threedCharacters.movementType, movementType as any));
-    if (bedId) query = query.where(eq(threedCharacters.bedId, parseInt(bedId)));
-    if (visible) query = query.where(eq(threedCharacters.visible, visible === 'true'));
-    if (weatherSensitivity) query = query.where(eq(threedCharacters.weatherSensitivity, weatherSensitivity as any));
-    if (interactable) query = query.where(eq(threedCharacters.interactable, interactable === 'true'));
+    if (isActive !== null) {
+      query = query.where(eq(threedCharacters.isActive, isActive === 'true'));
+    }
 
-    // Get total count
+    // ✅ Filter by moduleId if provided
+    if (moduleId) {
+      const parsedModuleId = parseInt(moduleId);
+      if (!isNaN(parsedModuleId)) {
+        const assetLinks = await db
+          .select({ assetId: projectAssets.assetId })
+          .from(projectAssets)
+          .where(
+            and(
+              eq(projectAssets.moduleId, parsedModuleId),
+              eq(projectAssets.moduleType, 'threed'),
+              eq(projectAssets.assetType, 'threed_characters'),
+              eq(projectAssets.userId, userId || '')
+            )
+          );
+
+        const characterIds = assetLinks.map((link) => link.assetId);
+        if (characterIds.length > 0) {
+          query = query.where(sql`${threedCharacters.id} IN (${sql.join(characterIds)})`);
+        } else {
+          return NextResponse.json({
+            success: true,
+            data: [],
+            pagination: { limit, offset, total: 0 },
+          });
+        }
+      }
+    }
+
+    // ✅ Get total count
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedCharacters)
       .where(query._where);
 
-    // Apply pagination and ordering
     const characters = await query
       .orderBy(desc(threedCharacters.createdAt))
       .limit(limit)
       .offset(offset);
 
-    // If includeModel, fetch model details for each character
-    let result = characters;
-    if (includeModel) {
-      result = await Promise.all(characters.map(async (character) => {
-        if (character.modelId) {
-          const [model] = await db
+    // ✅ For each character, fetch model associations
+    const charactersWithAssociations = await Promise.all(
+      characters.map(async (character) => {
+        const modelAssociations = await db
+          .select()
+          .from(projectAssets)
+          .where(
+            and(
+              eq(projectAssets.moduleId, character.id),
+              eq(projectAssets.moduleType, 'threed_character'),
+              eq(projectAssets.assetType, 'threed_models'),
+              eq(projectAssets.userId, userId || '')
+            )
+          )
+          .orderBy(projectAssets.createdAt);
+
+        const modelIds = modelAssociations.map((assoc) => assoc.assetId);
+        let models: any[] = [];
+        if (modelIds.length > 0) {
+          models = await db
             .select()
             .from(threedModels)
-            .where(eq(threedModels.id, character.modelId))
-            .limit(1);
-          return { ...character, model };
+            .where(sql`${threedModels.id} IN (${sql.join(modelIds)})`);
         }
-        return character;
-      }));
-    }
+
+        return {
+          ...character,
+          modelAssociations: modelAssociations.map((assoc) => ({
+            ...assoc,
+            model: models.find((m) => m.id === assoc.assetId) || null,
+          })),
+        };
+      })
+    );
 
     return NextResponse.json({
       success: true,
-      data: result,
+      data: charactersWithAssociations,
       pagination: {
         limit,
         offset,
@@ -141,7 +207,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching characters:', error);
+    console.error('[Characters API] GET error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch characters' },
       { status: 500 }
@@ -150,7 +216,7 @@ export async function GET(request: NextRequest) {
 }
 
 // ============================================
-// POST /api/threed/characters - Create character (ADMIN ONLY)
+// POST /api/threed/characters - Create a new character
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -162,91 +228,230 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
     const body = await request.json();
-    
-    if (!body.characterId || !body.name) {
+
+    console.log('[Characters API] POST - Received body:', body);
+
+    // ✅ Required fields
+    if (!body.name) {
       return NextResponse.json(
-        { success: false, error: 'characterId and name are required' },
+        { success: false, error: 'Missing required field: name' },
         { status: 400 }
       );
     }
 
-    // Safely handle enum values
-    const defaultAnimation = safeEnumValue(body.defaultAnimation, undefined);
-    const defaultEmote = safeEnumValue(body.defaultEmote, 'none');
-    const emoteOnInteract = safeEnumValue(body.emoteOnInteract, 'happy');
-    const movementType = safeEnumValue(body.movementType, 'stationary');
-    const weatherSensitivity = safeEnumValue(body.weatherSensitivity, 'all');
-    const type = safeEnumValue(body.type, 'animal');
-    const status = safeEnumValue(body.status, 'active');
+    // ✅ Generate characterId
+    const characterId =
+      body.characterId || `char_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
 
-    // Ensure sequence
+    // ✅ Parse animations - handle both string and array
+    let animationsArray: string[] = [];
+    if (body.animations) {
+      if (Array.isArray(body.animations)) {
+        animationsArray = body.animations;
+      } else if (typeof body.animations === 'string') {
+        animationsArray = body.animations
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s);
+      }
+    }
+
+    // ✅ Parse patrolWaypoints
+    let patrolWaypointsArray: any[] = [];
+    if (body.patrolWaypoints) {
+      if (Array.isArray(body.patrolWaypoints)) {
+        patrolWaypointsArray = body.patrolWaypoints;
+      } else if (typeof body.patrolWaypoints === 'string') {
+        patrolWaypointsArray = body.patrolWaypoints
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s);
+      }
+    }
+
+    // ✅ Parse teleportPositions
+    let teleportPositionsArray: any[] = [];
+    if (body.teleportPositions) {
+      if (Array.isArray(body.teleportPositions)) {
+        teleportPositionsArray = body.teleportPositions;
+      } else if (typeof body.teleportPositions === 'string') {
+        teleportPositionsArray = body.teleportPositions
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s);
+      }
+    }
+
+    // ✅ Create the character
     await ensureTableSequence('threed_characters');
-    
+
     const [newCharacter] = await db
       .insert(threedCharacters)
       .values({
-        userId: session.user.id,
-        characterId: body.characterId,
-        name: body.name,
-        description: body.description || null,
-        type: type,
-        status: status,
-        modelId: body.modelId || null,
-        animations: body.animations || [],
-        defaultAnimation: defaultAnimation,
-        animationSpeed: body.animationSpeed || 1.0,
-        movementType: movementType,
+        userId,
+        characterId,
+        name: body.name.trim(),
+        description: body.description?.trim() || null,
+        type: body.type || 'animal',
+        status: body.status || 'active',
+
+        // ✅ Animations as JSON array
+        animations: animationsArray,
+        defaultAnimation: body.defaultAnimation || null,
+        animationSpeed: body.animationSpeed ? parseFloat(body.animationSpeed) : 1,
+
+        // Movement
+        isMovable: body.isMovable === true || body.isMovable === 'true',
+        movementType: body.movementType || null,
         movementPattern: body.movementPattern || null,
-        movementRadius: body.movementRadius || 5,
-        movementSpeed: body.movementSpeed || 0.5,
-        patrolWaypoints: body.patrolWaypoints || [],
+        movementRadius: body.movementRadius ? parseFloat(body.movementRadius) : null,
+        movementSpeed: body.movementSpeed ? parseFloat(body.movementSpeed) : 0.5,
+        patrolWaypoints: patrolWaypointsArray,
         followTarget: body.followTarget || null,
-        followDistance: body.followDistance || 2.0,
-        teleportPositions: body.teleportPositions || [],
-        teleportInterval: body.teleportInterval || 30,
-        interactable: body.interactable !== false,
+        followDistance: body.followDistance ? parseFloat(body.followDistance) : 2,
+        teleportPositions: teleportPositionsArray,
+        teleportInterval: body.teleportInterval ? parseInt(body.teleportInterval) : null,
+
+        // Interaction
+        interactable: body.interactable === true || body.interactable === 'true',
         interactionMessage: body.interactionMessage || null,
         soundEffect: body.soundEffect || null,
-        defaultEmote: defaultEmote,
-        emoteOnInteract: emoteOnInteract,
-        activeStartHour: body.activeStartHour ?? 0,
-        activeEndHour: body.activeEndHour ?? 23,
-        weatherSensitivity: weatherSensitivity,
-        bedId: body.bedId || null,
-        positionX: body.positionX || 0,
-        positionY: body.positionY || 0,
-        positionZ: body.positionZ || 0,
-        rotation: body.rotation || 0,
-        scale: body.scale || 1,
-        scaleMultiplier: body.scaleMultiplier || 1,
+
+        // Emotes
+        defaultEmote: body.defaultEmote || null,
+        emoteOnInteract: body.emoteOnInteract || null,
+
+        // Time-based
+        activeStartHour: body.activeStartHour ? parseInt(body.activeStartHour) : null,
+        activeEndHour: body.activeEndHour ? parseInt(body.activeEndHour) : null,
+
+        // Weather
+        weatherSensitivity: body.weatherSensitivity || null,
+
+        // Position
+        bedId: body.bedId ? parseInt(body.bedId) : null,
+        positionX: body.positionX ? parseFloat(body.positionX) : 0,
+        positionY: body.positionY ? parseFloat(body.positionY) : 0,
+        positionZ: body.positionZ ? parseFloat(body.positionZ) : 0,
+        rotation: body.rotation ? parseFloat(body.rotation) : 0,
+        scale: body.scale ? parseFloat(body.scale) : 1,
+        scaleMultiplier: body.scaleMultiplier ? parseFloat(body.scaleMultiplier) : 1,
         colorTint: body.colorTint || null,
-        visible: body.visible !== false,
-        visibleDistance: body.visibleDistance || 30,
-        isActive: body.isActive !== false,
+
+        // Visibility
+        visible: body.visible !== false && body.visible !== 'false',
+        visibleDistance: body.visibleDistance ? parseFloat(body.visibleDistance) : 30,
+
+        // Status
+        isActive: body.isActive !== false && body.isActive !== 'false',
         metadata: body.metadata || {},
       })
       .returning();
-    
-    if (body.modelId) {
-      await db
-        .update(threedModels)
-        .set({ usedByCharacters: true })
-        .where(eq(threedModels.id, body.modelId));
+
+    console.log('[Characters API] Created character:', newCharacter.id, newCharacter.name);
+
+    // ✅ Handle Character-Model relationships via project_assets
+    // This creates the junction records between Character and Model
+    if (body.modelIds) {
+      const modelIds = body.modelIds
+        .split(',')
+        .map((s) => parseInt(s.trim()))
+        .filter((id) => !isNaN(id));
+
+      for (const modelId of modelIds) {
+        await ensureTableSequence('project_assets');
+
+        // ✅ Create project_assets record for Character-Model relationship
+        // moduleId = character.id (as the parent/module)
+        // moduleType = 'threed_character' (indicating this is a character)
+        // assetType = 'threed_models' (indicating the asset is a model)
+        // assetId = model.id (the specific model)
+        await db.insert(projectAssets).values({
+          userId,
+          projectId: null, // Not directly tied to a project
+          moduleId: newCharacter.id,
+          moduleType: 'threed_character',
+          assetType: 'threed_models',
+          assetId: modelId,
+          config: {
+            // Store any character-specific model config here
+            // e.g., animation overrides, scale overrides
+          },
+          isActive: true,
+        });
+
+        console.log(
+          '[Characters API] Linked character',
+          newCharacter.id,
+          'to model',
+          modelId
+        );
+      }
+
+      console.log(
+        '[Characters API] Added',
+        modelIds.length,
+        'character-model associations'
+      );
     }
-    
-    return NextResponse.json({ success: true, data: newCharacter });
+
+    // ✅ If moduleId is provided (ThreeD module association), create project_assets
+    if (body.moduleId) {
+      const parsedModuleId = parseInt(body.moduleId);
+      const moduleType = body.moduleType || 'threed';
+
+      const [module] = await db
+        .select()
+        .from(threed)
+        .where(
+          and(
+            eq(threed.id, parsedModuleId),
+            eq(threed.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (module) {
+        await ensureTableSequence('project_assets');
+        await db.insert(projectAssets).values({
+          userId,
+          projectId: module.projectId || null,
+          moduleId: parsedModuleId,
+          moduleType: moduleType,
+          assetType: 'threed_characters', // The character as an asset
+          assetId: newCharacter.id,
+          config: body.assetConfig || {},
+          isActive: true,
+        });
+        console.log(
+          '[Characters API] Created project_assets association for character:',
+          newCharacter.id
+        );
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: newCharacter,
+      message: 'Character created successfully',
+    });
   } catch (error) {
-    console.error('Error creating character:', error);
+    console.error('[Characters API] POST error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create character', details: error.message },
+      {
+        success: false,
+        error: 'Failed to create character',
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// PUT /api/threed/characters - Update character (ADMIN ONLY)
+// PUT /api/threed/characters - Update a character
 // ============================================
 export async function PUT(request: NextRequest) {
   try {
@@ -258,26 +463,33 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const url = new URL(request.url);
-    const id = url.searchParams.get('id');
-    
+    const userId = session.user.id;
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Character ID is required' },
+        { success: false, error: 'Missing character ID' },
         { status: 400 }
       );
     }
-    
-    const body = await request.json();
-    
-    // Verify ownership
+
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid character ID' },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Check if character exists and belongs to user
     const [existing] = await db
       .select()
       .from(threedCharacters)
       .where(
         and(
-          eq(threedCharacters.id, parseInt(id)),
-          eq(threedCharacters.userId, session.user.id)
+          eq(threedCharacters.id, parsedId),
+          eq(threedCharacters.userId, userId)
         )
       )
       .limit(1);
@@ -288,100 +500,217 @@ export async function PUT(request: NextRequest) {
         { status: 404 }
       );
     }
-    
-    // Get old model ID to update usage tracking
-    const oldModelId = existing.modelId;
-    
-    // Safely handle enum values
-    const defaultAnimation = safeEnumValue(body.defaultAnimation, undefined);
-    const defaultEmote = safeEnumValue(body.defaultEmote, 'none');
-    const emoteOnInteract = safeEnumValue(body.emoteOnInteract, 'happy');
-    const movementType = safeEnumValue(body.movementType, 'stationary');
-    const weatherSensitivity = safeEnumValue(body.weatherSensitivity, 'all');
-    const type = safeEnumValue(body.type, 'animal');
-    const status = safeEnumValue(body.status, 'active');
-    
+
+    const body = await request.json();
+
+    // ✅ Parse animations
+    let animationsArray: string[] = (existing.animations as string[]) || [];
+    if (body.animations !== undefined) {
+      if (Array.isArray(body.animations)) {
+        animationsArray = body.animations;
+      } else if (typeof body.animations === 'string') {
+        animationsArray = body.animations
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s);
+      }
+    }
+
+    // ✅ Parse patrolWaypoints
+    let patrolWaypointsArray: any[] = (existing.patrolWaypoints as any[]) || [];
+    if (body.patrolWaypoints !== undefined) {
+      if (Array.isArray(body.patrolWaypoints)) {
+        patrolWaypointsArray = body.patrolWaypoints;
+      } else if (typeof body.patrolWaypoints === 'string') {
+        patrolWaypointsArray = body.patrolWaypoints
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s);
+      }
+    }
+
+    // ✅ Parse teleportPositions
+    let teleportPositionsArray: any[] = (existing.teleportPositions as any[]) || [];
+    if (body.teleportPositions !== undefined) {
+      if (Array.isArray(body.teleportPositions)) {
+        teleportPositionsArray = body.teleportPositions;
+      } else if (typeof body.teleportPositions === 'string') {
+        teleportPositionsArray = body.teleportPositions
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s);
+      }
+    }
+
+    // ✅ Update the character
     const [updated] = await db
       .update(threedCharacters)
       .set({
-        name: body.name || existing.name,
-        description: body.description || null,
-        type: type,
-        status: status,
-        modelId: body.modelId || null,
-        animations: body.animations || [],
-        defaultAnimation: defaultAnimation,
-        animationSpeed: body.animationSpeed || 1.0,
-        movementType: movementType,
-        movementPattern: body.movementPattern || null,
-        movementRadius: body.movementRadius || 5,
-        movementSpeed: body.movementSpeed || 0.5,
-        patrolWaypoints: body.patrolWaypoints || [],
-        followTarget: body.followTarget || null,
-        followDistance: body.followDistance || 2.0,
-        teleportPositions: body.teleportPositions || [],
-        teleportInterval: body.teleportInterval || 30,
-        interactable: body.interactable !== false,
-        interactionMessage: body.interactionMessage || null,
-        soundEffect: body.soundEffect || null,
-        defaultEmote: defaultEmote,
-        emoteOnInteract: emoteOnInteract,
-        activeStartHour: body.activeStartHour ?? 0,
-        activeEndHour: body.activeEndHour ?? 23,
-        weatherSensitivity: weatherSensitivity,
-        bedId: body.bedId || null,
-        positionX: body.positionX || 0,
-        positionY: body.positionY || 0,
-        positionZ: body.positionZ || 0,
-        rotation: body.rotation || 0,
-        scale: body.scale || 1,
-        scaleMultiplier: body.scaleMultiplier || 1,
-        colorTint: body.colorTint || null,
-        visible: body.visible !== false,
-        visibleDistance: body.visibleDistance || 30,
-        isActive: body.isActive !== false,
-        metadata: body.metadata || {},
+        name: body.name?.trim() || existing.name,
+        description:
+          body.description !== undefined ? body.description?.trim() || null : existing.description,
+        type: body.type || existing.type,
+        status: body.status || existing.status,
+
+        animations: animationsArray,
+        defaultAnimation:
+          body.defaultAnimation !== undefined ? body.defaultAnimation : existing.defaultAnimation,
+        animationSpeed: body.animationSpeed ? parseFloat(body.animationSpeed) : existing.animationSpeed,
+
+        isMovable: body.isMovable !== undefined ? body.isMovable : existing.isMovable,
+        movementType: body.movementType !== undefined ? body.movementType : existing.movementType,
+        movementPattern:
+          body.movementPattern !== undefined ? body.movementPattern : existing.movementPattern,
+        movementRadius: body.movementRadius ? parseFloat(body.movementRadius) : existing.movementRadius,
+        movementSpeed: body.movementSpeed ? parseFloat(body.movementSpeed) : existing.movementSpeed,
+        patrolWaypoints: patrolWaypointsArray,
+        followTarget: body.followTarget !== undefined ? body.followTarget : existing.followTarget,
+        followDistance: body.followDistance ? parseFloat(body.followDistance) : existing.followDistance,
+        teleportPositions: teleportPositionsArray,
+        teleportInterval: body.teleportInterval ? parseInt(body.teleportInterval) : existing.teleportInterval,
+
+        interactable: body.interactable !== undefined ? body.interactable : existing.interactable,
+        interactionMessage:
+          body.interactionMessage !== undefined ? body.interactionMessage : existing.interactionMessage,
+        soundEffect: body.soundEffect !== undefined ? body.soundEffect : existing.soundEffect,
+
+        defaultEmote: body.defaultEmote !== undefined ? body.defaultEmote : existing.defaultEmote,
+        emoteOnInteract:
+          body.emoteOnInteract !== undefined ? body.emoteOnInteract : existing.emoteOnInteract,
+
+        activeStartHour: body.activeStartHour ? parseInt(body.activeStartHour) : existing.activeStartHour,
+        activeEndHour: body.activeEndHour ? parseInt(body.activeEndHour) : existing.activeEndHour,
+
+        weatherSensitivity:
+          body.weatherSensitivity !== undefined ? body.weatherSensitivity : existing.weatherSensitivity,
+
+        bedId: body.bedId ? parseInt(body.bedId) : existing.bedId,
+        positionX: body.positionX ? parseFloat(body.positionX) : existing.positionX,
+        positionY: body.positionY ? parseFloat(body.positionY) : existing.positionY,
+        positionZ: body.positionZ ? parseFloat(body.positionZ) : existing.positionZ,
+        rotation: body.rotation ? parseFloat(body.rotation) : existing.rotation,
+        scale: body.scale ? parseFloat(body.scale) : existing.scale,
+        scaleMultiplier: body.scaleMultiplier ? parseFloat(body.scaleMultiplier) : existing.scaleMultiplier,
+        colorTint: body.colorTint !== undefined ? body.colorTint : existing.colorTint,
+
+        visible: body.visible !== undefined ? body.visible : existing.visible,
+        visibleDistance: body.visibleDistance ? parseFloat(body.visibleDistance) : existing.visibleDistance,
+
+        isActive: body.isActive !== undefined ? body.isActive : existing.isActive,
+        metadata: body.metadata || existing.metadata,
         updatedAt: new Date(),
       })
-      .where(eq(threedCharacters.id, parseInt(id)))
+      .where(
+        and(
+          eq(threedCharacters.id, parsedId),
+          eq(threedCharacters.userId, userId)
+        )
+      )
       .returning();
-    
-    // Update model usage tracking
-    if (oldModelId !== body.modelId) {
-      if (oldModelId) {
-        const otherCharacters = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(threedCharacters)
-          .where(eq(threedCharacters.modelId, oldModelId));
-        
-        if (otherCharacters[0]?.count === 0) {
-          await db
-            .update(threedModels)
-            .set({ usedByCharacters: false })
-            .where(eq(threedModels.id, oldModelId));
-        }
+
+    console.log('[Characters API] Updated character:', updated.id, updated.name);
+
+    // ✅ Update Character-Model relationships via project_assets
+    if (body.modelIds !== undefined) {
+      // ✅ Delete existing character-model associations
+      await db
+        .delete(projectAssets)
+        .where(
+          and(
+            eq(projectAssets.moduleId, parsedId),
+            eq(projectAssets.moduleType, 'threed_character'),
+            eq(projectAssets.assetType, 'threed_models'),
+            eq(projectAssets.userId, userId)
+          )
+        );
+
+      // ✅ Create new character-model associations
+      const modelIds = body.modelIds
+        .split(',')
+        .map((s) => parseInt(s.trim()))
+        .filter((id) => !isNaN(id));
+
+      for (const modelId of modelIds) {
+        await ensureTableSequence('project_assets');
+        await db.insert(projectAssets).values({
+          userId,
+          projectId: null,
+          moduleId: parsedId,
+          moduleType: 'threed_character',
+          assetType: 'threed_models',
+          assetId: modelId,
+          config: body.modelConfigs?.[modelId] || {},
+          isActive: true,
+        });
       }
-      
-      if (body.modelId) {
-        await db
-          .update(threedModels)
-          .set({ usedByCharacters: true })
-          .where(eq(threedModels.id, body.modelId));
-      }
+
+      console.log('[Characters API] Updated', modelIds.length, 'character-model associations');
     }
-    
-    return NextResponse.json({ success: true, data: updated });
+
+    // ✅ Handle ThreeD module association via project_assets
+    if (body.moduleId) {
+      const parsedModuleId = parseInt(body.moduleId);
+      const moduleType = body.moduleType || 'threed';
+
+      // ✅ Delete existing module association
+      await db
+        .delete(projectAssets)
+        .where(
+          and(
+            eq(projectAssets.assetType, 'threed_characters'),
+            eq(projectAssets.assetId, parsedId),
+            eq(projectAssets.moduleId, parsedModuleId),
+            eq(projectAssets.moduleType, moduleType),
+            eq(projectAssets.userId, userId)
+          )
+        );
+
+      // ✅ Create new module association
+      await ensureTableSequence('project_assets');
+      const [module] = await db
+        .select()
+        .from(threed)
+        .where(
+          and(
+            eq(threed.id, parsedModuleId),
+            eq(threed.userId, userId)
+          )
+        )
+        .limit(1);
+
+      await db.insert(projectAssets).values({
+        userId,
+        projectId: module?.projectId || null,
+        moduleId: parsedModuleId,
+        moduleType: moduleType,
+        assetType: 'threed_characters',
+        assetId: parsedId,
+        config: body.assetConfig || {},
+        isActive: true,
+      });
+      console.log('[Characters API] Updated module association for character:', parsedId);
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: updated,
+      message: 'Character updated successfully',
+    });
   } catch (error) {
-    console.error('Error updating character:', error);
+    console.error('[Characters API] PUT error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update character', details: error.message },
+      {
+        success: false,
+        error: 'Failed to update character',
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// DELETE /api/threed/characters - Delete a character (ADMIN ONLY)
+// DELETE /api/threed/characters - Delete a character
 // ============================================
 export async function DELETE(request: NextRequest) {
   try {
@@ -393,65 +722,93 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const url = new URL(request.url);
-    const id = url.searchParams.get('id');
-    
+    const userId = session.user.id;
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Character ID is required' },
+        { success: false, error: 'Missing character ID' },
         { status: 400 }
       );
     }
-    
-    // Verify ownership
-    const [character] = await db
-      .select({ modelId: threedCharacters.modelId })
+
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid character ID' },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Check if character exists and belongs to user
+    const [existing] = await db
+      .select()
       .from(threedCharacters)
       .where(
         and(
-          eq(threedCharacters.id, parseInt(id)),
-          eq(threedCharacters.userId, session.user.id)
+          eq(threedCharacters.id, parsedId),
+          eq(threedCharacters.userId, userId)
         )
       )
       .limit(1);
 
-    if (!character) {
+    if (!existing) {
       return NextResponse.json(
         { success: false, error: 'Character not found' },
         { status: 404 }
       );
     }
-    
-    // Delete character
+
+    // ✅ Delete character-model associations (project_assets)
     await db
+      .delete(projectAssets)
+      .where(
+        and(
+          eq(projectAssets.moduleId, parsedId),
+          eq(projectAssets.moduleType, 'threed_character'),
+          eq(projectAssets.assetType, 'threed_models'),
+          eq(projectAssets.userId, userId)
+        )
+      );
+
+    // ✅ Delete module-level project_assets associations
+    await db
+      .delete(projectAssets)
+      .where(
+        and(
+          eq(projectAssets.assetType, 'threed_characters'),
+          eq(projectAssets.assetId, parsedId),
+          eq(projectAssets.userId, userId)
+        )
+      );
+
+    // ✅ Delete the character
+    const [deleted] = await db
       .delete(threedCharacters)
       .where(
         and(
-          eq(threedCharacters.id, parseInt(id)),
-          eq(threedCharacters.userId, session.user.id)
+          eq(threedCharacters.id, parsedId),
+          eq(threedCharacters.userId, userId)
         )
-      );
-    
-    // Update model usage if this was the last character using it
-    if (character?.modelId) {
-      const otherCharacters = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(threedCharacters)
-        .where(eq(threedCharacters.modelId, character.modelId));
-      
-      if (otherCharacters[0]?.count === 0) {
-        await db
-          .update(threedModels)
-          .set({ usedByCharacters: false })
-          .where(eq(threedModels.id, character.modelId));
-      }
-    }
-    
-    return NextResponse.json({ success: true, message: 'Character deleted successfully' });
+      )
+      .returning();
+
+    console.log('[Characters API] Deleted character:', deleted.id, deleted.name);
+
+    return NextResponse.json({
+      success: true,
+      data: deleted,
+      message: 'Character deleted successfully',
+    });
   } catch (error) {
-    console.error('Error deleting character:', error);
+    console.error('[Characters API] DELETE error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete character' },
+      {
+        success: false,
+        error: 'Failed to delete character',
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }

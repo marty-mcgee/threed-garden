@@ -2,37 +2,51 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedModels, threedPlants, threedModelFiles, threedCharacters } from '@/lib/schema/threed';
-import { eq, and, desc, sql, or } from 'drizzle-orm';
-import { put, del } from '@vercel/blob';
+import { threedModels, threed } from '@/lib/schema/threed';
+import { projectAssets } from '@/lib/schema/project';
+import { eq, and, desc, or, sql } from 'drizzle-orm';
+import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/threed/models - Fetch models (PUBLIC)
+// GET /api/threed/models
 // ============================================
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
     
-    const searchParams = request.nextUrl.searchParams;
+    const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const plantId = searchParams.get('plantId');
-    const characterId = searchParams.get('characterId');
-    const modelType = searchParams.get('modelType');
+    const moduleId = searchParams.get('moduleId');
     const isActive = searchParams.get('isActive');
+    const modelType = searchParams.get('modelType');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // Get single model
+    // ✅ Get a single model by ID
     if (id) {
+      const parsedId = parseInt(id);
+      if (isNaN(parsedId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid model ID' },
+          { status: 400 }
+        );
+      }
+
       let query = db
         .select()
         .from(threedModels)
-        .where(eq(threedModels.id, parseInt(id)));
+        .where(eq(threedModels.id, parsedId));
 
-      // Public users only see active models
       if (!userId) {
         query = query.where(eq(threedModels.isActive, true));
+      } else {
+        query = query.where(
+          or(
+            eq(threedModels.userId, userId),
+            eq(threedModels.isActive, true)
+          )
+        );
       }
 
       const [model] = await query.limit(1);
@@ -44,36 +58,83 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // Get associated files
-      const files = await db
+      // ✅ Get project asset associations
+      const assetAssociations = await db
         .select()
-        .from(threedModelFiles)
-        .where(eq(threedModelFiles.modelId, model.id))
-        .orderBy(threedModelFiles.loadOrder);
+        .from(projectAssets)
+        .where(
+          and(
+            eq(projectAssets.assetType, 'threed_models'),
+            eq(projectAssets.assetId, model.id),
+            eq(projectAssets.userId, userId || '')
+          )
+        );
 
       return NextResponse.json({
         success: true,
         data: {
           ...model,
-          files,
-          mainModelFile: files.find(f => f.fileType === 'model'),
-          textures: files.filter(f => f.fileType === 'texture'),
-          binaries: files.filter(f => f.fileType === 'binary'),
+          projectAssets: assetAssociations,
         },
       });
     }
 
-    // Build query
+    // ✅ Get models for a specific ThreeD module (via project_assets)
+    if (moduleId) {
+      const parsedModuleId = parseInt(moduleId);
+      if (isNaN(parsedModuleId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid module ID' },
+          { status: 400 }
+        );
+      }
+
+      if (!userId) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+
+      // ✅ Get models via project_assets junction
+      const results = await db
+        .select()
+        .from(threedModels)
+        .innerJoin(
+          projectAssets,
+          and(
+            eq(projectAssets.assetId, threedModels.id),
+            eq(projectAssets.assetType, 'threed_models'),
+            eq(projectAssets.moduleId, parsedModuleId),
+            eq(projectAssets.moduleType, 'threed'),
+            eq(projectAssets.userId, userId)
+          )
+        )
+        .orderBy(desc(threedModels.createdAt));
+
+      const models = results.map((row) => ({
+        ...row.threedModels,
+        projectAssetConfig: row.projectAssets.config,
+        isActiveInProject: row.projectAssets.isActive,
+        projectAssetId: row.projectAssets.id,
+      }));
+
+      return NextResponse.json({
+        success: true,
+        data: models,
+        count: models.length,
+      });
+    }
+
+    // ✅ List all models
     let query = db
       .select()
       .from(threedModels)
       .$dynamic();
 
-    // Public users only see active models
     if (!userId) {
       query = query.where(eq(threedModels.isActive, true));
     } else {
-      // Authenticated users see their models + active public models
       query = query.where(
         or(
           eq(threedModels.userId, userId),
@@ -82,52 +143,26 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Apply filters
-    if (plantId) {
-      query = query.where(eq(threedModels.usedByPlants, true));
-    }
-    if (characterId) {
-      query = query.where(eq(threedModels.usedByCharacters, true));
+    if (isActive !== null) {
+      query = query.where(eq(threedModels.isActive, isActive === 'true'));
     }
     if (modelType) {
       query = query.where(eq(threedModels.modelType, modelType));
     }
-    if (isActive !== null) {
-      query = query.where(eq(threedModels.isActive, isActive === 'true'));
-    }
 
-    // Get total count
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedModels)
       .where(query._where);
 
-    // Apply pagination and ordering
     const models = await query
       .orderBy(desc(threedModels.createdAt))
       .limit(limit)
       .offset(offset);
 
-    // For each model, get associated files
-    const modelsWithFiles = await Promise.all(models.map(async (model) => {
-      const files = await db
-        .select()
-        .from(threedModelFiles)
-        .where(eq(threedModelFiles.modelId, model.id))
-        .orderBy(threedModelFiles.loadOrder);
-      
-      return {
-        ...model,
-        files,
-        mainModelFile: files.find(f => f.fileType === 'model'),
-        textures: files.filter(f => f.fileType === 'texture'),
-        binaries: files.filter(f => f.fileType === 'binary'),
-      };
-    }));
-
     return NextResponse.json({
       success: true,
-      data: modelsWithFiles,
+      data: models,
       pagination: {
         limit,
         offset,
@@ -135,18 +170,152 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching models:', error);
+    console.error('[Models API] GET error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch models', details: error.message },
+      { success: false, error: 'Failed to fetch models' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// POST /api/threed/models - Upload model (ADMIN ONLY)
+// POST /api/threed/models - Create a new model
 // ============================================
 export async function POST(request: NextRequest) {
+  try {
+    // ✅ Check content type to handle both JSON and FormData
+    const contentType = request.headers.get('content-type') || '';
+    
+    let body: any;
+    let isFormData = false;
+    
+    if (contentType.includes('multipart/form-data')) {
+      // Handle FormData (for file uploads)
+      isFormData = true;
+      const formData = await request.formData();
+      body = Object.fromEntries(formData.entries());
+      // ✅ For file uploads, extract the file path from the file object
+      if (body.file && body.file instanceof File) {
+        body.filePath = body.filePath || `/uploads/models/${body.file.name}`;
+      }
+    } else {
+      // Handle JSON
+      body = await request.json();
+    }
+
+    console.log('[Models API] POST body:', body);
+
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.user.id;
+
+    // ✅ Required fields
+    if (!body.modelName) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: modelName' },
+        { status: 400 }
+      );
+    }
+
+    if (!body.filePath) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: filePath' },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Create the model (free-standing, no module ID)
+    await ensureTableSequence('threed_models');
+
+    const [newModel] = await db
+      .insert(threedModels)
+      .values({
+        userId,
+        modelName: body.modelName.trim(),
+        modelType: body.modelType || 'custom',
+        filePath: body.filePath.trim(),
+        fileSize: body.fileSize ? parseInt(body.fileSize) : null,
+        thumbnailUrl: body.thumbnailUrl || null,
+        scale: body.scale ? parseFloat(body.scale) : 1,
+        rotationY: body.rotationY ? parseFloat(body.rotationY) : 0,
+        offsetX: body.offsetX ? parseFloat(body.offsetX) : 0,
+        offsetY: body.offsetY ? parseFloat(body.offsetY) : 0,
+        offsetZ: body.offsetZ ? parseFloat(body.offsetZ) : 0,
+        hasLOD: body.hasLOD === 'true' || body.hasLOD === true,
+        lodLevels: body.lodLevels || {},
+        animations: body.animations ? (typeof body.animations === 'string' ? JSON.parse(body.animations) : body.animations) : [],
+        defaultAnimation: body.defaultAnimation || null,
+        hasExternalFiles: body.hasExternalFiles === 'true' || body.hasExternalFiles === true,
+        textureCount: body.textureCount ? parseInt(body.textureCount) : 0,
+        isActive: body.isActive !== 'false' && body.isActive !== false,
+        isDefault: body.isDefault === 'true' || body.isDefault === true,
+        uploadedBy: body.uploadedBy || null,
+        uploadedAt: new Date(),
+        usedByPlants: body.usedByPlants === 'true' || body.usedByPlants === true,
+        usedByCharacters: body.usedByCharacters === 'true' || body.usedByCharacters === true,
+        metadata: body.metadata || {},
+      })
+      .returning();
+
+    // ✅ If moduleId is provided, create project_assets association
+    if (body.moduleId) {
+      const parsedModuleId = parseInt(body.moduleId);
+      const moduleType = body.moduleType || 'threed';
+      
+      // Verify module exists
+      const [module] = await db
+        .select()
+        .from(threed)
+        .where(
+          and(
+            eq(threed.id, parsedModuleId),
+            eq(threed.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (module) {
+        await ensureTableSequence('project_assets');
+        await db.insert(projectAssets).values({
+          userId,
+          projectId: module.projectId || null,
+          moduleId: parsedModuleId,
+          moduleType: moduleType,
+          assetType: 'threed_models',
+          assetId: newModel.id,
+          config: body.assetConfig || {},
+          isActive: true,
+        });
+        console.log('[Models API] Created project_assets association for model:', newModel.id);
+      }
+    }
+
+    console.log('[Models API] Created model:', newModel.id, newModel.modelName);
+
+    return NextResponse.json({
+      success: true,
+      data: newModel,
+      message: 'Model created successfully',
+    });
+  } catch (error) {
+    console.error('[Models API] POST error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create model', details: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    );
+  }
+}
+
+// ============================================
+// PUT /api/threed/models - Update a model
+// ============================================
+export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -156,347 +325,160 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const formData = await request.formData();
-    const files = formData.getAll('files') as File[];
-    const associationType = formData.get('associationType') as string;
-    const plantId = formData.get('plantId') as string;
-    const characterId = formData.get('characterId') as string;
-    const modelName = formData.get('modelName') as string;
-    const modelType = formData.get('modelType') as string;
-    const isDefault = formData.get('isDefault') === 'true';
-    
-    console.log('📦 Upload request:', {
-      filesCount: files.length,
-      associationType,
-      plantId,
-      characterId,
-      modelName,
-      modelType
-    });
-    
-    // Separate main model file from textures and binaries
-    let mainModelFile: File | null = null;
-    const textureFiles: File[] = [];
-    const binaryFiles: File[] = [];
-    
-    for (const file of files) {
-      const extension = file.name.split('.').pop()?.toLowerCase();
-      
-      if (extension === 'glb' || extension === 'gltf' || extension === 'fbx' || extension === 'obj') {
-        mainModelFile = file;
-      } else if (extension === 'bin') {
-        binaryFiles.push(file);
-      } else if (['jpg', 'jpeg', 'png', 'webp', 'tga', 'bmp'].includes(extension || '')) {
-        textureFiles.push(file);
-      }
-    }
-    
-    // Validation
-    if (!mainModelFile) {
-      return NextResponse.json(
-        { success: false, error: 'No main model file (.glb, .gltf, .fbx, or .obj) provided' },
-        { status: 400 }
-      );
-    }
-
-    if (!modelName) {
-      return NextResponse.json(
-        { success: false, error: 'Model name is required' },
-        { status: 400 }
-      );
-    }
-
     const userId = session.user.id;
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
-    // Validate association based on type
-    if (associationType === 'plant') {
-      if (!plantId) {
-        return NextResponse.json(
-          { success: false, error: 'Plant ID is required when associating with a plant' },
-          { status: 400 }
-        );
-      }
-      
-      // Check if plant exists and belongs to user
-      const plant = await db
-        .select()
-        .from(threedPlants)
-        .where(
-          and(
-            eq(threedPlants.id, parseInt(plantId)),
-            eq(threedPlants.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (plant.length === 0) {
-        return NextResponse.json(
-          { success: false, error: 'Plant not found' },
-          { status: 404 }
-        );
-      }
-    } else if (associationType === 'character') {
-      if (!characterId) {
-        return NextResponse.json(
-          { success: false, error: 'Character ID is required when associating with a character' },
-          { status: 400 }
-        );
-      }
-      
-      // Check if character exists and belongs to user
-      const character = await db
-        .select()
-        .from(threedCharacters)
-        .where(
-          and(
-            eq(threedCharacters.id, parseInt(characterId)),
-            eq(threedCharacters.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (character.length === 0) {
-        return NextResponse.json(
-          { success: false, error: 'Character not found' },
-          { status: 404 }
-        );
-      }
-    }
-
-    // Validate main model file type
-    const validExtensions = ['.gltf', '.glb', '.fbx', '.obj'];
-    const fileExtension = mainModelFile.name.substring(mainModelFile.name.lastIndexOf('.')).toLowerCase();
-    if (!validExtensions.includes(fileExtension)) {
+    if (!id) {
       return NextResponse.json(
-        { success: false, error: `Invalid main model file type. Allowed: ${validExtensions.join(', ')}` },
+        { success: false, error: 'Missing model ID' },
         { status: 400 }
       );
     }
 
-    // Parse additional metadata
-    const scale = parseFloat(formData.get('scale') as string) || 1.0;
-    const rotationY = parseFloat(formData.get('rotationY') as string) || 0.0;
-    const offsetX = parseFloat(formData.get('offsetX') as string) || 0.0;
-    const offsetY = parseFloat(formData.get('offsetY') as string) || 0.0;
-    const offsetZ = parseFloat(formData.get('offsetZ') as string) || 0.0;
-    
-    const hasLOD = formData.get('hasLOD') === 'true';
-    let lodLevels = {};
-    if (hasLOD) {
-      try {
-        lodLevels = JSON.parse(formData.get('lodLevels') as string || '{}');
-      } catch (e) {
-        console.warn('Invalid LOD levels JSON');
-      }
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid model ID' },
+        { status: 400 }
+      );
     }
 
-    let animations = [];
-    try {
-      animations = JSON.parse(formData.get('animations') as string || '[]');
-    } catch (e) {
-      console.warn('Invalid animations JSON');
+    // ✅ Check if model exists and belongs to user
+    const [existing] = await db
+      .select()
+      .from(threedModels)
+      .where(
+        and(
+          eq(threedModels.id, parsedId),
+          eq(threedModels.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Model not found' },
+        { status: 404 }
+      );
     }
 
-    const defaultAnimation = formData.get('defaultAnimation') as string || null;
-    
-    let metadata = {};
-    try {
-      metadata = JSON.parse(formData.get('metadata') as string || '{}');
-    } catch (e) {
-      console.warn('Invalid metadata JSON');
-    }
+    const body = await request.json();
 
-    // Create model record
-    const timestamp = Date.now();
-    const [newModel] = await db
-      .insert(threedModels)
-      .values({
-        userId,
-        modelName,
-        modelType: modelType || fileExtension.substring(1),
-        filePath: '', // Will update after upload
-        fileSize: mainModelFile.size,
-        scale: scale.toString(),
-        rotationY: rotationY.toString(),
-        offsetX: offsetX.toString(),
-        offsetY: offsetY.toString(),
-        offsetZ: offsetZ.toString(),
-        hasLOD,
-        lodLevels,
-        animations,
-        defaultAnimation,
-        hasExternalFiles: textureFiles.length > 0 || binaryFiles.length > 0,
-        textureCount: textureFiles.length,
-        isActive: true,
-        isDefault: false,
-        usedByPlants: associationType === 'plant',
-        usedByCharacters: associationType === 'character',
-        uploadedBy: session.user.email || 'system',
-        metadata,
-        uploadedAt: new Date(),
-      })
-      .returning();
-
-    console.log(`📝 Created model record: ${newModel.id}`);
-
-    // Upload main model file
-    const mainFileName = `${timestamp}-${mainModelFile.name}`;
-    const mainBlob = await put(`models/${newModel.id}/${mainFileName}`, mainModelFile, {
-      access: 'public',
-      addRandomSuffix: false,
-    });
-
-    console.log(`✅ Uploaded main model to: ${mainBlob.url}`);
-
-    // Create model file record for main file
-    const [mainFileRecord] = await db
-      .insert(threedModelFiles)
-      .values({
-        userId,
-        modelId: newModel.id,
-        fileName: mainModelFile.name,
-        fileType: 'model',
-        filePath: mainBlob.url,
-        fileSize: mainModelFile.size,
-        loadOrder: 0,
-      })
-      .returning();
-
-    // Update model with main file path
-    await db
+    // ✅ Update the model
+    const [updated] = await db
       .update(threedModels)
       .set({
-        filePath: mainBlob.url,
-        mainModelFileId: mainFileRecord.id,
+        modelName: body.modelName?.trim() || existing.modelName,
+        modelType: body.modelType || existing.modelType,
+        filePath: body.filePath?.trim() || existing.filePath,
+        fileSize: body.fileSize !== undefined ? parseInt(body.fileSize) : existing.fileSize,
+        thumbnailUrl: body.thumbnailUrl !== undefined ? body.thumbnailUrl : existing.thumbnailUrl,
+        scale: body.scale !== undefined ? parseFloat(body.scale) : existing.scale,
+        rotationY: body.rotationY !== undefined ? parseFloat(body.rotationY) : existing.rotationY,
+        offsetX: body.offsetX !== undefined ? parseFloat(body.offsetX) : existing.offsetX,
+        offsetY: body.offsetY !== undefined ? parseFloat(body.offsetY) : existing.offsetY,
+        offsetZ: body.offsetZ !== undefined ? parseFloat(body.offsetZ) : existing.offsetZ,
+        hasLOD: body.hasLOD !== undefined ? body.hasLOD : existing.hasLOD,
+        lodLevels: body.lodLevels || existing.lodLevels,
+        animations: body.animations || existing.animations,
+        defaultAnimation: body.defaultAnimation !== undefined ? body.defaultAnimation : existing.defaultAnimation,
+        hasExternalFiles: body.hasExternalFiles !== undefined ? body.hasExternalFiles : existing.hasExternalFiles,
+        textureCount: body.textureCount !== undefined ? parseInt(body.textureCount) : existing.textureCount,
+        isActive: body.isActive !== undefined ? body.isActive : existing.isActive,
+        isDefault: body.isDefault !== undefined ? body.isDefault : existing.isDefault,
+        uploadedBy: body.uploadedBy || existing.uploadedBy,
+        usedByPlants: body.usedByPlants !== undefined ? body.usedByPlants : existing.usedByPlants,
+        usedByCharacters: body.usedByCharacters !== undefined ? body.usedByCharacters : existing.usedByCharacters,
+        metadata: body.metadata || existing.metadata,
+        updatedAt: new Date(),
       })
-      .where(eq(threedModels.id, newModel.id));
+      .where(
+        and(
+          eq(threedModels.id, parsedId),
+          eq(threedModels.userId, userId)
+        )
+      )
+      .returning();
 
-    // Upload texture files
-    const textureUploads = textureFiles.map(async (file, index) => {
-      const textureFileName = `${timestamp}-${file.name}`;
-      const blob = await put(`models/${newModel.id}/textures/${textureFileName}`, file, {
-        access: 'public',
-        addRandomSuffix: false,
-      });
+    // ✅ Handle project_assets association
+    if (body.moduleId) {
+      const parsedModuleId = parseInt(body.moduleId);
+      const moduleType = body.moduleType || 'threed';
       
-      // Determine texture type from filename
-      let textureType = 'baseColor';
-      const lowerName = file.name.toLowerCase();
-      if (lowerName.includes('normal')) textureType = 'normalMap';
-      else if (lowerName.includes('roughness')) textureType = 'roughness';
-      else if (lowerName.includes('metallic')) textureType = 'metallic';
-      else if (lowerName.includes('emissive')) textureType = 'emissive';
-      else if (lowerName.includes('occlusion')) textureType = 'occlusion';
-      else if (lowerName.includes('ao')) textureType = 'occlusion';
-      
-      return db
-        .insert(threedModelFiles)
-        .values({
-          userId,
-          modelId: newModel.id,
-          fileName: file.name,
-          fileType: 'texture',
-          textureType,
-          filePath: blob.url,
-          fileSize: file.size,
-          loadOrder: index + 1,
-        });
-    });
-    
-    // Upload binary files
-    const binaryUploads = binaryFiles.map(async (file, index) => {
-      const binaryFileName = `${timestamp}-${file.name}`;
-      const blob = await put(`models/${newModel.id}/bin/${binaryFileName}`, file, {
-        access: 'public',
-        addRandomSuffix: false,
-      });
-      
-      return db
-        .insert(threedModelFiles)
-        .values({
-          userId,
-          modelId: newModel.id,
-          fileName: file.name,
-          fileType: 'binary',
-          filePath: blob.url,
-          fileSize: file.size,
-          isBinaryBuffer: true,
-          loadOrder: index + 100,
-        });
-    });
-    
-    await Promise.all([...textureUploads, ...binaryUploads]);
+      // Check if association exists
+      const [existingAsset] = await db
+        .select()
+        .from(projectAssets)
+        .where(
+          and(
+            eq(projectAssets.assetType, 'threed_models'),
+            eq(projectAssets.assetId, parsedId),
+            eq(projectAssets.moduleId, parsedModuleId),
+            eq(projectAssets.moduleType, moduleType),
+            eq(projectAssets.userId, userId)
+          )
+        )
+        .limit(1);
 
-    // Associate with plant or character
-    if (associationType === 'plant' && plantId) {
-      if (isDefault) {
+      if (existingAsset) {
+        // Update existing association
         await db
-          .update(threedPlants)
+          .update(projectAssets)
           .set({
-            modelId: newModel.id,
+            config: body.assetConfig || existingAsset.config,
             updatedAt: new Date(),
           })
-          .where(eq(threedPlants.id, parseInt(plantId)));
+          .where(eq(projectAssets.id, existingAsset.id));
+        console.log('[Models API] Updated project_assets association for model:', parsedId);
+      } else {
+        // Create new association
+        await ensureTableSequence('project_assets');
+        
+        // Get the module to find projectId
+        const [module] = await db
+          .select()
+          .from(threed)
+          .where(
+            and(
+              eq(threed.id, parsedModuleId),
+              eq(threed.userId, userId)
+            )
+          )
+          .limit(1);
+
+        await db.insert(projectAssets).values({
+          userId,
+          projectId: module?.projectId || null,
+          moduleId: parsedModuleId,
+          moduleType: moduleType,
+          assetType: 'threed_models',
+          assetId: parsedId,
+          config: body.assetConfig || {},
+          isActive: true,
+        });
+        console.log('[Models API] Created project_assets association for model:', parsedId);
       }
-      await db
-        .update(threedModels)
-        .set({ usedByPlants: true })
-        .where(eq(threedModels.id, newModel.id));
-      
-      console.log(`🔗 Associated model ${newModel.id} with plant ${plantId}`);
-      
-    } else if (associationType === 'character' && characterId) {
-      await db
-        .update(threedCharacters)
-        .set({
-          modelId: newModel.id,
-          updatedAt: new Date(),
-        })
-        .where(eq(threedCharacters.id, parseInt(characterId)));
-      
-      await db
-        .update(threedModels)
-        .set({ usedByCharacters: true })
-        .where(eq(threedModels.id, newModel.id));
-      
-      console.log(`🔗 Associated model ${newModel.id} with character ${characterId}`);
     }
 
-    // Get all uploaded files for response
-    const allFiles = await db
-      .select()
-      .from(threedModelFiles)
-      .where(eq(threedModelFiles.modelId, newModel.id));
+    console.log('[Models API] Updated model:', updated.id, updated.modelName);
 
     return NextResponse.json({
       success: true,
-      data: {
-        ...newModel,
-        files: allFiles,
-        mainModelFile: allFiles.find(f => f.fileType === 'model'),
-        textures: allFiles.filter(f => f.fileType === 'texture'),
-        binaries: allFiles.filter(f => f.fileType === 'binary'),
-        fileCount: 1 + textureFiles.length + binaryFiles.length,
-        textureCount: textureFiles.length,
-      },
-      message: `Model uploaded successfully${associationType !== 'none' ? ` and associated with ${associationType}` : ''}!`,
+      data: updated,
+      message: 'Model updated successfully',
     });
-    
   } catch (error) {
-    console.error('❌ Error uploading model:', error);
+    console.error('[Models API] PUT error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to upload model', 
-        details: error.message,
-      },
+      { success: false, error: 'Failed to update model' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// DELETE /api/threed/models - Bulk delete models (ADMIN ONLY)
+// DELETE /api/threed/models - Delete a model
 // ============================================
 export async function DELETE(request: NextRequest) {
   try {
@@ -508,90 +490,77 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const searchParams = request.nextUrl.searchParams;
-    const ids = searchParams.get('ids')?.split(',') || [];
-    
-    if (ids.length === 0) {
+    const userId = session.user.id;
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
       return NextResponse.json(
-        { success: false, error: 'No model IDs provided' },
+        { success: false, error: 'Missing model ID' },
         { status: 400 }
       );
     }
 
-    const deletedModels = [];
-    const errors = [];
-
-    for (const id of ids) {
-      try {
-        // Verify ownership
-        const [model] = await db
-          .select()
-          .from(threedModels)
-          .where(
-            and(
-              eq(threedModels.id, parseInt(id)),
-              eq(threedModels.userId, session.user.id)
-            )
-          )
-          .limit(1);
-
-        if (model) {
-          // First, remove the model reference from any plants that use it
-          await db
-            .update(threedPlants)
-            .set({ modelId: null, updatedAt: new Date() })
-            .where(eq(threedPlants.modelId, parseInt(id)));
-
-          // Remove from characters
-          await db
-            .update(threedCharacters)
-            .set({ modelId: null, updatedAt: new Date() })
-            .where(eq(threedCharacters.modelId, parseInt(id)));
-
-          // Get all associated files
-          const files = await db
-            .select()
-            .from(threedModelFiles)
-            .where(eq(threedModelFiles.modelId, parseInt(id)));
-
-          // Delete all files from Vercel Blob
-          for (const file of files) {
-            try {
-              await del(file.filePath);
-            } catch (blobError) {
-              console.warn(`Failed to delete blob for file ${file.id}:`, blobError);
-            }
-          }
-
-          // Delete model files from database
-          await db
-            .delete(threedModelFiles)
-            .where(eq(threedModelFiles.modelId, parseInt(id)));
-
-          // Delete model from database
-          await db
-            .delete(threedModels)
-            .where(eq(threedModels.id, parseInt(id)));
-          
-          deletedModels.push(id);
-        } else {
-          errors.push({ id, error: 'Model not found or not owned by user' });
-        }
-      } catch (error) {
-        errors.push({ id, error: error.message });
-      }
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid model ID' },
+        { status: 400 }
+      );
     }
+
+    // ✅ Check if model exists and belongs to user
+    const [existing] = await db
+      .select()
+      .from(threedModels)
+      .where(
+        and(
+          eq(threedModels.id, parsedId),
+          eq(threedModels.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Model not found' },
+        { status: 404 }
+      );
+    }
+
+    // ✅ Delete project_assets associations first
+    await db
+      .delete(projectAssets)
+      .where(
+        and(
+          eq(projectAssets.assetType, 'threed_models'),
+          eq(projectAssets.assetId, parsedId),
+          eq(projectAssets.userId, userId)
+        )
+      );
+
+    // ✅ Delete the model
+    const [deleted] = await db
+      .delete(threedModels)
+      .where(
+        and(
+          eq(threedModels.id, parsedId),
+          eq(threedModels.userId, userId)
+        )
+      )
+      .returning();
+
+    console.log('[Models API] Deleted model:', deleted.id, deleted.modelName);
 
     return NextResponse.json({
       success: true,
-      deleted: deletedModels,
-      errors: errors.length > 0 ? errors : undefined,
-      message: `Deleted ${deletedModels.length} models and all associated files`,
+      data: deleted,
+      message: 'Model deleted successfully',
     });
   } catch (error) {
-    console.error('Error deleting models:', error);
+    console.error('[Models API] DELETE error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete models' },
+      { success: false, error: 'Failed to delete model' },
       { status: 500 }
     );
   }

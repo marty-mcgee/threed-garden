@@ -42,39 +42,6 @@ export enum WaterNeeds {
   HIGH = 'High',
 }
 
-export enum PlantingStatus {
-  PLANNED = 'planned',
-  PLANTED = 'planted',
-  GROWING = 'growing',
-  HARVESTING = 'harvesting',
-  HARVESTED = 'harvested',
-  FAILED = 'failed',
-}
-
-export enum GrowthStage {
-  SEED = 'seed',
-  SEEDLING = 'seedling',
-  VEGETATIVE = 'vegetative',
-  FLOWERING = 'flowering',
-  FRUITING = 'fruiting',
-  MATURE = 'mature',
-  DORMANT = 'dormant',
-}
-
-export enum TaskPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  URGENT = 'urgent',
-}
-
-export enum TaskStatus {
-  PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-}
-
 export enum BedShape {
   RECTANGLE = 'rectangle',
   SQUARE = 'square',
@@ -82,13 +49,6 @@ export enum BedShape {
   RAISED = 'raised',
   CONTAINER = 'container',
   CUSTOM = 'custom',
-}
-
-export enum FarmbotStatus {
-  ONLINE = 'online',
-  OFFLINE = 'offline',
-  MAINTENANCE = 'maintenance',
-  ERROR = 'error',
 }
 
 export enum ModelType {
@@ -104,16 +64,6 @@ export enum ModelType {
   FRUIT_GENERIC = 'fruit-generic',
   TREE_GENERIC = 'tree-generic',
   CUSTOM = 'custom',
-}
-
-export enum CharacterType {
-  ANIMAL = 'animal',
-  BIRD = 'bird',
-  INSECT = 'insect',
-  MYTHICAL = 'mythical',
-  HUMAN = 'human',
-  ROBOT = 'robot',
-  DECORATION = 'decoration',
 }
 
 // ============================================
@@ -533,3 +483,866 @@ export interface ThreeDData {
   farmbots: FarmBot3D[];
   weather: Weather3D | null;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// lib/types/threed.ts
+
+// ============================================
+// ENUMS (Add these)
+// ============================================
+
+// export enum ModelType {
+//   PROCEDURAL = 'procedural',
+//   GLTF = 'gltf',
+//   GLB = 'glb',
+//   FBX = 'fbx',
+//   USDZ = 'usdz',
+//   OBJ = 'obj',
+//   HERB_GENERIC = 'herb-generic',
+//   VEGETABLE_GENERIC = 'vegetable-generic',
+//   FLOWER_GENERIC = 'flower-generic',
+//   FRUIT_GENERIC = 'fruit-generic',
+//   TREE_GENERIC = 'tree-generic',
+//   CUSTOM = 'custom',
+// }
+
+export enum ModelStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  ARCHIVED = 'archived',
+}
+
+// ============================================
+// INTERFACES (Add these)
+// ============================================
+
+export interface ThreeDModel {
+  id: number;
+  userId: string;
+  modelName: string;
+  modelType: ModelType;
+  filePath: string;
+  fileSize: number | null;
+  thumbnailUrl: string | null;
+  scale: number | null;
+  rotationY: number | null;
+  offsetX: number | null;
+  offsetY: number | null;
+  offsetZ: number | null;
+  hasLOD: boolean;
+  lodLevels: any;
+  animations: any[];
+  defaultAnimation: string | null;
+  hasExternalFiles: boolean;
+  textureCount: number;
+  isActive: boolean;
+  isDefault: boolean;
+  uploadedBy: string | null;
+  uploadedAt: string | null;
+  usedByPlants: boolean;
+  usedByCharacters: boolean;
+  metadata: any;
+  createdAt: string;
+  updatedAt: string;
+  // ✅ Project asset associations (returned from API)
+  projectAssets?: any[];
+}
+
+export interface ThreeDModelFormData {
+  modelName: string;
+  modelType: ModelType;
+  filePath: string;
+  fileSize: string;
+  thumbnailUrl: string;
+  scale: string;
+  rotationY: string;
+  offsetX: string;
+  offsetY: string;
+  offsetZ: string;
+  hasLOD: boolean;
+  animations: string;
+  defaultAnimation: string;
+  hasExternalFiles: boolean;
+  textureCount: string;
+  isActive: boolean;
+  isDefault: boolean;
+  usedByPlants: boolean;
+  usedByCharacters: boolean;
+  uploadedBy: string;
+}
+
+// ============================================
+// OPTIONS (Add these)
+// ============================================
+
+export const MODEL_TYPE_OPTIONS: ThreeDSelectOption[] = [
+  { value: ModelType.PROCEDURAL, label: 'Procedural' },
+  { value: ModelType.GLTF, label: 'GLTF' },
+  { value: ModelType.GLB, label: 'GLB' },
+  { value: ModelType.FBX, label: 'FBX' },
+  { value: ModelType.USDZ, label: 'USDZ' },
+  { value: ModelType.OBJ, label: 'OBJ' },
+  { value: ModelType.HERB_GENERIC, label: 'Herb (Generic)' },
+  { value: ModelType.VEGETABLE_GENERIC, label: 'Vegetable (Generic)' },
+  { value: ModelType.FLOWER_GENERIC, label: 'Flower (Generic)' },
+  { value: ModelType.FRUIT_GENERIC, label: 'Fruit (Generic)' },
+  { value: ModelType.TREE_GENERIC, label: 'Tree (Generic)' },
+  { value: ModelType.CUSTOM, label: 'Custom' },
+];
+
+export const MODEL_STATUS_OPTIONS: ThreeDSelectOption[] = [
+  { value: ModelStatus.ACTIVE, label: 'Active' },
+  { value: ModelStatus.INACTIVE, label: 'Inactive' },
+  { value: ModelStatus.ARCHIVED, label: 'Archived' },
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// lib/types/threed.ts
+
+// ============================================
+// CHARACTER ENUMS
+// ============================================
+
+export enum CharacterType {
+  ANIMAL = 'animal',
+  BIRD = 'bird',
+  INSECT = 'insect',
+  MYTHICAL = 'mythical',
+  HUMAN = 'human',
+  ROBOT = 'robot',
+  DECORATION = 'decoration',
+}
+
+export enum CharacterStatus {
+  ACTIVE = 'active',
+  IDLE = 'idle',
+  SLEEPING = 'sleeping',
+  MOVING = 'moving',
+  HIDDEN = 'hidden',
+}
+
+export enum CharacterAnimation {
+  IDLE = 'idle',
+  WALK = 'walk',
+  RUN = 'run',
+  FLY = 'fly',
+  DANCE = 'dance',
+  SWAY = 'sway',
+  FLOAT = 'float',
+  SPIN = 'spin',
+  BOUNCE = 'bounce',
+}
+
+export enum CharacterMovementType {
+  STATIONARY = 'stationary',
+  WANDER = 'wander',
+  PATROL = 'patrol',
+  CIRCLE = 'circle',
+  FOLLOW = 'follow',
+  TELEPORT = 'teleport',
+}
+
+export enum CharacterWeatherSensitivity {
+  ALL = 'all',
+  SUNNY_ONLY = 'sunny_only',
+  RAINY_ONLY = 'rainy_only',
+  NO_RAIN = 'no_rain',
+  NO_SNOW = 'no_snow',
+}
+
+export enum CharacterEmote {
+  NONE = 'none',
+  HAPPY = 'happy',
+  SAD = 'sad',
+  SURPRISED = 'surprised',
+  ANGRY = 'angry',
+  WAVE = 'wave',
+  DANCE = 'dance',
+  SLEEP = 'sleep',
+}
+
+// ============================================
+// CHARACTER INTERFACES
+// ============================================
+
+export interface ThreeDCharacter {
+  id: number;
+  userId: string;
+  characterId: string;
+  name: string;
+  description: string | null;
+  type: CharacterType;
+  status: CharacterStatus;
+  
+  // Model relationships (many-to-many)
+  characterModels?: CharacterModelAssociation[];
+  
+  // Animation
+  animations: CharacterAnimation[];
+  defaultAnimation: CharacterAnimation | null;
+  animationSpeed: number | null;
+  
+  // Movement
+  isMovable: boolean;
+  movementType: CharacterMovementType | null;
+  movementPattern: string | null;
+  movementRadius: number | null;
+  movementSpeed: number | null;
+  patrolWaypoints: any[];
+  followTarget: string | null;
+  followDistance: number | null;
+  teleportPositions: any[];
+  teleportInterval: number | null;
+  
+  // Interaction
+  interactable: boolean;
+  interactionMessage: string | null;
+  soundEffect: string | null;
+  
+  // Emotes
+  defaultEmote: CharacterEmote | null;
+  emoteOnInteract: CharacterEmote | null;
+  
+  // Time-based activation
+  activeStartHour: number | null;
+  activeEndHour: number | null;
+  
+  // Weather sensitivity
+  weatherSensitivity: CharacterWeatherSensitivity | null;
+  
+  // Positioning
+  bedId: number | null;
+  positionX: number | null;
+  positionY: number | null;
+  positionZ: number | null;
+  rotation: number | null;
+  scale: number | null;
+  scaleMultiplier: number | null;
+  colorTint: string | null;
+  
+  // Visibility
+  visible: boolean;
+  visibleDistance: number | null;
+  
+  // Status
+  isActive: boolean;
+  metadata: any;
+  createdAt: string;
+  updatedAt: string;
+  
+  // Project asset associations
+  projectAssets?: any[];
+}
+
+export interface CharacterModelAssociation {
+  id: number;
+  characterId: number;
+  modelId: number;
+  model?: ThreeDModel;
+  config: any;
+  isActive: boolean;
+}
+
+export interface ThreeDCharacterFormData {
+  name: string;
+  description: string;
+  type: CharacterType;
+  status: CharacterStatus;
+  
+  // Model selection (comma-separated model IDs)
+  modelIds: string;
+  
+  animations: string;
+  defaultAnimation: string;
+  animationSpeed: string;
+  
+  isMovable: boolean;
+  movementType: string;
+  movementPattern: string;
+  movementRadius: string;
+  movementSpeed: string;
+  patrolWaypoints: string;
+  followTarget: string;
+  followDistance: string;
+  teleportPositions: string;
+  teleportInterval: string;
+  
+  interactable: boolean;
+  interactionMessage: string;
+  soundEffect: string;
+  defaultEmote: string;
+  emoteOnInteract: string;
+  
+  activeStartHour: string;
+  activeEndHour: string;
+  weatherSensitivity: string;
+  
+  bedId: string;
+  positionX: string;
+  positionY: string;
+  positionZ: string;
+  rotation: string;
+  scale: string;
+  scaleMultiplier: string;
+  colorTint: string;
+  
+  visible: boolean;
+  visibleDistance: string;
+  isActive: boolean;
+}
+
+// ============================================
+// CHARACTER OPTIONS
+// ============================================
+
+export const CHARACTER_TYPE_OPTIONS: ThreeDSelectOption[] = [
+  { value: CharacterType.ANIMAL, label: 'Animal' },
+  { value: CharacterType.BIRD, label: 'Bird' },
+  { value: CharacterType.INSECT, label: 'Insect' },
+  { value: CharacterType.MYTHICAL, label: 'Mythical' },
+  { value: CharacterType.HUMAN, label: 'Human' },
+  { value: CharacterType.ROBOT, label: 'Robot' },
+  { value: CharacterType.DECORATION, label: 'Decoration' },
+];
+
+export const CHARACTER_STATUS_OPTIONS: ThreeDSelectOption[] = [
+  { value: CharacterStatus.ACTIVE, label: 'Active' },
+  { value: CharacterStatus.IDLE, label: 'Idle' },
+  { value: CharacterStatus.SLEEPING, label: 'Sleeping' },
+  { value: CharacterStatus.MOVING, label: 'Moving' },
+  { value: CharacterStatus.HIDDEN, label: 'Hidden' },
+];
+
+export const CHARACTER_ANIMATION_OPTIONS: ThreeDSelectOption[] = [
+  { value: CharacterAnimation.IDLE, label: 'Idle' },
+  { value: CharacterAnimation.WALK, label: 'Walk' },
+  { value: CharacterAnimation.RUN, label: 'Run' },
+  { value: CharacterAnimation.FLY, label: 'Fly' },
+  { value: CharacterAnimation.DANCE, label: 'Dance' },
+  { value: CharacterAnimation.SWAY, label: 'Sway' },
+  { value: CharacterAnimation.FLOAT, label: 'Float' },
+  { value: CharacterAnimation.SPIN, label: 'Spin' },
+  { value: CharacterAnimation.BOUNCE, label: 'Bounce' },
+];
+
+export const CHARACTER_MOVEMENT_TYPE_OPTIONS: ThreeDSelectOption[] = [
+  { value: CharacterMovementType.STATIONARY, label: 'Stationary' },
+  { value: CharacterMovementType.WANDER, label: 'Wander' },
+  { value: CharacterMovementType.PATROL, label: 'Patrol' },
+  { value: CharacterMovementType.CIRCLE, label: 'Circle' },
+  { value: CharacterMovementType.FOLLOW, label: 'Follow' },
+  { value: CharacterMovementType.TELEPORT, label: 'Teleport' },
+];
+
+export const CHARACTER_EMOTE_OPTIONS: ThreeDSelectOption[] = [
+  { value: CharacterEmote.NONE, label: 'None' },
+  { value: CharacterEmote.HAPPY, label: 'Happy' },
+  { value: CharacterEmote.SAD, label: 'Sad' },
+  { value: CharacterEmote.SURPRISED, label: 'Surprised' },
+  { value: CharacterEmote.ANGRY, label: 'Angry' },
+  { value: CharacterEmote.WAVE, label: 'Wave' },
+  { value: CharacterEmote.DANCE, label: 'Dance' },
+  { value: CharacterEmote.SLEEP, label: 'Sleep' },
+];
+
+export const CHARACTER_WEATHER_SENSITIVITY_OPTIONS: ThreeDSelectOption[] = [
+  { value: CharacterWeatherSensitivity.ALL, label: 'All Weather' },
+  { value: CharacterWeatherSensitivity.SUNNY_ONLY, label: 'Sunny Only' },
+  { value: CharacterWeatherSensitivity.RAINY_ONLY, label: 'Rainy Only' },
+  { value: CharacterWeatherSensitivity.NO_RAIN, label: 'No Rain' },
+  { value: CharacterWeatherSensitivity.NO_SNOW, label: 'No Snow' },
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// lib/types/threed.ts
+
+// ============================================
+// TASK ENUMS
+// ============================================
+
+export enum TaskPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  URGENT = 'urgent',
+}
+
+export enum TaskStatus {
+  PENDING = 'pending',
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+}
+
+export enum TaskType {
+  WATER = 'water',
+  FERTILIZE = 'fertilize',
+  PRUNE = 'prune',
+  HARVEST = 'harvest',
+  WEED = 'weed',
+  PEST_CONTROL = 'pest_control',
+  PLANT = 'plant',
+  TRANSPLANT = 'transplant',
+  CLEAN = 'clean',
+  MAINTENANCE = 'maintenance',
+  OTHER = 'other',
+}
+
+// ============================================
+// TASK INTERFACES
+// ============================================
+
+export interface ThreeDTask {
+  id: number;
+  userId: string;
+  taskId: string;
+  title: string;
+  description: string | null;
+  type: TaskType | null;
+  priority: TaskPriority;
+  status: TaskStatus;
+  dueDate: string | null;
+  completedAt: string | null;
+  assignedTo: string | null;
+  notes: string | null;
+  
+  // ✅ Related entities (optional associations)
+  plantingId: number | null;
+  plantId: number | null;
+  bedId: number | null;
+  wateringScheduleId: number | null;
+  
+  // ✅ Project asset associations
+  projectAssets?: any[];
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ThreeDTaskFormData {
+  title: string;
+  description: string;
+  type: string;
+  priority: TaskPriority;
+  status: TaskStatus;
+  dueDate: string;
+  assignedTo: string;
+  notes: string;
+  
+  // Related entities
+  plantingId: string;
+  plantId: string;
+  bedId: string;
+  wateringScheduleId: string;
+  
+  // Module association
+  isActive: boolean;
+}
+
+// ============================================
+// TASK OPTIONS
+// ============================================
+
+export const TASK_TYPE_OPTIONS: ThreeDSelectOption[] = [
+  { value: TaskType.WATER, label: 'Water' },
+  { value: TaskType.FERTILIZE, label: 'Fertilize' },
+  { value: TaskType.PRUNE, label: 'Prune' },
+  { value: TaskType.HARVEST, label: 'Harvest' },
+  { value: TaskType.WEED, label: 'Weed' },
+  { value: TaskType.PEST_CONTROL, label: 'Pest Control' },
+  { value: TaskType.PLANT, label: 'Plant' },
+  { value: TaskType.TRANSPLANT, label: 'Transplant' },
+  { value: TaskType.CLEAN, label: 'Clean' },
+  { value: TaskType.MAINTENANCE, label: 'Maintenance' },
+  { value: TaskType.OTHER, label: 'Other' },
+];
+
+export const TASK_PRIORITY_OPTIONS: ThreeDSelectOption[] = [
+  { value: TaskPriority.LOW, label: 'Low' },
+  { value: TaskPriority.MEDIUM, label: 'Medium' },
+  { value: TaskPriority.HIGH, label: 'High' },
+  { value: TaskPriority.URGENT, label: 'Urgent' },
+];
+
+export const TASK_STATUS_OPTIONS: ThreeDSelectOption[] = [
+  { value: TaskStatus.PENDING, label: 'Pending' },
+  { value: TaskStatus.IN_PROGRESS, label: 'In Progress' },
+  { value: TaskStatus.COMPLETED, label: 'Completed' },
+  { value: TaskStatus.CANCELLED, label: 'Cancelled' },
+];
+
+
+// lib/types/threed.ts
+
+// ✅ Add these interfaces for the relationship options
+export interface ThreeDSelectOption {
+  value: string;
+  label: string;
+}
+
+export interface ThreeDRelatedEntity {
+  id: number;
+  name: string;
+  // Optional additional fields for display
+  plantId?: string;
+  commonName?: string;
+  bedId?: string;
+  description?: string;
+}
+
+// ✅ Update ThreeDTaskFormData to include the selected objects
+export interface ThreeDTaskFormData {
+  title: string;
+  description: string;
+  type: string;
+  priority: TaskPriority;
+  status: TaskStatus;
+  dueDate: string;
+  assignedTo: string;
+  notes: string;
+  
+  // ✅ Related entities (store the selected objects)
+  selectedPlant: ThreeDRelatedEntity | null;
+  selectedBed: ThreeDRelatedEntity | null;
+  selectedPlanting: ThreeDRelatedEntity | null;
+  selectedWateringSchedule: ThreeDRelatedEntity | null;
+  
+  // ✅ For API submission (still need IDs)
+  plantingId: string;
+  plantId: string;
+  bedId: string;
+  wateringScheduleId: string;
+  
+  isActive: boolean;
+}
+
+
+// lib/types/threed.ts
+
+// ============================================
+// FARMBOT ENUMS (Add these)
+// ============================================
+
+export enum FarmbotStatus {
+  ONLINE = 'online',
+  OFFLINE = 'offline',
+  MAINTENANCE = 'maintenance',
+  ERROR = 'error',
+}
+
+// ============================================
+// FARMBOT INTERFACES (Add these)
+// ============================================
+
+export interface ThreeDFarmbot {
+  id: number;
+  userId: string;
+  deviceId: string;
+  name: string;
+  status: FarmbotStatus;
+  
+  // Location in garden
+  bedId: number | null;
+  positionX: number | null;
+  positionY: number | null;
+  positionZ: number | null;
+  
+  // Configuration
+  apiToken: string | null;
+  apiUrl: string | null;
+  
+  // Last known data
+  lastSeen: string | null;
+  batteryLevel: number | null;
+  firmwareVersion: string | null;
+  
+  // Status
+  isActive: boolean;
+  notes: string | null;
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  
+  // Project asset associations
+  projectAssets?: any[];
+}
+
+export interface ThreeDFarmbotFormData {
+  name: string;
+  deviceId: string;
+  status: FarmbotStatus;
+  bedId: string;
+  positionX: string;
+  positionY: string;
+  positionZ: string;
+  apiToken: string;
+  apiUrl: string;
+  firmwareVersion: string;
+  notes: string;
+  isActive: boolean;
+}
+
+// ============================================
+// FARMBOT OPTIONS (Add these)
+// ============================================
+
+export const FARMBOT_STATUS_OPTIONS: ThreeDSelectOption[] = [
+  { value: FarmbotStatus.ONLINE, label: 'Online' },
+  { value: FarmbotStatus.OFFLINE, label: 'Offline' },
+  { value: FarmbotStatus.MAINTENANCE, label: 'Maintenance' },
+  { value: FarmbotStatus.ERROR, label: 'Error' },
+];
+
+
+// lib/types/threed.ts
+
+// ============================================
+// PLANTING ENUMS (Add if not already present)
+// ============================================
+
+export enum PlantingStatus {
+  PLANNED = 'planned',
+  PLANTED = 'planted',
+  GROWING = 'growing',
+  HARVESTING = 'harvesting',
+  HARVESTED = 'harvested',
+  FAILED = 'failed',
+}
+
+export enum GrowthStage {
+  SEED = 'seed',
+  SEEDLING = 'seedling',
+  VEGETATIVE = 'vegetative',
+  FLOWERING = 'flowering',
+  FRUITING = 'fruiting',
+  MATURE = 'mature',
+  DORMANT = 'dormant',
+}
+
+// ============================================
+// PLANTING INTERFACES
+// ============================================
+
+export interface ThreeDPlanting {
+  id: number;
+  userId: string;
+  plantingId: string;
+  plantId: number | null;
+  bedId: number | null;
+  
+  // Model override
+  customModelId: number | null;
+  modelScale: number | null;
+  modelOffset: any;
+  
+  // Planting details
+  quantity: number | null;
+  spacingInches: number | null;
+  positionX: number | null;
+  positionY: number | null;
+  positionZ: number | null;
+  
+  // Dates
+  plantedDate: string | null;
+  expectedGerminationDate: string | null;
+  expectedHarvestDate: string | null;
+  actualHarvestDate: string | null;
+  
+  // Status
+  status: PlantingStatus;
+  growthStage: GrowthStage;
+  health: string | null;
+  notes: string | null;
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  
+  // Related data (populated from joins)
+  plant?: ThreeDPlant;
+  bed?: ThreeDBed;
+  customModel?: ThreeDModel;
+  
+  // Project asset associations
+  projectAssets?: any[];
+}
+
+export interface ThreeDPlantingFormData {
+  plantId: string;
+  bedId: string;
+  customModelId: string;
+  modelScale: string;
+  quantity: string;
+  spacingInches: string;
+  positionX: string;
+  positionY: string;
+  positionZ: string;
+  plantedDate: string;
+  expectedGerminationDate: string;
+  expectedHarvestDate: string;
+  actualHarvestDate: string;
+  status: PlantingStatus;
+  growthStage: GrowthStage;
+  health: string;
+  notes: string;
+  isActive: boolean;
+}
+
+// ============================================
+// PLANTING OPTIONS
+// ============================================
+
+export const PLANTING_STATUS_OPTIONS: ThreeDSelectOption[] = [
+  { value: PlantingStatus.PLANNED, label: 'Planned' },
+  { value: PlantingStatus.PLANTED, label: 'Planted' },
+  { value: PlantingStatus.GROWING, label: 'Growing' },
+  { value: PlantingStatus.HARVESTING, label: 'Harvesting' },
+  { value: PlantingStatus.HARVESTED, label: 'Harvested' },
+  { value: PlantingStatus.FAILED, label: 'Failed' },
+];
+
+export const GROWTH_STAGE_OPTIONS: ThreeDSelectOption[] = [
+  { value: GrowthStage.SEED, label: 'Seed' },
+  { value: GrowthStage.SEEDLING, label: 'Seedling' },
+  { value: GrowthStage.VEGETATIVE, label: 'Vegetative' },
+  { value: GrowthStage.FLOWERING, label: 'Flowering' },
+  { value: GrowthStage.FRUITING, label: 'Fruiting' },
+  { value: GrowthStage.MATURE, label: 'Mature' },
+  { value: GrowthStage.DORMANT, label: 'Dormant' },
+];
+
+export const PLANTING_HEALTH_OPTIONS: ThreeDSelectOption[] = [
+  { value: 'good', label: 'Good' },
+  { value: 'fair', label: 'Fair' },
+  { value: 'poor', label: 'Poor' },
+  { value: 'excellent', label: 'Excellent' },
+];
+
+
+
+
+// lib/types/threed.ts
+
+// ============================================
+// HARVEST ENUMS (Add these)
+// ============================================
+
+export enum HarvestUnit {
+  LBS = 'lbs',
+  KG = 'kg',
+  OZ = 'oz',
+  GRAMS = 'grams',
+  PIECES = 'pieces',
+  BUNCHES = 'bunches',
+  POUNDS = 'pounds',
+}
+
+// ============================================
+// HARVEST INTERFACES
+// ============================================
+
+export interface ThreeDHarvest {
+  id: number;
+  userId: string;
+  harvestId: string;
+  plantingId: number | null;
+  plantId: number | null;
+  
+  // Harvest details
+  quantity: number | null;
+  unit: string | null;
+  weightLbs: number | null;
+  
+  // Date and notes
+  harvestDate: string | null;
+  notes: string | null;
+  imageUrl: string | null;
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  
+  // Related data (populated from joins)
+  plant?: ThreeDPlant;
+  planting?: ThreeDPlanting;
+  
+  // Project asset associations
+  projectAssets?: any[];
+}
+
+export interface ThreeDHarvestFormData {
+  plantingId: string;
+  plantId: string;
+  quantity: string;
+  unit: string;
+  weightLbs: string;
+  harvestDate: string;
+  notes: string;
+  imageUrl: string;
+  isActive: boolean;
+}
+
+// ============================================
+// HARVEST OPTIONS
+// ============================================
+
+export const HARVEST_UNIT_OPTIONS: ThreeDSelectOption[] = [
+  { value: HarvestUnit.LBS, label: 'Pounds (lbs)' },
+  { value: HarvestUnit.KG, label: 'Kilograms (kg)' },
+  { value: HarvestUnit.OZ, label: 'Ounces (oz)' },
+  { value: HarvestUnit.GRAMS, label: 'Grams' },
+  { value: HarvestUnit.PIECES, label: 'Pieces' },
+  { value: HarvestUnit.BUNCHES, label: 'Bunches' },
+  { value: HarvestUnit.POUNDS, label: 'Pounds' },
+];
+
+
+
+
+
+
+
+
+
+

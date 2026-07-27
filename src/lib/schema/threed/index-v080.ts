@@ -333,7 +333,6 @@ export const threedModelFiles = pgTable('threed_model_files', {
   loadOrder: integer('load_order').default(0),
   
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
   modelIdIdx: index('idx_threed_model_files_model_id').on(table.modelId),
   fileTypeIdx: index('idx_threed_model_files_type').on(table.fileType),
@@ -409,11 +408,11 @@ export const threedPlantings = pgTable('threed_plantings', {
   positionY: decimal('position_y', { precision: 8, scale: 2 }),
   positionZ: decimal('position_z', { precision: 8, scale: 2 }),
   
-  // ✅ Dates - ALL manually set dates need { mode: 'string' }
-  plantedDate: timestamp('planted_date', { mode: 'string' }),
-  expectedGerminationDate: timestamp('expected_germination_date', { mode: 'string' }),
-  expectedHarvestDate: timestamp('expected_harvest_date', { mode: 'string' }),
-  actualHarvestDate: timestamp('actual_harvest_date', { mode: 'string' }),
+  // Dates
+  plantedDate: timestamp('planted_date'),
+  expectedGerminationDate: timestamp('expected_germination_date'),
+  expectedHarvestDate: timestamp('expected_harvest_date'),
+  actualHarvestDate: timestamp('actual_harvest_date'),
   
   // Status tracking
   status: plantingStatusEnum('status').default('planted'),
@@ -421,9 +420,9 @@ export const threedPlantings = pgTable('threed_plantings', {
   health: varchar('health', { length: 20 }).default('good'),
   notes: text('notes'),
   
-  // ✅ Metadata - Database-managed timestamps (NO mode: 'string')
+  // Metadata
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
   plantingIdIdx: uniqueIndex('idx_threed_plantings_planting_id').on(table.plantingId),
   plantIdx: index('idx_threed_plantings_plant').on(table.plantId),
@@ -435,59 +434,56 @@ export const threedPlantings = pgTable('threed_plantings', {
 // ============================================
 // 4. threed_watering_schedules - Automated watering
 // ============================================
-// export const threedWateringSchedules = pgTable('threed_watering_schedules', {
-//   id: serial('id').primaryKey(),
-//   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
-
-//   scheduleId: varchar('schedule_id', { length: 50 }).unique().notNull(),
-//   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'cascade' }),
-//   farmbotId: integer('farmbot_id').references(() => threedFarmbots.id, { onDelete: 'set null' }),
-//   bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'cascade' }),
-//   plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'cascade' }),
+export const threedWateringSchedules = pgTable('threed_watering_schedules', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  scheduleId: varchar('schedule_id', { length: 50 }).unique().notNull(),
+  plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'cascade' }),
+  farmbotId: integer('farmbot_id').references(() => threedFarmbots.id, { onDelete: 'set null' }),
+  bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'cascade' }),
+  plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'cascade' }),
   
-//   // Schedule configuration
-//   frequency: wateringFrequencyEnum('frequency').notNull(),
-//   intervalDays: integer('interval_days'), // For custom frequency
-//   daysOfWeek: integer('days_of_week').array(), // 0-6 for Sunday-Saturday
-//   timeOfDay: time('time_of_day'), // When to water (e.g., '08:00:00')
+  // Schedule configuration
+  frequency: wateringFrequencyEnum('frequency').notNull(),
+  intervalDays: integer('interval_days'), // For custom frequency
+  daysOfWeek: integer('days_of_week').array(), // 0-6 for Sunday-Saturday
+  timeOfDay: time('time_of_day'), // When to water (e.g., '08:00:00')
   
-//   // Watering parameters
-//   durationMs: integer('duration_ms').notNull(), // How long to water
-//   volumeMl: integer('volume_ml'), // Alternative to duration
-//   moistureThreshold: integer('moisture_threshold'), // If using moisture-based scheduling
+  // Watering parameters
+  durationMs: integer('duration_ms').notNull(), // How long to water
+  volumeMl: integer('volume_ml'), // Alternative to duration
+  moistureThreshold: integer('moisture_threshold'), // If using moisture-based scheduling
   
-//   // ✅ Dates - manually set, need { mode: 'string' }
-//   nextWatering: timestamp('next_watering', { mode: 'string' }).notNull(),
-//   lastWatering: timestamp('last_watering', { mode: 'string' }),
-
-//   isActive: boolean('is_active').default(true),
+  // Schedule state
+  nextWatering: timestamp('next_watering').notNull(),
+  lastWatering: timestamp('last_watering'),
+  isActive: boolean('is_active').default(true),
   
-//   // Weather awareness
-//   skipIfRain: boolean('skip_if_rain').default(true),
-//   maxTemperature: integer('max_temperature'), // Skip if above this temp (F)
-//   minTemperature: integer('min_temperature'), // Skip if below this temp (F)
-//   maxWindSpeed: integer('max_wind_speed'), // Skip if windy (mph)
+  // Weather awareness
+  skipIfRain: boolean('skip_if_rain').default(true),
+  maxTemperature: integer('max_temperature'), // Skip if above this temp (F)
+  minTemperature: integer('min_temperature'), // Skip if below this temp (F)
+  maxWindSpeed: integer('max_wind_speed'), // Skip if windy (mph)
   
-//   // Recurrence
-//   repeatCount: integer('repeat_count'), // Number of times to repeat (-1 for infinite)
-//   timesExecuted: integer('times_executed').default(0),
+  // Recurrence
+  repeatCount: integer('repeat_count'), // Number of times to repeat (-1 for infinite)
+  timesExecuted: integer('times_executed').default(0),
   
-//   // Notes
-//   notes: text('notes'),
+  // Notes
+  notes: text('notes'),
   
-//   // Metadata
-//   createdBy: varchar('created_by', { length: 255 }),
-//   // ✅ Metadata - database-managed (NO mode: 'string')
-//   createdAt: timestamp('created_at').defaultNow(),
-//   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
-// }, (table) => ({
-//   scheduleIdIdx: uniqueIndex('idx_threed_watering_schedule_id').on(table.scheduleId),
-//   plantIdx: index('idx_threed_watering_plant').on(table.plantId),
-//   farmbotIdx: index('idx_threed_watering_farmbot').on(table.farmbotId),
-//   nextWateringIdx: index('idx_threed_watering_next').on(table.nextWatering),
-//   activeIdx: index('idx_threed_watering_active').on(table.isActive),
-//   compositeNextActiveIdx: index('idx_threed_watering_next_active').on(table.nextWatering, table.isActive),
-// }));
+  // Metadata
+  createdBy: varchar('created_by', { length: 255 }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  scheduleIdIdx: uniqueIndex('idx_threed_watering_schedule_id').on(table.scheduleId),
+  plantIdx: index('idx_threed_watering_plant').on(table.plantId),
+  farmbotIdx: index('idx_threed_watering_farmbot').on(table.farmbotId),
+  nextWateringIdx: index('idx_threed_watering_next').on(table.nextWatering),
+  activeIdx: index('idx_threed_watering_active').on(table.isActive),
+  compositeNextActiveIdx: index('idx_threed_watering_next_active').on(table.nextWatering, table.isActive),
+}));
 
 // ============================================
 // 5. threed_watering_history - Watering logs
@@ -495,7 +491,6 @@ export const threedPlantings = pgTable('threed_plantings', {
 export const threedWateringHistory = pgTable('threed_watering_history', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
-
   historyId: varchar('history_id', { length: 50 }).unique().notNull(),
   scheduleId: integer('schedule_id').references(() => threedWateringSchedules.id, { onDelete: 'set null' }),
   plantId: integer('plant_id').references(() => threedPlants.id),
@@ -519,15 +514,11 @@ export const threedWateringHistory = pgTable('threed_watering_history', {
   // Weather at execution time
   weatherAtTime: jsonb('weather_at_time'), // Temperature, conditions, wind speed
   
-  // ✅ Date - manually set, needs { mode: 'string' }
   // Execution metadata
-  // 'automated', 'manual', 'user'
-  executedAt: timestamp('executed_at', { mode: 'string' }).defaultNow(),
-  executedBy: varchar('executed_by', { length: 50 }).default('automated'),
+  executedAt: timestamp('executed_at').defaultNow(),
+  executedBy: varchar('executed_by', { length: 50 }).default('automated'), // 'automated', 'manual', 'user'
   
-  // ✅ Metadata - database-managed (NO mode: 'string')
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
   historyIdIdx: uniqueIndex('idx_threed_watering_history_id').on(table.historyId),
   scheduleIdx: index('idx_threed_watering_history_schedule').on(table.scheduleId),
@@ -559,7 +550,6 @@ export const threedHarvests = pgTable('threed_harvests', {
   
   // Metadata
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
   harvestIdIdx: uniqueIndex('idx_threed_harvests_harvest_id').on(table.harvestId),
   plantingIdx: index('idx_threed_harvests_planting').on(table.plantingId),
@@ -573,7 +563,12 @@ export const threedTasks = pgTable('threed_tasks', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
-  taskId: varchar('task_id', { length: 50 }).unique().notNull(),  
+  taskId: varchar('task_id', { length: 50 }).unique().notNull(),
+  plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'set null' }),
+  plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
+  bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'set null' }),
+  wateringScheduleId: integer('watering_schedule_id').references(() => threedWateringSchedules.id, { onDelete: 'set null' }),
+  
   // Task details
   title: varchar('title', { length: 200 }).notNull(),
   description: text('description'),
@@ -584,14 +579,9 @@ export const threedTasks = pgTable('threed_tasks', {
   status: taskStatusEnum('status').default('pending'),
   
   // Scheduling
-  dueDate: timestamp('due_date', { mode: 'string' }), // ✅ Use string mode
-  completedAt: timestamp('completed_at', { mode: 'string' }), // ✅ Use string mode
+  dueDate: timestamp('due_date'),
+  completedAt: timestamp('completed_at'),
   
-  // ✅ Foreign keys (optional)
-  plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'set null' }),
-  plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
-  bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'set null' }),
-  wateringScheduleId: integer('watering_schedule_id').references(() => threedWateringSchedules.id, { onDelete: 'set null' }),
   // Marker relationship (NEW)
   markerId: integer('marker_id').references(() => threedMarkers.id, { onDelete: 'set null' }),
   
@@ -601,14 +591,10 @@ export const threedTasks = pgTable('threed_tasks', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  userIdIdx: index('idx_threed_tasks_user_id').on(table.userId),
   taskIdIdx: uniqueIndex('idx_threed_tasks_task_id').on(table.taskId),
-  dueDateIdx: index('idx_threed_tasks_due_date').on(table.dueDate),
-  priorityIdx: index('idx_threed_tasks_priority').on(table.priority),
-  statusIdx: index('idx_threed_tasks_status').on(table.status),
   plantingIdx: index('idx_threed_tasks_planting').on(table.plantingId),
-  plantIdx: index('idx_threed_tasks_plant').on(table.plantId),
-  bedIdx: index('idx_threed_tasks_bed').on(table.bedId),
+  dueDateIdx: index('idx_threed_tasks_due_date').on(table.dueDate),
+  statusIdx: index('idx_threed_tasks_status').on(table.status),
   wateringScheduleIdx: index('idx_threed_tasks_watering').on(table.wateringScheduleId),
   markerIdx: index('idx_threed_tasks_marker').on(table.markerId),
 }));
@@ -619,9 +605,7 @@ export const threedTasks = pgTable('threed_tasks', {
 export const threedWeatherLogs = pgTable('threed_weather_logs', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
-
-  // ✅ Date - manually set, needs { mode: 'string' }
-  recordedAt: timestamp('recorded_at', { mode: 'string' }).defaultNow(),
+  recordedAt: timestamp('recorded_at').defaultNow(),
   
   // Weather data
   temperature: decimal('temperature', { precision: 5, scale: 1 }),
@@ -642,10 +626,7 @@ export const threedWeatherLogs = pgTable('threed_weather_logs', {
   // Source and metadata
   source: varchar('source', { length: 50 }).default('api'),
   rawData: jsonb('raw_data'),
-
-  // ✅ Metadata - database-managed (NO mode: 'string')
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
   recordedAtIdx: index('idx_threed_weather_recorded_at').on(table.recordedAt),
   markerIdx: index('idx_threed_weather_marker').on(table.markerId),
@@ -698,19 +679,13 @@ export const threedFarmbotLogs = pgTable('threed_farmbot_logs', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   farmbotId: integer('farmbot_id').references(() => threedFarmbots.id, { onDelete: 'cascade' }),
-  
-  eventType: varchar('event_type', { length: 50 }),
-  status: varchar('status', { length: 20 }),
+  eventType: varchar('event_type', { length: 50 }), // watering, planting, sensor, error, maintenance
+  status: varchar('status', { length: 20 }), // success, failed, pending, in_progress
   message: text('message'),
   sensorData: jsonb('sensor_data'),
   rawData: jsonb('raw_data'),
-  
-  // ✅ Date - manually set, needs { mode: 'string' }
-  loggedAt: timestamp('logged_at', { mode: 'string' }).defaultNow(),
-  
-  // ✅ Metadata - database-managed (NO mode: 'string')
+  loggedAt: timestamp('logged_at').defaultNow(),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
   farmbotIdx: index('idx_threed_farmbot_logs_farmbot').on(table.farmbotId),
   eventTypeIdx: index('idx_threed_farmbot_logs_event_type').on(table.eventType),
@@ -723,22 +698,16 @@ export const threedFarmbotLogs = pgTable('threed_farmbot_logs', {
 export const threedSystemLogs = pgTable('threed_system_logs', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
-  
-  level: varchar('level', { length: 20 }),
+  level: varchar('level', { length: 20 }), // info, warning, error, debug
   source: varchar('source', { length: 100 }),
   message: text('message'),
   details: jsonb('details'),
-  
-  // ✅ Date - manually set, needs { mode: 'string' }
-  loggedAt: timestamp('logged_at', { mode: 'string' }).defaultNow(),
-  
-  // ✅ Metadata - database-managed (NO mode: 'string')
+  loggedAt: timestamp('logged_at').defaultNow(),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
 }, (table) => ({
   levelIdx: index('idx_threed_system_logs_level').on(table.level),
   loggedAtIdx: index('idx_threed_system_logs_logged_at').on(table.loggedAt),
-}))
+}));
 
 // ============================================
 // 12. threed_characters - Characters and creatures
@@ -817,8 +786,6 @@ export const threedCharacters = pgTable('threed_characters', {
   // Metadata
   isActive: boolean('is_active').default(true),
   metadata: jsonb('metadata').default({}),
-
-  // Timestamps
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
@@ -881,6 +848,7 @@ export const threedLayers = pgTable('threed_layers', {
   // Visibility & access
   isEnabled: boolean('is_enabled').default(true),
   visibility: layerVisibilityEnum('visibility').default('public'),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   // Display settings
   icon: text('icon'), // Lucide icon name
@@ -917,6 +885,7 @@ export const threedMarkers = pgTable('threed_markers', {
   layerId: integer('layer_id').references(() => threedLayers.id, { 
     onDelete: 'cascade' 
   }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   // ===== 3D POSITION =====
   positionX: real('position_x').default(0),
@@ -982,7 +951,6 @@ export const threedMarkerRelationships = pgTable(
     
     // Timestamps
     createdAt: timestamp('created_at').defaultNow(),
-    updatedAt: timestamp('updated_at').defaultNow(),
   }, (table) => ({
     parentIdx: index('idx_threed_marker_relationships_parent').on(table.parentMarkerId),
     childIdx: index('idx_threed_marker_relationships_child').on(table.childMarkerId),
@@ -1079,6 +1047,46 @@ export const threedPlantingsRelations = relations(threedPlantings, ({ one, many 
   wateringSchedules: many(threedWateringSchedules),
 }));
 
+export const threedWateringSchedulesRelations = relations(threedWateringSchedules, ({ one, many }) => ({
+  plant: one(threedPlants, {
+    fields: [threedWateringSchedules.plantId],
+    references: [threedPlants.id],
+  }),
+  farmbot: one(threedFarmbots, {
+    fields: [threedWateringSchedules.farmbotId],
+    references: [threedFarmbots.id],
+  }),
+  bed: one(threedBeds, {
+    fields: [threedWateringSchedules.bedId],
+    references: [threedBeds.id],
+  }),
+  planting: one(threedPlantings, {
+    fields: [threedWateringSchedules.plantingId],
+    references: [threedPlantings.id],
+  }),
+  history: many(threedWateringHistory),
+  tasks: many(threedTasks),
+}));
+
+export const threedWateringHistoryRelations = relations(threedWateringHistory, ({ one }) => ({
+  schedule: one(threedWateringSchedules, {
+    fields: [threedWateringHistory.scheduleId],
+    references: [threedWateringSchedules.id],
+  }),
+  plant: one(threedPlants, {
+    fields: [threedWateringHistory.plantId],
+    references: [threedPlants.id],
+  }),
+  farmbot: one(threedFarmbots, {
+    fields: [threedWateringHistory.farmbotId],
+    references: [threedFarmbots.id],
+  }),
+  planting: one(threedPlantings, {
+    fields: [threedWateringHistory.plantingId],
+    references: [threedPlantings.id],
+  }),
+}));
+
 export const threedFarmbotsRelations = relations(threedFarmbots, ({ one, many }) => ({
   bed: one(threedBeds, {
     fields: [threedFarmbots.bedId],
@@ -1172,6 +1180,10 @@ export const threedMarkersRelations = relations(threedMarkers, ({ one, many }) =
     references: [user.id],
   }),
   
+  
+  
+  
+  
   // // ---- SOURCE RELATIONSHIPS (Polymorphic) ----
   // // Each marker can link to one source type
   // plant: one(threedPlants, {
@@ -1217,6 +1229,9 @@ export const threedMarkersRelations = relations(threedMarkers, ({ one, many }) =
   //   references: [threedMarkerRelationships.childMarkerId],
   // }),
 
+
+
+  
 }));
 
 export const threedMarkerRelationshipsRelations = relations(threedMarkerRelationships, ({ one }) => ({
@@ -1284,138 +1299,5 @@ export type ThreeDLayerPreset = typeof threedLayerPresets.$inferSelect;
 export type NewThreeDLayerPreset = typeof threedLayerPresets.$inferInsert;
 
 // =====================================
-// ## [MM] v0.9.0
-// =====================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-// =====================================
-// ## [MM] v0.10.0
-// =====================================
-
-// lib/schema/threed/index.ts
-
-// ============================================
-// 4. threed_watering_schedules - Automated watering
-// ============================================
-export const threedWateringSchedules = pgTable('threed_watering_schedules', {
-  id: serial('id').primaryKey(),
-  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
-  
-  scheduleId: varchar('schedule_id', { length: 50 }).unique().notNull(),
-  plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'cascade' }),
-  farmbotId: integer('farmbot_id').references(() => threedFarmbots.id, { onDelete: 'set null' }),
-  bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'cascade' }),
-  plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'cascade' }),
-  
-  // Schedule configuration
-  frequency: wateringFrequencyEnum('frequency').notNull(),
-  intervalDays: integer('interval_days'),
-  daysOfWeek: integer('days_of_week').array(),
-  timeOfDay: time('time_of_day'),
-  
-  // Watering parameters
-  durationMs: integer('duration_ms').notNull(),
-  volumeMl: integer('volume_ml'),
-  moistureThreshold: integer('moisture_threshold'),
-  
-  // ✅ Dates - manually set, need { mode: 'string' }
-  nextWatering: timestamp('next_watering', { mode: 'string' }).notNull(),
-  lastWatering: timestamp('last_watering', { mode: 'string' }),
-  
-  isActive: boolean('is_active').default(true),
-  
-  // Weather awareness
-  skipIfRain: boolean('skip_if_rain').default(true),
-  maxTemperature: integer('max_temperature'),
-  minTemperature: integer('min_temperature'),
-  maxWindSpeed: integer('max_wind_speed'),
-  
-  // Recurrence
-  repeatCount: integer('repeat_count'),
-  timesExecuted: integer('times_executed').default(0),
-  
-  notes: text('notes'),
-  createdBy: varchar('created_by', { length: 255 }),
-  
-  // ✅ Metadata - database-managed (NO mode: 'string')
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
-}, (table) => ({
-  scheduleIdIdx: uniqueIndex('idx_threed_watering_schedule_id').on(table.scheduleId),
-  plantIdx: index('idx_threed_watering_plant').on(table.plantId),
-  farmbotIdx: index('idx_threed_watering_farmbot').on(table.farmbotId),
-  nextWateringIdx: index('idx_threed_watering_next').on(table.nextWatering),
-  activeIdx: index('idx_threed_watering_active').on(table.isActive),
-  compositeNextActiveIdx: index('idx_threed_watering_next_active').on(table.nextWatering, table.isActive),
-}));
-
-// ============================================
-// 4. threed_watering_schedules - Automated watering
-// ============================================
-export const threedWateringSchedulesRelations = relations(threedWateringSchedules, ({ one, many }) => ({
-  plant: one(threedPlants, {
-    fields: [threedWateringSchedules.plantId],
-    references: [threedPlants.id],
-  }),
-  farmbot: one(threedFarmbots, {
-    fields: [threedWateringSchedules.farmbotId],
-    references: [threedFarmbots.id],
-  }),
-  bed: one(threedBeds, {
-    fields: [threedWateringSchedules.bedId],
-    references: [threedBeds.id],
-  }),
-  planting: one(threedPlantings, {
-    fields: [threedWateringSchedules.plantingId],
-    references: [threedPlantings.id],
-  }),
-  history: many(threedWateringHistory),
-  tasks: many(threedTasks),
-}));
-
-// ============================================
-// 4. threed_watering_schedules - Automated watering
-// ============================================
-export const threedWateringHistoryRelations = relations(threedWateringHistory, ({ one }) => ({
-  schedule: one(threedWateringSchedules, {
-    fields: [threedWateringHistory.scheduleId],
-    references: [threedWateringSchedules.id],
-  }),
-  plant: one(threedPlants, {
-    fields: [threedWateringHistory.plantId],
-    references: [threedPlants.id],
-  }),
-  farmbot: one(threedFarmbots, {
-    fields: [threedWateringHistory.farmbotId],
-    references: [threedFarmbots.id],
-  }),
-  planting: one(threedPlantings, {
-    fields: [threedWateringHistory.plantingId],
-    references: [threedPlantings.id],
-  }),
-}));
-
-
-// ============================================
-// 4. threed_watering_schedules - Automated watering
-// ============================================
-// ============================================
-// 4. threed_watering_schedules - Automated watering
-// ============================================
-// ============================================
-// 4. threed_watering_schedules - Automated watering
-// ============================================
-// ============================================
-// 4. threed_watering_schedules - Automated watering
-// ============================================
+// ## [MM]
+// 

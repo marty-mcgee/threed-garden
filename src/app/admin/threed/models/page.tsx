@@ -12,7 +12,7 @@ export default function ThreeDModelsPage() {
         <div>
           <h1 className="text-2xl font-bold">3D Models</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your 3D model library
+            Manage your 3D model library for plants, characters, and garden objects
           </p>
         </div>
       </div>

@@ -15,3 +15,14 @@ export function formatTime(seconds: number): string {
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
+
+export const formatDateForInput = (dateString: string | null): string => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return date.toISOString().split('T')[0]; // ✅ Returns "YYYY-MM-DD"
+  } catch {
+    return '';
+  }
+};
