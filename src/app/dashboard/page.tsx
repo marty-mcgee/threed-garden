@@ -34,7 +34,7 @@ const ThreeDMap = dynamic(
 // TYPES
 // ============================================
 
-type SourceFilter = 'all' | 'caltrans' | 'bayarea511' | 'chp-live' | 'chp-historical' | 'calfire';
+type SourceFilter = 'all' | 'caltrans' | 'bay-area-511' | 'chp-live' | 'chp-historical' | 'calfire';
 type DateRange = '1d' | '7d' | '30d' | 'all';
 
 interface MapEvent {
@@ -114,7 +114,7 @@ export default function DashboardPage() {
   // Layer visibility
   const [layers, setLayers] = useState<LayerConfig[]>([
     { id: 'chp-live', name: 'CHP Live', icon: <AlertTriangle className="w-4 h-4 text-red-500" />, color: 'red', activeColor: 'text-red-600 dark:text-red-400', activeBgColor: 'bg-red-100 dark:bg-red-900/50', enabled: true, count: 0 },
-    { id: 'bayarea511', name: '511.org', icon: <Radio className="w-4 h-4 text-emerald-500" />, color: 'emerald', activeColor: 'text-emerald-600 dark:text-emerald-400', activeBgColor: 'bg-emerald-100 dark:bg-emerald-900/50', enabled: true, count: 0 },
+    { id: 'bay-area-511', name: '511.org', icon: <Radio className="w-4 h-4 text-emerald-500" />, color: 'emerald', activeColor: 'text-emerald-600 dark:text-emerald-400', activeBgColor: 'bg-emerald-100 dark:bg-emerald-900/50', enabled: true, count: 0 },
     { id: 'caltrans', name: 'Caltrans', icon: <Car className="w-4 h-4 text-blue-500" />, color: 'blue', activeColor: 'text-blue-600 dark:text-blue-400', activeBgColor: 'bg-blue-100 dark:bg-blue-900/50', enabled: true, count: 0 },
     { id: 'calfire', name: 'CalFire', icon: <Flame className="w-4 h-4 text-orange-500" />, color: 'orange', activeColor: 'text-orange-600 dark:text-orange-400', activeBgColor: 'bg-orange-100 dark:bg-orange-900/50', enabled: true, count: 0 },
     { id: 'chp-historical', name: 'Historical', icon: <Calendar className="w-4 h-4 text-purple-500" />, color: 'purple', activeColor: 'text-purple-600 dark:text-purple-400', activeBgColor: 'bg-purple-100 dark:bg-purple-900/50', enabled: false, count: 0 },
@@ -139,7 +139,7 @@ export default function DashboardPage() {
       ]);
       
       const events: MapEvent[] = [];
-      const counts = { caltrans: 0, bayarea511: 0, 'chp-live': 0, 'chp-historical': 0, calfire: 0 };
+      const counts = { caltrans: 0, 'bay-area-511': 0, 'chp-live': 0, 'chp-historical': 0, calfire: 0 };
       
       // Process Caltrans
       (caltransData.data || []).forEach((item: any) => {
@@ -164,7 +164,7 @@ export default function DashboardPage() {
         if (item.latitude && item.longitude) {
           events.push({
             id: `bayarea_${item.id}`,
-            source: 'bayarea511',
+            source: 'bay-area-511',
             type: item.eventType || 'Traffic Event',
             location: item.roadwayName || 'Unknown',
             description: item.description || '',
@@ -435,7 +435,7 @@ export default function DashboardPage() {
                   {[
                     { value: 'all', label: 'All', icon: <MapPin className="w-3.5 h-3.5" /> },
                     { value: 'caltrans', label: 'Caltrans', icon: <Car className="w-3.5 h-3.5 text-blue-500" /> },
-                    { value: 'bayarea511', label: '511.org', icon: <Radio className="w-3.5 h-3.5 text-emerald-500" /> },
+                    { value: 'bay-area-511', label: '511.org', icon: <Radio className="w-3.5 h-3.5 text-emerald-500" /> },
                     { value: 'chp-live', label: 'CHP Live', icon: <AlertTriangle className="w-3.5 h-3.5 text-red-500" /> },
                     { value: 'chp-historical', label: 'Historical', icon: <Calendar className="w-3.5 h-3.5 text-purple-500" /> },
                   ].map(filter => (
@@ -580,7 +580,7 @@ export default function DashboardPage() {
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 text-xs rounded-full ${getSourceBadge(event.source)}`}>
                         {event.source === 'caltrans' ? 'Caltrans' : 
-                         event.source === 'bayarea511' ? '511.org' : 
+                         event.source === 'bay-area-511' ? '511.org' : 
                          event.source === 'chp-live' ? 'CHP Live' : 
                          event.source === 'calfire' ? 'CalFire' : 'CHP Historical'}
                       </span>
@@ -620,7 +620,7 @@ export default function DashboardPage() {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            onClick={() => router.push(`/dashboard/${event.source === 'bayarea511' ? '511org' : event.source}`)}
+                            onClick={() => router.push(`/dashboard/${event.source === 'bay-area-511' ? '511org' : event.source}`)}
                           >
                             View full details →
                           </Button>

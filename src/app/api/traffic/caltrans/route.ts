@@ -1,34 +1,42 @@
-// app/api/traffic/caltrans/route.ts - COMPLETE VERSION
+// app/api/traffic/caltrans/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { trafficCaltransLaneClosures, trafficCaltransDistricts, traffic } from '@/lib/schema/traffic';
+import { trafficCaltransLaneClosures, trafficCaltransDistricts } from '@/lib/schema/traffic';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
+// app/api/traffic/caltrans/route.ts - Fix GET function
+
 // ============================================
-// GET /api/traffic/caltrans - List closures (PUBLIC)
+// GET /api/traffic/caltrans - List Caltrans Lane Closures
 // Query Parameters:
 //   - id (optional): Get a single closure
-//   - status (optional): Filter by status
+//   - isActive (optional): Filter by active status
+//   - isPublic (optional): Filter by public status
+//   - closureType (optional): Filter by closure type
+//   - county (optional): Filter by county
 //   - route (optional): Filter by route
 //   - districtId (optional): Filter by district
-//   - trafficId (optional): Filter by traffic module
 //   - includeDistrict (optional): Include district details
+//   - limit (optional): Number of records to return (default: 50)
+//   - offset (optional): Number of records to skip (default: 0)
 // ============================================
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
-    
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const status = searchParams.get('status');
+    const isActive = searchParams.get('isActive');
+    const isPublic = searchParams.get('isPublic');
+    const closureType = searchParams.get('closureType');
+    const county = searchParams.get('county');
     const route = searchParams.get('route');
     const districtId = searchParams.get('districtId');
-    const trafficId = searchParams.get('trafficId');
     const includeDistrict = searchParams.get('includeDistrict') === 'true';
-    const limit = parseInt(searchParams.get('limit') || '100');
+    const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Get a single closure by ID
@@ -38,27 +46,32 @@ export async function GET(request: NextRequest) {
         .from(trafficCaltransLaneClosures)
         .where(eq(trafficCaltransLaneClosures.id, parseInt(id)));
 
-      // ✅ If no user, only show active closures
+      // Public users only see active public closures
       if (!userId) {
-        query = query.where(eq(trafficCaltransLaneClosures.status, 'active'));
+        query = query.where(
+          and(
+            eq(trafficCaltransLaneClosures.isPublic, true),
+            eq(trafficCaltransLaneClosures.isActive, true)
+          )
+        );
       }
 
       const [closure] = await query.limit(1);
 
       if (!closure) {
         return NextResponse.json(
-          { success: false, error: 'Closure not found' },
+          { success: false, error: 'Caltrans closure not found' },
           { status: 404 }
         );
       }
 
-      // ✅ Include district if requested
+      // Include district if requested
       let result: any = closure;
       if (includeDistrict && closure.districtId) {
         const [district] = await db
           .select()
           .from(trafficCaltransDistricts)
-          .where(eq(trafficCaltransDistricts.districtId, closure.districtId))
+          .where(eq(trafficCaltransDistricts.id, closure.districtId))
           .limit(1);
         result.district = district || null;
       }
@@ -77,21 +90,41 @@ export async function GET(request: NextRequest) {
 
     // ✅ Apply user filtering
     if (userId) {
-      // ✅ Show user's closures + public active closures
+      // Authenticated users see their closures + active public closures
       query = query.where(
         or(
           eq(trafficCaltransLaneClosures.userId, userId),
-          eq(trafficCaltransLaneClosures.status, 'active')
+          and(
+            eq(trafficCaltransLaneClosures.isPublic, true),
+            eq(trafficCaltransLaneClosures.isActive, true)
+          )
         )
       );
     } else {
-      // ✅ Public users only see active closures
-      query = query.where(eq(trafficCaltransLaneClosures.status, 'active'));
+      // Public users only see active public closures
+      query = query.where(
+        and(
+          eq(trafficCaltransLaneClosures.isPublic, true),
+          eq(trafficCaltransLaneClosures.isActive, true)
+        )
+      );
     }
 
-    // ✅ Apply filters
-    if (status) {
-      query = query.where(eq(trafficCaltransLaneClosures.status, status));
+    // ✅ Apply filters (removed 'status' since it doesn't exist)
+    if (isActive !== null) {
+      query = query.where(eq(trafficCaltransLaneClosures.isActive, isActive === 'true'));
+    }
+
+    if (isPublic !== null) {
+      query = query.where(eq(trafficCaltransLaneClosures.isPublic, isPublic === 'true'));
+    }
+
+    if (closureType) {
+      query = query.where(eq(trafficCaltransLaneClosures.closureType, closureType));
+    }
+
+    if (county) {
+      query = query.where(eq(trafficCaltransLaneClosures.county, county));
     }
 
     if (route) {
@@ -99,25 +132,20 @@ export async function GET(request: NextRequest) {
     }
 
     if (districtId) {
-      query = query.where(eq(trafficCaltransLaneClosures.districtId, districtId));
-    }
-
-    if (trafficId) {
-      query = query.where(eq(trafficCaltransLaneClosures.trafficId, parseInt(trafficId)));
+      query = query.where(eq(trafficCaltransLaneClosures.districtId, parseInt(districtId)));
     }
 
     // ✅ Get total count for pagination
-    const countQuery = db
+    const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficCaltransLaneClosures)
       .where(query._where);
 
-    const [countResult] = await countQuery;
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
     const closures = await query
-      .orderBy(desc(trafficCaltransLaneClosures.createdAt))
+      .orderBy(desc(trafficCaltransLaneClosures.startDate))
       .limit(limit)
       .offset(offset);
 
@@ -130,7 +158,7 @@ export async function GET(request: NextRequest) {
             const [district] = await db
               .select()
               .from(trafficCaltransDistricts)
-              .where(eq(trafficCaltransDistricts.districtId, closure.districtId))
+              .where(eq(trafficCaltransDistricts.id, closure.districtId))
               .limit(1);
             result.district = district || null;
           }
@@ -152,14 +180,16 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching Caltrans closures:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch closures' },
+      { success: false, error: 'Failed to fetch Caltrans closures' },
       { status: 500 }
     );
   }
 }
 
+// app/api/traffic/caltrans/route.ts - Fix numeric field handling
+
 // ============================================
-// POST /api/traffic/caltrans - Create closure (ADMIN ONLY)
+// POST /api/traffic/caltrans - Create Caltrans closure (ADMIN ONLY)
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -174,22 +204,31 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('📝 POST /api/traffic/caltrans - Request body:', body);
 
-    const { 
+    const {
       closureId,
-      route,
-      direction,
-      location,
+      sourceId,
+      title,
       description,
       closureType,
-      status,
-      severity,
+      route,
+      direction,
+      county,
+      city,
+      milepost,
       latitude,
       longitude,
       startDate,
       endDate,
+      expectedEndDate,
+      lastUpdated,
       districtId,
-      trafficId,
+      caltransId,
+      reason,
+      detour,
+      rawData,
+      notes,
       isActive,
+      isPublic,
     } = body;
 
     // ✅ Validate required fields
@@ -200,38 +239,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!route) {
+    if (!sourceId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: route' },
+        { success: false, error: 'Missing required field: sourceId' },
         { status: 400 }
       );
     }
 
-    if (!location) {
+    if (!title) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: location' },
+        { success: false, error: 'Missing required field: title' },
+        { status: 400 }
+      );
+    }
+
+    if (!startDate) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: startDate' },
         { status: 400 }
       );
     }
 
     const userId = session.user.id;
 
-    // ✅ Verify traffic module exists if provided
-    if (trafficId) {
-      const [module] = await db
+    // ✅ Verify district exists if provided
+    if (districtId) {
+      const [district] = await db
         .select()
-        .from(traffic)
-        .where(
-          and(
-            eq(traffic.id, parseInt(trafficId)),
-            eq(traffic.userId, userId)
-          )
-        )
+        .from(trafficCaltransDistricts)
+        .where(eq(trafficCaltransDistricts.id, parseInt(districtId)))
         .limit(1);
 
-      if (!module) {
+      if (!district) {
         return NextResponse.json(
-          { success: false, error: 'Traffic module not found' },
+          { success: false, error: 'Caltrans District not found' },
           { status: 404 }
         );
       }
@@ -258,24 +299,42 @@ export async function POST(request: NextRequest) {
 
     await ensureTableSequence('traffic_caltrans_lane_closures');
 
+    // ✅ Helper function to handle numeric fields
+    const parseNumeric = (value: any) => {
+      if (value === '' || value === null || value === undefined || isNaN(parseFloat(value))) {
+        return null;
+      }
+      return value;
+    };
+
     const [newClosure] = await db
       .insert(trafficCaltransLaneClosures)
       .values({
         userId,
-        trafficId: trafficId || null,
         closureId,
-        route,
-        direction: direction || 'northbound',
-        location,
+        sourceId,
+        title,
         description: description || null,
-        closureType: closureType || 'lane_closure',
-        status: status || 'active',
-        latitude: latitude || null,
-        longitude: longitude || null,
-        startDate: startDate || null,
-        endDate: endDate || null,
+        closureType: closureType || 'lane',
+        route: route || null,
+        direction: direction || null,
+        county: county || null,
+        city: city || null,
+        milepost: parseNumeric(milepost),
+        latitude: parseNumeric(latitude),
+        longitude: parseNumeric(longitude),
+        startDate: new Date(startDate),
+        endDate: endDate ? new Date(endDate) : null,
+        expectedEndDate: expectedEndDate ? new Date(expectedEndDate) : null,
+        lastUpdated: new Date(lastUpdated || Date.now()),
         districtId: districtId || null,
-        isActive: isActive !== false,
+        caltransId: caltransId || null,
+        reason: reason || null,
+        detour: detour || null,
+        rawData: rawData || null,
+        notes: notes || null,
+        isActive: isActive ?? true,
+        isPublic: isPublic ?? true,
       })
       .returning();
 
@@ -284,21 +343,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: newClosure,
-      message: 'Closure created successfully',
+      message: 'Caltrans closure created successfully',
     });
   } catch (error) {
     console.error('Error creating Caltrans closure:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create closure' },
+      { success: false, error: 'Failed to create Caltrans closure' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// PUT /api/traffic/caltrans - Update closure (ADMIN ONLY)
+// PATCH /api/traffic/caltrans - Partial update (ADMIN ONLY)
 // ============================================
-export async function PUT(request: NextRequest) {
+export async function PATCH(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -319,27 +378,15 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('📝 PUT /api/traffic/caltrans - Request body:', body);
-
-    const { 
-      closureId,
-      route,
-      direction,
-      location,
-      description,
-      closureType,
-      status,
-      severity,
-      latitude,
-      longitude,
-      startDate,
-      endDate,
-      districtId,
-      trafficId,
-      isActive,
-    } = body;
-
     const userId = session.user.id;
+    const parsedId = parseInt(id);
+
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid ID' },
+        { status: 400 }
+      );
+    }
 
     // ✅ Verify closure exists and belongs to user
     const [existing] = await db
@@ -347,7 +394,7 @@ export async function PUT(request: NextRequest) {
       .from(trafficCaltransLaneClosures)
       .where(
         and(
-          eq(trafficCaltransLaneClosures.id, parseInt(id)),
+          eq(trafficCaltransLaneClosures.id, parsedId),
           eq(trafficCaltransLaneClosures.userId, userId)
         )
       )
@@ -355,56 +402,69 @@ export async function PUT(request: NextRequest) {
 
     if (!existing) {
       return NextResponse.json(
-        { success: false, error: 'Closure not found' },
+        { success: false, error: 'Caltrans closure not found' },
         { status: 404 }
       );
     }
 
-    // ✅ Verify traffic module exists if provided
-    if (trafficId) {
-      const [module] = await db
+    // ✅ Verify district exists if provided
+    if (body.districtId) {
+      const [district] = await db
         .select()
-        .from(traffic)
-        .where(
-          and(
-            eq(traffic.id, parseInt(trafficId)),
-            eq(traffic.userId, userId)
-          )
-        )
+        .from(trafficCaltransDistricts)
+        .where(eq(trafficCaltransDistricts.id, parseInt(body.districtId)))
         .limit(1);
 
-      if (!module) {
+      if (!district) {
         return NextResponse.json(
-          { success: false, error: 'Traffic module not found' },
+          { success: false, error: 'Caltrans District not found' },
           { status: 404 }
         );
       }
     }
 
+    // ✅ Helper function to handle numeric fields
+    const parseNumeric = (value: any) => {
+      if (value === '' || value === null || value === undefined || isNaN(parseFloat(value))) {
+        return null;
+      }
+      return value;
+    };
+
+    // ✅ Handle date fields and numeric fields
+    const updateData: any = { updatedAt: new Date() };
+    
+    // Handle all fields with proper type conversion
+    if (body.closureId !== undefined) updateData.closureId = body.closureId;
+    if (body.sourceId !== undefined) updateData.sourceId = body.sourceId;
+    if (body.title !== undefined) updateData.title = body.title;
+    if (body.description !== undefined) updateData.description = body.description;
+    if (body.closureType !== undefined) updateData.closureType = body.closureType;
+    if (body.route !== undefined) updateData.route = body.route;
+    if (body.direction !== undefined) updateData.direction = body.direction;
+    if (body.county !== undefined) updateData.county = body.county;
+    if (body.city !== undefined) updateData.city = body.city;
+    if (body.milepost !== undefined) updateData.milepost = parseNumeric(body.milepost);
+    if (body.latitude !== undefined) updateData.latitude = parseNumeric(body.latitude);
+    if (body.longitude !== undefined) updateData.longitude = parseNumeric(body.longitude);
+    if (body.startDate !== undefined) updateData.startDate = new Date(body.startDate);
+    if (body.endDate !== undefined) updateData.endDate = body.endDate ? new Date(body.endDate) : null;
+    if (body.expectedEndDate !== undefined) updateData.expectedEndDate = body.expectedEndDate ? new Date(body.expectedEndDate) : null;
+    if (body.lastUpdated !== undefined) updateData.lastUpdated = new Date(body.lastUpdated);
+    if (body.districtId !== undefined) updateData.districtId = body.districtId || null;
+    if (body.caltransId !== undefined) updateData.caltransId = body.caltransId || null;
+    if (body.reason !== undefined) updateData.reason = body.reason || null;
+    if (body.detour !== undefined) updateData.detour = body.detour || null;
+    if (body.notes !== undefined) updateData.notes = body.notes || null;
+    if (body.isActive !== undefined) updateData.isActive = body.isActive;
+    if (body.isPublic !== undefined) updateData.isPublic = body.isPublic;
+
     const [updatedClosure] = await db
       .update(trafficCaltransLaneClosures)
-      .set({
-        closureId: closureId || existing.closureId,
-        route: route || existing.route,
-        direction: direction || existing.direction,
-        location: location || existing.location,
-        description: description !== undefined ? description : existing.description,
-        closureType: closureType || existing.closureType,
-        status: status || existing.status,
-        latitude: latitude !== undefined ? latitude : existing.latitude,
-        longitude: longitude !== undefined ? longitude : existing.longitude,
-        startDate: startDate !== undefined ? startDate : existing.startDate,
-        endDate: endDate !== undefined ? endDate : existing.endDate,
-        districtId: districtId !== undefined ? districtId : existing.districtId,
-        trafficId: trafficId !== undefined ? trafficId : existing.trafficId,
-        isActive: isActive !== undefined ? isActive : existing.isActive,
-        updatedAt: new Date(),
-        lastModified: new Date(),
-        lastSeen: new Date(),
-      })
+      .set(updateData)
       .where(
         and(
-          eq(trafficCaltransLaneClosures.id, parseInt(id)),
+          eq(trafficCaltransLaneClosures.id, parsedId),
           eq(trafficCaltransLaneClosures.userId, userId)
         )
       )
@@ -415,12 +475,12 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: updatedClosure,
-      message: 'Closure updated successfully',
+      message: 'Caltrans closure updated successfully',
     });
   } catch (error) {
     console.error('Error updating Caltrans closure:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update closure' },
+      { success: false, error: 'Failed to update Caltrans closure' },
       { status: 500 }
     );
   }
@@ -450,12 +510,20 @@ export async function DELETE(request: NextRequest) {
     }
 
     const userId = session.user.id;
+    const parsedId = parseInt(id);
+
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid ID' },
+        { status: 400 }
+      );
+    }
 
     const [deleted] = await db
       .delete(trafficCaltransLaneClosures)
       .where(
         and(
-          eq(trafficCaltransLaneClosures.id, parseInt(id)),
+          eq(trafficCaltransLaneClosures.id, parsedId),
           eq(trafficCaltransLaneClosures.userId, userId)
         )
       )
@@ -463,7 +531,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!deleted) {
       return NextResponse.json(
-        { success: false, error: 'Closure not found' },
+        { success: false, error: 'Caltrans closure not found' },
         { status: 404 }
       );
     }
@@ -471,12 +539,12 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: deleted,
-      message: 'Closure deleted successfully',
+      message: 'Caltrans closure deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting Caltrans closure:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete closure' },
+      { success: false, error: 'Failed to delete Caltrans closure' },
       { status: 500 }
     );
   }

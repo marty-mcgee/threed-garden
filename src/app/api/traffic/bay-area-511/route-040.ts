@@ -2,20 +2,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { trafficBayArea511Events } from '@/lib/schema/traffic';
+import { trafficBayArea511Events, traffic } from '@/lib/schema/traffic';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/traffic/bay-area-511 - List Bay Area 511 Events
+// GET /api/traffic/bay-area-511 - List 511 events (PUBLIC)
 // Query Parameters:
 //   - id (optional): Get a single event
-//   - isActive (optional): Filter by active status
-//   - isPublic (optional): Filter by public status
+//   - status (optional): Filter by status
 //   - eventType (optional): Filter by event type
-//   - severity (optional): Filter by severity
-//   - county (optional): Filter by county
-//   - city (optional): Filter by city
+//   - eventId (optional): Filter by event ID
+//   - trafficId (optional): Filter by traffic module
 //   - limit (optional): Number of records to return (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
 // ============================================
@@ -23,15 +21,13 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
-
+    
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const isActive = searchParams.get('isActive');
-    const isPublic = searchParams.get('isPublic');
+    const status = searchParams.get('status');
     const eventType = searchParams.get('eventType');
-    const severity = searchParams.get('severity');
-    const county = searchParams.get('county');
-    const city = searchParams.get('city');
+    const eventId = searchParams.get('eventId');
+    const trafficId = searchParams.get('trafficId');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -42,21 +38,16 @@ export async function GET(request: NextRequest) {
         .from(trafficBayArea511Events)
         .where(eq(trafficBayArea511Events.id, parseInt(id)));
 
-      // Public users only see active public events
+      // Public users only see active events
       if (!userId) {
-        query = query.where(
-          and(
-            eq(trafficBayArea511Events.isPublic, true),
-            eq(trafficBayArea511Events.isActive, true)
-          )
-        );
+        query = query.where(eq(trafficBayArea511Events.status, 'active'));
       }
 
       const [event] = await query.limit(1);
 
       if (!event) {
         return NextResponse.json(
-          { success: false, error: 'Bay Area 511 event not found' },
+          { success: false, error: 'Event not found' },
           { status: 404 }
         );
       }
@@ -79,58 +70,43 @@ export async function GET(request: NextRequest) {
       query = query.where(
         or(
           eq(trafficBayArea511Events.userId, userId),
-          and(
-            eq(trafficBayArea511Events.isPublic, true),
-            eq(trafficBayArea511Events.isActive, true)
-          )
+          eq(trafficBayArea511Events.status, 'active')
         )
       );
     } else {
-      // Public users only see active public events
-      query = query.where(
-        and(
-          eq(trafficBayArea511Events.isPublic, true),
-          eq(trafficBayArea511Events.isActive, true)
-        )
-      );
+      // Public users only see active events
+      query = query.where(eq(trafficBayArea511Events.status, 'active'));
     }
 
     // ✅ Apply filters
-    if (isActive !== null) {
-      query = query.where(eq(trafficBayArea511Events.isActive, isActive === 'true'));
-    }
-
-    if (isPublic !== null) {
-      query = query.where(eq(trafficBayArea511Events.isPublic, isPublic === 'true'));
+    if (status) {
+      query = query.where(eq(trafficBayArea511Events.status, status));
     }
 
     if (eventType) {
       query = query.where(eq(trafficBayArea511Events.eventType, eventType));
     }
 
-    if (severity) {
-      query = query.where(eq(trafficBayArea511Events.severity, parseInt(severity)));
+    if (eventId) {
+      query = query.where(eq(trafficBayArea511Events.sourceId, eventId));
     }
 
-    if (county) {
-      query = query.where(eq(trafficBayArea511Events.county, county));
-    }
-
-    if (city) {
-      query = query.where(eq(trafficBayArea511Events.city, city));
+    if (trafficId) {
+      query = query.where(eq(trafficBayArea511Events.trafficId, parseInt(trafficId)));
     }
 
     // ✅ Get total count for pagination
-    const [countResult] = await db
+    const countQuery = db
       .select({ count: sql<number>`count(*)` })
       .from(trafficBayArea511Events)
       .where(query._where);
 
+    const [countResult] = await countQuery;
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
     const events = await query
-      .orderBy(desc(trafficBayArea511Events.reportedAt))
+      .orderBy(desc(trafficBayArea511Events.createdAt))
       .limit(limit)
       .offset(offset);
 
@@ -142,14 +118,14 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching Bay Area 511 events:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch Bay Area 511 events' },
+      { success: false, error: 'Failed to fetch events' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// POST /api/traffic/bay-area-511 - Create Bay Area 511 event (ADMIN ONLY)
+// POST /api/traffic/bay-area-511 - Create event (ADMIN ONLY)
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -164,40 +140,28 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('📝 POST /api/traffic/bay-area-511 - Request body:', body);
 
-    const {
+    const { 
       eventId,
-      sourceId,
       title,
       description,
       eventType,
+      status,
       severity,
       location,
+      route,
+      direction,
       latitude,
       longitude,
-      address,
-      city,
-      county,
-      reportedAt,
-      clearedAt,
-      lastUpdated,
-      impact,
-      rawData,
-      notes,
+      startTime,
+      endTime,
+      trafficId,
       isActive,
-      isPublic,
     } = body;
 
     // ✅ Validate required fields
     if (!eventId) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: eventId' },
-        { status: 400 }
-      );
-    }
-
-    if (!sourceId) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: sourceId' },
         { status: 400 }
       );
     }
@@ -209,14 +173,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!reportedAt) {
+    if (!location) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: reportedAt' },
+        { success: false, error: 'Missing required field: location' },
         { status: 400 }
       );
     }
 
     const userId = session.user.id;
+
+    // ✅ Verify traffic module exists if provided
+    if (trafficId) {
+      const [module] = await db
+        .select()
+        .from(traffic)
+        .where(
+          and(
+            eq(traffic.id, parseInt(trafficId)),
+            eq(traffic.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!module) {
+        return NextResponse.json(
+          { success: false, error: 'Traffic module not found' },
+          { status: 404 }
+        );
+      }
+    }
 
     // ✅ Check if eventId already exists
     const [existing] = await db
@@ -224,7 +209,7 @@ export async function POST(request: NextRequest) {
       .from(trafficBayArea511Events)
       .where(
         and(
-          eq(trafficBayArea511Events.eventId, eventId),
+          eq(trafficBayArea511Events.sourceId, eventId),
           eq(trafficBayArea511Events.userId, userId)
         )
       )
@@ -237,40 +222,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ Helper function to handle numeric fields
-    const parseNumeric = (value: any) => {
-      if (value === '' || value === null || value === undefined || isNaN(parseFloat(value))) {
-        return null;
-      }
-      return value;
-    };
-
     await ensureTableSequence('traffic_bay_area_511_events');
 
     const [newEvent] = await db
       .insert(trafficBayArea511Events)
       .values({
         userId,
-        eventId,
-        sourceId,
+        trafficId: trafficId || null,
+        sourceId: eventId,
+        eventType: eventType || 'accident',
+        status: status || 'active',
         title,
         description: description || null,
-        eventType: eventType || 'accident',
-        severity: severity || 1,
-        location: location || null,
-        latitude: parseNumeric(latitude),
-        longitude: parseNumeric(longitude),
-        address: address || null,
-        city: city || null,
-        county: county || null,
-        reportedAt: new Date(reportedAt),
-        clearedAt: clearedAt ? new Date(clearedAt) : null,
-        lastUpdated: new Date(lastUpdated || Date.now()),
-        impact: impact || null,
-        rawData: rawData || null,
-        notes: notes || null,
-        isActive: isActive ?? true,
-        isPublic: isPublic ?? true,
+        roadwayName: route || null,
+        directionOfTravel: direction || null,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        location,
+        startTime: startTime || null,
+        endTime: endTime || null,
+        isActive: isActive !== false,
       })
       .returning();
 
@@ -279,21 +250,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: newEvent,
-      message: 'Bay Area 511 event created successfully',
+      message: 'Event created successfully',
     });
   } catch (error) {
     console.error('Error creating Bay Area 511 event:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create Bay Area 511 event' },
+      { success: false, error: 'Failed to create event' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// PATCH /api/traffic/bay-area-511 - Partial update (ADMIN ONLY)
+// PUT /api/traffic/bay-area-511 - Update event (ADMIN ONLY)
 // ============================================
-export async function PATCH(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -314,15 +285,27 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const userId = session.user.id;
-    const parsedId = parseInt(id);
+    console.log('📝 PUT /api/traffic/bay-area-511 - Request body:', body);
 
-    if (isNaN(parsedId)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid ID' },
-        { status: 400 }
-      );
-    }
+    const { 
+      eventId,
+      title,
+      description,
+      eventType,
+      status,
+      severity,
+      location,
+      route,
+      direction,
+      latitude,
+      longitude,
+      startTime,
+      endTime,
+      trafficId,
+      isActive,
+    } = body;
+
+    const userId = session.user.id;
 
     // ✅ Verify event exists and belongs to user
     const [existing] = await db
@@ -330,7 +313,7 @@ export async function PATCH(request: NextRequest) {
       .from(trafficBayArea511Events)
       .where(
         and(
-          eq(trafficBayArea511Events.id, parsedId),
+          eq(trafficBayArea511Events.id, parseInt(id)),
           eq(trafficBayArea511Events.userId, userId)
         )
       )
@@ -338,48 +321,55 @@ export async function PATCH(request: NextRequest) {
 
     if (!existing) {
       return NextResponse.json(
-        { success: false, error: 'Bay Area 511 event not found' },
+        { success: false, error: 'Event not found' },
         { status: 404 }
       );
     }
 
-    // ✅ Helper function to handle numeric fields
-    const parseNumeric = (value: any) => {
-      if (value === '' || value === null || value === undefined || isNaN(parseFloat(value))) {
-        return null;
+    // ✅ Verify traffic module exists if provided
+    if (trafficId) {
+      const [module] = await db
+        .select()
+        .from(traffic)
+        .where(
+          and(
+            eq(traffic.id, parseInt(trafficId)),
+            eq(traffic.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!module) {
+        return NextResponse.json(
+          { success: false, error: 'Traffic module not found' },
+          { status: 404 }
+        );
       }
-      return value;
-    };
-
-    // ✅ Handle date fields and numeric fields
-    const updateData: any = { updatedAt: new Date() };
-
-    if (body.eventId !== undefined) updateData.eventId = body.eventId;
-    if (body.sourceId !== undefined) updateData.sourceId = body.sourceId;
-    if (body.title !== undefined) updateData.title = body.title;
-    if (body.description !== undefined) updateData.description = body.description;
-    if (body.eventType !== undefined) updateData.eventType = body.eventType;
-    if (body.severity !== undefined) updateData.severity = body.severity;
-    if (body.location !== undefined) updateData.location = body.location;
-    if (body.latitude !== undefined) updateData.latitude = parseNumeric(body.latitude);
-    if (body.longitude !== undefined) updateData.longitude = parseNumeric(body.longitude);
-    if (body.address !== undefined) updateData.address = body.address;
-    if (body.city !== undefined) updateData.city = body.city;
-    if (body.county !== undefined) updateData.county = body.county;
-    if (body.reportedAt !== undefined) updateData.reportedAt = new Date(body.reportedAt);
-    if (body.clearedAt !== undefined) updateData.clearedAt = body.clearedAt ? new Date(body.clearedAt) : null;
-    if (body.lastUpdated !== undefined) updateData.lastUpdated = new Date(body.lastUpdated);
-    if (body.impact !== undefined) updateData.impact = body.impact;
-    if (body.notes !== undefined) updateData.notes = body.notes;
-    if (body.isActive !== undefined) updateData.isActive = body.isActive;
-    if (body.isPublic !== undefined) updateData.isPublic = body.isPublic;
+    }
 
     const [updatedEvent] = await db
       .update(trafficBayArea511Events)
-      .set(updateData)
+      .set({
+        sourceId: eventId || existing.sourceId,
+        eventType: eventType || existing.eventType,
+        status: status || existing.status,
+        title: title || existing.title,
+        description: description !== undefined ? description : existing.description,
+        roadwayName: route !== undefined ? route : existing.roadwayName,
+        directionOfTravel: direction !== undefined ? direction : existing.directionOfTravel,
+        latitude: latitude !== undefined ? latitude : existing.latitude,
+        longitude: longitude !== undefined ? longitude : existing.longitude,
+        location: location || existing.location,
+        startTime: startTime !== undefined ? startTime : existing.startTime,
+        endTime: endTime !== undefined ? endTime : existing.endTime,
+        trafficId: trafficId !== undefined ? trafficId : existing.trafficId,
+        isActive: isActive !== undefined ? isActive : existing.isActive,
+        lastUpdated: new Date(),
+        updatedAt: new Date(),
+      })
       .where(
         and(
-          eq(trafficBayArea511Events.id, parsedId),
+          eq(trafficBayArea511Events.id, parseInt(id)),
           eq(trafficBayArea511Events.userId, userId)
         )
       )
@@ -390,12 +380,12 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: updatedEvent,
-      message: 'Bay Area 511 event updated successfully',
+      message: 'Event updated successfully',
     });
   } catch (error) {
     console.error('Error updating Bay Area 511 event:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update Bay Area 511 event' },
+      { success: false, error: 'Failed to update event' },
       { status: 500 }
     );
   }
@@ -425,20 +415,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     const userId = session.user.id;
-    const parsedId = parseInt(id);
-
-    if (isNaN(parsedId)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid ID' },
-        { status: 400 }
-      );
-    }
 
     const [deleted] = await db
       .delete(trafficBayArea511Events)
       .where(
         and(
-          eq(trafficBayArea511Events.id, parsedId),
+          eq(trafficBayArea511Events.id, parseInt(id)),
           eq(trafficBayArea511Events.userId, userId)
         )
       )
@@ -446,7 +428,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!deleted) {
       return NextResponse.json(
-        { success: false, error: 'Bay Area 511 event not found' },
+        { success: false, error: 'Event not found' },
         { status: 404 }
       );
     }
@@ -454,12 +436,12 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: deleted,
-      message: 'Bay Area 511 event deleted successfully',
+      message: 'Event deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting Bay Area 511 event:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete Bay Area 511 event' },
+      { success: false, error: 'Failed to delete event' },
       { status: 500 }
     );
   }

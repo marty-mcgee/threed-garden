@@ -43,6 +43,9 @@ import {
   Carrot,
   Droplets,
   Drone,
+  Building2,
+  Grid3x2,
+  TrafficCone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -99,7 +102,9 @@ const navSections: NavSection[] = [
     items: [
       { title: 'CHP-CAD Incidents', href: '/admin/traffic/chp-cad', icon: AlertTriangle, exact: false },
       { title: 'CHP Cases', href: '/admin/traffic/chp-cases', icon: FileText, exact: false },
-      { title: 'Caltrans Closures', href: '/admin/traffic/caltrans', icon: Route, exact: false },
+      { title: 'CHP Centers', href: '/admin/traffic/chp-centers', icon: Building2, exact: false },
+      { title: 'Caltrans Closures', href: '/admin/traffic/caltrans', icon: TrafficCone, exact: false },
+      { title: 'Caltrans Districts', href: '/admin/traffic/caltrans-districts', icon: Grid3x2, exact: false },
       { title: 'CalFire Incidents', href: '/admin/traffic/calfire', icon: Flame, exact: false },
       { title: 'Bay Area 511', href: '/admin/traffic/bay-area-511', icon: Radio, exact: false },
     ],

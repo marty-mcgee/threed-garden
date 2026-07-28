@@ -2,7 +2,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { db } from '@/lib/db/client';
-import { trafficChpCadIncidents, trafficChpCadCenters } from '@/lib/schema';
+import { trafficChpCadIncidents, trafficChpCenters  } from '@/lib/schema';
 import { eq, and, sql } from 'drizzle-orm';
 // import { getCityCoordinates } from '@/lib/utils/cityGeocoder';
 
@@ -85,9 +85,9 @@ export class CHPCADPoller {
       console.log(`  Fetching ${center.name} (${center.code})...`);
       
       const centerRecord = await db
-        .select({ id: trafficChpCadCenters.id })
-        .from(trafficChpCadCenters)
-        .where(eq(trafficChpCadCenters.centerCode, center.code))
+        .select({ id: trafficChpCenters .id })
+        .from(trafficChpCenters )
+        .where(eq(trafficChpCenters .centerCode, center.code))
         .limit(1);
       
       const centerId = centerRecord[0]?.id || null;
@@ -200,13 +200,13 @@ export class CHPCADPoller {
     
     const byCenter = await db
       .select({
-        centerName: trafficChpCadCenters.centerName,
-        centerCode: trafficChpCadCenters.centerCode,
+        centerName: trafficChpCenters .centerName,
+        centerCode: trafficChpCenters .centerCode,
         count: sql<number>`COUNT(*)`,
       })
       .from(trafficChpCadIncidents)
-      .leftJoin(trafficChpCadCenters, eq(trafficChpCadIncidents.centerId, trafficChpCadCenters.id))
-      .groupBy(trafficChpCadCenters.centerName, trafficChpCadCenters.centerCode);
+      .leftJoin(trafficChpCenters , eq(trafficChpCadIncidents.centerId, trafficChpCenters .id))
+      .groupBy(trafficChpCenters .centerName, trafficChpCenters .centerCode);
     
     return {
       total: total[0]?.count || 0,

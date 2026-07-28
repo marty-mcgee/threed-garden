@@ -17,40 +17,43 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
-    const isPublic = searchParams.get('public') === 'true';
+    const isActive = searchParams.get('isActive');
+    const search = searchParams.get('search');
 
     let query = db.select().from(traffic);
 
-    if (isPublic) {
-      query = query.where(eq(traffic.isPublic, true));
-    } else if (userId) {
+    // Filter by user or public
+    if (userId) {
       query = query.where(eq(traffic.userId, userId));
     } else {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
+      query = query.where(eq(traffic.isPublic, true));
+    }
+
+    // Filter by active status
+    if (isActive !== null) {
+      query = query.where(eq(traffic.isActive, isActive === 'true'));
+    }
+
+    // Search by name or description
+    if (search) {
+      query = query.where(
+        sql`${traffic.name} ILIKE ${`%${search}%`} OR ${traffic.description} ILIKE ${`%${search}%`}`
       );
     }
 
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(traffic)
-      .where(
-        isPublic
-          ? eq(traffic.isPublic, true)
-          : userId
-          ? eq(traffic.userId, userId)
-          : sql`1=0`
-      );
+      .where(query._where);
 
-    const data = await query
+    const results = await query
       .orderBy(desc(traffic.createdAt))
       .limit(limit)
       .offset(offset);
 
     return NextResponse.json({
       success: true,
-      data,
+      data: results,
       pagination: {
         limit,
         offset,
@@ -73,15 +76,11 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { name, description, slug, config, settings, refreshInterval, isPublic } =
-      body;
+    const { name, description, slug, isActive, isPublic, config, metadata, dataSources, mapConfig } = body;
 
     if (!name || !slug) {
       return NextResponse.json(
@@ -90,20 +89,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
+
     await ensureTableSequence('traffic');
 
     const [newModule] = await db
       .insert(traffic)
       .values({
-        userId: session.user.id,
+        userId,
+        moduleId: `traffic_${Date.now()}`,
         name,
-        description,
+        description: description || null,
         slug,
+        isActive: isActive ?? true,
+        isPublic: isPublic ?? false,
         config: config || {},
-        settings: settings || {},
-        refreshInterval: refreshInterval || 60,
-        isPublic: isPublic || false,
-        isActive: true,
+        metadata: metadata || {},
+        dataSources: dataSources || {
+          chpCad: true,
+          chpCases: true,
+          caltransClosures: true,
+          bayArea511: true,
+          calfire: true,
+          cctv: true
+        },
+        mapConfig: mapConfig || {
+          center: { lat: 37.7749, lng: -122.4194 },
+          zoom: 10,
+          layers: ['incidents', 'closures', 'cameras']
+        },
       })
       .returning();
 
@@ -124,10 +138,7 @@ export async function PATCH(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -141,11 +152,12 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
+    const userId = session.user.id;
     const parsedId = parseInt(id);
 
     if (isNaN(parsedId)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid id' },
+        { success: false, error: 'Invalid ID' },
         { status: 400 }
       );
     }
@@ -154,9 +166,7 @@ export async function PATCH(request: NextRequest) {
     const [existing] = await db
       .select()
       .from(traffic)
-      .where(
-        and(eq(traffic.id, parsedId), eq(traffic.userId, session.user.id))
-      )
+      .where(and(eq(traffic.id, parsedId), eq(traffic.userId, userId)))
       .limit(1);
 
     if (!existing) {
@@ -172,7 +182,7 @@ export async function PATCH(request: NextRequest) {
         ...body,
         updatedAt: new Date(),
       })
-      .where(eq(traffic.id, parsedId))
+      .where(and(eq(traffic.id, parsedId), eq(traffic.userId, userId)))
       .returning();
 
     return NextResponse.json({ success: true, data: updated });
@@ -192,10 +202,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -208,35 +215,27 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const userId = session.user.id;
     const parsedId = parseInt(id);
 
     if (isNaN(parsedId)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid id' },
+        { success: false, error: 'Invalid ID' },
         { status: 400 }
-      );
-    }
-
-    // Verify ownership
-    const [existing] = await db
-      .select()
-      .from(traffic)
-      .where(
-        and(eq(traffic.id, parsedId), eq(traffic.userId, session.user.id))
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { success: false, error: 'Traffic module not found' },
-        { status: 404 }
       );
     }
 
     const [deleted] = await db
       .delete(traffic)
-      .where(eq(traffic.id, parsedId))
+      .where(and(eq(traffic.id, parsedId), eq(traffic.userId, userId)))
       .returning();
+
+    if (!deleted) {
+      return NextResponse.json(
+        { success: false, error: 'Traffic module not found' },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ success: true, data: deleted });
   } catch (error) {

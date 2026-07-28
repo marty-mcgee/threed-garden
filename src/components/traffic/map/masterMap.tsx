@@ -33,7 +33,7 @@ function MapBoundsUpdater({ events }: { events: MasterMapEvent[] }) {
 
 export interface MasterMapEvent {
   id: number;
-  source: 'caltrans' | 'bayarea511' | 'chp-live' | 'chp-historical';
+  source: 'caltrans' | 'bay-area-511' | 'chp-live' | 'chp-historical';
   type: string;
   severity?: string;
   location: string;
@@ -56,7 +56,7 @@ interface MasterMapProps {
 const getSourceColor = (source: string) => {
   switch (source) {
     case 'caltrans': return '#3b82f6';
-    case 'bayarea511': return '#10b981';
+    case 'bay-area-511': return '#10b981';
     case 'chp-live': return '#ef4444';
     case 'chp-historical': return '#8b5cf6';
     default: return '#6b7280';
@@ -66,7 +66,7 @@ const getSourceColor = (source: string) => {
 const getSourceName = (source: string) => {
   switch (source) {
     case 'caltrans': return 'Caltrans';
-    case 'bayarea511': return '511.org';
+    case 'bay-area-511': return '511.org';
     case 'chp-live': return 'CHP Live';
     case 'chp-historical': return 'CHP Historical';
     default: return source;
@@ -76,7 +76,7 @@ const getSourceName = (source: string) => {
 const getSourceIcon = (source: string) => {
   switch (source) {
     case 'caltrans': return '🚧';
-    case 'bayarea511': return '🚗';
+    case 'bay-area-511': return '🚗';
     case 'chp-live': return '🚨';
     case 'chp-historical': return '📊';
     default: return '📍';

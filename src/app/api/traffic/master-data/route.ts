@@ -37,7 +37,7 @@ export async function GET() {
     const trafficBayAreaEvents = await db
       .select({
         id: trafficBayArea511Events.id,
-        source: sql<string>`'bayarea511'`,
+        source: sql<string>`'bay-area-511'`,
         type: trafficBayArea511Events.eventType,
         severity: trafficBayArea511Events.severity,
         location: trafficBayArea511Events.roadwayName,

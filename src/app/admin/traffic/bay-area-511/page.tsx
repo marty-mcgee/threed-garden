@@ -1,7 +1,7 @@
-// app/admin/traffic/bayarea511/page.tsx
+// app/admin/traffic/bay-area-511/page.tsx
 'use client';
 
-import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bayarea511/TrafficBayArea511CRUD';
+import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bay-area-511/TrafficBayArea511CRUD';
 import { Radio } from 'lucide-react';
 
 export default function TrafficBayArea511Page() {

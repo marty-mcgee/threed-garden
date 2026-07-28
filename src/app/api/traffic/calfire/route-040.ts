@@ -2,20 +2,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { trafficCalfireIncidents } from '@/lib/schema/traffic';
+import { trafficCalfireIncidents, traffic } from '@/lib/schema/traffic';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/traffic/calfire - List CalFire Incidents
+// GET /api/traffic/calfire - List CalFire incidents (PUBLIC)
 // Query Parameters:
 //   - id (optional): Get a single incident
-//   - isActive (optional): Filter by active status
-//   - isPublic (optional): Filter by public status
-//   - status (optional): Filter by incident status (active, cleared, etc.)
-//   - severity (optional): Filter by severity (1-5)
+//   - status (optional): Filter by status
 //   - county (optional): Filter by county
-//   - fireType (optional): Filter by fire type
+//   - incidentId (optional): Filter by incident ID
+//   - trafficId (optional): Filter by traffic module
 //   - limit (optional): Number of records to return (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
 // ============================================
@@ -23,15 +21,13 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
-
+    
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const isActive = searchParams.get('isActive');
-    const isPublic = searchParams.get('isPublic');
     const status = searchParams.get('status');
-    const severity = searchParams.get('severity');
     const county = searchParams.get('county');
-    const fireType = searchParams.get('fireType');
+    const incidentId = searchParams.get('incidentId');
+    const trafficId = searchParams.get('trafficId');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -42,21 +38,16 @@ export async function GET(request: NextRequest) {
         .from(trafficCalfireIncidents)
         .where(eq(trafficCalfireIncidents.id, parseInt(id)));
 
-      // Public users only see active public incidents
+      // Public users only see active incidents
       if (!userId) {
-        query = query.where(
-          and(
-            eq(trafficCalfireIncidents.isPublic, true),
-            eq(trafficCalfireIncidents.isActive, true)
-          )
-        );
+        query = query.where(eq(trafficCalfireIncidents.status, 'active'));
       }
 
       const [incident] = await query.limit(1);
 
       if (!incident) {
         return NextResponse.json(
-          { success: false, error: 'CalFire incident not found' },
+          { success: false, error: 'Incident not found' },
           { status: 404 }
         );
       }
@@ -79,58 +70,43 @@ export async function GET(request: NextRequest) {
       query = query.where(
         or(
           eq(trafficCalfireIncidents.userId, userId),
-          and(
-            eq(trafficCalfireIncidents.isPublic, true),
-            eq(trafficCalfireIncidents.isActive, true)
-          )
+          eq(trafficCalfireIncidents.status, 'active')
         )
       );
     } else {
-      // Public users only see active public incidents
-      query = query.where(
-        and(
-          eq(trafficCalfireIncidents.isPublic, true),
-          eq(trafficCalfireIncidents.isActive, true)
-        )
-      );
+      // Public users only see active incidents
+      query = query.where(eq(trafficCalfireIncidents.status, 'active'));
     }
 
     // ✅ Apply filters
-    if (isActive !== null) {
-      query = query.where(eq(trafficCalfireIncidents.isActive, isActive === 'true'));
-    }
-
-    if (isPublic !== null) {
-      query = query.where(eq(trafficCalfireIncidents.isPublic, isPublic === 'true'));
-    }
-
     if (status) {
       query = query.where(eq(trafficCalfireIncidents.status, status));
-    }
-
-    if (severity) {
-      query = query.where(eq(trafficCalfireIncidents.severity, parseInt(severity)));
     }
 
     if (county) {
       query = query.where(eq(trafficCalfireIncidents.county, county));
     }
 
-    if (fireType) {
-      query = query.where(eq(trafficCalfireIncidents.fireType, fireType));
+    if (incidentId) {
+      query = query.where(eq(trafficCalfireIncidents.incidentId, incidentId));
+    }
+
+    if (trafficId) {
+      query = query.where(eq(trafficCalfireIncidents.trafficId, parseInt(trafficId)));
     }
 
     // ✅ Get total count for pagination
-    const [countResult] = await db
+    const countQuery = db
       .select({ count: sql<number>`count(*)` })
       .from(trafficCalfireIncidents)
       .where(query._where);
 
+    const [countResult] = await countQuery;
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
     const incidents = await query
-      .orderBy(desc(trafficCalfireIncidents.reportedAt))
+      .orderBy(desc(trafficCalfireIncidents.createdAt))
       .limit(limit)
       .offset(offset);
 
@@ -142,14 +118,14 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching CalFire incidents:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch CalFire incidents' },
+      { success: false, error: 'Failed to fetch incidents' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// POST /api/traffic/calfire - Create CalFire incident (ADMIN ONLY)
+// POST /api/traffic/calfire - Create incident (ADMIN ONLY)
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -164,32 +140,23 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('📝 POST /api/traffic/calfire - Request body:', body);
 
-    const {
+    const { 
       incidentId,
-      sourceId,
-      title,
+      name,
       description,
       incidentType,
       status,
+      severity,
       location,
+      county,
       latitude,
       longitude,
-      address,
-      city,
-      county,
-      acreage,
+      acresBurned,
       containment,
-      cause,
-      fireType,
-      evacuations,
-      reportedAt,
-      containedAt,
-      lastUpdated,
-      rawData,
-      notes,
+      reportedDate,
+      updatedDate,
+      trafficId,
       isActive,
-      isPublic,
-      severity,
     } = body;
 
     // ✅ Validate required fields
@@ -200,28 +167,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!sourceId) {
+    if (!name) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: sourceId' },
+        { success: false, error: 'Missing required field: name' },
         { status: 400 }
       );
     }
 
-    if (!title) {
+    if (!location) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: title' },
-        { status: 400 }
-      );
-    }
-
-    if (!reportedAt) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: reportedAt' },
+        { success: false, error: 'Missing required field: location' },
         { status: 400 }
       );
     }
 
     const userId = session.user.id;
+
+    // ✅ Verify traffic module exists if provided
+    if (trafficId) {
+      const [module] = await db
+        .select()
+        .from(traffic)
+        .where(
+          and(
+            eq(traffic.id, parseInt(trafficId)),
+            eq(traffic.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!module) {
+        return NextResponse.json(
+          { success: false, error: 'Traffic module not found' },
+          { status: 404 }
+        );
+      }
+    }
 
     // ✅ Check if incidentId already exists
     const [existing] = await db
@@ -242,45 +223,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ Helper function to handle numeric fields
-    const parseNumeric = (value: any) => {
-      if (value === '' || value === null || value === undefined || isNaN(parseFloat(value))) {
-        return null;
-      }
-      return parseInt(value);
-    };
-
     await ensureTableSequence('traffic_calfire_incidents');
 
     const [newIncident] = await db
       .insert(trafficCalfireIncidents)
       .values({
         userId,
+        trafficId: trafficId || null,
         incidentId,
-        sourceId,
-        title,
+        name,
         description: description || null,
-        incidentType: incidentType || 'wildfire',
+        type: incidentType || 'Wildfire',
         status: status || 'active',
-        location: location || null,
+        county: county || null,
+        location,
         latitude: latitude || null,
         longitude: longitude || null,
-        address: address || null,
-        city: city || null,
-        county: county || null,
-        acreage: parseNumeric(acreage),
-        containment: parseNumeric(containment),
-        cause: cause || null,
-        fireType: fireType || null,
-        evacuations: evacuations || null,
-        reportedAt: new Date(reportedAt),
-        containedAt: containedAt ? new Date(containedAt) : null,
-        lastUpdated: new Date(lastUpdated || Date.now()),
-        rawData: rawData || null,
-        notes: notes || null,
-        isActive: isActive ?? true,
-        isPublic: isPublic ?? true,
-        severity: severity || 1,
+        acresBurned: acresBurned || null,
+        percentContained: containment || null,
+        startedAt: reportedDate || null,
+        updatedAt: updatedDate || null,
+        isActive: isActive !== false,
+        isCalFireIncident: true,
       })
       .returning();
 
@@ -289,21 +253,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: newIncident,
-      message: 'CalFire incident created successfully',
+      message: 'Incident created successfully',
     });
   } catch (error) {
     console.error('Error creating CalFire incident:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create CalFire incident' },
+      { success: false, error: 'Failed to create incident' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// PATCH /api/traffic/calfire - Partial update (ADMIN ONLY)
+// PUT /api/traffic/calfire - Update incident (ADMIN ONLY)
 // ============================================
-export async function PATCH(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -324,15 +288,28 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const userId = session.user.id;
-    const parsedId = parseInt(id);
+    console.log('📝 PUT /api/traffic/calfire - Request body:', body);
 
-    if (isNaN(parsedId)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid ID' },
-        { status: 400 }
-      );
-    }
+    const { 
+      incidentId,
+      name,
+      description,
+      incidentType,
+      status,
+      severity,
+      location,
+      county,
+      latitude,
+      longitude,
+      acresBurned,
+      containment,
+      reportedDate,
+      updatedDate,
+      trafficId,
+      isActive,
+    } = body;
+
+    const userId = session.user.id;
 
     // ✅ Verify incident exists and belongs to user
     const [existing] = await db
@@ -340,7 +317,7 @@ export async function PATCH(request: NextRequest) {
       .from(trafficCalfireIncidents)
       .where(
         and(
-          eq(trafficCalfireIncidents.id, parsedId),
+          eq(trafficCalfireIncidents.id, parseInt(id)),
           eq(trafficCalfireIncidents.userId, userId)
         )
       )
@@ -348,53 +325,55 @@ export async function PATCH(request: NextRequest) {
 
     if (!existing) {
       return NextResponse.json(
-        { success: false, error: 'CalFire incident not found' },
+        { success: false, error: 'Incident not found' },
         { status: 404 }
       );
     }
 
-    // ✅ Helper function to handle numeric fields
-    const parseNumeric = (value: any) => {
-      if (value === '' || value === null || value === undefined || isNaN(parseFloat(value))) {
-        return null;
+    // ✅ Verify traffic module exists if provided
+    if (trafficId) {
+      const [module] = await db
+        .select()
+        .from(traffic)
+        .where(
+          and(
+            eq(traffic.id, parseInt(trafficId)),
+            eq(traffic.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!module) {
+        return NextResponse.json(
+          { success: false, error: 'Traffic module not found' },
+          { status: 404 }
+        );
       }
-      return parseInt(value);
-    };
-
-    // ✅ Handle date fields and numeric fields
-    const updateData: any = { updatedAt: new Date() };
-
-    if (body.incidentId !== undefined) updateData.incidentId = body.incidentId;
-    if (body.sourceId !== undefined) updateData.sourceId = body.sourceId;
-    if (body.title !== undefined) updateData.title = body.title;
-    if (body.description !== undefined) updateData.description = body.description;
-    if (body.incidentType !== undefined) updateData.incidentType = body.incidentType;
-    if (body.status !== undefined) updateData.status = body.status;
-    if (body.location !== undefined) updateData.location = body.location;
-    if (body.latitude !== undefined) updateData.latitude = body.latitude;
-    if (body.longitude !== undefined) updateData.longitude = body.longitude;
-    if (body.address !== undefined) updateData.address = body.address;
-    if (body.city !== undefined) updateData.city = body.city;
-    if (body.county !== undefined) updateData.county = body.county;
-    if (body.acreage !== undefined) updateData.acreage = parseNumeric(body.acreage);
-    if (body.containment !== undefined) updateData.containment = parseNumeric(body.containment);
-    if (body.cause !== undefined) updateData.cause = body.cause;
-    if (body.fireType !== undefined) updateData.fireType = body.fireType;
-    if (body.evacuations !== undefined) updateData.evacuations = body.evacuations;
-    if (body.reportedAt !== undefined) updateData.reportedAt = new Date(body.reportedAt);
-    if (body.containedAt !== undefined) updateData.containedAt = body.containedAt ? new Date(body.containedAt) : null;
-    if (body.lastUpdated !== undefined) updateData.lastUpdated = new Date(body.lastUpdated);
-    if (body.notes !== undefined) updateData.notes = body.notes;
-    if (body.isActive !== undefined) updateData.isActive = body.isActive;
-    if (body.isPublic !== undefined) updateData.isPublic = body.isPublic;
-    if (body.severity !== undefined) updateData.severity = body.severity;
+    }
 
     const [updatedIncident] = await db
       .update(trafficCalfireIncidents)
-      .set(updateData)
+      .set({
+        incidentId: incidentId || existing.incidentId,
+        name: name || existing.name,
+        description: description !== undefined ? description : existing.description,
+        type: incidentType || existing.type,
+        status: status || existing.status,
+        county: county !== undefined ? county : existing.county,
+        location: location || existing.location,
+        latitude: latitude !== undefined ? latitude : existing.latitude,
+        longitude: longitude !== undefined ? longitude : existing.longitude,
+        acresBurned: acresBurned !== undefined ? acresBurned : existing.acresBurned,
+        percentContained: containment !== undefined ? containment : existing.percentContained,
+        startedAt: reportedDate !== undefined ? reportedDate : existing.startedAt,
+        updatedAt: updatedDate !== undefined ? updatedDate : existing.updatedAt,
+        trafficId: trafficId !== undefined ? trafficId : existing.trafficId,
+        isActive: isActive !== undefined ? isActive : existing.isActive,
+        lastSeen: new Date(),
+      })
       .where(
         and(
-          eq(trafficCalfireIncidents.id, parsedId),
+          eq(trafficCalfireIncidents.id, parseInt(id)),
           eq(trafficCalfireIncidents.userId, userId)
         )
       )
@@ -405,12 +384,12 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: updatedIncident,
-      message: 'CalFire incident updated successfully',
+      message: 'Incident updated successfully',
     });
   } catch (error) {
     console.error('Error updating CalFire incident:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update CalFire incident' },
+      { success: false, error: 'Failed to update incident' },
       { status: 500 }
     );
   }
@@ -440,20 +419,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     const userId = session.user.id;
-    const parsedId = parseInt(id);
-
-    if (isNaN(parsedId)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid ID' },
-        { status: 400 }
-      );
-    }
 
     const [deleted] = await db
       .delete(trafficCalfireIncidents)
       .where(
         and(
-          eq(trafficCalfireIncidents.id, parsedId),
+          eq(trafficCalfireIncidents.id, parseInt(id)),
           eq(trafficCalfireIncidents.userId, userId)
         )
       )
@@ -461,7 +432,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!deleted) {
       return NextResponse.json(
-        { success: false, error: 'CalFire incident not found' },
+        { success: false, error: 'Incident not found' },
         { status: 404 }
       );
     }
@@ -469,12 +440,12 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: deleted,
-      message: 'CalFire incident deleted successfully',
+      message: 'Incident deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting CalFire incident:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete CalFire incident' },
+      { success: false, error: 'Failed to delete incident' },
       { status: 500 }
     );
   }

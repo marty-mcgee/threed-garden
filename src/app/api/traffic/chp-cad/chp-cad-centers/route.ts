@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { trafficChpCadCenters } from '@/lib/schema';
+import { trafficChpCenters  } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
@@ -13,14 +13,14 @@ export async function GET() {
     const sqlClient = neon(connectionString);
     const db = drizzle(sqlClient);
     
-    const conditions = [eq(trafficChpCadCenters.isActive, true)];
+    const conditions = [eq(trafficChpCenters .isActive, true)];
     const whereClause = and(...conditions);
     
     const centers = await db
       .select()
-      .from(trafficChpCadCenters)
+      .from(trafficChpCenters )
       .where(whereClause)
-      .orderBy(trafficChpCadCenters.centerName);
+      .orderBy(trafficChpCenters .centerName);
     
     return NextResponse.json({
       success: true,

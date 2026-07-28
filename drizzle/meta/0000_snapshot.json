@@ -1,5 +1,5 @@
 {
-  "id": "e7b5c7a4-8975-472d-babf-80f561c17bfa",
+  "id": "0564448b-678b-4fd1-8846-8049f5e394b3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8021,9 +8021,15 @@
           "primaryKey": false,
           "notNull": false
         },
+        "module_id": {
+          "name": "module_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
@@ -8035,16 +8041,9 @@
         },
         "slug": {
           "name": "slug",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
-        },
-        "config": {
-          "name": "config",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{}'::jsonb"
         },
         "is_active": {
           "name": "is_active",
@@ -8059,6 +8058,34 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "data_sources": {
+          "name": "data_sources",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"chpCad\":true,\"chpCases\":true,\"caltransClosures\":true,\"bayArea511\":true,\"calfire\":true,\"cctv\":true}'::jsonb"
+        },
+        "map_config": {
+          "name": "map_config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"center\":{\"lat\":37.7749,\"lng\":-122.4194},\"zoom\":10,\"layers\":[\"incidents\",\"closures\",\"cameras\"]}'::jsonb"
         },
         "created_at": {
           "name": "created_at",
@@ -8087,6 +8114,21 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_module_id": {
+          "name": "idx_traffic_module_id",
+          "columns": [
+            {
+              "expression": "module_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -8139,6 +8181,13 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "traffic_module_id_unique": {
+          "name": "traffic_module_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "module_id"
+          ]
+        },
         "traffic_slug_unique": {
           "name": "traffic_slug_unique",
           "nullsNotDistinct": false,
@@ -8167,11 +8216,23 @@
           "primaryKey": false,
           "notNull": false
         },
+        "source": {
+          "name": "source",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "endpoint": {
           "name": "endpoint",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "method": {
+          "name": "method",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
         },
         "status_code": {
           "name": "status_code",
@@ -8179,8 +8240,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "duration_ms": {
-          "name": "duration_ms",
+        "success": {
+          "name": "success",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "response_time": {
+          "name": "response_time",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -8197,27 +8265,14 @@
           "primaryKey": false,
           "notNull": false
         },
-        "error": {
-          "name": "error",
+        "error_message": {
+          "name": "error_message",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "source": {
-          "name": "source",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_success": {
-          "name": "is_success",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "logged_at": {
-          "name": "logged_at",
+        "requested_at": {
+          "name": "requested_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -8239,11 +8294,11 @@
         }
       },
       "indexes": {
-        "idx_api_logs_endpoint": {
-          "name": "idx_api_logs_endpoint",
+        "idx_traffic_api_log_source": {
+          "name": "idx_traffic_api_log_source",
           "columns": [
             {
-              "expression": "endpoint",
+              "expression": "source",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8254,11 +8309,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_api_logs_logged_at": {
-          "name": "idx_api_logs_logged_at",
+        "idx_traffic_api_log_success": {
+          "name": "idx_traffic_api_log_success",
           "columns": [
             {
-              "expression": "logged_at",
+              "expression": "success",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8269,11 +8324,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_api_logs_success": {
-          "name": "idx_api_logs_success",
+        "idx_traffic_api_log_requested_at": {
+          "name": "idx_traffic_api_log_requested_at",
           "columns": [
             {
-              "expression": "is_success",
+              "expression": "requested_at",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8328,16 +8383,15 @@
           "primaryKey": false,
           "notNull": true
         },
-        "event_type": {
-          "name": "event_type",
-          "type": "event_type",
-          "typeSchema": "public",
+        "source_id": {
+          "name": "source_id",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
         },
         "title": {
           "name": "title",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
@@ -8347,34 +8401,23 @@
           "primaryKey": false,
           "notNull": false
         },
-        "severity": {
-          "name": "severity",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "incident_status",
+        "event_type": {
+          "name": "event_type",
+          "type": "event_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": "'active'"
+          "default": "'accident'"
+        },
+        "severity": {
+          "name": "severity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
         },
         "location": {
           "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "city": {
-          "name": "city",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "county": {
-          "name": "county",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -8391,64 +8434,26 @@
           "primaryKey": false,
           "notNull": false
         },
-        "route": {
-          "name": "route",
+        "address": {
+          "name": "address",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "direction": {
-          "name": "direction",
-          "type": "text",
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
-        "milepost": {
-          "name": "milepost",
-          "type": "numeric(8, 2)",
+        "county": {
+          "name": "county",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
-        "area": {
-          "name": "area",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "affected_roads": {
-          "name": "affected_roads",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
-        },
-        "impact": {
-          "name": "impact",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "advice": {
-          "name": "advice",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "raw_data": {
-          "name": "raw_data",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "source": {
-          "name": "source",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'511'"
-        },
-        "occurred_at": {
-          "name": "occurred_at",
+        "reported_at": {
+          "name": "reported_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
@@ -8463,10 +8468,35 @@
           "name": "last_updated",
           "type": "timestamp",
           "primaryKey": false,
+          "notNull": true
+        },
+        "impact": {
+          "name": "impact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "raw_data": {
+          "name": "raw_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
           "notNull": false
         },
         "is_active": {
           "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "is_public": {
+          "name": "is_public",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
@@ -8488,8 +8518,8 @@
         }
       },
       "indexes": {
-        "idx_511_event_id": {
-          "name": "idx_511_event_id",
+        "idx_traffic_511_event_id": {
+          "name": "idx_traffic_511_event_id",
           "columns": [
             {
               "expression": "event_id",
@@ -8503,8 +8533,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_511_event_type": {
-          "name": "idx_511_event_type",
+        "idx_traffic_511_event_type": {
+          "name": "idx_traffic_511_event_type",
           "columns": [
             {
               "expression": "event_type",
@@ -8518,11 +8548,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_511_county": {
-          "name": "idx_511_county",
+        "idx_traffic_511_reported_at": {
+          "name": "idx_traffic_511_reported_at",
           "columns": [
             {
-              "expression": "county",
+              "expression": "reported_at",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8533,11 +8563,17 @@
           "method": "btree",
           "with": {}
         },
-        "idx_511_status": {
-          "name": "idx_511_status",
+        "idx_traffic_511_location": {
+          "name": "idx_traffic_511_location",
           "columns": [
             {
-              "expression": "status",
+              "expression": "latitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "longitude",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8548,23 +8584,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_511_occurred_at": {
-          "name": "idx_511_occurred_at",
-          "columns": [
-            {
-              "expression": "occurred_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_511_active": {
-          "name": "idx_511_active",
+        "idx_traffic_511_active": {
+          "name": "idx_traffic_511_active",
           "columns": [
             {
               "expression": "is_active",
@@ -8630,17 +8651,30 @@
           "primaryKey": false,
           "notNull": true
         },
-        "incident_name": {
-          "name": "incident_name",
-          "type": "text",
+        "source_id": {
+          "name": "source_id",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
         },
-        "incident_type": {
-          "name": "incident_type",
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "incident_type": {
+          "name": "incident_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'wildfire'"
         },
         "status": {
           "name": "status",
@@ -8650,36 +8684,11 @@
           "notNull": false,
           "default": "'active'"
         },
-        "severity": {
-          "name": "severity",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "location": {
           "name": "location",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
-        },
-        "county": {
-          "name": "county",
-          "type": "text",
-          "primaryKey": false,
           "notNull": false
-        },
-        "state": {
-          "name": "state",
-          "type": "varchar(2)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'CA'"
         },
         "latitude": {
           "name": "latitude",
@@ -8693,18 +8702,29 @@
           "primaryKey": false,
           "notNull": false
         },
-        "fire_size": {
-          "name": "fire_size",
-          "type": "numeric(10, 1)",
+        "address": {
+          "name": "address",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "fire_size_unit": {
-          "name": "fire_size_unit",
-          "type": "varchar(10)",
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'acres'"
+          "notNull": false
+        },
+        "county": {
+          "name": "county",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acreage": {
+          "name": "acreage",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         },
         "containment": {
           "name": "containment",
@@ -8714,55 +8734,24 @@
         },
         "cause": {
           "name": "cause",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
-        "personnel": {
-          "name": "personnel",
-          "type": "integer",
+        "fire_type": {
+          "name": "fire_type",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
         },
-        "engines": {
-          "name": "engines",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "dozers": {
-          "name": "dozers",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "aircraft": {
-          "name": "aircraft",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "crews": {
-          "name": "crews",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "raw_data": {
-          "name": "raw_data",
+        "evacuations": {
+          "name": "evacuations",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
-        "source": {
-          "name": "source",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'calfire'"
-        },
-        "started_at": {
-          "name": "started_at",
+        "reported_at": {
+          "name": "reported_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
@@ -8779,12 +8768,38 @@
           "primaryKey": false,
           "notNull": true
         },
+        "raw_data": {
+          "name": "raw_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "is_active": {
           "name": "is_active",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": true
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "severity": {
+          "name": "severity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
         },
         "created_at": {
           "name": "created_at",
@@ -8802,8 +8817,8 @@
         }
       },
       "indexes": {
-        "idx_calfire_incident_id": {
-          "name": "idx_calfire_incident_id",
+        "idx_traffic_calfire_incident_id": {
+          "name": "idx_traffic_calfire_incident_id",
           "columns": [
             {
               "expression": "incident_id",
@@ -8817,8 +8832,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_calfire_status": {
-          "name": "idx_calfire_status",
+        "idx_traffic_calfire_status": {
+          "name": "idx_traffic_calfire_status",
           "columns": [
             {
               "expression": "status",
@@ -8832,8 +8847,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_calfire_county": {
-          "name": "idx_calfire_county",
+        "idx_traffic_calfire_county": {
+          "name": "idx_traffic_calfire_county",
           "columns": [
             {
               "expression": "county",
@@ -8847,11 +8862,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_calfire_started_at": {
-          "name": "idx_calfire_started_at",
+        "idx_traffic_calfire_reported_at": {
+          "name": "idx_traffic_calfire_reported_at",
           "columns": [
             {
-              "expression": "started_at",
+              "expression": "reported_at",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8862,11 +8877,47 @@
           "method": "btree",
           "with": {}
         },
-        "idx_calfire_active": {
-          "name": "idx_calfire_active",
+        "idx_traffic_calfire_location": {
+          "name": "idx_traffic_calfire_location",
+          "columns": [
+            {
+              "expression": "latitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "longitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_calfire_active": {
+          "name": "idx_traffic_calfire_active",
           "columns": [
             {
               "expression": "is_active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_calfire_severity": {
+          "name": "idx_traffic_calfire_severity",
+          "columns": [
+            {
+              "expression": "severity",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -8929,51 +8980,74 @@
           "primaryKey": false,
           "notNull": true
         },
+        "source_id": {
+          "name": "source_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
-        "location": {
-          "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "city": {
-          "name": "city",
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "county": {
-          "name": "county",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "state": {
-          "name": "state",
-          "type": "varchar(2)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'CA'"
         },
         "latitude": {
           "name": "latitude",
           "type": "numeric(10, 7)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "longitude": {
           "name": "longitude",
           "type": "numeric(10, 7)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "county": {
+          "name": "county",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
         },
         "camera_type": {
           "name": "camera_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "direction": {
+          "name": "direction",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "streaming_url": {
+          "name": "streaming_url",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -8985,48 +9059,17 @@
           "notNull": false,
           "default": "'active'"
         },
-        "direction": {
-          "name": "direction",
-          "type": "text",
+        "district_id": {
+          "name": "district_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "route": {
-          "name": "route",
-          "type": "text",
+        "caltrans_id": {
+          "name": "caltrans_id",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
-        },
-        "milepost": {
-          "name": "milepost",
-          "type": "numeric(8, 2)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "image_url": {
-          "name": "image_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "stream_url": {
-          "name": "stream_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "thumbnail_url": {
-          "name": "thumbnail_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "metadata": {
-          "name": "metadata",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{}'::jsonb"
         },
         "raw_data": {
           "name": "raw_data",
@@ -9034,20 +9077,21 @@
           "primaryKey": false,
           "notNull": false
         },
-        "last_image_update": {
-          "name": "last_image_update",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_status_update": {
-          "name": "last_status_update",
-          "type": "timestamp",
+        "notes": {
+          "name": "notes",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
         "is_active": {
           "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "is_public": {
+          "name": "is_public",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
@@ -9069,8 +9113,8 @@
         }
       },
       "indexes": {
-        "idx_cctv_camera_id": {
-          "name": "idx_cctv_camera_id",
+        "idx_traffic_cctv_camera_id": {
+          "name": "idx_traffic_cctv_camera_id",
           "columns": [
             {
               "expression": "camera_id",
@@ -9084,11 +9128,17 @@
           "method": "btree",
           "with": {}
         },
-        "idx_cctv_county": {
-          "name": "idx_cctv_county",
+        "idx_traffic_cctv_location": {
+          "name": "idx_traffic_cctv_location",
           "columns": [
             {
-              "expression": "county",
+              "expression": "latitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "longitude",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -9099,11 +9149,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_cctv_status": {
-          "name": "idx_cctv_status",
+        "idx_traffic_cctv_district": {
+          "name": "idx_traffic_cctv_district",
           "columns": [
             {
-              "expression": "status",
+              "expression": "district_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -9114,11 +9164,26 @@
           "method": "btree",
           "with": {}
         },
-        "idx_cctv_active": {
-          "name": "idx_cctv_active",
+        "idx_traffic_cctv_active": {
+          "name": "idx_traffic_cctv_active",
           "columns": [
             {
               "expression": "is_active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_cctv_status": {
+          "name": "idx_traffic_cctv_status",
+          "columns": [
+            {
+              "expression": "status",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -9177,50 +9242,55 @@
         },
         "district_id": {
           "name": "district_id",
-          "type": "varchar(20)",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         },
-        "number": {
-          "name": "number",
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "district_number": {
+          "name": "district_number",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "numeric(10, 7)",
           "primaryKey": false,
           "notNull": false
         },
         "region": {
           "name": "region",
-          "type": "text",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
-        "counties": {
-          "name": "counties",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
-        },
         "phone": {
           "name": "phone",
-          "type": "text",
+          "type": "varchar(20)",
           "primaryKey": false,
           "notNull": false
         },
         "email": {
           "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false
         },
@@ -9236,6 +9306,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": true
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
         },
         "created_at": {
           "name": "created_at",
@@ -9253,8 +9330,8 @@
         }
       },
       "indexes": {
-        "idx_caltrans_district_id": {
-          "name": "idx_caltrans_district_id",
+        "idx_traffic_caltrans_district_id": {
+          "name": "idx_traffic_caltrans_district_id",
           "columns": [
             {
               "expression": "district_id",
@@ -9268,11 +9345,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_caltrans_district_number": {
-          "name": "idx_caltrans_district_number",
+        "idx_traffic_caltrans_district_num": {
+          "name": "idx_traffic_caltrans_district_num",
           "columns": [
             {
-              "expression": "number",
+              "expression": "district_number",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -9283,8 +9360,29 @@
           "method": "btree",
           "with": {}
         },
-        "idx_caltrans_district_active": {
-          "name": "idx_caltrans_district_active",
+        "idx_traffic_caltrans_district_location": {
+          "name": "idx_traffic_caltrans_district_location",
+          "columns": [
+            {
+              "expression": "latitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "longitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_caltrans_district_active": {
+          "name": "idx_traffic_caltrans_district_active",
           "columns": [
             {
               "expression": "is_active",
@@ -9323,11 +9421,11 @@
             "district_id"
           ]
         },
-        "traffic_caltrans_districts_number_unique": {
-          "name": "traffic_caltrans_districts_number_unique",
+        "traffic_caltrans_districts_district_number_unique": {
+          "name": "traffic_caltrans_districts_district_number_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "number"
+            "district_number"
           ]
         }
       },
@@ -9357,31 +9455,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "district": {
-          "name": "district",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "route": {
-          "name": "route",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "type": {
-          "name": "type",
-          "type": "text",
+        "source_id": {
+          "name": "source_id",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
         },
-        "status": {
-          "name": "status",
-          "type": "closure_status",
-          "typeSchema": "public",
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'active'"
+          "notNull": true
         },
         "description": {
           "name": "description",
@@ -9389,15 +9473,41 @@
           "primaryKey": false,
           "notNull": false
         },
-        "location": {
-          "name": "location",
-          "type": "text",
+        "closure_type": {
+          "name": "closure_type",
+          "type": "closure_type",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "'lane'"
+        },
+        "route": {
+          "name": "route",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "direction": {
+          "name": "direction",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
         },
         "county": {
           "name": "county",
-          "type": "text",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "milepost": {
+          "name": "milepost",
+          "type": "numeric(8, 2)",
           "primaryKey": false,
           "notNull": false
         },
@@ -9409,30 +9519,6 @@
         },
         "longitude": {
           "name": "longitude",
-          "type": "numeric(10, 7)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "start_latitude": {
-          "name": "start_latitude",
-          "type": "numeric(10, 7)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "start_longitude": {
-          "name": "start_longitude",
-          "type": "numeric(10, 7)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "end_latitude": {
-          "name": "end_latitude",
-          "type": "numeric(10, 7)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "end_longitude": {
-          "name": "end_longitude",
           "type": "numeric(10, 7)",
           "primaryKey": false,
           "notNull": false
@@ -9455,15 +9541,26 @@
           "primaryKey": false,
           "notNull": false
         },
-        "lanes_closed": {
-          "name": "lanes_closed",
-          "type": "jsonb",
+        "last_updated": {
+          "name": "last_updated",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
+          "notNull": true
         },
-        "impact": {
-          "name": "impact",
+        "district_id": {
+          "name": "district_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "caltrans_id": {
+          "name": "caltrans_id",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reason": {
+          "name": "reason",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -9480,15 +9577,21 @@
           "primaryKey": false,
           "notNull": false
         },
-        "source": {
-          "name": "source",
-          "type": "varchar(50)",
+        "notes": {
+          "name": "notes",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "default": "'cwwp2'"
+          "notNull": false
         },
         "is_active": {
           "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "is_public": {
+          "name": "is_public",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
@@ -9510,8 +9613,8 @@
         }
       },
       "indexes": {
-        "idx_caltrans_closure_id": {
-          "name": "idx_caltrans_closure_id",
+        "idx_traffic_caltrans_closure_id": {
+          "name": "idx_traffic_caltrans_closure_id",
           "columns": [
             {
               "expression": "closure_id",
@@ -9525,23 +9628,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_caltrans_closure_district": {
-          "name": "idx_caltrans_closure_district",
-          "columns": [
-            {
-              "expression": "district",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_caltrans_closure_route": {
-          "name": "idx_caltrans_closure_route",
+        "idx_traffic_caltrans_route": {
+          "name": "idx_traffic_caltrans_route",
           "columns": [
             {
               "expression": "route",
@@ -9555,8 +9643,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_caltrans_closure_county": {
-          "name": "idx_caltrans_closure_county",
+        "idx_traffic_caltrans_county": {
+          "name": "idx_traffic_caltrans_county",
           "columns": [
             {
               "expression": "county",
@@ -9570,23 +9658,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_caltrans_closure_status": {
-          "name": "idx_caltrans_closure_status",
-          "columns": [
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_caltrans_closure_start_date": {
-          "name": "idx_caltrans_closure_start_date",
+        "idx_traffic_caltrans_start_date": {
+          "name": "idx_traffic_caltrans_start_date",
           "columns": [
             {
               "expression": "start_date",
@@ -9600,11 +9673,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_caltrans_closure_active": {
-          "name": "idx_caltrans_closure_active",
+        "idx_traffic_caltrans_district": {
+          "name": "idx_traffic_caltrans_district",
           "columns": [
             {
-              "expression": "is_active",
+              "expression": "district_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -9615,21 +9688,9 @@
           "method": "btree",
           "with": {}
         },
-        "idx_caltrans_closure_composite": {
-          "name": "idx_caltrans_closure_composite",
+        "idx_traffic_caltrans_active": {
+          "name": "idx_traffic_caltrans_active",
           "columns": [
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "district",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
             {
               "expression": "is_active",
               "isExpression": false,
@@ -9672,193 +9733,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.traffic_chp_cad_centers": {
-      "name": "traffic_chp_cad_centers",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "center_id": {
-          "name": "center_id",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "code": {
-          "name": "code",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "city": {
-          "name": "city",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "county": {
-          "name": "county",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "state": {
-          "name": "state",
-          "type": "varchar(2)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'CA'"
-        },
-        "latitude": {
-          "name": "latitude",
-          "type": "numeric(10, 7)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "longitude": {
-          "name": "longitude",
-          "type": "numeric(10, 7)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "phone": {
-          "name": "phone",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "website": {
-          "name": "website",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "raw_data": {
-          "name": "raw_data",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_chp_center_id": {
-          "name": "idx_chp_center_id",
-          "columns": [
-            {
-              "expression": "center_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_chp_center_county": {
-          "name": "idx_chp_center_county",
-          "columns": [
-            {
-              "expression": "county",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_chp_center_active": {
-          "name": "idx_chp_center_active",
-          "columns": [
-            {
-              "expression": "is_active",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "traffic_chp_cad_centers_user_id_user_id_fk": {
-          "name": "traffic_chp_cad_centers_user_id_user_id_fk",
-          "tableFrom": "traffic_chp_cad_centers",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "traffic_chp_cad_centers_center_id_unique": {
-          "name": "traffic_chp_cad_centers_center_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "center_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.traffic_chp_cad_incidents": {
       "name": "traffic_chp_cad_incidents",
       "schema": "",
@@ -9881,29 +9755,31 @@
           "primaryKey": false,
           "notNull": true
         },
-        "log_number": {
-          "name": "log_number",
+        "source_id": {
+          "name": "source_id",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "cad_number": {
-          "name": "cad_number",
-          "type": "varchar(50)",
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
         "type": {
           "name": "type",
-          "type": "text",
+          "type": "incident_type",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
-        },
-        "subtype": {
-          "name": "subtype",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'other'"
         },
         "status": {
           "name": "status",
@@ -9913,36 +9789,11 @@
           "notNull": false,
           "default": "'active'"
         },
-        "priority": {
-          "name": "priority",
-          "type": "varchar(10)",
-          "primaryKey": false,
-          "notNull": false
-        },
         "location": {
           "name": "location",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
-        },
-        "city": {
-          "name": "city",
-          "type": "text",
-          "primaryKey": false,
           "notNull": false
-        },
-        "county": {
-          "name": "county",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "state": {
-          "name": "state",
-          "type": "varchar(2)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'CA'"
         },
         "latitude": {
           "name": "latitude",
@@ -9956,28 +9807,51 @@
           "primaryKey": false,
           "notNull": false
         },
-        "chp_unit": {
-          "name": "chp_unit",
+        "address": {
+          "name": "address",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "responding_units": {
-          "name": "responding_units",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
-        },
-        "log_text": {
-          "name": "log_text",
-          "type": "text",
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false
         },
-        "raw_data": {
-          "name": "raw_data",
-          "type": "jsonb",
+        "county": {
+          "name": "county",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "zip_code": {
+          "name": "zip_code",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chp_division": {
+          "name": "chp_division",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "chp_office": {
+          "name": "chp_office",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "center_id": {
+          "name": "center_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "log_number": {
+          "name": "log_number",
+          "type": "varchar(20)",
           "primaryKey": false,
           "notNull": false
         },
@@ -9999,12 +9873,45 @@
           "primaryKey": false,
           "notNull": true
         },
+        "units": {
+          "name": "units",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[]'::jsonb"
+        },
+        "raw_data": {
+          "name": "raw_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "is_active": {
           "name": "is_active",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": true
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "severity": {
+          "name": "severity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
         },
         "created_at": {
           "name": "created_at",
@@ -10022,8 +9929,8 @@
         }
       },
       "indexes": {
-        "idx_chp_cad_incident_id": {
-          "name": "idx_chp_cad_incident_id",
+        "idx_traffic_chp_incident_id": {
+          "name": "idx_traffic_chp_incident_id",
           "columns": [
             {
               "expression": "incident_id",
@@ -10037,8 +9944,23 @@
           "method": "btree",
           "with": {}
         },
-        "idx_chp_cad_status": {
-          "name": "idx_chp_cad_status",
+        "idx_traffic_chp_source_id": {
+          "name": "idx_traffic_chp_source_id",
+          "columns": [
+            {
+              "expression": "source_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_chp_status": {
+          "name": "idx_traffic_chp_status",
           "columns": [
             {
               "expression": "status",
@@ -10052,11 +9974,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_chp_cad_location": {
-          "name": "idx_chp_cad_location",
+        "idx_traffic_chp_type": {
+          "name": "idx_traffic_chp_type",
           "columns": [
             {
-              "expression": "location",
+              "expression": "type",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -10067,23 +9989,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_chp_cad_county": {
-          "name": "idx_chp_cad_county",
-          "columns": [
-            {
-              "expression": "county",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_chp_cad_reported_at": {
-          "name": "idx_chp_cad_reported_at",
+        "idx_traffic_chp_reported_at": {
+          "name": "idx_traffic_chp_reported_at",
           "columns": [
             {
               "expression": "reported_at",
@@ -10097,8 +10004,29 @@
           "method": "btree",
           "with": {}
         },
-        "idx_chp_cad_active": {
-          "name": "idx_chp_cad_active",
+        "idx_traffic_chp_location": {
+          "name": "idx_traffic_chp_location",
+          "columns": [
+            {
+              "expression": "latitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "longitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_chp_active": {
+          "name": "idx_traffic_chp_active",
           "columns": [
             {
               "expression": "is_active",
@@ -10112,23 +10040,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_chp_cad_composite": {
-          "name": "idx_chp_cad_composite",
+        "idx_traffic_chp_center": {
+          "name": "idx_traffic_chp_center",
           "columns": [
             {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "county",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "is_active",
+              "expression": "center_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -10191,62 +10107,44 @@
           "primaryKey": false,
           "notNull": true
         },
-        "log_number": {
-          "name": "log_number",
+        "source_id": {
+          "name": "source_id",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "collision_number": {
-          "name": "collision_number",
-          "type": "varchar(50)",
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
         "type": {
           "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "severity": {
-          "name": "severity",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "status": {
-          "name": "status",
-          "type": "incident_status",
+          "type": "incident_type",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false,
-          "default": "'closed'"
+          "default": "'traffic_collision'"
+        },
+        "severity": {
+          "name": "severity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
         },
         "location": {
           "name": "location",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
-        },
-        "city": {
-          "name": "city",
-          "type": "text",
-          "primaryKey": false,
           "notNull": false
-        },
-        "county": {
-          "name": "county",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "state": {
-          "name": "state",
-          "type": "varchar(2)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'CA'"
         },
         "latitude": {
           "name": "latitude",
@@ -10260,29 +10158,60 @@
           "primaryKey": false,
           "notNull": false
         },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "county": {
+          "name": "county",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "zip_code": {
+          "name": "zip_code",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "collision_type": {
           "name": "collision_type",
-          "type": "text",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
         },
-        "weather_conditions": {
-          "name": "weather_conditions",
-          "type": "text",
+        "weather_condition": {
+          "name": "weather_condition",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
         },
-        "road_conditions": {
-          "name": "road_conditions",
-          "type": "text",
+        "road_condition": {
+          "name": "road_condition",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
         },
-        "lighting_conditions": {
-          "name": "lighting_conditions",
-          "type": "text",
+        "light_condition": {
+          "name": "light_condition",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false
+        },
+        "vehicles_involved": {
+          "name": "vehicles_involved",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
         },
         "injuries": {
           "name": "injuries",
@@ -10298,33 +10227,6 @@
           "notNull": false,
           "default": 0
         },
-        "vehicles_involved": {
-          "name": "vehicles_involved",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "parties_involved": {
-          "name": "parties_involved",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "raw_data": {
-          "name": "raw_data",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "source": {
-          "name": "source",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'ckan'"
-        },
         "occurred_at": {
           "name": "occurred_at",
           "type": "timestamp",
@@ -10337,14 +10239,27 @@
           "primaryKey": false,
           "notNull": false
         },
-        "last_updated": {
-          "name": "last_updated",
-          "type": "timestamp",
+        "raw_data": {
+          "name": "raw_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
         "is_active": {
           "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "is_public": {
+          "name": "is_public",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
@@ -10366,8 +10281,8 @@
         }
       },
       "indexes": {
-        "idx_chp_cases_case_id": {
-          "name": "idx_chp_cases_case_id",
+        "idx_traffic_chp_case_id": {
+          "name": "idx_traffic_chp_case_id",
           "columns": [
             {
               "expression": "case_id",
@@ -10381,23 +10296,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_chp_cases_county": {
-          "name": "idx_chp_cases_county",
-          "columns": [
-            {
-              "expression": "county",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_chp_cases_occurred_at": {
-          "name": "idx_chp_cases_occurred_at",
+        "idx_traffic_chp_case_occurred_at": {
+          "name": "idx_traffic_chp_case_occurred_at",
           "columns": [
             {
               "expression": "occurred_at",
@@ -10411,8 +10311,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_chp_cases_severity": {
-          "name": "idx_chp_cases_severity",
+        "idx_traffic_chp_case_severity": {
+          "name": "idx_traffic_chp_case_severity",
           "columns": [
             {
               "expression": "severity",
@@ -10426,8 +10326,29 @@
           "method": "btree",
           "with": {}
         },
-        "idx_chp_cases_active": {
-          "name": "idx_chp_cases_active",
+        "idx_traffic_chp_case_location": {
+          "name": "idx_traffic_chp_case_location",
+          "columns": [
+            {
+              "expression": "latitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "longitude",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_chp_case_active": {
+          "name": "idx_traffic_chp_case_active",
           "columns": [
             {
               "expression": "is_active",
@@ -10464,6 +10385,221 @@
           "nullsNotDistinct": false,
           "columns": [
             "case_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.traffic_chp_centers": {
+      "name": "traffic_chp_centers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "center_id": {
+          "name": "center_id",
+          "type": "varchar(8)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "numeric(10, 7)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "county": {
+          "name": "county",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'CA'"
+        },
+        "zip_code": {
+          "name": "zip_code",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "config": {
+          "name": "config",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_traffic_chp_center_id": {
+          "name": "idx_traffic_chp_center_id",
+          "columns": [
+            {
+              "expression": "center_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_chp_center_county": {
+          "name": "idx_traffic_chp_center_county",
+          "columns": [
+            {
+              "expression": "county",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_chp_center_region": {
+          "name": "idx_traffic_chp_center_region",
+          "columns": [
+            {
+              "expression": "county",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_traffic_chp_center_active": {
+          "name": "idx_traffic_chp_center_active",
+          "columns": [
+            {
+              "expression": "is_active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "traffic_chp_centers_user_id_user_id_fk": {
+          "name": "traffic_chp_centers_user_id_user_id_fk",
+          "tableFrom": "traffic_chp_centers",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "traffic_chp_centers_center_id_unique": {
+          "name": "traffic_chp_centers_center_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "center_id"
           ]
         }
       },
@@ -10607,6 +10743,17 @@
         "cancelled"
       ]
     },
+    "public.closure_type": {
+      "name": "closure_type",
+      "schema": "public",
+      "values": [
+        "full",
+        "partial",
+        "lane",
+        "shoulder",
+        "ramp"
+      ]
+    },
     "public.deployment_environment": {
       "name": "deployment_environment",
       "schema": "public",
@@ -10616,16 +10763,25 @@
         "production"
       ]
     },
+    "public.event_status": {
+      "name": "event_status",
+      "schema": "public",
+      "values": [
+        "active",
+        "cleared",
+        "planned",
+        "cancelled"
+      ]
+    },
     "public.event_type": {
       "name": "event_type",
       "schema": "public",
       "values": [
         "accident",
-        "hazard",
-        "weather",
+        "congestion",
         "construction",
         "special_event",
-        "other"
+        "weather"
       ]
     },
     "public.threed_farmbot_status": {
@@ -10658,7 +10814,19 @@
         "active",
         "cleared",
         "pending",
-        "closed"
+        "unknown"
+      ]
+    },
+    "public.incident_type": {
+      "name": "incident_type",
+      "schema": "public",
+      "values": [
+        "traffic_collision",
+        "hazard",
+        "road_closed",
+        "fire",
+        "emergency",
+        "other"
       ]
     },
     "public.threed_layer_type": {

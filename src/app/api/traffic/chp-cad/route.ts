@@ -2,19 +2,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { trafficChpCadIncidents, trafficChpCadCenters, traffic } from '@/lib/schema/traffic';
+import { trafficChpCadIncidents, trafficChpCenters  } from '@/lib/schema/traffic';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/traffic/chp-cad - List incidents (PUBLIC)
+// GET /api/traffic/chp-cad - List CHP-CAD incidents
 // Query Parameters:
 //   - id (optional): Get a single incident
 //   - status (optional): Filter by status
 //   - severity (optional): Filter by severity
 //   - county (optional): Filter by county
 //   - centerId (optional): Filter by center
-//   - trafficId (optional): Filter by traffic module
 //   - includeCenter (optional): Include center details
 //   - limit (optional): Number of records to return (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
@@ -23,14 +22,13 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
-    
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const status = searchParams.get('status');
     const severity = searchParams.get('severity');
     const county = searchParams.get('county');
     const centerId = searchParams.get('centerId');
-    const trafficId = searchParams.get('trafficId');
     const includeCenter = searchParams.get('includeCenter') === 'true';
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -42,9 +40,25 @@ export async function GET(request: NextRequest) {
         .from(trafficChpCadIncidents)
         .where(eq(trafficChpCadIncidents.id, parseInt(id)));
 
-      // Public users only see active incidents
+      // Public users only see active public incidents
       if (!userId) {
-        query = query.where(eq(trafficChpCadIncidents.status, 'active'));
+        query = query.where(
+          and(
+            eq(trafficChpCadIncidents.isPublic, true),
+            eq(trafficChpCadIncidents.isActive, true)
+          )
+        );
+      } else {
+        // Authenticated users see their own OR public incidents
+        query = query.where(
+          or(
+            eq(trafficChpCadIncidents.userId, userId),
+            and(
+              eq(trafficChpCadIncidents.isPublic, true),
+              eq(trafficChpCadIncidents.isActive, true)
+            )
+          )
+        );
       }
 
       const [incident] = await query.limit(1);
@@ -61,8 +75,8 @@ export async function GET(request: NextRequest) {
       if (includeCenter && incident.centerId) {
         const [center] = await db
           .select()
-          .from(trafficChpCadCenters)
-          .where(eq(trafficChpCadCenters.id, incident.centerId))
+          .from(trafficChpCenters )
+          .where(eq(trafficChpCenters .id, incident.centerId))
           .limit(1);
         result.center = center || null;
       }
@@ -79,18 +93,26 @@ export async function GET(request: NextRequest) {
       .from(trafficChpCadIncidents)
       .$dynamic();
 
-    // ✅ Apply user filtering
+    // ✅ Apply user filtering (align with Music/ThreeD pattern)
     if (userId) {
       // Authenticated users see their incidents + active public incidents
       query = query.where(
         or(
           eq(trafficChpCadIncidents.userId, userId),
-          eq(trafficChpCadIncidents.status, 'active')
+          and(
+            eq(trafficChpCadIncidents.isPublic, true),
+            eq(trafficChpCadIncidents.isActive, true)
+          )
         )
       );
     } else {
-      // Public users only see active incidents
-      query = query.where(eq(trafficChpCadIncidents.status, 'active'));
+      // Public users only see active public incidents
+      query = query.where(
+        and(
+          eq(trafficChpCadIncidents.isPublic, true),
+          eq(trafficChpCadIncidents.isActive, true)
+        )
+      );
     }
 
     // ✅ Apply filters
@@ -99,7 +121,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (severity) {
-      query = query.where(eq(trafficChpCadIncidents.severity, severity));
+      query = query.where(eq(trafficChpCadIncidents.severity, parseInt(severity)));
     }
 
     if (county) {
@@ -110,22 +132,17 @@ export async function GET(request: NextRequest) {
       query = query.where(eq(trafficChpCadIncidents.centerId, parseInt(centerId)));
     }
 
-    if (trafficId) {
-      query = query.where(eq(trafficChpCadIncidents.trafficId, parseInt(trafficId)));
-    }
-
     // ✅ Get total count for pagination
-    const countQuery = db
+    const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficChpCadIncidents)
       .where(query._where);
 
-    const [countResult] = await countQuery;
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
     const incidents = await query
-      .orderBy(desc(trafficChpCadIncidents.logTime))
+      .orderBy(desc(trafficChpCadIncidents.reportedAt))
       .limit(limit)
       .offset(offset);
 
@@ -137,8 +154,8 @@ export async function GET(request: NextRequest) {
           if (incident.centerId) {
             const [center] = await db
               .select()
-              .from(trafficChpCadCenters)
-              .where(eq(trafficChpCadCenters.id, incident.centerId))
+              .from(trafficChpCenters )
+              .where(eq(trafficChpCenters .id, incident.centerId))
               .limit(1);
             result.center = center || null;
           }
@@ -182,23 +199,50 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('📝 POST /api/traffic/chp-cad - Request body:', body);
 
+    // ✅ Required fields (align with schema)
     const { 
+      title,
+      incidentId,
       sourceId,
-      incidentType,
+      reportedAt,
+      type,
+      status,
+      severity,
       location,
       city,
       county,
-      details,
-      severity,
-      status,
       latitude,
       longitude,
-      logTime,
       centerId,
-      trafficId,
+      // Optional fields
+      description,
+      address,
+      zipCode,
+      chpDivision,
+      chpOffice,
+      logNumber,
+      units,
+      rawData,
+      notes,
+      isActive,
+      isPublic,
     } = body;
 
     // ✅ Validate required fields
+    if (!title) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: title' },
+        { status: 400 }
+      );
+    }
+
+    if (!incidentId) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: incidentId' },
+        { status: 400 }
+      );
+    }
+
     if (!sourceId) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: sourceId' },
@@ -206,42 +250,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!location && !city) {
+    if (!reportedAt) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: location or city' },
+        { success: false, error: 'Missing required field: reportedAt' },
         { status: 400 }
       );
     }
 
     const userId = session.user.id;
 
-    // ✅ Verify traffic module exists if provided
-    if (trafficId) {
-      const [module] = await db
-        .select()
-        .from(traffic)
-        .where(
-          and(
-            eq(traffic.id, parseInt(trafficId)),
-            eq(traffic.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!module) {
-        return NextResponse.json(
-          { success: false, error: 'Traffic module not found' },
-          { status: 404 }
-        );
-      }
-    }
-
     // ✅ Verify center exists if provided
     if (centerId) {
       const [center] = await db
         .select()
-        .from(trafficChpCadCenters)
-        .where(eq(trafficChpCadCenters.id, parseInt(centerId)))
+        .from(trafficChpCenters )
+        .where(eq(trafficChpCenters .id, parseInt(centerId)))
         .limit(1);
 
       if (!center) {
@@ -252,13 +275,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ✅ Check if sourceId already exists
+    // ✅ Check if incidentId already exists for this user
     const [existing] = await db
       .select()
       .from(trafficChpCadIncidents)
       .where(
         and(
-          eq(trafficChpCadIncidents.sourceId, sourceId),
+          eq(trafficChpCadIncidents.incidentId, incidentId),
           eq(trafficChpCadIncidents.userId, userId)
         )
       )
@@ -266,7 +289,7 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { success: false, error: 'Source ID already exists' },
+        { success: false, error: 'Incident ID already exists' },
         { status: 409 }
       );
     }
@@ -277,19 +300,31 @@ export async function POST(request: NextRequest) {
       .insert(trafficChpCadIncidents)
       .values({
         userId,
-        trafficId: trafficId || null,
+        incidentId,
         sourceId,
-        incidentType: incidentType || null,
+        title,
+        description: description || null,
+        type: type || 'other',
+        status: status || 'active',
+        severity: severity || 1,
         location: location || null,
         city: city || null,
         county: county || null,
-        details: details || null,
-        severity: severity || 'moderate',
-        status: status || 'active',
+        address: address || null,
+        zipCode: zipCode || null,
         latitude: latitude || null,
         longitude: longitude || null,
-        logTime: logTime ? new Date(logTime) : null,
+        chpDivision: chpDivision || null,
+        chpOffice: chpOffice || null,
         centerId: centerId || null,
+        logNumber: logNumber || null,
+        reportedAt: new Date(reportedAt),
+        lastUpdated: new Date(),
+        units: units || [],
+        rawData: rawData || null,
+        notes: notes || null,
+        isActive: isActive ?? true,
+        isPublic: isPublic ?? true,
       })
       .returning();
 
@@ -310,7 +345,7 @@ export async function POST(request: NextRequest) {
 }
 
 // ============================================
-// PUT /api/traffic/chp-cad - Update incident (ADMIN ONLY)
+// PUT /api/traffic/chp-cad - Full update (ADMIN ONLY)
 // ============================================
 export async function PUT(request: NextRequest) {
   try {
@@ -335,23 +370,15 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     console.log('📝 PUT /api/traffic/chp-cad - Request body:', body);
 
-    const { 
-      sourceId,
-      incidentType,
-      location,
-      city,
-      county,
-      details,
-      severity,
-      status,
-      latitude,
-      longitude,
-      logTime,
-      centerId,
-      trafficId,
-    } = body;
-
     const userId = session.user.id;
+    const parsedId = parseInt(id);
+
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid ID' },
+        { status: 400 }
+      );
+    }
 
     // ✅ Verify incident exists and belongs to user
     const [existing] = await db
@@ -359,7 +386,7 @@ export async function PUT(request: NextRequest) {
       .from(trafficChpCadIncidents)
       .where(
         and(
-          eq(trafficChpCadIncidents.id, parseInt(id)),
+          eq(trafficChpCadIncidents.id, parsedId),
           eq(trafficChpCadIncidents.userId, userId)
         )
       )
@@ -372,33 +399,12 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // ✅ Verify traffic module exists if provided
-    if (trafficId) {
-      const [module] = await db
-        .select()
-        .from(traffic)
-        .where(
-          and(
-            eq(traffic.id, parseInt(trafficId)),
-            eq(traffic.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!module) {
-        return NextResponse.json(
-          { success: false, error: 'Traffic module not found' },
-          { status: 404 }
-        );
-      }
-    }
-
     // ✅ Verify center exists if provided
-    if (centerId) {
+    if (body.centerId) {
       const [center] = await db
         .select()
-        .from(trafficChpCadCenters)
-        .where(eq(trafficChpCadCenters.id, parseInt(centerId)))
+        .from(trafficChpCenters )
+        .where(eq(trafficChpCenters .id, parseInt(body.centerId)))
         .limit(1);
 
       if (!center) {
@@ -412,30 +418,107 @@ export async function PUT(request: NextRequest) {
     const [updatedIncident] = await db
       .update(trafficChpCadIncidents)
       .set({
-        sourceId: sourceId || existing.sourceId,
-        incidentType: incidentType || existing.incidentType,
-        location: location || existing.location,
-        city: city !== undefined ? city : existing.city,
-        county: county !== undefined ? county : existing.county,
-        details: details !== undefined ? details : existing.details,
-        severity: severity || existing.severity,
-        status: status || existing.status,
-        latitude: latitude !== undefined ? latitude : existing.latitude,
-        longitude: longitude !== undefined ? longitude : existing.longitude,
-        logTime: logTime ? new Date(logTime) : existing.logTime,
-        centerId: centerId !== undefined ? centerId : existing.centerId,
-        trafficId: trafficId !== undefined ? trafficId : existing.trafficId,
+        ...body,
+        reportedAt: body.reportedAt ? new Date(body.reportedAt) : existing.reportedAt,
+        clearedAt: body.clearedAt ? new Date(body.clearedAt) : existing.clearedAt,
+        lastUpdated: new Date(),
         updatedAt: new Date(),
       })
       .where(
         and(
-          eq(trafficChpCadIncidents.id, parseInt(id)),
+          eq(trafficChpCadIncidents.id, parsedId),
           eq(trafficChpCadIncidents.userId, userId)
         )
       )
       .returning();
 
     console.log('✅ CHP-CAD incident updated:', updatedIncident);
+
+    return NextResponse.json({
+      success: true,
+      data: updatedIncident,
+      message: 'Incident updated successfully',
+    });
+  } catch (error) {
+    console.error('Error updating CHP-CAD incident:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update incident' },
+      { status: 500 }
+    );
+  }
+}
+
+// ============================================
+// PATCH /api/traffic/chp-cad - Partial update (ADMIN ONLY)
+// ============================================
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Missing id parameter' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const userId = session.user.id;
+    const parsedId = parseInt(id);
+
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid ID' },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Verify incident exists and belongs to user
+    const [existing] = await db
+      .select()
+      .from(trafficChpCadIncidents)
+      .where(
+        and(
+          eq(trafficChpCadIncidents.id, parsedId),
+          eq(trafficChpCadIncidents.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Incident not found' },
+        { status: 404 }
+      );
+    }
+
+    // ✅ Handle date fields
+    const updateData: any = { ...body, updatedAt: new Date() };
+    if (body.reportedAt) updateData.reportedAt = new Date(body.reportedAt);
+    if (body.clearedAt) updateData.clearedAt = new Date(body.clearedAt);
+    updateData.lastUpdated = new Date();
+
+    const [updatedIncident] = await db
+      .update(trafficChpCadIncidents)
+      .set(updateData)
+      .where(
+        and(
+          eq(trafficChpCadIncidents.id, parsedId),
+          eq(trafficChpCadIncidents.userId, userId)
+        )
+      )
+      .returning();
+
+    console.log('✅ CHP-CAD incident patched:', updatedIncident);
 
     return NextResponse.json({
       success: true,
@@ -475,12 +558,20 @@ export async function DELETE(request: NextRequest) {
     }
 
     const userId = session.user.id;
+    const parsedId = parseInt(id);
+
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid ID' },
+        { status: 400 }
+      );
+    }
 
     const [deleted] = await db
       .delete(trafficChpCadIncidents)
       .where(
         and(
-          eq(trafficChpCadIncidents.id, parseInt(id)),
+          eq(trafficChpCadIncidents.id, parsedId),
           eq(trafficChpCadIncidents.userId, userId)
         )
       )

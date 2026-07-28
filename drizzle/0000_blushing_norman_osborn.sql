@@ -8,11 +8,14 @@ CREATE TYPE "public"."threed_character_status" AS ENUM('active', 'idle', 'sleepi
 CREATE TYPE "public"."threed_character_type" AS ENUM('animal', 'bird', 'insect', 'mythical', 'human', 'robot', 'decoration');--> statement-breakpoint
 CREATE TYPE "public"."threed_character_weather_sensitivity" AS ENUM('all', 'sunny_only', 'rainy_only', 'no_rain', 'no_snow');--> statement-breakpoint
 CREATE TYPE "public"."closure_status" AS ENUM('active', 'cleared', 'planned', 'cancelled');--> statement-breakpoint
+CREATE TYPE "public"."closure_type" AS ENUM('full', 'partial', 'lane', 'shoulder', 'ramp');--> statement-breakpoint
 CREATE TYPE "public"."deployment_environment" AS ENUM('development', 'staging', 'production');--> statement-breakpoint
-CREATE TYPE "public"."event_type" AS ENUM('accident', 'hazard', 'weather', 'construction', 'special_event', 'other');--> statement-breakpoint
+CREATE TYPE "public"."event_status" AS ENUM('active', 'cleared', 'planned', 'cancelled');--> statement-breakpoint
+CREATE TYPE "public"."event_type" AS ENUM('accident', 'congestion', 'construction', 'special_event', 'weather');--> statement-breakpoint
 CREATE TYPE "public"."threed_farmbot_status" AS ENUM('online', 'offline', 'maintenance', 'error');--> statement-breakpoint
 CREATE TYPE "public"."threed_growth_stage" AS ENUM('seed', 'seedling', 'vegetative', 'flowering', 'fruiting', 'mature', 'dormant');--> statement-breakpoint
-CREATE TYPE "public"."incident_status" AS ENUM('active', 'cleared', 'pending', 'closed');--> statement-breakpoint
+CREATE TYPE "public"."incident_status" AS ENUM('active', 'cleared', 'pending', 'unknown');--> statement-breakpoint
+CREATE TYPE "public"."incident_type" AS ENUM('traffic_collision', 'hazard', 'road_closed', 'fire', 'emergency', 'other');--> statement-breakpoint
 CREATE TYPE "public"."threed_layer_type" AS ENUM('garden', 'plants', 'beds', 'farmbots', 'models', 'characters', 'tasks', 'weather', 'traffic', 'custom');--> statement-breakpoint
 CREATE TYPE "public"."threed_layer_visibility" AS ENUM('public', 'private', 'shared');--> statement-breakpoint
 CREATE TYPE "public"."threed_marker_status" AS ENUM('active', 'inactive', 'archived', 'pending');--> statement-breakpoint
@@ -770,29 +773,35 @@ CREATE TABLE "threed_weather_logs" (
 CREATE TABLE "traffic" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
-	"name" text NOT NULL,
+	"module_id" varchar(50) NOT NULL,
+	"name" varchar(255) NOT NULL,
 	"description" text,
-	"slug" text NOT NULL,
-	"config" jsonb DEFAULT '{}'::jsonb,
+	"slug" varchar(255) NOT NULL,
 	"is_active" boolean DEFAULT true,
 	"is_public" boolean DEFAULT false,
+	"config" jsonb DEFAULT '{}'::jsonb,
+	"metadata" jsonb DEFAULT '{}'::jsonb,
+	"data_sources" jsonb DEFAULT '{"chpCad":true,"chpCases":true,"caltransClosures":true,"bayArea511":true,"calfire":true,"cctv":true}'::jsonb,
+	"map_config" jsonb DEFAULT '{"center":{"lat":37.7749,"lng":-122.4194},"zoom":10,"layers":["incidents","closures","cameras"]}'::jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "traffic_module_id_unique" UNIQUE("module_id"),
 	CONSTRAINT "traffic_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "traffic_api_request_logs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
-	"endpoint" text NOT NULL,
+	"source" varchar(50) NOT NULL,
+	"endpoint" text,
+	"method" varchar(10),
 	"status_code" integer,
-	"duration_ms" integer,
+	"success" boolean DEFAULT false,
+	"response_time" integer,
 	"request_data" jsonb,
 	"response_data" jsonb,
-	"error" text,
-	"source" varchar(50),
-	"is_success" boolean DEFAULT true,
-	"logged_at" timestamp DEFAULT now(),
+	"error_message" text,
+	"requested_at" timestamp DEFAULT now(),
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
@@ -801,29 +810,25 @@ CREATE TABLE "traffic_bay_area_511_events" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"event_id" varchar(50) NOT NULL,
-	"event_type" "event_type" NOT NULL,
-	"title" text NOT NULL,
+	"source_id" varchar(50) NOT NULL,
+	"title" varchar(255) NOT NULL,
 	"description" text,
-	"severity" varchar(20),
-	"status" "incident_status" DEFAULT 'active',
-	"location" text NOT NULL,
-	"city" text,
-	"county" text,
+	"event_type" "event_type" DEFAULT 'accident',
+	"severity" integer DEFAULT 1,
+	"location" text,
 	"latitude" numeric(10, 7),
 	"longitude" numeric(10, 7),
-	"route" text,
-	"direction" text,
-	"milepost" numeric(8, 2),
-	"area" text,
-	"affected_roads" jsonb DEFAULT '[]'::jsonb,
-	"impact" text,
-	"advice" text,
-	"raw_data" jsonb,
-	"source" varchar(50) DEFAULT '511',
-	"occurred_at" timestamp NOT NULL,
+	"address" text,
+	"city" varchar(100),
+	"county" varchar(100),
+	"reported_at" timestamp NOT NULL,
 	"cleared_at" timestamp,
-	"last_updated" timestamp,
+	"last_updated" timestamp NOT NULL,
+	"impact" text,
+	"raw_data" jsonb,
+	"notes" text,
 	"is_active" boolean DEFAULT true,
+	"is_public" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "traffic_bay_area_511_events_event_id_unique" UNIQUE("event_id")
@@ -833,31 +838,30 @@ CREATE TABLE "traffic_calfire_incidents" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"incident_id" varchar(50) NOT NULL,
-	"incident_name" text NOT NULL,
-	"incident_type" text,
-	"status" "incident_status" DEFAULT 'active',
-	"severity" varchar(20),
+	"source_id" varchar(50) NOT NULL,
+	"title" varchar(255) NOT NULL,
 	"description" text,
-	"location" text NOT NULL,
-	"county" text,
-	"state" varchar(2) DEFAULT 'CA',
+	"incident_type" varchar(50) DEFAULT 'wildfire',
+	"status" "incident_status" DEFAULT 'active',
+	"location" text,
 	"latitude" numeric(10, 7),
 	"longitude" numeric(10, 7),
-	"fire_size" numeric(10, 1),
-	"fire_size_unit" varchar(10) DEFAULT 'acres',
+	"address" text,
+	"city" varchar(100),
+	"county" varchar(100),
+	"acreage" integer,
 	"containment" integer,
-	"cause" text,
-	"personnel" integer,
-	"engines" integer,
-	"dozers" integer,
-	"aircraft" integer,
-	"crews" integer,
-	"raw_data" jsonb,
-	"source" varchar(50) DEFAULT 'calfire',
-	"started_at" timestamp NOT NULL,
+	"cause" varchar(100),
+	"fire_type" varchar(50),
+	"evacuations" jsonb,
+	"reported_at" timestamp NOT NULL,
 	"contained_at" timestamp,
 	"last_updated" timestamp NOT NULL,
+	"raw_data" jsonb,
+	"notes" text,
 	"is_active" boolean DEFAULT true,
+	"is_public" boolean DEFAULT true,
+	"severity" integer DEFAULT 1,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "traffic_calfire_incidents_incident_id_unique" UNIQUE("incident_id")
@@ -867,26 +871,25 @@ CREATE TABLE "traffic_caltrans_cctv_cameras" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"camera_id" varchar(50) NOT NULL,
-	"name" text NOT NULL,
-	"location" text NOT NULL,
-	"city" text,
-	"county" text,
-	"state" varchar(2) DEFAULT 'CA',
-	"latitude" numeric(10, 7) NOT NULL,
-	"longitude" numeric(10, 7) NOT NULL,
-	"camera_type" text,
-	"status" varchar(20) DEFAULT 'active',
-	"direction" text,
-	"route" text,
-	"milepost" numeric(8, 2),
+	"source_id" varchar(50) NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"description" text,
+	"latitude" numeric(10, 7),
+	"longitude" numeric(10, 7),
+	"address" text,
+	"city" varchar(100),
+	"county" varchar(100),
+	"camera_type" varchar(50),
+	"direction" varchar(20),
 	"image_url" text,
-	"stream_url" text,
-	"thumbnail_url" text,
-	"metadata" jsonb DEFAULT '{}'::jsonb,
+	"streaming_url" text,
+	"status" varchar(20) DEFAULT 'active',
+	"district_id" integer,
+	"caltrans_id" varchar(50),
 	"raw_data" jsonb,
-	"last_image_update" timestamp,
-	"last_status_update" timestamp,
+	"notes" text,
 	"is_active" boolean DEFAULT true,
+	"is_public" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "traffic_caltrans_cctv_cameras_camera_id_unique" UNIQUE("camera_id")
@@ -895,98 +898,85 @@ CREATE TABLE "traffic_caltrans_cctv_cameras" (
 CREATE TABLE "traffic_caltrans_districts" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
-	"district_id" varchar(20) NOT NULL,
-	"name" text NOT NULL,
-	"number" integer,
-	"region" text,
-	"counties" jsonb DEFAULT '[]'::jsonb,
-	"phone" text,
-	"email" text,
-	"address" text,
+	"district_id" varchar(50) NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"description" text,
+	"district_number" integer NOT NULL,
+	"latitude" numeric(10, 7),
+	"longitude" numeric(10, 7),
+	"region" varchar(100),
+	"phone" varchar(20),
+	"email" varchar(255),
 	"website" text,
 	"is_active" boolean DEFAULT true,
+	"config" jsonb DEFAULT '{}'::jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "traffic_caltrans_districts_district_id_unique" UNIQUE("district_id"),
-	CONSTRAINT "traffic_caltrans_districts_number_unique" UNIQUE("number")
+	CONSTRAINT "traffic_caltrans_districts_district_number_unique" UNIQUE("district_number")
 );
 --> statement-breakpoint
 CREATE TABLE "traffic_caltrans_lane_closures" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"closure_id" varchar(50) NOT NULL,
-	"district" varchar(10),
-	"route" varchar(20),
-	"type" text NOT NULL,
-	"status" "closure_status" DEFAULT 'active',
+	"source_id" varchar(50) NOT NULL,
+	"title" varchar(255) NOT NULL,
 	"description" text,
-	"location" text NOT NULL,
-	"county" text,
+	"closure_type" "closure_type" DEFAULT 'lane',
+	"route" varchar(50),
+	"direction" varchar(20),
+	"county" varchar(100),
+	"city" varchar(100),
+	"milepost" numeric(8, 2),
 	"latitude" numeric(10, 7),
 	"longitude" numeric(10, 7),
-	"start_latitude" numeric(10, 7),
-	"start_longitude" numeric(10, 7),
-	"end_latitude" numeric(10, 7),
-	"end_longitude" numeric(10, 7),
 	"start_date" timestamp NOT NULL,
 	"end_date" timestamp,
 	"expected_end_date" timestamp,
-	"lanes_closed" jsonb DEFAULT '[]'::jsonb,
-	"impact" text,
+	"last_updated" timestamp NOT NULL,
+	"district_id" integer,
+	"caltrans_id" varchar(50),
+	"reason" text,
 	"detour" text,
 	"raw_data" jsonb,
-	"source" varchar(50) DEFAULT 'cwwp2',
+	"notes" text,
 	"is_active" boolean DEFAULT true,
+	"is_public" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "traffic_caltrans_lane_closures_closure_id_unique" UNIQUE("closure_id")
-);
---> statement-breakpoint
-CREATE TABLE "traffic_chp_cad_centers" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"user_id" text,
-	"center_id" varchar(50) NOT NULL,
-	"name" text NOT NULL,
-	"code" varchar(20),
-	"city" text,
-	"county" text,
-	"state" varchar(2) DEFAULT 'CA',
-	"latitude" numeric(10, 7),
-	"longitude" numeric(10, 7),
-	"phone" text,
-	"address" text,
-	"website" text,
-	"is_active" boolean DEFAULT true,
-	"raw_data" jsonb,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "traffic_chp_cad_centers_center_id_unique" UNIQUE("center_id")
 );
 --> statement-breakpoint
 CREATE TABLE "traffic_chp_cad_incidents" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"incident_id" varchar(50) NOT NULL,
-	"log_number" varchar(50),
-	"cad_number" varchar(50),
-	"type" text NOT NULL,
-	"subtype" text,
+	"source_id" varchar(50) NOT NULL,
+	"title" varchar(255) NOT NULL,
+	"description" text,
+	"type" "incident_type" DEFAULT 'other',
 	"status" "incident_status" DEFAULT 'active',
-	"priority" varchar(10),
-	"location" text NOT NULL,
-	"city" text,
-	"county" text,
-	"state" varchar(2) DEFAULT 'CA',
+	"location" text,
 	"latitude" numeric(10, 7),
 	"longitude" numeric(10, 7),
-	"chp_unit" text,
-	"responding_units" jsonb DEFAULT '[]'::jsonb,
-	"log_text" text,
-	"raw_data" jsonb,
+	"address" text,
+	"city" varchar(100),
+	"county" varchar(100),
+	"zip_code" varchar(10),
+	"chp_division" varchar(50),
+	"chp_office" varchar(50),
+	"center_id" integer,
+	"log_number" varchar(20),
 	"reported_at" timestamp NOT NULL,
 	"cleared_at" timestamp,
 	"last_updated" timestamp NOT NULL,
+	"units" jsonb DEFAULT '[]'::jsonb,
+	"raw_data" jsonb,
+	"notes" text,
 	"is_active" boolean DEFAULT true,
+	"is_public" boolean DEFAULT true,
+	"severity" integer DEFAULT 1,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "traffic_chp_cad_incidents_incident_id_unique" UNIQUE("incident_id")
@@ -996,34 +986,57 @@ CREATE TABLE "traffic_chp_cases" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"case_id" varchar(50) NOT NULL,
-	"log_number" varchar(50),
-	"collision_number" varchar(50),
-	"type" text NOT NULL,
-	"severity" varchar(20),
-	"status" "incident_status" DEFAULT 'closed',
-	"location" text NOT NULL,
-	"city" text,
-	"county" text,
-	"state" varchar(2) DEFAULT 'CA',
+	"source_id" varchar(50) NOT NULL,
+	"title" varchar(255) NOT NULL,
+	"description" text,
+	"type" "incident_type" DEFAULT 'traffic_collision',
+	"severity" integer DEFAULT 1,
+	"location" text,
 	"latitude" numeric(10, 7),
 	"longitude" numeric(10, 7),
-	"collision_type" text,
-	"weather_conditions" text,
-	"road_conditions" text,
-	"lighting_conditions" text,
+	"address" text,
+	"city" varchar(100),
+	"county" varchar(100),
+	"zip_code" varchar(10),
+	"collision_type" varchar(50),
+	"weather_condition" varchar(50),
+	"road_condition" varchar(50),
+	"light_condition" varchar(50),
+	"vehicles_involved" integer DEFAULT 1,
 	"injuries" integer DEFAULT 0,
 	"fatalities" integer DEFAULT 0,
-	"vehicles_involved" integer DEFAULT 0,
-	"parties_involved" integer DEFAULT 0,
-	"raw_data" jsonb,
-	"source" varchar(50) DEFAULT 'ckan',
 	"occurred_at" timestamp NOT NULL,
 	"reported_at" timestamp,
-	"last_updated" timestamp,
+	"raw_data" jsonb,
+	"notes" text,
 	"is_active" boolean DEFAULT true,
+	"is_public" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "traffic_chp_cases_case_id_unique" UNIQUE("case_id")
+);
+--> statement-breakpoint
+CREATE TABLE "traffic_chp_centers" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
+	"center_id" varchar(8) NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"description" text,
+	"latitude" numeric(10, 7),
+	"longitude" numeric(10, 7),
+	"address" text,
+	"city" varchar(100),
+	"county" varchar(50),
+	"state" varchar(2) DEFAULT 'CA',
+	"zip_code" varchar(10),
+	"type" varchar(50),
+	"phone" varchar(20),
+	"email" varchar(255),
+	"is_active" boolean DEFAULT true,
+	"config" jsonb DEFAULT '{}'::jsonb,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "traffic_chp_centers_center_id_unique" UNIQUE("center_id")
 );
 --> statement-breakpoint
 ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -1121,9 +1134,9 @@ ALTER TABLE "traffic_calfire_incidents" ADD CONSTRAINT "traffic_calfire_incident
 ALTER TABLE "traffic_caltrans_cctv_cameras" ADD CONSTRAINT "traffic_caltrans_cctv_cameras_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traffic_caltrans_districts" ADD CONSTRAINT "traffic_caltrans_districts_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traffic_caltrans_lane_closures" ADD CONSTRAINT "traffic_caltrans_lane_closures_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "traffic_chp_cad_centers" ADD CONSTRAINT "traffic_chp_cad_centers_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traffic_chp_cad_incidents" ADD CONSTRAINT "traffic_chp_cad_incidents_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traffic_chp_cases" ADD CONSTRAINT "traffic_chp_cases_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "traffic_chp_centers" ADD CONSTRAINT "traffic_chp_centers_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_user_email" ON "user" USING btree ("email");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_user_username" ON "user" USING btree ("username");--> statement-breakpoint
 CREATE INDEX "idx_user_accounts_user_id" ON "user_accounts" USING btree ("user_id");--> statement-breakpoint
@@ -1270,49 +1283,53 @@ CREATE INDEX "idx_threed_watering_next_active" ON "threed_watering_schedules" US
 CREATE INDEX "idx_threed_weather_recorded_at" ON "threed_weather_logs" USING btree ("recorded_at");--> statement-breakpoint
 CREATE INDEX "idx_threed_weather_marker" ON "threed_weather_logs" USING btree ("marker_id");--> statement-breakpoint
 CREATE INDEX "idx_traffic_user_id" ON "traffic" USING btree ("user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_module_id" ON "traffic" USING btree ("module_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_traffic_slug" ON "traffic" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_traffic_active" ON "traffic" USING btree ("is_active");--> statement-breakpoint
-CREATE INDEX "idx_api_logs_endpoint" ON "traffic_api_request_logs" USING btree ("endpoint");--> statement-breakpoint
-CREATE INDEX "idx_api_logs_logged_at" ON "traffic_api_request_logs" USING btree ("logged_at");--> statement-breakpoint
-CREATE INDEX "idx_api_logs_success" ON "traffic_api_request_logs" USING btree ("is_success");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_511_event_id" ON "traffic_bay_area_511_events" USING btree ("event_id");--> statement-breakpoint
-CREATE INDEX "idx_511_event_type" ON "traffic_bay_area_511_events" USING btree ("event_type");--> statement-breakpoint
-CREATE INDEX "idx_511_county" ON "traffic_bay_area_511_events" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_511_status" ON "traffic_bay_area_511_events" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "idx_511_occurred_at" ON "traffic_bay_area_511_events" USING btree ("occurred_at");--> statement-breakpoint
-CREATE INDEX "idx_511_active" ON "traffic_bay_area_511_events" USING btree ("is_active");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_calfire_incident_id" ON "traffic_calfire_incidents" USING btree ("incident_id");--> statement-breakpoint
-CREATE INDEX "idx_calfire_status" ON "traffic_calfire_incidents" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "idx_calfire_county" ON "traffic_calfire_incidents" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_calfire_started_at" ON "traffic_calfire_incidents" USING btree ("started_at");--> statement-breakpoint
-CREATE INDEX "idx_calfire_active" ON "traffic_calfire_incidents" USING btree ("is_active");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_cctv_camera_id" ON "traffic_caltrans_cctv_cameras" USING btree ("camera_id");--> statement-breakpoint
-CREATE INDEX "idx_cctv_county" ON "traffic_caltrans_cctv_cameras" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_cctv_status" ON "traffic_caltrans_cctv_cameras" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "idx_cctv_active" ON "traffic_caltrans_cctv_cameras" USING btree ("is_active");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_caltrans_district_id" ON "traffic_caltrans_districts" USING btree ("district_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_caltrans_district_number" ON "traffic_caltrans_districts" USING btree ("number");--> statement-breakpoint
-CREATE INDEX "idx_caltrans_district_active" ON "traffic_caltrans_districts" USING btree ("is_active");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_caltrans_closure_id" ON "traffic_caltrans_lane_closures" USING btree ("closure_id");--> statement-breakpoint
-CREATE INDEX "idx_caltrans_closure_district" ON "traffic_caltrans_lane_closures" USING btree ("district");--> statement-breakpoint
-CREATE INDEX "idx_caltrans_closure_route" ON "traffic_caltrans_lane_closures" USING btree ("route");--> statement-breakpoint
-CREATE INDEX "idx_caltrans_closure_county" ON "traffic_caltrans_lane_closures" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_caltrans_closure_status" ON "traffic_caltrans_lane_closures" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "idx_caltrans_closure_start_date" ON "traffic_caltrans_lane_closures" USING btree ("start_date");--> statement-breakpoint
-CREATE INDEX "idx_caltrans_closure_active" ON "traffic_caltrans_lane_closures" USING btree ("is_active");--> statement-breakpoint
-CREATE INDEX "idx_caltrans_closure_composite" ON "traffic_caltrans_lane_closures" USING btree ("status","district","is_active");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_chp_center_id" ON "traffic_chp_cad_centers" USING btree ("center_id");--> statement-breakpoint
-CREATE INDEX "idx_chp_center_county" ON "traffic_chp_cad_centers" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_chp_center_active" ON "traffic_chp_cad_centers" USING btree ("is_active");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_chp_cad_incident_id" ON "traffic_chp_cad_incidents" USING btree ("incident_id");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_status" ON "traffic_chp_cad_incidents" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_location" ON "traffic_chp_cad_incidents" USING btree ("location");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_county" ON "traffic_chp_cad_incidents" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_reported_at" ON "traffic_chp_cad_incidents" USING btree ("reported_at");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_active" ON "traffic_chp_cad_incidents" USING btree ("is_active");--> statement-breakpoint
-CREATE INDEX "idx_chp_cad_composite" ON "traffic_chp_cad_incidents" USING btree ("status","county","is_active");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_chp_cases_case_id" ON "traffic_chp_cases" USING btree ("case_id");--> statement-breakpoint
-CREATE INDEX "idx_chp_cases_county" ON "traffic_chp_cases" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_chp_cases_occurred_at" ON "traffic_chp_cases" USING btree ("occurred_at");--> statement-breakpoint
-CREATE INDEX "idx_chp_cases_severity" ON "traffic_chp_cases" USING btree ("severity");--> statement-breakpoint
-CREATE INDEX "idx_chp_cases_active" ON "traffic_chp_cases" USING btree ("is_active");
+CREATE INDEX "idx_traffic_api_log_source" ON "traffic_api_request_logs" USING btree ("source");--> statement-breakpoint
+CREATE INDEX "idx_traffic_api_log_success" ON "traffic_api_request_logs" USING btree ("success");--> statement-breakpoint
+CREATE INDEX "idx_traffic_api_log_requested_at" ON "traffic_api_request_logs" USING btree ("requested_at");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_511_event_id" ON "traffic_bay_area_511_events" USING btree ("event_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_511_event_type" ON "traffic_bay_area_511_events" USING btree ("event_type");--> statement-breakpoint
+CREATE INDEX "idx_traffic_511_reported_at" ON "traffic_bay_area_511_events" USING btree ("reported_at");--> statement-breakpoint
+CREATE INDEX "idx_traffic_511_location" ON "traffic_bay_area_511_events" USING btree ("latitude","longitude");--> statement-breakpoint
+CREATE INDEX "idx_traffic_511_active" ON "traffic_bay_area_511_events" USING btree ("is_active");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_calfire_incident_id" ON "traffic_calfire_incidents" USING btree ("incident_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_calfire_status" ON "traffic_calfire_incidents" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "idx_traffic_calfire_county" ON "traffic_calfire_incidents" USING btree ("county");--> statement-breakpoint
+CREATE INDEX "idx_traffic_calfire_reported_at" ON "traffic_calfire_incidents" USING btree ("reported_at");--> statement-breakpoint
+CREATE INDEX "idx_traffic_calfire_location" ON "traffic_calfire_incidents" USING btree ("latitude","longitude");--> statement-breakpoint
+CREATE INDEX "idx_traffic_calfire_active" ON "traffic_calfire_incidents" USING btree ("is_active");--> statement-breakpoint
+CREATE INDEX "idx_traffic_calfire_severity" ON "traffic_calfire_incidents" USING btree ("severity");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_cctv_camera_id" ON "traffic_caltrans_cctv_cameras" USING btree ("camera_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_cctv_location" ON "traffic_caltrans_cctv_cameras" USING btree ("latitude","longitude");--> statement-breakpoint
+CREATE INDEX "idx_traffic_cctv_district" ON "traffic_caltrans_cctv_cameras" USING btree ("district_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_cctv_active" ON "traffic_caltrans_cctv_cameras" USING btree ("is_active");--> statement-breakpoint
+CREATE INDEX "idx_traffic_cctv_status" ON "traffic_caltrans_cctv_cameras" USING btree ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_caltrans_district_id" ON "traffic_caltrans_districts" USING btree ("district_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_caltrans_district_num" ON "traffic_caltrans_districts" USING btree ("district_number");--> statement-breakpoint
+CREATE INDEX "idx_traffic_caltrans_district_location" ON "traffic_caltrans_districts" USING btree ("latitude","longitude");--> statement-breakpoint
+CREATE INDEX "idx_traffic_caltrans_district_active" ON "traffic_caltrans_districts" USING btree ("is_active");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_caltrans_closure_id" ON "traffic_caltrans_lane_closures" USING btree ("closure_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_caltrans_route" ON "traffic_caltrans_lane_closures" USING btree ("route");--> statement-breakpoint
+CREATE INDEX "idx_traffic_caltrans_county" ON "traffic_caltrans_lane_closures" USING btree ("county");--> statement-breakpoint
+CREATE INDEX "idx_traffic_caltrans_start_date" ON "traffic_caltrans_lane_closures" USING btree ("start_date");--> statement-breakpoint
+CREATE INDEX "idx_traffic_caltrans_district" ON "traffic_caltrans_lane_closures" USING btree ("district_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_caltrans_active" ON "traffic_caltrans_lane_closures" USING btree ("is_active");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_chp_incident_id" ON "traffic_chp_cad_incidents" USING btree ("incident_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_source_id" ON "traffic_chp_cad_incidents" USING btree ("source_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_status" ON "traffic_chp_cad_incidents" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_type" ON "traffic_chp_cad_incidents" USING btree ("type");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_reported_at" ON "traffic_chp_cad_incidents" USING btree ("reported_at");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_location" ON "traffic_chp_cad_incidents" USING btree ("latitude","longitude");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_active" ON "traffic_chp_cad_incidents" USING btree ("is_active");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_center" ON "traffic_chp_cad_incidents" USING btree ("center_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_chp_case_id" ON "traffic_chp_cases" USING btree ("case_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_case_occurred_at" ON "traffic_chp_cases" USING btree ("occurred_at");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_case_severity" ON "traffic_chp_cases" USING btree ("severity");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_case_location" ON "traffic_chp_cases" USING btree ("latitude","longitude");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_case_active" ON "traffic_chp_cases" USING btree ("is_active");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_traffic_chp_center_id" ON "traffic_chp_centers" USING btree ("center_id");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_center_county" ON "traffic_chp_centers" USING btree ("county");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_center_region" ON "traffic_chp_centers" USING btree ("county");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_center_active" ON "traffic_chp_centers" USING btree ("is_active");

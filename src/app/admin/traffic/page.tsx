@@ -9,7 +9,7 @@ import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHP
 import { TrafficCHPCasesCRUD } from '@/components/admin/traffic/chp-cases/TrafficCHPCasesCRUD';
 import { TrafficCaltransCRUD } from '@/components/admin/traffic/caltrans/TrafficCaltransCRUD';
 import { TrafficCalfireCRUD } from '@/components/admin/traffic/calfire/TrafficCalfireCRUD';
-import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bayarea511/TrafficBayArea511CRUD';
+import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bay-area-511/TrafficBayArea511CRUD';
 import { TrafficStats } from '@/components/traffic/dashboard/TrafficStats';
 
 export default function TrafficAdminPage() {
@@ -50,7 +50,7 @@ export default function TrafficAdminPage() {
           <TabsTrigger value="chp-cases">CHP Historical</TabsTrigger>
           <TabsTrigger value="caltrans">Caltrans</TabsTrigger>
           <TabsTrigger value="calfire">CalFire</TabsTrigger>
-          <TabsTrigger value="bayarea511">Bay Area 511</TabsTrigger>
+          <TabsTrigger value="bay-area-511">Bay Area 511</TabsTrigger>
         </TabsList>
 
         <TabsContent value="chp-cad">
@@ -109,7 +109,7 @@ export default function TrafficAdminPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="bayarea511">
+        <TabsContent value="bay-area-511">
           <Card>
             <CardHeader>
               <CardTitle>Bay Area 511 Events</CardTitle>

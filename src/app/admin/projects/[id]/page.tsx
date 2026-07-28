@@ -38,7 +38,7 @@ import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHP
 import { TrafficCHPCasesCRUD } from '@/components/admin/traffic/chp-cases/TrafficCHPCasesCRUD';
 import { TrafficCaltransCRUD } from '@/components/admin/traffic/caltrans/TrafficCaltransCRUD';
 import { TrafficCalfireCRUD } from '@/components/admin/traffic/calfire/TrafficCalfireCRUD';
-import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bayarea511/TrafficBayArea511CRUD';
+import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bay-area-511/TrafficBayArea511CRUD';
 
 import { ProjectAssetManager } from '@/components/admin/projects/ProjectAssetManager';
 

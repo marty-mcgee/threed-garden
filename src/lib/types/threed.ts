@@ -415,7 +415,7 @@ export interface WeatherData {
 // ===== TRAFFIC =====
 export interface TrafficIncident3D {
   id: string;
-  type: 'chpLive' | 'chpHistorical' | 'caltrans' | 'bayarea511' | 'calfire';
+  type: 'chpLive' | 'chpHistorical' | 'caltrans' | 'bay-area-511' | 'calfire';
   title: string;
   description: string;
   location: string;
