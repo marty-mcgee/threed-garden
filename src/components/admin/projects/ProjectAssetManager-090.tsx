@@ -1,4 +1,4 @@
-// components/admin/projects/ProjectAssetManager.tsx - Updated with complete traffic asset configs
+// components/admin/projects/ProjectAssetManager.tsx - Fixed spacing
 
 'use client';
 
@@ -21,10 +21,7 @@ import {
   Radio,
   Music2,
   Image,
-  Link2,
-  Building2,
-  Camera,
-  MapPin,
+  Link2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -74,7 +71,7 @@ const ASSET_TYPES = {
         assetType: 'music_albums',
         fetchEndpoint: '/api/music/albums',
         searchFields: ['title', 'artist'],
-        displayFields: ['title', 'artist', 'year'],
+        displayFields: ['title', 'artist'],
         idField: 'id',
         nameField: 'title',
       },
@@ -141,7 +138,7 @@ const ASSET_TYPES = {
         assetType: 'threed_plants',
         fetchEndpoint: '/api/threed/plants',
         searchFields: ['commonName', 'scientificName'],
-        displayFields: ['commonName', 'scientificName', 'plantType'],
+        displayFields: ['commonName', 'scientificName'],
         idField: 'id',
         nameField: 'commonName',
       },
@@ -178,83 +175,6 @@ const ASSET_TYPES = {
         idField: 'id',
         nameField: 'name',
       },
-      {
-        id: 'threed_layers',
-        label: 'Layers',
-        icon: Box,
-        assetType: 'threed_layers',
-        fetchEndpoint: '/api/threed/layers',
-        searchFields: ['name'],
-        displayFields: ['name', 'layerType'],
-        idField: 'id',
-        nameField: 'name',
-      },
-      {
-        id: 'threed_markers',
-        label: 'Markers',
-        icon: MapPin,
-        assetType: 'threed_markers',
-        fetchEndpoint: '/api/threed/markers',
-        searchFields: ['name'],
-        displayFields: ['name', 'markerType'],
-        idField: 'id',
-        nameField: 'name',
-      },
-      {
-        id: 'threed_tasks',
-        label: 'Tasks',
-        icon: FileText,
-        assetType: 'threed_tasks',
-        fetchEndpoint: '/api/threed/tasks',
-        searchFields: ['title'],
-        displayFields: ['title', 'status'],
-        idField: 'id',
-        nameField: 'title',
-      },
-      {
-        id: 'threed_harvests',
-        label: 'Harvests',
-        icon: Package,
-        assetType: 'threed_harvests',
-        fetchEndpoint: '/api/threed/harvests',
-        searchFields: ['harvestId'],
-        displayFields: ['harvestId', 'quantity'],
-        idField: 'id',
-        nameField: 'harvestId',
-      },
-      {
-        id: 'threed_weather_logs',
-        label: 'Weather Logs',
-        icon: AlertTriangle,
-        assetType: 'threed_weather_logs',
-        fetchEndpoint: '/api/threed/weather-logs',
-        searchFields: ['recordedAt'],
-        displayFields: ['recordedAt', 'temperature'],
-        idField: 'id',
-        nameField: 'recordedAt',
-      },
-      {
-        id: 'threed_farmbots',
-        label: 'FarmBots',
-        icon: Box,
-        assetType: 'threed_farmbots',
-        fetchEndpoint: '/api/threed/farmbots',
-        searchFields: ['name'],
-        displayFields: ['name', 'status'],
-        idField: 'id',
-        nameField: 'name',
-      },
-      {
-        id: 'threed_watering_schedules',
-        label: 'Watering Schedules',
-        icon: AlertTriangle,
-        assetType: 'threed_watering_schedules',
-        fetchEndpoint: '/api/threed/watering-schedules',
-        searchFields: ['scheduleId'],
-        displayFields: ['scheduleId', 'frequency'],
-        idField: 'id',
-        nameField: 'scheduleId',
-      },
     ],
   },
 
@@ -275,105 +195,130 @@ const ASSET_TYPES = {
       { value: 'traffic_calfire_incidents', label: 'CalFire Incidents' },
     ],
     assetConfigs: [
-      // ✅ CHP-CAD Incidents
       {
         id: 'traffic_chp_cad_incidents',
         label: 'CHP-CAD Incidents',
         icon: AlertTriangle,
         assetType: 'traffic_chp_cad_incidents',
         fetchEndpoint: '/api/traffic/chp-cad',
-        searchFields: ['title', 'incidentId', 'location'],
-        displayFields: ['incidentId', 'location', 'status'],
+        searchFields: ['sourceId', 'location'],
+        displayFields: ['sourceId', 'location'],
         idField: 'id',
-        nameField: 'title',
+        nameField: 'sourceId',
       },
-      // ✅ CHP Centers
-      {
-        id: 'traffic_chp_centers',
-        label: 'CHP Centers',
-        icon: Building2,
-        assetType: 'traffic_chp_centers',
-        fetchEndpoint: '/api/traffic/chp-centers',
-        searchFields: ['name', 'centerId', 'city'],
-        displayFields: ['centerId', 'city', 'county'],
-        idField: 'id',
-        nameField: 'name',
-      },
-      // ✅ CHP Cases
       {
         id: 'traffic_chp_cases',
         label: 'CHP Cases',
         icon: FileText,
         assetType: 'traffic_chp_cases',
         fetchEndpoint: '/api/traffic/chp-cases',
-        searchFields: ['title', 'caseId'],
-        displayFields: ['caseId', 'type'],
+        searchFields: ['caseId', 'title'],
+        displayFields: ['caseId', 'title'],
         idField: 'id',
-        nameField: 'title',
+        nameField: 'caseId',
       },
-      // ✅ Caltrans Lane Closures
       {
         id: 'traffic_caltrans_lane_closures',
         label: 'Caltrans Closures',
         icon: Route,
         assetType: 'traffic_caltrans_lane_closures',
         fetchEndpoint: '/api/traffic/caltrans',
-        searchFields: ['title', 'closureId', 'route'],
-        displayFields: ['closureId', 'route', 'county'],
+        searchFields: ['closureId', 'route'],
+        displayFields: ['closureId', 'route'],
         idField: 'id',
-        nameField: 'title',
+        nameField: 'closureId',
       },
-      // ✅ Caltrans Districts
-      {
-        id: 'traffic_caltrans_districts',
-        label: 'Caltrans Districts',
-        icon: Building2,
-        assetType: 'traffic_caltrans_districts',
-        fetchEndpoint: '/api/traffic/caltrans-districts',
-        searchFields: ['name', 'districtId'],
-        displayFields: ['districtId', 'districtNumber', 'region'],
-        idField: 'id',
-        nameField: 'name',
-      },
-      // ✅ CCTV Cameras
-      {
-        id: 'traffic_caltrans_cctv_cameras',
-        label: 'CCTV Cameras',
-        icon: Camera,
-        assetType: 'traffic_caltrans_cctv_cameras',
-        fetchEndpoint: '/api/traffic/cctv',
-        searchFields: ['name', 'cameraId'],
-        displayFields: ['cameraId', 'city', 'county'],
-        idField: 'id',
-        nameField: 'name',
-      },
-      // ✅ Bay Area 511 Events
-      {
-        id: 'traffic_bay_area_511_events',
-        label: 'Bay Area 511',
-        icon: Radio,
-        assetType: 'traffic_bay_area_511_events',
-        fetchEndpoint: '/api/traffic/bay-area-511',
-        searchFields: ['title', 'eventId', 'location'],
-        displayFields: ['eventId', 'location', 'eventType'],
-        idField: 'id',
-        nameField: 'title',
-      },
-      // ✅ CalFire Incidents
       {
         id: 'traffic_calfire_incidents',
         label: 'CalFire Incidents',
         icon: Flame,
         assetType: 'traffic_calfire_incidents',
         fetchEndpoint: '/api/traffic/calfire',
-        searchFields: ['title', 'incidentId', 'location'],
-        displayFields: ['incidentId', 'location', 'status'],
+        searchFields: ['name', 'location'],
+        displayFields: ['name', 'location'],
+        idField: 'id',
+        nameField: 'name',
+      },
+      {
+        id: 'traffic_bay_area_511_events',
+        label: 'Bay Area 511',
+        icon: Radio,
+        assetType: 'traffic_bay_area_511_events',
+        fetchEndpoint: '/api/traffic/bay-area-511',
+        searchFields: ['title', 'location'],
+        displayFields: ['title', 'location'],
         idField: 'id',
         nameField: 'title',
       },
     ],
   },
 };
+
+
+
+// // Update the fetchAvailableAssets function to handle traffic types
+// const fetchAvailableAssets = async () => {
+//   if (!selectedAssetType) return;
+  
+//   try {
+//     // Map asset type to API endpoint
+//     const endpointMap: Record<string, string> = {
+//       // Music
+//       'music_albums': '/api/music/albums',
+//       'music_tracks': '/api/music/tracks',
+//       'music_links': '/api/music/links',
+//       'music_media': '/api/music/media',
+//       // ThreeD
+//       'threed_plants': '/api/threed/plants',
+//       'threed_beds': '/api/threed/beds',
+//       'threed_layers': '/api/threed/layers',
+//       'threed_markers': '/api/threed/markers',
+//       'threed_models': '/api/threed/models',
+//       'threed_characters': '/api/threed/characters',
+//       'threed_tasks': '/api/threed/tasks',
+//       'threed_harvests': '/api/threed/harvests',
+//       'threed_weather_logs': '/api/threed/weather-logs',
+//       'threed_farmbots': '/api/threed/farmbots',
+//       'threed_watering_schedules': '/api/threed/watering-schedules',
+//       // Traffic
+//       'traffic_chp_cad_incidents': '/api/traffic/chp-cad',
+//       'traffic_chp_centers': '/api/traffic/chp-centers',
+//       'traffic_chp_cases': '/api/traffic/chp-cases',
+//       'traffic_caltrans_lane_closures': '/api/traffic/caltrans',
+//       'traffic_caltrans_districts': '/api/traffic/caltrans-districts',
+//       'traffic_caltrans_cctv_cameras': '/api/traffic/cctv',
+//       'traffic_bay_area_511_events': '/api/traffic/bay-area-511',
+//       'traffic_calfire_incidents': '/api/traffic/calfire',
+//     };
+
+//     const endpoint = endpointMap[selectedAssetType];
+//     if (!endpoint) return;
+
+//     const response = await fetch(`${endpoint}?limit=1000`);
+//     const data = await response.json();
+    
+//     if (data.success) {
+//       // Map to display format
+//       const assets = (data.data || []).map((item: any) => ({
+//         id: item.id,
+//         name: item.title || item.name || item.eventId || item.incidentId || item.cameraId || item.closureId || `Asset #${item.id}`,
+//         // Different display fields based on type
+//         subtitle: item.county || item.city || item.location || item.route || item.sourceId || '',
+//         status: item.isActive ? 'active' : 'inactive',
+//         raw: item,
+//       }));
+//       setAvailableAssets(assets);
+//     }
+//   } catch (error) {
+//     console.error('Error fetching available assets:', error);
+//     showToast('Failed to fetch available assets', 'error');
+//   }
+// };
+
+
+
+
+
 
 // ✅ Helper functions for session storage
 const getStoredAssetTab = (key: string): string => {
@@ -469,7 +414,7 @@ export function ProjectAssetManager({
           return {
             ...asset,
             id: asset[config.idField],
-            name: asset[config.nameField] || `Asset #${asset[config.idField]}`,
+            name: asset[config.nameField],
             type: config.assetType,
             assigned,
           };

@@ -1,4 +1,4 @@
-// components/admin/traffic/calfire/TrafficCalfireCRUD.tsx
+// components/admin/traffic/caltrans-cctv/TrafficCaltransCctvCRUD.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,15 +7,16 @@ import {
   Edit,
   Trash2,
   Loader2,
-  Flame,
+  Camera,
   MoreHorizontal,
   Search,
   Filter,
   Eye,
   EyeOff,
   MapPin,
-  Calendar,
-  AlertTriangle,
+  Building2,
+  Image,
+  Video,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,92 +31,91 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
 // ✅ Types
-interface TrafficCalfireCRUDProps {
+interface TrafficCaltransCctvCRUDProps {
   // userId: string;
   // moduleId?: number;
   onModuleUpdate?: () => void;
 }
 
-interface Incident {
+interface District {
   id: number;
-  incidentId: string;
+  districtId: string;
+  name: string;
+  districtNumber: number;
+  region: string | null;
+  isActive: boolean;
+}
+
+interface Camera {
+  id: number;
+  cameraId: string;
   sourceId: string;
-  title: string;
+  name: string;
   description: string | null;
-  incidentType: string;
-  status: string;
-  location: string | null;
   latitude: number | null;
   longitude: number | null;
   address: string | null;
   city: string | null;
   county: string | null;
-  acreage: number | null;
-  containment: number | null;
-  cause: string | null;
-  fireType: string | null;
-  evacuations: any;
-  reportedAt: string;
-  containedAt: string | null;
-  lastUpdated: string;
+  cameraType: string | null;
+  direction: string | null;
+  imageUrl: string | null;
+  streamingUrl: string | null;
+  status: string;
+  districtId: number | null;
+  caltransId: string | null;
   rawData: any;
   notes: string | null;
   isActive: boolean;
   isPublic: boolean;
-  severity: number;
   createdAt: string;
   updatedAt: string;
+  district?: District;
 }
 
 interface FormData {
-  incidentId: string;
+  cameraId: string;
   sourceId: string;
-  title: string;
+  name: string;
   description: string;
-  incidentType: string;
-  status: string;
-  location: string;
   latitude: number | null;
   longitude: number | null;
   address: string;
   city: string;
   county: string;
-  acreage: string;
-  containment: string;
-  cause: string;
-  fireType: string;
-  evacuations: string;
-  reportedAt: string;
-  containedAt: string;
+  cameraType: string;
+  direction: string;
+  imageUrl: string;
+  streamingUrl: string;
+  status: string;
+  districtId: number | null;
+  caltransId: string;
   notes: string;
   isActive: boolean;
   isPublic: boolean;
-  severity: number;
 }
 
 // ✅ Options
-const INCIDENT_STATUS_OPTIONS = [
-  { value: 'active', label: 'Active' },
-  { value: 'cleared', label: 'Cleared' },
-  { value: 'contained', label: 'Contained' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'unknown', label: 'Unknown' },
-];
-
-const FIRE_TYPE_OPTIONS = [
-  { value: 'wildfire', label: 'Wildfire' },
-  { value: 'prescribed_burn', label: 'Prescribed Burn' },
-  { value: 'structure_fire', label: 'Structure Fire' },
-  { value: 'vegetation_fire', label: 'Vegetation Fire' },
+const CAMERA_TYPE_OPTIONS = [
+  { value: 'fixed', label: 'Fixed' },
+  { value: 'ptz', label: 'PTZ (Pan-Tilt-Zoom)' },
+  { value: 'mobile', label: 'Mobile' },
   { value: 'other', label: 'Other' },
 ];
 
-const CAUSE_OPTIONS = [
-  { value: 'lightning', label: 'Lightning' },
-  { value: 'human', label: 'Human Caused' },
-  { value: 'equipment', label: 'Equipment' },
-  { value: 'arson', label: 'Arson' },
-  { value: 'unknown', label: 'Unknown' },
+const DIRECTION_OPTIONS = [
+  { value: 'northbound', label: 'Northbound' },
+  { value: 'southbound', label: 'Southbound' },
+  { value: 'eastbound', label: 'Eastbound' },
+  { value: 'westbound', label: 'Westbound' },
+  { value: 'both', label: 'Both Directions' },
+];
+
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
+  { value: 'maintenance', label: 'Maintenance' },
+  { value: 'offline', label: 'Offline' },
 ];
 
 // ✅ Helper to get label from value
@@ -125,24 +125,12 @@ const getOptionLabel = (options: { value: string; label: string }[], value: stri
 };
 
 // ✅ Status color mapping
-const getStatusColor = (status: string) => {
+const getCameraStatusColor = (status: string) => {
   switch (status) {
-    case 'active': return 'bg-red-100 text-red-700';
-    case 'contained': return 'bg-yellow-100 text-yellow-700';
-    case 'cleared': return 'bg-green-100 text-green-700';
-    case 'pending': return 'bg-blue-100 text-blue-700';
-    case 'unknown': return 'bg-gray-100 text-gray-700';
-    default: return 'bg-gray-100 text-gray-700';
-  }
-};
-
-const getSeverityColor = (severity: number) => {
-  switch (severity) {
-    case 1: return 'bg-green-100 text-green-700';
-    case 2: return 'bg-yellow-100 text-yellow-700';
-    case 3: return 'bg-orange-100 text-orange-700';
-    case 4: return 'bg-red-100 text-red-700';
-    case 5: return 'bg-red-200 text-red-800';
+    case 'active': return 'bg-green-100 text-green-700';
+    case 'inactive': return 'bg-gray-100 text-gray-700';
+    case 'maintenance': return 'bg-yellow-100 text-yellow-700';
+    case 'offline': return 'bg-red-100 text-red-700';
     default: return 'bg-gray-100 text-gray-700';
   }
 };
@@ -151,216 +139,216 @@ const getActiveStatusColor = (isActive: boolean) => {
   return isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700';
 };
 
-export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) {
+export function TrafficCaltransCctvCRUD({ onModuleUpdate }: TrafficCaltransCctvCRUDProps) {
   const { showToast, ToastComponent } = useToast();
-  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [cameras, setCameras] = useState<Camera[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingIncident, setEditingIncident] = useState<Incident | null>(null);
+  const [editingCamera, setEditingCamera] = useState<Camera | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterActive, setFilterActive] = useState<string>('all');
-  const [filterSeverity, setFilterSeverity] = useState<string>('all');
+  const [filterDistrict, setFilterDistrict] = useState<string>('all');
 
   // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
-    incidentId: '',
+    cameraId: '',
     sourceId: '',
-    title: '',
+    name: '',
     description: '',
-    incidentType: '',
-    status: 'active',
-    location: '',
     latitude: null,
     longitude: null,
     address: '',
     city: '',
     county: '',
-    acreage: '',
-    containment: '',
-    cause: '',
-    fireType: '',
-    evacuations: '',
-    reportedAt: '',
-    containedAt: '',
+    cameraType: '',
+    direction: '',
+    imageUrl: '',
+    streamingUrl: '',
+    status: 'active',
+    districtId: null,
+    caltransId: '',
     notes: '',
     isActive: true,
     isPublic: true,
-    severity: 1,
   });
 
-  // ✅ Fetch incidents
+  // ✅ Fetch cameras and districts
   useEffect(() => {
-    fetchIncidents();
-  }, [filterStatus, filterActive, filterSeverity]);
+    fetchCameras();
+    fetchDistricts();
+  }, [filterStatus, filterActive, filterDistrict]);
 
-  const fetchIncidents = async () => {
+  const fetchDistricts = async () => {
+    setLoadingDistricts(true);
+    try {
+      const response = await fetch('/api/traffic/caltrans-districts?isActive=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setDistricts(Array.isArray(data.data) ? data.data : []);
+      } else {
+        console.error('Failed to fetch districts:', data.error);
+        setDistricts([]);
+      }
+    } catch (error) {
+      console.error('Error fetching districts:', error);
+      setDistricts([]);
+    } finally {
+      setLoadingDistricts(false);
+    }
+  };
+
+  const fetchCameras = async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (filterStatus !== 'all') params.append('status', filterStatus);
       if (filterActive !== 'all') params.append('isActive', filterActive === 'true' ? 'true' : 'false');
-      if (filterSeverity !== 'all') params.append('severity', filterSeverity);
+      if (filterDistrict !== 'all') params.append('districtId', filterDistrict);
 
-      const response = await fetch(`/api/traffic/calfire?${params.toString()}`);
+      const response = await fetch(`/api/traffic/caltrans-cctv?${params.toString()}&includeDistrict=true`);
       const data = await response.json();
 
       if (data.success) {
-        setIncidents(Array.isArray(data.data) ? data.data : []);
+        setCameras(Array.isArray(data.data) ? data.data : []);
       } else {
-        showToast(data.error || 'Failed to fetch incidents', 'error');
-        setIncidents([]);
+        showToast(data.error || 'Failed to fetch cameras', 'error');
+        setCameras([]);
       }
     } catch (error) {
-      console.error('Error fetching incidents:', error);
-      showToast('Failed to fetch incidents', 'error');
-      setIncidents([]);
+      console.error('Error fetching cameras:', error);
+      showToast('Failed to fetch cameras', 'error');
+      setCameras([]);
     } finally {
       setLoading(false);
     }
   };
 
   // ✅ Get unique counties for filter
-  const counties = Array.from(new Set(incidents.map(i => i.county).filter(Boolean)));
+  const counties = Array.from(new Set(cameras.map(c => c.county).filter(Boolean)));
 
-  const filteredIncidents = incidents.filter((incident) =>
-    incident.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (incident.incidentId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-    (incident.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-    (incident.location?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-    (incident.county?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+  const filteredCameras = cameras.filter((camera) =>
+    camera.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (camera.cameraId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    (camera.city?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    (camera.county?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
+  // ✅ Get district name by ID
+  const getDistrictName = (districtId: number | null) => {
+    if (!districtId) return 'None';
+    const district = districts.find(d => d.id === districtId);
+    return district ? district.name : `District #${districtId}`;
+  };
+
   const handleCreate = async () => {
-    if (!formData.incidentId) {
-      showToast('Incident ID is required', 'error');
+    if (!formData.cameraId) {
+      showToast('Camera ID is required', 'error');
       return;
     }
     if (!formData.sourceId) {
       showToast('Source ID is required', 'error');
       return;
     }
-    if (!formData.title) {
-      showToast('Title is required', 'error');
-      return;
-    }
-    if (!formData.reportedAt) {
-      showToast('Reported date is required', 'error');
+    if (!formData.name) {
+      showToast('Camera name is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const payload = {
-        ...formData,
-        acreage: formData.acreage || null,
-        containment: formData.containment || null,
-        evacuations: formData.evacuations ? JSON.parse(formData.evacuations) : null,
-        lastUpdated: new Date().toISOString(),
-      };
-
-      const response = await fetch('/api/traffic/calfire', {
+      const response = await fetch('/api/traffic/caltrans-cctv', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('CalFire incident created successfully', 'success');
+        showToast('Caltrans CCTV camera created successfully', 'success');
         setShowCreateDialog(false);
         resetForm();
-        await fetchIncidents();
+        await fetchCameras();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to create incident', 'error');
+        showToast(data.error || 'Failed to create camera', 'error');
       }
     } catch (error) {
-      console.error('Error creating incident:', error);
-      showToast('Failed to create incident', 'error');
+      console.error('Error creating camera:', error);
+      showToast('Failed to create camera', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleUpdate = async () => {
-    if (!editingIncident) return;
-    if (!formData.incidentId) {
-      showToast('Incident ID is required', 'error');
+    if (!editingCamera) return;
+    if (!formData.cameraId) {
+      showToast('Camera ID is required', 'error');
       return;
     }
     if (!formData.sourceId) {
       showToast('Source ID is required', 'error');
       return;
     }
-    if (!formData.title) {
-      showToast('Title is required', 'error');
-      return;
-    }
-    if (!formData.reportedAt) {
-      showToast('Reported date is required', 'error');
+    if (!formData.name) {
+      showToast('Camera name is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const payload = {
-        ...formData,
-        acreage: formData.acreage || null,
-        containment: formData.containment || null,
-        evacuations: formData.evacuations ? JSON.parse(formData.evacuations) : null,
-        lastUpdated: new Date().toISOString(),
-      };
-
-      const response = await fetch(`/api/traffic/calfire?id=${editingIncident.id}`, {
+      const response = await fetch(`/api/traffic/caltrans-cctv?id=${editingCamera.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('CalFire incident updated successfully', 'success');
-        setEditingIncident(null);
-        await fetchIncidents();
+        showToast('Caltrans CCTV camera updated successfully', 'success');
+        setEditingCamera(null);
+        await fetchCameras();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to update incident', 'error');
+        showToast(data.error || 'Failed to update camera', 'error');
       }
     } catch (error) {
-      console.error('Error updating incident:', error);
-      showToast('Failed to update incident', 'error');
+      console.error('Error updating camera:', error);
+      showToast('Failed to update camera', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: number, title: string) => {
-    if (!confirm(`Delete CalFire incident "${title}"? This action cannot be undone.`)) return;
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Delete Caltrans CCTV camera "${name}"? This action cannot be undone.`)) return;
 
     try {
-      const response = await fetch(`/api/traffic/calfire?id=${id}`, {
+      const response = await fetch(`/api/traffic/caltrans-cctv?id=${id}`, {
         method: 'DELETE',
       });
 
       const data = await response.json();
       if (data.success) {
-        showToast('CalFire incident deleted successfully', 'success');
-        await fetchIncidents();
+        showToast('Caltrans CCTV camera deleted successfully', 'success');
+        await fetchCameras();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to delete incident', 'error');
+        showToast(data.error || 'Failed to delete camera', 'error');
       }
     } catch (error) {
-      console.error('Error deleting incident:', error);
-      showToast('Failed to delete incident', 'error');
+      console.error('Error deleting camera:', error);
+      showToast('Failed to delete camera', 'error');
     }
   };
 
-  const toggleActive = async (id: number, currentStatus: boolean, title: string) => {
+  const toggleActive = async (id: number, currentStatus: boolean, name: string) => {
     try {
-      const response = await fetch(`/api/traffic/calfire?id=${id}`, {
+      const response = await fetch(`/api/traffic/caltrans-cctv?id=${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !currentStatus }),
@@ -368,8 +356,8 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
 
       const data = await response.json();
       if (data.success) {
-        showToast(`Incident "${title}" ${!currentStatus ? 'activated' : 'deactivated'}`, 'success');
-        await fetchIncidents();
+        showToast(`Camera "${name}" ${!currentStatus ? 'activated' : 'deactivated'}`, 'success');
+        await fetchCameras();
         if (onModuleUpdate) onModuleUpdate();
       } else {
         showToast(data.error || 'Failed to update status', 'error');
@@ -382,73 +370,65 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
 
   const resetForm = () => {
     setFormData({
-      incidentId: '',
+      cameraId: '',
       sourceId: '',
-      title: '',
+      name: '',
       description: '',
-      incidentType: '',
-      status: 'active',
-      location: '',
       latitude: null,
       longitude: null,
       address: '',
       city: '',
       county: '',
-      acreage: '',
-      containment: '',
-      cause: '',
-      fireType: '',
-      evacuations: '',
-      reportedAt: '',
-      containedAt: '',
+      cameraType: '',
+      direction: '',
+      imageUrl: '',
+      streamingUrl: '',
+      status: 'active',
+      districtId: null,
+      caltransId: '',
       notes: '',
       isActive: true,
       isPublic: true,
-      severity: 1,
     });
   };
 
-  const openEditDialog = (incident: Incident) => {
-    setEditingIncident(incident);
+  const openEditDialog = (camera: Camera) => {
+    setEditingCamera(camera);
     setFormData({
-      incidentId: incident.incidentId || '',
-      sourceId: incident.sourceId || '',
-      title: incident.title,
-      description: incident.description || '',
-      incidentType: incident.incidentType || '',
-      status: incident.status || 'active',
-      location: incident.location || '',
-      latitude: incident.latitude,
-      longitude: incident.longitude,
-      address: incident.address || '',
-      city: incident.city || '',
-      county: incident.county || '',
-      acreage: incident.acreage ? String(incident.acreage) : '',
-      containment: incident.containment ? String(incident.containment) : '',
-      cause: incident.cause || '',
-      fireType: incident.fireType || '',
-      evacuations: incident.evacuations ? JSON.stringify(incident.evacuations) : '',
-      reportedAt: incident.reportedAt ? new Date(incident.reportedAt).toISOString().split('T')[0] : '',
-      containedAt: incident.containedAt ? new Date(incident.containedAt).toISOString().split('T')[0] : '',
-      notes: incident.notes || '',
-      isActive: incident.isActive ?? true,
-      isPublic: incident.isPublic ?? true,
-      severity: incident.severity || 1,
+      cameraId: camera.cameraId || '',
+      sourceId: camera.sourceId || '',
+      name: camera.name,
+      description: camera.description || '',
+      latitude: camera.latitude,
+      longitude: camera.longitude,
+      address: camera.address || '',
+      city: camera.city || '',
+      county: camera.county || '',
+      cameraType: camera.cameraType || '',
+      direction: camera.direction || '',
+      imageUrl: camera.imageUrl || '',
+      streamingUrl: camera.streamingUrl || '',
+      status: camera.status || 'active',
+      districtId: camera.districtId,
+      caltransId: camera.caltransId || '',
+      notes: camera.notes || '',
+      isActive: camera.isActive ?? true,
+      isPublic: camera.isPublic ?? true,
     });
   };
 
-  const renderActions = (incident: Incident) => (
+  const renderActions = (camera: Camera) => (
     <div className="flex items-center justify-end gap-1">
-      <Button variant="ghost" size="sm" onClick={() => openEditDialog(incident)}>
+      <Button variant="ghost" size="sm" onClick={() => openEditDialog(camera)}>
         <Edit className="w-4 h-4" />
       </Button>
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => toggleActive(incident.id, incident.isActive, incident.title)}
-        title={incident.isActive ? 'Deactivate' : 'Activate'}
+        onClick={() => toggleActive(camera.id, camera.isActive, camera.name)}
+        title={camera.isActive ? 'Deactivate' : 'Activate'}
       >
-        {incident.isActive ? (
+        {camera.isActive ? (
           <Eye className="w-4 h-4 text-green-500" />
         ) : (
           <EyeOff className="w-4 h-4 text-gray-400" />
@@ -461,46 +441,48 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {incident.incidentId && (
+          {camera.cameraId && (
             <DropdownMenuItem>
               <span className="text-xs text-muted-foreground">
-                ID: {incident.incidentId}
+                ID: {camera.cameraId}
               </span>
             </DropdownMenuItem>
           )}
-          {incident.acreage && (
-            <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">
-                Acres: {incident.acreage.toLocaleString()}
-              </span>
-            </DropdownMenuItem>
-          )}
-          {incident.containment !== null && incident.containment !== undefined && (
-            <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">
-                Contained: {incident.containment}%
-              </span>
-            </DropdownMenuItem>
-          )}
-          {incident.county && (
+          {camera.city && camera.county && (
             <DropdownMenuItem>
               <span className="text-xs text-muted-foreground flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
-                {incident.county}
+                {camera.city}, {camera.county}
               </span>
             </DropdownMenuItem>
           )}
-          {incident.reportedAt && (
+          {camera.districtId && (
             <DropdownMenuItem>
               <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                Reported: {new Date(incident.reportedAt).toLocaleDateString()}
+                <Building2 className="w-3 h-3" />
+                {getDistrictName(camera.districtId)}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {camera.imageUrl && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Image className="w-3 h-3" />
+                Has Snapshot
+              </span>
+            </DropdownMenuItem>
+          )}
+          {camera.streamingUrl && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Video className="w-3 h-3" />
+                Has Stream
               </span>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
             className="text-red-600"
-            onClick={() => handleDelete(incident.id, incident.title)}
+            onClick={() => handleDelete(camera.id, camera.name)}
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -525,32 +507,32 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Flame className="w-4 h-4 text-orange-400" />
-          <span className="text-sm font-medium">CalFire Incidents</span>
+          <Camera className="w-4 h-4 text-blue-400" />
+          <span className="text-sm font-medium">Caltrans CCTV Cameras</span>
           <Badge variant="secondary" className="text-xs">
-            {filteredIncidents.length}
+            {filteredCameras.length}
           </Badge>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
               <Plus className="w-3 h-3 mr-1" />
-              Add Incident
+              Add Camera
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create CalFire Incident</DialogTitle>
+              <DialogTitle>Create Caltrans CCTV Camera</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
               {/* Basic Info */}
               <div>
-                <Label htmlFor="incidentId">Incident ID *</Label>
+                <Label htmlFor="cameraId">Camera ID *</Label>
                 <Input
-                  id="incidentId"
-                  placeholder="e.g., CA-2024-001"
-                  value={formData.incidentId}
-                  onChange={(e) => setFormData({ ...formData, incidentId: e.target.value })}
+                  id="cameraId"
+                  placeholder="e.g., CAM-001"
+                  value={formData.cameraId}
+                  onChange={(e) => setFormData({ ...formData, cameraId: e.target.value })}
                   disabled={isSubmitting}
                   required
                 />
@@ -569,12 +551,12 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
               </div>
 
               <div>
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="name">Camera Name *</Label>
                 <Input
-                  id="title"
-                  placeholder="e.g., Oak Fire"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  id="name"
+                  placeholder="e.g., I-80 at Truckee"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={isSubmitting}
                   required
                 />
@@ -584,7 +566,7 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  placeholder="Incident description..."
+                  placeholder="Camera description..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
@@ -594,34 +576,16 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="incidentType">Incident Type</Label>
+                  <Label htmlFor="cameraType">Camera Type</Label>
                   <Select
-                    value={formData.incidentType}
-                    onValueChange={(value) => setFormData({ ...formData, incidentType: value })}
+                    value={formData.cameraType}
+                    onValueChange={(value) => setFormData({ ...formData, cameraType: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="wildfire">Wildfire</SelectItem>
-                      <SelectItem value="prescribed_burn">Prescribed Burn</SelectItem>
-                      <SelectItem value="structure_fire">Structure Fire</SelectItem>
-                      <SelectItem value="vegetation_fire">Vegetation Fire</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="fireType">Fire Type</Label>
-                  <Select
-                    value={formData.fireType}
-                    onValueChange={(value) => setFormData({ ...formData, fireType: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select fire type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FIRE_TYPE_OPTIONS.map((type) => (
+                      {CAMERA_TYPE_OPTIONS.map((type) => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
                         </SelectItem>
@@ -629,51 +593,49 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="direction">Direction</Label>
                   <Select
-                    value={formData.status}
-                    onValueChange={(value) => setFormData({ ...formData, status: value })}
+                    value={formData.direction}
+                    onValueChange={(value) => setFormData({ ...formData, direction: value })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder="Select direction" />
                     </SelectTrigger>
                     <SelectContent>
-                      {INCIDENT_STATUS_OPTIONS.map((status) => (
-                        <SelectItem key={status.value} value={status.value}>
-                          {status.label}
+                      {DIRECTION_OPTIONS.map((dir) => (
+                        <SelectItem key={dir.value} value={dir.value}>
+                          {dir.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="severity">Severity (1-5)</Label>
-                  <Input
-                    id="severity"
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={formData.severity}
-                    onChange={(e) => setFormData({ ...formData, severity: parseInt(e.target.value) || 1 })}
-                    disabled={isSubmitting}
-                  />
-                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="status">Camera Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        {status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Location */}
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium">Location</Label>
                 <div className="space-y-3 mt-2">
-                  <Input
-                    placeholder="Location description"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    disabled={isSubmitting}
-                  />
                   <Input
                     placeholder="Street address"
                     value={formData.address}
@@ -715,81 +677,59 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
                 </div>
               </div>
 
-              {/* Fire Details */}
+              {/* URLs */}
               <div className="border-t pt-4">
-                <Label className="text-sm font-medium">Fire Details</Label>
+                <Label className="text-sm font-medium">Media URLs</Label>
                 <div className="space-y-3 mt-2">
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Acreage"
-                      type="number"
-                      value={formData.acreage}
-                      onChange={(e) => setFormData({ ...formData, acreage: e.target.value })}
-                      disabled={isSubmitting}
-                    />
-                    <Input
-                      placeholder="Containment %"
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={formData.containment}
-                      onChange={(e) => setFormData({ ...formData, containment: e.target.value })}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="cause">Cause</Label>
-                    <Select
-                      value={formData.cause}
-                      onValueChange={(value) => setFormData({ ...formData, cause: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select cause" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {CAUSE_OPTIONS.map((cause) => (
-                          <SelectItem key={cause.value} value={cause.value}>
-                            {cause.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Textarea
-                    placeholder="Evacuations (JSON format)"
-                    value={formData.evacuations}
-                    onChange={(e) => setFormData({ ...formData, evacuations: e.target.value })}
-                    rows={2}
+                  <Input
+                    placeholder="Image URL (snapshot)"
+                    type="url"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                  <Input
+                    placeholder="Streaming URL (live video)"
+                    type="url"
+                    value={formData.streamingUrl}
+                    onChange={(e) => setFormData({ ...formData, streamingUrl: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
 
-              {/* Dates */}
+              {/* District & Caltrans Info */}
               <div className="border-t pt-4">
-                <Label className="text-sm font-medium">Dates</Label>
+                <Label className="text-sm font-medium">Caltrans Info</Label>
                 <div className="space-y-3 mt-2">
                   <div>
-                    <Label htmlFor="reportedAt">Reported Date *</Label>
-                    <Input
-                      id="reportedAt"
-                      type="date"
-                      value={formData.reportedAt}
-                      onChange={(e) => setFormData({ ...formData, reportedAt: e.target.value })}
-                      disabled={isSubmitting}
-                      required
-                    />
+                    <Label htmlFor="districtId">Caltrans District</Label>
+                    <Select
+                      value={formData.districtId ? String(formData.districtId) : 'none'}
+                      onValueChange={(value) => {
+                        setFormData({ ...formData, districtId: value === 'none' ? null : parseInt(value) });
+                      }}
+                      disabled={isSubmitting || loadingDistricts}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={loadingDistricts ? 'Loading districts...' : 'Select a district'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {districts.map((district) => (
+                          <SelectItem key={district.id} value={String(district.id)}>
+                            #{district.districtNumber} - {district.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                  <div>
-                    <Label htmlFor="containedAt">Contained Date</Label>
-                    <Input
-                      id="containedAt"
-                      type="date"
-                      value={formData.containedAt}
-                      onChange={(e) => setFormData({ ...formData, containedAt: e.target.value })}
-                      disabled={isSubmitting}
-                    />
-                  </div>
+                  <Input
+                    placeholder="Caltrans ID"
+                    value={formData.caltransId}
+                    onChange={(e) => setFormData({ ...formData, caltransId: e.target.value })}
+                    disabled={isSubmitting}
+                  />
                 </div>
               </div>
 
@@ -837,7 +777,7 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
                     Creating...
                   </>
                 ) : (
-                  'Create Incident'
+                  'Create Camera'
                 )}
               </Button>
             </div>
@@ -850,7 +790,7 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search by title, ID, county..."
+            placeholder="Search by name, ID, city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-8 text-xs"
@@ -863,25 +803,25 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
-            {INCIDENT_STATUS_OPTIONS.map((status) => (
+            {STATUS_OPTIONS.map((status) => (
               <SelectItem key={status.value} value={status.value}>
                 {status.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-          <SelectTrigger className="w-[100px] h-8 text-xs">
+        <Select value={filterDistrict} onValueChange={setFilterDistrict}>
+          <SelectTrigger className="w-[120px] h-8 text-xs">
             <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Severity" />
+            <SelectValue placeholder="District" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="1">S1</SelectItem>
-            <SelectItem value="2">S2</SelectItem>
-            <SelectItem value="3">S3</SelectItem>
-            <SelectItem value="4">S4</SelectItem>
-            <SelectItem value="5">S5</SelectItem>
+            <SelectItem value="all">All Districts</SelectItem>
+            {districts.map((district) => (
+              <SelectItem key={district.id} value={String(district.id)}>
+                #{district.districtNumber} - {district.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={filterActive} onValueChange={setFilterActive}>
@@ -902,20 +842,20 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
           onClick={() => {
             setSearchQuery('');
             setFilterStatus('all');
-            setFilterSeverity('all');
             setFilterActive('all');
-            fetchIncidents();
+            setFilterDistrict('all');
+            fetchCameras();
           }}
         >
           Clear Filters
         </Button>
       </div>
 
-      {/* Incidents Table */}
-      {filteredIncidents.length === 0 ? (
+      {/* Cameras Table */}
+      {filteredCameras.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <Flame className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No CalFire incidents found</p>
+          <Camera className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <p>No Caltrans CCTV cameras found</p>
           <Button
             variant="outline"
             size="sm"
@@ -923,7 +863,7 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
             onClick={() => setShowCreateDialog(true)}
           >
             <Plus className="w-3 h-3 mr-1" />
-            Create your first incident
+            Create your first camera
           </Button>
         </div>
       ) : (
@@ -931,56 +871,58 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-xs py-1">Title</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">Status</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Severity</TableHead>
-                <TableHead className="hidden lg:table-cell text-xs py-1">Acres</TableHead>
-                <TableHead className="hidden xl:table-cell text-xs py-1">Containment</TableHead>
+                <TableHead className="text-xs py-1">Name</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">ID</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs py-1">District</TableHead>
+                <TableHead className="text-center text-xs py-1">Status</TableHead>
                 <TableHead className="text-center text-xs py-1">Active</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredIncidents.map((incident) => (
-                <TableRow key={incident.id} className="hover:bg-muted/50">
+              {filteredCameras.map((camera) => (
+                <TableRow key={camera.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Flame className="w-3.5 h-3.5 text-orange-400" />
-                      {incident.title}
-                      {incident.county && (
+                      <Camera className="w-3.5 h-3.5 text-blue-400" />
+                      {camera.name}
+                      {camera.city && (
                         <span className="text-[10px] text-muted-foreground hidden xl:inline">
-                          ({incident.county})
+                          ({camera.city})
                         </span>
                       )}
-                      {!incident.isActive && (
+                      {!camera.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
-                    <Badge className={`text-[10px] ${getStatusColor(incident.status)}`}>
-                      {getOptionLabel(INCIDENT_STATUS_OPTIONS, incident.status)}
-                    </Badge>
+                  <TableCell className="hidden sm:table-cell py-1 text-xs font-mono text-muted-foreground">
+                    {camera.cameraId || '—'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
-                    <Badge className={`text-[10px] ${getSeverityColor(incident.severity)}`}>
-                      S{incident.severity}
-                    </Badge>
+                    {camera.cameraType ? (
+                      <Badge variant="outline" className="text-[10px]">
+                        {getOptionLabel(CAMERA_TYPE_OPTIONS, camera.cameraType)}
+                      </Badge>
+                    ) : (
+                      '—'
+                    )}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
-                    {incident.acreage ? incident.acreage.toLocaleString() : '—'}
-                  </TableCell>
-                  <TableCell className="hidden xl:table-cell py-1 text-sm text-muted-foreground">
-                    {incident.containment !== null && incident.containment !== undefined 
-                      ? `${incident.containment}%` 
-                      : '—'}
+                    {camera.district ? camera.district.name : '—'}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <Badge className={`text-[10px] ${getActiveStatusColor(incident.isActive)}`}>
-                      {incident.isActive ? 'Active' : 'Inactive'}
+                    <Badge className={`text-[10px] ${getCameraStatusColor(camera.status)}`}>
+                      {getOptionLabel(STATUS_OPTIONS, camera.status)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="py-1 text-right">{renderActions(incident)}</TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge className={`text-[10px] ${getActiveStatusColor(camera.isActive)}`}>
+                      {camera.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">{renderActions(camera)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -989,18 +931,18 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={!!editingIncident} onOpenChange={(open) => !open && setEditingIncident(null)}>
+      <Dialog open={!!editingCamera} onOpenChange={(open) => !open && setEditingCamera(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit CalFire Incident</DialogTitle>
+            <DialogTitle>Edit Caltrans CCTV Camera</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label htmlFor="edit-incidentId">Incident ID *</Label>
+              <Label htmlFor="edit-cameraId">Camera ID *</Label>
               <Input
-                id="edit-incidentId"
-                value={formData.incidentId}
-                onChange={(e) => setFormData({ ...formData, incidentId: e.target.value })}
+                id="edit-cameraId"
+                value={formData.cameraId}
+                onChange={(e) => setFormData({ ...formData, cameraId: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
@@ -1016,11 +958,11 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
             </div>
 
             <div>
-              <Label htmlFor="edit-title">Title *</Label>
+              <Label htmlFor="edit-name">Camera Name *</Label>
               <Input
-                id="edit-title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                id="edit-name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
@@ -1038,34 +980,16 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-incidentType">Incident Type</Label>
+                <Label htmlFor="edit-cameraType">Camera Type</Label>
                 <Select
-                  value={formData.incidentType}
-                  onValueChange={(value) => setFormData({ ...formData, incidentType: value })}
+                  value={formData.cameraType}
+                  onValueChange={(value) => setFormData({ ...formData, cameraType: value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="wildfire">Wildfire</SelectItem>
-                    <SelectItem value="prescribed_burn">Prescribed Burn</SelectItem>
-                    <SelectItem value="structure_fire">Structure Fire</SelectItem>
-                    <SelectItem value="vegetation_fire">Vegetation Fire</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="edit-fireType">Fire Type</Label>
-                <Select
-                  value={formData.fireType}
-                  onValueChange={(value) => setFormData({ ...formData, fireType: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select fire type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FIRE_TYPE_OPTIONS.map((type) => (
+                    {CAMERA_TYPE_OPTIONS.map((type) => (
                       <SelectItem key={type.value} value={type.value}>
                         {type.label}
                       </SelectItem>
@@ -1073,51 +997,49 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-status">Status</Label>
+                <Label htmlFor="edit-direction">Direction</Label>
                 <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  value={formData.direction}
+                  onValueChange={(value) => setFormData({ ...formData, direction: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder="Select direction" />
                   </SelectTrigger>
                   <SelectContent>
-                    {INCIDENT_STATUS_OPTIONS.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        {status.label}
+                    {DIRECTION_OPTIONS.map((dir) => (
+                      <SelectItem key={dir.value} value={dir.value}>
+                        {dir.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="edit-severity">Severity (1-5)</Label>
-                <Input
-                  id="edit-severity"
-                  type="number"
-                  min="1"
-                  max="5"
-                  value={formData.severity}
-                  onChange={(e) => setFormData({ ...formData, severity: parseInt(e.target.value) || 1 })}
-                  disabled={isSubmitting}
-                />
-              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="edit-status">Camera Status</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Location */}
             <div className="border-t pt-4">
               <Label className="text-sm font-medium">Location</Label>
               <div className="space-y-3 mt-2">
-                <Input
-                  placeholder="Location description"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  disabled={isSubmitting}
-                />
                 <Input
                   placeholder="Street address"
                   value={formData.address}
@@ -1159,81 +1081,59 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
               </div>
             </div>
 
-            {/* Fire Details */}
+            {/* URLs */}
             <div className="border-t pt-4">
-              <Label className="text-sm font-medium">Fire Details</Label>
+              <Label className="text-sm font-medium">Media URLs</Label>
               <div className="space-y-3 mt-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    placeholder="Acreage"
-                    type="number"
-                    value={formData.acreage}
-                    onChange={(e) => setFormData({ ...formData, acreage: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Containment %"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={formData.containment}
-                    onChange={(e) => setFormData({ ...formData, containment: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-cause">Cause</Label>
-                  <Select
-                    value={formData.cause}
-                    onValueChange={(value) => setFormData({ ...formData, cause: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select cause" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CAUSE_OPTIONS.map((cause) => (
-                        <SelectItem key={cause.value} value={cause.value}>
-                          {cause.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Textarea
-                  placeholder="Evacuations (JSON format)"
-                  value={formData.evacuations}
-                  onChange={(e) => setFormData({ ...formData, evacuations: e.target.value })}
-                  rows={2}
+                <Input
+                  placeholder="Image URL (snapshot)"
+                  type="url"
+                  value={formData.imageUrl}
+                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                  disabled={isSubmitting}
+                />
+                <Input
+                  placeholder="Streaming URL (live video)"
+                  type="url"
+                  value={formData.streamingUrl}
+                  onChange={(e) => setFormData({ ...formData, streamingUrl: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
             </div>
 
-            {/* Dates */}
+            {/* District & Caltrans Info */}
             <div className="border-t pt-4">
-              <Label className="text-sm font-medium">Dates</Label>
+              <Label className="text-sm font-medium">Caltrans Info</Label>
               <div className="space-y-3 mt-2">
                 <div>
-                  <Label htmlFor="edit-reportedAt">Reported Date *</Label>
-                  <Input
-                    id="edit-reportedAt"
-                    type="date"
-                    value={formData.reportedAt}
-                    onChange={(e) => setFormData({ ...formData, reportedAt: e.target.value })}
-                    disabled={isSubmitting}
-                    required
-                  />
+                  <Label htmlFor="edit-districtId">Caltrans District</Label>
+                  <Select
+                    value={formData.districtId ? String(formData.districtId) : 'none'}
+                    onValueChange={(value) => {
+                      setFormData({ ...formData, districtId: value === 'none' ? null : parseInt(value) });
+                    }}
+                    disabled={isSubmitting || loadingDistricts}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={loadingDistricts ? 'Loading districts...' : 'Select a district'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {districts.map((district) => (
+                        <SelectItem key={district.id} value={String(district.id)}>
+                          #{district.districtNumber} - {district.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div>
-                  <Label htmlFor="edit-containedAt">Contained Date</Label>
-                  <Input
-                    id="edit-containedAt"
-                    type="date"
-                    value={formData.containedAt}
-                    onChange={(e) => setFormData({ ...formData, containedAt: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
+                <Input
+                  placeholder="Caltrans ID"
+                  value={formData.caltransId}
+                  onChange={(e) => setFormData({ ...formData, caltransId: e.target.value })}
+                  disabled={isSubmitting}
+                />
               </div>
             </div>
 

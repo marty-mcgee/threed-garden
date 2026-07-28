@@ -15,6 +15,13 @@
       "when": 1785260164722,
       "tag": "0001_wakeful_nightshade",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785268868678,
+      "tag": "0002_bouncy_ink",
+      "breakpoints": true
     }
   ]
 }

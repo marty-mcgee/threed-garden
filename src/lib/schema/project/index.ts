@@ -13,13 +13,13 @@ import { traffic } from '../traffic';
 // ============================================
 
 export const assetTypeEnum = pgEnum('asset_type', [
-  // Music
+  // Music v0.8.0
   'music_albums',
   'music_tracks',
   'music_links',
   'music_media',
   
-  // ThreeD
+  // ThreeD v0.9.0
   'threed_plants',
   'threed_beds',
   'threed_layers',
@@ -32,10 +32,12 @@ export const assetTypeEnum = pgEnum('asset_type', [
   'threed_farmbots',
   'threed_watering_schedules',
   
-  // Traffic
+  // Traffic v0.10.0
   'traffic_chp_cad_incidents',
+  'traffic_chp_centers',
   'traffic_chp_cases',
   'traffic_caltrans_lane_closures',
+  'traffic_caltrans_districts',
   'traffic_caltrans_cctv_cameras',
   'traffic_bay_area_511_events',
   'traffic_calfire_incidents',
