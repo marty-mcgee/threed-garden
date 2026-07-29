@@ -1,2 +1,0 @@
-ALTER TYPE "public"."asset_type" ADD VALUE 'traffic_chp_centers' BEFORE 'traffic_chp_cases';--> statement-breakpoint
-ALTER TYPE "public"."asset_type" ADD VALUE 'traffic_caltrans_districts' BEFORE 'traffic_caltrans_cctv_cameras';

@@ -1,5 +1,5 @@
 {
-  "id": "0564448b-678b-4fd1-8846-8049f5e394b3",
+  "id": "7470890f-2635-4780-9a5c-fc61c1d9de58",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8021,15 +8021,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "module_id": {
-          "name": "module_id",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -8041,7 +8035,7 @@
         },
         "slug": {
           "name": "slug",
-          "type": "varchar(255)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -8066,26 +8060,19 @@
           "notNull": false,
           "default": "'{}'::jsonb"
         },
+        "version": {
+          "name": "version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'1.0.0'"
+        },
         "metadata": {
           "name": "metadata",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
           "default": "'{}'::jsonb"
-        },
-        "data_sources": {
-          "name": "data_sources",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{\"chpCad\":true,\"chpCases\":true,\"caltransClosures\":true,\"bayArea511\":true,\"calfire\":true,\"cctv\":true}'::jsonb"
-        },
-        "map_config": {
-          "name": "map_config",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{\"center\":{\"lat\":37.7749,\"lng\":-122.4194},\"zoom\":10,\"layers\":[\"incidents\",\"closures\",\"cameras\"]}'::jsonb"
         },
         "created_at": {
           "name": "created_at",
@@ -8098,7 +8085,7 @@
           "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "default": "now()"
         }
       },
@@ -8114,21 +8101,6 @@
             }
           ],
           "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_traffic_module_id": {
-          "name": "idx_traffic_module_id",
-          "columns": [
-            {
-              "expression": "module_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -8181,13 +8153,6 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "traffic_module_id_unique": {
-          "name": "traffic_module_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "module_id"
-          ]
-        },
         "traffic_slug_unique": {
           "name": "traffic_slug_unique",
           "nullsNotDistinct": false,
@@ -10456,6 +10421,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "region": {
+          "name": "region",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "state": {
           "name": "state",
           "type": "varchar(2)",
@@ -10551,7 +10522,7 @@
           "name": "idx_traffic_chp_center_region",
           "columns": [
             {
-              "expression": "county",
+              "expression": "region",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -10638,8 +10609,10 @@
         "threed_farmbots",
         "threed_watering_schedules",
         "traffic_chp_cad_incidents",
+        "traffic_chp_centers",
         "traffic_chp_cases",
         "traffic_caltrans_lane_closures",
+        "traffic_caltrans_districts",
         "traffic_caltrans_cctv_cameras",
         "traffic_bay_area_511_events",
         "traffic_calfire_incidents"

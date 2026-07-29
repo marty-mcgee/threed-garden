@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1785259370836,
-      "tag": "0000_blushing_norman_osborn",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1785260164722,
-      "tag": "0001_wakeful_nightshade",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1785268868678,
-      "tag": "0002_bouncy_ink",
+      "when": 1785321839930,
+      "tag": "0000_awesome_elektra",
       "breakpoints": true
     }
   ]

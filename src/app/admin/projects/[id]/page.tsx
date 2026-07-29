@@ -33,10 +33,18 @@ import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsC
 import { ThreeDBedsCRUD } from '@/components/admin/threed/beds/ThreeDBedsCRUD';
 import { ThreeDModelsCRUD } from '@/components/admin/threed/models/ThreeDModelsCRUD';
 import { ThreeDCharactersCRUD } from '@/components/admin/threed/characters/ThreeDCharactersCRUD';
+import { ThreeDTasksCRUD } from '@/components/admin/threed/tasks/ThreeDTasksCRUD';
+import { ThreeDPlantingsCRUD } from '@/components/admin/threed/plantings/ThreeDPlantingsCRUD';
+import { ThreeDWateringSchedulesCRUD } from '@/components/admin/threed/watering-schedules/ThreeDWateringSchedulesCRUD';
+import { ThreeDHarvestsCRUD } from '@/components/admin/threed/harvests/ThreeDHarvestsCRUD';
+import { ThreeDFarmbotsCRUD } from '@/components/admin/threed/farmbots/ThreeDFarmbotsCRUD';
 
 import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHPCADCRUD';
+import { TrafficCHPCentersCRUD } from '@/components/admin/traffic/chp-centers/TrafficCHPCentersCRUD';
 import { TrafficCHPCasesCRUD } from '@/components/admin/traffic/chp-cases/TrafficCHPCasesCRUD';
 import { TrafficCaltransCRUD } from '@/components/admin/traffic/caltrans/TrafficCaltransCRUD';
+import { TrafficCaltransCctvCRUD } from '@/components/admin/traffic/caltrans-cctv/TrafficCaltransCctvCRUD';
+import { TrafficCaltransDistrictsCRUD } from '@/components/admin/traffic/caltrans-districts/TrafficCaltransDistrictsCRUD';
 import { TrafficCalfireCRUD } from '@/components/admin/traffic/calfire/TrafficCalfireCRUD';
 import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bay-area-511/TrafficBayArea511CRUD';
 

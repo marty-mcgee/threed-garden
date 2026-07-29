@@ -1,5 +1,5 @@
 CREATE TYPE "public"."album_status" AS ENUM('draft', 'published', 'archived');--> statement-breakpoint
-CREATE TYPE "public"."asset_type" AS ENUM('music_albums', 'music_tracks', 'music_links', 'music_media', 'threed_plants', 'threed_beds', 'threed_layers', 'threed_markers', 'threed_models', 'threed_characters', 'threed_tasks', 'threed_harvests', 'threed_weather_logs', 'threed_farmbots', 'threed_watering_schedules', 'traffic_chp_cad_incidents', 'traffic_chp_cases', 'traffic_caltrans_lane_closures', 'traffic_caltrans_cctv_cameras', 'traffic_bay_area_511_events', 'traffic_calfire_incidents');--> statement-breakpoint
+CREATE TYPE "public"."asset_type" AS ENUM('music_albums', 'music_tracks', 'music_links', 'music_media', 'threed_plants', 'threed_beds', 'threed_layers', 'threed_markers', 'threed_models', 'threed_characters', 'threed_tasks', 'threed_harvests', 'threed_weather_logs', 'threed_farmbots', 'threed_watering_schedules', 'traffic_chp_cad_incidents', 'traffic_chp_centers', 'traffic_chp_cases', 'traffic_caltrans_lane_closures', 'traffic_caltrans_districts', 'traffic_caltrans_cctv_cameras', 'traffic_bay_area_511_events', 'traffic_calfire_incidents');--> statement-breakpoint
 CREATE TYPE "public"."threed_bed_shape" AS ENUM('rectangle', 'square', 'circle', 'raised', 'container', 'custom');--> statement-breakpoint
 CREATE TYPE "public"."threed_character_animation" AS ENUM('idle', 'walk', 'run', 'fly', 'dance', 'sway', 'float', 'spin', 'bounce');--> statement-breakpoint
 CREATE TYPE "public"."threed_character_emote" AS ENUM('none', 'happy', 'sad', 'surprised', 'angry', 'wave', 'dance', 'sleep');--> statement-breakpoint
@@ -773,19 +773,16 @@ CREATE TABLE "threed_weather_logs" (
 CREATE TABLE "traffic" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
-	"module_id" varchar(50) NOT NULL,
-	"name" varchar(255) NOT NULL,
+	"name" text NOT NULL,
 	"description" text,
-	"slug" varchar(255) NOT NULL,
+	"slug" text NOT NULL,
 	"is_active" boolean DEFAULT true,
 	"is_public" boolean DEFAULT false,
 	"config" jsonb DEFAULT '{}'::jsonb,
+	"version" text DEFAULT '1.0.0',
 	"metadata" jsonb DEFAULT '{}'::jsonb,
-	"data_sources" jsonb DEFAULT '{"chpCad":true,"chpCases":true,"caltransClosures":true,"bayArea511":true,"calfire":true,"cctv":true}'::jsonb,
-	"map_config" jsonb DEFAULT '{"center":{"lat":37.7749,"lng":-122.4194},"zoom":10,"layers":["incidents","closures","cameras"]}'::jsonb,
 	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "traffic_module_id_unique" UNIQUE("module_id"),
+	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "traffic_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
@@ -1027,6 +1024,7 @@ CREATE TABLE "traffic_chp_centers" (
 	"address" text,
 	"city" varchar(100),
 	"county" varchar(50),
+	"region" varchar(50),
 	"state" varchar(2) DEFAULT 'CA',
 	"zip_code" varchar(10),
 	"type" varchar(50),
@@ -1283,7 +1281,6 @@ CREATE INDEX "idx_threed_watering_next_active" ON "threed_watering_schedules" US
 CREATE INDEX "idx_threed_weather_recorded_at" ON "threed_weather_logs" USING btree ("recorded_at");--> statement-breakpoint
 CREATE INDEX "idx_threed_weather_marker" ON "threed_weather_logs" USING btree ("marker_id");--> statement-breakpoint
 CREATE INDEX "idx_traffic_user_id" ON "traffic" USING btree ("user_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_traffic_module_id" ON "traffic" USING btree ("module_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_traffic_slug" ON "traffic" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_traffic_active" ON "traffic" USING btree ("is_active");--> statement-breakpoint
 CREATE INDEX "idx_traffic_api_log_source" ON "traffic_api_request_logs" USING btree ("source");--> statement-breakpoint
@@ -1331,5 +1328,5 @@ CREATE INDEX "idx_traffic_chp_case_location" ON "traffic_chp_cases" USING btree 
 CREATE INDEX "idx_traffic_chp_case_active" ON "traffic_chp_cases" USING btree ("is_active");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_traffic_chp_center_id" ON "traffic_chp_centers" USING btree ("center_id");--> statement-breakpoint
 CREATE INDEX "idx_traffic_chp_center_county" ON "traffic_chp_centers" USING btree ("county");--> statement-breakpoint
-CREATE INDEX "idx_traffic_chp_center_region" ON "traffic_chp_centers" USING btree ("county");--> statement-breakpoint
+CREATE INDEX "idx_traffic_chp_center_region" ON "traffic_chp_centers" USING btree ("region");--> statement-breakpoint
 CREATE INDEX "idx_traffic_chp_center_active" ON "traffic_chp_centers" USING btree ("is_active");
