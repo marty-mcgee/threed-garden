@@ -96,6 +96,11 @@ const moduleConfig: Record<ModuleType, {
       { id: 'beds', label: 'Beds', component: ThreeDBedsCRUD, icon: Box },
       { id: 'models', label: '3D Models', component: ThreeDModelsCRUD, icon: Package },
       { id: 'characters', label: 'Characters', component: ThreeDCharactersCRUD, icon: User },
+      { id: 'tasks', label: 'Tasks', component: ThreeDTasksCRUD, icon: Sprout },
+      { id: 'plantings', label: 'Plantings', component: ThreeDPlantingsCRUD, icon: Box },
+      { id: 'watering-schedules', label: 'Watering Schedules', component: ThreeDWateringSchedulesCRUD, icon: Package },
+      { id: 'harvests', label: 'Harvests', component: ThreeDHarvestsCRUD, icon: User },
+      { id: 'farmbots', label: 'Farmbots', component: ThreeDFarmbotsCRUD, icon: User },
     ],
   },
   traffic: { 
@@ -105,10 +110,13 @@ const moduleConfig: Record<ModuleType, {
     borderColor: 'border-blue-200',
     crudComponents: [
       { id: 'chp-cad', label: 'CHP-CAD Incidents', component: TrafficCHPCADCRUD, icon: AlertTriangle },
+      { id: 'chp-centers', label: 'CHP Centers', component: TrafficCHPCentersCRUD, icon: AlertTriangle },
       { id: 'chp-cases', label: 'CHP Cases', component: TrafficCHPCasesCRUD, icon: FileText },
       { id: 'caltrans', label: 'Caltrans Closures', component: TrafficCaltransCRUD, icon: Route },
+      { id: 'caltrans-cctv', label: 'Caltrans CCTV', component: TrafficCaltransCctvCRUD, icon: Route },
+      { id: 'caltrans-districts', label: 'Caltrans Districts', component: TrafficCaltransDistrictsCRUD, icon: Route },
       { id: 'calfire', label: 'CalFire Incidents', component: TrafficCalfireCRUD, icon: Flame },
-      { id: 'bayarea511', label: 'Bay Area 511', component: TrafficBayArea511CRUD, icon: Radio },
+      { id: 'bay-area-511', label: 'Bay Area 511', component: TrafficBayArea511CRUD, icon: Radio },
     ],
   },
   music: { 
