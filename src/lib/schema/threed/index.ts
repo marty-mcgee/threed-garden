@@ -863,9 +863,218 @@ export const threedCharacterModels = pgTable('threed_character_models', {
 
 
 
+// lib/schema/threed/index.ts - Add Layers and Markers
 
+// ============================================
+// Layers - Groups of 3D objects
+// ============================================
 
+export const threedLayers = pgTable('threed_layers', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
+  // Basic info
+  name: text('name').notNull(),
+  description: text('description'),
+  layerId: text('layer_id').unique().notNull(),
+  
+  // Layer configuration
+  config: jsonb('config').default({
+    visible: true,
+    opacity: 1.0,
+    color: '#ffffff',
+    transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } }
+  }),
+  
+  // Category and type
+  category: text('category'),
+  layerType: text('layer_type'),
+  
+  // Parent-child relationships
+  parentLayerId: integer('parent_layer_id'),
+  
+  // Order and visibility
+  orderIndex: integer('order_index').default(0),
+  isVisible: boolean('is_visible').default(true),
+  isLocked: boolean('is_locked').default(false),
+  
+  // Metadata
+  isActive: boolean('is_active').default(true),
+  isPublic: boolean('is_public').default(false),
+  metadata: jsonb('metadata').default({}),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  userIdIdx: index('idx_threed_layers_user_id').on(table.userId),
+  layerIdIdx: uniqueIndex('idx_threed_layers_layer_id').on(table.layerId),
+  parentIdx: index('idx_threed_layers_parent').on(table.parentLayerId),
+  activeIdx: index('idx_threed_layers_active').on(table.isActive),
+  visibleIdx: index('idx_threed_layers_visible').on(table.isVisible),
+}));
 
+// ============================================
+// Markers - All 3D objects with positioning
+// ============================================
+
+export const threedMarkers = pgTable('threed_markers', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
+  // Basic info
+  name: text('name').notNull(),
+  description: text('description'),
+  markerId: text('marker_id').unique().notNull(),
+  
+  // Positioning
+  position: jsonb('position').default({ x: 0, y: 0, z: 0 }),
+  rotation: jsonb('rotation').default({ x: 0, y: 0, z: 0 }),
+  scale: jsonb('scale').default({ x: 1, y: 1, z: 1 }),
+  
+  // Marker type and styling
+  markerType: text('marker_type'),
+  color: text('color').default('#ffffff'),
+  size: text('size').default('medium'),
+  
+  // Content
+  icon: text('icon'),
+  label: text('label'),
+  content: text('content'),
+  
+  // Relationships
+  layerId: integer('layer_id').references(() => threedLayers.id, { onDelete: 'set null' }),
+  parentMarkerId: integer('parent_marker_id'),
+  
+  // Model reference (for 3D models)
+  modelId: integer('model_id'),
+  characterId: integer('character_id'),
+  plantId: integer('plant_id'),
+  bedId: integer('bed_id'),
+  
+  // Additional data
+  data: jsonb('data').default({}),
+  
+  // Visibility and status
+  isVisible: boolean('is_visible').default(true),
+  isInteractive: boolean('is_interactive').default(false),
+  isActive: boolean('is_active').default(true),
+  isPublic: boolean('is_public').default(false),
+  
+  // Metadata
+  metadata: jsonb('metadata').default({}),
+  
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  userIdIdx: index('idx_threed_markers_user_id').on(table.userId),
+  markerIdIdx: uniqueIndex('idx_threed_markers_marker_id').on(table.markerId),
+  layerIdx: index('idx_threed_markers_layer').on(table.layerId),
+  parentIdx: index('idx_threed_markers_parent').on(table.parentMarkerId),
+  modelIdx: index('idx_threed_markers_model').on(table.modelId),
+  characterIdx: index('idx_threed_markers_character').on(table.characterId),
+  plantIdx: index('idx_threed_markers_plant').on(table.plantId),
+  bedIdx: index('idx_threed_markers_bed').on(table.bedId),
+  activeIdx: index('idx_threed_markers_active').on(table.isActive),
+  visibleIdx: index('idx_threed_markers_visible').on(table.isVisible),
+}));
+
+// ============================================
+// Marker Relationships - Parent-child connections
+// ============================================
+
+export const threedMarkerRelationships = pgTable('threed_marker_relationships', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  
+  parentMarkerId: integer('parent_marker_id').references(() => threedMarkers.id, { onDelete: 'cascade' }),
+  childMarkerId: integer('child_marker_id').references(() => threedMarkers.id, { onDelete: 'cascade' }),
+  
+  relationshipType: text('relationship_type').default('hierarchy'),
+  orderIndex: integer('order_index').default(0),
+  
+  config: jsonb('config').default({}),
+  isActive: boolean('is_active').default(true),
+  
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  parentIdx: index('idx_threed_marker_rel_parent').on(table.parentMarkerId),
+  childIdx: index('idx_threed_marker_rel_child').on(table.childMarkerId),
+  uniqueRelationship: uniqueIndex('idx_threed_marker_rel_unique').on(table.parentMarkerId, table.childMarkerId),
+  activeIdx: index('idx_threed_marker_rel_active').on(table.isActive),
+}));
+
+// ============================================
+// Update Relations
+// ============================================
+
+// ✅ Layers Relations
+export const threedLayersRelations = relations(threedLayers, ({ one, many }) => ({
+  user: one(user, {
+    fields: [threedLayers.userId],
+    references: [user.id],
+  }),
+  parentLayer: one(threedLayers, {
+    fields: [threedLayers.parentLayerId],
+    references: [threedLayers.id],
+  }),
+  childLayers: many(threedLayers),
+  markers: many(threedMarkers),
+}));
+
+// ✅ Markers Relations
+export const threedMarkersRelations = relations(threedMarkers, ({ one, many }) => ({
+  user: one(user, {
+    fields: [threedMarkers.userId],
+    references: [user.id],
+  }),
+  layer: one(threedLayers, {
+    fields: [threedMarkers.layerId],
+    references: [threedLayers.id],
+  }),
+  parentMarker: one(threedMarkers, {
+    fields: [threedMarkers.parentMarkerId],
+    references: [threedMarkers.id],
+  }),
+  childMarkers: many(threedMarkers),
+  model: one(threedModels, {
+    fields: [threedMarkers.modelId],
+    references: [threedModels.id],
+  }),
+  character: one(threedCharacters, {
+    fields: [threedMarkers.characterId],
+    references: [threedCharacters.id],
+  }),
+  plant: one(threedPlants, {
+    fields: [threedMarkers.plantId],
+    references: [threedPlants.id],
+  }),
+  bed: one(threedBeds, {
+    fields: [threedMarkers.bedId],
+    references: [threedBeds.id],
+  }),
+  relationships: many(threedMarkerRelationships),
+}));
+
+// ✅ Marker Relationships Relations
+export const threedMarkerRelationshipsRelations = relations(threedMarkerRelationships, ({ one }) => ({
+  user: one(user, {
+    fields: [threedMarkerRelationships.userId],
+    references: [user.id],
+  }),
+  parentMarker: one(threedMarkers, {
+    fields: [threedMarkerRelationships.parentMarkerId],
+    references: [threedMarkers.id],
+  }),
+  childMarker: one(threedMarkers, {
+    fields: [threedMarkerRelationships.childMarkerId],
+    references: [threedMarkers.id],
+  }),
+}));
+
+/*
 // ============================================
 // LAYERS TABLE - Groups of 3D objects
 // ============================================
@@ -1012,6 +1221,7 @@ export const threedLayerPresets = pgTable('threed_layer_presets', {
 }, (table) => ({
   userIdIdx: index('idx_threed_layer_presets_user_id').on(table.userId),
 }));
+*/
 
 // ============================================
 // RELATIONSHIPS - FULLY INTEGRATED
@@ -1149,6 +1359,7 @@ export const threedModelFilesRelations = relations(threedModelFiles, ({ one }) =
   }),
 }));
 
+/*
 // ---- NEW: Layers + Markers Relationships ----
 
 export const threedLayersRelations = relations(threedLayers, ({ one, many }) => ({
@@ -1240,6 +1451,7 @@ export const threedLayerPresetsRelations = relations(threedLayerPresets, ({ one 
     references: [user.id],
   }),
 }));
+*/
 
 // ============================================
 // EXPORT TYPES
@@ -1280,11 +1492,11 @@ export type ThreeDMarker = typeof threedMarkers.$inferSelect;
 export type NewThreeDMarker = typeof threedMarkers.$inferInsert;
 export type ThreeDMarkerRelationship = typeof threedMarkerRelationships.$inferSelect;
 export type NewThreeDMarkerRelationship = typeof threedMarkerRelationships.$inferInsert;
-export type ThreeDLayerPreset = typeof threedLayerPresets.$inferSelect;
-export type NewThreeDLayerPreset = typeof threedLayerPresets.$inferInsert;
+// export type ThreeDLayerPreset = typeof threedLayerPresets.$inferSelect;
+// export type NewThreeDLayerPreset = typeof threedLayerPresets.$inferInsert;
 
 // =====================================
-// ## [MM] v0.9.0
+// ## [MM] v0.9.0 - v0.11.0
 // =====================================
 
 

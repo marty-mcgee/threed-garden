@@ -480,40 +480,36 @@ CREATE TABLE "threed_harvests" (
 	CONSTRAINT "threed_harvests_harvest_id_unique" UNIQUE("harvest_id")
 );
 --> statement-breakpoint
-CREATE TABLE "threed_layer_presets" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" text NOT NULL,
-	"description" text,
-	"layer_ids" jsonb,
-	"config" jsonb,
-	"user_id" text,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
-);
---> statement-breakpoint
 CREATE TABLE "threed_layers" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"name" text NOT NULL,
 	"description" text,
-	"type" "threed_layer_type" DEFAULT 'custom' NOT NULL,
-	"is_enabled" boolean DEFAULT true,
-	"visibility" "threed_layer_visibility" DEFAULT 'public',
-	"icon" text,
-	"color" text,
+	"layer_id" text NOT NULL,
+	"config" jsonb DEFAULT '{"visible":true,"opacity":1,"color":"#ffffff","transform":{"position":{"x":0,"y":0,"z":0},"rotation":{"x":0,"y":0,"z":0},"scale":{"x":1,"y":1,"z":1}}}'::jsonb,
+	"category" text,
+	"layer_type" text,
+	"parent_layer_id" integer,
 	"order_index" integer DEFAULT 0,
-	"config" jsonb,
-	"metadata" jsonb,
+	"is_visible" boolean DEFAULT true,
+	"is_locked" boolean DEFAULT false,
+	"is_active" boolean DEFAULT true,
+	"is_public" boolean DEFAULT false,
+	"metadata" jsonb DEFAULT '{}'::jsonb,
 	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
+	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "threed_layers_layer_id_unique" UNIQUE("layer_id")
 );
 --> statement-breakpoint
 CREATE TABLE "threed_marker_relationships" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text,
 	"parent_marker_id" integer,
 	"child_marker_id" integer,
-	"relationship_type" text,
-	"metadata" jsonb,
+	"relationship_type" text DEFAULT 'hierarchy',
+	"order_index" integer DEFAULT 0,
+	"config" jsonb DEFAULT '{}'::jsonb,
+	"is_active" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -523,27 +519,31 @@ CREATE TABLE "threed_markers" (
 	"user_id" text,
 	"name" text NOT NULL,
 	"description" text,
-	"type" "threed_marker_type" NOT NULL,
-	"status" "threed_marker_status" DEFAULT 'active',
-	"layer_id" integer,
-	"position_x" real DEFAULT 0,
-	"position_y" real DEFAULT 0,
-	"position_z" real DEFAULT 0,
-	"rotation_x" real DEFAULT 0,
-	"rotation_y" real DEFAULT 0,
-	"rotation_z" real DEFAULT 0,
-	"scale_x" real DEFAULT 1,
-	"scale_y" real DEFAULT 1,
-	"scale_z" real DEFAULT 1,
-	"source_type" text,
-	"source_id" integer,
+	"marker_id" text NOT NULL,
+	"position" jsonb DEFAULT '{"x":0,"y":0,"z":0}'::jsonb,
+	"rotation" jsonb DEFAULT '{"x":0,"y":0,"z":0}'::jsonb,
+	"scale" jsonb DEFAULT '{"x":1,"y":1,"z":1}'::jsonb,
+	"marker_type" text,
+	"color" text DEFAULT '#ffffff',
+	"size" text DEFAULT 'medium',
 	"icon" text,
-	"color" text,
-	"size" real DEFAULT 1,
-	"custom_data" jsonb,
-	"metadata" jsonb,
+	"label" text,
+	"content" text,
+	"layer_id" integer,
+	"parent_marker_id" integer,
+	"model_id" integer,
+	"character_id" integer,
+	"plant_id" integer,
+	"bed_id" integer,
+	"data" jsonb DEFAULT '{}'::jsonb,
+	"is_visible" boolean DEFAULT true,
+	"is_interactive" boolean DEFAULT false,
+	"is_active" boolean DEFAULT true,
+	"is_public" boolean DEFAULT false,
+	"metadata" jsonb DEFAULT '{}'::jsonb,
 	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
+	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "threed_markers_marker_id_unique" UNIQUE("marker_id")
 );
 --> statement-breakpoint
 CREATE TABLE "threed_model_files" (
@@ -1089,12 +1089,12 @@ ALTER TABLE "threed_farmbots" ADD CONSTRAINT "threed_farmbots_marker_id_threed_m
 ALTER TABLE "threed_harvests" ADD CONSTRAINT "threed_harvests_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_harvests" ADD CONSTRAINT "threed_harvests_planting_id_threed_plantings_id_fk" FOREIGN KEY ("planting_id") REFERENCES "public"."threed_plantings"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_harvests" ADD CONSTRAINT "threed_harvests_plant_id_threed_plants_id_fk" FOREIGN KEY ("plant_id") REFERENCES "public"."threed_plants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "threed_layer_presets" ADD CONSTRAINT "threed_layer_presets_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_layers" ADD CONSTRAINT "threed_layers_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "threed_marker_relationships" ADD CONSTRAINT "threed_marker_relationships_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_marker_relationships" ADD CONSTRAINT "threed_marker_relationships_parent_marker_id_threed_markers_id_fk" FOREIGN KEY ("parent_marker_id") REFERENCES "public"."threed_markers"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_marker_relationships" ADD CONSTRAINT "threed_marker_relationships_child_marker_id_threed_markers_id_fk" FOREIGN KEY ("child_marker_id") REFERENCES "public"."threed_markers"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_markers" ADD CONSTRAINT "threed_markers_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "threed_markers" ADD CONSTRAINT "threed_markers_layer_id_threed_layers_id_fk" FOREIGN KEY ("layer_id") REFERENCES "public"."threed_layers"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "threed_markers" ADD CONSTRAINT "threed_markers_layer_id_threed_layers_id_fk" FOREIGN KEY ("layer_id") REFERENCES "public"."threed_layers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_model_files" ADD CONSTRAINT "threed_model_files_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_model_files" ADD CONSTRAINT "threed_model_files_model_id_threed_models_id_fk" FOREIGN KEY ("model_id") REFERENCES "public"."threed_models"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_models" ADD CONSTRAINT "threed_models_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -1229,17 +1229,25 @@ CREATE INDEX "idx_threed_farmbots_marker" ON "threed_farmbots" USING btree ("mar
 CREATE UNIQUE INDEX "idx_threed_harvests_harvest_id" ON "threed_harvests" USING btree ("harvest_id");--> statement-breakpoint
 CREATE INDEX "idx_threed_harvests_planting" ON "threed_harvests" USING btree ("planting_id");--> statement-breakpoint
 CREATE INDEX "idx_threed_harvests_date" ON "threed_harvests" USING btree ("harvest_date");--> statement-breakpoint
-CREATE INDEX "idx_threed_layer_presets_user_id" ON "threed_layer_presets" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "idx_threed_layers_user_id" ON "threed_layers" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_layers_type" ON "threed_layers" USING btree ("type");--> statement-breakpoint
-CREATE INDEX "idx_threed_layers_enabled" ON "threed_layers" USING btree ("is_enabled");--> statement-breakpoint
-CREATE INDEX "idx_threed_marker_relationships_parent" ON "threed_marker_relationships" USING btree ("parent_marker_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_marker_relationships_child" ON "threed_marker_relationships" USING btree ("child_marker_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_layer_id" ON "threed_markers" USING btree ("layer_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_threed_layers_layer_id" ON "threed_layers" USING btree ("layer_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_layers_parent" ON "threed_layers" USING btree ("parent_layer_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_layers_active" ON "threed_layers" USING btree ("is_active");--> statement-breakpoint
+CREATE INDEX "idx_threed_layers_visible" ON "threed_layers" USING btree ("is_visible");--> statement-breakpoint
+CREATE INDEX "idx_threed_marker_rel_parent" ON "threed_marker_relationships" USING btree ("parent_marker_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_marker_rel_child" ON "threed_marker_relationships" USING btree ("child_marker_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_threed_marker_rel_unique" ON "threed_marker_relationships" USING btree ("parent_marker_id","child_marker_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_marker_rel_active" ON "threed_marker_relationships" USING btree ("is_active");--> statement-breakpoint
 CREATE INDEX "idx_threed_markers_user_id" ON "threed_markers" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_type" ON "threed_markers" USING btree ("type");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_source" ON "threed_markers" USING btree ("source_type","source_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_status" ON "threed_markers" USING btree ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_threed_markers_marker_id" ON "threed_markers" USING btree ("marker_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_markers_layer" ON "threed_markers" USING btree ("layer_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_markers_parent" ON "threed_markers" USING btree ("parent_marker_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_markers_model" ON "threed_markers" USING btree ("model_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_markers_character" ON "threed_markers" USING btree ("character_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_markers_plant" ON "threed_markers" USING btree ("plant_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_markers_bed" ON "threed_markers" USING btree ("bed_id");--> statement-breakpoint
+CREATE INDEX "idx_threed_markers_active" ON "threed_markers" USING btree ("is_active");--> statement-breakpoint
+CREATE INDEX "idx_threed_markers_visible" ON "threed_markers" USING btree ("is_visible");--> statement-breakpoint
 CREATE INDEX "idx_threed_model_files_model_id" ON "threed_model_files" USING btree ("model_id");--> statement-breakpoint
 CREATE INDEX "idx_threed_model_files_type" ON "threed_model_files" USING btree ("file_type");--> statement-breakpoint
 CREATE INDEX "idx_threed_models_type" ON "threed_models" USING btree ("model_type");--> statement-breakpoint

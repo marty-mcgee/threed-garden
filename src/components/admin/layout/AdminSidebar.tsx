@@ -47,6 +47,8 @@ import {
   Grid3x2,
   TrafficCone,
   Camera,
+  Layers,
+  MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -90,6 +92,8 @@ const navSections: NavSection[] = [
       { title: 'Beds', href: '/admin/threed/beds', icon: Box, exact: false },
       { title: '3D Models', href: '/admin/threed/models', icon: Package, exact: false },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
+      { title: 'Layers', href: '/admin/threed/layers', icon: Layers, exact: false },
+      { title: 'Markers', href: '/admin/threed/markers', icon: MapPin, exact: false },
       { title: 'Tasks', href: '/admin/threed/tasks', icon: ListTodo, exact: false },
       { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
       { title: 'Waterings', href: '/admin/threed/watering-schedules', icon: Droplets, exact: false },

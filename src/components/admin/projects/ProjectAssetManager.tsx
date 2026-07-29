@@ -24,6 +24,7 @@ import {
   Link2,
   Building2,
   Camera,
+  Layers,
   MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -181,11 +182,11 @@ const ASSET_TYPES = {
       {
         id: 'threed_layers',
         label: 'Layers',
-        icon: Box,
+        icon: Layers,
         assetType: 'threed_layers',
         fetchEndpoint: '/api/threed/layers',
-        searchFields: ['name'],
-        displayFields: ['name', 'layerType'],
+        searchFields: ['name', 'layerId'],
+        displayFields: ['layerId', 'layerType', 'category'],
         idField: 'id',
         nameField: 'name',
       },
@@ -195,8 +196,8 @@ const ASSET_TYPES = {
         icon: MapPin,
         assetType: 'threed_markers',
         fetchEndpoint: '/api/threed/markers',
-        searchFields: ['name'],
-        displayFields: ['name', 'markerType'],
+        searchFields: ['name', 'markerId', 'label'],
+        displayFields: ['markerId', 'markerType', 'position'],
         idField: 'id',
         nameField: 'name',
       },

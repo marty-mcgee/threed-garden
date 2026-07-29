@@ -16,7 +16,6 @@ export default function AdminThreeDPlantsPage() {
           </p>
         </div>
       </div>
-      {/* ✅ Uses your existing CRUD component - no interference */}
       <ThreeDPlantsCRUD />
     </div>
   );

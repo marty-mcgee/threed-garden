@@ -1,6 +1,6 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** July 28, 2026 @ 12:12pm PST
+**Last Updated:** July 29, 2026 @ 06:00am PST
 
 ---
 
@@ -2837,3 +2837,608 @@ You've successfully completed the entire Traffic Module with:
 *🎊 Great work! The Traffic Module is now complete and ready to deploy!*
 
 ---
+
+# Project Context – threed-garden-neon, marty-mcgee-neon
+
+**Last Updated:** July 29, 2026 @ 2:30pm PST
+
+**Version:** v0.11.0 (Projects Module + Asset Manager) 🚀
+
+---
+
+## 🎉 v0.11.0 Release Highlights
+
+### Projects Module + Asset Manager Complete!
+
+This release completes the Projects Module with full asset management capabilities across all three modules (Music, ThreeD, Traffic). Users can now create projects, add modules, and assign specific assets to those modules through a unified interface.
+
+| Component | Status |
+|-----------|--------|
+| Projects Module | ✅ Full CRUD |
+| Module Junction Tables | ✅ project_threed, project_traffic, project_music |
+| Project Asset Manager | ✅ Complete |
+| Music Assets | ✅ Albums, Tracks, Media, Links |
+| ThreeD Assets | ✅ Plants, Beds, Models, Characters, Layers, Markers |
+| Traffic Assets | ✅ CHP-CAD Incidents, CHP Centers, CHP Cases, Caltrans Closures, Caltrans Districts, Caltrans CCTV Cameras, Bay Area 511 Events, CalFire Incidents |
+
+---
+
+## 🧱 Tech Stack
+
+- **Framework:** Next.js 16.2.11 (App Router), TypeScript, React
+- **Database:** Neon Postgres + Drizzle ORM
+- **UI:** shadcn/ui, Tailwind, Three.JS, React Three Fiber, Leaflet (OpenStreetMaps)
+- **Music Streaming:** AWS S3, Vercel Blob Storage
+- **Deployment:** Vercel
+- **Package Manager:** Bun
+
+---
+
+## 🗄️ Database Schema Architecture
+
+### Hybrid Approach: Data Ownership + Free-Standing Data
+
+The database follows a clean hybrid approach where:
+- All records have `userId` for ownership and audit trails
+- Child data is free-standing (no direct foreign keys to modules)
+- Relationships are handled via junction tables
+
+```
+User (user)
+  └── Projects (project) - HAS userId
+       └── (junction: project_threed, project_traffic, project_music)
+            └── Modules (threed, traffic, music) - HAS userId
+                 └── Child Data (plants, albums, incidents) - HAS userId
+                      └── (free-standing, reusable across projects)
+```
+
+### Key ID Patterns
+
+| Table Type | ID Type | Foreign Key Type |
+|------------|---------|------------------|
+| user (Better Auth) | text('id') | N/A |
+| All other tables | serial('id') | integer |
+| Tables referencing user.id | N/A | text('user_id') |
+
+### Junction Tables (Many-to-Many)
+
+| Table | Purpose |
+|-------|---------|
+| `project_threed` | Links Projects to ThreeD modules |
+| `project_traffic` | Links Projects to Traffic modules |
+| `project_music` | Links Projects to Music modules |
+| `project_assets` | Single junction table with polymorphic relationship linking child records to projects |
+
+### Main Tables per Module
+
+| Module | Main Table | Purpose |
+|--------|------------|---------|
+| Auth | user | User authentication and profiles |
+| Settings | settings | Global and user-specific settings |
+| Projects | project | Top-level project container |
+| ThreeD | threed | Garden/3D module configuration |
+| Traffic | traffic | Traffic monitoring module configuration |
+| Music | music | Music library module configuration |
+
+### Project Asset Type Enum
+
+```typescript
+export const assetTypeEnum = pgEnum('asset_type', [
+  // Music
+  'music_albums',
+  'music_tracks',
+  'music_links',
+  'music_media',
+  
+  // ThreeD
+  'threed_plants',
+  'threed_beds',
+  'threed_layers',
+  'threed_markers',
+  'threed_models',
+  'threed_characters',
+  'threed_tasks',
+  'threed_harvests',
+  'threed_weather_logs',
+  'threed_farmbots',
+  'threed_watering_schedules',
+  
+  // Traffic
+  'traffic_chp_cad_incidents',
+  'traffic_chp_centers',
+  'traffic_chp_cases',
+  'traffic_caltrans_lane_closures',
+  'traffic_caltrans_districts',
+  'traffic_caltrans_cctv_cameras',
+  'traffic_bay_area_511_events',
+  'traffic_calfire_incidents',
+]);
+```
+
+### Project Assets Table (Polymorphic Junction)
+
+```typescript
+export const projectAssets = pgTable('project_assets', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
+  moduleId: integer('module_id').notNull(), // References the specific module
+  moduleType: text('module_type').notNull(), // 'music', 'threed', 'traffic'
+  assetType: assetTypeEnum('asset_type').notNull(),
+  assetId: integer('asset_id').notNull(),
+  config: jsonb('config').default({}),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+```
+
+### ThreeD Module Tables
+
+| Table | Purpose |
+|-------|---------|
+| `threed` | Main ThreeD module configuration |
+| `threed_plants` | Master plant database |
+| `threed_models` | GLTF model library |
+| `threed_model_files` | Associated files for 3D models |
+| `threed_beds` | Garden layout with 3D positioning |
+| `threed_plantings` | Plants in beds with growth tracking |
+| `threed_watering_schedules` | Automated watering schedules |
+| `threed_watering_history` | Watering execution logs |
+| `threed_harvests` | Harvest logging |
+| `threed_tasks` | Garden tasks/to-do |
+| `threed_weather_logs` | Environmental data |
+| `threed_farmbots` | FarmBot devices |
+| `threed_farmbot_logs` | FarmBot activity logs |
+| `threed_characters` | 3D characters and creatures |
+| `threed_layers` | Groups of 3D objects |
+| `threed_markers` | All 3D objects with positioning |
+| `threed_marker_relationships` | Parent-child marker connections |
+| `threed_layer_presets` | Saved layer configurations |
+| `threed_system_logs` | Application logging |
+
+### Traffic Module Tables
+
+| Table | Purpose |
+|-------|---------|
+| `traffic` | Main Traffic module configuration |
+| `traffic_chp_cad_incidents` | Live CHP CAD incidents |
+| `traffic_chp_centers` | CHP CAD centers |
+| `traffic_chp_cases` | Historical CHP collision cases |
+| `traffic_caltrans_lane_closures` | Caltrans lane closures |
+| `traffic_caltrans_districts` | Caltrans districts |
+| `traffic_caltrans_cctv_cameras` | Caltrans CCTV cameras |
+| `traffic_bay_area_511_events` | Bay Area 511.org events |
+| `traffic_calfire_incidents` | CalFire wildfire incidents |
+| `traffic_api_request_logs` | API request monitoring logs |
+
+### Music Module Tables
+
+| Table | Purpose |
+|-------|---------|
+| `music` | Main Music module configuration |
+| `music_albums` | Album metadata |
+| `music_tracks` | Track metadata |
+| `music_links` | External links (Spotify, social, etc.) |
+| `music_album_links` | Album-track-link associations |
+| `music_media` | Album images and media |
+| `music_playback_history` | User listening history |
+| `music_polling_logs` | Polling service logs |
+
+---
+
+## 🔧 API Architecture (Next.js 16)
+
+### Key Pattern: `params` is a Promise
+
+In Next.js 16+, dynamic route parameters are Promises that must be awaited:
+
+```typescript
+// ✅ CORRECT - Next.js 16+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  // ... rest of code
+}
+```
+
+### API Structure (All Modules Follow Same Pattern)
+
+```
+api/
+├── project/
+│   ├── route.ts              # GET (list), POST (create)
+│   ├── modules/
+│   │   ├── route.ts          # GET, POST, DELETE (with ?projectId=1)
+│   │   └── verify/
+│   │       └── route.ts      # Verify module in project
+│   └── assets/
+│       └── route.ts          # GET, POST, DELETE
+├── threed/
+│   ├── route.ts              # GET (list), POST (create)
+│   ├── layers/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── markers/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   └── [child-table]/
+│       └── route.ts          # GET, POST, PUT, PATCH, DELETE
+├── traffic/
+│   ├── route.ts              # GET (list), POST (create)
+│   ├── chp-cad/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── chp-centers/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── chp-cases/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── caltrans/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── caltrans-districts/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── caltrans-cctv/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── bay-area-511/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   └── calfire/
+│       └── route.ts          # GET, POST, PUT, PATCH, DELETE
+└── music/
+    ├── route.ts              # GET (list), POST (create)
+    └── albums/
+        └── route.ts          # GET, POST, PUT, PATCH, DELETE
+```
+
+### Project API Endpoint Reference
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/project` | GET | List all projects |
+| `/api/project` | POST | Create a project |
+| `/api/project?id=1` | PATCH | Update a project |
+| `/api/project?id=1` | DELETE | Delete a project |
+| `/api/project/modules?projectId=1` | GET | Get modules for a project |
+| `/api/project/modules` | POST | Add a module to a project |
+| `/api/project/modules` | DELETE | Remove a module from a project |
+| `/api/project/modules/verify` | GET | Verify module is in project |
+| `/api/project/assets?projectId=1` | GET | Get assets for a project |
+| `/api/project/assets` | POST | Add an asset to a project |
+| `/api/project/assets` | DELETE | Remove an asset from a project |
+
+---
+
+## 🎯 Key Features
+
+### Settings System
+- Centralized JSON configuration with admin UI
+- User-specific overrides via database
+- Deployment snapshots and rollback support
+
+### Dynamic Navigation
+- Auto-builds menu from settings
+- Client-side rendering with no server dependencies
+- Loading states and active page highlighting
+
+### Projects Module
+- **Full CRUD** for projects (Create, Read, Update, Delete)
+- **Module Management** - Add/remove modules to projects
+- **Asset Management** - Assign/reassign assets to modules
+- **Session Persistence** - Module expansion state saved in sessionStorage
+- **Asset Tab Persistence** - Selected asset type saved in sessionStorage
+- **Unified Interface** - Consistent UI for all module types
+
+### Project Asset Manager
+- **Polymorphic Junction** - Single `project_assets` table for all asset types
+- **Asset Type Configuration** - All asset types registered with proper metadata
+- **Assigned vs Available** - Clear separation of assigned and available assets
+- **Search & Filter** - Search assets by name, ID, or other fields
+- **Session Persistence** - Selected asset tab preserved across page refreshes
+- **Toast Notifications** - User feedback for all actions
+
+### ThreeD Garden Module
+- Interactive 3D visualization with Three.js + React Three Fiber
+- Plant database with growth stage tracking
+- FarmBot integration and control
+- Weather effects and logging
+- Task management with related entities
+- **Layers** - Organize 3D objects into groups with visibility and lock controls
+- **Markers** - 3D objects with positioning, rotation, scale, and relationships
+
+### Traffic Module
+- **8 real-time data sources** with full CRUD:
+  - CHP CAD Incidents (Live dispatcher feed)
+  - CHP Centers (Dispatch centers)
+  - CHP Historical Cases (CKAN API)
+  - Caltrans Lane Closures (CWWP2 API)
+  - Caltrans Districts (Caltrans regions)
+  - Caltrans CCTV Cameras (Traffic cameras)
+  - Bay Area 511 Events (511.org API)
+  - CalFire Incidents (Wildfire tracking)
+- **3D map visualization** with Three.js integration
+- **Marker clustering** and rich popups
+- **Multi-source filtering** by status, severity, county, and region
+
+### Music Module
+- Prominent media player with waveform visualization
+- Full CRUD for albums, tracks, links, and media
+- S3 integration for audio streaming
+- Album detail view with tracks, links, and media gallery
+
+---
+
+## 🚀 Deployment
+
+### Environment Variables
+
+```bash
+# Required for all deployments
+DATABASE_URL=your_neon_connection_string
+NEXTAUTH_URL=https://your-domain.vercel.app
+NEXTAUTH_SECRET=your_secret
+
+# Music Module
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_REGION=us-west-2
+S3_BUCKET_NAME=threedpublic
+S3_PUBLIC_URL=https://threedpublic.s3.us-west-2.amazonaws.com
+
+# ThreeD Module
+FARMBOT_API_TOKEN=your_personal_access_token
+FARMBOT_API_URL=https://my.farmbot.io/api
+FARMBOT_DEVICE_ID=your_device_id
+OPENWEATHER_API_KEY=your_api_key
+
+# Vercel Blob (images)
+BLOB_READ_WRITE_TOKEN=your_token
+```
+
+### Common Commands
+
+```bash
+# Development
+bun dev
+
+# Database
+bun db:generate
+bun db:push
+bun db:studio
+
+# Seeds
+bun run db:seed-music
+bun run src/lib/scripts/seed-threed-plants.ts
+```
+
+---
+
+## 📁 File Structure
+
+```
+src/
+├── app/
+│   ├── admin/
+│   │   ├── layout.tsx                     # Admin layout with sidebar
+│   │   ├── page.tsx                       # Dashboard
+│   │   ├── projects/
+│   │   │   ├── page.tsx                   # Projects list
+│   │   │   └── [id]/
+│   │   │       └── page.tsx               # Project detail with modules
+│   │   │   └── new/
+│   │   │       └── page.tsx               # Project add new
+│   │   ├── music/
+│   │   │   ├── albums/
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── [id]/page.tsx
+│   │   │   ├── tracks/page.tsx
+│   │   │   ├── media/page.tsx
+│   │   │   └── links/page.tsx
+│   │   ├── threed/
+│   │   │   ├── plants/page.tsx
+│   │   │   ├── beds/page.tsx
+│   │   │   ├── models/page.tsx
+│   │   │   ├── characters/page.tsx
+│   │   │   ├── layers/page.tsx            # ✅ NEW
+│   │   │   └── markers/page.tsx           # ✅ NEW
+│   │   └── traffic/
+│   │       ├── chp-cad/page.tsx
+│   │       ├── chp-centers/page.tsx
+│   │       ├── chp-cases/page.tsx
+│   │       ├── caltrans/page.tsx
+│   │       ├── caltrans-districts/page.tsx
+│   │       ├── caltrans-cctv/page.tsx
+│   │       ├── bay-area-511/page.tsx
+│   │       └── calfire/page.tsx
+│   └── api/
+│       ├── project/
+│       │   ├── route.ts
+│       │   ├── modules/
+│       │   │   ├── route.ts
+│       │   │   └── verify/
+│       │   │       └── route.ts
+│       │   └── assets/
+│       │       └── route.ts
+│       ├── threed/
+│       │   ├── route.ts
+│       │   ├── layers/
+│       │   │   └── route.ts               # ✅ NEW
+│       │   ├── markers/
+│       │   │   └── route.ts               # ✅ NEW
+│       │   └── [child-table]/route.ts
+│       ├── traffic/
+│       │   ├── route.ts
+│       │   ├── chp-cad/route.ts
+│       │   ├── chp-centers/route.ts
+│       │   ├── chp-cases/route.ts
+│       │   ├── caltrans/route.ts
+│       │   ├── caltrans-districts/route.ts
+│       │   ├── caltrans-cctv/route.ts
+│       │   ├── bay-area-511/route.ts
+│       │   └── calfire/route.ts
+│       │   └── [child-table]/route.ts
+│       └── music/
+│           └── albums/route.ts
+│       │   └── [child-table]/route.ts
+├── components/
+│   ├── admin/
+│   │   ├── layout/
+│   │   │   ├── AdminSidebar.tsx
+│   │   │   ├── AdminHeader.tsx
+│   │   │   ├── AdminFooter.tsx
+│   │   │   └── AdminLayout.tsx
+│   │   ├── projects/
+│   │   │   ├── ProjectAssetManager.tsx
+│   │   │   └── ProjectDetailClient.tsx
+│   │   ├── music/
+│   │   │   ├── albums/MusicAlbumCRUD.tsx
+│   │   │   ├── tracks/MusicTracksCRUD.tsx
+│   │   │   ├── media/MusicMediaCRUD.tsx
+│   │   │   └── links/MusicLinksCRUD.tsx
+│   │   ├── threed/
+│   │   │   ├── plants/ThreeDPlantsCRUD.tsx
+│   │   │   ├── beds/ThreeDBedsCRUD.tsx
+│   │   │   ├── models/ThreeDModelsCRUD.tsx
+│   │   │   ├── characters/ThreeDCharactersCRUD.tsx
+│   │   │   ├── layers/ThreeDLayersCRUD.tsx          # ✅ NEW
+│   │   │   └── markers/ThreeDMarkersCRUD.tsx        # ✅ NEW
+│   │   │   ├── plantings/ThreeDPlantingsCRUD.tsx
+│   │   │   ├── watering-schedules/ThreeDWateringSchedulesCRUD.tsx
+│   │   │   ├── harvests/ThreeDHarvestsCRUD.tsx
+│   │   │   ├── farmbots/ThreeDCharactersCRUD.tsx
+│   │   └── traffic/
+│   │       ├── chp-cad/TrafficCHPCADCRUD.tsx
+│   │       ├── chp-centers/TrafficCHPCentersCRUD.tsx
+│   │       ├── chp-cases/TrafficCHPCasesCRUD.tsx
+│   │       ├── caltrans/TrafficCaltransCRUD.tsx
+│   │       ├── caltrans-districts/TrafficCaltransDistrictsCRUD.tsx
+│   │       ├── caltrans-cctv/TrafficCaltransCctvCRUD.tsx
+│   │       ├── bay-area-511/TrafficBayArea511CRUD.tsx
+│   │       └── calfire/TrafficCalfireCRUD.tsx
+│   └── music/
+│       ├── MusicContent.tsx
+│       ├── AlbumGrid.tsx
+│       ├── MusicPlayer.tsx
+│       └── WaveformVisualizer.tsx
+└── lib/
+    ├── schema/
+    │   ├── auth/
+    │   ├── projects/
+    │   │   └── index.ts
+    │   ├── threed/
+    │   │   └── index.ts
+    │   ├── traffic/
+    │   │   └── index.ts
+    │   └── music/
+    │       └── index.ts
+    ├── types/
+    │   ├── threed/
+    │   ├── traffic/
+    │   └── music/
+    └── db/
+        └── client.ts
+```
+
+---
+
+## 📊 Data Sources
+
+| Source | Type | Method | Status |
+|--------|------|--------|--------|
+| CHP CAD (Live) | Live dispatcher feed | HTML scraping (Cheerio) | ✅ Working |
+| CHP CKAN | Historical collisions | Official JSON API (CKAN) | ✅ Working |
+| Caltrans CWWP2 | Real-time lane closures | Official JSON API | ✅ Working |
+| Bay Area 511 | Real-time incidents | Official JSON API (511.org) | ✅ Working |
+| Caltrans CCTV | Traffic cameras | Official JSON API | ✅ Working |
+| CalFire | Wildfire incidents | Official JSON API | ✅ Working |
+| OpenWeatherMap | Weather data | Official API | ✅ Working |
+| FarmBot API | Device integration | Official API | ✅ Working |
+
+---
+
+## 🚦 Production Status
+
+| Component | Status |
+|-----------|--------|
+| Settings System | ✅ Working |
+| Dynamic Navigation | ✅ Working |
+| Projects Module | ✅ Working |
+| Project Asset Manager | ✅ Working |
+| ThreeD Module | ✅ Working |
+| ThreeD Layers | ✅ Working |
+| ThreeD Markers | ✅ Working |
+| Traffic Module | ✅ Working |
+| Music Module | ✅ Working |
+| Weather Poller | ✅ Working |
+| CalFire Poller | ✅ Working |
+| Caltrans Poller | ✅ Working |
+| Bay Area 511 | ✅ Working |
+| CHP CAD | ✅ Working |
+| CHP Historical | ✅ Working |
+| FarmBot Poller | ✅ Working |
+| Music Poller | ✅ Working |
+| Music Player | ✅ Working |
+| 3D Garden | ✅ Rendering |
+| Database | ✅ Connected |
+
+---
+
+## ⚠️ Known Issues & Solutions
+
+| Issue | Solution |
+|-------|----------|
+| Next.js 16 params is a Promise | Use `await params` in dynamic routes |
+| Audio CORS errors | Configure S3 bucket CORS for your domain |
+| Duplicate key errors | Use regular indexes, not unique indexes |
+| DNS module error in client | Use client-safe settings loader |
+| Severity as string error | Parse severity to integer with mapping |
+
+---
+
+## 🎊 Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v0.1.0 | 2026-06-02 | Initial project setup |
+| v0.5.5 | 2026-07-18 | Hybrid Architecture with Free-Standing Data |
+| v0.6.0 | 2026-07-20 | Project Module Assets 'project_assets' |
+| v0.6.5 | 2026-07-22 | Complete CRUD components for Music, ThreeD, Traffic |
+| v0.7.3 | 2026-07-23 | Modern Admin Dashboard with unified navigation |
+| v0.8.3 | 2026-07-24 | Complete Music Admin CRUD with Links & Media |
+| v0.9.0 | 2026-07-25 | ThreeD Module Complete |
+| v0.10.0 | 2026-07-28 | Traffic Module Complete |
+| v0.10.1 | 2026-07-28 | Caltrans CCTV + CHP Cases Fixes |
+| **v0.11.0** | **2026-07-29** | **Projects Module + Asset Manager Complete** 🚀 |
+
+---
+
+## 🚀 Next Steps
+
+### Short Term
+1. **Project Detail Page improvements** - Enhanced UI/UX for module management
+2. **Asset preview** - Preview assets before assigning to projects
+3. **Bulk operations** - Add/remove multiple assets at once
+4. **Advanced filtering** - Multi-field search and filter combinations
+
+### Long Term
+1. **Real-time updates** - WebSocket integration for live data
+2. **Analytics Dashboard** - Traffic pattern analysis and metrics
+3. **Mobile app** - React Native or PWA
+4. **API documentation** - OpenAPI/Swagger documentation
+5. **Testing suite** - Comprehensive unit and integration tests
+
+---
+
+**Version:** v0.11.0 (Projects Module + Asset Manager Complete) 🚀
+
+**Deployed to:** Vercel Production ✅
+
+**Built with:** Next.js 16.2.11, TypeScript, Drizzle ORM, Neon Postgres, Tailwind, shadcn/ui, Three.js
+
+---
+
+*🎉 Congratulations on reaching v0.11.0! The Projects Module with Asset Manager is now fully complete, providing a unified interface for managing projects, modules, and assets across all three modules!*
+
+---
+
+## v0.11.0 In Progress
+
+---
+

@@ -1,5 +1,5 @@
 {
-  "id": "7470890f-2635-4780-9a5c-fc61c1d9de58",
+  "id": "380c3eb3-f33a-4df8-af12-bc55623201ef",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -4953,99 +4953,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.threed_layer_presets": {
-      "name": "threed_layer_presets",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "layer_ids": {
-          "name": "layer_ids",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "config": {
-          "name": "config",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_threed_layer_presets_user_id": {
-          "name": "idx_threed_layer_presets_user_id",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "threed_layer_presets_user_id_user_id_fk": {
-          "name": "threed_layer_presets_user_id_user_id_fk",
-          "tableFrom": "threed_layer_presets",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.threed_layers": {
       "name": "threed_layers",
       "schema": "",
@@ -5074,38 +4981,34 @@
           "primaryKey": false,
           "notNull": false
         },
-        "type": {
-          "name": "type",
-          "type": "threed_layer_type",
-          "typeSchema": "public",
+        "layer_id": {
+          "name": "layer_id",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'custom'"
+          "notNull": true
         },
-        "is_enabled": {
-          "name": "is_enabled",
-          "type": "boolean",
+        "config": {
+          "name": "config",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": true
+          "default": "'{\"visible\":true,\"opacity\":1,\"color\":\"#ffffff\",\"transform\":{\"position\":{\"x\":0,\"y\":0,\"z\":0},\"rotation\":{\"x\":0,\"y\":0,\"z\":0},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}}'::jsonb"
         },
-        "visibility": {
-          "name": "visibility",
-          "type": "threed_layer_visibility",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'public'"
-        },
-        "icon": {
-          "name": "icon",
+        "category": {
+          "name": "category",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "color": {
-          "name": "color",
+        "layer_type": {
+          "name": "layer_type",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_layer_id": {
+          "name": "parent_layer_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -5116,17 +5019,40 @@
           "notNull": false,
           "default": 0
         },
-        "config": {
-          "name": "config",
-          "type": "jsonb",
+        "is_visible": {
+          "name": "is_visible",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": true
+        },
+        "is_locked": {
+          "name": "is_locked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "metadata": {
           "name": "metadata",
           "type": "jsonb",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'{}'::jsonb"
         },
         "created_at": {
           "name": "created_at",
@@ -5159,11 +5085,26 @@
           "method": "btree",
           "with": {}
         },
-        "idx_threed_layers_type": {
-          "name": "idx_threed_layers_type",
+        "idx_threed_layers_layer_id": {
+          "name": "idx_threed_layers_layer_id",
           "columns": [
             {
-              "expression": "type",
+              "expression": "layer_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_layers_parent": {
+          "name": "idx_threed_layers_parent",
+          "columns": [
+            {
+              "expression": "parent_layer_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5174,11 +5115,26 @@
           "method": "btree",
           "with": {}
         },
-        "idx_threed_layers_enabled": {
-          "name": "idx_threed_layers_enabled",
+        "idx_threed_layers_active": {
+          "name": "idx_threed_layers_active",
           "columns": [
             {
-              "expression": "is_enabled",
+              "expression": "is_active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_layers_visible": {
+          "name": "idx_threed_layers_visible",
+          "columns": [
+            {
+              "expression": "is_visible",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5206,7 +5162,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "threed_layers_layer_id_unique": {
+          "name": "threed_layers_layer_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "layer_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -5220,6 +5184,12 @@
           "type": "serial",
           "primaryKey": true,
           "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "parent_marker_id": {
           "name": "parent_marker_id",
@@ -5237,13 +5207,29 @@
           "name": "relationship_type",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'hierarchy'"
         },
-        "metadata": {
-          "name": "metadata",
+        "order_index": {
+          "name": "order_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "config": {
+          "name": "config",
           "type": "jsonb",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
         },
         "created_at": {
           "name": "created_at",
@@ -5261,8 +5247,8 @@
         }
       },
       "indexes": {
-        "idx_threed_marker_relationships_parent": {
-          "name": "idx_threed_marker_relationships_parent",
+        "idx_threed_marker_rel_parent": {
+          "name": "idx_threed_marker_rel_parent",
           "columns": [
             {
               "expression": "parent_marker_id",
@@ -5276,8 +5262,8 @@
           "method": "btree",
           "with": {}
         },
-        "idx_threed_marker_relationships_child": {
-          "name": "idx_threed_marker_relationships_child",
+        "idx_threed_marker_rel_child": {
+          "name": "idx_threed_marker_rel_child",
           "columns": [
             {
               "expression": "child_marker_id",
@@ -5290,9 +5276,58 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "idx_threed_marker_rel_unique": {
+          "name": "idx_threed_marker_rel_unique",
+          "columns": [
+            {
+              "expression": "parent_marker_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "child_marker_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_marker_rel_active": {
+          "name": "idx_threed_marker_rel_active",
+          "columns": [
+            {
+              "expression": "is_active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
+        "threed_marker_relationships_user_id_user_id_fk": {
+          "name": "threed_marker_relationships_user_id_user_id_fk",
+          "tableFrom": "threed_marker_relationships",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "threed_marker_relationships_parent_marker_id_threed_markers_id_fk": {
           "name": "threed_marker_relationships_parent_marker_id_threed_markers_id_fk",
           "tableFrom": "threed_marker_relationships",
@@ -5354,104 +5389,35 @@
           "primaryKey": false,
           "notNull": false
         },
-        "type": {
-          "name": "type",
-          "type": "threed_marker_type",
-          "typeSchema": "public",
+        "marker_id": {
+          "name": "marker_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "status": {
-          "name": "status",
-          "type": "threed_marker_status",
-          "typeSchema": "public",
+        "position": {
+          "name": "position",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": "'active'"
+          "default": "'{\"x\":0,\"y\":0,\"z\":0}'::jsonb"
         },
-        "layer_id": {
-          "name": "layer_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "position_x": {
-          "name": "position_x",
-          "type": "real",
+        "rotation": {
+          "name": "rotation",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": 0
+          "default": "'{\"x\":0,\"y\":0,\"z\":0}'::jsonb"
         },
-        "position_y": {
-          "name": "position_y",
-          "type": "real",
+        "scale": {
+          "name": "scale",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": 0
+          "default": "'{\"x\":1,\"y\":1,\"z\":1}'::jsonb"
         },
-        "position_z": {
-          "name": "position_z",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "rotation_x": {
-          "name": "rotation_x",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "rotation_y": {
-          "name": "rotation_y",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "rotation_z": {
-          "name": "rotation_z",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "scale_x": {
-          "name": "scale_x",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 1
-        },
-        "scale_y": {
-          "name": "scale_y",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 1
-        },
-        "scale_z": {
-          "name": "scale_z",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 1
-        },
-        "source_type": {
-          "name": "source_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "source_id": {
-          "name": "source_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "icon": {
-          "name": "icon",
+        "marker_type": {
+          "name": "marker_type",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -5460,26 +5426,111 @@
           "name": "color",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'#ffffff'"
         },
         "size": {
           "name": "size",
-          "type": "real",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": 1
+          "default": "'medium'"
         },
-        "custom_data": {
-          "name": "custom_data",
-          "type": "jsonb",
+        "icon": {
+          "name": "icon",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "layer_id": {
+          "name": "layer_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_marker_id": {
+          "name": "parent_marker_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model_id": {
+          "name": "model_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "character_id": {
+          "name": "character_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plant_id": {
+          "name": "plant_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bed_id": {
+          "name": "bed_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data": {
+          "name": "data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'::jsonb"
+        },
+        "is_visible": {
+          "name": "is_visible",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "is_interactive": {
+          "name": "is_interactive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "metadata": {
           "name": "metadata",
           "type": "jsonb",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'{}'::jsonb"
         },
         "created_at": {
           "name": "created_at",
@@ -5497,21 +5548,6 @@
         }
       },
       "indexes": {
-        "idx_threed_markers_layer_id": {
-          "name": "idx_threed_markers_layer_id",
-          "columns": [
-            {
-              "expression": "layer_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_markers_user_id": {
           "name": "idx_threed_markers_user_id",
           "columns": [
@@ -5527,11 +5563,26 @@
           "method": "btree",
           "with": {}
         },
-        "idx_threed_markers_type": {
-          "name": "idx_threed_markers_type",
+        "idx_threed_markers_marker_id": {
+          "name": "idx_threed_markers_marker_id",
           "columns": [
             {
-              "expression": "type",
+              "expression": "marker_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_markers_layer": {
+          "name": "idx_threed_markers_layer",
+          "columns": [
+            {
+              "expression": "layer_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5542,17 +5593,11 @@
           "method": "btree",
           "with": {}
         },
-        "idx_threed_markers_source": {
-          "name": "idx_threed_markers_source",
+        "idx_threed_markers_parent": {
+          "name": "idx_threed_markers_parent",
           "columns": [
             {
-              "expression": "source_type",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "source_id",
+              "expression": "parent_marker_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5563,11 +5608,86 @@
           "method": "btree",
           "with": {}
         },
-        "idx_threed_markers_status": {
-          "name": "idx_threed_markers_status",
+        "idx_threed_markers_model": {
+          "name": "idx_threed_markers_model",
           "columns": [
             {
-              "expression": "status",
+              "expression": "model_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_markers_character": {
+          "name": "idx_threed_markers_character",
+          "columns": [
+            {
+              "expression": "character_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_markers_plant": {
+          "name": "idx_threed_markers_plant",
+          "columns": [
+            {
+              "expression": "plant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_markers_bed": {
+          "name": "idx_threed_markers_bed",
+          "columns": [
+            {
+              "expression": "bed_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_markers_active": {
+          "name": "idx_threed_markers_active",
+          "columns": [
+            {
+              "expression": "is_active",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_markers_visible": {
+          "name": "idx_threed_markers_visible",
+          "columns": [
+            {
+              "expression": "is_visible",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5603,12 +5723,20 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "threed_markers_marker_id_unique": {
+          "name": "threed_markers_marker_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "marker_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
