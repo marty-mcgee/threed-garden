@@ -1,6 +1,6 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** July 29, 2026 @ 06:00am PST
+**Last Updated:** July 29, 2026 @ 12:00pm PST
 
 ---
 
@@ -25,7 +25,7 @@ The database follows a **clean parent-child hierarchy** where Projects own Modul
 User (user)
   │
   └── Projects (project)
-  └── Project Modules (project_modules)
+  └── Project Modules (project_traffic, project_threed, project_music)
   └── Project Assets (project_assets)
   │
   ├── ThreeD (threed) ← Main module table
@@ -47,30 +47,30 @@ User (user)
   │
   ├── Traffic (traffic) ← Main module table
   │    ├── traffic_chp_cad_incidents
-  │    ├── traffic_chp_collisions
-  │    ├── traffic_lane_closures
+  │    ├── traffic_chp_cases
+  │    ├── traffic_chp_centers
+  │    ├── traffic_caltrans_lane_closures
+  │    ├── traffic_caltrans_cctv_cameras
+  │    ├── traffic_caltrans_districts
   │    ├── traffic_bay_area_511_events
   │    ├── traffic_calfire_incidents
-  │    ├── traffic_cctv_cameras
-  │    ├── traffic_chp_cad_centers
-  │    ├── traffic_caltrans_districts
   │    └── traffic_api_request_logs
   │
-  └── Music (music) ← Main module table
-      ├── music_albums
-      ├── music_tracks
-      ├── music_links
-      ├── music_media
-      ├── music_album_links
-      ├── music_playback_history
-      └── music_polling_logs
+  ├── Music (music) ← Main module table
+  │    ├── music_albums
+  │    ├── music_tracks
+  │    ├── music_links
+  │    ├── music_media
+  │    ├── music_album_links
+  │    ├── music_playback_history
+  │    └── music_polling_logs
 ```
 
 ### Key ID Patterns
 
 | Table Type | ID Type | Foreign Key Type |
 |------------|---------|------------------|
-| `user` (Better Auth) | `text('id')` | N/A |
+| `user` (Next Auth.js) | `text('id')` | N/A |
 | All other tables | `serial('id')` | `integer` |
 | Tables referencing `user.id` | N/A | `text('user_id')` |
 | Tables referencing other tables | N/A | `integer('*_id')` |
@@ -94,7 +94,7 @@ User (user)
 
 | Table | Purpose |
 |-------|---------|
-| `user` | Main user table (Better Auth) |
+| `user` | Main user table (Next Auth) |
 | `user_accounts` | OAuth/Provider accounts |
 | `user_sessions` | User sessions |
 | `user_verifications` | Email/Phone verification |
@@ -148,7 +148,7 @@ User (user)
 |-------|---------|
 | `traffic` | Main Traffic module configuration |
 | `traffic_chp_cad_incidents` | Live CHP incidents |
-| `traffic_chp_cad_centers` | CHP communication centers |
+| `traffic_chp_centers` | CHP communication centers |
 | `traffic_chp_cases` | Historical collisions cases |
 | `traffic_caltrans_lane_closures` | Caltrans lane closures |
 | `traffic_caltrans_lane_closures_snapshots` | Historical lane closure snapshots |
@@ -165,9 +165,8 @@ User (user)
 | `music` | Main Music module configuration |
 | `music_albums` | Album metadata |
 | `music_tracks` | Track metadata |
-| `music_links` | External links (Spotify, social, etc.) |
-| `music_album_links` | Album-track-link associations |
 | `music_media` | Album images and media |
+| `music_links` | External links (Spotify, social, etc.) |
 | `music_playback_history` | User listening history |
 | `music_polling_logs` | Polling service logs |
 
@@ -277,7 +276,7 @@ User (user)
 
 | Table Type | ID Type | Foreign Key Type |
 |------------|---------|------------------|
-| `user` (Auth.js) | `text('id')` | N/A |
+| `user` (Next Auth.js) | `text('id')` | N/A |
 | All other tables | `serial('id')` | `integer` |
 | Tables referencing `user.id` | N/A | `text('user_id')` |
 
@@ -2184,7 +2183,7 @@ User (user)
 
 | Table Type | ID Type | Foreign Key Type |
 |------------|---------|------------------|
-| user (Better Auth) | text('id') | N/A |
+| user (Next Auth.js) | text('id') | N/A |
 | All other tables | serial('id') | integer |
 | Tables referencing user.id | N/A | text('user_id') |
 
@@ -2227,7 +2226,7 @@ User (user)
 
 | Module | Child Tables | Has userId |
 |--------|--------------|------------|
-| ThreeD | `threed_plants`, `threed_beds`, `threed_farmbots`, `threed_characters`, `threed_tasks`, `threed_harvests`, `threed_weather_logs`, `threed_watering_schedules`, `threed_layers`, `threed_markers` | ✅ |
+| ThreeD | `threed_plants`, `threed_beds`, `threed_farmbots`, `threed_characters`, `threed_models`,`threed_tasks`, `threed_harvests`, `threed_weather_logs`, `threed_watering_schedules`, `threed_layers`, `threed_markers` | ✅ |
 | Traffic | `traffic_chp_cad_incidents`, `traffic_chp_centers`, `traffic_chp_cases`, `traffic_caltrans_lane_closures`, `traffic_caltrans_districts`, `traffic_caltrans_cctv_cameras`, `traffic_bay_area_511_events`, `traffic_calfire_incidents` | ✅ |
 | Music | `music_albums`, `music_tracks`, `music_links`, `music_media` | ✅ |
 
@@ -2280,7 +2279,7 @@ api/
 │       └── route.ts          # GET, POST, PUT, PATCH, DELETE (with ?id=1)
 └── music/
     ├── route.ts              # GET (list), POST (create)
-    └── albums/
+    └── [child-table]/
         └── route.ts          # GET, POST, PUT, PATCH, DELETE (with ?id=1)
 ```
 
@@ -2896,7 +2895,7 @@ User (user)
 
 | Table Type | ID Type | Foreign Key Type |
 |------------|---------|------------------|
-| user (Better Auth) | text('id') | N/A |
+| `user` (Next Auth.js) | text('id') | N/A |
 | All other tables | serial('id') | integer |
 | Tables referencing user.id | N/A | text('user_id') |
 
@@ -3213,127 +3212,677 @@ bun run src/lib/scripts/seed-threed-plants.ts
 ## 📁 File Structure
 
 ```
-src/
-├── app/
-│   ├── admin/
-│   │   ├── layout.tsx                     # Admin layout with sidebar
-│   │   ├── page.tsx                       # Dashboard
-│   │   ├── projects/
-│   │   │   ├── page.tsx                   # Projects list
-│   │   │   └── [id]/
-│   │   │       └── page.tsx               # Project detail with modules
-│   │   │   └── new/
-│   │   │       └── page.tsx               # Project add new
-│   │   ├── music/
-│   │   │   ├── albums/
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── [id]/page.tsx
-│   │   │   ├── tracks/page.tsx
-│   │   │   ├── media/page.tsx
-│   │   │   └── links/page.tsx
-│   │   ├── threed/
-│   │   │   ├── plants/page.tsx
-│   │   │   ├── beds/page.tsx
-│   │   │   ├── models/page.tsx
-│   │   │   ├── characters/page.tsx
-│   │   │   ├── layers/page.tsx            # ✅ NEW
-│   │   │   └── markers/page.tsx           # ✅ NEW
-│   │   └── traffic/
-│   │       ├── chp-cad/page.tsx
-│   │       ├── chp-centers/page.tsx
-│   │       ├── chp-cases/page.tsx
-│   │       ├── caltrans/page.tsx
-│   │       ├── caltrans-districts/page.tsx
-│   │       ├── caltrans-cctv/page.tsx
-│   │       ├── bay-area-511/page.tsx
-│   │       └── calfire/page.tsx
-│   └── api/
-│       ├── project/
-│       │   ├── route.ts
-│       │   ├── modules/
-│       │   │   ├── route.ts
-│       │   │   └── verify/
-│       │   │       └── route.ts
-│       │   └── assets/
-│       │       └── route.ts
-│       ├── threed/
-│       │   ├── route.ts
-│       │   ├── layers/
-│       │   │   └── route.ts               # ✅ NEW
-│       │   ├── markers/
-│       │   │   └── route.ts               # ✅ NEW
-│       │   └── [child-table]/route.ts
-│       ├── traffic/
-│       │   ├── route.ts
-│       │   ├── chp-cad/route.ts
-│       │   ├── chp-centers/route.ts
-│       │   ├── chp-cases/route.ts
-│       │   ├── caltrans/route.ts
-│       │   ├── caltrans-districts/route.ts
-│       │   ├── caltrans-cctv/route.ts
-│       │   ├── bay-area-511/route.ts
-│       │   └── calfire/route.ts
-│       │   └── [child-table]/route.ts
-│       └── music/
-│           └── albums/route.ts
-│       │   └── [child-table]/route.ts
-├── components/
-│   ├── admin/
-│   │   ├── layout/
-│   │   │   ├── AdminSidebar.tsx
-│   │   │   ├── AdminHeader.tsx
-│   │   │   ├── AdminFooter.tsx
-│   │   │   └── AdminLayout.tsx
-│   │   ├── projects/
-│   │   │   ├── ProjectAssetManager.tsx
-│   │   │   └── ProjectDetailClient.tsx
-│   │   ├── music/
-│   │   │   ├── albums/MusicAlbumCRUD.tsx
-│   │   │   ├── tracks/MusicTracksCRUD.tsx
-│   │   │   ├── media/MusicMediaCRUD.tsx
-│   │   │   └── links/MusicLinksCRUD.tsx
-│   │   ├── threed/
-│   │   │   ├── plants/ThreeDPlantsCRUD.tsx
-│   │   │   ├── beds/ThreeDBedsCRUD.tsx
-│   │   │   ├── models/ThreeDModelsCRUD.tsx
-│   │   │   ├── characters/ThreeDCharactersCRUD.tsx
-│   │   │   ├── layers/ThreeDLayersCRUD.tsx          # ✅ NEW
-│   │   │   └── markers/ThreeDMarkersCRUD.tsx        # ✅ NEW
-│   │   │   ├── plantings/ThreeDPlantingsCRUD.tsx
-│   │   │   ├── watering-schedules/ThreeDWateringSchedulesCRUD.tsx
-│   │   │   ├── harvests/ThreeDHarvestsCRUD.tsx
-│   │   │   ├── farmbots/ThreeDCharactersCRUD.tsx
-│   │   └── traffic/
-│   │       ├── chp-cad/TrafficCHPCADCRUD.tsx
-│   │       ├── chp-centers/TrafficCHPCentersCRUD.tsx
-│   │       ├── chp-cases/TrafficCHPCasesCRUD.tsx
-│   │       ├── caltrans/TrafficCaltransCRUD.tsx
-│   │       ├── caltrans-districts/TrafficCaltransDistrictsCRUD.tsx
-│   │       ├── caltrans-cctv/TrafficCaltransCctvCRUD.tsx
-│   │       ├── bay-area-511/TrafficBayArea511CRUD.tsx
-│   │       └── calfire/TrafficCalfireCRUD.tsx
-│   └── music/
-│       ├── MusicContent.tsx
-│       ├── AlbumGrid.tsx
-│       ├── MusicPlayer.tsx
-│       └── WaveformVisualizer.tsx
-└── lib/
-    ├── schema/
-    │   ├── auth/
-    │   ├── projects/
-    │   │   └── index.ts
-    │   ├── threed/
-    │   │   └── index.ts
-    │   ├── traffic/
-    │   │   └── index.ts
-    │   └── music/
-    │       └── index.ts
-    ├── types/
-    │   ├── threed/
-    │   ├── traffic/
-    │   └── music/
-    └── db/
-        └── client.ts
+./src/
+├── lib
+│   ├── utils
+│   │   ├── upload.ts
+│   │   ├── locationCoords.ts
+│   │   ├── index.ts
+│   │   └── cityGeocoder.ts
+│   ├── types
+│   │   ├── traffic.ts
+│   │   ├── threed.ts
+│   │   ├── music.ts
+│   │   └── app.ts
+│   ├── stores
+│   │   ├── test-store.ts
+│   │   ├── music-player-store.ts
+│   │   └── direct-storage-test.ts
+│   ├── services
+│   │   ├── traffic
+│   │   │   ├── TravelTimesPoller.ts
+│   │   │   ├── TrafficService.ts
+│   │   │   ├── CaltransPoller.ts
+│   │   │   ├── CaltransPoller-info.ts
+│   │   │   ├── CaltransCCTVPoller.ts
+│   │   │   ├── CalFirePoller.ts
+│   │   │   ├── CHPPoller.ts
+│   │   │   ├── CHPCADPoller.ts
+│   │   │   └── BayArea511Poller.ts
+│   │   ├── threed
+│   │   │   ├── WeatherPoller.ts
+│   │   │   ├── PlantModelMapping.ts
+│   │   │   ├── PlantDataPoller.ts
+│   │   │   ├── MarkerService.ts
+│   │   │   ├── FarmBotPoller.ts
+│   │   │   └── DataService.ts
+│   │   ├── music
+│   │   │   ├── S3.ts
+│   │   │   └── MusicPoller.ts
+│   │   ├── index.ts
+│   │   └── app
+│   │       └── MasterDataService.ts
+│   ├── scripts
+│   │   ├── sync-sequences.ts
+│   │   ├── migrate-project-module-relationships.ts
+│   │   └── migrate-project-assets-add-module.ts
+│   ├── schema
+│   │   ├── traffic
+│   │   │   ├── index.ts
+│   │   │   ├── index-090.ts
+│   │   │   └── index-080.ts
+│   │   ├── threed
+│   │   │   ├── index.ts
+│   │   │   └── index-v080.ts
+│   │   ├── settings
+│   │   │   └── index.ts
+│   │   ├── project
+│   │   │   └── index.ts
+│   │   ├── music
+│   │   │   └── index.ts
+│   │   ├── index.ts
+│   │   └── auth
+│   │       └── index.ts
+│   ├── db
+│   │   ├── sequence.ts
+│   │   └── client.ts
+│   ├── data
+│   │   ├── traffic
+│   │   │   └── seed.ts
+│   │   ├── threed
+│   │   │   ├── seed-layers.ts
+│   │   │   └── plants.ts
+│   │   ├── settings
+│   │   │   └── seed.ts
+│   │   └── music
+│   │       ├── seed.ts
+│   │       ├── seed-simple.ts
+│   │       └── seed-data.json
+│   ├── config
+│   │   ├── settings.ts
+│   │   ├── settings.server.ts
+│   │   ├── settings.json
+│   │   ├── settings.client.ts
+│   │   ├── navigation.ts
+│   │   ├── navigation.server.ts
+│   │   ├── navigation.client.ts
+│   │   ├── constants.ts
+│   │   └── _test
+│   │       ├── settings.client.ts
+│   │       ├── service-registry.ts
+│   │       ├── navigation.client.ts
+│   │       └── deployments.ts
+│   └── auth
+│       ├── index.ts
+│       └── index-maybe.ts
+├── components
+│   ├── ui
+│   │   ├── toast.tsx
+│   │   ├── textarea.tsx
+│   │   ├── tabs.tsx
+│   │   ├── table.tsx
+│   │   ├── switch.tsx
+│   │   ├── slider.tsx
+│   │   ├── skeleton.tsx
+│   │   ├── separator.tsx
+│   │   ├── select.tsx
+│   │   ├── scroll-area.tsx
+│   │   ├── progress.tsx
+│   │   ├── navbar.tsx
+│   │   ├── modal.tsx
+│   │   ├── modal-confirm.tsx
+│   │   ├── loading-spinner.tsx
+│   │   ├── label.tsx
+│   │   ├── input.tsx
+│   │   ├── dropdown-menu.tsx
+│   │   ├── dialog.tsx
+│   │   ├── card.tsx
+│   │   ├── button.tsx
+│   │   └── badge.tsx
+│   ├── traffic
+│   │   ├── map
+│   │   │   ├── simpleMap.tsx
+│   │   │   ├── masterMap.tsx
+│   │   │   ├── leafletMap.tsx
+│   │   │   ├── ThreeDMap.tsx
+│   │   │   ├── ThreeDMap-intro.tsx
+│   │   │   └── EnhancedLeafletMap.tsx
+│   │   └── dashboard
+│   │       ├── TrafficStats.tsx
+│   │       ├── TrafficMapDashboard.tsx
+│   │       ├── CaltransClosures.tsx
+│   │       ├── CHPLiveIncidents.tsx
+│   │       ├── CHPHistorical.tsx
+│   │       └── BayArea511.tsx
+│   ├── threed
+│   │   ├── shared
+│   │   │   ├── WeatherEffects.tsx
+│   │   │   ├── UnifiedMap.tsx
+│   │   │   ├── PlantModels.tsx
+│   │   │   ├── PlantModels-working.tsx
+│   │   │   ├── ModelPreview.tsx
+│   │   │   ├── GardenViewer.tsx
+│   │   │   ├── GardenPlant.tsx
+│   │   │   ├── GardenPlant-working.tsx
+│   │   │   ├── GardenPlant-original.tsx
+│   │   │   ├── GardenGround.tsx
+│   │   │   ├── GardenCharacter.tsx
+│   │   │   ├── GardenBed.tsx
+│   │   │   ├── GLTFPlant.tsx
+│   │   │   ├── FloatingUI.tsx
+│   │   │   └── AnimatedFBXPlant.tsx
+│   │   ├── markers
+│   │   │   ├── TrafficMarker3D.tsx
+│   │   │   ├── PlantMarker3D.tsx
+│   │   │   ├── FarmBotMarker3D.tsx
+│   │   │   └── BedMarker3D.tsx
+│   │   ├── map
+│   │   ├── layers
+│   │   │   ├── WeatherLayer.tsx
+│   │   │   ├── TrafficLayer.tsx
+│   │   │   ├── GardenLayer.tsx
+│   │   │   └── FarmBotLayer.tsx
+│   │   ├── effects
+│   │   │   └── WeatherEffects.tsx
+│   │   ├── controls
+│   │   │   ├── Legend3D.tsx
+│   │   │   └── LayerToggles.tsx
+│   │   ├── _test
+│   │   │   ├── Unified3DMap.tsx
+│   │   │   ├── ThreeDGarden.tsx
+│   │   │   ├── ThreeDGarden-working.tsx
+│   │   │   ├── ThreeDGarden-working-3-base.tsx
+│   │   │   ├── ThreeDGarden-working-2.tsx
+│   │   │   └── FloatingUI copy.tsx
+│   │   ├── ThreeDGarden.tsx
+│   │   └── ThreeDGarden-maybe.tsx
+│   ├── themes
+│   │   ├── selector.tsx
+│   │   └── provider.tsx
+│   ├── test
+│   │   ├── TestLocalStorage.tsx
+│   │   └── DirectStorageTest.tsx
+│   ├── navigation
+│   │   ├── NavMenu.tsx
+│   │   └── NavDropdown.tsx
+│   ├── music
+│   │   ├── WaveformVisualizer1.tsx
+│   │   ├── WaveformVisualizer.tsx
+│   │   ├── WaveformVisualizer-testing.tsx
+│   │   ├── NowPlayingBar.tsx
+│   │   ├── MusicStats.tsx
+│   │   ├── MusicPlayer.tsx
+│   │   ├── MusicContent.tsx
+│   │   ├── MusicContent-close.tsx
+│   │   ├── MediaGallery.tsx
+│   │   └── AlbumGrid.tsx
+│   ├── auth
+│   │   └── SignOutButton.tsx
+│   └── admin
+│       ├── traffic
+│       │   ├── chp-centers
+│       │   │   └── TrafficCHPCentersCRUD.tsx
+│       │   ├── chp-cases
+│       │   │   ├── TrafficCHPCasesCRUD.tsx
+│       │   │   └── TrafficCHPCasesCRUD-080.tsx
+│       │   ├── chp-cad
+│       │   │   ├── TrafficCHPCADCRUD.tsx
+│       │   │   └── TrafficCHPCADCRUD-080.tsx
+│       │   ├── caltrans-districts
+│       │   │   └── TrafficCaltransDistrictsCRUD.tsx
+│       │   ├── caltrans-cctv
+│       │   │   └── TrafficCaltransCctvCRUD.tsx
+│       │   ├── caltrans
+│       │   │   ├── TrafficCaltransCRUD.tsx
+│       │   │   └── TrafficCaltransCRUD-080.tsx
+│       │   ├── calfire
+│       │   │   ├── TrafficCalfireCRUD.tsx
+│       │   │   └── TrafficCalfireCRUD-080.tsx
+│       │   └── bay-area-511
+│       │       ├── TrafficBayArea511CRUD.tsx
+│       │       └── TrafficBayArea511CRUD-080.tsx
+│       ├── threed
+│       │   ├── watering-schedules
+│       │   │   └── ThreeDWateringSchedulesCRUD.tsx
+│       │   ├── tasks
+│       │   │   └── ThreeDTasksCRUD.tsx
+│       │   ├── plants
+│       │   │   └── ThreeDPlantsCRUD.tsx
+│       │   ├── plantings
+│       │   │   └── ThreeDPlantingsCRUD.tsx
+│       │   ├── models
+│       │   │   ├── ThreeDModelsCRUD.tsx
+│       │   │   └── ThreeDModelsCRUD-v080.tsx
+│       │   ├── markers
+│       │   │   └── ThreeDMarkersCRUD.tsx
+│       │   ├── layers
+│       │   │   └── ThreeDLayersCRUD.tsx
+│       │   ├── harvests
+│       │   │   └── ThreeDHarvestsCRUD.tsx
+│       │   ├── farmbots
+│       │   │   └── ThreeDFarmbotsCRUD.tsx
+│       │   ├── characters
+│       │   │   ├── ThreeDCharactersCRUD.tsx
+│       │   │   └── ThreeDCharactersCRUD-070.tsx
+│       │   └── beds
+│       │       └── ThreeDBedsCRUD.tsx
+│       ├── settings
+│       │   └── SettingsManager.tsx
+│       ├── projects
+│       │   ├── ProjectAssetManager.tsx
+│       │   └── ProjectAssetManager-090.tsx
+│       ├── music
+│       │   ├── tracks
+│       │   │   └── MusicTracksCRUD.tsx
+│       │   ├── media
+│       │   │   ├── MusicMediaCRUD.tsx
+│       │   │   ├── MediaManager.tsx
+│       │   │   └── MediaForm.tsx
+│       │   ├── links
+│       │   │   ├── MusicLinksCRUD.tsx
+│       │   │   ├── LinksManager.tsx
+│       │   │   └── LinkForm.tsx
+│       │   ├── albums
+│       │   │   └── MusicAlbumCRUD.tsx
+│       │   └── AdminMusicManager.tsx
+│       ├── layout
+│       │   ├── AdminSidebar.tsx
+│       │   ├── AdminLayout.tsx
+│       │   ├── AdminHeader.tsx
+│       │   └── AdminFooter.tsx
+│       └── dashboard
+│           └── AdminDashboard.tsx
+└── app
+    ├── providers.tsx
+    ├── page.tsx
+    ├── layout.tsx
+    ├── globals.css
+    ├── fonts.js
+    ├── favicon.ico
+    ├── dashboard
+    │   ├── traffic
+    │   │   ├── page.tsx
+    │   │   ├── chp-live
+    │   │   │   ├── page.tsx
+    │   │   │   └── chpLiveContent.tsx
+    │   │   ├── chp-historical
+    │   │   │   ├── page.tsx
+    │   │   │   └── chpHistoricalContent.tsx
+    │   │   ├── caltrans
+    │   │   │   ├── page.tsx
+    │   │   │   ├── closure
+    │   │   │   │   └── [id]
+    │   │   │   │       └── page.tsx
+    │   │   │   └── caltransContent.tsx
+    │   │   ├── calfire
+    │   │   │   ├── page.tsx
+    │   │   │   └── calfireContent.tsx
+    │   │   └── 511org
+    │   │       ├── page.tsx
+    │   │       └── 511orgContent.tsx
+    │   ├── threed
+    │   │   ├── weather
+    │   │   │   ├── weatherContent.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── tasks
+    │   │   │   ├── tasksContent.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── plants
+    │   │   │   ├── plantsContent.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── plantings
+    │   │   │   ├── plantingsContent.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── plant-models
+    │   │   │   └── page.tsx
+    │   │   ├── page.tsx
+    │   │   ├── page-working.tsx
+    │   │   ├── models
+    │   │   │   ├── page.tsx
+    │   │   │   └── modelsContent.tsx
+    │   │   ├── logs
+    │   │   │   ├── page.tsx
+    │   │   │   └── logsContent.tsx
+    │   │   ├── harvests
+    │   │   │   ├── page.tsx
+    │   │   │   └── harvestsContent.tsx
+    │   │   ├── garden
+    │   │   │   ├── page.tsx
+    │   │   │   ├── page-working.tsx
+    │   │   │   └── analytics
+    │   │   │       └── page.tsx
+    │   │   ├── farmbots
+    │   │   │   ├── page.tsx
+    │   │   │   └── farmbotsContent.tsx
+    │   │   ├── characters
+    │   │   │   ├── page.tsx
+    │   │   │   └── charactersContent.tsx
+    │   │   └── beds
+    │   │       ├── page.tsx
+    │   │       └── bedsContent.tsx
+    │   ├── page.tsx
+    │   ├── music
+    │   │   ├── player
+    │   │   │   └── page.tsx
+    │   │   ├── page.tsx
+    │   │   ├── layout-potential.tsx
+    │   │   └── album
+    │   │       └── [id]
+    │   │           └── page.tsx
+    │   └── layout.tsx
+    ├── auth
+    │   ├── sign-up
+    │   │   └── page.tsx
+    │   ├── sign-out
+    │   │   └── page.tsx
+    │   ├── sign-in
+    │   │   └── page.tsx
+    │   └── error
+    │       └── page.tsx
+    ├── api
+    │   ├── traffic
+    │   │   ├── stats
+    │   │   │   ├── route.ts
+    │   │   │   └── route-040.ts
+    │   │   ├── route.ts
+    │   │   ├── route-080.ts
+    │   │   ├── master-data
+    │   │   │   └── route.ts
+    │   │   ├── dashboard
+    │   │   │   └── route.ts
+    │   │   ├── chp-centers
+    │   │   │   └── route.ts
+    │   │   ├── chp-cases
+    │   │   │   ├── seed
+    │   │   │   │   └── route.ts
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-040.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── debug
+    │   │   │   │   └── route.ts
+    │   │   │   ├── cron
+    │   │   │   │   └── route.ts
+    │   │   │   └── collisions
+    │   │   │       ├── stats
+    │   │   │       │   └── route.ts
+    │   │   │       └── route.ts
+    │   │   ├── chp-cad
+    │   │   │   ├── seed
+    │   │   │   │   └── chp-cad-centers
+    │   │   │   │       ├── route.ts
+    │   │   │   │       └── data
+    │   │   │   │           └── chpCadCenters.ts
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-040.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── cron
+    │   │   │   │   └── route.ts
+    │   │   │   └── chp-cad-centers
+    │   │   │       └── route.ts
+    │   │   ├── caltrans-districts
+    │   │   │   └── route.ts
+    │   │   ├── caltrans-cctv
+    │   │   │   └── route.ts
+    │   │   ├── caltrans
+    │   │   │   ├── seed
+    │   │   │   │   └── route.ts
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-040.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── cron
+    │   │   │   │   └── route.ts
+    │   │   │   ├── closures
+    │   │   │   │   ├── update-coordinates
+    │   │   │   │   │   └── route.ts
+    │   │   │   │   ├── summary
+    │   │   │   │   │   ├── route.ts
+    │   │   │   │   │   └── debug
+    │   │   │   │   │       └── route.ts
+    │   │   │   │   ├── stats
+    │   │   │   │   │   └── route.ts
+    │   │   │   │   ├── simple
+    │   │   │   │   │   └── route.ts
+    │   │   │   │   ├── search
+    │   │   │   │   │   └── route.ts
+    │   │   │   │   ├── route.ts
+    │   │   │   │   ├── raw
+    │   │   │   │   │   └── route.ts
+    │   │   │   │   ├── export
+    │   │   │   │   │   └── route.ts
+    │   │   │   │   ├── add-test-coordinates
+    │   │   │   │   │   └── route.ts
+    │   │   │   │   └── [id]
+    │   │   │   │       └── route.ts
+    │   │   │   └── cctv
+    │   │   │       ├── seed
+    │   │   │       ├── route.ts
+    │   │   │       ├── poll
+    │   │   │       ├── debug
+    │   │   │       └── cron
+    │   │   ├── calfire
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-040.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   │       └── route.ts
+    │   │   └── bay-area-511
+    │   │       ├── seed
+    │   │       │   └── route.ts
+    │   │       ├── route.ts
+    │   │       ├── route-040.ts
+    │   │       ├── poll
+    │   │       │   └── route.ts
+    │   │       ├── debug
+    │   │       │   └── route.ts
+    │   │       └── cron
+    │   │           └── route.ts
+    │   ├── threed
+    │   │   ├── weather
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── watering-schedules
+    │   │   │   └── route.ts
+    │   │   ├── tasks
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-070.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── route.ts
+    │   │   ├── plants
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── plantings
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-070.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── models
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-v080.ts
+    │   │   │   ├── files
+    │   │   │   │   ├── route.ts
+    │   │   │   │   └── [fileId]
+    │   │   │   │       └── route.ts
+    │   │   │   └── [id]
+    │   │   │       └── route-v070.ts
+    │   │   ├── markers
+    │   │   │   └── route.ts
+    │   │   ├── logs
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   └── route.ts
+    │   │   ├── layers
+    │   │   │   └── route.ts
+    │   │   ├── harvests
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-070.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   ├── farmbots
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-070.ts
+    │   │   │   ├── poll
+    │   │   │   │   └── route.ts
+    │   │   │   ├── debug
+    │   │   │   ├── cron
+    │   │   │   ├── commands
+    │   │   │   │   └── route.ts
+    │   │   │   └── [id]
+    │   │   │       └── water
+    │   │   │           ├── route.ts
+    │   │   │           └── move
+    │   │   │               └── route.ts
+    │   │   ├── characters
+    │   │   │   ├── stats
+    │   │   │   ├── route.ts
+    │   │   │   ├── route-v070.ts
+    │   │   │   ├── poll
+    │   │   │   └── [id]
+    │   │   │       └── route.ts
+    │   │   ├── beds
+    │   │   │   ├── stats
+    │   │   │   │   └── route.ts
+    │   │   │   ├── seed
+    │   │   │   ├── route.ts
+    │   │   │   ├── poll
+    │   │   │   ├── debug
+    │   │   │   └── cron
+    │   │   └── analytics
+    │   │       └── route.ts
+    │   ├── project
+    │   │   ├── route.ts
+    │   │   ├── modules
+    │   │   │   └── route.ts
+    │   │   └── assets
+    │   │       └── route.ts
+    │   ├── music
+    │   │   ├── tracks
+    │   │   │   └── route.ts
+    │   │   ├── stream
+    │   │   │   └── [trackId]
+    │   │   │       └── route.ts
+    │   │   ├── stats
+    │   │   │   └── route.ts
+    │   │   ├── seed
+    │   │   │   └── route.ts
+    │   │   ├── route.ts
+    │   │   ├── poll
+    │   │   │   └── route.ts
+    │   │   ├── playback
+    │   │   │   └── track
+    │   │   │       └── route.ts
+    │   │   ├── media
+    │   │   │   └── route.ts
+    │   │   ├── links
+    │   │   │   └── route.ts
+    │   │   ├── cron
+    │   │   │   └── route.ts
+    │   │   ├── albums
+    │   │   │   └── route.ts
+    │   │   └── admin
+    │   │       └── stats
+    │   │           └── route.ts
+    │   ├── auth
+    │   │   ├── debug
+    │   │   │   └── route.ts
+    │   │   └── [...nextauth]
+    │   │       └── route.ts
+    │   └── admin
+    │       └── dashboard
+    │           └── route.ts
+    └── admin
+        ├── traffic
+        │   ├── page.tsx
+        │   ├── chp-centers
+        │   │   └── page.tsx
+        │   ├── chp-cases
+        │   │   └── page.tsx
+        │   ├── chp-cad
+        │   │   └── page.tsx
+        │   ├── caltrans-districts
+        │   │   └── page.tsx
+        │   ├── caltrans-cctv
+        │   │   └── page.tsx
+        │   ├── caltrans
+        │   │   └── page.tsx
+        │   ├── calfire
+        │   │   └── page.tsx
+        │   └── bay-area-511
+        │       └── page.tsx
+        ├── threed
+        │   ├── watering-schedules
+        │   │   └── page.tsx
+        │   ├── tasks
+        │   │   └── page.tsx
+        │   ├── plants
+        │   │   ├── page.tsx
+        │   │   └── [id]
+        │   │       └── page.tsx
+        │   ├── plantings
+        │   │   └── page.tsx
+        │   ├── models
+        │   │   └── page.tsx
+        │   ├── markers
+        │   │   └── page.tsx
+        │   ├── layers
+        │   │   └── page.tsx
+        │   ├── harvests
+        │   │   └── page.tsx
+        │   ├── farmbots
+        │   │   └── page.tsx
+        │   ├── characters
+        │   │   └── page.tsx
+        │   └── beds
+        │       └── page.tsx
+        ├── settings
+        │   └── page.tsx
+        ├── projects
+        │   ├── page.tsx
+        │   ├── new
+        │   │   └── page.tsx
+        │   └── [id]
+        │       └── page.tsx
+        ├── page.tsx
+        ├── music
+        │   ├── tracks
+        │   │   ├── page.tsx
+        │   │   └── [id]
+        │   │       └── page.tsx
+        │   ├── page.tsx
+        │   ├── media
+        │   │   └── page.tsx
+        │   ├── links
+        │   │   └── page.tsx
+        │   ├── layout-legacy.tsx
+        │   └── albums
+        │       ├── page.tsx
+        │       └── [id]
+        │           └── page.tsx
+        ├── layout.tsx
+        └── _coordinates
+            └── page.tsx
 ```
 
 ---
@@ -3442,3 +3991,67 @@ src/
 
 ---
 
+📋 Complete v0.11.0 File Checklist
+
+Here's a summary of all the files we've created/modified for v0.11.0:
+New Files Created
+text
+
+app/
+├── admin/
+│   ├── page.tsx                          # ✅ New Dashboard
+│   └── projects/
+│       └── page.tsx                      # ✅ Moved from /admin/page.tsx
+├── api/
+│   └── admin/
+│       └── dashboard/
+│           └── route.ts                  # ✅ New Dashboard API
+└── components/
+    └── admin/
+        └── dashboard/
+            └── AdminDashboard.tsx        # ✅ New Dashboard Component
+
+Updated Files
+text
+
+components/admin/layout/AdminSidebar.tsx   # ✅ Added Dashboard link
+
+🎯 What's Working
+Feature	Status
+Dashboard Overview	✅
+Stats Cards	✅
+Quick Actions	✅
+Module Overview	✅
+Recent Projects	✅
+Client-side Auth	✅
+API Route for Data	✅
+
+- Add Admin Dashboard with stats and quick actions
+- Move Projects page to /admin/projects
+- Add Dashboard API route for client-side data fetching
+- Add ThreeD Layers and Markers sub-modules
+- Full Project Asset Manager integration
+- Consistent client-side auth pattern"
+
+🎊 Version v0.11.0 Complete!
+Module	Status
+Projects Module	✅ Complete
+Project Asset Manager	✅ Complete
+ThreeD Layers	✅ Complete
+ThreeD Markers	✅ Complete
+Admin Dashboard	✅ Complete
+Client-side Auth	✅ Consistent
+
+The Projects Module with Asset Manager is now fully complete and production-ready! 🚀
+
+---
+
+## v0.11.0 Complete.
+
+---
+
+---
+
+## v0.12.0 Start Here.
+
+---
