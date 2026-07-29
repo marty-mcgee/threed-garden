@@ -31,8 +31,8 @@ import { useToast } from '@/components/ui/toast';
 
 // ✅ Types
 interface TrafficCHPCasesCRUDProps {
-  userId: string;
-  moduleId?: number;
+  // userId: string;
+  // moduleId?: number;
   onModuleUpdate?: () => void;
 }
 
@@ -183,7 +183,7 @@ const getActiveStatusColor = (isActive: boolean) => {
   return isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700';
 };
 
-export function TrafficCHPCasesCRUD({ userId, moduleId, onModuleUpdate }: TrafficCHPCasesCRUDProps) {
+export function TrafficCHPCasesCRUD({ onModuleUpdate }: TrafficCHPCasesCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [cases, setCases] = useState<CHPCase[]>([]);
   const [loading, setLoading] = useState(true);

@@ -64,13 +64,14 @@ export const eventTypeEnum = pgEnum('event_type', [
 
 export const traffic = pgTable('traffic', {
   id: serial('id').primaryKey(),
+
+  // Owner
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
-  // Module identification
-  moduleId: varchar('module_id', { length: 50 }).unique().notNull(),
-  name: varchar('name', { length: 255 }).notNull(),
+  // Basic info
+  name: text('name').notNull(),
   description: text('description'),
-  slug: varchar('slug', { length: 255 }).unique().notNull(),
+  slug: text('slug').unique().notNull(),
   
   // Module settings
   isActive: boolean('is_active').default(true),
@@ -78,31 +79,40 @@ export const traffic = pgTable('traffic', {
   
   // Configuration
   config: jsonb('config').default({}),
+  
+  // // Data source preferences
+  // dataSources: jsonb('data_sources').default({
+  //   chpCad: true,
+  //   chpCases: true,
+  //   caltrans: true,
+  //   caltransCctv: true,
+  //   bayArea511: true,
+  //   calfire: true
+  // }),
+  
+  // // Map settings
+  // mapConfig: jsonb('map_config').default({
+  //   center: { lat: 37.7749, lng: -122.4194 },
+  //   zoom: 10,
+  //   layers: [
+  //     'chpCad', 
+  //     'chpCases', 
+  //     'caltrans', 
+  //     'caltransCctv', 
+  //     'bayArea511', 
+  //     'calfire'
+  //   ]
+  // }),
+  
+  // Metadata
+  version: text('version').default('1.0.0'),
   metadata: jsonb('metadata').default({}),
   
-  // Data source preferences
-  dataSources: jsonb('data_sources').default({
-    chpCad: true,
-    chpCases: true,
-    caltransClosures: true,
-    bayArea511: true,
-    calfire: true,
-    cctv: true
-  }),
-  
-  // Map settings
-  mapConfig: jsonb('map_config').default({
-    center: { lat: 37.7749, lng: -122.4194 },
-    zoom: 10,
-    layers: ['incidents', 'closures', 'cameras']
-  }),
-  
-  // ✅ Metadata - database-managed (NO mode: 'string')
+  // Timestamps
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
   userIdIdx: index('idx_traffic_user_id').on(table.userId),
-  moduleIdIdx: uniqueIndex('idx_traffic_module_id').on(table.moduleId),
   slugIdx: uniqueIndex('idx_traffic_slug').on(table.slug),
   activeIdx: index('idx_traffic_active').on(table.isActive),
 }));
@@ -564,24 +574,30 @@ export const trafficApiRequestLogs = pgTable('traffic_api_request_logs', {
 }));
 
 // ============================================
-// RELATIONS
+// RELATIONSHIPS
 // ============================================
 
-export const trafficRelations = relations(traffic, ({ many }) => ({
-  // ✅ Project junction
+export const trafficRelations = relations(traffic, ({ one, many }) => ({
+  // ✅ User relationship (matches threed and music)
+  user: one(user, {
+    fields: [traffic.userId],
+    references: [user.id],
+  }),
+  
+  // ✅ Project junction (many-to-many via junction table)
   projectTraffics: many(projectTraffic),
   
   // ✅ Project Assets junction (via project_assets)
   projectAssets: many(projectAssets),
   
-  // ✅ Child relations (free-standing, linked via moduleId in project_assets)
+  // ✅ Child relations (free-standing, linked via project_assets)
   chpCadIncidents: many(trafficChpCadIncidents),
   chpCases: many(trafficChpCases),
   caltransLaneClosures: many(trafficCaltransLaneClosures),
   caltransCctvCameras: many(trafficCaltransCctvCameras),
   bayArea511Events: many(trafficBayArea511Events),
   calfireIncidents: many(trafficCalfireIncidents),
-  chpCadCenters: many(trafficChpCenters),
+  chpCenters: many(trafficChpCenters),
   caltransDistricts: many(trafficCaltransDistricts),
   apiRequestLogs: many(trafficApiRequestLogs),
 }));

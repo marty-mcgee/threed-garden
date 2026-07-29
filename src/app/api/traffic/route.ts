@@ -1,10 +1,9 @@
-// app/api/traffic/route.ts
+// app/api/traffic/route.ts - Updated POST to match Music/ThreeD
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { traffic } from '@/lib/schema/traffic';
 import { eq, and, desc, sql } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
 // GET /api/traffic - List all Traffic modules
@@ -12,39 +11,56 @@ import { ensureTableSequence } from '@/lib/db/sequence';
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    const userId = session?.user?.id;
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
 
     const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const projectId = searchParams.get('projectId');
+    const includeInactive = searchParams.get('includeInactive') === 'true';
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
-    const isActive = searchParams.get('isActive');
-    const search = searchParams.get('search');
 
-    let query = db.select().from(traffic);
+    // ✅ Get single module (matching Music/ThreeD)
+    if (id) {
+      const [result] = await db
+        .select()
+        .from(traffic)
+        .where(
+          and(
+            eq(traffic.id, parseInt(id)),
+            eq(traffic.userId, session.user.id)
+          )
+        );
 
-    // Filter by user or public
-    if (userId) {
-      query = query.where(eq(traffic.userId, userId));
-    } else {
-      query = query.where(eq(traffic.isPublic, true));
+      if (!result) {
+        return NextResponse.json(
+          { success: false, error: 'Traffic module not found' },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({ success: true, data: result });
     }
 
-    // Filter by active status
-    if (isActive !== null) {
-      query = query.where(eq(traffic.isActive, isActive === 'true'));
+    // ✅ List all modules (matching Music/ThreeD)
+    let query = db
+      .select()
+      .from(traffic)
+      .where(eq(traffic.userId, session.user.id));
+
+    if (projectId) {
+      query = query.where(eq(traffic.projectId, parseInt(projectId)));
+    }
+    if (!includeInactive) {
+      query = query.where(eq(traffic.isActive, true));
     }
 
-    // Search by name or description
-    if (search) {
-      query = query.where(
-        sql`${traffic.name} ILIKE ${`%${search}%`} OR ${traffic.description} ILIKE ${`%${search}%`}`
-      );
-    }
-
-    const [countResult] = await db
+    const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(traffic)
-      .where(query._where);
+      .where(eq(traffic.userId, session.user.id));
 
     const results = await query
       .orderBy(desc(traffic.createdAt))
@@ -57,20 +73,20 @@ export async function GET(request: NextRequest) {
       pagination: {
         limit,
         offset,
-        total: countResult?.count || 0,
+        total: countResult[0]?.count || 0,
       },
     });
   } catch (error) {
-    console.error('Error fetching traffic modules:', error);
+    console.error('Traffic API error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch traffic modules' },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// POST /api/traffic - Create a Traffic module
+// POST /api/traffic - Create a Traffic module (matching Music/ThreeD)
 // ============================================
 export async function POST(request: NextRequest) {
   try {
@@ -80,59 +96,118 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, slug, isActive, isPublic, config, metadata, dataSources, mapConfig } = body;
+    const { name, description, config } = body; // ✅ Removed projectId, slug, moduleId
 
-    if (!name || !slug) {
+    if (!name) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: name, slug' },
+        { success: false, error: 'Missing required field: name' },
         { status: 400 }
       );
     }
 
-    const userId = session.user.id;
-
-    await ensureTableSequence('traffic');
+    // ✅ Auto-generate slug from name (matching Music/ThreeD)
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
 
     const [newModule] = await db
       .insert(traffic)
       .values({
-        userId,
-        moduleId: `traffic_${Date.now()}`,
         name,
-        description: description || null,
-        slug,
-        isActive: isActive ?? true,
-        isPublic: isPublic ?? false,
+        description: description || '',
+        slug: slug,
+        userId: session.user.id,
+        isActive: true,
+        isPublic: false,
         config: config || {},
-        metadata: metadata || {},
-        dataSources: dataSources || {
-          chpCad: true,
-          chpCases: true,
-          caltransClosures: true,
-          bayArea511: true,
-          calfire: true,
-          cctv: true
-        },
-        mapConfig: mapConfig || {
-          center: { lat: 37.7749, lng: -122.4194 },
-          zoom: 10,
-          layers: ['incidents', 'closures', 'cameras']
-        },
+        version: '1.0.0',
+        metadata: {},
       })
       .returning();
 
     return NextResponse.json({ success: true, data: newModule });
   } catch (error) {
-    console.error('Error creating traffic module:', error);
+    console.error('Traffic API error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create traffic module' },
+      { success: false, error: 'Failed to create Traffic module' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// PATCH /api/traffic?id=1 - Update a Traffic module
+// PUT /api/traffic?id=1 - Full update of a Traffic module
+// ============================================
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Missing module ID' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { projectId, name, description, isActive, isPublic, config, version, metadata } = body;
+
+    const [existing] = await db
+      .select()
+      .from(traffic)
+      .where(
+        and(
+          eq(traffic.id, parseInt(id)),
+          eq(traffic.userId, session.user.id)
+        )
+      )
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Traffic module not found' },
+        { status: 404 }
+      );
+    }
+
+    const [updated] = await db
+      .update(traffic)
+      .set({
+        projectId: projectId || existing.projectId,
+        name: name || existing.name,
+        description: description !== undefined ? description : existing.description,
+        slug: name ? name.toLowerCase().replace(/\s+/g, '-') : existing.slug,
+        isActive: isActive !== undefined ? isActive : existing.isActive,
+        isPublic: isPublic !== undefined ? isPublic : existing.isPublic,
+        config: config || existing.config,
+        version: version || existing.version,
+        metadata: metadata || existing.metadata,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(traffic.id, parseInt(id)),
+          eq(traffic.userId, session.user.id)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ success: true, data: updated });
+  } catch (error) {
+    console.error('Traffic API error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update Traffic module' },
+      { status: 500 }
+    );
+  }
+}
+
+// ============================================
+// PATCH /api/traffic?id=1 - Partial update of a Traffic module
 // ============================================
 export async function PATCH(request: NextRequest) {
   try {
@@ -146,27 +221,23 @@ export async function PATCH(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Missing id parameter' },
+        { success: false, error: 'Missing module ID' },
         { status: 400 }
       );
     }
 
     const body = await request.json();
-    const userId = session.user.id;
-    const parsedId = parseInt(id);
+    const { name, description, isActive, isPublic, config, version, metadata } = body;
 
-    if (isNaN(parsedId)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid ID' },
-        { status: 400 }
-      );
-    }
-
-    // Verify ownership
     const [existing] = await db
       .select()
       .from(traffic)
-      .where(and(eq(traffic.id, parsedId), eq(traffic.userId, userId)))
+      .where(
+        and(
+          eq(traffic.id, parseInt(id)),
+          eq(traffic.userId, session.user.id)
+        )
+      )
       .limit(1);
 
     if (!existing) {
@@ -176,20 +247,34 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    const updateData: any = { updatedAt: new Date() };
+    if (name !== undefined) {
+      updateData.name = name;
+      updateData.slug = name.toLowerCase().replace(/\s+/g, '-');
+    }
+    if (description !== undefined) updateData.description = description;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (isPublic !== undefined) updateData.isPublic = isPublic;
+    if (config !== undefined) updateData.config = config;
+    if (version !== undefined) updateData.version = version;
+    if (metadata !== undefined) updateData.metadata = metadata;
+
     const [updated] = await db
       .update(traffic)
-      .set({
-        ...body,
-        updatedAt: new Date(),
-      })
-      .where(and(eq(traffic.id, parsedId), eq(traffic.userId, userId)))
+      .set(updateData)
+      .where(
+        and(
+          eq(traffic.id, parseInt(id)),
+          eq(traffic.userId, session.user.id)
+        )
+      )
       .returning();
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
-    console.error('Error updating traffic module:', error);
+    console.error('Traffic API error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update traffic module' },
+      { success: false, error: 'Failed to update Traffic module' },
       { status: 500 }
     );
   }
@@ -210,38 +295,44 @@ export async function DELETE(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Missing id parameter' },
+        { success: false, error: 'Missing module ID' },
         { status: 400 }
       );
     }
 
-    const userId = session.user.id;
-    const parsedId = parseInt(id);
+    const [existing] = await db
+      .select()
+      .from(traffic)
+      .where(
+        and(
+          eq(traffic.id, parseInt(id)),
+          eq(traffic.userId, session.user.id)
+        )
+      )
+      .limit(1);
 
-    if (isNaN(parsedId)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid ID' },
-        { status: 400 }
-      );
-    }
-
-    const [deleted] = await db
-      .delete(traffic)
-      .where(and(eq(traffic.id, parsedId), eq(traffic.userId, userId)))
-      .returning();
-
-    if (!deleted) {
+    if (!existing) {
       return NextResponse.json(
         { success: false, error: 'Traffic module not found' },
         { status: 404 }
       );
     }
 
+    const [deleted] = await db
+      .delete(traffic)
+      .where(
+        and(
+          eq(traffic.id, parseInt(id)),
+          eq(traffic.userId, session.user.id)
+        )
+      )
+      .returning();
+
     return NextResponse.json({ success: true, data: deleted });
   } catch (error) {
-    console.error('Error deleting traffic module:', error);
+    console.error('Traffic API error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete traffic module' },
+      { success: false, error: 'Failed to delete Traffic module' },
       { status: 500 }
     );
   }

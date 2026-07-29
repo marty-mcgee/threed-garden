@@ -50,7 +50,7 @@ export const threed = pgTable('threed', {
 }));
 
 // ============================================
-// UPDATE RELATIONSHIPS
+// RELATIONSHIPS
 // ============================================
 
 export const threedRelations = relations(threed, ({ one, many }) => ({
