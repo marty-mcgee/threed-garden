@@ -124,7 +124,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back, {data.user.name || 'User'}! Here's an overview of your projects and modules.
+            Welcome back, {data.user.name || 'User'}!
           </p>
         </div>
         <div className="flex items-center gap-2">
