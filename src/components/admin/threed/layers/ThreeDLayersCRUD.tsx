@@ -15,6 +15,9 @@ import {
   EyeOff,
   Lock,
   Unlock,
+  Palette,
+  Hash,
+  Move,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,16 +31,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-interface ThreeDLayersCRUDProps {
-  moduleId?: number;
-  onModuleUpdate?: () => void;
-}
-
+// ✅ Types
 interface Layer {
   id: number;
   layerId: string;
   name: string;
   description: string | null;
+  config: any;
   category: string | null;
   layerType: string | null;
   parentLayerId: number | null;
@@ -46,16 +46,29 @@ interface Layer {
   isLocked: boolean;
   isActive: boolean;
   isPublic: boolean;
-  config: any;
   metadata: any;
   createdAt: string;
   updatedAt: string;
+  parentLayer?: Layer;
+  childLayers?: Layer[];
 }
 
 interface FormData {
   layerId: string;
   name: string;
   description: string;
+  configVisible: string;
+  configOpacity: string;
+  configColor: string;
+  configTransformX: string;
+  configTransformY: string;
+  configTransformZ: string;
+  configRotationX: string;
+  configRotationY: string;
+  configRotationZ: string;
+  configScaleX: string;
+  configScaleY: string;
+  configScaleZ: string;
   category: string;
   layerType: string;
   parentLayerId: string;
@@ -64,34 +77,62 @@ interface FormData {
   isLocked: boolean;
   isActive: boolean;
   isPublic: boolean;
-  config: any;
-  metadata: any;
+  metadata: string;
 }
 
-const LAYER_TYPE_OPTIONS = [
-  { value: 'base', label: 'Base Layer' },
-  { value: 'overlay', label: 'Overlay' },
-  { value: 'annotation', label: 'Annotation' },
-  { value: 'reference', label: 'Reference' },
-  { value: 'custom', label: 'Custom' },
-];
-
-const CATEGORY_OPTIONS = [
+// ✅ Options
+const LAYER_CATEGORY_OPTIONS = [
+  { value: 'garden', label: 'Garden' },
   { value: 'plants', label: 'Plants' },
   { value: 'beds', label: 'Beds' },
-  { value: 'buildings', label: 'Buildings' },
-  { value: 'paths', label: 'Paths' },
-  { value: 'water', label: 'Water' },
-  { value: 'decorations', label: 'Decorations' },
+  { value: 'farmbots', label: 'FarmBots' },
+  { value: 'models', label: 'Models' },
+  { value: 'characters', label: 'Characters' },
+  { value: 'tasks', label: 'Tasks' },
+  { value: 'weather', label: 'Weather' },
+  { value: 'traffic', label: 'Traffic' },
   { value: 'custom', label: 'Custom' },
 ];
 
+const LAYER_TYPE_OPTIONS = [
+  { value: 'garden', label: 'Garden' },
+  { value: 'plants', label: 'Plants' },
+  { value: 'beds', label: 'Beds' },
+  { value: 'farmbots', label: 'FarmBots' },
+  { value: 'models', label: 'Models' },
+  { value: 'characters', label: 'Characters' },
+  { value: 'tasks', label: 'Tasks' },
+  { value: 'weather', label: 'Weather' },
+  { value: 'traffic', label: 'Traffic' },
+  { value: 'custom', label: 'Custom' },
+];
+
+const COLOR_OPTIONS = [
+  { value: '#ffffff', label: 'White' },
+  { value: '#ef4444', label: 'Red' },
+  { value: '#22c55e', label: 'Green' },
+  { value: '#3b82f6', label: 'Blue' },
+  { value: '#eab308', label: 'Yellow' },
+  { value: '#f97316', label: 'Orange' },
+  { value: '#a855f7', label: 'Purple' },
+  { value: '#ec4899', label: 'Pink' },
+  { value: '#06b6d4', label: 'Cyan' },
+  { value: '#8b5cf6', label: 'Violet' },
+  { value: '#64748b', label: 'Gray' },
+  { value: '#000000', label: 'Black' },
+];
+
+// ✅ Helper
 const getOptionLabel = (options: { value: string; label: string }[], value: string) => {
   const option = options.find((o) => o.value === value);
   return option ? option.label : value;
 };
 
-export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDProps) {
+const getStatusColor = (isActive: boolean) => {
+  return isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700';
+};
+
+export function ThreeDLayersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
   const [layers, setLayers] = useState<Layer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,10 +143,23 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
   const [filterType, setFilterType] = useState<string>('all');
   const [filterActive, setFilterActive] = useState<string>('all');
 
+  // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
     layerId: '',
     name: '',
     description: '',
+    configVisible: 'true',
+    configOpacity: '1.0',
+    configColor: '#ffffff',
+    configTransformX: '0',
+    configTransformY: '0',
+    configTransformZ: '0',
+    configRotationX: '0',
+    configRotationY: '0',
+    configRotationZ: '0',
+    configScaleX: '1',
+    configScaleY: '1',
+    configScaleZ: '1',
     category: '',
     layerType: '',
     parentLayerId: '',
@@ -114,25 +168,19 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
     isLocked: false,
     isActive: true,
     isPublic: false,
-    config: { visible: true, opacity: 1.0, color: '#ffffff' },
-    metadata: {},
+    metadata: '{}',
   });
 
+  // ✅ Fetch layers
   useEffect(() => {
     fetchLayers();
-  }, [moduleId, filterType, filterActive]);
+  }, []);
 
   const fetchLayers = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (moduleId) params.append('moduleId', String(moduleId));
-      if (filterType !== 'all') params.append('layerType', filterType);
-      if (filterActive !== 'all') params.append('isActive', filterActive === 'true' ? 'true' : 'false');
-
-      const response = await fetch(`/api/threed/layers?${params.toString()}`);
+      const response = await fetch('/api/threed/layers?limit=100');
       const data = await response.json();
-
       if (data.success) {
         setLayers(Array.isArray(data.data) ? data.data : []);
       } else {
@@ -150,7 +198,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
 
   const filteredLayers = layers.filter((layer) =>
     layer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (layer.layerId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    layer.layerId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (layer.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
@@ -168,10 +216,31 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
     try {
       const payload = {
         ...formData,
-        moduleId: moduleId || null,
-        moduleType: 'threed',
-        orderIndex: parseInt(formData.orderIndex) || 0,
+        config: {
+          visible: formData.configVisible === 'true',
+          opacity: parseFloat(formData.configOpacity) || 1.0,
+          color: formData.configColor || '#ffffff',
+          transform: {
+            position: {
+              x: parseFloat(formData.configTransformX) || 0,
+              y: parseFloat(formData.configTransformY) || 0,
+              z: parseFloat(formData.configTransformZ) || 0,
+            },
+            rotation: {
+              x: parseFloat(formData.configRotationX) || 0,
+              y: parseFloat(formData.configRotationY) || 0,
+              z: parseFloat(formData.configRotationZ) || 0,
+            },
+            scale: {
+              x: parseFloat(formData.configScaleX) || 1,
+              y: parseFloat(formData.configScaleY) || 1,
+              z: parseFloat(formData.configScaleZ) || 1,
+            },
+          },
+        },
+        metadata: JSON.parse(formData.metadata),
         parentLayerId: formData.parentLayerId ? parseInt(formData.parentLayerId) : null,
+        orderIndex: parseInt(formData.orderIndex) || 0,
       };
 
       const response = await fetch('/api/threed/layers', {
@@ -213,8 +282,31 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
     try {
       const payload = {
         ...formData,
-        orderIndex: parseInt(formData.orderIndex) || 0,
+        config: {
+          visible: formData.configVisible === 'true',
+          opacity: parseFloat(formData.configOpacity) || 1.0,
+          color: formData.configColor || '#ffffff',
+          transform: {
+            position: {
+              x: parseFloat(formData.configTransformX) || 0,
+              y: parseFloat(formData.configTransformY) || 0,
+              z: parseFloat(formData.configTransformZ) || 0,
+            },
+            rotation: {
+              x: parseFloat(formData.configRotationX) || 0,
+              y: parseFloat(formData.configRotationY) || 0,
+              z: parseFloat(formData.configRotationZ) || 0,
+            },
+            scale: {
+              x: parseFloat(formData.configScaleX) || 1,
+              y: parseFloat(formData.configScaleY) || 1,
+              z: parseFloat(formData.configScaleZ) || 1,
+            },
+          },
+        },
+        metadata: JSON.parse(formData.metadata),
         parentLayerId: formData.parentLayerId ? parseInt(formData.parentLayerId) : null,
+        orderIndex: parseInt(formData.orderIndex) || 0,
       };
 
       const response = await fetch(`/api/threed/layers?id=${editingLayer.id}`, {
@@ -262,55 +354,23 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
     }
   };
 
-  const toggleVisibility = async (id: number, currentStatus: boolean, name: string) => {
-    try {
-      const response = await fetch(`/api/threed/layers?id=${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isVisible: !currentStatus }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        showToast(`Layer "${name}" ${!currentStatus ? 'shown' : 'hidden'}`, 'success');
-        await fetchLayers();
-        if (onModuleUpdate) onModuleUpdate();
-      } else {
-        showToast(data.error || 'Failed to update visibility', 'error');
-      }
-    } catch (error) {
-      console.error('Error toggling visibility:', error);
-      showToast('Failed to update visibility', 'error');
-    }
-  };
-
-  const toggleLock = async (id: number, currentStatus: boolean, name: string) => {
-    try {
-      const response = await fetch(`/api/threed/layers?id=${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isLocked: !currentStatus }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        showToast(`Layer "${name}" ${!currentStatus ? 'locked' : 'unlocked'}`, 'success');
-        await fetchLayers();
-        if (onModuleUpdate) onModuleUpdate();
-      } else {
-        showToast(data.error || 'Failed to update lock status', 'error');
-      }
-    } catch (error) {
-      console.error('Error toggling lock:', error);
-      showToast('Failed to update lock status', 'error');
-    }
-  };
-
   const resetForm = () => {
     setFormData({
       layerId: '',
       name: '',
       description: '',
+      configVisible: 'true',
+      configOpacity: '1.0',
+      configColor: '#ffffff',
+      configTransformX: '0',
+      configTransformY: '0',
+      configTransformZ: '0',
+      configRotationX: '0',
+      configRotationY: '0',
+      configRotationZ: '0',
+      configScaleX: '1',
+      configScaleY: '1',
+      configScaleZ: '1',
       category: '',
       layerType: '',
       parentLayerId: '',
@@ -319,17 +379,31 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
       isLocked: false,
       isActive: true,
       isPublic: false,
-      config: { visible: true, opacity: 1.0, color: '#ffffff' },
-      metadata: {},
+      metadata: '{}',
     });
   };
 
   const openEditDialog = (layer: Layer) => {
     setEditingLayer(layer);
+    const config = layer.config || { visible: true, opacity: 1.0, color: '#ffffff', transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } } };
+    const transform = config.transform || { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } };
+
     setFormData({
       layerId: layer.layerId || '',
       name: layer.name,
       description: layer.description || '',
+      configVisible: String(config.visible ?? true),
+      configOpacity: String(config.opacity ?? 1.0),
+      configColor: config.color || '#ffffff',
+      configTransformX: String(transform.position?.x ?? 0),
+      configTransformY: String(transform.position?.y ?? 0),
+      configTransformZ: String(transform.position?.z ?? 0),
+      configRotationX: String(transform.rotation?.x ?? 0),
+      configRotationY: String(transform.rotation?.y ?? 0),
+      configRotationZ: String(transform.rotation?.z ?? 0),
+      configScaleX: String(transform.scale?.x ?? 1),
+      configScaleY: String(transform.scale?.y ?? 1),
+      configScaleZ: String(transform.scale?.z ?? 1),
       category: layer.category || '',
       layerType: layer.layerType || '',
       parentLayerId: layer.parentLayerId ? String(layer.parentLayerId) : '',
@@ -338,8 +412,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
       isLocked: layer.isLocked ?? false,
       isActive: layer.isActive ?? true,
       isPublic: layer.isPublic ?? false,
-      config: layer.config || { visible: true, opacity: 1.0, color: '#ffffff' },
-      metadata: layer.metadata || {},
+      metadata: JSON.stringify(layer.metadata || {}),
     });
   };
 
@@ -348,7 +421,14 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => toggleVisibility(layer.id, layer.isVisible, layer.name)}
+        onClick={() => {
+          // Toggle visibility
+          fetch(`/api/threed/layers?id=${layer.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isVisible: !layer.isVisible }),
+          }).then(() => fetchLayers());
+        }}
         title={layer.isVisible ? 'Hide' : 'Show'}
       >
         {layer.isVisible ? (
@@ -360,7 +440,14 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => toggleLock(layer.id, layer.isLocked, layer.name)}
+        onClick={() => {
+          // Toggle lock
+          fetch(`/api/threed/layers?id=${layer.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isLocked: !layer.isLocked }),
+          }).then(() => fetchLayers());
+        }}
         title={layer.isLocked ? 'Unlock' : 'Lock'}
       >
         {layer.isLocked ? (
@@ -379,16 +466,27 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>
-            <span className="text-xs text-muted-foreground">
-              ID: {layer.layerId}
-            </span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span className="text-xs text-muted-foreground">
-              Order: {layer.orderIndex}
-            </span>
-          </DropdownMenuItem>
+          {layer.orderIndex !== undefined && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground">
+                Order: {layer.orderIndex}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {layer.category && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground">
+                Category: {layer.category}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {layer.parentLayer && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground">
+                Parent: {layer.parentLayer.name}
+              </span>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
             className="text-red-600"
             onClick={() => handleDelete(layer.id, layer.name)}
@@ -416,7 +514,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-blue-500" />
+          <Layers className="w-4 h-4 text-cyan-500" />
           <span className="text-sm font-medium">Layers</span>
           <Badge variant="secondary" className="text-xs">
             {filteredLayers.length}
@@ -434,6 +532,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
               <DialogTitle>Create New Layer</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
+              {/* Basic Info */}
               <div>
                 <Label htmlFor="layerId">Layer ID *</Label>
                 <Input
@@ -450,7 +549,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
                 <Label htmlFor="name">Layer Name *</Label>
                 <Input
                   id="name"
-                  placeholder="e.g., Garden Plants"
+                  placeholder="e.g., Main Garden Layer"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={isSubmitting}
@@ -472,6 +571,24 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LAYER_CATEGORY_OPTIONS.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
                   <Label htmlFor="layerType">Layer Type</Label>
                   <Select
                     value={formData.layerType}
@@ -489,53 +606,214 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value) => setFormData({ ...formData, category: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORY_OPTIONS.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="parentLayerId">Parent Layer</Label>
+                <Select
+                  value={formData.parentLayerId}
+                  onValueChange={(value) => setFormData({ ...formData, parentLayerId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a parent layer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {layers.map((layer) => (
+                      <SelectItem key={layer.id} value={String(layer.id)}>
+                        {layer.name} ({layer.layerId})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="orderIndex">Order Index</Label>
+                <Input
+                  id="orderIndex"
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  value={formData.orderIndex}
+                  onChange={(e) => setFormData({ ...formData, orderIndex: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              {/* Layer Configuration */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Layer Configuration</Label>
+                <div className="space-y-2 mt-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="configVisible" className="text-xs">Visible</Label>
+                      <Select
+                        value={formData.configVisible}
+                        onValueChange={(value) => setFormData({ ...formData, configVisible: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Visible" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="true">Visible</SelectItem>
+                          <SelectItem value="false">Hidden</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="configOpacity" className="text-xs">Opacity</Label>
+                      <Input
+                        id="configOpacity"
+                        type="number"
+                        step="0.05"
+                        min="0"
+                        max="1"
+                        value={formData.configOpacity}
+                        onChange={(e) => setFormData({ ...formData, configOpacity: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="configColor" className="text-xs">Color</Label>
+                    <Select
+                      value={formData.configColor}
+                      onValueChange={(value) => setFormData({ ...formData, configColor: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select color" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COLOR_OPTIONS.map((color) => (
+                          <SelectItem key={color.value} value={color.value}>
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-4 h-4 rounded-full border"
+                                style={{ backgroundColor: color.value }}
+                              />
+                              {color.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="orderIndex">Order Index</Label>
-                  <Input
-                    id="orderIndex"
-                    type="number"
-                    placeholder="0"
-                    value={formData.orderIndex}
-                    onChange={(e) => setFormData({ ...formData, orderIndex: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="parentLayerId">Parent Layer</Label>
-                  <Input
-                    id="parentLayerId"
-                    placeholder="Parent layer ID (optional)"
-                    value={formData.parentLayerId}
-                    onChange={(e) => setFormData({ ...formData, parentLayerId: e.target.value })}
-                    disabled={isSubmitting}
-                  />
+              {/* Transform */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Transform</Label>
+                <div className="space-y-2 mt-2">
+                  <div>
+                    <Label className="text-xs">Position</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      <Input
+                        placeholder="X"
+                        type="number"
+                        step="0.01"
+                        value={formData.configTransformX}
+                        onChange={(e) => setFormData({ ...formData, configTransformX: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Y"
+                        type="number"
+                        step="0.01"
+                        value={formData.configTransformY}
+                        onChange={(e) => setFormData({ ...formData, configTransformY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Z"
+                        type="number"
+                        step="0.01"
+                        value={formData.configTransformZ}
+                        onChange={(e) => setFormData({ ...formData, configTransformZ: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Rotation</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      <Input
+                        placeholder="X"
+                        type="number"
+                        step="1"
+                        value={formData.configRotationX}
+                        onChange={(e) => setFormData({ ...formData, configRotationX: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Y"
+                        type="number"
+                        step="1"
+                        value={formData.configRotationY}
+                        onChange={(e) => setFormData({ ...formData, configRotationY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Z"
+                        type="number"
+                        step="1"
+                        value={formData.configRotationZ}
+                        onChange={(e) => setFormData({ ...formData, configRotationZ: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Scale</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      <Input
+                        placeholder="X"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.configScaleX}
+                        onChange={(e) => setFormData({ ...formData, configScaleX: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Y"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.configScaleY}
+                        onChange={(e) => setFormData({ ...formData, configScaleY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Z"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.configScaleZ}
+                        onChange={(e) => setFormData({ ...formData, configScaleZ: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              <div>
+                <Label htmlFor="metadata">Metadata (JSON)</Label>
+                <Input
+                  id="metadata"
+                  placeholder='{"key": "value"}'
+                  value={formData.metadata}
+                  onChange={(e) => setFormData({ ...formData, metadata: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              {/* Visibility & Status */}
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium">Visibility & Status</Label>
-                <div className="flex flex-col gap-2 mt-2">
+                <div className="space-y-2 mt-2">
                   <div className="flex items-center gap-2">
                     <Switch
                       id="isVisible"
@@ -595,7 +873,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search layers..."
+            placeholder="Search by name, ID, description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-8 text-xs"
@@ -618,7 +896,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
         <Select value={filterActive} onValueChange={setFilterActive}>
           <SelectTrigger className="w-[120px] h-8 text-xs">
             <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder="Active" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
@@ -664,7 +942,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
                 <TableHead className="text-xs py-1">Name</TableHead>
                 <TableHead className="hidden sm:table-cell text-xs py-1">ID</TableHead>
                 <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
-                <TableHead className="hidden lg:table-cell text-xs py-1">Category</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs py-1">Order</TableHead>
                 <TableHead className="text-center text-xs py-1">Visible</TableHead>
                 <TableHead className="text-center text-xs py-1">Locked</TableHead>
                 <TableHead className="text-center text-xs py-1">Active</TableHead>
@@ -676,7 +954,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
                 <TableRow key={layer.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Layers className="w-3.5 h-3.5 text-blue-500" />
+                      <Layers className="w-3.5 h-3.5 text-cyan-500" />
                       {layer.name}
                       {!layer.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
@@ -696,13 +974,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
                     )}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
-                    {layer.category ? (
-                      <Badge variant="outline" className="text-[10px]">
-                        {getOptionLabel(CATEGORY_OPTIONS, layer.category)}
-                      </Badge>
-                    ) : (
-                      '—'
-                    )}
+                    {layer.orderIndex !== undefined ? layer.orderIndex : '—'}
                   </TableCell>
                   <TableCell className="text-center py-1">
                     {layer.isVisible ? (
@@ -719,7 +991,7 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
                     )}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <Badge className={`text-[10px] ${layer.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                    <Badge className={`text-[10px] ${getStatusColor(layer.isActive)}`}>
                       {layer.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
@@ -771,6 +1043,24 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
 
             <div className="grid grid-cols-2 gap-4">
               <div>
+                <Label htmlFor="edit-category">Category</Label>
+                <Select
+                  value={formData.category}
+                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LAYER_CATEGORY_OPTIONS.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <Label htmlFor="edit-layerType">Layer Type</Label>
                 <Select
                   value={formData.layerType}
@@ -788,53 +1078,212 @@ export function ThreeDLayersCRUD({ moduleId, onModuleUpdate }: ThreeDLayersCRUDP
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="edit-category">Category</Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={(value) => setFormData({ ...formData, category: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CATEGORY_OPTIONS.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="edit-parentLayerId">Parent Layer</Label>
+              <Select
+                value={formData.parentLayerId}
+                onValueChange={(value) => setFormData({ ...formData, parentLayerId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a parent layer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {layers.map((layer) => (
+                    <SelectItem key={layer.id} value={String(layer.id)}>
+                      {layer.name} ({layer.layerId})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="edit-orderIndex">Order Index</Label>
+              <Input
+                id="edit-orderIndex"
+                type="number"
+                min="0"
+                value={formData.orderIndex}
+                onChange={(e) => setFormData({ ...formData, orderIndex: e.target.value })}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* Layer Configuration */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Layer Configuration</Label>
+              <div className="space-y-2 mt-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label htmlFor="edit-configVisible" className="text-xs">Visible</Label>
+                    <Select
+                      value={formData.configVisible}
+                      onValueChange={(value) => setFormData({ ...formData, configVisible: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Visible" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">Visible</SelectItem>
+                        <SelectItem value="false">Hidden</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-configOpacity" className="text-xs">Opacity</Label>
+                    <Input
+                      id="edit-configOpacity"
+                      type="number"
+                      step="0.05"
+                      min="0"
+                      max="1"
+                      value={formData.configOpacity}
+                      onChange={(e) => setFormData({ ...formData, configOpacity: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="edit-configColor" className="text-xs">Color</Label>
+                  <Select
+                    value={formData.configColor}
+                    onValueChange={(value) => setFormData({ ...formData, configColor: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COLOR_OPTIONS.map((color) => (
+                        <SelectItem key={color.value} value={color.value}>
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-4 h-4 rounded-full border"
+                              style={{ backgroundColor: color.value }}
+                            />
+                            {color.label}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-orderIndex">Order Index</Label>
-                <Input
-                  id="edit-orderIndex"
-                  type="number"
-                  placeholder="0"
-                  value={formData.orderIndex}
-                  onChange={(e) => setFormData({ ...formData, orderIndex: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-parentLayerId">Parent Layer</Label>
-                <Input
-                  id="edit-parentLayerId"
-                  placeholder="Parent layer ID (optional)"
-                  value={formData.parentLayerId}
-                  onChange={(e) => setFormData({ ...formData, parentLayerId: e.target.value })}
-                  disabled={isSubmitting}
-                />
+            {/* Transform */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Transform</Label>
+              <div className="space-y-2 mt-2">
+                <div>
+                  <Label className="text-xs">Position</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Input
+                      placeholder="X"
+                      type="number"
+                      step="0.01"
+                      value={formData.configTransformX}
+                      onChange={(e) => setFormData({ ...formData, configTransformX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Y"
+                      type="number"
+                      step="0.01"
+                      value={formData.configTransformY}
+                      onChange={(e) => setFormData({ ...formData, configTransformY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Z"
+                      type="number"
+                      step="0.01"
+                      value={formData.configTransformZ}
+                      onChange={(e) => setFormData({ ...formData, configTransformZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Rotation</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Input
+                      placeholder="X"
+                      type="number"
+                      step="1"
+                      value={formData.configRotationX}
+                      onChange={(e) => setFormData({ ...formData, configRotationX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Y"
+                      type="number"
+                      step="1"
+                      value={formData.configRotationY}
+                      onChange={(e) => setFormData({ ...formData, configRotationY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Z"
+                      type="number"
+                      step="1"
+                      value={formData.configRotationZ}
+                      onChange={(e) => setFormData({ ...formData, configRotationZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Scale</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Input
+                      placeholder="X"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.configScaleX}
+                      onChange={(e) => setFormData({ ...formData, configScaleX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Y"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.configScaleY}
+                      onChange={(e) => setFormData({ ...formData, configScaleY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Z"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.configScaleZ}
+                      onChange={(e) => setFormData({ ...formData, configScaleZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
+            <div>
+              <Label htmlFor="edit-metadata">Metadata (JSON)</Label>
+              <Input
+                id="edit-metadata"
+                value={formData.metadata}
+                onChange={(e) => setFormData({ ...formData, metadata: e.target.value })}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* Visibility & Status */}
             <div className="border-t pt-4">
               <Label className="text-sm font-medium">Visibility & Status</Label>
-              <div className="flex flex-col gap-2 mt-2">
+              <div className="space-y-2 mt-2">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="edit-isVisible"

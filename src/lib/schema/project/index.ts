@@ -22,6 +22,7 @@ export const assetTypeEnum = pgEnum('asset_type', [
   // ThreeD v0.9.0
   'threed_plants',
   'threed_beds',
+  'threed_plantings', // ✅ v0.12.0
   'threed_layers',
   'threed_markers',
   'threed_models',

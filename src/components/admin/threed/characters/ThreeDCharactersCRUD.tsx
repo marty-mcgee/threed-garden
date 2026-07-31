@@ -7,11 +7,18 @@ import {
   Edit,
   Trash2,
   Loader2,
-  User,
+  Users,
   MoreHorizontal,
   Search,
   Filter,
-  X,
+  Eye,
+  EyeOff,
+  MapPin,
+  Play,
+  Pause,
+  Move,
+  Clock,
+  Palette,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,92 +32,231 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-// ✅ Import types from lib
-import {
-  ThreeDCharacter,
-  ThreeDCharacterFormData,
-  CharacterType,
-  CharacterStatus,
-  CharacterAnimation,
-  CharacterMovementType,
-  CharacterEmote,
-  CharacterWeatherSensitivity,
-  ThreeDModel,
-  CHARACTER_TYPE_OPTIONS,
-  CHARACTER_STATUS_OPTIONS,
-  CHARACTER_ANIMATION_OPTIONS,
-  CHARACTER_MOVEMENT_TYPE_OPTIONS,
-  CHARACTER_EMOTE_OPTIONS,
-  CHARACTER_WEATHER_SENSITIVITY_OPTIONS,
-} from '@/lib/types/threed';
-
-interface ThreeDCharactersCRUDProps {
-  threedId?: number;
-  onModuleUpdate?: () => void;
+// ✅ Types
+interface Model {
+  id: number;
+  modelName: string;
+  modelType: string;
 }
 
-// ✅ Helper to get label from value
+interface Character {
+  id: number;
+  characterId: string;
+  name: string;
+  description: string | null;
+  type: string;
+  isActive: boolean;
+  status: string;
+  modelId: number | null;
+  animations: string[];
+  defaultAnimation: string | null;
+  animationSpeed: string;
+  isMovable: boolean;
+  movementType: string;
+  movementPattern: string | null;
+  movementRadius: string | null;
+  movementSpeed: string;
+  patrolWaypoints: any[];
+  followTarget: string | null;
+  followDistance: string;
+  teleportPositions: any[];
+  teleportInterval: number | null;
+  interactable: boolean;
+  interactionMessage: string | null;
+  soundEffect: string | null;
+  defaultEmote: string;
+  emoteOnInteract: string;
+  activeStartHour: number | null;
+  activeEndHour: number | null;
+  weatherSensitivity: string;
+  positionX: string;
+  positionY: string;
+  positionZ: string;
+  rotation: string;
+  scale: string;
+  scaleMultiplier: string;
+  colorTint: string | null;
+  visible: boolean;
+  visibleDistance: string;
+  metadata: any;
+  createdAt: string;
+  updatedAt: string;
+  model?: Model;
+}
+
+interface FormData {
+  characterId: string;
+  name: string;
+  description: string;
+  type: string;
+  isActive: boolean;
+  status: string;
+  modelId: string;
+  animations: string;
+  defaultAnimation: string;
+  animationSpeed: string;
+  isMovable: boolean;
+  movementType: string;
+  movementPattern: string;
+  movementRadius: string;
+  movementSpeed: string;
+  patrolWaypoints: string;
+  followTarget: string;
+  followDistance: string;
+  teleportPositions: string;
+  teleportInterval: string;
+  interactable: boolean;
+  interactionMessage: string;
+  soundEffect: string;
+  defaultEmote: string;
+  emoteOnInteract: string;
+  activeStartHour: string;
+  activeEndHour: string;
+  weatherSensitivity: string;
+  positionX: string;
+  positionY: string;
+  positionZ: string;
+  rotation: string;
+  scale: string;
+  scaleMultiplier: string;
+  colorTint: string;
+  visible: boolean;
+  visibleDistance: string;
+  metadata: string;
+}
+
+// ✅ Options
+const CHARACTER_TYPE_OPTIONS = [
+  { value: 'animal', label: 'Animal' },
+  { value: 'bird', label: 'Bird' },
+  { value: 'insect', label: 'Insect' },
+  { value: 'mythical', label: 'Mythical' },
+  { value: 'human', label: 'Human' },
+  { value: 'robot', label: 'Robot' },
+  { value: 'decoration', label: 'Decoration' },
+];
+
+const CHARACTER_STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'idle', label: 'Idle' },
+  { value: 'sleeping', label: 'Sleeping' },
+  { value: 'moving', label: 'Moving' },
+  { value: 'hidden', label: 'Hidden' },
+];
+
+const MOVEMENT_TYPE_OPTIONS = [
+  { value: 'stationary', label: 'Stationary' },
+  { value: 'wander', label: 'Wander' },
+  { value: 'patrol', label: 'Patrol' },
+  { value: 'circle', label: 'Circle' },
+  { value: 'follow', label: 'Follow' },
+  { value: 'teleport', label: 'Teleport' },
+];
+
+const ANIMATION_OPTIONS = [
+  { value: 'idle', label: 'Idle' },
+  { value: 'walk', label: 'Walk' },
+  { value: 'run', label: 'Run' },
+  { value: 'fly', label: 'Fly' },
+  { value: 'dance', label: 'Dance' },
+  { value: 'sway', label: 'Sway' },
+  { value: 'float', label: 'Float' },
+  { value: 'spin', label: 'Spin' },
+  { value: 'bounce', label: 'Bounce' },
+];
+
+const EMOTE_OPTIONS = [
+  { value: 'none', label: 'None' },
+  { value: 'happy', label: 'Happy' },
+  { value: 'sad', label: 'Sad' },
+  { value: 'surprised', label: 'Surprised' },
+  { value: 'angry', label: 'Angry' },
+  { value: 'wave', label: 'Wave' },
+  { value: 'dance', label: 'Dance' },
+  { value: 'sleep', label: 'Sleep' },
+];
+
+const WEATHER_SENSITIVITY_OPTIONS = [
+  { value: 'all', label: 'All Weather' },
+  { value: 'sunny_only', label: 'Sunny Only' },
+  { value: 'rainy_only', label: 'Rainy Only' },
+  { value: 'no_rain', label: 'No Rain' },
+  { value: 'no_snow', label: 'No Snow' },
+];
+
+// ✅ Helper
 const getOptionLabel = (options: { value: string; label: string }[], value: string) => {
   const option = options.find((o) => o.value === value);
   return option ? option.label : value;
 };
 
-export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharactersCRUDProps) {
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'active': return 'bg-green-100 text-green-700';
+    case 'idle': return 'bg-blue-100 text-blue-700';
+    case 'sleeping': return 'bg-purple-100 text-purple-700';
+    case 'moving': return 'bg-orange-100 text-orange-700';
+    case 'hidden': return 'bg-gray-100 text-gray-700';
+    default: return 'bg-gray-100 text-gray-700';
+  }
+};
+
+const getTypeColor = (type: string) => {
+  switch (type) {
+    case 'animal': return 'bg-amber-100 text-amber-700';
+    case 'bird': return 'bg-sky-100 text-sky-700';
+    case 'insect': return 'bg-lime-100 text-lime-700';
+    case 'mythical': return 'bg-purple-100 text-purple-700';
+    case 'human': return 'bg-pink-100 text-pink-700';
+    case 'robot': return 'bg-slate-100 text-slate-700';
+    case 'decoration': return 'bg-gray-100 text-gray-700';
+    default: return 'bg-gray-100 text-gray-700';
+  }
+};
+
+export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
-  const [characters, setCharacters] = useState<ThreeDCharacter[]>([]);
-  const [models, setModels] = useState<ThreeDModel[]>([]);
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingCharacter, setEditingCharacter] = useState<ThreeDCharacter | null>(null);
+  const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
+  const [filterActive, setFilterActive] = useState<string>('all');
 
-  // ✅ Form state with selected models
-  const [formData, setFormData] = useState<ThreeDCharacterFormData & { selectedModels: ThreeDModel[] }>({
+  // ✅ Form state
+  const [formData, setFormData] = useState<FormData>({
+    characterId: '',
     name: '',
     description: '',
-    type: CharacterType.HUMAN,
-    status: CharacterStatus.ACTIVE,
-
-    // ✅ Model selection
-    modelIds: '',
-    selectedModels: [],
-
-    // Animation
-    animations: '',
+    type: 'animal',
+    isActive: true,
+    status: 'active',
+    modelId: '',
+    animations: '[]',
     defaultAnimation: '',
-    animationSpeed: '1',
-
-    // Movement
+    animationSpeed: '1.0',
     isMovable: false,
-    movementType: '',
+    movementType: 'stationary',
     movementPattern: '',
     movementRadius: '',
-    movementSpeed: '',
-    patrolWaypoints: '',
+    movementSpeed: '0.5',
+    patrolWaypoints: '[]',
     followTarget: '',
-    followDistance: '',
-    teleportPositions: '',
+    followDistance: '2.0',
+    teleportPositions: '[]',
     teleportInterval: '',
-
-    // Interaction
-    interactable: false,
+    interactable: true,
     interactionMessage: '',
     soundEffect: '',
-    defaultEmote: '',
-    emoteOnInteract: '',
-
-    // Time-based
+    defaultEmote: 'none',
+    emoteOnInteract: 'happy',
     activeStartHour: '',
     activeEndHour: '',
-
-    // Weather
-    weatherSensitivity: '',
-
-    // Positioning
-    bedId: '',
+    weatherSensitivity: 'all',
     positionX: '0',
     positionY: '0',
     positionZ: '0',
@@ -118,29 +264,22 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
     scale: '1',
     scaleMultiplier: '1',
     colorTint: '',
-
-    // Visibility
     visible: true,
-    visibleDistance: '',
-    isActive: true,
+    visibleDistance: '30.0',
+    metadata: '{}',
   });
 
+  // ✅ Fetch data
   useEffect(() => {
     fetchCharacters();
     fetchModels();
-  }, [threedId]);
+  }, []);
 
   const fetchCharacters = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filterStatus !== 'all') params.append('status', filterStatus);
-      if (filterType !== 'all') params.append('type', filterType);
-      if (threedId) params.append('moduleId', String(threedId));
-
-      const response = await fetch(`/api/threed/characters?${params.toString()}`);
+      const response = await fetch('/api/threed/characters?limit=100');
       const data = await response.json();
-
       if (data.success) {
         setCharacters(Array.isArray(data.data) ? data.data : []);
       } else {
@@ -158,7 +297,7 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
 
   const fetchModels = async () => {
     try {
-      const response = await fetch('/api/threed/models?isActive=true');
+      const response = await fetch('/api/threed/models?isActive=true&limit=100');
       const data = await response.json();
       if (data.success) {
         setModels(Array.isArray(data.data) ? data.data : []);
@@ -171,46 +310,15 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
 
   const filteredCharacters = characters.filter((character) =>
     character.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    character.characterId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (character.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
-  // ✅ Toggle model selection
-  const toggleModelSelection = (model: ThreeDModel) => {
-    setFormData((prev) => {
-      const isSelected = prev.selectedModels.some((m) => m.id === model.id);
-
-      let newSelected: ThreeDModel[];
-      if (isSelected) {
-        newSelected = prev.selectedModels.filter((m) => m.id !== model.id);
-      } else {
-        newSelected = [...prev.selectedModels, model];
-      }
-
-      const modelIdsString = newSelected.map((m) => m.id).join(',');
-
-      return {
-        ...prev,
-        selectedModels: newSelected,
-        modelIds: modelIdsString,
-      };
-    });
-  };
-
-  // ✅ Get model objects from modelAssociations for edit dialog
-  const getSelectedModelsFromAssociations = (associations: any[]): ThreeDModel[] => {
-    if (!associations || associations.length === 0) return [];
-    return associations
-      .map((assoc) => {
-        if (assoc.model) {
-          return assoc.model;
-        }
-        const model = models.find((m) => m.id === assoc.modelId);
-        return model;
-      })
-      .filter(Boolean) as ThreeDModel[];
-  };
-
   const handleCreate = async () => {
+    if (!formData.characterId) {
+      showToast('Character ID is required', 'error');
+      return;
+    }
     if (!formData.name) {
       showToast('Character name is required', 'error');
       return;
@@ -218,60 +326,27 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
 
     setIsSubmitting(true);
     try {
-      const payload: any = {
-        name: formData.name.trim(),
-        description: formData.description || null,
-        type: formData.type,
-        status: formData.status,
-
-        modelIds: formData.modelIds || '',
-
-        animations: formData.animations || '',
-        defaultAnimation: formData.defaultAnimation || null,
-        animationSpeed: formData.animationSpeed ? parseFloat(formData.animationSpeed) : 1,
-
-        isMovable: formData.isMovable,
-        movementType: formData.movementType || null,
-        movementPattern: formData.movementPattern || null,
-        movementRadius: formData.movementRadius ? parseFloat(formData.movementRadius) : null,
-        movementSpeed: formData.movementSpeed ? parseFloat(formData.movementSpeed) : 0.5,
-        patrolWaypoints: formData.patrolWaypoints ? formData.patrolWaypoints.split(',').map(s => s.trim()) : [],
-        followTarget: formData.followTarget || null,
-        followDistance: formData.followDistance ? parseFloat(formData.followDistance) : 2,
-        teleportPositions: formData.teleportPositions ? formData.teleportPositions.split(',').map(s => s.trim()) : [],
-        teleportInterval: formData.teleportInterval ? parseInt(formData.teleportInterval) : null,
-
-        interactable: formData.interactable,
-        interactionMessage: formData.interactionMessage || null,
-        soundEffect: formData.soundEffect || null,
-
-        defaultEmote: formData.defaultEmote || null,
-        emoteOnInteract: formData.emoteOnInteract || null,
-
+      const payload = {
+        ...formData,
+        animations: JSON.parse(formData.animations),
+        patrolWaypoints: JSON.parse(formData.patrolWaypoints),
+        teleportPositions: JSON.parse(formData.teleportPositions),
+        metadata: JSON.parse(formData.metadata),
+        modelId: formData.modelId ? parseInt(formData.modelId) : null,
         activeStartHour: formData.activeStartHour ? parseInt(formData.activeStartHour) : null,
         activeEndHour: formData.activeEndHour ? parseInt(formData.activeEndHour) : null,
-
-        weatherSensitivity: formData.weatherSensitivity || null,
-
-        bedId: formData.bedId ? parseInt(formData.bedId) : null,
-        positionX: formData.positionX ? parseFloat(formData.positionX) : 0,
-        positionY: formData.positionY ? parseFloat(formData.positionY) : 0,
-        positionZ: formData.positionZ ? parseFloat(formData.positionZ) : 0,
-        rotation: formData.rotation ? parseFloat(formData.rotation) : 0,
-        scale: formData.scale ? parseFloat(formData.scale) : 1,
-        scaleMultiplier: formData.scaleMultiplier ? parseFloat(formData.scaleMultiplier) : 1,
-        colorTint: formData.colorTint || null,
-
-        visible: formData.visible,
-        visibleDistance: formData.visibleDistance ? parseFloat(formData.visibleDistance) : 30,
-
-        isActive: formData.isActive,
+        teleportInterval: formData.teleportInterval ? parseInt(formData.teleportInterval) : null,
+        positionX: formData.positionX || '0',
+        positionY: formData.positionY || '0',
+        positionZ: formData.positionZ || '0',
+        rotation: formData.rotation || '0',
+        scale: formData.scale || '1',
+        scaleMultiplier: formData.scaleMultiplier || '1',
+        visibleDistance: formData.visibleDistance || '30.0',
+        animationSpeed: formData.animationSpeed || '1.0',
+        movementSpeed: formData.movementSpeed || '0.5',
+        followDistance: formData.followDistance || '2.0',
       };
-
-      if (threedId) {
-        payload.moduleId = threedId;
-        payload.moduleType = 'threed';
-      }
 
       const response = await fetch('/api/threed/characters', {
         method: 'POST',
@@ -299,6 +374,10 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
 
   const handleUpdate = async () => {
     if (!editingCharacter) return;
+    if (!formData.characterId) {
+      showToast('Character ID is required', 'error');
+      return;
+    }
     if (!formData.name) {
       showToast('Character name is required', 'error');
       return;
@@ -306,65 +385,30 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
 
     setIsSubmitting(true);
     try {
-      const payload: any = {
-        name: formData.name.trim(),
-        description: formData.description || null,
-        type: formData.type,
-        status: formData.status,
-
-        modelIds: formData.modelIds || '',
-
-        animations: formData.animations || '',
-        defaultAnimation: formData.defaultAnimation || null,
-        animationSpeed: formData.animationSpeed ? parseFloat(formData.animationSpeed) : 1,
-
-        isMovable: formData.isMovable,
-        movementType: formData.movementType || null,
-        movementPattern: formData.movementPattern || null,
-        movementRadius: formData.movementRadius ? parseFloat(formData.movementRadius) : null,
-        movementSpeed: formData.movementSpeed ? parseFloat(formData.movementSpeed) : 0.5,
-        patrolWaypoints: formData.patrolWaypoints ? formData.patrolWaypoints.split(',').map(s => s.trim()) : [],
-        followTarget: formData.followTarget || null,
-        followDistance: formData.followDistance ? parseFloat(formData.followDistance) : 2,
-        teleportPositions: formData.teleportPositions ? formData.teleportPositions.split(',').map(s => s.trim()) : [],
-        teleportInterval: formData.teleportInterval ? parseInt(formData.teleportInterval) : null,
-
-        interactable: formData.interactable,
-        interactionMessage: formData.interactionMessage || null,
-        soundEffect: formData.soundEffect || null,
-
-        defaultEmote: formData.defaultEmote || null,
-        emoteOnInteract: formData.emoteOnInteract || null,
-
+      const payload = {
+        ...formData,
+        animations: JSON.parse(formData.animations),
+        patrolWaypoints: JSON.parse(formData.patrolWaypoints),
+        teleportPositions: JSON.parse(formData.teleportPositions),
+        metadata: JSON.parse(formData.metadata),
+        modelId: formData.modelId ? parseInt(formData.modelId) : null,
         activeStartHour: formData.activeStartHour ? parseInt(formData.activeStartHour) : null,
         activeEndHour: formData.activeEndHour ? parseInt(formData.activeEndHour) : null,
-
-        weatherSensitivity: formData.weatherSensitivity || null,
-
-        bedId: formData.bedId ? parseInt(formData.bedId) : null,
-        positionX: formData.positionX ? parseFloat(formData.positionX) : 0,
-        positionY: formData.positionY ? parseFloat(formData.positionY) : 0,
-        positionZ: formData.positionZ ? parseFloat(formData.positionZ) : 0,
-        rotation: formData.rotation ? parseFloat(formData.rotation) : 0,
-        scale: formData.scale ? parseFloat(formData.scale) : 1,
-        scaleMultiplier: formData.scaleMultiplier ? parseFloat(formData.scaleMultiplier) : 1,
-        colorTint: formData.colorTint || null,
-
-        visible: formData.visible,
-        visibleDistance: formData.visibleDistance ? parseFloat(formData.visibleDistance) : 30,
-
-        isActive: formData.isActive,
+        teleportInterval: formData.teleportInterval ? parseInt(formData.teleportInterval) : null,
+        positionX: formData.positionX || '0',
+        positionY: formData.positionY || '0',
+        positionZ: formData.positionZ || '0',
+        rotation: formData.rotation || '0',
+        scale: formData.scale || '1',
+        scaleMultiplier: formData.scaleMultiplier || '1',
+        visibleDistance: formData.visibleDistance || '30.0',
+        animationSpeed: formData.animationSpeed || '1.0',
+        movementSpeed: formData.movementSpeed || '0.5',
+        followDistance: formData.followDistance || '2.0',
       };
 
-      if (threedId) {
-        payload.moduleId = threedId;
-        payload.moduleType = 'threed';
-      }
-
-      console.log('[Characters CRUD] Updating with payload:', payload);
-
       const response = await fetch(`/api/threed/characters?id=${editingCharacter.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -410,34 +454,34 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
 
   const resetForm = () => {
     setFormData({
+      characterId: '',
       name: '',
       description: '',
-      type: CharacterType.HUMAN,
-      status: CharacterStatus.ACTIVE,
-      modelIds: '',
-      selectedModels: [],
-      animations: '',
+      type: 'animal',
+      isActive: true,
+      status: 'active',
+      modelId: '',
+      animations: '[]',
       defaultAnimation: '',
-      animationSpeed: '1',
+      animationSpeed: '1.0',
       isMovable: false,
-      movementType: '',
+      movementType: 'stationary',
       movementPattern: '',
       movementRadius: '',
-      movementSpeed: '',
-      patrolWaypoints: '',
+      movementSpeed: '0.5',
+      patrolWaypoints: '[]',
       followTarget: '',
-      followDistance: '',
-      teleportPositions: '',
+      followDistance: '2.0',
+      teleportPositions: '[]',
       teleportInterval: '',
-      interactable: false,
+      interactable: true,
       interactionMessage: '',
       soundEffect: '',
-      defaultEmote: '',
-      emoteOnInteract: '',
+      defaultEmote: 'none',
+      emoteOnInteract: 'happy',
       activeStartHour: '',
       activeEndHour: '',
-      weatherSensitivity: '',
-      bedId: '',
+      weatherSensitivity: 'all',
       positionX: '0',
       positionY: '0',
       positionZ: '0',
@@ -446,68 +490,56 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
       scaleMultiplier: '1',
       colorTint: '',
       visible: true,
-      visibleDistance: '',
-      isActive: true,
+      visibleDistance: '30.0',
+      metadata: '{}',
     });
   };
 
-  const openEditDialog = (character: ThreeDCharacter) => {
-    console.log('[Characters CRUD] Opening edit dialog for character:', character);
-
-    const selectedModels = getSelectedModelsFromAssociations(character.modelAssociations || []);
-    const modelIdsString = selectedModels.map((m) => String(m.id)).join(',');
-
-    console.log('[Characters CRUD] Selected models:', selectedModels);
-    console.log('[Characters CRUD] Model IDs string:', modelIdsString);
-
+  const openEditDialog = (character: Character) => {
     setEditingCharacter(character);
     setFormData({
+      characterId: character.characterId || '',
       name: character.name,
       description: character.description || '',
-      type: character.type || CharacterType.HUMAN,
-      status: character.status || CharacterStatus.ACTIVE,
-      modelIds: modelIdsString,
-      selectedModels: selectedModels,
-      animations: character.animations?.join(', ') || '',
+      type: character.type || 'animal',
+      isActive: character.isActive ?? true,
+      status: character.status || 'active',
+      modelId: character.modelId ? String(character.modelId) : '',
+      animations: JSON.stringify(character.animations || []),
       defaultAnimation: character.defaultAnimation || '',
-      animationSpeed: character.animationSpeed ? String(character.animationSpeed) : '1',
-      isMovable: character.isMovable || false,
-      movementType: character.movementType || '',
+      animationSpeed: character.animationSpeed || '1.0',
+      isMovable: character.isMovable ?? false,
+      movementType: character.movementType || 'stationary',
       movementPattern: character.movementPattern || '',
-      movementRadius: character.movementRadius ? String(character.movementRadius) : '',
-      movementSpeed: character.movementSpeed ? String(character.movementSpeed) : '',
-      patrolWaypoints: character.patrolWaypoints?.join(', ') || '',
+      movementRadius: character.movementRadius || '',
+      movementSpeed: character.movementSpeed || '0.5',
+      patrolWaypoints: JSON.stringify(character.patrolWaypoints || []),
       followTarget: character.followTarget || '',
-      followDistance: character.followDistance ? String(character.followDistance) : '',
-      teleportPositions: character.teleportPositions?.join(', ') || '',
+      followDistance: character.followDistance || '2.0',
+      teleportPositions: JSON.stringify(character.teleportPositions || []),
       teleportInterval: character.teleportInterval ? String(character.teleportInterval) : '',
-      interactable: character.interactable || false,
+      interactable: character.interactable ?? true,
       interactionMessage: character.interactionMessage || '',
       soundEffect: character.soundEffect || '',
-      defaultEmote: character.defaultEmote || '',
-      emoteOnInteract: character.emoteOnInteract || '',
+      defaultEmote: character.defaultEmote || 'none',
+      emoteOnInteract: character.emoteOnInteract || 'happy',
       activeStartHour: character.activeStartHour ? String(character.activeStartHour) : '',
       activeEndHour: character.activeEndHour ? String(character.activeEndHour) : '',
-      weatherSensitivity: character.weatherSensitivity || '',
-      bedId: character.bedId ? String(character.bedId) : '',
-      positionX: character.positionX ? String(character.positionX) : '0',
-      positionY: character.positionY ? String(character.positionY) : '0',
-      positionZ: character.positionZ ? String(character.positionZ) : '0',
-      rotation: character.rotation ? String(character.rotation) : '0',
-      scale: character.scale ? String(character.scale) : '1',
-      scaleMultiplier: character.scaleMultiplier ? String(character.scaleMultiplier) : '1',
+      weatherSensitivity: character.weatherSensitivity || 'all',
+      positionX: character.positionX || '0',
+      positionY: character.positionY || '0',
+      positionZ: character.positionZ || '0',
+      rotation: character.rotation || '0',
+      scale: character.scale || '1',
+      scaleMultiplier: character.scaleMultiplier || '1',
       colorTint: character.colorTint || '',
-      visible: character.visible !== undefined ? character.visible : true,
-      visibleDistance: character.visibleDistance ? String(character.visibleDistance) : '',
-      isActive: character.isActive !== undefined ? character.isActive : true,
+      visible: character.visible ?? true,
+      visibleDistance: character.visibleDistance || '30.0',
+      metadata: JSON.stringify(character.metadata || {}),
     });
   };
 
-  const getTypeLabel = (type: string) => {
-    return getOptionLabel(CHARACTER_TYPE_OPTIONS, type);
-  };
-
-  const renderActions = (character: ThreeDCharacter) => (
+  const renderActions = (character: Character) => (
     <div className="flex items-center justify-end gap-1">
       <Button variant="ghost" size="sm" onClick={() => openEditDialog(character)}>
         <Edit className="w-4 h-4" />
@@ -519,10 +551,26 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {character.modelAssociations && character.modelAssociations.length > 0 && (
+          {character.positionX && character.positionZ && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                ({character.positionX}, {character.positionZ})
+              </span>
+            </DropdownMenuItem>
+          )}
+          {character.isMovable && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Move className="w-3 h-3" />
+                {getOptionLabel(MOVEMENT_TYPE_OPTIONS, character.movementType)}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {character.model && (
             <DropdownMenuItem>
               <span className="text-xs text-muted-foreground">
-                Models: {character.modelAssociations.length}
+                Model: {character.model.modelName}
               </span>
             </DropdownMenuItem>
           )}
@@ -553,7 +601,7 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <User className="w-4 h-4 text-purple-500" />
+          <Users className="w-4 h-4 text-purple-500" />
           <span className="text-sm font-medium">Characters</span>
           <Badge variant="secondary" className="text-xs">
             {filteredCharacters.length}
@@ -566,22 +614,36 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
               Add Character
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create New Character</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
               {/* Basic Info */}
               <div>
+                <Label htmlFor="characterId">Character ID *</Label>
+                <Input
+                  id="characterId"
+                  placeholder="e.g., CHAR-001"
+                  value={formData.characterId}
+                  onChange={(e) => setFormData({ ...formData, characterId: e.target.value })}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
+
+              <div>
                 <Label htmlFor="name">Character Name *</Label>
                 <Input
                   id="name"
-                  placeholder="e.g., Farmer Joe"
+                  placeholder="e.g., Gardener Joe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={isSubmitting}
+                  required
                 />
               </div>
+
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -594,16 +656,15 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                 />
               </div>
 
-              {/* Type & Status */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="type">Character Type</Label>
+                  <Label htmlFor="type">Type</Label>
                   <Select
                     value={formData.type}
-                    onValueChange={(value) => setFormData({ ...formData, type: value as CharacterType })}
+                    onValueChange={(value) => setFormData({ ...formData, type: value })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select character type" />
+                      <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
                       {CHARACTER_TYPE_OPTIONS.map((type) => (
@@ -618,7 +679,7 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                   <Label htmlFor="status">Status</Label>
                   <Select
                     value={formData.status}
-                    onValueChange={(value) => setFormData({ ...formData, status: value as CharacterStatus })}
+                    onValueChange={(value) => setFormData({ ...formData, status: value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
@@ -634,252 +695,234 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                 </div>
               </div>
 
-              {/* ✅ Model Selection */}
+              {/* Model */}
               <div>
-                <Label>Associated Models</Label>
-                <div className="mt-1">
-                  {formData.selectedModels.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {formData.selectedModels.map((model) => (
-                        <Badge
-                          key={model.id}
-                          variant="secondary"
-                          className="flex items-center gap-1 text-xs"
-                        >
-                          {model.modelName} ({model.modelType})
-                          <button
-                            type="button"
-                            onClick={() => toggleModelSelection(model)}
-                            className="ml-1 hover:text-destructive"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-
-                  <Select
-                    value=""
-                    onValueChange={(value) => {
-                      const model = models.find((m) => String(m.id) === value);
-                      if (model) {
-                        toggleModelSelection(model);
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a model to associate..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {models
-                        .filter((m) => !formData.selectedModels.some((sm) => sm.id === m.id))
-                        .map((model) => (
-                          <SelectItem key={model.id} value={String(model.id)}>
-                            {model.modelName} ({model.modelType})
-                          </SelectItem>
-                        ))}
-                      {models.length === 0 && (
-                        <SelectItem value="none" disabled>
-                          No models available
-                        </SelectItem>
-                      )}
-                      {models.length > 0 && formData.selectedModels.length === models.length && (
-                        <SelectItem value="all" disabled>
-                          All models selected
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Select models to associate with this character
-                  </p>
-                </div>
-              </div>
-
-              {/* Animation */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="animations">Animations (comma-separated)</Label>
-                  <Input
-                    id="animations"
-                    placeholder="idle, walk, run"
-                    value={formData.animations}
-                    onChange={(e) => setFormData({ ...formData, animations: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="defaultAnimation">Default Animation</Label>
-                  <Select
-                    value={formData.defaultAnimation || 'none'}
-                    onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value === 'none' ? '' : value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select default animation" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {CHARACTER_ANIMATION_OPTIONS.map((anim) => (
-                        <SelectItem key={anim.value} value={anim.value}>
-                          {anim.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="animationSpeed">Animation Speed</Label>
-                <Input
-                  id="animationSpeed"
-                  type="number"
-                  step="0.1"
-                  placeholder="1"
-                  value={formData.animationSpeed}
-                  onChange={(e) => setFormData({ ...formData, animationSpeed: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              {/* Movement */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="movementType">Movement Type</Label>
-                  <Select
-                    value={formData.movementType || 'none'}
-                    onValueChange={(value) => setFormData({ ...formData, movementType: value === 'none' ? '' : value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select movement type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {CHARACTER_MOVEMENT_TYPE_OPTIONS.map((movement) => (
-                        <SelectItem key={movement.value} value={movement.value}>
-                          {movement.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="isMovable">
-                    <div className="flex items-center gap-2 pt-6">
-                      <Switch
-                        id="isMovable"
-                        checked={formData.isMovable}
-                        onCheckedChange={(checked) => setFormData({ ...formData, isMovable: checked })}
-                        disabled={isSubmitting}
-                      />
-                      <Label htmlFor="isMovable">Movable</Label>
-                    </div>
-                  </Label>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="movementSpeed">Movement Speed</Label>
-                  <Input
-                    id="movementSpeed"
-                    type="number"
-                    step="0.1"
-                    placeholder="0.5"
-                    value={formData.movementSpeed}
-                    onChange={(e) => setFormData({ ...formData, movementSpeed: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="movementRadius">Movement Radius</Label>
-                  <Input
-                    id="movementRadius"
-                    type="number"
-                    step="0.1"
-                    placeholder="5"
-                    value={formData.movementRadius}
-                    onChange={(e) => setFormData({ ...formData, movementRadius: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </div>
-
-              {/* Emotes */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="defaultEmote">Default Emote</Label>
-                  <Select
-                    value={formData.defaultEmote || 'none'}
-                    onValueChange={(value) => setFormData({ ...formData, defaultEmote: value === 'none' ? '' : value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select default emote" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {CHARACTER_EMOTE_OPTIONS.map((emote) => (
-                        <SelectItem key={emote.value} value={emote.value}>
-                          {emote.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="emoteOnInteract">Emote on Interact</Label>
-                  <Select
-                    value={formData.emoteOnInteract || 'none'}
-                    onValueChange={(value) => setFormData({ ...formData, emoteOnInteract: value === 'none' ? '' : value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select emote on interact" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {CHARACTER_EMOTE_OPTIONS.map((emote) => (
-                        <SelectItem key={emote.value} value={emote.value}>
-                          {emote.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Weather Sensitivity */}
-              <div>
-                <Label htmlFor="weatherSensitivity">Weather Sensitivity</Label>
+                <Label htmlFor="modelId">Model</Label>
                 <Select
-                  value={formData.weatherSensitivity || 'none'}
-                  onValueChange={(value) => setFormData({ ...formData, weatherSensitivity: value === 'none' ? '' : value })}
+                  value={formData.modelId}
+                  onValueChange={(value) => setFormData({ ...formData, modelId: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select weather sensitivity" />
+                    <SelectValue placeholder="Select a model (optional)" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    {CHARACTER_WEATHER_SENSITIVITY_OPTIONS.map((weather) => (
-                      <SelectItem key={weather.value} value={weather.value}>
-                        {weather.label}
+                    {models.map((model) => (
+                      <SelectItem key={model.id} value={String(model.id)}>
+                        {model.modelName} ({model.modelType})
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Positioning */}
-              <div>
-                <Label>3D Position</Label>
-                <div className="grid grid-cols-3 gap-4 mt-2">
+              {/* Animation */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Animation</Label>
+                <div className="space-y-2 mt-2">
+                  <div>
+                    <Label htmlFor="animations" className="text-xs">Animations (JSON array)</Label>
+                    <Input
+                      id="animations"
+                      placeholder='["idle", "walk"]'
+                      value={formData.animations}
+                      onChange={(e) => setFormData({ ...formData, animations: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="defaultAnimation" className="text-xs">Default Animation</Label>
+                      <Select
+                        value={formData.defaultAnimation}
+                        onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select animation" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {ANIMATION_OPTIONS.map((anim) => (
+                            <SelectItem key={anim.value} value={anim.value}>
+                              {anim.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="animationSpeed" className="text-xs">Animation Speed</Label>
+                      <Input
+                        id="animationSpeed"
+                        type="number"
+                        step="0.1"
+                        min="0.1"
+                        value={formData.animationSpeed}
+                        onChange={(e) => setFormData({ ...formData, animationSpeed: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Movement */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Movement</Label>
+                <div className="space-y-2 mt-2">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="isMovable"
+                      checked={formData.isMovable}
+                      onCheckedChange={(checked) => setFormData({ ...formData, isMovable: checked })}
+                      disabled={isSubmitting}
+                    />
+                    <Label htmlFor="isMovable">Movable</Label>
+                  </div>
+                  <div>
+                    <Label htmlFor="movementType" className="text-xs">Movement Type</Label>
+                    <Select
+                      value={formData.movementType}
+                      onValueChange={(value) => setFormData({ ...formData, movementType: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select movement" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MOVEMENT_TYPE_OPTIONS.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="movementSpeed" className="text-xs">Movement Speed</Label>
+                      <Input
+                        id="movementSpeed"
+                        type="number"
+                        step="0.1"
+                        min="0.1"
+                        value={formData.movementSpeed}
+                        onChange={(e) => setFormData({ ...formData, movementSpeed: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="movementRadius" className="text-xs">Movement Radius</Label>
+                      <Input
+                        id="movementRadius"
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="e.g., 5"
+                        value={formData.movementRadius}
+                        onChange={(e) => setFormData({ ...formData, movementRadius: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="patrolWaypoints" className="text-xs">Patrol Waypoints (JSON)</Label>
+                    <Input
+                      id="patrolWaypoints"
+                      placeholder='[{"x":0,"y":0,"z":0}]'
+                      value={formData.patrolWaypoints}
+                      onChange={(e) => setFormData({ ...formData, patrolWaypoints: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Interaction */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Interaction</Label>
+                <div className="space-y-2 mt-2">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="interactable"
+                      checked={formData.interactable}
+                      onCheckedChange={(checked) => setFormData({ ...formData, interactable: checked })}
+                      disabled={isSubmitting}
+                    />
+                    <Label htmlFor="interactable">Interactable</Label>
+                  </div>
+                  <div>
+                    <Label htmlFor="interactionMessage" className="text-xs">Interaction Message</Label>
+                    <Input
+                      id="interactionMessage"
+                      placeholder="Message when interacted with"
+                      value={formData.interactionMessage}
+                      onChange={(e) => setFormData({ ...formData, interactionMessage: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="defaultEmote" className="text-xs">Default Emote</Label>
+                      <Select
+                        value={formData.defaultEmote}
+                        onValueChange={(value) => setFormData({ ...formData, defaultEmote: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select emote" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {EMOTE_OPTIONS.map((emote) => (
+                            <SelectItem key={emote.value} value={emote.value}>
+                              {emote.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="emoteOnInteract" className="text-xs">Emote on Interact</Label>
+                      <Select
+                        value={formData.emoteOnInteract}
+                        onValueChange={(value) => setFormData({ ...formData, emoteOnInteract: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select emote" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {EMOTE_OPTIONS.map((emote) => (
+                            <SelectItem key={emote.value} value={emote.value}>
+                              {emote.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="soundEffect" className="text-xs">Sound Effect</Label>
+                    <Input
+                      id="soundEffect"
+                      placeholder="Sound effect filename"
+                      value={formData.soundEffect}
+                      onChange={(e) => setFormData({ ...formData, soundEffect: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 3D Position */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">3D Position</Label>
+                <p className="text-xs text-muted-foreground mb-2">Position in 3D space</p>
+                <div className="grid grid-cols-3 gap-2">
                   <div>
                     <Label htmlFor="positionX" className="text-xs">X</Label>
                     <Input
                       id="positionX"
                       type="number"
-                      step="0.5"
-                      placeholder="0"
+                      step="0.01"
+                      placeholder="0.00"
                       value={formData.positionX}
                       onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
                       disabled={isSubmitting}
@@ -890,8 +933,8 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                     <Input
                       id="positionY"
                       type="number"
-                      step="0.5"
-                      placeholder="0"
+                      step="0.01"
+                      placeholder="0.00"
                       value={formData.positionY}
                       onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
                       disabled={isSubmitting}
@@ -902,93 +945,168 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                     <Input
                       id="positionZ"
                       type="number"
-                      step="0.5"
-                      placeholder="0"
+                      step="0.01"
+                      placeholder="0.00"
                       value={formData.positionZ}
                       onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                 </div>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <Label htmlFor="rotation" className="text-xs">Rotation</Label>
+                    <Input
+                      id="rotation"
+                      type="number"
+                      step="1"
+                      placeholder="0"
+                      value={formData.rotation}
+                      onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="scale" className="text-xs">Scale</Label>
+                    <Input
+                      id="scale"
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      placeholder="1"
+                      value={formData.scale}
+                      onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="rotation">Rotation</Label>
-                  <Input
-                    id="rotation"
-                    type="number"
-                    step="0.1"
-                    placeholder="0"
-                    value={formData.rotation}
-                    onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="scale">Scale</Label>
-                  <Input
-                    id="scale"
-                    type="number"
-                    step="0.1"
-                    placeholder="1"
-                    value={formData.scale}
-                    onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
-                    disabled={isSubmitting}
-                  />
+              {/* Appearance */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Appearance</Label>
+                <div className="space-y-2 mt-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="colorTint" className="text-xs">Color Tint</Label>
+                      <Input
+                        id="colorTint"
+                        placeholder="#ffffff"
+                        value={formData.colorTint}
+                        onChange={(e) => setFormData({ ...formData, colorTint: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="scaleMultiplier" className="text-xs">Scale Multiplier</Label>
+                      <Input
+                        id="scaleMultiplier"
+                        type="number"
+                        step="0.1"
+                        min="0.1"
+                        value={formData.scaleMultiplier}
+                        onChange={(e) => setFormData({ ...formData, scaleMultiplier: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="visible"
+                      checked={formData.visible}
+                      onCheckedChange={(checked) => setFormData({ ...formData, visible: checked })}
+                      disabled={isSubmitting}
+                    />
+                    <Label htmlFor="visible">Visible</Label>
+                  </div>
+                  <div>
+                    <Label htmlFor="visibleDistance" className="text-xs">Visible Distance</Label>
+                    <Input
+                      id="visibleDistance"
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      value={formData.visibleDistance}
+                      onChange={(e) => setFormData({ ...formData, visibleDistance: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Interaction */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="interactable">
-                    <div className="flex items-center gap-2 pt-6">
-                      <Switch
-                        id="interactable"
-                        checked={formData.interactable}
-                        onCheckedChange={(checked) => setFormData({ ...formData, interactable: checked })}
-                        disabled={isSubmitting}
-                      />
-                      <Label htmlFor="interactable">Interactable</Label>
-                    </div>
-                  </Label>
+              {/* Schedule & Weather */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Schedule & Weather</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <Label htmlFor="activeStartHour" className="text-xs">Active Start Hour (0-23)</Label>
+                    <Input
+                      id="activeStartHour"
+                      type="number"
+                      min="0"
+                      max="23"
+                      placeholder="6"
+                      value={formData.activeStartHour}
+                      onChange={(e) => setFormData({ ...formData, activeStartHour: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="activeEndHour" className="text-xs">Active End Hour (0-23)</Label>
+                    <Input
+                      id="activeEndHour"
+                      type="number"
+                      min="0"
+                      max="23"
+                      placeholder="20"
+                      value={formData.activeEndHour}
+                      onChange={(e) => setFormData({ ...formData, activeEndHour: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="visible">
-                    <div className="flex items-center gap-2 pt-6">
-                      <Switch
-                        id="visible"
-                        checked={formData.visible}
-                        onCheckedChange={(checked) => setFormData({ ...formData, visible: checked })}
-                        disabled={isSubmitting}
-                      />
-                      <Label htmlFor="visible">Visible</Label>
-                    </div>
-                  </Label>
+                <div className="mt-2">
+                  <Label htmlFor="weatherSensitivity" className="text-xs">Weather Sensitivity</Label>
+                  <Select
+                    value={formData.weatherSensitivity}
+                    onValueChange={(value) => setFormData({ ...formData, weatherSensitivity: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select sensitivity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {WEATHER_SENSITIVITY_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="interactionMessage">Interaction Message</Label>
+                <Label htmlFor="metadata">Metadata (JSON)</Label>
                 <Input
-                  id="interactionMessage"
-                  placeholder="Hello there!"
-                  value={formData.interactionMessage}
-                  onChange={(e) => setFormData({ ...formData, interactionMessage: e.target.value })}
+                  id="metadata"
+                  placeholder='{"key": "value"}'
+                  value={formData.metadata}
+                  onChange={(e) => setFormData({ ...formData, metadata: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
 
               {/* Active Status */}
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="isActive"
-                  checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                  disabled={isSubmitting}
-                />
-                <Label htmlFor="isActive">Active</Label>
+              <div className="border-t pt-4">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="isActive">Active</Label>
+                </div>
               </div>
 
               <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
@@ -1011,26 +1129,12 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search characters..."
+            placeholder="Search by name, ID, description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-8 text-xs"
           />
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {CHARACTER_STATUS_OPTIONS.map((status) => (
-              <SelectItem key={status.value} value={status.value}>
-                {status.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Select value={filterType} onValueChange={setFilterType}>
           <SelectTrigger className="w-[120px] h-8 text-xs">
             <Filter className="w-3.5 h-3.5 mr-1" />
@@ -1045,14 +1149,40 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
             ))}
           </SelectContent>
         </Select>
+        <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <SelectTrigger className="w-[120px] h-8 text-xs">
+            <Filter className="w-3.5 h-3.5 mr-1" />
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {CHARACTER_STATUS_OPTIONS.map((status) => (
+              <SelectItem key={status.value} value={status.value}>
+                {status.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filterActive} onValueChange={setFilterActive}>
+          <SelectTrigger className="w-[120px] h-8 text-xs">
+            <Filter className="w-3.5 h-3.5 mr-1" />
+            <SelectValue placeholder="Active" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="true">Active</SelectItem>
+            <SelectItem value="false">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
         <Button
           variant="outline"
           size="sm"
           className="h-8 text-xs"
           onClick={() => {
             setSearchQuery('');
-            setFilterStatus('all');
             setFilterType('all');
+            setFilterStatus('all');
+            setFilterActive('all');
             fetchCharacters();
           }}
         >
@@ -1060,10 +1190,10 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
         </Button>
       </div>
 
-      {/* ✅ Characters Table - Shows Model Associations */}
+      {/* Characters Table */}
       {filteredCharacters.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <User className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No characters found</p>
           <Button
             variant="outline"
@@ -1081,9 +1211,11 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-xs py-1">Name</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Models</TableHead>
-                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">ID</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs py-1">Status</TableHead>
+                <TableHead className="hidden xl:table-cell text-xs py-1">Position</TableHead>
+                <TableHead className="text-center text-xs py-1">Active</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -1091,22 +1223,38 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
               {filteredCharacters.map((character) => (
                 <TableRow key={character.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
-                    {character.name}
+                    <div className="flex items-center gap-2">
+                      <Users className="w-3.5 h-3.5 text-purple-500" />
+                      {character.name}
+                      {!character.isActive && (
+                        <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
+                      )}
+                      {character.isMovable && (
+                        <Badge variant="outline" className="text-[10px]">
+                          <Move className="w-2.5 h-2.5 mr-0.5" />
+                          Mobile
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
-                    {getTypeLabel(character.type)}
+                  <TableCell className="hidden sm:table-cell py-1 text-xs font-mono text-muted-foreground">
+                    {character.characterId || '—'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
-                    {character.modelAssociations && character.modelAssociations.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {character.modelAssociations.map((assoc) => (
-                          <Badge key={assoc.id} variant="outline" className="text-[10px]">
-                            {assoc.model?.modelName || `Model #${assoc.modelId}`}
-                          </Badge>
-                        ))}
-                      </div>
+                    <Badge className={`text-[10px] ${getTypeColor(character.type)}`}>
+                      {getOptionLabel(CHARACTER_TYPE_OPTIONS, character.type)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge className={`text-[10px] ${getStatusColor(character.status)}`}>
+                      {getOptionLabel(CHARACTER_STATUS_OPTIONS, character.status)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden xl:table-cell py-1 text-xs font-mono text-muted-foreground">
+                    {character.positionX && character.positionZ ? (
+                      `(${character.positionX}, ${character.positionZ})`
                     ) : (
-                      <span className="text-muted-foreground/60">—</span>
+                      '—'
                     )}
                   </TableCell>
                   <TableCell className="text-center py-1">
@@ -1124,11 +1272,21 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
 
       {/* Edit Dialog */}
       <Dialog open={!!editingCharacter} onOpenChange={(open) => !open && setEditingCharacter(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Character</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
+            <div>
+              <Label htmlFor="edit-characterId">Character ID *</Label>
+              <Input
+                id="edit-characterId"
+                value={formData.characterId}
+                onChange={(e) => setFormData({ ...formData, characterId: e.target.value })}
+                disabled={isSubmitting}
+              />
+            </div>
+
             <div>
               <Label htmlFor="edit-name">Character Name *</Label>
               <Input
@@ -1138,6 +1296,7 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                 disabled={isSubmitting}
               />
             </div>
+
             <div>
               <Label htmlFor="edit-description">Description</Label>
               <Textarea
@@ -1151,13 +1310,13 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-type">Character Type</Label>
+                <Label htmlFor="edit-type">Type</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value) => setFormData({ ...formData, type: value as CharacterType })}
+                  onValueChange={(value) => setFormData({ ...formData, type: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select character type" />
+                    <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
                     {CHARACTER_TYPE_OPTIONS.map((type) => (
@@ -1172,7 +1331,7 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                 <Label htmlFor="edit-status">Status</Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value as CharacterStatus })}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -1188,187 +1347,227 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
               </div>
             </div>
 
-            {/* ✅ Model Selection - Edit mode */}
+            {/* Model */}
             <div>
-              <Label>Associated Models</Label>
-              <div className="mt-1">
-                {formData.selectedModels.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {formData.selectedModels.map((model) => (
-                      <Badge
-                        key={model.id}
-                        variant="secondary"
-                        className="flex items-center gap-1 text-xs"
-                      >
-                        {model.modelName} ({model.modelType})
-                        <button
-                          type="button"
-                          onClick={() => toggleModelSelection(model)}
-                          className="ml-1 hover:text-destructive"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </Badge>
-                    ))}
+              <Label htmlFor="edit-modelId">Model</Label>
+              <Select
+                value={formData.modelId}
+                onValueChange={(value) => setFormData({ ...formData, modelId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a model (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {models.map((model) => (
+                    <SelectItem key={model.id} value={String(model.id)}>
+                      {model.modelName} ({model.modelType})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Animation */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Animation</Label>
+              <div className="space-y-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-animations" className="text-xs">Animations (JSON array)</Label>
+                  <Input
+                    id="edit-animations"
+                    value={formData.animations}
+                    onChange={(e) => setFormData({ ...formData, animations: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label htmlFor="edit-defaultAnimation" className="text-xs">Default Animation</Label>
+                    <Select
+                      value={formData.defaultAnimation}
+                      onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select animation" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {ANIMATION_OPTIONS.map((anim) => (
+                          <SelectItem key={anim.value} value={anim.value}>
+                            {anim.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                )}
-
-                <Select
-                  value=""
-                  onValueChange={(value) => {
-                    const model = models.find((m) => String(m.id) === value);
-                    if (model) {
-                      toggleModelSelection(model);
-                    }
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a model to associate..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {models
-                      .filter((m) => !formData.selectedModels.some((sm) => sm.id === m.id))
-                      .map((model) => (
-                        <SelectItem key={model.id} value={String(model.id)}>
-                          {model.modelName} ({model.modelType})
-                        </SelectItem>
-                      ))}
-                    {models.length === 0 && (
-                      <SelectItem value="none" disabled>
-                        No models available
-                      </SelectItem>
-                    )}
-                    {models.length > 0 && formData.selectedModels.length === models.length && (
-                      <SelectItem value="all" disabled>
-                        All models selected
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {formData.selectedModels.length > 0
-                    ? `${formData.selectedModels.length} model(s) associated`
-                    : 'No models associated'}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-animations">Animations</Label>
-                <Input
-                  id="edit-animations"
-                  value={formData.animations}
-                  onChange={(e) => setFormData({ ...formData, animations: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-defaultAnimation">Default Animation</Label>
-                <Select
-                  value={formData.defaultAnimation || 'none'}
-                  onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value === 'none' ? '' : value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select default animation" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {CHARACTER_ANIMATION_OPTIONS.map((anim) => (
-                      <SelectItem key={anim.value} value={anim.value}>
-                        {anim.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-movementType">Movement Type</Label>
-                <Select
-                  value={formData.movementType || 'none'}
-                  onValueChange={(value) => setFormData({ ...formData, movementType: value === 'none' ? '' : value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select movement type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {CHARACTER_MOVEMENT_TYPE_OPTIONS.map((movement) => (
-                      <SelectItem key={movement.value} value={movement.value}>
-                        {movement.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="edit-isMovable">
-                  <div className="flex items-center gap-2 pt-6">
-                    <Switch
-                      id="edit-isMovable"
-                      checked={formData.isMovable}
-                      onCheckedChange={(checked) => setFormData({ ...formData, isMovable: checked })}
+                  <div>
+                    <Label htmlFor="edit-animationSpeed" className="text-xs">Animation Speed</Label>
+                    <Input
+                      id="edit-animationSpeed"
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      value={formData.animationSpeed}
+                      onChange={(e) => setFormData({ ...formData, animationSpeed: e.target.value })}
                       disabled={isSubmitting}
                     />
-                    <Label htmlFor="edit-isMovable">Movable</Label>
                   </div>
-                </Label>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-defaultEmote">Default Emote</Label>
-                <Select
-                  value={formData.defaultEmote || 'none'}
-                  onValueChange={(value) => setFormData({ ...formData, defaultEmote: value === 'none' ? '' : value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select default emote" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {CHARACTER_EMOTE_OPTIONS.map((emote) => (
-                      <SelectItem key={emote.value} value={emote.value}>
-                        {emote.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="edit-weatherSensitivity">Weather Sensitivity</Label>
-                <Select
-                  value={formData.weatherSensitivity || 'none'}
-                  onValueChange={(value) => setFormData({ ...formData, weatherSensitivity: value === 'none' ? '' : value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select weather sensitivity" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {CHARACTER_WEATHER_SENSITIVITY_OPTIONS.map((weather) => (
-                      <SelectItem key={weather.value} value={weather.value}>
-                        {weather.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Movement */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Movement</Label>
+              <div className="space-y-2 mt-2">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="edit-isMovable"
+                    checked={formData.isMovable}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isMovable: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="edit-isMovable">Movable</Label>
+                </div>
+                <div>
+                  <Label htmlFor="edit-movementType" className="text-xs">Movement Type</Label>
+                  <Select
+                    value={formData.movementType}
+                    onValueChange={(value) => setFormData({ ...formData, movementType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select movement" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MOVEMENT_TYPE_OPTIONS.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label htmlFor="edit-movementSpeed" className="text-xs">Movement Speed</Label>
+                    <Input
+                      id="edit-movementSpeed"
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      value={formData.movementSpeed}
+                      onChange={(e) => setFormData({ ...formData, movementSpeed: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-movementRadius" className="text-xs">Movement Radius</Label>
+                    <Input
+                      id="edit-movementRadius"
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      value={formData.movementRadius}
+                      onChange={(e) => setFormData({ ...formData, movementRadius: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="edit-patrolWaypoints" className="text-xs">Patrol Waypoints (JSON)</Label>
+                  <Input
+                    id="edit-patrolWaypoints"
+                    value={formData.patrolWaypoints}
+                    onChange={(e) => setFormData({ ...formData, patrolWaypoints: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
             </div>
 
-            <div>
-              <Label>3D Position</Label>
-              <div className="grid grid-cols-3 gap-4 mt-2">
+            {/* Interaction */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Interaction</Label>
+              <div className="space-y-2 mt-2">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="edit-interactable"
+                    checked={formData.interactable}
+                    onCheckedChange={(checked) => setFormData({ ...formData, interactable: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="edit-interactable">Interactable</Label>
+                </div>
+                <div>
+                  <Label htmlFor="edit-interactionMessage" className="text-xs">Interaction Message</Label>
+                  <Input
+                    id="edit-interactionMessage"
+                    value={formData.interactionMessage}
+                    onChange={(e) => setFormData({ ...formData, interactionMessage: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label htmlFor="edit-defaultEmote" className="text-xs">Default Emote</Label>
+                    <Select
+                      value={formData.defaultEmote}
+                      onValueChange={(value) => setFormData({ ...formData, defaultEmote: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select emote" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {EMOTE_OPTIONS.map((emote) => (
+                          <SelectItem key={emote.value} value={emote.value}>
+                            {emote.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-emoteOnInteract" className="text-xs">Emote on Interact</Label>
+                    <Select
+                      value={formData.emoteOnInteract}
+                      onValueChange={(value) => setFormData({ ...formData, emoteOnInteract: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select emote" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {EMOTE_OPTIONS.map((emote) => (
+                          <SelectItem key={emote.value} value={emote.value}>
+                            {emote.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="edit-soundEffect" className="text-xs">Sound Effect</Label>
+                  <Input
+                    id="edit-soundEffect"
+                    value={formData.soundEffect}
+                    onChange={(e) => setFormData({ ...formData, soundEffect: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 3D Position */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">3D Position</Label>
+              <div className="grid grid-cols-3 gap-2 mt-2">
                 <div>
                   <Label htmlFor="edit-positionX" className="text-xs">X</Label>
                   <Input
                     id="edit-positionX"
                     type="number"
-                    step="0.5"
+                    step="0.01"
                     value={formData.positionX}
                     onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
                     disabled={isSubmitting}
@@ -1379,7 +1578,7 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                   <Input
                     id="edit-positionY"
                     type="number"
-                    step="0.5"
+                    step="0.01"
                     value={formData.positionY}
                     onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
                     disabled={isSubmitting}
@@ -1390,87 +1589,161 @@ export function ThreeDCharactersCRUD({ threedId, onModuleUpdate }: ThreeDCharact
                   <Input
                     id="edit-positionZ"
                     type="number"
-                    step="0.5"
+                    step="0.01"
                     value={formData.positionZ}
                     onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-rotation" className="text-xs">Rotation</Label>
+                  <Input
+                    id="edit-rotation"
+                    type="number"
+                    step="1"
+                    value={formData.rotation}
+                    onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-scale" className="text-xs">Scale</Label>
+                  <Input
+                    id="edit-scale"
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    value={formData.scale}
+                    onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-rotation">Rotation</Label>
-                <Input
-                  id="edit-rotation"
-                  type="number"
-                  step="0.1"
-                  value={formData.rotation}
-                  onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-scale">Scale</Label>
-                <Input
-                  id="edit-scale"
-                  type="number"
-                  step="0.1"
-                  value={formData.scale}
-                  onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
-                  disabled={isSubmitting}
-                />
+            {/* Appearance */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Appearance</Label>
+              <div className="space-y-2 mt-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label htmlFor="edit-colorTint" className="text-xs">Color Tint</Label>
+                    <Input
+                      id="edit-colorTint"
+                      value={formData.colorTint}
+                      onChange={(e) => setFormData({ ...formData, colorTint: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-scaleMultiplier" className="text-xs">Scale Multiplier</Label>
+                    <Input
+                      id="edit-scaleMultiplier"
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      value={formData.scaleMultiplier}
+                      onChange={(e) => setFormData({ ...formData, scaleMultiplier: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="edit-visible"
+                    checked={formData.visible}
+                    onCheckedChange={(checked) => setFormData({ ...formData, visible: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="edit-visible">Visible</Label>
+                </div>
+                <div>
+                  <Label htmlFor="edit-visibleDistance" className="text-xs">Visible Distance</Label>
+                  <Input
+                    id="edit-visibleDistance"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={formData.visibleDistance}
+                    onChange={(e) => setFormData({ ...formData, visibleDistance: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-interactable">
-                  <div className="flex items-center gap-2 pt-6">
-                    <Switch
-                      id="edit-interactable"
-                      checked={formData.interactable}
-                      onCheckedChange={(checked) => setFormData({ ...formData, interactable: checked })}
-                      disabled={isSubmitting}
-                    />
-                    <Label htmlFor="edit-interactable">Interactable</Label>
-                  </div>
-                </Label>
+            {/* Schedule & Weather */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Schedule & Weather</Label>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-activeStartHour" className="text-xs">Active Start Hour</Label>
+                  <Input
+                    id="edit-activeStartHour"
+                    type="number"
+                    min="0"
+                    max="23"
+                    value={formData.activeStartHour}
+                    onChange={(e) => setFormData({ ...formData, activeStartHour: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-activeEndHour" className="text-xs">Active End Hour</Label>
+                  <Input
+                    id="edit-activeEndHour"
+                    type="number"
+                    min="0"
+                    max="23"
+                    value={formData.activeEndHour}
+                    onChange={(e) => setFormData({ ...formData, activeEndHour: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="edit-visible">
-                  <div className="flex items-center gap-2 pt-6">
-                    <Switch
-                      id="edit-visible"
-                      checked={formData.visible}
-                      onCheckedChange={(checked) => setFormData({ ...formData, visible: checked })}
-                      disabled={isSubmitting}
-                    />
-                    <Label htmlFor="edit-visible">Visible</Label>
-                  </div>
-                </Label>
+              <div className="mt-2">
+                <Label htmlFor="edit-weatherSensitivity" className="text-xs">Weather Sensitivity</Label>
+                <Select
+                  value={formData.weatherSensitivity}
+                  onValueChange={(value) => setFormData({ ...formData, weatherSensitivity: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select sensitivity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {WEATHER_SENSITIVITY_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             <div>
-              <Label htmlFor="edit-interactionMessage">Interaction Message</Label>
+              <Label htmlFor="edit-metadata">Metadata (JSON)</Label>
               <Input
-                id="edit-interactionMessage"
-                value={formData.interactionMessage}
-                onChange={(e) => setFormData({ ...formData, interactionMessage: e.target.value })}
+                id="edit-metadata"
+                value={formData.metadata}
+                onChange={(e) => setFormData({ ...formData, metadata: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <Switch
-                id="edit-isActive"
-                checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                disabled={isSubmitting}
-              />
-              <Label htmlFor="edit-isActive">Active</Label>
+            {/* Active Status */}
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="edit-isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="edit-isActive">Active</Label>
+              </div>
             </div>
 
             <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>

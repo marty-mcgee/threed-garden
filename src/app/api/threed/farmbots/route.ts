@@ -3,62 +3,51 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { 
-  threedFarmbots, 
+  threedFarmbots,
   threedBeds,
 } from '@/lib/schema/threed';
-import { projectAssets } from '@/lib/schema/project';
-import { eq, and, or, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/threed/farmbots
+// GET /api/threed/farmbots - List ThreeD FarmBots
 // Query Parameters:
-//   - id: Get a single FarmBot
-//   - moduleId: Get FarmBots for a specific ThreeD module (via project_assets)
-//   - status: Filter by status
-//   - isActive: Filter by active status
-//   - limit, offset: Pagination
+//   - id (optional): Get a single farmbot
+//   - status (optional): Filter by farmbot status
+//   - isActive (optional): Filter by active status
+//   - search (optional): Search by name, deviceId, or notes
+//   - limit (optional): Number of records (default: 50)
+//   - offset (optional): Number of records to skip (default: 0)
 // ============================================
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    const userId = session?.user?.id;
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const moduleId = searchParams.get('moduleId');
     const status = searchParams.get('status');
     const isActive = searchParams.get('isActive');
+    const search = searchParams.get('search');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // ✅ Get a single FarmBot by ID
-    if (id) {
-      const parsedId = parseInt(id);
-      if (isNaN(parsedId)) {
-        return NextResponse.json(
-          { success: false, error: 'Invalid FarmBot ID' },
-          { status: 400 }
-        );
-      }
+    const userId = session.user.id;
 
-      let query = db
+    // Get a single farmbot by ID
+    if (id) {
+      const [farmbot] = await db
         .select()
         .from(threedFarmbots)
-        .where(eq(threedFarmbots.id, parsedId));
-
-      if (!userId) {
-        query = query.where(eq(threedFarmbots.isActive, true));
-      } else {
-        query = query.where(
-          or(
-            eq(threedFarmbots.userId, userId),
-            eq(threedFarmbots.isActive, true)
+        .where(
+          and(
+            eq(threedFarmbots.id, parseInt(id)),
+            eq(threedFarmbots.userId, userId)
           )
-        );
-      }
-
-      const [farmbot] = await query.limit(1);
+        )
+        .limit(1);
 
       if (!farmbot) {
         return NextResponse.json(
@@ -67,173 +56,205 @@ export async function GET(request: NextRequest) {
         );
       }
 
+      // ✅ Fetch related bed info if available
+      const [bed] = farmbot.bedId ? await db
+        .select()
+        .from(threedBeds)
+        .where(eq(threedBeds.id, farmbot.bedId))
+        .limit(1) : [];
+
       return NextResponse.json({
         success: true,
-        data: farmbot,
+        data: {
+          ...farmbot,
+          bed: bed || null,
+        },
       });
     }
 
-    // ✅ Build query for listing FarmBots
+    // ✅ Build query
     let query = db
       .select()
       .from(threedFarmbots)
+      .where(eq(threedFarmbots.userId, userId))
       .$dynamic();
-
-    if (!userId) {
-      query = query.where(eq(threedFarmbots.isActive, true));
-    } else {
-      query = query.where(
-        or(
-          eq(threedFarmbots.userId, userId),
-          eq(threedFarmbots.isActive, true)
-        )
-      );
-    }
 
     // ✅ Apply filters
     if (status) {
       query = query.where(eq(threedFarmbots.status, status));
     }
+
     if (isActive !== null) {
       query = query.where(eq(threedFarmbots.isActive, isActive === 'true'));
     }
 
-    // ✅ Filter by moduleId via project_assets
-    if (moduleId) {
-      const parsedModuleId = parseInt(moduleId);
-      if (!isNaN(parsedModuleId)) {
-        const assetLinks = await db
-          .select({ assetId: projectAssets.assetId })
-          .from(projectAssets)
-          .where(
-            and(
-              eq(projectAssets.moduleId, parsedModuleId),
-              eq(projectAssets.moduleType, 'threed'),
-              eq(projectAssets.assetType, 'threed_farmbots'),
-              eq(projectAssets.userId, userId || '')
-            )
-          );
-
-        const farmbotIds = assetLinks.map((link) => link.assetId);
-        if (farmbotIds.length > 0) {
-          query = query.where(sql`${threedFarmbots.id} IN (${sql.join(farmbotIds)})`);
-        } else {
-          return NextResponse.json({
-            success: true,
-            data: [],
-            pagination: { limit, offset, total: 0 },
-          });
-        }
-      }
+    if (search) {
+      query = query.where(
+        sql`${threedFarmbots.name} ILIKE ${`%${search}%`} OR 
+            ${threedFarmbots.deviceId} ILIKE ${`%${search}%`} OR
+            ${threedFarmbots.notes} ILIKE ${`%${search}%`}`
+      );
     }
 
-    // ✅ Get total count
-    const countResult = await db
+    // ✅ Get total count for pagination
+    const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedFarmbots)
       .where(query._where);
 
-    const farmbots = await query
+    const total = countResult?.count || 0;
+
+    // ✅ Get paginated results
+    const results = await query
       .orderBy(desc(threedFarmbots.createdAt))
       .limit(limit)
       .offset(offset);
 
+    // ✅ Fetch related bed info for each farmbot
+    const farmbotsWithBeds = await Promise.all(
+      results.map(async (farmbot) => {
+        const [bed] = farmbot.bedId ? await db
+          .select()
+          .from(threedBeds)
+          .where(eq(threedBeds.id, farmbot.bedId))
+          .limit(1) : [];
+
+        return {
+          ...farmbot,
+          bed: bed || null,
+        };
+      })
+    );
+
     return NextResponse.json({
       success: true,
-      data: farmbots,
+      data: farmbotsWithBeds,
       pagination: {
         limit,
         offset,
-        total: countResult[0]?.count || 0,
+        total,
       },
     });
   } catch (error) {
-    console.error('[FarmBots API] GET error:', error);
+    console.error('Error fetching farmbots:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch FarmBots' },
+      { success: false, error: 'Failed to fetch farmbots' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// POST /api/threed/farmbots - Create a new FarmBot
+// POST /api/threed/farmbots - Create ThreeD FarmBot
 // ============================================
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = session.user.id;
     const body = await request.json();
+    console.log('📝 POST /api/threed/farmbots - Request body:', body);
 
-    console.log('[FarmBots API] POST - Received body:', body);
+    const {
+      deviceId,
+      name,
+      isActive,
+      status,
+      bedId,
+      positionX,
+      positionY,
+      positionZ,
+      apiToken,
+      apiUrl,
+      lastSeen,
+      batteryLevel,
+      firmwareVersion,
+      notes,
+    } = body;
 
-    if (!body.name) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: name' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.deviceId) {
+    // ✅ Validate required fields
+    if (!deviceId) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: deviceId' },
         { status: 400 }
       );
     }
 
-    await ensureTableSequence('threed_farmbots');
+    if (!name) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: name' },
+        { status: 400 }
+      );
+    }
 
-    // ✅ Build values object - let database handle createdAt/updatedAt
-    const values: any = {
-      userId,
-      deviceId: body.deviceId.trim(),
-      name: body.name.trim(),
-      status: body.status || 'offline',
-      bedId: body.bedId ? parseInt(body.bedId) : null,
-      positionX: body.positionX ? parseFloat(body.positionX) : 0,
-      positionY: body.positionY ? parseFloat(body.positionY) : 0,
-      positionZ: body.positionZ ? parseFloat(body.positionZ) : 0,
-      apiToken: body.apiToken || null,
-      apiUrl: body.apiUrl || null,
-      firmwareVersion: body.firmwareVersion || null,
-      notes: body.notes || null,
-      isActive: body.isActive !== undefined ? body.isActive : true,
-    };
+    const userId = session.user.id;
 
-    console.log('[FarmBots API] Inserting values:', values);
+    // ✅ Verify bed exists if provided
+    if (bedId) {
+      const [bed] = await db
+        .select()
+        .from(threedBeds)
+        .where(
+          and(
+            eq(threedBeds.id, parseInt(bedId)),
+            eq(threedBeds.userId, userId)
+          )
+        )
+        .limit(1);
 
-    const [newFarmbot] = await db
-      .insert(threedFarmbots)
-      .values(values)
-      .returning();
-
-    // ✅ If moduleId is provided, create project_assets association
-    if (body.moduleId) {
-      const parsedModuleId = parseInt(body.moduleId);
-      if (!isNaN(parsedModuleId)) {
-        await ensureTableSequence('project_assets');
-        await db.insert(projectAssets).values({
-          userId,
-          projectId: null,
-          moduleId: parsedModuleId,
-          moduleType: 'threed',
-          assetType: 'threed_farmbots',
-          assetId: newFarmbot.id,
-          config: {},
-          isActive: true,
-        });
-        console.log('[FarmBots API] Created project_assets association for FarmBot:', newFarmbot.id);
+      if (!bed) {
+        return NextResponse.json(
+          { success: false, error: 'Bed not found' },
+          { status: 404 }
+        );
       }
     }
 
-    console.log('[FarmBots API] Created FarmBot:', newFarmbot.id, newFarmbot.name);
+    // ✅ Check if deviceId already exists
+    const [existing] = await db
+      .select()
+      .from(threedFarmbots)
+      .where(
+        and(
+          eq(threedFarmbots.deviceId, deviceId),
+          eq(threedFarmbots.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      return NextResponse.json(
+        { success: false, error: 'Device ID already exists' },
+        { status: 409 }
+      );
+    }
+
+    await ensureTableSequence('threed_farmbots');
+
+    const [newFarmbot] = await db
+      .insert(threedFarmbots)
+      .values({
+        userId,
+        deviceId,
+        name,
+        isActive: isActive ?? true,
+        status: status || 'offline',
+        bedId: bedId || null,
+        positionX: positionX || null,
+        positionY: positionY || null,
+        positionZ: positionZ || null,
+        apiToken: apiToken || null,
+        apiUrl: apiUrl || null,
+        lastSeen: lastSeen ? new Date(lastSeen) : null,
+        batteryLevel: batteryLevel || null,
+        firmwareVersion: firmwareVersion || null,
+        notes: notes || null,
+      })
+      .returning();
+
+    console.log('✅ ThreeD FarmBot created:', newFarmbot);
 
     return NextResponse.json({
       success: true,
@@ -241,46 +262,46 @@ export async function POST(request: NextRequest) {
       message: 'FarmBot created successfully',
     });
   } catch (error) {
-    console.error('[FarmBots API] POST error:', error);
+    console.error('Error creating farmbot:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create FarmBot', details: error instanceof Error ? error.message : String(error) },
+      { success: false, error: 'Failed to create farmbot' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// PUT /api/threed/farmbots - Update a FarmBot
+// PUT /api/threed/farmbots?id=1 - Full update
 // ============================================
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = session.user.id;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Missing FarmBot ID' },
+        { success: false, error: 'Missing id parameter' },
         { status: 400 }
       );
     }
 
+    const body = await request.json();
+    const userId = session.user.id;
     const parsedId = parseInt(id);
+
     if (isNaN(parsedId)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid FarmBot ID' },
+        { success: false, error: 'Invalid ID' },
         { status: 400 }
       );
     }
 
+    // ✅ Verify farmbot exists and belongs to user
     const [existing] = await db
       .select()
       .from(threedFarmbots)
@@ -299,56 +320,30 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    console.log('[FarmBots API] PUT - Updating FarmBot:', parsedId, body);
+    // ✅ Verify bed exists if provided
+    if (body.bedId) {
+      const [bed] = await db
+        .select()
+        .from(threedBeds)
+        .where(
+          and(
+            eq(threedBeds.id, parseInt(body.bedId)),
+            eq(threedBeds.userId, userId)
+          )
+        )
+        .limit(1);
 
-    // ✅ Build updateData - start empty, only add what's provided
-    const updateData: any = {};
-
-    // ✅ Only add fields if they exist in the request body
-    if (body.name !== undefined) {
-      updateData.name = body.name?.trim() || existing.name;
-    }
-    if (body.deviceId !== undefined) {
-      updateData.deviceId = body.deviceId?.trim() || existing.deviceId;
-    }
-    if (body.status !== undefined) {
-      updateData.status = body.status;
-    }
-    if (body.bedId !== undefined) {
-      updateData.bedId = (body.bedId && body.bedId !== '' && !isNaN(parseInt(body.bedId))) 
-        ? parseInt(body.bedId) 
-        : null;
-    }
-    if (body.positionX !== undefined) {
-      updateData.positionX = body.positionX ? parseFloat(body.positionX) : 0;
-    }
-    if (body.positionY !== undefined) {
-      updateData.positionY = body.positionY ? parseFloat(body.positionY) : 0;
-    }
-    if (body.positionZ !== undefined) {
-      updateData.positionZ = body.positionZ ? parseFloat(body.positionZ) : 0;
-    }
-    if (body.apiToken !== undefined) {
-      updateData.apiToken = body.apiToken || null;
-    }
-    if (body.apiUrl !== undefined) {
-      updateData.apiUrl = body.apiUrl || null;
-    }
-    if (body.firmwareVersion !== undefined) {
-      updateData.firmwareVersion = body.firmwareVersion || null;
-    }
-    if (body.notes !== undefined) {
-      updateData.notes = body.notes || null;
-    }
-    if (body.isActive !== undefined) {
-      updateData.isActive = body.isActive;
+      if (!bed) {
+        return NextResponse.json(
+          { success: false, error: 'Bed not found' },
+          { status: 404 }
+        );
+      }
     }
 
-    // ✅ updatedAt is handled by the database ($onUpdateFn)
-    // No need to set it here
-
-    console.log('[FarmBots API] Updating with values:', updateData);
+    // ✅ Handle date fields
+    const updateData: any = { ...body, updatedAt: new Date() };
+    if (body.lastSeen) updateData.lastSeen = new Date(body.lastSeen);
 
     const [updated] = await db
       .update(threedFarmbots)
@@ -361,7 +356,7 @@ export async function PUT(request: NextRequest) {
       )
       .returning();
 
-    console.log('[FarmBots API] Updated FarmBot:', updated.id, updated.name);
+    console.log('✅ ThreeD FarmBot updated:', updated);
 
     return NextResponse.json({
       success: true,
@@ -369,46 +364,46 @@ export async function PUT(request: NextRequest) {
       message: 'FarmBot updated successfully',
     });
   } catch (error) {
-    console.error('[FarmBots API] PUT error:', error);
+    console.error('Error updating farmbot:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update FarmBot', details: error instanceof Error ? error.message : String(error) },
+      { success: false, error: 'Failed to update farmbot' },
       { status: 500 }
     );
   }
 }
 
 // ============================================
-// DELETE /api/threed/farmbots - Delete a FarmBot
+// PATCH /api/threed/farmbots?id=1 - Partial update
 // ============================================
-export async function DELETE(request: NextRequest) {
+export async function PATCH(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = session.user.id;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Missing FarmBot ID' },
+        { success: false, error: 'Missing id parameter' },
         { status: 400 }
       );
     }
 
+    const body = await request.json();
+    const userId = session.user.id;
     const parsedId = parseInt(id);
+
     if (isNaN(parsedId)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid FarmBot ID' },
+        { success: false, error: 'Invalid ID' },
         { status: 400 }
       );
     }
 
+    // ✅ Verify farmbot exists and belongs to user
     const [existing] = await db
       .select()
       .from(threedFarmbots)
@@ -427,18 +422,91 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // ✅ Delete project_assets associations
-    await db
-      .delete(projectAssets)
+    // ✅ Verify bed exists if provided
+    if (body.bedId) {
+      const [bed] = await db
+        .select()
+        .from(threedBeds)
+        .where(
+          and(
+            eq(threedBeds.id, parseInt(body.bedId)),
+            eq(threedBeds.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!bed) {
+        return NextResponse.json(
+          { success: false, error: 'Bed not found' },
+          { status: 404 }
+        );
+      }
+    }
+
+    // ✅ Handle date fields
+    const updateData: any = { ...body, updatedAt: new Date() };
+    if (body.lastSeen) updateData.lastSeen = new Date(body.lastSeen);
+
+    const [updated] = await db
+      .update(threedFarmbots)
+      .set(updateData)
       .where(
         and(
-          eq(projectAssets.assetType, 'threed_farmbots'),
-          eq(projectAssets.assetId, parsedId),
-          eq(projectAssets.userId, userId)
+          eq(threedFarmbots.id, parsedId),
+          eq(threedFarmbots.userId, userId)
         )
-      );
+      )
+      .returning();
 
-    // ✅ Delete the FarmBot
+    console.log('✅ ThreeD FarmBot patched:', updated);
+
+    return NextResponse.json({
+      success: true,
+      data: updated,
+      message: 'FarmBot updated successfully',
+    });
+  } catch (error) {
+    console.error('Error updating farmbot:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update farmbot' },
+      { status: 500 }
+    );
+  }
+}
+
+// ============================================
+// DELETE /api/threed/farmbots?id=1 - Delete farmbot
+// ============================================
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Missing id parameter' },
+        { status: 400 }
+      );
+    }
+
+    const userId = session.user.id;
+    const parsedId = parseInt(id);
+
+    if (isNaN(parsedId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid ID' },
+        { status: 400 }
+      );
+    }
+
     const [deleted] = await db
       .delete(threedFarmbots)
       .where(
@@ -449,7 +517,12 @@ export async function DELETE(request: NextRequest) {
       )
       .returning();
 
-    console.log('[FarmBots API] Deleted FarmBot:', deleted.id, deleted.name);
+    if (!deleted) {
+      return NextResponse.json(
+        { success: false, error: 'FarmBot not found' },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -457,9 +530,9 @@ export async function DELETE(request: NextRequest) {
       message: 'FarmBot deleted successfully',
     });
   } catch (error) {
-    console.error('[FarmBots API] DELETE error:', error);
+    console.error('Error deleting farmbot:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete FarmBot' },
+      { success: false, error: 'Failed to delete farmbot' },
       { status: 500 }
     );
   }

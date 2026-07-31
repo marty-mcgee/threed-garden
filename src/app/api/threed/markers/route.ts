@@ -2,12 +2,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedMarkers, threedLayers, threedModels, threedCharacters, threedPlants, threedBeds } from '@/lib/schema/threed';
+import { 
+  threedMarkers,
+  threedLayers,
+  threedModels,
+  threedCharacters,
+  threedPlants,
+  threedBeds,
+} from '@/lib/schema/threed';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
 // GET /api/threed/markers - List ThreeD Markers
+// Query Parameters:
+//   - id (optional): Get a single marker
+//   - markerType (optional): Filter by marker type
+//   - layerId (optional): Filter by layer
+//   - isActive (optional): Filter by active status
+//   - isVisible (optional): Filter by visibility
+//   - search (optional): Search by name, markerId, or description
+//   - limit (optional): Number of records (default: 50)
+//   - offset (optional): Number of records to skip (default: 0)
 // ============================================
 export async function GET(request: NextRequest) {
   try {
@@ -18,10 +34,8 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const moduleId = searchParams.get('moduleId');
-    const layerId = searchParams.get('layerId');
     const markerType = searchParams.get('markerType');
-    const parentMarkerId = searchParams.get('parentMarkerId');
+    const layerId = searchParams.get('layerId');
     const isActive = searchParams.get('isActive');
     const isVisible = searchParams.get('isVisible');
     const search = searchParams.get('search');
@@ -50,9 +64,47 @@ export async function GET(request: NextRequest) {
         );
       }
 
+      // ✅ Fetch related entities
+      const [layer] = marker.layerId ? await db
+        .select()
+        .from(threedLayers)
+        .where(eq(threedLayers.id, marker.layerId))
+        .limit(1) : [];
+
+      const [model] = marker.modelId ? await db
+        .select()
+        .from(threedModels)
+        .where(eq(threedModels.id, marker.modelId))
+        .limit(1) : [];
+
+      const [character] = marker.characterId ? await db
+        .select()
+        .from(threedCharacters)
+        .where(eq(threedCharacters.id, marker.characterId))
+        .limit(1) : [];
+
+      const [plant] = marker.plantId ? await db
+        .select()
+        .from(threedPlants)
+        .where(eq(threedPlants.id, marker.plantId))
+        .limit(1) : [];
+
+      const [bed] = marker.bedId ? await db
+        .select()
+        .from(threedBeds)
+        .where(eq(threedBeds.id, marker.bedId))
+        .limit(1) : [];
+
       return NextResponse.json({
         success: true,
-        data: marker,
+        data: {
+          ...marker,
+          layer: layer || null,
+          model: model || null,
+          character: character || null,
+          plant: plant || null,
+          bed: bed || null,
+        },
       });
     }
 
@@ -64,22 +116,12 @@ export async function GET(request: NextRequest) {
       .$dynamic();
 
     // ✅ Apply filters
-    if (moduleId) {
-      query = query.where(eq(threedMarkers.moduleId, parseInt(moduleId)));
-    }
-
-    if (layerId) {
-      query = query.where(eq(threedMarkers.layerId, parseInt(layerId)));
-    }
-
     if (markerType) {
       query = query.where(eq(threedMarkers.markerType, markerType));
     }
 
-    if (parentMarkerId) {
-      query = query.where(eq(threedMarkers.parentMarkerId, parseInt(parentMarkerId)));
-    } else if (parentMarkerId === null) {
-      query = query.where(sql`${threedMarkers.parentMarkerId} IS NULL`);
+    if (layerId) {
+      query = query.where(eq(threedMarkers.layerId, parseInt(layerId)));
     }
 
     if (isActive !== null) {
@@ -93,28 +135,77 @@ export async function GET(request: NextRequest) {
     if (search) {
       query = query.where(
         sql`${threedMarkers.name} ILIKE ${`%${search}%`} OR 
+            ${threedMarkers.markerId} ILIKE ${`%${search}%`} OR
             ${threedMarkers.description} ILIKE ${`%${search}%`} OR
             ${threedMarkers.label} ILIKE ${`%${search}%`}`
       );
     }
 
+    // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedMarkers)
       .where(query._where);
 
+    const total = countResult?.count || 0;
+
+    // ✅ Get paginated results
     const results = await query
       .orderBy(desc(threedMarkers.createdAt))
       .limit(limit)
       .offset(offset);
 
+    // ✅ Fetch related entities for each marker
+    const markersWithRelations = await Promise.all(
+      results.map(async (marker) => {
+        const [layer] = marker.layerId ? await db
+          .select()
+          .from(threedLayers)
+          .where(eq(threedLayers.id, marker.layerId))
+          .limit(1) : [];
+
+        const [model] = marker.modelId ? await db
+          .select()
+          .from(threedModels)
+          .where(eq(threedModels.id, marker.modelId))
+          .limit(1) : [];
+
+        const [character] = marker.characterId ? await db
+          .select()
+          .from(threedCharacters)
+          .where(eq(threedCharacters.id, marker.characterId))
+          .limit(1) : [];
+
+        const [plant] = marker.plantId ? await db
+          .select()
+          .from(threedPlants)
+          .where(eq(threedPlants.id, marker.plantId))
+          .limit(1) : [];
+
+        const [bed] = marker.bedId ? await db
+          .select()
+          .from(threedBeds)
+          .where(eq(threedBeds.id, marker.bedId))
+          .limit(1) : [];
+
+        return {
+          ...marker,
+          layer: layer || null,
+          model: model || null,
+          character: character || null,
+          plant: plant || null,
+          bed: bed || null,
+        };
+      })
+    );
+
     return NextResponse.json({
       success: true,
-      data: results,
+      data: markersWithRelations,
       pagination: {
         limit,
         offset,
-        total: countResult?.count || 0,
+        total,
       },
     });
   } catch (error) {
@@ -140,11 +231,9 @@ export async function POST(request: NextRequest) {
     console.log('📝 POST /api/threed/markers - Request body:', body);
 
     const {
-      moduleId,
-      moduleType,
+      markerId,
       name,
       description,
-      markerId,
       position,
       rotation,
       scale,
@@ -169,13 +258,6 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // ✅ Validate required fields
-    if (!name) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: name' },
-        { status: 400 }
-      );
-    }
-
     if (!markerId) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: markerId' },
@@ -183,26 +265,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
-
-    // ✅ Check if markerId already exists
-    const [existing] = await db
-      .select()
-      .from(threedMarkers)
-      .where(
-        and(
-          eq(threedMarkers.markerId, markerId),
-          eq(threedMarkers.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (existing) {
+    if (!name) {
       return NextResponse.json(
-        { success: false, error: 'Marker ID already exists' },
-        { status: 409 }
+        { success: false, error: 'Missing required field: name' },
+        { status: 400 }
       );
     }
+
+    const userId = session.user.id;
 
     // ✅ Verify layer exists if provided
     if (layerId) {
@@ -246,7 +316,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ✅ Verify related entities exist if provided
+    // ✅ Verify model exists if provided
     if (modelId) {
       const [model] = await db
         .select()
@@ -267,6 +337,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ✅ Verify character exists if provided
     if (characterId) {
       const [character] = await db
         .select()
@@ -287,6 +358,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ✅ Verify plant exists if provided
     if (plantId) {
       const [plant] = await db
         .select()
@@ -307,6 +379,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ✅ Verify bed exists if provided
     if (bedId) {
       const [bed] = await db
         .select()
@@ -327,17 +400,34 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ✅ Check if markerId already exists
+    const [existing] = await db
+      .select()
+      .from(threedMarkers)
+      .where(
+        and(
+          eq(threedMarkers.markerId, markerId),
+          eq(threedMarkers.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      return NextResponse.json(
+        { success: false, error: 'Marker ID already exists' },
+        { status: 409 }
+      );
+    }
+
     await ensureTableSequence('threed_markers');
 
     const [newMarker] = await db
       .insert(threedMarkers)
       .values({
         userId,
-        moduleId: moduleId || null,
-        moduleType: moduleType || 'threed',
+        markerId,
         name,
         description: description || null,
-        markerId,
         position: position || { x: 0, y: 0, z: 0 },
         rotation: rotation || { x: 0, y: 0, z: 0 },
         scale: scale || { x: 1, y: 1, z: 1 },
@@ -428,7 +518,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // ✅ Verify related entities exist if provided
+    // ✅ Verify layer exists if provided
     if (body.layerId) {
       const [layer] = await db
         .select()
@@ -449,6 +539,28 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    // ✅ Verify parent marker exists if provided
+    if (body.parentMarkerId) {
+      const [parent] = await db
+        .select()
+        .from(threedMarkers)
+        .where(
+          and(
+            eq(threedMarkers.id, parseInt(body.parentMarkerId)),
+            eq(threedMarkers.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!parent) {
+        return NextResponse.json(
+          { success: false, error: 'Parent marker not found' },
+          { status: 404 }
+        );
+      }
+    }
+
+    // ✅ Verify related entities exist if provided
     if (body.modelId) {
       const [model] = await db
         .select()
@@ -464,6 +576,66 @@ export async function PUT(request: NextRequest) {
       if (!model) {
         return NextResponse.json(
           { success: false, error: 'Model not found' },
+          { status: 404 }
+        );
+      }
+    }
+
+    if (body.characterId) {
+      const [character] = await db
+        .select()
+        .from(threedCharacters)
+        .where(
+          and(
+            eq(threedCharacters.id, parseInt(body.characterId)),
+            eq(threedCharacters.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!character) {
+        return NextResponse.json(
+          { success: false, error: 'Character not found' },
+          { status: 404 }
+        );
+      }
+    }
+
+    if (body.plantId) {
+      const [plant] = await db
+        .select()
+        .from(threedPlants)
+        .where(
+          and(
+            eq(threedPlants.id, parseInt(body.plantId)),
+            eq(threedPlants.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!plant) {
+        return NextResponse.json(
+          { success: false, error: 'Plant not found' },
+          { status: 404 }
+        );
+      }
+    }
+
+    if (body.bedId) {
+      const [bed] = await db
+        .select()
+        .from(threedBeds)
+        .where(
+          and(
+            eq(threedBeds.id, parseInt(body.bedId)),
+            eq(threedBeds.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!bed) {
+        return NextResponse.json(
+          { success: false, error: 'Bed not found' },
           { status: 404 }
         );
       }
@@ -547,6 +719,48 @@ export async function PATCH(request: NextRequest) {
         { success: false, error: 'Marker not found' },
         { status: 404 }
       );
+    }
+
+    // ✅ Verify layer exists if provided
+    if (body.layerId) {
+      const [layer] = await db
+        .select()
+        .from(threedLayers)
+        .where(
+          and(
+            eq(threedLayers.id, parseInt(body.layerId)),
+            eq(threedLayers.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!layer) {
+        return NextResponse.json(
+          { success: false, error: 'Layer not found' },
+          { status: 404 }
+        );
+      }
+    }
+
+    // ✅ Verify parent marker exists if provided
+    if (body.parentMarkerId) {
+      const [parent] = await db
+        .select()
+        .from(threedMarkers)
+        .where(
+          and(
+            eq(threedMarkers.id, parseInt(body.parentMarkerId)),
+            eq(threedMarkers.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!parent) {
+        return NextResponse.json(
+          { success: false, error: 'Parent marker not found' },
+          { status: 404 }
+        );
+      }
     }
 
     const [updated] = await db

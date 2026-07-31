@@ -13,10 +13,13 @@ import {
   Filter,
   Eye,
   EyeOff,
+  Layers,
   Box,
   Users,
   Sprout,
-  Layers,
+  Palette,
+  Type,
+  Hash,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,9 +33,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-interface ThreeDMarkersCRUDProps {
-  moduleId?: number;
-  onModuleUpdate?: () => void;
+// ✅ Types
+interface Layer {
+  id: number;
+  layerId: string;
+  name: string;
+}
+
+interface Model {
+  id: number;
+  modelName: string;
+  modelType: string;
+}
+
+interface Character {
+  id: number;
+  characterId: string;
+  name: string;
+}
+
+interface Plant {
+  id: number;
+  plantId: string;
+  commonName: string;
+}
+
+interface Bed {
+  id: number;
+  bedId: string;
+  name: string;
 }
 
 interface Marker {
@@ -63,6 +92,11 @@ interface Marker {
   metadata: any;
   createdAt: string;
   updatedAt: string;
+  layer?: Layer;
+  model?: Model;
+  character?: Character;
+  plant?: Plant;
+  bed?: Bed;
 }
 
 interface FormData {
@@ -90,22 +124,24 @@ interface FormData {
   characterId: string;
   plantId: string;
   bedId: string;
+  data: string;
   isVisible: boolean;
   isInteractive: boolean;
   isActive: boolean;
   isPublic: boolean;
-  data: any;
-  metadata: any;
+  metadata: string;
 }
 
+// ✅ Options
 const MARKER_TYPE_OPTIONS = [
-  { value: 'object', label: 'Object' },
-  { value: 'waypoint', label: 'Waypoint' },
-  { value: 'label', label: 'Label' },
-  { value: 'model', label: '3D Model' },
   { value: 'plant', label: 'Plant' },
   { value: 'bed', label: 'Bed' },
+  { value: 'farmbot', label: 'FarmBot' },
+  { value: 'model', label: '3D Model' },
   { value: 'character', label: 'Character' },
+  { value: 'task', label: 'Task' },
+  { value: 'weather_station', label: 'Weather Station' },
+  { value: 'traffic_incident', label: 'Traffic Incident' },
   { value: 'custom', label: 'Custom' },
 ];
 
@@ -117,23 +153,48 @@ const SIZE_OPTIONS = [
 
 const COLOR_OPTIONS = [
   { value: '#ffffff', label: 'White' },
-  { value: '#ff0000', label: 'Red' },
-  { value: '#00ff00', label: 'Green' },
-  { value: '#0000ff', label: 'Blue' },
-  { value: '#ffff00', label: 'Yellow' },
-  { value: '#ff8800', label: 'Orange' },
-  { value: '#ff00ff', label: 'Magenta' },
-  { value: '#00ffff', label: 'Cyan' },
+  { value: '#ef4444', label: 'Red' },
+  { value: '#22c55e', label: 'Green' },
+  { value: '#3b82f6', label: 'Blue' },
+  { value: '#eab308', label: 'Yellow' },
+  { value: '#f97316', label: 'Orange' },
+  { value: '#a855f7', label: 'Purple' },
+  { value: '#ec4899', label: 'Pink' },
+  { value: '#06b6d4', label: 'Cyan' },
+  { value: '#8b5cf6', label: 'Violet' },
+  { value: '#64748b', label: 'Gray' },
 ];
 
+// ✅ Helper
 const getOptionLabel = (options: { value: string; label: string }[], value: string) => {
   const option = options.find((o) => o.value === value);
   return option ? option.label : value;
 };
 
-export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRUDProps) {
+const getTypeColor = (type: string | null) => {
+  if (!type) return 'bg-gray-100 text-gray-700';
+  switch (type) {
+    case 'plant': return 'bg-green-100 text-green-700';
+    case 'bed': return 'bg-amber-100 text-amber-700';
+    case 'farmbot': return 'bg-slate-100 text-slate-700';
+    case 'model': return 'bg-blue-100 text-blue-700';
+    case 'character': return 'bg-purple-100 text-purple-700';
+    case 'task': return 'bg-orange-100 text-orange-700';
+    case 'weather_station': return 'bg-cyan-100 text-cyan-700';
+    case 'traffic_incident': return 'bg-red-100 text-red-700';
+    case 'custom': return 'bg-gray-100 text-gray-700';
+    default: return 'bg-gray-100 text-gray-700';
+  }
+};
+
+export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
   const [markers, setMarkers] = useState<Marker[]>([]);
+  const [layers, setLayers] = useState<Layer[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [plants, setPlants] = useState<Plant[]>([]);
+  const [beds, setBeds] = useState<Bed[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -142,6 +203,7 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
   const [filterType, setFilterType] = useState<string>('all');
   const [filterActive, setFilterActive] = useState<string>('all');
 
+  // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
     markerId: '',
     name: '',
@@ -167,29 +229,29 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
     characterId: '',
     plantId: '',
     bedId: '',
+    data: '{}',
     isVisible: true,
     isInteractive: false,
     isActive: true,
     isPublic: false,
-    data: {},
-    metadata: {},
+    metadata: '{}',
   });
 
+  // ✅ Fetch data
   useEffect(() => {
     fetchMarkers();
-  }, [moduleId, filterType, filterActive]);
+    fetchLayers();
+    fetchModels();
+    fetchCharacters();
+    fetchPlants();
+    fetchBeds();
+  }, []);
 
   const fetchMarkers = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (moduleId) params.append('moduleId', String(moduleId));
-      if (filterType !== 'all') params.append('markerType', filterType);
-      if (filterActive !== 'all') params.append('isActive', filterActive === 'true' ? 'true' : 'false');
-
-      const response = await fetch(`/api/threed/markers?${params.toString()}`);
+      const response = await fetch('/api/threed/markers?limit=100');
       const data = await response.json();
-
       if (data.success) {
         setMarkers(Array.isArray(data.data) ? data.data : []);
       } else {
@@ -205,9 +267,74 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
     }
   };
 
+  const fetchLayers = async () => {
+    try {
+      const response = await fetch('/api/threed/layers?isActive=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setLayers(Array.isArray(data.data) ? data.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching layers:', error);
+      setLayers([]);
+    }
+  };
+
+  const fetchModels = async () => {
+    try {
+      const response = await fetch('/api/threed/models?isActive=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setModels(Array.isArray(data.data) ? data.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching models:', error);
+      setModels([]);
+    }
+  };
+
+  const fetchCharacters = async () => {
+    try {
+      const response = await fetch('/api/threed/characters?isActive=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setCharacters(Array.isArray(data.data) ? data.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching characters:', error);
+      setCharacters([]);
+    }
+  };
+
+  const fetchPlants = async () => {
+    try {
+      const response = await fetch('/api/threed/plants?isActive=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setPlants(Array.isArray(data.data) ? data.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching plants:', error);
+      setPlants([]);
+    }
+  };
+
+  const fetchBeds = async () => {
+    try {
+      const response = await fetch('/api/threed/beds?isActive=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setBeds(Array.isArray(data.data) ? data.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching beds:', error);
+      setBeds([]);
+    }
+  };
+
   const filteredMarkers = markers.filter((marker) =>
     marker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (marker.markerId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+    marker.markerId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (marker.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
     (marker.label?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
@@ -226,8 +353,6 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
     try {
       const payload = {
         ...formData,
-        moduleId: moduleId || null,
-        moduleType: 'threed',
         position: {
           x: parseFloat(formData.positionX) || 0,
           y: parseFloat(formData.positionY) || 0,
@@ -243,6 +368,8 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
           y: parseFloat(formData.scaleY) || 1,
           z: parseFloat(formData.scaleZ) || 1,
         },
+        data: JSON.parse(formData.data),
+        metadata: JSON.parse(formData.metadata),
         layerId: formData.layerId ? parseInt(formData.layerId) : null,
         parentMarkerId: formData.parentMarkerId ? parseInt(formData.parentMarkerId) : null,
         modelId: formData.modelId ? parseInt(formData.modelId) : null,
@@ -305,6 +432,8 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
           y: parseFloat(formData.scaleY) || 1,
           z: parseFloat(formData.scaleZ) || 1,
         },
+        data: JSON.parse(formData.data),
+        metadata: JSON.parse(formData.metadata),
         layerId: formData.layerId ? parseInt(formData.layerId) : null,
         parentMarkerId: formData.parentMarkerId ? parseInt(formData.parentMarkerId) : null,
         modelId: formData.modelId ? parseInt(formData.modelId) : null,
@@ -358,28 +487,6 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
     }
   };
 
-  const toggleVisibility = async (id: number, currentStatus: boolean, name: string) => {
-    try {
-      const response = await fetch(`/api/threed/markers?id=${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isVisible: !currentStatus }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        showToast(`Marker "${name}" ${!currentStatus ? 'shown' : 'hidden'}`, 'success');
-        await fetchMarkers();
-        if (onModuleUpdate) onModuleUpdate();
-      } else {
-        showToast(data.error || 'Failed to update visibility', 'error');
-      }
-    } catch (error) {
-      console.error('Error toggling visibility:', error);
-      showToast('Failed to update visibility', 'error');
-    }
-  };
-
   const resetForm = () => {
     setFormData({
       markerId: '',
@@ -406,30 +513,34 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
       characterId: '',
       plantId: '',
       bedId: '',
+      data: '{}',
       isVisible: true,
       isInteractive: false,
       isActive: true,
       isPublic: false,
-      data: {},
-      metadata: {},
+      metadata: '{}',
     });
   };
 
   const openEditDialog = (marker: Marker) => {
     setEditingMarker(marker);
+    const position = marker.position || { x: 0, y: 0, z: 0 };
+    const rotation = marker.rotation || { x: 0, y: 0, z: 0 };
+    const scale = marker.scale || { x: 1, y: 1, z: 1 };
+
     setFormData({
       markerId: marker.markerId || '',
       name: marker.name,
       description: marker.description || '',
-      positionX: String(marker.position?.x || 0),
-      positionY: String(marker.position?.y || 0),
-      positionZ: String(marker.position?.z || 0),
-      rotationX: String(marker.rotation?.x || 0),
-      rotationY: String(marker.rotation?.y || 0),
-      rotationZ: String(marker.rotation?.z || 0),
-      scaleX: String(marker.scale?.x || 1),
-      scaleY: String(marker.scale?.y || 1),
-      scaleZ: String(marker.scale?.z || 1),
+      positionX: String(position.x || 0),
+      positionY: String(position.y || 0),
+      positionZ: String(position.z || 0),
+      rotationX: String(rotation.x || 0),
+      rotationY: String(rotation.y || 0),
+      rotationZ: String(rotation.z || 0),
+      scaleX: String(scale.x || 1),
+      scaleY: String(scale.y || 1),
+      scaleZ: String(scale.z || 1),
       markerType: marker.markerType || '',
       color: marker.color || '#ffffff',
       size: marker.size || 'medium',
@@ -442,39 +553,17 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
       characterId: marker.characterId ? String(marker.characterId) : '',
       plantId: marker.plantId ? String(marker.plantId) : '',
       bedId: marker.bedId ? String(marker.bedId) : '',
+      data: JSON.stringify(marker.data || {}),
       isVisible: marker.isVisible ?? true,
       isInteractive: marker.isInteractive ?? false,
       isActive: marker.isActive ?? true,
       isPublic: marker.isPublic ?? false,
-      data: marker.data || {},
-      metadata: marker.metadata || {},
+      metadata: JSON.stringify(marker.metadata || {}),
     });
-  };
-
-  const getMarkerTypeIcon = (type: string | null) => {
-    switch (type) {
-      case 'model': return <Box className="w-3.5 h-3.5" />;
-      case 'plant': return <Sprout className="w-3.5 h-3.5" />;
-      case 'bed': return <Layers className="w-3.5 h-3.5" />;
-      case 'character': return <Users className="w-3.5 h-3.5" />;
-      default: return <MapPin className="w-3.5 h-3.5" />;
-    }
   };
 
   const renderActions = (marker: Marker) => (
     <div className="flex items-center justify-end gap-1">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => toggleVisibility(marker.id, marker.isVisible, marker.name)}
-        title={marker.isVisible ? 'Hide' : 'Show'}
-      >
-        {marker.isVisible ? (
-          <Eye className="w-4 h-4 text-green-500" />
-        ) : (
-          <EyeOff className="w-4 h-4 text-gray-400" />
-        )}
-      </Button>
       <Button variant="ghost" size="sm" onClick={() => openEditDialog(marker)}>
         <Edit className="w-4 h-4" />
       </Button>
@@ -485,15 +574,35 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>
-            <span className="text-xs text-muted-foreground">
-              ID: {marker.markerId}
-            </span>
-          </DropdownMenuItem>
           {marker.position && (
             <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">
-                Pos: ({marker.position.x}, {marker.position.y}, {marker.position.z})
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                ({marker.position.x.toFixed(2)}, {marker.position.z.toFixed(2)})
+              </span>
+            </DropdownMenuItem>
+          )}
+          {marker.label && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Type className="w-3 h-3" />
+                {marker.label}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {marker.layer && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Layers className="w-3 h-3" />
+                {marker.layer.name}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {marker.model && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Box className="w-3 h-3" />
+                {marker.model.modelName}
               </span>
             </DropdownMenuItem>
           )}
@@ -524,7 +633,7 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-violet-300" />
+          <MapPin className="w-4 h-4 text-pink-500" />
           <span className="text-sm font-medium">Markers</span>
           <Badge variant="secondary" className="text-xs">
             {filteredMarkers.length}
@@ -542,6 +651,7 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
               <DialogTitle>Create New Marker</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
+              {/* Basic Info */}
               <div>
                 <Label htmlFor="markerId">Marker ID *</Label>
                 <Input
@@ -558,7 +668,7 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                 <Label htmlFor="name">Marker Name *</Label>
                 <Input
                   id="name"
-                  placeholder="e.g., Entrance Gate"
+                  placeholder="e.g., Garden Entrance"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={isSubmitting}
@@ -578,53 +688,82 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                 />
               </div>
 
-              <div>
-                <Label htmlFor="markerType">Marker Type</Label>
-                <Select
-                  value={formData.markerType}
-                  onValueChange={(value) => setFormData({ ...formData, markerType: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MARKER_TYPE_OPTIONS.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="markerType">Marker Type</Label>
+                  <Select
+                    value={formData.markerType}
+                    onValueChange={(value) => setFormData({ ...formData, markerType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MARKER_TYPE_OPTIONS.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="size">Size</Label>
+                  <Select
+                    value={formData.size}
+                    onValueChange={(value) => setFormData({ ...formData, size: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SIZE_OPTIONS.map((size) => (
+                        <SelectItem key={size.value} value={size.value}>
+                          {size.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              {/* Position */}
+              {/* 3D Position */}
               <div className="border-t pt-4">
-                <Label className="text-sm font-medium">Position</Label>
+                <Label className="text-sm font-medium">3D Position</Label>
                 <div className="grid grid-cols-3 gap-2 mt-2">
-                  <Input
-                    placeholder="X"
-                    type="number"
-                    step="0.01"
-                    value={formData.positionX}
-                    onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Y"
-                    type="number"
-                    step="0.01"
-                    value={formData.positionY}
-                    onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Z"
-                    type="number"
-                    step="0.01"
-                    value={formData.positionZ}
-                    onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
-                    disabled={isSubmitting}
-                  />
+                  <div>
+                    <Label htmlFor="positionX" className="text-xs">X</Label>
+                    <Input
+                      id="positionX"
+                      type="number"
+                      step="0.01"
+                      value={formData.positionX}
+                      onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="positionY" className="text-xs">Y</Label>
+                    <Input
+                      id="positionY"
+                      type="number"
+                      step="0.01"
+                      value={formData.positionY}
+                      onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="positionZ" className="text-xs">Z</Label>
+                    <Input
+                      id="positionZ"
+                      type="number"
+                      step="0.01"
+                      value={formData.positionZ}
+                      onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -632,30 +771,39 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium">Rotation</Label>
                 <div className="grid grid-cols-3 gap-2 mt-2">
-                  <Input
-                    placeholder="X"
-                    type="number"
-                    step="0.01"
-                    value={formData.rotationX}
-                    onChange={(e) => setFormData({ ...formData, rotationX: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Y"
-                    type="number"
-                    step="0.01"
-                    value={formData.rotationY}
-                    onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Z"
-                    type="number"
-                    step="0.01"
-                    value={formData.rotationZ}
-                    onChange={(e) => setFormData({ ...formData, rotationZ: e.target.value })}
-                    disabled={isSubmitting}
-                  />
+                  <div>
+                    <Label htmlFor="rotationX" className="text-xs">X</Label>
+                    <Input
+                      id="rotationX"
+                      type="number"
+                      step="1"
+                      value={formData.rotationX}
+                      onChange={(e) => setFormData({ ...formData, rotationX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="rotationY" className="text-xs">Y</Label>
+                    <Input
+                      id="rotationY"
+                      type="number"
+                      step="1"
+                      value={formData.rotationY}
+                      onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="rotationZ" className="text-xs">Z</Label>
+                    <Input
+                      id="rotationZ"
+                      type="number"
+                      step="1"
+                      value={formData.rotationZ}
+                      onChange={(e) => setFormData({ ...formData, rotationZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -663,30 +811,42 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium">Scale</Label>
                 <div className="grid grid-cols-3 gap-2 mt-2">
-                  <Input
-                    placeholder="X"
-                    type="number"
-                    step="0.01"
-                    value={formData.scaleX}
-                    onChange={(e) => setFormData({ ...formData, scaleX: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Y"
-                    type="number"
-                    step="0.01"
-                    value={formData.scaleY}
-                    onChange={(e) => setFormData({ ...formData, scaleY: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Z"
-                    type="number"
-                    step="0.01"
-                    value={formData.scaleZ}
-                    onChange={(e) => setFormData({ ...formData, scaleZ: e.target.value })}
-                    disabled={isSubmitting}
-                  />
+                  <div>
+                    <Label htmlFor="scaleX" className="text-xs">X</Label>
+                    <Input
+                      id="scaleX"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.scaleX}
+                      onChange={(e) => setFormData({ ...formData, scaleX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="scaleY" className="text-xs">Y</Label>
+                    <Input
+                      id="scaleY"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.scaleY}
+                      onChange={(e) => setFormData({ ...formData, scaleY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="scaleZ" className="text-xs">Z</Label>
+                    <Input
+                      id="scaleZ"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.scaleZ}
+                      onChange={(e) => setFormData({ ...formData, scaleZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -700,7 +860,7 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                       value={formData.color}
                       onValueChange={(value) => setFormData({ ...formData, color: value })}
                     >
-                      <SelectTrigger className="h-8 text-xs">
+                      <SelectTrigger>
                         <SelectValue placeholder="Select color" />
                       </SelectTrigger>
                       <SelectContent>
@@ -719,18 +879,152 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="size" className="text-xs">Size</Label>
+                    <Label htmlFor="icon" className="text-xs">Icon</Label>
+                    <Input
+                      id="icon"
+                      placeholder="e.g., star, heart, flag"
+                      value={formData.icon}
+                      onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <Label htmlFor="label" className="text-xs">Display Label</Label>
+                  <Input
+                    id="label"
+                    placeholder="Short display label"
+                    value={formData.label}
+                    onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="mt-2">
+                  <Label htmlFor="content" className="text-xs">Content</Label>
+                  <Textarea
+                    id="content"
+                    placeholder="Additional content..."
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    rows={2}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
+
+              {/* Relationships */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Relationships</Label>
+                <div className="space-y-2 mt-2">
+                  <div>
+                    <Label htmlFor="layerId" className="text-xs">Layer</Label>
                     <Select
-                      value={formData.size}
-                      onValueChange={(value) => setFormData({ ...formData, size: value })}
+                      value={formData.layerId}
+                      onValueChange={(value) => setFormData({ ...formData, layerId: value })}
                     >
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue placeholder="Select size" />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a layer" />
                       </SelectTrigger>
                       <SelectContent>
-                        {SIZE_OPTIONS.map((size) => (
-                          <SelectItem key={size.value} value={size.value}>
-                            {size.label}
+                        <SelectItem value="none">None</SelectItem>
+                        {layers.map((layer) => (
+                          <SelectItem key={layer.id} value={String(layer.id)}>
+                            {layer.name} ({layer.layerId})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="parentMarkerId" className="text-xs">Parent Marker</Label>
+                    <Select
+                      value={formData.parentMarkerId}
+                      onValueChange={(value) => setFormData({ ...formData, parentMarkerId: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a parent marker" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {markers.map((marker) => (
+                          <SelectItem key={marker.id} value={String(marker.id)}>
+                            {marker.name} ({marker.markerId})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="modelId" className="text-xs">Model</Label>
+                    <Select
+                      value={formData.modelId}
+                      onValueChange={(value) => setFormData({ ...formData, modelId: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a model" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {models.map((model) => (
+                          <SelectItem key={model.id} value={String(model.id)}>
+                            {model.modelName} ({model.modelType})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="characterId" className="text-xs">Character</Label>
+                    <Select
+                      value={formData.characterId}
+                      onValueChange={(value) => setFormData({ ...formData, characterId: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a character" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {characters.map((character) => (
+                          <SelectItem key={character.id} value={String(character.id)}>
+                            {character.name} ({character.characterId})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="plantId" className="text-xs">Plant</Label>
+                    <Select
+                      value={formData.plantId}
+                      onValueChange={(value) => setFormData({ ...formData, plantId: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a plant" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {plants.map((plant) => (
+                          <SelectItem key={plant.id} value={String(plant.id)}>
+                            {plant.commonName} ({plant.plantId})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="bedId" className="text-xs">Bed</Label>
+                    <Select
+                      value={formData.bedId}
+                      onValueChange={(value) => setFormData({ ...formData, bedId: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a bed" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {beds.map((bed) => (
+                          <SelectItem key={bed.id} value={String(bed.id)}>
+                            {bed.name} ({bed.bedId})
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -739,75 +1033,32 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                 </div>
               </div>
 
-              {/* Relationships */}
-              <div className="border-t pt-4">
-                <Label className="text-sm font-medium">Relationships</Label>
-                <div className="space-y-2 mt-2">
-                  <Input
-                    placeholder="Layer ID (optional)"
-                    value={formData.layerId}
-                    onChange={(e) => setFormData({ ...formData, layerId: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Parent Marker ID (optional)"
-                    value={formData.parentMarkerId}
-                    onChange={(e) => setFormData({ ...formData, parentMarkerId: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Model ID (optional)"
-                    value={formData.modelId}
-                    onChange={(e) => setFormData({ ...formData, modelId: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Character ID (optional)"
-                    value={formData.characterId}
-                    onChange={(e) => setFormData({ ...formData, characterId: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Plant ID (optional)"
-                    value={formData.plantId}
-                    onChange={(e) => setFormData({ ...formData, plantId: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    placeholder="Bed ID (optional)"
-                    value={formData.bedId}
-                    onChange={(e) => setFormData({ ...formData, bedId: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </div>
-
               <div>
-                <Label htmlFor="label">Label</Label>
+                <Label htmlFor="data">Data (JSON)</Label>
                 <Input
-                  id="label"
-                  placeholder="Display label (optional)"
-                  value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                  id="data"
+                  placeholder='{"key": "value"}'
+                  value={formData.data}
+                  onChange={(e) => setFormData({ ...formData, data: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
 
               <div>
-                <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
-                  placeholder="Additional content..."
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  rows={2}
+                <Label htmlFor="metadata">Metadata (JSON)</Label>
+                <Input
+                  id="metadata"
+                  placeholder='{"key": "value"}'
+                  value={formData.metadata}
+                  onChange={(e) => setFormData({ ...formData, metadata: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
 
+              {/* Visibility & Status */}
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium">Visibility & Status</Label>
-                <div className="flex flex-col gap-2 mt-2">
+                <div className="space-y-2 mt-2">
                   <div className="flex items-center gap-2">
                     <Switch
                       id="isVisible"
@@ -867,7 +1118,7 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search markers..."
+            placeholder="Search by name, ID, label..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-8 text-xs"
@@ -890,7 +1141,7 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
         <Select value={filterActive} onValueChange={setFilterActive}>
           <SelectTrigger className="w-[120px] h-8 text-xs">
             <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder="Active" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
@@ -947,15 +1198,15 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                 <TableRow key={marker.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      {getMarkerTypeIcon(marker.markerType)}
+                      <MapPin className="w-3.5 h-3.5 text-pink-500" />
                       {marker.name}
-                      {!marker.isActive && (
-                        <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
-                      )}
                       {marker.label && (
                         <Badge variant="outline" className="text-[10px]">
                           {marker.label}
                         </Badge>
+                      )}
+                      {!marker.isActive && (
+                        <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                       )}
                     </div>
                   </TableCell>
@@ -963,17 +1214,13 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                     {marker.markerId || '—'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
-                    {marker.markerType ? (
-                      <Badge variant="outline" className="text-[10px]">
-                        {getOptionLabel(MARKER_TYPE_OPTIONS, marker.markerType)}
-                      </Badge>
-                    ) : (
-                      '—'
-                    )}
+                    <Badge className={`text-[10px] ${getTypeColor(marker.markerType)}`}>
+                      {getOptionLabel(MARKER_TYPE_OPTIONS, marker.markerType || '')}
+                    </Badge>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell py-1 text-xs font-mono text-muted-foreground">
                     {marker.position ? (
-                      `(${marker.position.x.toFixed(2)}, ${marker.position.y.toFixed(2)}, ${marker.position.z.toFixed(2)})`
+                      `(${marker.position.x.toFixed(2)}, ${marker.position.z.toFixed(2)})`
                     ) : (
                       '—'
                     )}
@@ -1036,53 +1283,82 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
               />
             </div>
 
-            <div>
-              <Label htmlFor="edit-markerType">Marker Type</Label>
-              <Select
-                value={formData.markerType}
-                onValueChange={(value) => setFormData({ ...formData, markerType: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {MARKER_TYPE_OPTIONS.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-markerType">Marker Type</Label>
+                <Select
+                  value={formData.markerType}
+                  onValueChange={(value) => setFormData({ ...formData, markerType: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MARKER_TYPE_OPTIONS.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit-size">Size</Label>
+                <Select
+                  value={formData.size}
+                  onValueChange={(value) => setFormData({ ...formData, size: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SIZE_OPTIONS.map((size) => (
+                      <SelectItem key={size.value} value={size.value}>
+                        {size.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            {/* Position */}
+            {/* 3D Position */}
             <div className="border-t pt-4">
-              <Label className="text-sm font-medium">Position</Label>
+              <Label className="text-sm font-medium">3D Position</Label>
               <div className="grid grid-cols-3 gap-2 mt-2">
-                <Input
-                  placeholder="X"
-                  type="number"
-                  step="0.01"
-                  value={formData.positionX}
-                  onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Y"
-                  type="number"
-                  step="0.01"
-                  value={formData.positionY}
-                  onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Z"
-                  type="number"
-                  step="0.01"
-                  value={formData.positionZ}
-                  onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
-                  disabled={isSubmitting}
-                />
+                <div>
+                  <Label htmlFor="edit-positionX" className="text-xs">X</Label>
+                  <Input
+                    id="edit-positionX"
+                    type="number"
+                    step="0.01"
+                    value={formData.positionX}
+                    onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-positionY" className="text-xs">Y</Label>
+                  <Input
+                    id="edit-positionY"
+                    type="number"
+                    step="0.01"
+                    value={formData.positionY}
+                    onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-positionZ" className="text-xs">Z</Label>
+                  <Input
+                    id="edit-positionZ"
+                    type="number"
+                    step="0.01"
+                    value={formData.positionZ}
+                    onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
             </div>
 
@@ -1090,30 +1366,39 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
             <div className="border-t pt-4">
               <Label className="text-sm font-medium">Rotation</Label>
               <div className="grid grid-cols-3 gap-2 mt-2">
-                <Input
-                  placeholder="X"
-                  type="number"
-                  step="0.01"
-                  value={formData.rotationX}
-                  onChange={(e) => setFormData({ ...formData, rotationX: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Y"
-                  type="number"
-                  step="0.01"
-                  value={formData.rotationY}
-                  onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Z"
-                  type="number"
-                  step="0.01"
-                  value={formData.rotationZ}
-                  onChange={(e) => setFormData({ ...formData, rotationZ: e.target.value })}
-                  disabled={isSubmitting}
-                />
+                <div>
+                  <Label htmlFor="edit-rotationX" className="text-xs">X</Label>
+                  <Input
+                    id="edit-rotationX"
+                    type="number"
+                    step="1"
+                    value={formData.rotationX}
+                    onChange={(e) => setFormData({ ...formData, rotationX: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-rotationY" className="text-xs">Y</Label>
+                  <Input
+                    id="edit-rotationY"
+                    type="number"
+                    step="1"
+                    value={formData.rotationY}
+                    onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-rotationZ" className="text-xs">Z</Label>
+                  <Input
+                    id="edit-rotationZ"
+                    type="number"
+                    step="1"
+                    value={formData.rotationZ}
+                    onChange={(e) => setFormData({ ...formData, rotationZ: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
             </div>
 
@@ -1121,30 +1406,42 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
             <div className="border-t pt-4">
               <Label className="text-sm font-medium">Scale</Label>
               <div className="grid grid-cols-3 gap-2 mt-2">
-                <Input
-                  placeholder="X"
-                  type="number"
-                  step="0.01"
-                  value={formData.scaleX}
-                  onChange={(e) => setFormData({ ...formData, scaleX: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Y"
-                  type="number"
-                  step="0.01"
-                  value={formData.scaleY}
-                  onChange={(e) => setFormData({ ...formData, scaleY: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Z"
-                  type="number"
-                  step="0.01"
-                  value={formData.scaleZ}
-                  onChange={(e) => setFormData({ ...formData, scaleZ: e.target.value })}
-                  disabled={isSubmitting}
-                />
+                <div>
+                  <Label htmlFor="edit-scaleX" className="text-xs">X</Label>
+                  <Input
+                    id="edit-scaleX"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={formData.scaleX}
+                    onChange={(e) => setFormData({ ...formData, scaleX: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-scaleY" className="text-xs">Y</Label>
+                  <Input
+                    id="edit-scaleY"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={formData.scaleY}
+                    onChange={(e) => setFormData({ ...formData, scaleY: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-scaleZ" className="text-xs">Z</Label>
+                  <Input
+                    id="edit-scaleZ"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={formData.scaleZ}
+                    onChange={(e) => setFormData({ ...formData, scaleZ: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
             </div>
 
@@ -1158,7 +1455,7 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                     value={formData.color}
                     onValueChange={(value) => setFormData({ ...formData, color: value })}
                   >
-                    <SelectTrigger className="h-8 text-xs">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select color" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1177,18 +1474,149 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="edit-size" className="text-xs">Size</Label>
+                  <Label htmlFor="edit-icon" className="text-xs">Icon</Label>
+                  <Input
+                    id="edit-icon"
+                    value={formData.icon}
+                    onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
+              <div className="mt-2">
+                <Label htmlFor="edit-label" className="text-xs">Display Label</Label>
+                <Input
+                  id="edit-label"
+                  value={formData.label}
+                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="mt-2">
+                <Label htmlFor="edit-content" className="text-xs">Content</Label>
+                <Textarea
+                  id="edit-content"
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  rows={2}
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+
+            {/* Relationships */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Relationships</Label>
+              <div className="space-y-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-layerId" className="text-xs">Layer</Label>
                   <Select
-                    value={formData.size}
-                    onValueChange={(value) => setFormData({ ...formData, size: value })}
+                    value={formData.layerId}
+                    onValueChange={(value) => setFormData({ ...formData, layerId: value })}
                   >
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue placeholder="Select size" />
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a layer" />
                     </SelectTrigger>
                     <SelectContent>
-                      {SIZE_OPTIONS.map((size) => (
-                        <SelectItem key={size.value} value={size.value}>
-                          {size.label}
+                      <SelectItem value="none">None</SelectItem>
+                      {layers.map((layer) => (
+                        <SelectItem key={layer.id} value={String(layer.id)}>
+                          {layer.name} ({layer.layerId})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-parentMarkerId" className="text-xs">Parent Marker</Label>
+                  <Select
+                    value={formData.parentMarkerId}
+                    onValueChange={(value) => setFormData({ ...formData, parentMarkerId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a parent marker" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {markers.map((marker) => (
+                        <SelectItem key={marker.id} value={String(marker.id)}>
+                          {marker.name} ({marker.markerId})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-modelId" className="text-xs">Model</Label>
+                  <Select
+                    value={formData.modelId}
+                    onValueChange={(value) => setFormData({ ...formData, modelId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {models.map((model) => (
+                        <SelectItem key={model.id} value={String(model.id)}>
+                          {model.modelName} ({model.modelType})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-characterId" className="text-xs">Character</Label>
+                  <Select
+                    value={formData.characterId}
+                    onValueChange={(value) => setFormData({ ...formData, characterId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a character" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {characters.map((character) => (
+                        <SelectItem key={character.id} value={String(character.id)}>
+                          {character.name} ({character.characterId})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-plantId" className="text-xs">Plant</Label>
+                  <Select
+                    value={formData.plantId}
+                    onValueChange={(value) => setFormData({ ...formData, plantId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a plant" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {plants.map((plant) => (
+                        <SelectItem key={plant.id} value={String(plant.id)}>
+                          {plant.commonName} ({plant.plantId})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-bedId" className="text-xs">Bed</Label>
+                  <Select
+                    value={formData.bedId}
+                    onValueChange={(value) => setFormData({ ...formData, bedId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a bed" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {beds.map((bed) => (
+                        <SelectItem key={bed.id} value={String(bed.id)}>
+                          {bed.name} ({bed.bedId})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -1197,73 +1625,30 @@ export function ThreeDMarkersCRUD({ moduleId, onModuleUpdate }: ThreeDMarkersCRU
               </div>
             </div>
 
-            {/* Relationships */}
-            <div className="border-t pt-4">
-              <Label className="text-sm font-medium">Relationships</Label>
-              <div className="space-y-2 mt-2">
-                <Input
-                  placeholder="Layer ID (optional)"
-                  value={formData.layerId}
-                  onChange={(e) => setFormData({ ...formData, layerId: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Parent Marker ID (optional)"
-                  value={formData.parentMarkerId}
-                  onChange={(e) => setFormData({ ...formData, parentMarkerId: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Model ID (optional)"
-                  value={formData.modelId}
-                  onChange={(e) => setFormData({ ...formData, modelId: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Character ID (optional)"
-                  value={formData.characterId}
-                  onChange={(e) => setFormData({ ...formData, characterId: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Plant ID (optional)"
-                  value={formData.plantId}
-                  onChange={(e) => setFormData({ ...formData, plantId: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <Input
-                  placeholder="Bed ID (optional)"
-                  value={formData.bedId}
-                  onChange={(e) => setFormData({ ...formData, bedId: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-            </div>
-
             <div>
-              <Label htmlFor="edit-label">Label</Label>
+              <Label htmlFor="edit-data">Data (JSON)</Label>
               <Input
-                id="edit-label"
-                value={formData.label}
-                onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                id="edit-data"
+                value={formData.data}
+                onChange={(e) => setFormData({ ...formData, data: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
 
             <div>
-              <Label htmlFor="edit-content">Content</Label>
-              <Textarea
-                id="edit-content"
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                rows={2}
+              <Label htmlFor="edit-metadata">Metadata (JSON)</Label>
+              <Input
+                id="edit-metadata"
+                value={formData.metadata}
+                onChange={(e) => setFormData({ ...formData, metadata: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
 
+            {/* Visibility & Status */}
             <div className="border-t pt-4">
               <Label className="text-sm font-medium">Visibility & Status</Label>
-              <div className="flex flex-col gap-2 mt-2">
+              <div className="space-y-2 mt-2">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="edit-isVisible"

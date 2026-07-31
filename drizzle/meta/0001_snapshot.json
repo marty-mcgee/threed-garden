@@ -1,6 +1,6 @@
 {
-  "id": "d53a5a3f-ce0d-4231-99e9-84ae0536956f",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "8cdc1e82-a933-4e35-bd3a-048e1e0612c2",
+  "prevId": "d53a5a3f-ce0d-4231-99e9-84ae0536956f",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -10604,6 +10604,7 @@
         "music_media",
         "threed_plants",
         "threed_beds",
+        "threed_plantings",
         "threed_layers",
         "threed_markers",
         "threed_models",

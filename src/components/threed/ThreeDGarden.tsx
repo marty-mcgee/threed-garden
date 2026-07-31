@@ -26,7 +26,7 @@ interface ThreeDGardenProps {
 export function ThreeDGarden({
   data,
   layers,
-  autoRotate = true,
+  autoRotate = false,
   height = '700px',
 }: ThreeDGardenProps) {
   const controlsRef = useRef<any>(null);

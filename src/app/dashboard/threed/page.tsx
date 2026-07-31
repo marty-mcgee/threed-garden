@@ -15,7 +15,7 @@ export default function ThreeDPage() {
   const [data, setData] = useState<ThreeDData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [autoRotate, setAutoRotate] = useState(true);
+  const [autoRotate, setAutoRotate] = useState(false);
   const [layers, setLayers] = useState<LayerVisibility>({
     traffic: true,
     garden: true,

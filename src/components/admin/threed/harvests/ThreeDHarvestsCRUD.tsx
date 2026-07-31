@@ -7,11 +7,14 @@ import {
   Edit,
   Trash2,
   Loader2,
-  Apple,
+  Package,
   MoreHorizontal,
   Search,
   Filter,
-  X,
+  Eye,
+  EyeOff,
+  Calendar,
+  Sprout,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,54 +25,89 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-// ✅ Import types from lib
-import {
-  ThreeDHarvest,
-  ThreeDHarvestFormData,
-  ThreeDRelatedEntity,
-  HarvestUnit,
-  HARVEST_UNIT_OPTIONS,
-} from '@/lib/types/threed';
-
-interface ThreeDHarvestsCRUDProps {
-  threedId?: number;
-  onModuleUpdate?: () => void;
+// ✅ Types
+interface Plant {
+  id: number;
+  plantId: string;
+  commonName: string;
 }
 
-// ✅ Helper to format date for input
-const formatDateForInput = (dateString: string | null): string => {
-  if (!dateString) return '';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '';
-    return date.toISOString().split('T')[0];
-  } catch {
-    return '';
-  }
+interface Planting {
+  id: number;
+  plantingId: string;
+  plantId: number | null;
+  plant?: Plant;
+}
+
+interface Harvest {
+  id: number;
+  harvestId: string;
+  plantingId: number | null;
+  plantId: number | null;
+  quantity: string;
+  unit: string;
+  weightLbs: string | null;
+  harvestDate: string | null;
+  notes: string | null;
+  imageUrl: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  planting?: Planting;
+  plant?: Plant;
+}
+
+interface FormData {
+  harvestId: string;
+  plantingId: string;
+  plantId: string;
+  quantity: string;
+  unit: string;
+  weightLbs: string;
+  harvestDate: string;
+  notes: string;
+  imageUrl: string;
+  isActive: boolean;
+}
+
+// ✅ Options
+const UNIT_OPTIONS = [
+  { value: 'lbs', label: 'Pounds (lbs)' },
+  { value: 'oz', label: 'Ounces (oz)' },
+  { value: 'kg', label: 'Kilograms (kg)' },
+  { value: 'g', label: 'Grams (g)' },
+  { value: 'each', label: 'Each' },
+  { value: 'bunch', label: 'Bunch' },
+];
+
+// ✅ Helper
+const getOptionLabel = (options: { value: string; label: string }[], value: string) => {
+  const option = options.find((o) => o.value === value);
+  return option ? option.label : value;
 };
 
-export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsCRUDProps) {
+export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
-  const [harvests, setHarvests] = useState<ThreeDHarvest[]>([]);
+  const [harvests, setHarvests] = useState<Harvest[]>([]);
+  const [plants, setPlants] = useState<Plant[]>([]);
+  const [plantings, setPlantings] = useState<Planting[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingHarvest, setEditingHarvest] = useState<ThreeDHarvest | null>(null);
+  const [editingHarvest, setEditingHarvest] = useState<Harvest | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterUnit, setFilterUnit] = useState<string>('all');
-
-  // ✅ State for related entity options
-  const [plants, setPlants] = useState<ThreeDRelatedEntity[]>([]);
-  const [plantings, setPlantings] = useState<ThreeDRelatedEntity[]>([]);
+  const [filterActive, setFilterActive] = useState<string>('all');
 
   // ✅ Form state
-  const [formData, setFormData] = useState<ThreeDHarvestFormData>({
+  const [formData, setFormData] = useState<FormData>({
+    harvestId: '',
     plantingId: '',
     plantId: '',
     quantity: '',
-    unit: HarvestUnit.LBS,
+    unit: 'lbs',
     weightLbs: '',
     harvestDate: '',
     notes: '',
@@ -77,25 +115,18 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
     isActive: true,
   });
 
-  // ✅ Track selected entities for display
-  const [selectedPlant, setSelectedPlant] = useState<ThreeDRelatedEntity | null>(null);
-  const [selectedPlanting, setSelectedPlanting] = useState<ThreeDRelatedEntity | null>(null);
-
+  // ✅ Fetch data
   useEffect(() => {
     fetchHarvests();
-    fetchRelatedEntities();
-  }, [threedId]);
+    fetchPlants();
+    fetchPlantings();
+  }, []);
 
   const fetchHarvests = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filterUnit !== 'all') params.append('unit', filterUnit);
-      if (threedId) params.append('moduleId', String(threedId));
-
-      const response = await fetch(`/api/threed/harvests?${params.toString()}`);
+      const response = await fetch('/api/threed/harvests?limit=100');
       const data = await response.json();
-
       if (data.success) {
         setHarvests(Array.isArray(data.data) ? data.data : []);
       } else {
@@ -111,62 +142,58 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
     }
   };
 
-  const fetchRelatedEntities = async () => {
+  const fetchPlants = async () => {
     try {
-      // ✅ Fetch plants
-      const plantsRes = await fetch('/api/threed/plants?isActive=true');
-      const plantsData = await plantsRes.json();
-      if (plantsData.success) {
-        setPlants(plantsData.data.map((p: any) => ({
-          id: p.id,
-          name: p.commonName || p.name || `Plant #${p.id}`,
-          plantId: p.plantId,
-          commonName: p.commonName,
-        })));
-      }
-
-      // ✅ Fetch plantings
-      const plantingsRes = await fetch('/api/threed/plantings?isActive=true');
-      const plantingsData = await plantingsRes.json();
-      if (plantingsData.success) {
-        setPlantings(plantingsData.data.map((p: any) => ({
-          id: p.id,
-          name: p.plantingId || `Planting #${p.id}`,
-        })));
+      const response = await fetch('/api/threed/plants?isActive=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setPlants(Array.isArray(data.data) ? data.data : []);
       }
     } catch (error) {
-      console.error('Error fetching related entities:', error);
+      console.error('Error fetching plants:', error);
+      setPlants([]);
+    }
+  };
+
+  const fetchPlantings = async () => {
+    try {
+      const response = await fetch('/api/threed/plantings?isActive=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setPlantings(Array.isArray(data.data) ? data.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching plantings:', error);
+      setPlantings([]);
     }
   };
 
   const filteredHarvests = harvests.filter((harvest) =>
-    harvest.harvestId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    harvest.harvestId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (harvest.plant?.commonName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
     (harvest.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   const handleCreate = async () => {
-    if (!formData.plantId && !formData.plantingId) {
-      showToast('Plant or Planting selection is required', 'error');
+    if (!formData.harvestId) {
+      showToast('Harvest ID is required', 'error');
+      return;
+    }
+    if (!formData.quantity) {
+      showToast('Quantity is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const payload: any = {
+      const payload = {
+        ...formData,
         plantingId: formData.plantingId ? parseInt(formData.plantingId) : null,
         plantId: formData.plantId ? parseInt(formData.plantId) : null,
-        quantity: formData.quantity ? parseFloat(formData.quantity) : null,
-        unit: formData.unit || 'lbs',
+        quantity: parseFloat(formData.quantity) || 0,
         weightLbs: formData.weightLbs ? parseFloat(formData.weightLbs) : null,
         harvestDate: formData.harvestDate || null,
-        notes: formData.notes || null,
-        imageUrl: formData.imageUrl || null,
       };
-
-      if (threedId) {
-        payload.moduleId = threedId;
-        payload.moduleType = 'threed';
-      }
 
       const response = await fetch('/api/threed/harvests', {
         method: 'POST',
@@ -194,26 +221,28 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
 
   const handleUpdate = async () => {
     if (!editingHarvest) return;
-    if (!formData.plantId && !formData.plantingId) {
-      showToast('Plant or Planting selection is required', 'error');
+    if (!formData.harvestId) {
+      showToast('Harvest ID is required', 'error');
+      return;
+    }
+    if (!formData.quantity) {
+      showToast('Quantity is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const payload: any = {
+      const payload = {
+        ...formData,
         plantingId: formData.plantingId ? parseInt(formData.plantingId) : null,
         plantId: formData.plantId ? parseInt(formData.plantId) : null,
-        quantity: formData.quantity ? parseFloat(formData.quantity) : null,
-        unit: formData.unit || 'lbs',
+        quantity: parseFloat(formData.quantity) || 0,
         weightLbs: formData.weightLbs ? parseFloat(formData.weightLbs) : null,
         harvestDate: formData.harvestDate || null,
-        notes: formData.notes || null,
-        imageUrl: formData.imageUrl || null,
       };
 
       const response = await fetch(`/api/threed/harvests?id=${editingHarvest.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -235,8 +264,8 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
     }
   };
 
-  const handleDelete = async (id: number, harvestId: string) => {
-    if (!confirm(`Delete harvest "${harvestId}"? This action cannot be undone.`)) return;
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Delete harvest "${name}"? This action cannot be undone.`)) return;
 
     try {
       const response = await fetch(`/api/threed/harvests?id=${id}`, {
@@ -259,44 +288,36 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
 
   const resetForm = () => {
     setFormData({
+      harvestId: '',
       plantingId: '',
       plantId: '',
       quantity: '',
-      unit: HarvestUnit.LBS,
+      unit: 'lbs',
       weightLbs: '',
       harvestDate: '',
       notes: '',
       imageUrl: '',
       isActive: true,
     });
-    setSelectedPlant(null);
-    setSelectedPlanting(null);
   };
 
-  const openEditDialog = (harvest: ThreeDHarvest) => {
+  const openEditDialog = (harvest: Harvest) => {
     setEditingHarvest(harvest);
-
-    // ✅ Find selected entities
-    const plant = plants.find(p => p.id === harvest.plantId) || null;
-    const planting = plantings.find(p => p.id === harvest.plantingId) || null;
-
-    setSelectedPlant(plant);
-    setSelectedPlanting(planting);
-
     setFormData({
+      harvestId: harvest.harvestId || '',
       plantingId: harvest.plantingId ? String(harvest.plantingId) : '',
       plantId: harvest.plantId ? String(harvest.plantId) : '',
-      quantity: harvest.quantity ? String(harvest.quantity) : '',
-      unit: harvest.unit || HarvestUnit.LBS,
-      weightLbs: harvest.weightLbs ? String(harvest.weightLbs) : '',
-      harvestDate: formatDateForInput(harvest.harvestDate),
+      quantity: harvest.quantity || '',
+      unit: harvest.unit || 'lbs',
+      weightLbs: harvest.weightLbs || '',
+      harvestDate: harvest.harvestDate ? new Date(harvest.harvestDate).toISOString().split('T')[0] : '',
       notes: harvest.notes || '',
       imageUrl: harvest.imageUrl || '',
-      isActive: true,
+      isActive: harvest.isActive ?? true,
     });
   };
 
-  const renderActions = (harvest: ThreeDHarvest) => (
+  const renderActions = (harvest: Harvest) => (
     <div className="flex items-center justify-end gap-1">
       <Button variant="ghost" size="sm" onClick={() => openEditDialog(harvest)}>
         <Edit className="w-4 h-4" />
@@ -308,16 +329,25 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {harvest.quantity && (
+          {harvest.weightLbs && (
             <DropdownMenuItem>
               <span className="text-xs text-muted-foreground">
-                Quantity: {harvest.quantity} {harvest.unit}
+                Weight: {harvest.weightLbs} lbs
               </span>
             </DropdownMenuItem>
           )}
-          {harvest.weightLbs && (
+          {harvest.plant && (
             <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">Weight: {harvest.weightLbs} lbs</span>
+              <span className="text-xs text-muted-foreground">
+                Plant: {harvest.plant.commonName}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {harvest.harvestDate && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground">
+                Harvested: {new Date(harvest.harvestDate).toLocaleDateString()}
+              </span>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
@@ -347,7 +377,7 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Apple className="w-4 h-4 text-red-500" />
+          <Package className="w-4 h-4 text-orange-500" />
           <span className="text-sm font-medium">Harvests</span>
           <Badge variant="secondary" className="text-xs">
             {filteredHarvests.length}
@@ -360,117 +390,76 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
               Add Harvest
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create New Harvest</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
-              {/* Plant Selection */}
               <div>
-                <Label htmlFor="plantId">Plant (Optional)</Label>
+                <Label htmlFor="harvestId">Harvest ID *</Label>
+                <Input
+                  id="harvestId"
+                  placeholder="e.g., HARVEST-001"
+                  value={formData.harvestId}
+                  onChange={(e) => setFormData({ ...formData, harvestId: e.target.value })}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="plantId">Plant</Label>
                 <Select
-                  value={selectedPlant?.id ? String(selectedPlant.id) : 'none'}
-                  onValueChange={(value) => {
-                    if (value === 'none') {
-                      setSelectedPlant(null);
-                      setFormData({ ...formData, plantId: '' });
-                    } else {
-                      const plant = plants.find(p => String(p.id) === value);
-                      setSelectedPlant(plant || null);
-                      setFormData({ ...formData, plantId: plant ? String(plant.id) : '' });
-                    }
-                  }}
+                  value={formData.plantId}
+                  onValueChange={(value) => setFormData({ ...formData, plantId: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a plant..." />
+                    <SelectValue placeholder="Select a plant" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
                     {plants.map((plant) => (
                       <SelectItem key={plant.id} value={String(plant.id)}>
-                        {plant.commonName || plant.name}
+                        {plant.commonName} ({plant.plantId})
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {selectedPlant && (
-                  <div className="flex items-center gap-1 mt-1">
-                    <Badge variant="secondary" className="text-[10px]">
-                      {selectedPlant.commonName || selectedPlant.name}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedPlant(null);
-                          setFormData({ ...formData, plantId: '' });
-                        }}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  </div>
-                )}
               </div>
 
-              {/* Planting Selection */}
               <div>
-                <Label htmlFor="plantingId">Planting (Optional)</Label>
+                <Label htmlFor="plantingId">Planting</Label>
                 <Select
-                  value={selectedPlanting?.id ? String(selectedPlanting.id) : 'none'}
-                  onValueChange={(value) => {
-                    if (value === 'none') {
-                      setSelectedPlanting(null);
-                      setFormData({ ...formData, plantingId: '' });
-                    } else {
-                      const planting = plantings.find(p => String(p.id) === value);
-                      setSelectedPlanting(planting || null);
-                      setFormData({ ...formData, plantingId: planting ? String(planting.id) : '' });
-                    }
-                  }}
+                  value={formData.plantingId}
+                  onValueChange={(value) => setFormData({ ...formData, plantingId: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a planting..." />
+                    <SelectValue placeholder="Select a planting" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
                     {plantings.map((planting) => (
                       <SelectItem key={planting.id} value={String(planting.id)}>
-                        {planting.name}
+                        {planting.plantingId}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {selectedPlanting && (
-                  <div className="flex items-center gap-1 mt-1">
-                    <Badge variant="secondary" className="text-[10px]">
-                      {selectedPlanting.name}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedPlanting(null);
-                          setFormData({ ...formData, plantingId: '' });
-                        }}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  </div>
-                )}
               </div>
 
-              {/* Harvest Details */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="quantity">Quantity</Label>
+                  <Label htmlFor="quantity">Quantity *</Label>
                   <Input
                     id="quantity"
                     type="number"
                     step="0.01"
-                    placeholder="5.5"
+                    min="0"
+                    placeholder="10"
                     value={formData.quantity}
                     onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                     disabled={isSubmitting}
+                    required
                   />
                 </div>
                 <div>
@@ -483,7 +472,7 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
                       <SelectValue placeholder="Select unit" />
                     </SelectTrigger>
                     <SelectContent>
-                      {HARVEST_UNIT_OPTIONS.map((unit) => (
+                      {UNIT_OPTIONS.map((unit) => (
                         <SelectItem key={unit.value} value={unit.value}>
                           {unit.label}
                         </SelectItem>
@@ -499,6 +488,7 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
                   id="weightLbs"
                   type="number"
                   step="0.01"
+                  min="0"
                   placeholder="2.5"
                   value={formData.weightLbs}
                   onChange={(e) => setFormData({ ...formData, weightLbs: e.target.value })}
@@ -506,7 +496,6 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
                 />
               </div>
 
-              {/* Harvest Date */}
               <div>
                 <Label htmlFor="harvestDate">Harvest Date</Label>
                 <Input
@@ -518,7 +507,6 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
                 />
               </div>
 
-              {/* Image URL */}
               <div>
                 <Label htmlFor="imageUrl">Image URL</Label>
                 <Input
@@ -530,17 +518,29 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
                 />
               </div>
 
-              {/* Notes */}
               <div>
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea
                   id="notes"
-                  placeholder="Additional notes about this harvest..."
+                  placeholder="Additional notes..."
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={2}
                   disabled={isSubmitting}
                 />
+              </div>
+
+              {/* Active Status */}
+              <div className="border-t pt-4">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="isActive">Active</Label>
+                </div>
               </div>
 
               <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
@@ -563,24 +563,21 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search harvests..."
+            placeholder="Search by ID, plant, notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-8 text-xs"
           />
         </div>
-        <Select value={filterUnit} onValueChange={setFilterUnit}>
+        <Select value={filterActive} onValueChange={setFilterActive}>
           <SelectTrigger className="w-[120px] h-8 text-xs">
             <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Unit" />
+            <SelectValue placeholder="Active" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Units</SelectItem>
-            {HARVEST_UNIT_OPTIONS.map((unit) => (
-              <SelectItem key={unit.value} value={unit.value}>
-                {unit.label}
-              </SelectItem>
-            ))}
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="true">Active</SelectItem>
+            <SelectItem value="false">Inactive</SelectItem>
           </SelectContent>
         </Select>
         <Button
@@ -589,7 +586,7 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
           className="h-8 text-xs"
           onClick={() => {
             setSearchQuery('');
-            setFilterUnit('all');
+            setFilterActive('all');
             fetchHarvests();
           }}
         >
@@ -600,7 +597,7 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
       {/* Harvests Table */}
       {filteredHarvests.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <Apple className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No harvests found</p>
           <Button
             variant="outline"
@@ -617,37 +614,47 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-xs py-1">Harvest ID</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">Plant</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Quantity</TableHead>
-                <TableHead className="text-center text-xs py-1">Date</TableHead>
+                <TableHead className="text-xs py-1">ID</TableHead>
+                <TableHead className="text-xs py-1">Plant</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Quantity</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Weight</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs py-1">Date</TableHead>
+                <TableHead className="text-center text-xs py-1">Active</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredHarvests.map((harvest) => {
-                const plant = plants.find(p => p.id === harvest.plantId);
-                return (
-                  <TableRow key={harvest.id} className="hover:bg-muted/50">
-                    <TableCell className="py-1 text-sm font-medium">
-                      <div className="flex items-center gap-2">
-                        <Apple className="w-3.5 h-3.5 text-red-500" />
-                        {harvest.harvestId}
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
-                      {plant?.commonName || plant?.name || `Plant #${harvest.plantId}`}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
-                      {harvest.quantity ? `${harvest.quantity} ${harvest.unit}` : '—'}
-                    </TableCell>
-                    <TableCell className="text-center py-1 text-sm text-muted-foreground">
-                      {harvest.harvestDate ? new Date(harvest.harvestDate).toLocaleDateString() : '—'}
-                    </TableCell>
-                    <TableCell className="py-1 text-right">{renderActions(harvest)}</TableCell>
-                  </TableRow>
-                );
-              })}
+              {filteredHarvests.map((harvest) => (
+                <TableRow key={harvest.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1 text-xs font-mono text-muted-foreground">
+                    {harvest.harvestId}
+                  </TableCell>
+                  <TableCell className="py-1 text-sm font-medium">
+                    <div className="flex items-center gap-2">
+                      <Package className="w-3.5 h-3.5 text-orange-500" />
+                      {harvest.plant?.commonName || 'Unknown'}
+                      {!harvest.isActive && (
+                        <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    {harvest.quantity} {harvest.unit}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    {harvest.weightLbs ? `${harvest.weightLbs} lbs` : '—'}
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
+                    {harvest.harvestDate ? new Date(harvest.harvestDate).toLocaleDateString() : '—'}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge className={`text-[10px] ${harvest.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {harvest.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-1 text-right">{renderActions(harvest)}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
@@ -655,113 +662,69 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
 
       {/* Edit Dialog */}
       <Dialog open={!!editingHarvest} onOpenChange={(open) => !open && setEditingHarvest(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Harvest</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
-            {/* Plant Selection */}
             <div>
-              <Label htmlFor="edit-plantId">Plant (Optional)</Label>
+              <Label htmlFor="edit-harvestId">Harvest ID *</Label>
+              <Input
+                id="edit-harvestId"
+                value={formData.harvestId}
+                onChange={(e) => setFormData({ ...formData, harvestId: e.target.value })}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit-plantId">Plant</Label>
               <Select
-                value={selectedPlant?.id ? String(selectedPlant.id) : 'none'}
-                onValueChange={(value) => {
-                  if (value === 'none') {
-                    setSelectedPlant(null);
-                    setFormData({ ...formData, plantId: '' });
-                  } else {
-                    const plant = plants.find(p => String(p.id) === value);
-                    setSelectedPlant(plant || null);
-                    setFormData({ ...formData, plantId: plant ? String(plant.id) : '' });
-                  }
-                }}
+                value={formData.plantId}
+                onValueChange={(value) => setFormData({ ...formData, plantId: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a plant..." />
+                  <SelectValue placeholder="Select a plant" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
                   {plants.map((plant) => (
                     <SelectItem key={plant.id} value={String(plant.id)}>
-                      {plant.commonName || plant.name}
+                      {plant.commonName} ({plant.plantId})
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {selectedPlant && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Badge variant="secondary" className="text-[10px]">
-                    {selectedPlant.commonName || selectedPlant.name}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedPlant(null);
-                        setFormData({ ...formData, plantId: '' });
-                      }}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                </div>
-              )}
             </div>
 
-            {/* Planting Selection */}
             <div>
-              <Label htmlFor="edit-plantingId">Planting (Optional)</Label>
+              <Label htmlFor="edit-plantingId">Planting</Label>
               <Select
-                value={selectedPlanting?.id ? String(selectedPlanting.id) : 'none'}
-                onValueChange={(value) => {
-                  if (value === 'none') {
-                    setSelectedPlanting(null);
-                    setFormData({ ...formData, plantingId: '' });
-                  } else {
-                    const planting = plantings.find(p => String(p.id) === value);
-                    setSelectedPlanting(planting || null);
-                    setFormData({ ...formData, plantingId: planting ? String(planting.id) : '' });
-                  }
-                }}
+                value={formData.plantingId}
+                onValueChange={(value) => setFormData({ ...formData, plantingId: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a planting..." />
+                  <SelectValue placeholder="Select a planting" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
                   {plantings.map((planting) => (
                     <SelectItem key={planting.id} value={String(planting.id)}>
-                      {planting.name}
+                      {planting.plantingId}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {selectedPlanting && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Badge variant="secondary" className="text-[10px]">
-                    {selectedPlanting.name}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedPlanting(null);
-                        setFormData({ ...formData, plantingId: '' });
-                      }}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                </div>
-              )}
             </div>
 
-            {/* Harvest Details */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-quantity">Quantity</Label>
+                <Label htmlFor="edit-quantity">Quantity *</Label>
                 <Input
                   id="edit-quantity"
                   type="number"
                   step="0.01"
+                  min="0"
                   value={formData.quantity}
                   onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                   disabled={isSubmitting}
@@ -777,7 +740,7 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
                     <SelectValue placeholder="Select unit" />
                   </SelectTrigger>
                   <SelectContent>
-                    {HARVEST_UNIT_OPTIONS.map((unit) => (
+                    {UNIT_OPTIONS.map((unit) => (
                       <SelectItem key={unit.value} value={unit.value}>
                         {unit.label}
                       </SelectItem>
@@ -793,13 +756,13 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
                 id="edit-weightLbs"
                 type="number"
                 step="0.01"
+                min="0"
                 value={formData.weightLbs}
                 onChange={(e) => setFormData({ ...formData, weightLbs: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
 
-            {/* Harvest Date */}
             <div>
               <Label htmlFor="edit-harvestDate">Harvest Date</Label>
               <Input
@@ -811,7 +774,6 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
               />
             </div>
 
-            {/* Image URL */}
             <div>
               <Label htmlFor="edit-imageUrl">Image URL</Label>
               <Input
@@ -822,7 +784,6 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
               />
             </div>
 
-            {/* Notes */}
             <div>
               <Label htmlFor="edit-notes">Notes</Label>
               <Textarea
@@ -832,6 +793,19 @@ export function ThreeDHarvestsCRUD({ threedId, onModuleUpdate }: ThreeDHarvestsC
                 rows={2}
                 disabled={isSubmitting}
               />
+            </div>
+
+            {/* Active Status */}
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="edit-isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="edit-isActive">Active</Label>
+              </div>
             </div>
 
             <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>

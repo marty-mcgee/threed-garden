@@ -7,12 +7,16 @@ import {
   Edit,
   Trash2,
   Loader2,
-  Layout,
+  Box,
   MoreHorizontal,
   Search,
   Filter,
+  Eye,
+  EyeOff,
+  MapPin,
   Ruler,
-  Square,
+  Layers,
+  Palette,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,72 +30,174 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-// ✅ Import types from lib
-import {
-  ThreeDBed,
-  BedShape,
-  BED_SHAPE_OPTIONS,
-} from '@/lib/types/threed';
-
-interface ThreeDBedsCRUDProps {
-  threedId?: number;
-  onModuleUpdate?: () => void;
+// ✅ Types
+interface Bed {
+  id: number;
+  bedId: string;
+  name: string;
+  description: string | null;
+  shape: string;
+  widthFeet: string | null;
+  lengthFeet: string | null;
+  squareFeet: string | null;
+  heightFeet: string;
+  soilType: string | null;
+  sunExposure: string | null;
+  positionX: string;
+  positionY: string;
+  positionZ: string;
+  rotation: string;
+  scale: string;
+  isActive: boolean;
+  status: string;
+  color: string;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-// ✅ Helper to generate bed ID
-const generateBedId = () => {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 6);
-  return `bed_${timestamp}_${random}`;
+interface FormData {
+  bedId: string;
+  name: string;
+  description: string;
+  shape: string;
+  widthFeet: string;
+  lengthFeet: string;
+  squareFeet: string;
+  heightFeet: string;
+  soilType: string;
+  sunExposure: string;
+  positionX: string;
+  positionY: string;
+  positionZ: string;
+  rotation: string;
+  scale: string;
+  isActive: boolean;
+  status: string;
+  color: string;
+  notes: string;
+}
+
+// ✅ Options
+const BED_SHAPE_OPTIONS = [
+  { value: 'rectangle', label: 'Rectangle' },
+  { value: 'square', label: 'Square' },
+  { value: 'circle', label: 'Circle' },
+  { value: 'raised', label: 'Raised' },
+  { value: 'container', label: 'Container' },
+  { value: 'custom', label: 'Custom' },
+];
+
+const BED_STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'maintenance', label: 'Maintenance' },
+  { value: 'dormant', label: 'Dormant' },
+  { value: 'retired', label: 'Retired' },
+];
+
+const SOIL_TYPE_OPTIONS = [
+  { value: 'loam', label: 'Loam' },
+  { value: 'clay', label: 'Clay' },
+  { value: 'sandy', label: 'Sandy' },
+  { value: 'silty', label: 'Silty' },
+  { value: 'peaty', label: 'Peaty' },
+  { value: 'chalky', label: 'Chalky' },
+];
+
+const SUN_EXPOSURE_OPTIONS = [
+  { value: 'full_sun', label: 'Full Sun' },
+  { value: 'partial_sun', label: 'Partial Sun' },
+  { value: 'partial_shade', label: 'Partial Shade' },
+  { value: 'full_shade', label: 'Full Shade' },
+];
+
+const COLOR_OPTIONS = [
+  { value: '#8B5E3C', label: 'Brown' },
+  { value: '#2E7D32', label: 'Dark Green' },
+  { value: '#4CAF50', label: 'Green' },
+  { value: '#795548', label: 'Wood' },
+  { value: '#607D8B', label: 'Gray' },
+  { value: '#D32F2F', label: 'Red' },
+  { value: '#1976D2', label: 'Blue' },
+  { value: '#F57C00', label: 'Orange' },
+  { value: '#9C27B0', label: 'Purple' },
+  { value: '#000000', label: 'Black' },
+];
+
+// ✅ Helper
+const getOptionLabel = (options: { value: string; label: string }[], value: string) => {
+  const option = options.find((o) => o.value === value);
+  return option ? option.label : value;
 };
 
-export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps) {
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'active': return 'bg-green-100 text-green-700';
+    case 'pending': return 'bg-yellow-100 text-yellow-700';
+    case 'maintenance': return 'bg-orange-100 text-orange-700';
+    case 'dormant': return 'bg-blue-100 text-blue-700';
+    case 'retired': return 'bg-gray-100 text-gray-700';
+    default: return 'bg-gray-100 text-gray-700';
+  }
+};
+
+const getShapeIcon = (shape: string) => {
+  switch (shape) {
+    case 'rectangle': return '▭';
+    case 'square': return '▢';
+    case 'circle': return '◯';
+    case 'raised': return '▤';
+    case 'container': return '▣';
+    default: return '▭';
+  }
+};
+
+export function ThreeDBedsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
-  const [beds, setBeds] = useState<ThreeDBed[]>([]);
+  const [beds, setBeds] = useState<Bed[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingBed, setEditingBed] = useState<ThreeDBed | null>(null);
+  const [editingBed, setEditingBed] = useState<Bed | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterShape, setFilterShape] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterActive, setFilterActive] = useState<string>('all');
 
-  // ✅ Form state - matches schema field names exactly
-  const [formData, setFormData] = useState({
+  // ✅ Form state
+  const [formData, setFormData] = useState<FormData>({
+    bedId: '',
     name: '',
     description: '',
-    shape: BedShape.RECTANGLE,
+    shape: 'rectangle',
     widthFeet: '',
     lengthFeet: '',
-    heightFeet: '',
+    squareFeet: '',
+    heightFeet: '1',
     soilType: '',
     sunExposure: '',
-    positionX: '',
-    positionY: '',
-    positionZ: '',
-    rotation: '',
-    scale: '',
+    positionX: '0',
+    positionY: '0',
+    positionZ: '0',
+    rotation: '0',
+    scale: '1',
+    isActive: true,
+    status: 'active',
     color: '#8B5E3C',
     notes: '',
-    isActive: true,
   });
 
+  // ✅ Fetch beds
   useEffect(() => {
     fetchBeds();
-  }, [threedId]);
+  }, []);
 
   const fetchBeds = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filterShape !== 'all') params.append('shape', filterShape);
-      if (filterStatus !== 'all') params.append('isActive', filterStatus === 'active' ? 'true' : 'false');
-
-      const response = await fetch(`/api/threed/beds?${params.toString()}`);
+      const response = await fetch('/api/threed/beds?limit=100');
       const data = await response.json();
-
       if (data.success) {
-        // ✅ Ensure we're setting the data correctly
         setBeds(Array.isArray(data.data) ? data.data : []);
       } else {
         showToast(data.error || 'Failed to fetch beds', 'error');
@@ -108,10 +214,15 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
 
   const filteredBeds = beds.filter((bed) =>
     bed.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    bed.bedId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (bed.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   const handleCreate = async () => {
+    if (!formData.bedId) {
+      showToast('Bed ID is required', 'error');
+      return;
+    }
     if (!formData.name) {
       showToast('Bed name is required', 'error');
       return;
@@ -119,33 +230,10 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
 
     setIsSubmitting(true);
     try {
-      // ✅ Build payload with correct field names matching schema
-      const payload: any = {
-        bedId: generateBedId(),
-        name: formData.name.trim(),
-        description: formData.description?.trim() || null,
-        shape: formData.shape,
-        widthFeet: formData.widthFeet ? parseFloat(formData.widthFeet) : null,
-        lengthFeet: formData.lengthFeet ? parseFloat(formData.lengthFeet) : null,
-        heightFeet: formData.heightFeet ? parseFloat(formData.heightFeet) : null,
-        soilType: formData.soilType?.trim() || null,
-        sunExposure: formData.sunExposure?.trim() || null,
-        positionX: formData.positionX ? parseFloat(formData.positionX) : 0,
-        positionY: formData.positionY ? parseFloat(formData.positionY) : 0,
-        positionZ: formData.positionZ ? parseFloat(formData.positionZ) : 0,
-        rotation: formData.rotation ? parseFloat(formData.rotation) : 0,
-        scale: formData.scale ? parseFloat(formData.scale) : 1,
-        color: formData.color || '#8B5E3C',
-        notes: formData.notes?.trim() || null,
-        isActive: formData.isActive,
-      };
-
-      console.log('[Beds] Creating with payload:', payload);
-
       const response = await fetch('/api/threed/beds', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -167,11 +255,11 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
   };
 
   const handleUpdate = async () => {
-    if (!editingBed) {
-      showToast('No bed selected to edit', 'error');
+    if (!editingBed) return;
+    if (!formData.bedId) {
+      showToast('Bed ID is required', 'error');
       return;
     }
-    
     if (!formData.name) {
       showToast('Bed name is required', 'error');
       return;
@@ -179,32 +267,10 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
 
     setIsSubmitting(true);
     try {
-      // ✅ Build payload with correct field names matching schema
-      const payload: any = {
-        name: formData.name.trim(),
-        description: formData.description?.trim() || null,
-        shape: formData.shape,
-        widthFeet: formData.widthFeet ? parseFloat(formData.widthFeet) : null,
-        lengthFeet: formData.lengthFeet ? parseFloat(formData.lengthFeet) : null,
-        heightFeet: formData.heightFeet ? parseFloat(formData.heightFeet) : null,
-        soilType: formData.soilType?.trim() || null,
-        sunExposure: formData.sunExposure?.trim() || null,
-        positionX: formData.positionX ? parseFloat(formData.positionX) : 0,
-        positionY: formData.positionY ? parseFloat(formData.positionY) : 0,
-        positionZ: formData.positionZ ? parseFloat(formData.positionZ) : 0,
-        rotation: formData.rotation ? parseFloat(formData.rotation) : 0,
-        scale: formData.scale ? parseFloat(formData.scale) : 1,
-        color: formData.color || '#8B5E3C',
-        notes: formData.notes?.trim() || null,
-        isActive: formData.isActive,
-      };
-
-      console.log('[Beds] Updating bed:', editingBed.id, 'with payload:', payload);
-
       const response = await fetch(`/api/threed/beds?id=${editingBed.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -248,54 +314,54 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
 
   const resetForm = () => {
     setFormData({
+      bedId: '',
       name: '',
       description: '',
-      shape: BedShape.RECTANGLE,
+      shape: 'rectangle',
       widthFeet: '',
       lengthFeet: '',
-      heightFeet: '',
+      squareFeet: '',
+      heightFeet: '1',
       soilType: '',
       sunExposure: '',
-      positionX: '',
-      positionY: '',
-      positionZ: '',
-      rotation: '',
-      scale: '',
+      positionX: '0',
+      positionY: '0',
+      positionZ: '0',
+      rotation: '0',
+      scale: '1',
+      isActive: true,
+      status: 'active',
       color: '#8B5E3C',
       notes: '',
-      isActive: true,
     });
   };
 
-  const openEditDialog = (bed: ThreeDBed) => {
-    console.log('[Beds] Opening edit dialog for bed:', bed);
+  const openEditDialog = (bed: Bed) => {
     setEditingBed(bed);
     setFormData({
-      name: bed.name || '',
+      bedId: bed.bedId || '',
+      name: bed.name,
       description: bed.description || '',
-      shape: bed.shape || BedShape.RECTANGLE,
-      widthFeet: bed.widthFeet !== null && bed.widthFeet !== undefined ? String(bed.widthFeet) : '',
-      lengthFeet: bed.lengthFeet !== null && bed.lengthFeet !== undefined ? String(bed.lengthFeet) : '',
-      heightFeet: bed.heightFeet !== null && bed.heightFeet !== undefined ? String(bed.heightFeet) : '',
+      shape: bed.shape || 'rectangle',
+      widthFeet: bed.widthFeet || '',
+      lengthFeet: bed.lengthFeet || '',
+      squareFeet: bed.squareFeet || '',
+      heightFeet: bed.heightFeet || '1',
       soilType: bed.soilType || '',
       sunExposure: bed.sunExposure || '',
-      positionX: bed.positionX !== null && bed.positionX !== undefined ? String(bed.positionX) : '',
-      positionY: bed.positionY !== null && bed.positionY !== undefined ? String(bed.positionY) : '',
-      positionZ: bed.positionZ !== null && bed.positionZ !== undefined ? String(bed.positionZ) : '',
-      rotation: bed.rotation !== null && bed.rotation !== undefined ? String(bed.rotation) : '',
-      scale: bed.scale !== null && bed.scale !== undefined ? String(bed.scale) : '',
+      positionX: bed.positionX || '0',
+      positionY: bed.positionY || '0',
+      positionZ: bed.positionZ || '0',
+      rotation: bed.rotation || '0',
+      scale: bed.scale || '1',
+      isActive: bed.isActive ?? true,
+      status: bed.status || 'active',
       color: bed.color || '#8B5E3C',
       notes: bed.notes || '',
-      isActive: bed.isActive !== undefined ? bed.isActive : true,
     });
   };
 
-  const getShapeLabel = (shape: string) => {
-    const option = BED_SHAPE_OPTIONS.find((s) => s.value === shape);
-    return option ? option.label : shape;
-  };
-
-  const renderActions = (bed: ThreeDBed) => (
+  const renderActions = (bed: Bed) => (
     <div className="flex items-center justify-end gap-1">
       <Button variant="ghost" size="sm" onClick={() => openEditDialog(bed)}>
         <Edit className="w-4 h-4" />
@@ -307,14 +373,27 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {bed.bedId && (
+          {bed.positionX && bed.positionZ && (
             <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">ID: {bed.bedId}</span>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                ({bed.positionX}, {bed.positionZ})
+              </span>
+            </DropdownMenuItem>
+          )}
+          {bed.widthFeet && bed.lengthFeet && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Ruler className="w-3 h-3" />
+                {bed.widthFeet} × {bed.lengthFeet} ft
+              </span>
             </DropdownMenuItem>
           )}
           {bed.squareFeet && (
             <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">{bed.squareFeet} sq ft</span>
+              <span className="text-xs text-muted-foreground">
+                {bed.squareFeet} sq ft
+              </span>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
@@ -344,7 +423,7 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Layout className="w-4 h-4 text-orange-500" />
+          <Box className="w-4 h-4 text-amber-500" />
           <span className="text-sm font-medium">Beds</span>
           <Badge variant="secondary" className="text-xs">
             {filteredBeds.length}
@@ -362,16 +441,31 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
               <DialogTitle>Create New Bed</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
+              {/* Basic Info */}
+              <div>
+                <Label htmlFor="bedId">Bed ID *</Label>
+                <Input
+                  id="bedId"
+                  placeholder="e.g., BED-001"
+                  value={formData.bedId}
+                  onChange={(e) => setFormData({ ...formData, bedId: e.target.value })}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
+
               <div>
                 <Label htmlFor="name">Bed Name *</Label>
                 <Input
                   id="name"
-                  placeholder="e.g., North Garden Bed"
+                  placeholder="e.g., Main Garden Bed"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={isSubmitting}
+                  required
                 />
               </div>
+
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -383,171 +477,246 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
                   disabled={isSubmitting}
                 />
               </div>
-              <div>
-                <Label htmlFor="shape">Shape</Label>
-                <Select
-                  value={formData.shape}
-                  onValueChange={(value) => setFormData({ ...formData, shape: value as BedShape })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select shape" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BED_SHAPE_OPTIONS.map((shape) => (
-                      <SelectItem key={shape.value} value={shape.value}>
-                        {shape.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="widthFeet">Width (ft)</Label>
-                  <Input
-                    id="widthFeet"
-                    type="number"
-                    step="0.5"
-                    placeholder="4"
-                    value={formData.widthFeet}
-                    onChange={(e) => setFormData({ ...formData, widthFeet: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="lengthFeet">Length (ft)</Label>
-                  <Input
-                    id="lengthFeet"
-                    type="number"
-                    step="0.5"
-                    placeholder="8"
-                    value={formData.lengthFeet}
-                    onChange={(e) => setFormData({ ...formData, lengthFeet: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="heightFeet">Height (ft)</Label>
-                  <Input
-                    id="heightFeet"
-                    type="number"
-                    step="0.5"
-                    placeholder="1"
-                    value={formData.heightFeet}
-                    onChange={(e) => setFormData({ ...formData, heightFeet: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="soilType">Soil Type</Label>
-                  <Input
-                    id="soilType"
-                    placeholder="e.g., Loamy"
-                    value={formData.soilType}
-                    onChange={(e) => setFormData({ ...formData, soilType: e.target.value })}
-                    disabled={isSubmitting}
-                  />
+                  <Label htmlFor="shape">Shape</Label>
+                  <Select
+                    value={formData.shape}
+                    onValueChange={(value) => setFormData({ ...formData, shape: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select shape" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BED_SHAPE_OPTIONS.map((shape) => (
+                        <SelectItem key={shape.value} value={shape.value}>
+                          {shape.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
-                  <Label htmlFor="sunExposure">Sun Exposure</Label>
+                  <Label htmlFor="color">Color</Label>
+                  <Select
+                    value={formData.color}
+                    onValueChange={(value) => setFormData({ ...formData, color: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COLOR_OPTIONS.map((color) => (
+                        <SelectItem key={color.value} value={color.value}>
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-4 h-4 rounded-full border"
+                              style={{ backgroundColor: color.value }}
+                            />
+                            {color.label}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Dimensions */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Dimensions (feet)</Label>
+                <div className="grid grid-cols-3 gap-2 mt-2">
+                  <div>
+                    <Label htmlFor="widthFeet" className="text-xs">Width</Label>
+                    <Input
+                      id="widthFeet"
+                      type="number"
+                      step="0.5"
+                      placeholder="4"
+                      value={formData.widthFeet}
+                      onChange={(e) => setFormData({ ...formData, widthFeet: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lengthFeet" className="text-xs">Length</Label>
+                    <Input
+                      id="lengthFeet"
+                      type="number"
+                      step="0.5"
+                      placeholder="8"
+                      value={formData.lengthFeet}
+                      onChange={(e) => setFormData({ ...formData, lengthFeet: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="heightFeet" className="text-xs">Height</Label>
+                    <Input
+                      id="heightFeet"
+                      type="number"
+                      step="0.1"
+                      placeholder="1"
+                      value={formData.heightFeet}
+                      onChange={(e) => setFormData({ ...formData, heightFeet: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <Label htmlFor="squareFeet" className="text-xs">Square Feet (auto-calculated)</Label>
                   <Input
-                    id="sunExposure"
-                    placeholder="e.g., Full Sun"
-                    value={formData.sunExposure}
-                    onChange={(e) => setFormData({ ...formData, sunExposure: e.target.value })}
+                    id="squareFeet"
+                    type="number"
+                    step="0.1"
+                    placeholder="Auto-calculated"
+                    value={formData.squareFeet}
+                    onChange={(e) => setFormData({ ...formData, squareFeet: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">3D Positioning</Label>
-                <div className="grid grid-cols-3 gap-4 mt-1">
+
+              {/* Soil & Environment */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Soil & Environment</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
                   <div>
-                    <Label htmlFor="positionX" className="text-[10px]">X</Label>
+                    <Label htmlFor="soilType" className="text-xs">Soil Type</Label>
+                    <Select
+                      value={formData.soilType}
+                      onValueChange={(value) => setFormData({ ...formData, soilType: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select soil" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SOIL_TYPE_OPTIONS.map((soil) => (
+                          <SelectItem key={soil.value} value={soil.value}>
+                            {soil.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="sunExposure" className="text-xs">Sun Exposure</Label>
+                    <Select
+                      value={formData.sunExposure}
+                      onValueChange={(value) => setFormData({ ...formData, sunExposure: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select exposure" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SUN_EXPOSURE_OPTIONS.map((exposure) => (
+                          <SelectItem key={exposure.value} value={exposure.value}>
+                            {exposure.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3D Position */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">3D Position</Label>
+                <p className="text-xs text-muted-foreground mb-2">Position in 3D space (for map and scene)</p>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Label htmlFor="positionX" className="text-xs">X (Longitude)</Label>
                     <Input
                       id="positionX"
                       type="number"
-                      step="0.1"
-                      placeholder="0"
+                      step="0.01"
+                      placeholder="0.00"
                       value={formData.positionX}
                       onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="positionY" className="text-[10px]">Y</Label>
+                    <Label htmlFor="positionY" className="text-xs">Y (Height)</Label>
                     <Input
                       id="positionY"
                       type="number"
-                      step="0.1"
-                      placeholder="0"
+                      step="0.01"
+                      placeholder="0.00"
                       value={formData.positionY}
                       onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="positionZ" className="text-[10px]">Z</Label>
+                    <Label htmlFor="positionZ" className="text-xs">Z (Latitude)</Label>
                     <Input
                       id="positionZ"
                       type="number"
-                      step="0.1"
-                      placeholder="0"
+                      step="0.01"
+                      placeholder="0.00"
                       value={formData.positionZ}
                       onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="rotation">Rotation</Label>
-                  <Input
-                    id="rotation"
-                    type="number"
-                    step="0.1"
-                    placeholder="0"
-                    value={formData.rotation}
-                    onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="scale">Scale</Label>
-                  <Input
-                    id="scale"
-                    type="number"
-                    step="0.1"
-                    placeholder="1"
-                    value={formData.scale}
-                    onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="color">Color</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="color"
-                    type="color"
-                    value={formData.color}
-                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    className="w-12 h-10 p-1"
-                    disabled={isSubmitting}
-                  />
-                  <Input
-                    value={formData.color}
-                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    placeholder="#8B5E3C"
-                    className="flex-1"
-                    disabled={isSubmitting}
-                  />
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <Label htmlFor="rotation" className="text-xs">Rotation</Label>
+                    <Input
+                      id="rotation"
+                      type="number"
+                      step="1"
+                      placeholder="0"
+                      value={formData.rotation}
+                      onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="scale" className="text-xs">Scale</Label>
+                    <Input
+                      id="scale"
+                      type="number"
+                      step="0.1"
+                      min="0.1"
+                      placeholder="1"
+                      value={formData.scale}
+                      onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
               </div>
+
+              {/* Status */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Status</Label>
+                <div className="space-y-2 mt-2">
+                  <div>
+                    <Label htmlFor="status" className="text-xs">Bed Status</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) => setFormData({ ...formData, status: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BED_STATUS_OPTIONS.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea
@@ -559,15 +728,20 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
                   disabled={isSubmitting}
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="isActive"
-                  checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                  disabled={isSubmitting}
-                />
-                <Label htmlFor="isActive">Active</Label>
+
+              {/* Active Status */}
+              <div className="border-t pt-4">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="isActive">Active</Label>
+                </div>
               </div>
+
               <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
@@ -588,35 +762,35 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search beds..."
+            placeholder="Search by name, ID, description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-8 text-xs"
           />
         </div>
-        <Select value={filterShape} onValueChange={setFilterShape}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Shape" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Shapes</SelectItem>
-            {BED_SHAPE_OPTIONS.map((shape) => (
-              <SelectItem key={shape.value} value={shape.value}>
-                {shape.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
           <SelectTrigger className="w-[120px] h-8 text-xs">
             <Filter className="w-3.5 h-3.5 mr-1" />
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {BED_STATUS_OPTIONS.map((status) => (
+              <SelectItem key={status.value} value={status.value}>
+                {status.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filterActive} onValueChange={setFilterActive}>
+          <SelectTrigger className="w-[120px] h-8 text-xs">
+            <Filter className="w-3.5 h-3.5 mr-1" />
+            <SelectValue placeholder="Active" />
+          </SelectTrigger>
+          <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="true">Active</SelectItem>
+            <SelectItem value="false">Inactive</SelectItem>
           </SelectContent>
         </Select>
         <Button
@@ -625,8 +799,8 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
           className="h-8 text-xs"
           onClick={() => {
             setSearchQuery('');
-            setFilterShape('all');
             setFilterStatus('all');
+            setFilterActive('all');
             fetchBeds();
           }}
         >
@@ -637,7 +811,7 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
       {/* Beds Table */}
       {filteredBeds.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <Layout className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <Box className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No beds found</p>
           <Button
             variant="outline"
@@ -655,9 +829,12 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-xs py-1">Name</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">Shape</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Dimensions</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">ID</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Shape</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs py-1">Dimensions</TableHead>
+                <TableHead className="hidden xl:table-cell text-xs py-1">Position</TableHead>
                 <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="text-center text-xs py-1">Active</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -666,39 +843,44 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
                 <TableRow key={bed.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: bed.color || '#8B5E3C' }}
-                      />
+                      <Box className="w-3.5 h-3.5 text-amber-500" />
                       {bed.name}
+                      {!bed.isActive && (
+                        <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
+                      )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
-                    <Badge variant="outline" className="text-[10px]">
-                      {getShapeLabel(bed.shape)}
-                    </Badge>
+                  <TableCell className="hidden sm:table-cell py-1 text-xs font-mono text-muted-foreground">
+                    {bed.bedId || '—'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge variant="outline" className="text-[10px]">
+                      {getShapeIcon(bed.shape)} {getOptionLabel(BED_SHAPE_OPTIONS, bed.shape)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell py-1 text-xs text-muted-foreground">
                     {bed.widthFeet && bed.lengthFeet ? (
-                      <div className="flex items-center gap-1">
-                        <Ruler className="w-3 h-3" />
-                        {bed.widthFeet}′ × {bed.lengthFeet}′
-                        {bed.squareFeet && (
-                          <span className="text-muted-foreground/60 ml-1">
-                            ({bed.squareFeet} sq ft)
-                          </span>
-                        )}
-                      </div>
+                      `${bed.widthFeet} × ${bed.lengthFeet} ft`
+                    ) : (
+                      '—'
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden xl:table-cell py-1 text-xs font-mono text-muted-foreground">
+                    {bed.positionX && bed.positionZ ? (
+                      `(${bed.positionX}, ${bed.positionZ})`
                     ) : (
                       '—'
                     )}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    {bed.isActive ? (
-                      <Badge className="text-[10px] bg-green-100 text-green-700">Active</Badge>
-                    ) : (
-                      <Badge className="text-[10px] bg-gray-100 text-gray-700">Inactive</Badge>
-                    )}
+                    <Badge className={`text-[10px] ${getStatusColor(bed.status)}`}>
+                      {getOptionLabel(BED_STATUS_OPTIONS, bed.status)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge className={`text-[10px] ${bed.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {bed.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="py-1 text-right">{renderActions(bed)}</TableCell>
                 </TableRow>
@@ -716,6 +898,16 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
+              <Label htmlFor="edit-bedId">Bed ID *</Label>
+              <Input
+                id="edit-bedId"
+                value={formData.bedId}
+                onChange={(e) => setFormData({ ...formData, bedId: e.target.value })}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div>
               <Label htmlFor="edit-name">Bed Name *</Label>
               <Input
                 id="edit-name"
@@ -724,6 +916,7 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
                 disabled={isSubmitting}
               />
             </div>
+
             <div>
               <Label htmlFor="edit-description">Description</Label>
               <Textarea
@@ -734,160 +927,236 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
                 disabled={isSubmitting}
               />
             </div>
-            <div>
-              <Label htmlFor="edit-shape">Shape</Label>
-              <Select
-                value={formData.shape}
-                onValueChange={(value) => setFormData({ ...formData, shape: value as BedShape })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select shape" />
-                </SelectTrigger>
-                <SelectContent>
-                  {BED_SHAPE_OPTIONS.map((shape) => (
-                    <SelectItem key={shape.value} value={shape.value}>
-                      {shape.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="edit-widthFeet">Width (ft)</Label>
-                <Input
-                  id="edit-widthFeet"
-                  type="number"
-                  step="0.5"
-                  value={formData.widthFeet}
-                  onChange={(e) => setFormData({ ...formData, widthFeet: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-lengthFeet">Length (ft)</Label>
-                <Input
-                  id="edit-lengthFeet"
-                  type="number"
-                  step="0.5"
-                  value={formData.lengthFeet}
-                  onChange={(e) => setFormData({ ...formData, lengthFeet: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-heightFeet">Height (ft)</Label>
-                <Input
-                  id="edit-heightFeet"
-                  type="number"
-                  step="0.5"
-                  value={formData.heightFeet}
-                  onChange={(e) => setFormData({ ...formData, heightFeet: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-soilType">Soil Type</Label>
-                <Input
-                  id="edit-soilType"
-                  value={formData.soilType}
-                  onChange={(e) => setFormData({ ...formData, soilType: e.target.value })}
-                  disabled={isSubmitting}
-                />
+                <Label htmlFor="edit-shape">Shape</Label>
+                <Select
+                  value={formData.shape}
+                  onValueChange={(value) => setFormData({ ...formData, shape: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select shape" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BED_SHAPE_OPTIONS.map((shape) => (
+                      <SelectItem key={shape.value} value={shape.value}>
+                        {shape.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <Label htmlFor="edit-sunExposure">Sun Exposure</Label>
+                <Label htmlFor="edit-color">Color</Label>
+                <Select
+                  value={formData.color}
+                  onValueChange={(value) => setFormData({ ...formData, color: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select color" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COLOR_OPTIONS.map((color) => (
+                      <SelectItem key={color.value} value={color.value}>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-4 h-4 rounded-full border"
+                            style={{ backgroundColor: color.value }}
+                          />
+                          {color.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Dimensions */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Dimensions (feet)</Label>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-widthFeet" className="text-xs">Width</Label>
+                  <Input
+                    id="edit-widthFeet"
+                    type="number"
+                    step="0.5"
+                    value={formData.widthFeet}
+                    onChange={(e) => setFormData({ ...formData, widthFeet: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-lengthFeet" className="text-xs">Length</Label>
+                  <Input
+                    id="edit-lengthFeet"
+                    type="number"
+                    step="0.5"
+                    value={formData.lengthFeet}
+                    onChange={(e) => setFormData({ ...formData, lengthFeet: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-heightFeet" className="text-xs">Height</Label>
+                  <Input
+                    id="edit-heightFeet"
+                    type="number"
+                    step="0.1"
+                    value={formData.heightFeet}
+                    onChange={(e) => setFormData({ ...formData, heightFeet: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
+              <div className="mt-2">
+                <Label htmlFor="edit-squareFeet" className="text-xs">Square Feet</Label>
                 <Input
-                  id="edit-sunExposure"
-                  value={formData.sunExposure}
-                  onChange={(e) => setFormData({ ...formData, sunExposure: e.target.value })}
+                  id="edit-squareFeet"
+                  type="number"
+                  step="0.1"
+                  value={formData.squareFeet}
+                  onChange={(e) => setFormData({ ...formData, squareFeet: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
             </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">3D Positioning</Label>
-              <div className="grid grid-cols-3 gap-4 mt-1">
+
+            {/* Soil & Environment */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Soil & Environment</Label>
+              <div className="grid grid-cols-2 gap-2 mt-2">
                 <div>
-                  <Label htmlFor="edit-positionX" className="text-[10px]">X</Label>
+                  <Label htmlFor="edit-soilType" className="text-xs">Soil Type</Label>
+                  <Select
+                    value={formData.soilType}
+                    onValueChange={(value) => setFormData({ ...formData, soilType: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select soil" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SOIL_TYPE_OPTIONS.map((soil) => (
+                        <SelectItem key={soil.value} value={soil.value}>
+                          {soil.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-sunExposure" className="text-xs">Sun Exposure</Label>
+                  <Select
+                    value={formData.sunExposure}
+                    onValueChange={(value) => setFormData({ ...formData, sunExposure: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select exposure" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SUN_EXPOSURE_OPTIONS.map((exposure) => (
+                        <SelectItem key={exposure.value} value={exposure.value}>
+                          {exposure.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* 3D Position */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">3D Position</Label>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-positionX" className="text-xs">X (Longitude)</Label>
                   <Input
                     id="edit-positionX"
                     type="number"
-                    step="0.1"
+                    step="0.01"
                     value={formData.positionX}
                     onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-positionY" className="text-[10px]">Y</Label>
+                  <Label htmlFor="edit-positionY" className="text-xs">Y (Height)</Label>
                   <Input
                     id="edit-positionY"
                     type="number"
-                    step="0.1"
+                    step="0.01"
                     value={formData.positionY}
                     onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-positionZ" className="text-[10px]">Z</Label>
+                  <Label htmlFor="edit-positionZ" className="text-xs">Z (Latitude)</Label>
                   <Input
                     id="edit-positionZ"
                     type="number"
-                    step="0.1"
+                    step="0.01"
                     value={formData.positionZ}
                     onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-rotation">Rotation</Label>
-                <Input
-                  id="edit-rotation"
-                  type="number"
-                  step="0.1"
-                  value={formData.rotation}
-                  onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-scale">Scale</Label>
-                <Input
-                  id="edit-scale"
-                  type="number"
-                  step="0.1"
-                  value={formData.scale}
-                  onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="edit-color">Color</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="edit-color"
-                  type="color"
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="w-12 h-10 p-1"
-                  disabled={isSubmitting}
-                />
-                <Input
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="flex-1"
-                  disabled={isSubmitting}
-                />
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-rotation" className="text-xs">Rotation</Label>
+                  <Input
+                    id="edit-rotation"
+                    type="number"
+                    step="1"
+                    value={formData.rotation}
+                    onChange={(e) => setFormData({ ...formData, rotation: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-scale" className="text-xs">Scale</Label>
+                  <Input
+                    id="edit-scale"
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    value={formData.scale}
+                    onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
             </div>
+
+            {/* Status */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Status</Label>
+              <div className="space-y-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-status" className="text-xs">Bed Status</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BED_STATUS_OPTIONS.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="edit-notes">Notes</Label>
               <Textarea
@@ -898,15 +1167,20 @@ export function ThreeDBedsCRUD({ threedId, onModuleUpdate }: ThreeDBedsCRUDProps
                 disabled={isSubmitting}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                id="edit-isActive"
-                checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                disabled={isSubmitting}
-              />
-              <Label htmlFor="edit-isActive">Active</Label>
+
+            {/* Active Status */}
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="edit-isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="edit-isActive">Active</Label>
+              </div>
             </div>
+
             <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>

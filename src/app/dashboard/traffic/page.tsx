@@ -1,4 +1,4 @@
-// src/app/dashboard/page.tsx
+// src/app/dashboard/traffic/page.tsx
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';

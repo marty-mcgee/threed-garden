@@ -7,11 +7,18 @@ import {
   Edit,
   Trash2,
   Loader2,
-  Drone,
+  Bot,
   MoreHorizontal,
   Search,
   Filter,
-  X,
+  Eye,
+  EyeOff,
+  MapPin,
+  Battery,
+  Wifi,
+  Cpu,
+  Clock,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,99 +32,139 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-// ✅ Import types from lib
-import {
-  ThreeDFarmbot,
-  ThreeDFarmbotFormData,
-  ThreeDRelatedEntity,
-  FarmbotStatus,
-  FARMBOT_STATUS_OPTIONS,
-} from '@/lib/types/threed';
-
-interface ThreeDFarmbotsCRUDProps {
-  threedId?: number;
-  onModuleUpdate?: () => void;
+// ✅ Types
+interface Bed {
+  id: number;
+  bedId: string;
+  name: string;
 }
 
-// ✅ Status color mapping
+interface Farmbot {
+  id: number;
+  deviceId: string;
+  name: string;
+  isActive: boolean;
+  status: string;
+  bedId: number | null;
+  positionX: string | null;
+  positionY: string | null;
+  positionZ: string | null;
+  apiToken: string | null;
+  apiUrl: string | null;
+  lastSeen: string | null;
+  batteryLevel: number | null;
+  firmwareVersion: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  bed?: Bed;
+}
+
+interface FormData {
+  deviceId: string;
+  name: string;
+  isActive: boolean;
+  status: string;
+  bedId: string;
+  positionX: string;
+  positionY: string;
+  positionZ: string;
+  apiToken: string;
+  apiUrl: string;
+  lastSeen: string;
+  batteryLevel: string;
+  firmwareVersion: string;
+  notes: string;
+}
+
+// ✅ Options
+const FARMBOT_STATUS_OPTIONS = [
+  { value: 'online', label: 'Online' },
+  { value: 'offline', label: 'Offline' },
+  { value: 'maintenance', label: 'Maintenance' },
+  { value: 'error', label: 'Error' },
+];
+
+// ✅ Helper
+const getOptionLabel = (options: { value: string; label: string }[], value: string) => {
+  const option = options.find((o) => o.value === value);
+  return option ? option.label : value;
+};
+
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'online': return 'bg-green-100 text-green-700 border-green-200';
-    case 'offline': return 'bg-gray-100 text-gray-700 border-gray-200';
-    case 'maintenance': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-    case 'error': return 'bg-red-100 text-red-700 border-red-200';
-    default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    case 'online': return 'bg-green-100 text-green-700';
+    case 'offline': return 'bg-gray-100 text-gray-700';
+    case 'maintenance': return 'bg-yellow-100 text-yellow-700';
+    case 'error': return 'bg-red-100 text-red-700';
+    default: return 'bg-gray-100 text-gray-700';
   }
 };
 
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'online': return '🟢';
-    case 'offline': return '🔴';
-    case 'maintenance': return '🟡';
-    case 'error': return '🔴';
-    default: return '⚪';
-  }
+const getBatteryColor = (level: number | null) => {
+  if (level === null) return 'bg-gray-100 text-gray-700';
+  if (level >= 70) return 'bg-green-100 text-green-700';
+  if (level >= 30) return 'bg-yellow-100 text-yellow-700';
+  return 'bg-red-100 text-red-700';
 };
 
-export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsCRUDProps) {
+const getBatteryIcon = (level: number | null) => {
+  if (level === null) return <Zap className="w-3 h-3" />;
+  if (level >= 70) return <Battery className="w-3 h-3 text-green-500" />;
+  if (level >= 30) return <Battery className="w-3 h-3 text-yellow-500" />;
+  return <Battery className="w-3 h-3 text-red-500" />;
+};
+
+export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
-  const [farmbots, setFarmbots] = useState<ThreeDFarmbot[]>([]);
+  const [farmbots, setFarmbots] = useState<Farmbot[]>([]);
+  const [beds, setBeds] = useState<Bed[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingFarmbot, setEditingFarmbot] = useState<ThreeDFarmbot | null>(null);
+  const [editingFarmbot, setEditingFarmbot] = useState<Farmbot | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterActive, setFilterActive] = useState<string>('all');
 
-  // ✅ State for related entity options (Beds)
-  const [beds, setBeds] = useState<ThreeDRelatedEntity[]>([]);
-
   // ✅ Form state
-  const [formData, setFormData] = useState<ThreeDFarmbotFormData>({
-    name: '',
+  const [formData, setFormData] = useState<FormData>({
     deviceId: '',
-    status: FarmbotStatus.OFFLINE,
+    name: '',
+    isActive: true,
+    status: 'offline',
     bedId: '',
-    positionX: '0',
-    positionY: '0',
-    positionZ: '0',
+    positionX: '',
+    positionY: '',
+    positionZ: '',
     apiToken: '',
     apiUrl: '',
+    lastSeen: '',
+    batteryLevel: '',
     firmwareVersion: '',
     notes: '',
-    isActive: true,
   });
 
-  // ✅ Track selected bed for display
-  const [selectedBed, setSelectedBed] = useState<ThreeDRelatedEntity | null>(null);
-
+  // ✅ Fetch data
   useEffect(() => {
     fetchFarmbots();
     fetchBeds();
-  }, [threedId]);
+  }, []);
 
   const fetchFarmbots = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filterStatus !== 'all') params.append('status', filterStatus);
-      if (filterActive !== 'all') params.append('isActive', filterActive === 'active' ? 'true' : 'false');
-      if (threedId) params.append('moduleId', String(threedId));
-
-      const response = await fetch(`/api/threed/farmbots?${params.toString()}`);
+      const response = await fetch('/api/threed/farmbots?limit=100');
       const data = await response.json();
-
       if (data.success) {
         setFarmbots(Array.isArray(data.data) ? data.data : []);
       } else {
-        showToast(data.error || 'Failed to fetch FarmBots', 'error');
+        showToast(data.error || 'Failed to fetch farmbots', 'error');
         setFarmbots([]);
       }
     } catch (error) {
-      console.error('Error fetching FarmBots:', error);
-      showToast('Failed to fetch FarmBots', 'error');
+      console.error('Error fetching farmbots:', error);
+      showToast('Failed to fetch farmbots', 'error');
       setFarmbots([]);
     } finally {
       setLoading(false);
@@ -126,15 +173,10 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
 
   const fetchBeds = async () => {
     try {
-      const response = await fetch('/api/threed/beds?isActive=true');
+      const response = await fetch('/api/threed/beds?isActive=true&limit=100');
       const data = await response.json();
       if (data.success) {
-        setBeds(data.data.map((b: any) => ({
-          id: b.id,
-          name: b.name || `Bed #${b.id}`,
-          bedId: b.bedId,
-          description: b.description,
-        })));
+        setBeds(Array.isArray(data.data) ? data.data : []);
       }
     } catch (error) {
       console.error('Error fetching beds:', error);
@@ -149,37 +191,26 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
   );
 
   const handleCreate = async () => {
+    if (!formData.deviceId) {
+      showToast('Device ID is required', 'error');
+      return;
+    }
     if (!formData.name) {
       showToast('FarmBot name is required', 'error');
       return;
     }
 
-    if (!formData.deviceId) {
-      showToast('Device ID is required', 'error');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const payload: any = {
-        name: formData.name.trim(),
-        deviceId: formData.deviceId.trim(),
-        status: formData.status,
-        bedId: selectedBed?.id || null,
-        positionX: formData.positionX ? parseFloat(formData.positionX) : 0,
-        positionY: formData.positionY ? parseFloat(formData.positionY) : 0,
-        positionZ: formData.positionZ ? parseFloat(formData.positionZ) : 0,
-        apiToken: formData.apiToken || null,
-        apiUrl: formData.apiUrl || null,
-        firmwareVersion: formData.firmwareVersion || null,
-        notes: formData.notes || null,
-        isActive: formData.isActive,
+      const payload = {
+        ...formData,
+        bedId: formData.bedId ? parseInt(formData.bedId) : null,
+        batteryLevel: formData.batteryLevel ? parseInt(formData.batteryLevel) : null,
+        positionX: formData.positionX || null,
+        positionY: formData.positionY || null,
+        positionZ: formData.positionZ || null,
+        lastSeen: formData.lastSeen || null,
       };
-
-      if (threedId) {
-        payload.moduleId = threedId;
-        payload.moduleType = 'threed';
-      }
 
       const response = await fetch('/api/threed/farmbots', {
         method: 'POST',
@@ -195,11 +226,11 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
         await fetchFarmbots();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to create FarmBot', 'error');
+        showToast(data.error || 'Failed to create farmbot', 'error');
       }
     } catch (error) {
-      console.error('Error creating FarmBot:', error);
-      showToast('Failed to create FarmBot', 'error');
+      console.error('Error creating farmbot:', error);
+      showToast('Failed to create farmbot', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -207,35 +238,29 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
 
   const handleUpdate = async () => {
     if (!editingFarmbot) return;
+    if (!formData.deviceId) {
+      showToast('Device ID is required', 'error');
+      return;
+    }
     if (!formData.name) {
       showToast('FarmBot name is required', 'error');
       return;
     }
 
-    if (!formData.deviceId) {
-      showToast('Device ID is required', 'error');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      const payload: any = {
-        name: formData.name.trim(),
-        deviceId: formData.deviceId.trim(),
-        status: formData.status,
-        bedId: selectedBed?.id || null,
-        positionX: formData.positionX ? parseFloat(formData.positionX) : 0,
-        positionY: formData.positionY ? parseFloat(formData.positionY) : 0,
-        positionZ: formData.positionZ ? parseFloat(formData.positionZ) : 0,
-        apiToken: formData.apiToken || null,
-        apiUrl: formData.apiUrl || null,
-        firmwareVersion: formData.firmwareVersion || null,
-        notes: formData.notes || null,
-        isActive: formData.isActive,
+      const payload = {
+        ...formData,
+        bedId: formData.bedId ? parseInt(formData.bedId) : null,
+        batteryLevel: formData.batteryLevel ? parseInt(formData.batteryLevel) : null,
+        positionX: formData.positionX || null,
+        positionY: formData.positionY || null,
+        positionZ: formData.positionZ || null,
+        lastSeen: formData.lastSeen || null,
       };
 
       const response = await fetch(`/api/threed/farmbots?id=${editingFarmbot.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -247,11 +272,11 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
         await fetchFarmbots();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to update FarmBot', 'error');
+        showToast(data.error || 'Failed to update farmbot', 'error');
       }
     } catch (error) {
-      console.error('Error updating FarmBot:', error);
-      showToast('Failed to update FarmBot', 'error');
+      console.error('Error updating farmbot:', error);
+      showToast('Failed to update farmbot', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -271,56 +296,54 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
         await fetchFarmbots();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        showToast(data.error || 'Failed to delete FarmBot', 'error');
+        showToast(data.error || 'Failed to delete farmbot', 'error');
       }
     } catch (error) {
-      console.error('Error deleting FarmBot:', error);
-      showToast('Failed to delete FarmBot', 'error');
+      console.error('Error deleting farmbot:', error);
+      showToast('Failed to delete farmbot', 'error');
     }
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
       deviceId: '',
-      status: FarmbotStatus.OFFLINE,
+      name: '',
+      isActive: true,
+      status: 'offline',
       bedId: '',
-      positionX: '0',
-      positionY: '0',
-      positionZ: '0',
+      positionX: '',
+      positionY: '',
+      positionZ: '',
       apiToken: '',
       apiUrl: '',
+      lastSeen: '',
+      batteryLevel: '',
       firmwareVersion: '',
       notes: '',
-      isActive: true,
     });
-    setSelectedBed(null);
   };
 
-  const openEditDialog = (farmbot: ThreeDFarmbot) => {
+  const openEditDialog = (farmbot: Farmbot) => {
     setEditingFarmbot(farmbot);
-    
-    // ✅ Find selected bed
-    const bed = beds.find(b => b.id === farmbot.bedId) || null;
-    setSelectedBed(bed);
-
     setFormData({
+      deviceId: farmbot.deviceId || '',
       name: farmbot.name,
-      deviceId: farmbot.deviceId,
-      status: farmbot.status || FarmbotStatus.OFFLINE,
+      isActive: farmbot.isActive ?? true,
+      status: farmbot.status || 'offline',
       bedId: farmbot.bedId ? String(farmbot.bedId) : '',
-      positionX: farmbot.positionX ? String(farmbot.positionX) : '0',
-      positionY: farmbot.positionY ? String(farmbot.positionY) : '0',
-      positionZ: farmbot.positionZ ? String(farmbot.positionZ) : '0',
+      positionX: farmbot.positionX || '',
+      positionY: farmbot.positionY || '',
+      positionZ: farmbot.positionZ || '',
       apiToken: farmbot.apiToken || '',
       apiUrl: farmbot.apiUrl || '',
+      lastSeen: farmbot.lastSeen ? new Date(farmbot.lastSeen).toISOString().split('T')[0] : '',
+      batteryLevel: farmbot.batteryLevel ? String(farmbot.batteryLevel) : '',
       firmwareVersion: farmbot.firmwareVersion || '',
       notes: farmbot.notes || '',
-      isActive: farmbot.isActive !== undefined ? farmbot.isActive : true,
     });
   };
 
-  const renderActions = (farmbot: ThreeDFarmbot) => (
+  const renderActions = (farmbot: Farmbot) => (
     <div className="flex items-center justify-end gap-1">
       <Button variant="ghost" size="sm" onClick={() => openEditDialog(farmbot)}>
         <Edit className="w-4 h-4" />
@@ -332,19 +355,36 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {farmbot.batteryLevel !== null && farmbot.batteryLevel !== undefined && (
+          {farmbot.positionX && farmbot.positionZ && (
             <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">🔋 Battery: {farmbot.batteryLevel}%</span>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                ({farmbot.positionX}, {farmbot.positionZ})
+              </span>
+            </DropdownMenuItem>
+          )}
+          {farmbot.batteryLevel !== null && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Battery className="w-3 h-3" />
+                {farmbot.batteryLevel}%
+              </span>
             </DropdownMenuItem>
           )}
           {farmbot.firmwareVersion && (
             <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">📦 Firmware: {farmbot.firmwareVersion}</span>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Cpu className="w-3 h-3" />
+                FW: {farmbot.firmwareVersion}
+              </span>
             </DropdownMenuItem>
           )}
-          {farmbot.lastSeen && (
+          {farmbot.apiUrl && (
             <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">🕐 Last seen: {new Date(farmbot.lastSeen).toLocaleDateString()}</span>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Wifi className="w-3 h-3" />
+                {farmbot.apiUrl}
+              </span>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
@@ -374,7 +414,7 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Drone className="w-4 h-4 text-cyan-500" />
+          <Bot className="w-4 h-4 text-slate-500" />
           <span className="text-sm font-medium">FarmBots</span>
           <Badge variant="secondary" className="text-xs">
             {filteredFarmbots.length}
@@ -394,167 +434,171 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
             <div className="space-y-4 pt-4">
               {/* Basic Info */}
               <div>
-                <Label htmlFor="name">FarmBot Name *</Label>
-                <Input
-                  id="name"
-                  placeholder="e.g., Garden Bot 1"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              <div>
                 <Label htmlFor="deviceId">Device ID *</Label>
                 <Input
                   id="deviceId"
-                  placeholder="e.g., fb-001"
+                  placeholder="e.g., FARM-001"
                   value={formData.deviceId}
                   onChange={(e) => setFormData({ ...formData, deviceId: e.target.value })}
                   disabled={isSubmitting}
+                  required
                 />
               </div>
 
               <div>
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value as FarmbotStatus })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {FARMBOT_STATUS_OPTIONS.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        {status.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="name">FarmBot Name *</Label>
+                <Input
+                  id="name"
+                  placeholder="e.g., Main Garden Bot"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  disabled={isSubmitting}
+                  required
+                />
               </div>
 
-              {/* Bed Selection */}
-              <div>
-                <Label htmlFor="bedId" className="text-xs">Associated Bed</Label>
-                <Select
-                  value={selectedBed?.id ? String(selectedBed.id) : 'none'}
-                  onValueChange={(value) => {
-                    if (value === 'none') {
-                      setSelectedBed(null);
-                    } else {
-                      const bed = beds.find(b => String(b.id) === value);
-                      setSelectedBed(bed || null);
-                    }
-                  }}
-                >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder="Select a bed..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {beds.map((bed) => (
-                      <SelectItem key={bed.id} value={String(bed.id)}>
-                        {bed.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {selectedBed && (
-                  <div className="flex items-center gap-1 mt-1">
-                    <Badge variant="secondary" className="text-[10px]">
-                      {selectedBed.name}
-                      <button
-                        type="button"
-                        onClick={() => setSelectedBed(null)}
-                        className="ml-1 hover:text-destructive"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </Badge>
-                  </div>
-                )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="status">Status</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FARMBOT_STATUS_OPTIONS.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="batteryLevel">Battery Level (%)</Label>
+                  <Input
+                    id="batteryLevel"
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="85"
+                    value={formData.batteryLevel}
+                    onChange={(e) => setFormData({ ...formData, batteryLevel: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
               </div>
 
-              {/* Positioning */}
-              <div>
-                <Label className="text-xs text-muted-foreground">3D Position</Label>
-                <div className="grid grid-cols-3 gap-4 mt-1">
+              {/* Location */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Location</Label>
+                <div className="space-y-2 mt-2">
                   <div>
-                    <Label htmlFor="positionX" className="text-[10px]">X</Label>
+                    <Label htmlFor="bedId" className="text-xs">Bed</Label>
+                    <Select
+                      value={formData.bedId}
+                      onValueChange={(value) => setFormData({ ...formData, bedId: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a bed (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {beds.map((bed) => (
+                          <SelectItem key={bed.id} value={String(bed.id)}>
+                            {bed.name} ({bed.bedId})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">3D Position</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      <Input
+                        placeholder="X"
+                        type="number"
+                        step="0.01"
+                        value={formData.positionX}
+                        onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Y"
+                        type="number"
+                        step="0.01"
+                        value={formData.positionY}
+                        onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Z"
+                        type="number"
+                        step="0.01"
+                        value={formData.positionZ}
+                        onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* API Configuration */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">API Configuration</Label>
+                <div className="space-y-2 mt-2">
+                  <div>
+                    <Label htmlFor="apiUrl" className="text-xs">API URL</Label>
                     <Input
-                      id="positionX"
-                      type="number"
-                      step="0.5"
-                      placeholder="0"
-                      value={formData.positionX}
-                      onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
+                      id="apiUrl"
+                      placeholder="https://my.farmbot.io/api"
+                      value={formData.apiUrl}
+                      onChange={(e) => setFormData({ ...formData, apiUrl: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="positionY" className="text-[10px]">Y</Label>
+                    <Label htmlFor="apiToken" className="text-xs">API Token</Label>
                     <Input
-                      id="positionY"
-                      type="number"
-                      step="0.5"
-                      placeholder="0"
-                      value={formData.positionY}
-                      onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="positionZ" className="text-[10px]">Z</Label>
-                    <Input
-                      id="positionZ"
-                      type="number"
-                      step="0.5"
-                      placeholder="0"
-                      value={formData.positionZ}
-                      onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
+                      id="apiToken"
+                      type="password"
+                      placeholder="Enter API token"
+                      value={formData.apiToken}
+                      onChange={(e) => setFormData({ ...formData, apiToken: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* API Configuration */}
-              <div>
-                <Label htmlFor="apiToken">API Token</Label>
-                <Input
-                  id="apiToken"
-                  type="password"
-                  placeholder="FarmBot API token"
-                  value={formData.apiToken}
-                  onChange={(e) => setFormData({ ...formData, apiToken: e.target.value })}
-                  disabled={isSubmitting}
-                />
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  ⚠️ This will be stored in plain text in the database
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="apiUrl">API URL</Label>
-                <Input
-                  id="apiUrl"
-                  placeholder="https://my.farmbot.io/api"
-                  value={formData.apiUrl}
-                  onChange={(e) => setFormData({ ...formData, apiUrl: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="firmwareVersion">Firmware Version</Label>
-                <Input
-                  id="firmwareVersion"
-                  placeholder="v1.0.0"
-                  value={formData.firmwareVersion}
-                  onChange={(e) => setFormData({ ...formData, firmwareVersion: e.target.value })}
-                  disabled={isSubmitting}
-                />
+              {/* Firmware & Last Seen */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">System Info</Label>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <Label htmlFor="firmwareVersion" className="text-xs">Firmware Version</Label>
+                    <Input
+                      id="firmwareVersion"
+                      placeholder="v1.2.3"
+                      value={formData.firmwareVersion}
+                      onChange={(e) => setFormData({ ...formData, firmwareVersion: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastSeen" className="text-xs">Last Seen</Label>
+                    <Input
+                      id="lastSeen"
+                      type="date"
+                      value={formData.lastSeen}
+                      onChange={(e) => setFormData({ ...formData, lastSeen: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -569,14 +613,17 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="isActive"
-                  checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                  disabled={isSubmitting}
-                />
-                <Label htmlFor="isActive">Active</Label>
+              {/* Active Status */}
+              <div className="border-t pt-4">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="isActive"
+                    checked={formData.isActive}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="isActive">Active</Label>
+                </div>
               </div>
 
               <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
@@ -599,7 +646,7 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search FarmBots..."
+            placeholder="Search by name, device ID, notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-8 text-xs"
@@ -626,8 +673,8 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="true">Active</SelectItem>
+            <SelectItem value="false">Inactive</SelectItem>
           </SelectContent>
         </Select>
         <Button
@@ -648,7 +695,7 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
       {/* FarmBots Table */}
       {filteredFarmbots.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <Drone className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <Bot className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No FarmBots found</p>
           <Button
             variant="outline"
@@ -668,6 +715,8 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
                 <TableHead className="text-xs py-1">Name</TableHead>
                 <TableHead className="hidden sm:table-cell text-xs py-1">Device ID</TableHead>
                 <TableHead className="hidden md:table-cell text-xs py-1">Status</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs py-1">Battery</TableHead>
+                <TableHead className="hidden xl:table-cell text-xs py-1">Position</TableHead>
                 <TableHead className="text-center text-xs py-1">Active</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
@@ -677,35 +726,44 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
                 <TableRow key={farmbot.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Drone className="w-3.5 h-3.5 text-cyan-500" />
+                      <Bot className="w-3.5 h-3.5 text-slate-500" />
                       {farmbot.name}
-                      {farmbot.bedId && (
-                        <Badge variant="outline" className="text-[10px]">
-                          Bed #{farmbot.bedId}
-                        </Badge>
+                      {!farmbot.isActive && (
+                        <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
-                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                      {farmbot.deviceId}
-                    </code>
+                  <TableCell className="hidden sm:table-cell py-1 text-xs font-mono text-muted-foreground">
+                    {farmbot.deviceId || '—'}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell py-1 text-sm">
-                    <Badge className={`text-[10px] border ${getStatusColor(farmbot.status)}`}>
-                      {getStatusIcon(farmbot.status)} {farmbot.status}
+                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                    <Badge className={`text-[10px] ${getStatusColor(farmbot.status)}`}>
+                      {getOptionLabel(FARMBOT_STATUS_OPTIONS, farmbot.status)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-center py-1">
-                    {farmbot.isActive ? (
-                      <Badge className="text-[10px] bg-green-100 text-green-700 border-green-200">
-                        Active
-                      </Badge>
+                  <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
+                    {farmbot.batteryLevel !== null ? (
+                      <div className="flex items-center gap-1.5">
+                        {getBatteryIcon(farmbot.batteryLevel)}
+                        <Badge className={`text-[10px] ${getBatteryColor(farmbot.batteryLevel)}`}>
+                          {farmbot.batteryLevel}%
+                        </Badge>
+                      </div>
                     ) : (
-                      <Badge className="text-[10px] bg-gray-100 text-gray-700 border-gray-200">
-                        Inactive
-                      </Badge>
+                      '—'
                     )}
+                  </TableCell>
+                  <TableCell className="hidden xl:table-cell py-1 text-xs font-mono text-muted-foreground">
+                    {farmbot.positionX && farmbot.positionZ ? (
+                      `(${farmbot.positionX}, ${farmbot.positionZ})`
+                    ) : (
+                      '—'
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    <Badge className={`text-[10px] ${farmbot.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {farmbot.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="py-1 text-right">{renderActions(farmbot)}</TableCell>
                 </TableRow>
@@ -723,16 +781,6 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label htmlFor="edit-name">FarmBot Name *</Label>
-              <Input
-                id="edit-name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div>
               <Label htmlFor="edit-deviceId">Device ID *</Label>
               <Input
                 id="edit-deviceId"
@@ -743,136 +791,153 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
             </div>
 
             <div>
-              <Label htmlFor="edit-status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value as FarmbotStatus })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {FARMBOT_STATUS_OPTIONS.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
-                      {status.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="edit-name">FarmBot Name *</Label>
+              <Input
+                id="edit-name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                disabled={isSubmitting}
+              />
             </div>
 
-            <div>
-              <Label htmlFor="edit-bedId" className="text-xs">Associated Bed</Label>
-              <Select
-                value={selectedBed?.id ? String(selectedBed.id) : 'none'}
-                onValueChange={(value) => {
-                  if (value === 'none') {
-                    setSelectedBed(null);
-                  } else {
-                    const bed = beds.find(b => String(b.id) === value);
-                    setSelectedBed(bed || null);
-                  }
-                }}
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select a bed..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  {beds.map((bed) => (
-                    <SelectItem key={bed.id} value={String(bed.id)}>
-                      {bed.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedBed && (
-                <div className="flex items-center gap-1 mt-1">
-                  <Badge variant="secondary" className="text-[10px]">
-                    {selectedBed.name}
-                    <button
-                      type="button"
-                      onClick={() => setSelectedBed(null)}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                </div>
-              )}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-status">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FARMBOT_STATUS_OPTIONS.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        {status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit-batteryLevel">Battery Level (%)</Label>
+                <Input
+                  id="edit-batteryLevel"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.batteryLevel}
+                  onChange={(e) => setFormData({ ...formData, batteryLevel: e.target.value })}
+                  disabled={isSubmitting}
+                />
+              </div>
             </div>
 
-            <div>
-              <Label className="text-xs text-muted-foreground">3D Position</Label>
-              <div className="grid grid-cols-3 gap-4 mt-1">
+            {/* Location */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Location</Label>
+              <div className="space-y-2 mt-2">
                 <div>
-                  <Label htmlFor="edit-positionX" className="text-[10px]">X</Label>
+                  <Label htmlFor="edit-bedId" className="text-xs">Bed</Label>
+                  <Select
+                    value={formData.bedId}
+                    onValueChange={(value) => setFormData({ ...formData, bedId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a bed (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {beds.map((bed) => (
+                        <SelectItem key={bed.id} value={String(bed.id)}>
+                          {bed.name} ({bed.bedId})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">3D Position</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Input
+                      placeholder="X"
+                      type="number"
+                      step="0.01"
+                      value={formData.positionX}
+                      onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Y"
+                      type="number"
+                      step="0.01"
+                      value={formData.positionY}
+                      onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Z"
+                      type="number"
+                      step="0.01"
+                      value={formData.positionZ}
+                      onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* API Configuration */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">API Configuration</Label>
+              <div className="space-y-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-apiUrl" className="text-xs">API URL</Label>
                   <Input
-                    id="edit-positionX"
-                    type="number"
-                    step="0.5"
-                    value={formData.positionX}
-                    onChange={(e) => setFormData({ ...formData, positionX: e.target.value })}
+                    id="edit-apiUrl"
+                    value={formData.apiUrl}
+                    onChange={(e) => setFormData({ ...formData, apiUrl: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-positionY" className="text-[10px]">Y</Label>
+                  <Label htmlFor="edit-apiToken" className="text-xs">API Token</Label>
                   <Input
-                    id="edit-positionY"
-                    type="number"
-                    step="0.5"
-                    value={formData.positionY}
-                    onChange={(e) => setFormData({ ...formData, positionY: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-positionZ" className="text-[10px]">Z</Label>
-                  <Input
-                    id="edit-positionZ"
-                    type="number"
-                    step="0.5"
-                    value={formData.positionZ}
-                    onChange={(e) => setFormData({ ...formData, positionZ: e.target.value })}
+                    id="edit-apiToken"
+                    type="password"
+                    value={formData.apiToken}
+                    onChange={(e) => setFormData({ ...formData, apiToken: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="edit-apiToken">API Token</Label>
-              <Input
-                id="edit-apiToken"
-                type="password"
-                value={formData.apiToken}
-                onChange={(e) => setFormData({ ...formData, apiToken: e.target.value })}
-                disabled={isSubmitting}
-              />
-              <p className="text-[10px] text-muted-foreground mt-1">
-                ⚠️ This will be stored in plain text in the database
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="edit-apiUrl">API URL</Label>
-              <Input
-                id="edit-apiUrl"
-                value={formData.apiUrl}
-                onChange={(e) => setFormData({ ...formData, apiUrl: e.target.value })}
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="edit-firmwareVersion">Firmware Version</Label>
-              <Input
-                id="edit-firmwareVersion"
-                value={formData.firmwareVersion}
-                onChange={(e) => setFormData({ ...formData, firmwareVersion: e.target.value })}
-                disabled={isSubmitting}
-              />
+            {/* Firmware & Last Seen */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">System Info</Label>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-firmwareVersion" className="text-xs">Firmware Version</Label>
+                  <Input
+                    id="edit-firmwareVersion"
+                    value={formData.firmwareVersion}
+                    onChange={(e) => setFormData({ ...formData, firmwareVersion: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-lastSeen" className="text-xs">Last Seen</Label>
+                  <Input
+                    id="edit-lastSeen"
+                    type="date"
+                    value={formData.lastSeen}
+                    onChange={(e) => setFormData({ ...formData, lastSeen: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
             </div>
 
             <div>
@@ -886,14 +951,17 @@ export function ThreeDFarmbotsCRUD({ threedId, onModuleUpdate }: ThreeDFarmbotsC
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <Switch
-                id="edit-isActive"
-                checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                disabled={isSubmitting}
-              />
-              <Label htmlFor="edit-isActive">Active</Label>
+            {/* Active Status */}
+            <div className="border-t pt-4">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="edit-isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="edit-isActive">Active</Label>
+              </div>
             </div>
 
             <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>

@@ -11,8 +11,16 @@ import {
   MoreHorizontal,
   Search,
   Filter,
-  Image as ImageIcon,
+  Eye,
+  EyeOff,
   File,
+  Image,
+  Layers,
+  Palette,
+  Ruler,
+  RotateCw,
+  Grid,
+  Upload,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,70 +34,184 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
-// ✅ Import types from lib
-import {
-  ThreeDModel,
-  ThreeDModelFormData,
-  ModelType,
-  ModelStatus,
-  MODEL_TYPE_OPTIONS,
-  MODEL_STATUS_OPTIONS,
-} from '@/lib/types/threed';
-
-interface ThreeDModelsCRUDProps {
-  threedId?: number;
-  onModuleUpdate?: () => void;
+// ✅ Types
+interface ModelFile {
+  id: number;
+  fileName: string;
+  fileType: string;
+  textureType: string | null;
+  filePath: string;
+  fileSize: number | null;
+  isBinaryBuffer: boolean;
+  loadOrder: number;
+  createdAt: string;
 }
 
-export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDProps) {
+interface Model {
+  id: number;
+  modelName: string;
+  modelType: string;
+  filePath: string;
+  fileSize: number | null;
+  thumbnailUrl: string | null;
+  scale: string;
+  rotationY: string;
+  offsetX: string;
+  offsetY: string;
+  offsetZ: string;
+  hasLOD: boolean;
+  lodLevels: any;
+  animations: string[];
+  defaultAnimation: string | null;
+  hasExternalFiles: boolean;
+  textureCount: number;
+  mainModelFileId: number | null;
+  isActive: boolean;
+  status: string;
+  isDefault: boolean;
+  uploadedBy: string | null;
+  uploadedAt: string | null;
+  metadata: any;
+  createdAt: string;
+  updatedAt: string;
+  files?: ModelFile[];
+}
+
+interface FormData {
+  modelName: string;
+  modelType: string;
+  filePath: string;
+  fileSize: string;
+  thumbnailUrl: string;
+  scale: string;
+  rotationY: string;
+  offsetX: string;
+  offsetY: string;
+  offsetZ: string;
+  hasLOD: boolean;
+  lodLevels: string;
+  animations: string;
+  defaultAnimation: string;
+  hasExternalFiles: boolean;
+  textureCount: string;
+  mainModelFileId: string;
+  isActive: boolean;
+  status: string;
+  isDefault: boolean;
+  uploadedBy: string;
+  metadata: string;
+}
+
+// ✅ Options
+const MODEL_TYPE_OPTIONS = [
+  { value: 'procedural', label: 'Procedural' },
+  { value: 'gltf', label: 'GLTF' },
+  { value: 'glb', label: 'GLB' },
+  { value: 'fbx', label: 'FBX' },
+  { value: 'usdz', label: 'USDZ' },
+  { value: 'obj', label: 'OBJ' },
+  { value: 'herb-generic', label: 'Herb - Generic' },
+  { value: 'vegetable-generic', label: 'Vegetable - Generic' },
+  { value: 'flower-generic', label: 'Flower - Generic' },
+  { value: 'fruit-generic', label: 'Fruit - Generic' },
+  { value: 'tree-generic', label: 'Tree - Generic' },
+  { value: 'custom', label: 'Custom' },
+];
+
+const MODEL_STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'maintenance', label: 'Maintenance' },
+  { value: 'dormant', label: 'Dormant' },
+  { value: 'retired', label: 'Retired' },
+];
+
+const ANIMATION_OPTIONS = [
+  { value: 'idle', label: 'Idle' },
+  { value: 'grow', label: 'Grow' },
+  { value: 'flower', label: 'Flower' },
+  { value: 'sway', label: 'Sway' },
+];
+
+// ✅ Helper
+const getOptionLabel = (options: { value: string; label: string }[], value: string) => {
+  const option = options.find((o) => o.value === value);
+  return option ? option.label : value;
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'active': return 'bg-green-100 text-green-700';
+    case 'pending': return 'bg-yellow-100 text-yellow-700';
+    case 'maintenance': return 'bg-orange-100 text-orange-700';
+    case 'dormant': return 'bg-blue-100 text-blue-700';
+    case 'retired': return 'bg-gray-100 text-gray-700';
+    default: return 'bg-gray-100 text-gray-700';
+  }
+};
+
+const getModelTypeLabel = (type: string) => {
+  const option = MODEL_TYPE_OPTIONS.find((o) => o.value === type);
+  return option ? option.label : type;
+};
+
+const formatFileSize = (bytes: number | null): string => {
+  if (bytes === null) return '—';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
-  const [models, setModels] = useState<ThreeDModel[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingModel, setEditingModel] = useState<ThreeDModel | null>(null);
+  const [editingModel, setEditingModel] = useState<Model | null>(null);
+  const [showFilesDialog, setShowFilesDialog] = useState(false);
+  const [selectedModelFiles, setSelectedModelFiles] = useState<ModelFile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterActive, setFilterActive] = useState<string>('all');
 
   // ✅ Form state
-  const [formData, setFormData] = useState<ThreeDModelFormData>({
+  const [formData, setFormData] = useState<FormData>({
     modelName: '',
-    modelType: ModelType.CUSTOM,
+    modelType: '',
     filePath: '',
     fileSize: '',
     thumbnailUrl: '',
-    scale: '1',
-    rotationY: '0',
-    offsetX: '0',
-    offsetY: '0',
-    offsetZ: '0',
+    scale: '1.0',
+    rotationY: '0.0',
+    offsetX: '0.0',
+    offsetY: '0.0',
+    offsetZ: '0.0',
     hasLOD: false,
-    animations: '',
+    lodLevels: '{}',
+    animations: '[]',
     defaultAnimation: '',
     hasExternalFiles: false,
     textureCount: '0',
+    mainModelFileId: '',
     isActive: true,
+    status: 'active',
     isDefault: false,
-    usedByPlants: false,
-    usedByCharacters: false,
     uploadedBy: '',
+    metadata: '{}',
   });
 
+  // ✅ Fetch data
   useEffect(() => {
     fetchModels();
-  }, [threedId]);
+  }, []);
 
   const fetchModels = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filterStatus !== 'all') params.append('isActive', filterStatus === 'active' ? 'true' : 'false');
-      if (filterType !== 'all') params.append('modelType', filterType);
-
-      const response = await fetch(`/api/threed/models?${params.toString()}`);
+      const response = await fetch('/api/threed/models?limit=100');
       const data = await response.json();
-
       if (data.success) {
         setModels(Array.isArray(data.data) ? data.data : []);
       } else {
@@ -105,46 +227,52 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
     }
   };
 
+  const fetchModelFiles = async (modelId: number) => {
+    try {
+      const response = await fetch(`/api/threed/models?id=${modelId}`);
+      const data = await response.json();
+      if (data.success) {
+        setSelectedModelFiles(data.data.files || []);
+        setShowFilesDialog(true);
+      } else {
+        showToast('Failed to fetch model files', 'error');
+      }
+    } catch (error) {
+      console.error('Error fetching model files:', error);
+      showToast('Failed to fetch model files', 'error');
+    }
+  };
+
   const filteredModels = models.filter((model) =>
-    model.modelName.toLowerCase().includes(searchQuery.toLowerCase())
+    model.modelName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    model.modelType.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCreate = async () => {
-    if (!formData.modelName || !formData.filePath) {
-      showToast('Model name and file path are required', 'error');
+    if (!formData.modelName) {
+      showToast('Model name is required', 'error');
+      return;
+    }
+    if (!formData.modelType) {
+      showToast('Model type is required', 'error');
+      return;
+    }
+    if (!formData.filePath) {
+      showToast('File path is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const payload: any = {
-        modelName: formData.modelName.trim(),
-        modelType: formData.modelType,
-        filePath: formData.filePath.trim(),
+      const payload = {
+        ...formData,
         fileSize: formData.fileSize ? parseInt(formData.fileSize) : null,
-        thumbnailUrl: formData.thumbnailUrl || null,
-        scale: formData.scale ? parseFloat(formData.scale) : 1,
-        rotationY: formData.rotationY ? parseFloat(formData.rotationY) : 0,
-        offsetX: formData.offsetX ? parseFloat(formData.offsetX) : 0,
-        offsetY: formData.offsetY ? parseFloat(formData.offsetY) : 0,
-        offsetZ: formData.offsetZ ? parseFloat(formData.offsetZ) : 0,
-        hasLOD: formData.hasLOD,
-        animations: formData.animations ? formData.animations.split(',').map(s => s.trim()) : [],
-        defaultAnimation: formData.defaultAnimation || null,
-        hasExternalFiles: formData.hasExternalFiles,
-        textureCount: formData.textureCount ? parseInt(formData.textureCount) : 0,
-        isActive: formData.isActive,
-        isDefault: formData.isDefault,
-        usedByPlants: formData.usedByPlants,
-        usedByCharacters: formData.usedByCharacters,
-        uploadedBy: formData.uploadedBy || null,
+        textureCount: parseInt(formData.textureCount) || 0,
+        animations: JSON.parse(formData.animations),
+        lodLevels: JSON.parse(formData.lodLevels),
+        metadata: JSON.parse(formData.metadata),
+        mainModelFileId: formData.mainModelFileId ? parseInt(formData.mainModelFileId) : null,
       };
-
-      // ✅ Include moduleId if provided
-      if (threedId) {
-        payload.moduleId = threedId;
-        payload.moduleType = 'threed';
-      }
 
       const response = await fetch('/api/threed/models', {
         method: 'POST',
@@ -172,44 +300,33 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
 
   const handleUpdate = async () => {
     if (!editingModel) return;
-    if (!formData.modelName || !formData.filePath) {
-      showToast('Model name and file path are required', 'error');
+    if (!formData.modelName) {
+      showToast('Model name is required', 'error');
+      return;
+    }
+    if (!formData.modelType) {
+      showToast('Model type is required', 'error');
+      return;
+    }
+    if (!formData.filePath) {
+      showToast('File path is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const payload: any = {
-        modelName: formData.modelName.trim(),
-        modelType: formData.modelType,
-        filePath: formData.filePath.trim(),
+      const payload = {
+        ...formData,
         fileSize: formData.fileSize ? parseInt(formData.fileSize) : null,
-        thumbnailUrl: formData.thumbnailUrl || null,
-        scale: formData.scale ? parseFloat(formData.scale) : 1,
-        rotationY: formData.rotationY ? parseFloat(formData.rotationY) : 0,
-        offsetX: formData.offsetX ? parseFloat(formData.offsetX) : 0,
-        offsetY: formData.offsetY ? parseFloat(formData.offsetY) : 0,
-        offsetZ: formData.offsetZ ? parseFloat(formData.offsetZ) : 0,
-        hasLOD: formData.hasLOD,
-        animations: formData.animations ? formData.animations.split(',').map(s => s.trim()) : [],
-        defaultAnimation: formData.defaultAnimation || null,
-        hasExternalFiles: formData.hasExternalFiles,
-        textureCount: formData.textureCount ? parseInt(formData.textureCount) : 0,
-        isActive: formData.isActive,
-        isDefault: formData.isDefault,
-        usedByPlants: formData.usedByPlants,
-        usedByCharacters: formData.usedByCharacters,
-        uploadedBy: formData.uploadedBy || null,
+        textureCount: parseInt(formData.textureCount) || 0,
+        animations: JSON.parse(formData.animations),
+        lodLevels: JSON.parse(formData.lodLevels),
+        metadata: JSON.parse(formData.metadata),
+        mainModelFileId: formData.mainModelFileId ? parseInt(formData.mainModelFileId) : null,
       };
 
-      // ✅ Include moduleId if provided
-      if (threedId) {
-        payload.moduleId = threedId;
-        payload.moduleType = 'threed';
-      }
-
       const response = await fetch(`/api/threed/models?id=${editingModel.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
@@ -231,8 +348,8 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
     }
   };
 
-  const handleDelete = async (id: number, modelName: string) => {
-    if (!confirm(`Delete model "${modelName}"? This action cannot be undone.`)) return;
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Delete model "${name}"? This action cannot be undone.`)) return;
 
     try {
       const response = await fetch(`/api/threed/models?id=${id}`, {
@@ -256,70 +373,63 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
   const resetForm = () => {
     setFormData({
       modelName: '',
-      modelType: ModelType.CUSTOM,
+      modelType: '',
       filePath: '',
       fileSize: '',
       thumbnailUrl: '',
-      scale: '1',
-      rotationY: '0',
-      offsetX: '0',
-      offsetY: '0',
-      offsetZ: '0',
+      scale: '1.0',
+      rotationY: '0.0',
+      offsetX: '0.0',
+      offsetY: '0.0',
+      offsetZ: '0.0',
       hasLOD: false,
-      animations: '',
+      lodLevels: '{}',
+      animations: '[]',
       defaultAnimation: '',
       hasExternalFiles: false,
       textureCount: '0',
+      mainModelFileId: '',
       isActive: true,
+      status: 'active',
       isDefault: false,
-      usedByPlants: false,
-      usedByCharacters: false,
       uploadedBy: '',
+      metadata: '{}',
     });
   };
 
-  const openEditDialog = (model: ThreeDModel) => {
+  const openEditDialog = (model: Model) => {
     setEditingModel(model);
     setFormData({
       modelName: model.modelName,
-      modelType: model.modelType || ModelType.CUSTOM,
-      filePath: model.filePath || '',
+      modelType: model.modelType,
+      filePath: model.filePath,
       fileSize: model.fileSize ? String(model.fileSize) : '',
       thumbnailUrl: model.thumbnailUrl || '',
-      scale: model.scale ? String(model.scale) : '1',
-      rotationY: model.rotationY ? String(model.rotationY) : '0',
-      offsetX: model.offsetX ? String(model.offsetX) : '0',
-      offsetY: model.offsetY ? String(model.offsetY) : '0',
-      offsetZ: model.offsetZ ? String(model.offsetZ) : '0',
-      hasLOD: model.hasLOD || false,
-      animations: Array.isArray(model.animations) ? model.animations.join(', ') : '',
+      scale: model.scale || '1.0',
+      rotationY: model.rotationY || '0.0',
+      offsetX: model.offsetX || '0.0',
+      offsetY: model.offsetY || '0.0',
+      offsetZ: model.offsetZ || '0.0',
+      hasLOD: model.hasLOD ?? false,
+      lodLevels: JSON.stringify(model.lodLevels || {}),
+      animations: JSON.stringify(model.animations || []),
       defaultAnimation: model.defaultAnimation || '',
-      hasExternalFiles: model.hasExternalFiles || false,
-      textureCount: model.textureCount ? String(model.textureCount) : '0',
-      isActive: model.isActive !== undefined ? model.isActive : true,
-      isDefault: model.isDefault || false,
-      usedByPlants: model.usedByPlants || false,
-      usedByCharacters: model.usedByCharacters || false,
+      hasExternalFiles: model.hasExternalFiles ?? false,
+      textureCount: String(model.textureCount || 0),
+      mainModelFileId: model.mainModelFileId ? String(model.mainModelFileId) : '',
+      isActive: model.isActive ?? true,
+      status: model.status || 'active',
+      isDefault: model.isDefault ?? false,
       uploadedBy: model.uploadedBy || '',
+      metadata: JSON.stringify(model.metadata || {}),
     });
   };
 
-  const getTypeLabel = (type: string) => {
-    const option = MODEL_TYPE_OPTIONS.find((t) => t.value === type);
-    return option ? option.label : type;
-  };
-
-  const renderActions = (model: ThreeDModel) => (
+  const renderActions = (model: Model) => (
     <div className="flex items-center justify-end gap-1">
-      {model.thumbnailUrl && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => window.open(model.thumbnailUrl || '', '_blank')}
-        >
-          <ImageIcon className="w-4 h-4" />
-        </Button>
-      )}
+      <Button variant="ghost" size="sm" onClick={() => fetchModelFiles(model.id)}>
+        <File className="w-4 h-4" />
+      </Button>
       <Button variant="ghost" size="sm" onClick={() => openEditDialog(model)}>
         <Edit className="w-4 h-4" />
       </Button>
@@ -330,13 +440,25 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => window.open(model.filePath, '_blank')}>
-            <File className="w-4 h-4 mr-2" />
-            View File
-          </DropdownMenuItem>
-          {model.isDefault && (
+          {model.fileSize && (
             <DropdownMenuItem>
-              <span className="text-xs text-muted-foreground">Default Model</span>
+              <span className="text-xs text-muted-foreground">
+                Size: {formatFileSize(model.fileSize)}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {model.textureCount > 0 && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground">
+                Textures: {model.textureCount}
+              </span>
+            </DropdownMenuItem>
+          )}
+          {model.animations && model.animations.length > 0 && (
+            <DropdownMenuItem>
+              <span className="text-xs text-muted-foreground">
+                Animations: {model.animations.join(', ')}
+              </span>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
@@ -366,7 +488,7 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Box className="w-4 h-4 text-purple-500" />
+          <Box className="w-4 h-4 text-blue-500" />
           <span className="text-sm font-medium">3D Models</span>
           <Badge variant="secondary" className="text-xs">
             {filteredModels.length}
@@ -384,6 +506,7 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
               <DialogTitle>Create New 3D Model</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 pt-4">
+              {/* Basic Info */}
               <div>
                 <Label htmlFor="modelName">Model Name *</Label>
                 <Input
@@ -392,13 +515,15 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                   value={formData.modelName}
                   onChange={(e) => setFormData({ ...formData, modelName: e.target.value })}
                   disabled={isSubmitting}
+                  required
                 />
               </div>
+
               <div>
-                <Label htmlFor="modelType">Model Type</Label>
+                <Label htmlFor="modelType">Model Type *</Label>
                 <Select
                   value={formData.modelType}
-                  onValueChange={(value) => setFormData({ ...formData, modelType: value as ModelType })}
+                  onValueChange={(value) => setFormData({ ...formData, modelType: value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select model type" />
@@ -412,6 +537,7 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                   </SelectContent>
                 </Select>
               </div>
+
               <div>
                 <Label htmlFor="filePath">File Path *</Label>
                 <Input
@@ -420,14 +546,17 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                   value={formData.filePath}
                   onChange={(e) => setFormData({ ...formData, filePath: e.target.value })}
                   disabled={isSubmitting}
+                  required
                 />
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="fileSize">File Size (bytes)</Label>
                   <Input
                     id="fileSize"
                     type="number"
+                    min="0"
                     placeholder="1024"
                     value={formData.fileSize}
                     onChange={(e) => setFormData({ ...formData, fileSize: e.target.value })}
@@ -435,118 +564,227 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                   />
                 </div>
                 <div>
-                  <Label htmlFor="textureCount">Texture Count</Label>
+                  <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
                   <Input
-                    id="textureCount"
-                    type="number"
-                    placeholder="0"
-                    value={formData.textureCount}
-                    onChange={(e) => setFormData({ ...formData, textureCount: e.target.value })}
+                    id="thumbnailUrl"
+                    placeholder="https://example.com/thumb.jpg"
+                    value={formData.thumbnailUrl}
+                    onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
-              <div>
-                <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
-                <Input
-                  id="thumbnailUrl"
-                  placeholder="https://example.com/thumb.jpg"
-                  value={formData.thumbnailUrl}
-                  onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Transform</Label>
-                <div className="grid grid-cols-3 gap-4 mt-1">
+
+              {/* Transform */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Transform</Label>
+                <div className="space-y-2 mt-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="scale" className="text-xs">Scale</Label>
+                      <Input
+                        id="scale"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.scale}
+                        onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="rotationY" className="text-xs">Rotation Y</Label>
+                      <Input
+                        id="rotationY"
+                        type="number"
+                        step="1"
+                        value={formData.rotationY}
+                        onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
                   <div>
-                    <Label htmlFor="scale" className="text-[10px]">Scale</Label>
+                    <Label className="text-xs">Offset</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      <Input
+                        placeholder="X"
+                        type="number"
+                        step="0.01"
+                        value={formData.offsetX}
+                        onChange={(e) => setFormData({ ...formData, offsetX: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Y"
+                        type="number"
+                        step="0.01"
+                        value={formData.offsetY}
+                        onChange={(e) => setFormData({ ...formData, offsetY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Z"
+                        type="number"
+                        step="0.01"
+                        value={formData.offsetZ}
+                        onChange={(e) => setFormData({ ...formData, offsetZ: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* LOD & Animation */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">LOD & Animation</Label>
+                <div className="space-y-2 mt-2">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="hasLOD"
+                      checked={formData.hasLOD}
+                      onCheckedChange={(checked) => setFormData({ ...formData, hasLOD: checked })}
+                      disabled={isSubmitting}
+                    />
+                    <Label htmlFor="hasLOD">Has LOD</Label>
+                  </div>
+                  <div>
+                    <Label htmlFor="lodLevels" className="text-xs">LOD Levels (JSON)</Label>
                     <Input
-                      id="scale"
-                      type="number"
-                      step="0.1"
-                      placeholder="1"
-                      value={formData.scale}
-                      onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
+                      id="lodLevels"
+                      placeholder='{"low": "path/to/low.glb"}'
+                      value={formData.lodLevels}
+                      onChange={(e) => setFormData({ ...formData, lodLevels: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="rotationY" className="text-[10px]">Rotation Y</Label>
+                    <Label htmlFor="animations" className="text-xs">Animations (JSON array)</Label>
                     <Input
-                      id="rotationY"
-                      type="number"
-                      step="0.1"
-                      placeholder="0"
-                      value={formData.rotationY}
-                      onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })}
+                      id="animations"
+                      placeholder='["idle", "sway"]'
+                      value={formData.animations}
+                      onChange={(e) => setFormData({ ...formData, animations: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                   <div>
-                    <Label htmlFor="offsetX" className="text-[10px]">Offset X</Label>
+                    <Label htmlFor="defaultAnimation" className="text-xs">Default Animation</Label>
+                    <Select
+                      value={formData.defaultAnimation}
+                      onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select default animation" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {ANIMATION_OPTIONS.map((anim) => (
+                          <SelectItem key={anim.value} value={anim.value}>
+                            {anim.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Files & Textures */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Files & Textures</Label>
+                <div className="space-y-2 mt-2">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="hasExternalFiles"
+                      checked={formData.hasExternalFiles}
+                      onCheckedChange={(checked) => setFormData({ ...formData, hasExternalFiles: checked })}
+                      disabled={isSubmitting}
+                    />
+                    <Label htmlFor="hasExternalFiles">Has External Files</Label>
+                  </div>
+                  <div>
+                    <Label htmlFor="textureCount" className="text-xs">Texture Count</Label>
                     <Input
-                      id="offsetX"
+                      id="textureCount"
                       type="number"
-                      step="0.1"
-                      placeholder="0"
-                      value={formData.offsetX}
-                      onChange={(e) => setFormData({ ...formData, offsetX: e.target.value })}
+                      min="0"
+                      value={formData.textureCount}
+                      onChange={(e) => setFormData({ ...formData, textureCount: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="mainModelFileId" className="text-xs">Main Model File ID</Label>
+                    <Input
+                      id="mainModelFileId"
+                      type="number"
+                      placeholder="File ID"
+                      value={formData.mainModelFileId}
+                      onChange={(e) => setFormData({ ...formData, mainModelFileId: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
                 </div>
               </div>
+
               <div>
-                <Label htmlFor="animations">Animations (comma separated)</Label>
+                <Label htmlFor="metadata">Metadata (JSON)</Label>
                 <Input
-                  id="animations"
-                  placeholder="idle, walk, run"
-                  value={formData.animations}
-                  onChange={(e) => setFormData({ ...formData, animations: e.target.value })}
+                  id="metadata"
+                  placeholder='{"author": "John"}'
+                  value={formData.metadata}
+                  onChange={(e) => setFormData({ ...formData, metadata: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
-              <div>
-                <Label htmlFor="defaultAnimation">Default Animation</Label>
-                <Input
-                  id="defaultAnimation"
-                  placeholder="idle"
-                  value={formData.defaultAnimation}
-                  onChange={(e) => setFormData({ ...formData, defaultAnimation: e.target.value })}
-                  disabled={isSubmitting}
-                />
+
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Status</Label>
+                <div className="space-y-2 mt-2">
+                  <div>
+                    <Label htmlFor="status" className="text-xs">Model Status</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) => setFormData({ ...formData, status: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {MODEL_STATUS_OPTIONS.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="isDefault"
+                      checked={formData.isDefault}
+                      onCheckedChange={(checked) => setFormData({ ...formData, isDefault: checked })}
+                      disabled={isSubmitting}
+                    />
+                    <Label htmlFor="isDefault">Default Model</Label>
+                  </div>
+                  <div>
+                    <Label htmlFor="uploadedBy" className="text-xs">Uploaded By</Label>
+                    <Input
+                      id="uploadedBy"
+                      placeholder="Username"
+                      value={formData.uploadedBy}
+                      onChange={(e) => setFormData({ ...formData, uploadedBy: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="hasLOD"
-                    checked={formData.hasLOD}
-                    onCheckedChange={(checked) => setFormData({ ...formData, hasLOD: checked })}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="hasLOD">Has LOD</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="hasExternalFiles"
-                    checked={formData.hasExternalFiles}
-                    onCheckedChange={(checked) => setFormData({ ...formData, hasExternalFiles: checked })}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="hasExternalFiles">External Files</Label>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="isDefault"
-                    checked={formData.isDefault}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isDefault: checked })}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="isDefault">Default Model</Label>
-                </div>
+
+              {/* Active Status */}
+              <div className="border-t pt-4">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="isActive"
@@ -557,36 +795,7 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                   <Label htmlFor="isActive">Active</Label>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="usedByPlants"
-                    checked={formData.usedByPlants}
-                    onCheckedChange={(checked) => setFormData({ ...formData, usedByPlants: checked })}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="usedByPlants">Used by Plants</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="usedByCharacters"
-                    checked={formData.usedByCharacters}
-                    onCheckedChange={(checked) => setFormData({ ...formData, usedByCharacters: checked })}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="usedByCharacters">Used by Characters</Label>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="uploadedBy">Uploaded By</Label>
-                <Input
-                  id="uploadedBy"
-                  placeholder="Username"
-                  value={formData.uploadedBy}
-                  onChange={(e) => setFormData({ ...formData, uploadedBy: e.target.value })}
-                  disabled={isSubmitting}
-                />
-              </div>
+
               <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
@@ -607,26 +816,12 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Search models..."
+            placeholder="Search by name, type..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-7 h-8 text-xs"
           />
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {MODEL_STATUS_OPTIONS.map((status) => (
-              <SelectItem key={status.value} value={status.value}>
-                {status.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <Select value={filterType} onValueChange={setFilterType}>
           <SelectTrigger className="w-[120px] h-8 text-xs">
             <Filter className="w-3.5 h-3.5 mr-1" />
@@ -641,14 +836,40 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
             ))}
           </SelectContent>
         </Select>
+        <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <SelectTrigger className="w-[120px] h-8 text-xs">
+            <Filter className="w-3.5 h-3.5 mr-1" />
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {MODEL_STATUS_OPTIONS.map((status) => (
+              <SelectItem key={status.value} value={status.value}>
+                {status.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filterActive} onValueChange={setFilterActive}>
+          <SelectTrigger className="w-[120px] h-8 text-xs">
+            <Filter className="w-3.5 h-3.5 mr-1" />
+            <SelectValue placeholder="Active" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="true">Active</SelectItem>
+            <SelectItem value="false">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
         <Button
           variant="outline"
           size="sm"
           className="h-8 text-xs"
           onClick={() => {
             setSearchQuery('');
-            setFilterStatus('all');
             setFilterType('all');
+            setFilterStatus('all');
+            setFilterActive('all');
             fetchModels();
           }}
         >
@@ -660,7 +881,7 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
       {filteredModels.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Box className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No models found</p>
+          <p>No 3D models found</p>
           <Button
             variant="outline"
             size="sm"
@@ -678,8 +899,10 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-xs py-1">Name</TableHead>
                 <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">File</TableHead>
-                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Status</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs py-1">File Size</TableHead>
+                <TableHead className="hidden xl:table-cell text-xs py-1">Animations</TableHead>
+                <TableHead className="text-center text-xs py-1">Active</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -688,38 +911,42 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                 <TableRow key={model.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      {model.thumbnailUrl ? (
-                        <img
-                          src={model.thumbnailUrl}
-                          alt={model.modelName}
-                          className="w-6 h-6 rounded object-cover"
-                        />
-                      ) : (
-                        <Box className="w-4 h-4 text-purple-500" />
-                      )}
+                      <Box className="w-3.5 h-3.5 text-blue-500" />
                       {model.modelName}
                       {model.isDefault && (
-                        <Badge variant="secondary" className="text-[10px]">Default</Badge>
+                        <Badge variant="default" className="text-[10px]">Default</Badge>
+                      )}
+                      {!model.isActive && (
+                        <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                       )}
                     </div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
                     <Badge variant="outline" className="text-[10px]">
-                      {getTypeLabel(model.modelType)}
+                      {getModelTypeLabel(model.modelType)}
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1 truncate max-w-[150px]">
-                      <File className="w-3 h-3" />
-                      {model.filePath.split('/').pop()}
-                    </div>
+                    <Badge className={`text-[10px] ${getStatusColor(model.status)}`}>
+                      {getOptionLabel(MODEL_STATUS_OPTIONS, model.status)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
+                    {formatFileSize(model.fileSize)}
+                  </TableCell>
+                  <TableCell className="hidden xl:table-cell py-1 text-sm text-muted-foreground">
+                    {model.animations && model.animations.length > 0 ? (
+                      <span className="text-[10px]">
+                        {model.animations.join(', ')}
+                      </span>
+                    ) : (
+                      '—'
+                    )}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    {model.isActive ? (
-                      <Badge className="text-[10px] bg-green-100 text-green-700">Active</Badge>
-                    ) : (
-                      <Badge className="text-[10px] bg-gray-100 text-gray-700">Inactive</Badge>
-                    )}
+                    <Badge className={`text-[10px] ${model.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {model.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="py-1 text-right">{renderActions(model)}</TableCell>
                 </TableRow>
@@ -733,7 +960,7 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
       <Dialog open={!!editingModel} onOpenChange={(open) => !open && setEditingModel(null)}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Model</DialogTitle>
+            <DialogTitle>Edit 3D Model</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
@@ -745,11 +972,12 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                 disabled={isSubmitting}
               />
             </div>
+
             <div>
-              <Label htmlFor="edit-modelType">Model Type</Label>
+              <Label htmlFor="edit-modelType">Model Type *</Label>
               <Select
                 value={formData.modelType}
-                onValueChange={(value) => setFormData({ ...formData, modelType: value as ModelType })}
+                onValueChange={(value) => setFormData({ ...formData, modelType: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select model type" />
@@ -763,6 +991,7 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                 </SelectContent>
               </Select>
             </div>
+
             <div>
               <Label htmlFor="edit-filePath">File Path *</Label>
               <Input
@@ -772,123 +1001,235 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                 disabled={isSubmitting}
               />
             </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-fileSize">File Size (bytes)</Label>
                 <Input
                   id="edit-fileSize"
                   type="number"
+                  min="0"
                   value={formData.fileSize}
                   onChange={(e) => setFormData({ ...formData, fileSize: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
               <div>
-                <Label htmlFor="edit-textureCount">Texture Count</Label>
+                <Label htmlFor="edit-thumbnailUrl">Thumbnail URL</Label>
                 <Input
-                  id="edit-textureCount"
-                  type="number"
-                  value={formData.textureCount}
-                  onChange={(e) => setFormData({ ...formData, textureCount: e.target.value })}
+                  id="edit-thumbnailUrl"
+                  value={formData.thumbnailUrl}
+                  onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
                   disabled={isSubmitting}
                 />
               </div>
             </div>
-            <div>
-              <Label htmlFor="edit-thumbnailUrl">Thumbnail URL</Label>
-              <Input
-                id="edit-thumbnailUrl"
-                value={formData.thumbnailUrl}
-                onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
-                disabled={isSubmitting}
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Transform</Label>
-              <div className="grid grid-cols-3 gap-4 mt-1">
+
+            {/* Transform */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Transform</Label>
+              <div className="space-y-2 mt-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label htmlFor="edit-scale" className="text-xs">Scale</Label>
+                    <Input
+                      id="edit-scale"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.scale}
+                      onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-rotationY" className="text-xs">Rotation Y</Label>
+                    <Input
+                      id="edit-rotationY"
+                      type="number"
+                      step="1"
+                      value={formData.rotationY}
+                      onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
                 <div>
-                  <Label htmlFor="edit-scale" className="text-[10px]">Scale</Label>
+                  <Label className="text-xs">Offset</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Input
+                      placeholder="X"
+                      type="number"
+                      step="0.01"
+                      value={formData.offsetX}
+                      onChange={(e) => setFormData({ ...formData, offsetX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Y"
+                      type="number"
+                      step="0.01"
+                      value={formData.offsetY}
+                      onChange={(e) => setFormData({ ...formData, offsetY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Z"
+                      type="number"
+                      step="0.01"
+                      value={formData.offsetZ}
+                      onChange={(e) => setFormData({ ...formData, offsetZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* LOD & Animation */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">LOD & Animation</Label>
+              <div className="space-y-2 mt-2">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="edit-hasLOD"
+                    checked={formData.hasLOD}
+                    onCheckedChange={(checked) => setFormData({ ...formData, hasLOD: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="edit-hasLOD">Has LOD</Label>
+                </div>
+                <div>
+                  <Label htmlFor="edit-lodLevels" className="text-xs">LOD Levels (JSON)</Label>
                   <Input
-                    id="edit-scale"
-                    type="number"
-                    step="0.1"
-                    value={formData.scale}
-                    onChange={(e) => setFormData({ ...formData, scale: e.target.value })}
+                    id="edit-lodLevels"
+                    value={formData.lodLevels}
+                    onChange={(e) => setFormData({ ...formData, lodLevels: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-rotationY" className="text-[10px]">Rotation Y</Label>
+                  <Label htmlFor="edit-animations" className="text-xs">Animations (JSON array)</Label>
                   <Input
-                    id="edit-rotationY"
-                    type="number"
-                    step="0.1"
-                    value={formData.rotationY}
-                    onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })}
+                    id="edit-animations"
+                    value={formData.animations}
+                    onChange={(e) => setFormData({ ...formData, animations: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="edit-offsetX" className="text-[10px]">Offset X</Label>
+                  <Label htmlFor="edit-defaultAnimation" className="text-xs">Default Animation</Label>
+                  <Select
+                    value={formData.defaultAnimation}
+                    onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select default animation" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {ANIMATION_OPTIONS.map((anim) => (
+                        <SelectItem key={anim.value} value={anim.value}>
+                          {anim.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Files & Textures */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Files & Textures</Label>
+              <div className="space-y-2 mt-2">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="edit-hasExternalFiles"
+                    checked={formData.hasExternalFiles}
+                    onCheckedChange={(checked) => setFormData({ ...formData, hasExternalFiles: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="edit-hasExternalFiles">Has External Files</Label>
+                </div>
+                <div>
+                  <Label htmlFor="edit-textureCount" className="text-xs">Texture Count</Label>
                   <Input
-                    id="edit-offsetX"
+                    id="edit-textureCount"
                     type="number"
-                    step="0.1"
-                    value={formData.offsetX}
-                    onChange={(e) => setFormData({ ...formData, offsetX: e.target.value })}
+                    min="0"
+                    value={formData.textureCount}
+                    onChange={(e) => setFormData({ ...formData, textureCount: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-mainModelFileId" className="text-xs">Main Model File ID</Label>
+                  <Input
+                    id="edit-mainModelFileId"
+                    type="number"
+                    value={formData.mainModelFileId}
+                    onChange={(e) => setFormData({ ...formData, mainModelFileId: e.target.value })}
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
             </div>
+
             <div>
-              <Label htmlFor="edit-animations">Animations</Label>
+              <Label htmlFor="edit-metadata">Metadata (JSON)</Label>
               <Input
-                id="edit-animations"
-                value={formData.animations}
-                onChange={(e) => setFormData({ ...formData, animations: e.target.value })}
+                id="edit-metadata"
+                value={formData.metadata}
+                onChange={(e) => setFormData({ ...formData, metadata: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
-            <div>
-              <Label htmlFor="edit-defaultAnimation">Default Animation</Label>
-              <Input
-                id="edit-defaultAnimation"
-                value={formData.defaultAnimation}
-                onChange={(e) => setFormData({ ...formData, defaultAnimation: e.target.value })}
-                disabled={isSubmitting}
-              />
+
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Status</Label>
+              <div className="space-y-2 mt-2">
+                <div>
+                  <Label htmlFor="edit-status" className="text-xs">Model Status</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MODEL_STATUS_OPTIONS.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="edit-isDefault"
+                    checked={formData.isDefault}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isDefault: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="edit-isDefault">Default Model</Label>
+                </div>
+                <div>
+                  <Label htmlFor="edit-uploadedBy" className="text-xs">Uploaded By</Label>
+                  <Input
+                    id="edit-uploadedBy"
+                    value={formData.uploadedBy}
+                    onChange={(e) => setFormData({ ...formData, uploadedBy: e.target.value })}
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="edit-hasLOD"
-                  checked={formData.hasLOD}
-                  onCheckedChange={(checked) => setFormData({ ...formData, hasLOD: checked })}
-                  disabled={isSubmitting}
-                />
-                <Label htmlFor="edit-hasLOD">Has LOD</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="edit-hasExternalFiles"
-                  checked={formData.hasExternalFiles}
-                  onCheckedChange={(checked) => setFormData({ ...formData, hasExternalFiles: checked })}
-                  disabled={isSubmitting}
-                />
-                <Label htmlFor="edit-hasExternalFiles">External Files</Label>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="edit-isDefault"
-                  checked={formData.isDefault}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isDefault: checked })}
-                  disabled={isSubmitting}
-                />
-                <Label htmlFor="edit-isDefault">Default Model</Label>
-              </div>
+
+            {/* Active Status */}
+            <div className="border-t pt-4">
               <div className="flex items-center gap-2">
                 <Switch
                   id="edit-isActive"
@@ -899,35 +1240,7 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                 <Label htmlFor="edit-isActive">Active</Label>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="edit-usedByPlants"
-                  checked={formData.usedByPlants}
-                  onCheckedChange={(checked) => setFormData({ ...formData, usedByPlants: checked })}
-                  disabled={isSubmitting}
-                />
-                <Label htmlFor="edit-usedByPlants">Used by Plants</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="edit-usedByCharacters"
-                  checked={formData.usedByCharacters}
-                  onCheckedChange={(checked) => setFormData({ ...formData, usedByCharacters: checked })}
-                  disabled={isSubmitting}
-                />
-                <Label htmlFor="edit-usedByCharacters">Used by Characters</Label>
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="edit-uploadedBy">Uploaded By</Label>
-              <Input
-                id="edit-uploadedBy"
-                value={formData.uploadedBy}
-                onChange={(e) => setFormData({ ...formData, uploadedBy: e.target.value })}
-                disabled={isSubmitting}
-              />
-            </div>
+
             <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
@@ -938,6 +1251,46 @@ export function ThreeDModelsCRUD({ threedId, onModuleUpdate }: ThreeDModelsCRUDP
                 'Save Changes'
               )}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Files Dialog */}
+      <Dialog open={showFilesDialog} onOpenChange={setShowFilesDialog}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Model Files</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            {selectedModelFiles.length === 0 ? (
+              <div className="text-center py-4 text-muted-foreground text-sm">
+                <File className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>No files associated with this model</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {selectedModelFiles.map((file) => (
+                  <div key={file.id} className="flex items-center justify-between p-2 border rounded-lg">
+                    <div className="flex items-center gap-2">
+                      {file.fileType === 'model' && <Box className="w-4 h-4 text-blue-500" />}
+                      {file.fileType === 'texture' && <Image className="w-4 h-4 text-green-500" />}
+                      {file.fileType === 'binary' && <File className="w-4 h-4 text-orange-500" />}
+                      {file.fileType === 'other' && <File className="w-4 h-4 text-gray-500" />}
+                      <div>
+                        <p className="text-sm font-medium">{file.fileName}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {file.fileType} {file.textureType ? `• ${file.textureType}` : ''}
+                          {file.fileSize ? `• ${formatFileSize(file.fileSize)}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-[10px]">
+                      #{file.loadOrder}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

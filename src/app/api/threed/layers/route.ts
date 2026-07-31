@@ -8,6 +8,14 @@ import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
 // GET /api/threed/layers - List ThreeD Layers
+// Query Parameters:
+//   - id (optional): Get a single layer
+//   - parentLayerId (optional): Filter by parent layer
+//   - isActive (optional): Filter by active status
+//   - isVisible (optional): Filter by visibility
+//   - search (optional): Search by name, layerId, or description
+//   - limit (optional): Number of records (default: 50)
+//   - offset (optional): Number of records to skip (default: 0)
 // ============================================
 export async function GET(request: NextRequest) {
   try {
@@ -18,9 +26,9 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const moduleId = searchParams.get('moduleId');
     const parentLayerId = searchParams.get('parentLayerId');
     const isActive = searchParams.get('isActive');
+    const isVisible = searchParams.get('isVisible');
     const search = searchParams.get('search');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -47,9 +55,19 @@ export async function GET(request: NextRequest) {
         );
       }
 
+      // ✅ Fetch parent layer info if available
+      const [parentLayer] = layer.parentLayerId ? await db
+        .select()
+        .from(threedLayers)
+        .where(eq(threedLayers.id, layer.parentLayerId))
+        .limit(1) : [];
+
       return NextResponse.json({
         success: true,
-        data: layer,
+        data: {
+          ...layer,
+          parentLayer: parentLayer || null,
+        },
       });
     }
 
@@ -61,10 +79,6 @@ export async function GET(request: NextRequest) {
       .$dynamic();
 
     // ✅ Apply filters
-    if (moduleId) {
-      query = query.where(eq(threedLayers.moduleId, parseInt(moduleId)));
-    }
-
     if (parentLayerId) {
       query = query.where(eq(threedLayers.parentLayerId, parseInt(parentLayerId)));
     } else if (parentLayerId === null) {
@@ -75,30 +89,55 @@ export async function GET(request: NextRequest) {
       query = query.where(eq(threedLayers.isActive, isActive === 'true'));
     }
 
+    if (isVisible !== null) {
+      query = query.where(eq(threedLayers.isVisible, isVisible === 'true'));
+    }
+
     if (search) {
       query = query.where(
         sql`${threedLayers.name} ILIKE ${`%${search}%`} OR 
+            ${threedLayers.layerId} ILIKE ${`%${search}%`} OR
             ${threedLayers.description} ILIKE ${`%${search}%`}`
       );
     }
 
+    // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedLayers)
       .where(query._where);
 
+    const total = countResult?.count || 0;
+
+    // ✅ Get paginated results
     const results = await query
       .orderBy(desc(threedLayers.createdAt))
       .limit(limit)
       .offset(offset);
 
+    // ✅ Fetch parent layer info for each layer
+    const layersWithParent = await Promise.all(
+      results.map(async (layer) => {
+        const [parentLayer] = layer.parentLayerId ? await db
+          .select()
+          .from(threedLayers)
+          .where(eq(threedLayers.id, layer.parentLayerId))
+          .limit(1) : [];
+
+        return {
+          ...layer,
+          parentLayer: parentLayer || null,
+        };
+      })
+    );
+
     return NextResponse.json({
       success: true,
-      data: results,
+      data: layersWithParent,
       pagination: {
         limit,
         offset,
-        total: countResult?.count || 0,
+        total,
       },
     });
   } catch (error) {
@@ -124,11 +163,9 @@ export async function POST(request: NextRequest) {
     console.log('📝 POST /api/threed/layers - Request body:', body);
 
     const {
-      moduleId,
-      moduleType,
+      layerId,
       name,
       description,
-      layerId,
       config,
       category,
       layerType,
@@ -142,13 +179,6 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // ✅ Validate required fields
-    if (!name) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: name' },
-        { status: 400 }
-      );
-    }
-
     if (!layerId) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: layerId' },
@@ -156,26 +186,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
-
-    // ✅ Check if layerId already exists
-    const [existing] = await db
-      .select()
-      .from(threedLayers)
-      .where(
-        and(
-          eq(threedLayers.layerId, layerId),
-          eq(threedLayers.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (existing) {
+    if (!name) {
       return NextResponse.json(
-        { success: false, error: 'Layer ID already exists' },
-        { status: 409 }
+        { success: false, error: 'Missing required field: name' },
+        { status: 400 }
       );
     }
+
+    const userId = session.user.id;
 
     // ✅ Verify parent layer exists if provided
     if (parentLayerId) {
@@ -198,18 +216,40 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // ✅ Check if layerId already exists
+    const [existing] = await db
+      .select()
+      .from(threedLayers)
+      .where(
+        and(
+          eq(threedLayers.layerId, layerId),
+          eq(threedLayers.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      return NextResponse.json(
+        { success: false, error: 'Layer ID already exists' },
+        { status: 409 }
+      );
+    }
+
     await ensureTableSequence('threed_layers');
 
     const [newLayer] = await db
       .insert(threedLayers)
       .values({
         userId,
-        moduleId: moduleId || null,
-        moduleType: moduleType || 'threed',
+        layerId,
         name,
         description: description || null,
-        layerId,
-        config: config || { visible: true, opacity: 1.0, color: '#ffffff' },
+        config: config || { 
+          visible: true, 
+          opacity: 1.0, 
+          color: '#ffffff',
+          transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } }
+        },
         category: category || null,
         layerType: layerType || null,
         parentLayerId: parentLayerId || null,
