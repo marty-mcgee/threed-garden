@@ -4652,3 +4652,411 @@ src/
 ---
 
 *🎉 Congratulations on reaching v0.12.0! The Unified Map Module is now fully complete, providing a seamless 2D and 3D visualization experience for all your Traffic and ThreeD data!*
+
+---
+
+Here's the complete `CONTEXT.md` for your application:
+
+```markdown
+# Project Context – threed-garden-neon, marty-mcgee-neon
+
+**Last Updated:** August 1, 2026 @ 06:15pm PST
+
+---
+
+## 🚀 Version v0.12.1 "Runtime Marker Generation"
+
+### 🎯 What's New in v0.12.1
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Runtime Marker Generation** | ✅ Complete | Markers generated on-the-fly from sub-module data |
+| **ThreeD Markers Removed** | ✅ Complete | No database markers - markers are dispensable |
+| **Plantings as Markers** | ✅ Complete | Plantings (instances) drive markers, not Plants (master data) |
+| **Layers as Config** | ✅ Complete | Layers store view configurations, not markers |
+| **Full Precision GPS** | ✅ Complete | 7 decimal places for all coordinates |
+| **Seed Data Complete** | ✅ Complete | All tables seeded with realistic test data |
+| **2D/3D Map Views** | ✅ Working | Both views render correctly |
+
+---
+
+## 🧱 Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| **Framework** | Next.js 16.2.12 (App Router), TypeScript, React |
+| **Database** | Neon Postgres + Drizzle ORM |
+| **UI** | shadcn/ui, Tailwind, Three.JS, React Three Fiber, Leaflet (OpenStreetMaps) |
+| **Music Streaming** | AWS S3, Vercel Blob Storage |
+| **Deployment** | Vercel |
+| **Package Manager** | Bun |
+
+---
+
+## 🗄️ Database Schema Architecture
+
+### Hybrid Approach: Data Ownership + Free-Standing Data
+
+The database follows a clean hybrid approach where:
+
+- All records have `userId` for ownership and audit trails
+- Child data is free-standing (no direct foreign keys to modules)
+- Relationships are handled via junction tables
+
+```
+User (user)
+  └── Projects (project) - HAS userId
+       └── (junction: project_threed, project_traffic, project_music)
+            └── Modules (threed, traffic, music) - HAS userId
+                 └── Child Data - HAS userId
+                      └── (free-standing, reusable across projects)
+```
+
+### Key ID Patterns
+
+| Table Type | ID Type | Foreign Key Type |
+|------------|---------|------------------|
+| user (Next Auth.js) | text('id') | N/A |
+| All other tables | serial('id') | integer |
+| Tables referencing user.id | N/A | text('user_id') |
+
+---
+
+## 📁 Complete Database Schema
+
+### Auth Module (`lib/schema/auth/`)
+
+| Table | Purpose |
+|-------|---------|
+| `user` | Main user table (Next Auth) |
+| `user_accounts` | OAuth/Provider accounts |
+| `user_sessions` | User sessions |
+| `user_verifications` | Email/Phone verification |
+| `user_settings_overrides` | User-specific settings |
+| `user_api_keys` | API keys for programmatic access |
+| `user_audit_logs` | User activity audit trail |
+
+### Projects Module (`lib/schema/projects/`)
+
+| Table | Purpose |
+|-------|---------|
+| `project` | Main project container |
+| `project_assets` | Single junction table for all asset types |
+| `project_threed` | Links Projects to ThreeD modules |
+| `project_traffic` | Links Projects to Traffic modules |
+| `project_music` | Links Projects to Music modules |
+
+### ThreeD Module (`lib/schema/threed/`)
+
+| Table | Purpose |
+|-------|---------|
+| `threed` | Main ThreeD module configuration |
+| `threed_plants` | Master plant database (NO markers) |
+| `threed_models` | GLTF model library |
+| `threed_model_files` | Associated files for 3D models |
+| `threed_beds` | Garden layout with 3D positioning |
+| `threed_plantings` | **Plants in beds with position data → BECOME MARKERS** |
+| `threed_watering_schedules` | Automated watering schedules |
+| `threed_watering_history` | Watering execution logs |
+| `threed_harvests` | Harvest logging (NO markers) |
+| `threed_tasks` | Garden tasks/to-do (NO markers) |
+| `threed_weather_logs` | Environmental data (NO markers) |
+| `threed_farmbots` | FarmBot devices |
+| `threed_farmbot_logs` | FarmBot activity logs |
+| `threed_characters` | 3D characters and creatures |
+| `threed_layers` | **Configuration for what to display (NO markers)** |
+| `threed_system_logs` | Application logging |
+| `threed_character_models` | Junction: Character ↔ Models |
+
+### Traffic Module (`lib/schema/traffic/`)
+
+| Table | Purpose |
+|-------|---------|
+| `traffic` | Main Traffic module configuration |
+| `traffic_chp_cad_incidents` | Live CHP incidents |
+| `traffic_chp_centers` | CHP communication centers |
+| `traffic_chp_cases` | Historical collisions cases |
+| `traffic_caltrans_lane_closures` | Caltrans lane closures |
+| `traffic_caltrans_cctv_cameras` | Traffic cameras |
+| `traffic_caltrans_districts` | Caltrans districts |
+| `traffic_bay_area_511_events` | 511.org events |
+| `traffic_calfire_incidents` | CalFire wildfire incidents |
+| `traffic_api_request_logs` | API monitoring logs |
+
+### Music Module (`lib/schema/music/`)
+
+| Table | Purpose |
+|-------|---------|
+| `music` | Main Music module configuration |
+| `music_albums` | Album metadata |
+| `music_tracks` | Track metadata |
+| `music_media` | Album images and media |
+| `music_links` | External links (Spotify, social, etc.) |
+| `music_playback_history` | User listening history |
+| `music_polling_logs` | Polling service logs |
+
+---
+
+## 📡 Data Sources
+
+| Source | Type | Method | Status |
+|--------|------|--------|--------|
+| CHP CAD (Live) | Live dispatcher feed | HTML scraping (Cheerio) | ✅ Working |
+| CHP CKAN | Historical collisions | Official JSON API (CKAN) | ✅ Working |
+| Caltrans CWWP2 | Real-time lane closures | Official JSON API | ✅ Working |
+| Bay Area 511 | Real-time incidents | Official JSON API (511.org) | ✅ Working |
+| Caltrans CCTV | Traffic cameras | Official JSON API | ✅ Working |
+| CalFire | Wildfire incidents | Official JSON API | ✅ Working |
+| OpenWeatherMap | Weather data | Official API | ✅ Working |
+| FarmBot API | Device integration | Official API | ✅ Working |
+
+---
+
+## 🎯 Key Features
+
+### Runtime Marker Generation (NEW in v0.12.1)
+- ✅ Markers generated on-the-fly from Plantings (not stored in database)
+- ✅ Plantings (instances) drive markers, Plants (master data) do not
+- ✅ Full precision GPS coordinates (7 decimal places)
+- ✅ Markers are dispensable - can be regenerated anytime
+
+### Layers System (NEW in v0.12.1)
+- ✅ Layers store view configurations (what to display)
+- ✅ Layers have NO markers - purely configuration
+- ✅ Include types: plants, beds, characters, farmbots, plantings, tasks, harvests, weatherLogs
+- ✅ Visual settings: color, opacity, visibility
+
+### Settings System
+- Centralized JSON configuration with admin UI
+- User-specific overrides via database
+- Deployment snapshots and rollback support
+
+### Dynamic Navigation
+- Auto-builds menu from settings
+- Client-side rendering with no server dependencies
+- Loading states and active page highlighting
+
+### Traffic Module
+- 6 real-time data sources with full CRUD
+- 2D/3D map visualization with Leaflet + Three.js
+- Runtime marker generation for traffic incidents
+
+### ThreeD Garden Module
+- Interactive 3D visualization with Three.js + React Three Fiber
+- Plant database with growth stage tracking
+- FarmBot integration and control
+- Weather effects and logging
+- **Runtime markers from Plantings**
+
+### Music Module
+- Prominent media player with waveform visualization
+- Full CRUD for albums, tracks, links, and media
+- S3 integration for audio streaming
+
+---
+
+## 🚀 Deployment
+
+### Environment Variables
+
+```bash
+# Required for all deployments
+DATABASE_URL=your_neon_connection_string
+NEXTAUTH_URL=https://your-domain.vercel.app
+NEXTAUTH_SECRET=your_secret
+
+# Music Module
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_REGION=us-west-2
+S3_BUCKET_NAME=threedpublic
+S3_PUBLIC_URL=https://threedpublic.s3.us-west-2.amazonaws.com
+
+# ThreeD Module
+FARMBOT_API_TOKEN=your_personal_access_token
+FARMBOT_API_URL=https://my.farmbot.io/api
+FARMBOT_DEVICE_ID=your_device_id
+OPENWEATHER_API_KEY=your_api_key
+
+# Vercel Blob (images)
+BLOB_READ_WRITE_TOKEN=your_token
+```
+
+### Common Commands
+
+```bash
+# Development
+bun dev
+
+# Database
+bun db:generate
+bun db:push
+bun db:studio
+
+# Seeds
+bun db:seed:all
+bun run src/lib/scripts/seed-threed-plants.ts
+```
+
+---
+
+## 📋 Project Asset Types
+
+### ThreeD Asset Types
+
+| Asset Type | Table | Has Position | Becomes Marker |
+|------------|-------|--------------|----------------|
+| `threed_plants` | `threed_plants` | ❌ | ❌ (Master data) |
+| `threed_beds` | `threed_beds` | ✅ | ✅ |
+| `threed_plantings` | `threed_plantings` | ✅ | ✅ (Primary) |
+| `threed_characters` | `threed_characters` | ✅ | ✅ |
+| `threed_farmbots` | `threed_farmbots` | ✅ | ✅ |
+| `threed_layers` | `threed_layers` | ❌ | ❌ (Config) |
+| `threed_tasks` | `threed_tasks` | ❌ | ❌ (To-dos) |
+| `threed_harvests` | `threed_harvests` | ❌ | ❌ (Logs) |
+| `threed_weather_logs` | `threed_weather_logs` | ❌ | ❌ (Logs) |
+| `threed_models` | `threed_models` | ❌ | ❌ (Library) |
+
+### Traffic Asset Types
+
+| Asset Type | Table |
+|------------|-------|
+| `traffic_chp_cad_incidents` | `traffic_chp_cad_incidents` |
+| `traffic_chp_cases` | `traffic_chp_cases` |
+| `traffic_chp_centers` | `traffic_chp_centers` |
+| `traffic_caltrans_lane_closures` | `traffic_caltrans_lane_closures` |
+| `traffic_caltrans_cctv_cameras` | `traffic_caltrans_cctv_cameras` |
+| `traffic_caltrans_districts` | `traffic_caltrans_districts` |
+| `traffic_bay_area_511_events` | `traffic_bay_area_511_events` |
+| `traffic_calfire_incidents` | `traffic_calfire_incidents` |
+
+### Music Asset Types
+
+| Asset Type | Table |
+|------------|-------|
+| `music_albums` | `music_albums` |
+| `music_tracks` | `music_tracks` |
+| `music_links` | `music_links` |
+| `music_media` | `music_media` |
+
+---
+
+## 🔧 API Architecture (Next.js 16)
+
+### Key Pattern: `params` is a Promise
+
+In Next.js 16+, dynamic route parameters are Promises that must be awaited:
+
+```typescript
+// ✅ CORRECT - Next.js 16+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  // ... rest of code
+}
+```
+
+### API Structure
+
+```
+api/
+├── project/
+│   ├── route.ts              # GET (list), POST (create)
+│   ├── assets/
+│   │   └── route.ts          # GET, POST, DELETE
+│   └── modules/
+│       └── route.ts          # GET, POST, DELETE
+├── threed/
+│   ├── route.ts              # GET (list), POST (create)
+│   ├── plants/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── beds/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── plantings/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   ├── layers/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   └── markers/
+│       └── route.ts          # (DEPRECATED - markers generated at runtime)
+├── traffic/
+│   ├── route.ts              # GET (list), POST (create)
+│   ├── chp-cad/
+│   │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+│   └── caltrans/
+│       └── route.ts          # GET, POST, PUT, PATCH, DELETE
+└── music/
+    ├── route.ts              # GET (list), POST (create)
+    ├── albums/
+    │   └── route.ts          # GET, POST, PUT, PATCH, DELETE
+    └── tracks/
+        └── route.ts          # GET, POST, PUT, PATCH, DELETE
+```
+
+---
+
+## ⚠️ Known Issues & Solutions
+
+| Issue | Solution |
+|-------|----------|
+| Next.js 16 params is a Promise | Use `await params` in dynamic routes |
+| Audio CORS errors | Configure S3 bucket CORS for your domain |
+| Duplicate key errors | Use regular indexes, not unique indexes |
+| DNS module error in client | Use client-safe settings loader |
+| Enum value errors | Ensure enum values match schema definitions |
+| Timestamp `{ mode: 'string' }` | Use `.toISOString()` when inserting |
+
+---
+
+## 🚦 Production Status
+
+| Component | Status |
+|-----------|--------|
+| Settings System | ✅ Working |
+| Dynamic Navigation | ✅ Working |
+| Project Module | ✅ Working |
+| ThreeD Module | ✅ Working |
+| Traffic Module | ✅ Working |
+| Music Module | ✅ Working |
+| Weather Poller | ✅ Working |
+| CalFire Poller | ✅ Working |
+| Caltrans Poller | ✅ Working |
+| Bay Area 511 | ✅ Working |
+| CHP CAD | ✅ Working |
+| CHP Historical | ✅ Working |
+| FarmBot Poller | ✅ Working |
+| Music Poller | ✅ Working |
+| Music Player | ✅ Working |
+| 3D Garden | ✅ Rendering |
+| 2D Map | ✅ Rendering |
+| Runtime Markers | ✅ Working |
+| Database | ✅ Connected |
+| Seed Data | ✅ Complete |
+
+---
+
+## 🎉 v0.12.1 "Runtime Marker Generation"
+
+### What Changed
+
+1. **Removed `threed_markers` table** - No database markers
+2. **Runtime markers generated from Plantings** - Plantings (instances) drive markers
+3. **Plants are master data** - No markers from Plants
+4. **Layers are configuration** - Store view settings, not markers
+5. **Full precision GPS** - 7 decimal places for all coordinates
+6. **Comprehensive seed data** - All tables seeded with realistic data
+
+### Benefits
+
+- ✅ Markers are always in sync with data
+- ✅ No database marker maintenance
+- ✅ Markers are dispensable (regenerate anytime)
+- ✅ Cleaner architecture
+- ✅ Better performance
+
+---
+
+**Version:** v0.12.1 "Runtime Marker Generation" 🚀
+
+---

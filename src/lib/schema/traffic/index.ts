@@ -467,7 +467,7 @@ export const trafficChpCenters = pgTable('traffic_chp_centers', {
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   // Center identification
-  centerId: varchar('center_id', { length: 8 }).unique().notNull(),
+  centerId: varchar('center_id', { length: 50 }).unique().notNull(),
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
   

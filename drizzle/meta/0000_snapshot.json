@@ -1,5 +1,5 @@
 {
-  "id": "d53a5a3f-ce0d-4231-99e9-84ae0536956f",
+  "id": "e71e6cb6-1309-4490-9a8b-2f44293210c0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -4916,7 +4916,7 @@
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": "'{\"visible\":true,\"opacity\":1,\"color\":\"#ffffff\",\"transform\":{\"position\":{\"x\":0,\"y\":0,\"z\":0},\"rotation\":{\"x\":0,\"y\":0,\"z\":0},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}}'::jsonb"
+          "default": "'{\"includeTypes\":[\"plant\",\"bed\",\"task\"],\"filters\":{\"status\":\"active\",\"priority\":null,\"type\":null},\"color\":\"#ffffff\",\"opacity\":1,\"visible\":true}'::jsonb"
         },
         "category": {
           "name": "category",
@@ -4926,15 +4926,11 @@
         },
         "layer_type": {
           "name": "layer_type",
-          "type": "text",
+          "type": "threed_layer_type",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
-        },
-        "parent_layer_id": {
-          "name": "parent_layer_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'custom'"
         },
         "order_index": {
           "name": "order_index",
@@ -4950,13 +4946,6 @@
           "notNull": false,
           "default": true
         },
-        "is_locked": {
-          "name": "is_locked",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
         "is_active": {
           "name": "is_active",
           "type": "boolean",
@@ -4970,6 +4959,14 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "visibility": {
+          "name": "visibility",
+          "type": "threed_layer_visibility",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'private'"
         },
         "metadata": {
           "name": "metadata",
@@ -5024,21 +5021,6 @@
           "method": "btree",
           "with": {}
         },
-        "idx_threed_layers_parent": {
-          "name": "idx_threed_layers_parent",
-          "columns": [
-            {
-              "expression": "parent_layer_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "idx_threed_layers_active": {
           "name": "idx_threed_layers_active",
           "columns": [
@@ -5059,6 +5041,21 @@
           "columns": [
             {
               "expression": "is_visible",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_threed_layers_type": {
+          "name": "idx_threed_layers_type",
+          "columns": [
+            {
+              "expression": "layer_type",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -5092,572 +5089,6 @@
           "nullsNotDistinct": false,
           "columns": [
             "layer_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.threed_marker_relationships": {
-      "name": "threed_marker_relationships",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "parent_marker_id": {
-          "name": "parent_marker_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "child_marker_id": {
-          "name": "child_marker_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "relationship_type": {
-          "name": "relationship_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'hierarchy'"
-        },
-        "order_index": {
-          "name": "order_index",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "default": 0
-        },
-        "config": {
-          "name": "config",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{}'::jsonb"
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_threed_marker_rel_parent": {
-          "name": "idx_threed_marker_rel_parent",
-          "columns": [
-            {
-              "expression": "parent_marker_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_marker_rel_child": {
-          "name": "idx_threed_marker_rel_child",
-          "columns": [
-            {
-              "expression": "child_marker_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_marker_rel_unique": {
-          "name": "idx_threed_marker_rel_unique",
-          "columns": [
-            {
-              "expression": "parent_marker_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "child_marker_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_marker_rel_active": {
-          "name": "idx_threed_marker_rel_active",
-          "columns": [
-            {
-              "expression": "is_active",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "threed_marker_relationships_user_id_user_id_fk": {
-          "name": "threed_marker_relationships_user_id_user_id_fk",
-          "tableFrom": "threed_marker_relationships",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "threed_marker_relationships_parent_marker_id_threed_markers_id_fk": {
-          "name": "threed_marker_relationships_parent_marker_id_threed_markers_id_fk",
-          "tableFrom": "threed_marker_relationships",
-          "tableTo": "threed_markers",
-          "columnsFrom": [
-            "parent_marker_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "threed_marker_relationships_child_marker_id_threed_markers_id_fk": {
-          "name": "threed_marker_relationships_child_marker_id_threed_markers_id_fk",
-          "tableFrom": "threed_marker_relationships",
-          "tableTo": "threed_markers",
-          "columnsFrom": [
-            "child_marker_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.threed_markers": {
-      "name": "threed_markers",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "marker_id": {
-          "name": "marker_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "position": {
-          "name": "position",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{\"x\":0,\"y\":0,\"z\":0}'::jsonb"
-        },
-        "rotation": {
-          "name": "rotation",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{\"x\":0,\"y\":0,\"z\":0}'::jsonb"
-        },
-        "scale": {
-          "name": "scale",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{\"x\":1,\"y\":1,\"z\":1}'::jsonb"
-        },
-        "marker_type": {
-          "name": "marker_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'#ffffff'"
-        },
-        "size": {
-          "name": "size",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'medium'"
-        },
-        "icon": {
-          "name": "icon",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "label": {
-          "name": "label",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "layer_id": {
-          "name": "layer_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "parent_marker_id": {
-          "name": "parent_marker_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "model_id": {
-          "name": "model_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "character_id": {
-          "name": "character_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "plant_id": {
-          "name": "plant_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "bed_id": {
-          "name": "bed_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "data": {
-          "name": "data",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{}'::jsonb"
-        },
-        "is_visible": {
-          "name": "is_visible",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "is_interactive": {
-          "name": "is_interactive",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": true
-        },
-        "is_public": {
-          "name": "is_public",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "metadata": {
-          "name": "metadata",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'{}'::jsonb"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_threed_markers_user_id": {
-          "name": "idx_threed_markers_user_id",
-          "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_marker_id": {
-          "name": "idx_threed_markers_marker_id",
-          "columns": [
-            {
-              "expression": "marker_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_layer": {
-          "name": "idx_threed_markers_layer",
-          "columns": [
-            {
-              "expression": "layer_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_parent": {
-          "name": "idx_threed_markers_parent",
-          "columns": [
-            {
-              "expression": "parent_marker_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_model": {
-          "name": "idx_threed_markers_model",
-          "columns": [
-            {
-              "expression": "model_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_character": {
-          "name": "idx_threed_markers_character",
-          "columns": [
-            {
-              "expression": "character_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_plant": {
-          "name": "idx_threed_markers_plant",
-          "columns": [
-            {
-              "expression": "plant_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_bed": {
-          "name": "idx_threed_markers_bed",
-          "columns": [
-            {
-              "expression": "bed_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_active": {
-          "name": "idx_threed_markers_active",
-          "columns": [
-            {
-              "expression": "is_active",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_threed_markers_visible": {
-          "name": "idx_threed_markers_visible",
-          "columns": [
-            {
-              "expression": "is_visible",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "threed_markers_user_id_user_id_fk": {
-          "name": "threed_markers_user_id_user_id_fk",
-          "tableFrom": "threed_markers",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "threed_markers_layer_id_threed_layers_id_fk": {
-          "name": "threed_markers_layer_id_threed_layers_id_fk",
-          "tableFrom": "threed_markers",
-          "tableTo": "threed_layers",
-          "columnsFrom": [
-            "layer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "threed_markers_marker_id_unique": {
-          "name": "threed_markers_marker_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "marker_id"
           ]
         }
       },
@@ -10380,7 +9811,7 @@
         },
         "center_id": {
           "name": "center_id",
-          "type": "varchar(8)",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
         },
@@ -10604,6 +10035,7 @@
         "music_media",
         "threed_plants",
         "threed_beds",
+        "threed_plantings",
         "threed_layers",
         "threed_markers",
         "threed_models",
@@ -10830,7 +10262,8 @@
         "characters",
         "tasks",
         "weather",
-        "traffic",
+        "harvests",
+        "plantings",
         "custom"
       ]
     },
@@ -10841,31 +10274,6 @@
         "public",
         "private",
         "shared"
-      ]
-    },
-    "public.threed_marker_status": {
-      "name": "threed_marker_status",
-      "schema": "public",
-      "values": [
-        "active",
-        "inactive",
-        "archived",
-        "pending"
-      ]
-    },
-    "public.threed_marker_type": {
-      "name": "threed_marker_type",
-      "schema": "public",
-      "values": [
-        "plant",
-        "bed",
-        "farmbot",
-        "model",
-        "character",
-        "task",
-        "weather_station",
-        "traffic_incident",
-        "custom"
       ]
     },
     "public.threed_model_status": {

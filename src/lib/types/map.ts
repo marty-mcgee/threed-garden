@@ -1,34 +1,78 @@
-// lib/types/map/index.ts
-export interface MapLayerConfig {
-  traffic: {
-    chpCad: LayerState;
-    chpCases: LayerState;
-    chpCenters: LayerState;
-    caltransClosures: LayerState;
-    caltransCctv: LayerState;
-    caltransDistricts: LayerState;
-    bayArea511: LayerState;
-    calfireIncidents: LayerState;
+// lib/types/map.ts
+
+// ============================================
+// Traffic Types
+// ============================================
+
+export interface TrafficIncident {
+  id: string;
+  source: string;
+  title: string;
+  description: string;
+  location: string;
+  lat: number;
+  lng: number;
+  timestamp: string;
+  severity?: string;
+  status?: string;
+  type?: string;
+}
+
+// ============================================
+// ThreeD Types
+// ============================================
+
+export interface ThreeDLayer {
+  id: number;
+  layerId: string;
+  name: string;
+  description: string | null;
+  config: {
+    includeTypes?: string[];
+    color?: string;
+    opacity?: number;
+    visible?: boolean;
   };
-  threed: {
-    plants: LayerState;
-    beds: LayerState;
-    characters: LayerState;
-    markers: LayerState;
-    layers: LayerState;
-    farmbots: LayerState;
+  isVisible: boolean;
+  isActive: boolean;
+  orderIndex?: number;
+}
+
+// ✅ Runtime Marker (generated at runtime from sub-module data)
+export interface RuntimeMarker {
+  id: string;
+  name: string;
+  type: string;
+  position: { x: number; y: number; z: number };
+  color: string;
+  icon: string;
+  label: string;
+  isVisible: boolean;
+  isActive: boolean;
+  data: any;
+  metadata: {
+    source: 'sub-module';
+    generatedAt: string;
   };
 }
 
-export interface LayerState {
-  enabled: boolean;
-  visible: boolean;
-}
-
-export type MapViewMode = 'combined' | '2d' | '3d';
+// ============================================
+// Unified Map Data
+// ============================================
 
 export interface UnifiedMapData {
   traffic: {
+    // Raw data from traffic sub-modules
+    raw: {
+      chpCadIncidents: any[];
+      chpCases: any[];
+      chpCenters: any[];
+      caltransLaneClosures: any[];
+      caltransCctvCameras: any[];
+      caltransDistricts: any[];
+      bayArea511Events: any[];
+      calfireIncidents: any[];
+    } | null;
     total: number;
     chpCadCount: number;
     chpCasesCount: number;
@@ -38,42 +82,52 @@ export interface UnifiedMapData {
     caltransDistrictsCount: number;
     bayArea511Count: number;
     calfireIncidentsCount: number;
-    incidents: TrafficIncident[];
   };
   threed: {
+    // Raw data from threed sub-modules
+    raw: {
+      plants: any[];
+      beds: any[];
+      characters: any[];
+      layers: any[];
+      farmbots: any[];
+      plantings: any[];
+      tasks: any[];
+      harvests: any[];
+      weatherLogs: any[];
+    } | null;
     total: number;
     plantsCount: number;
-    plantingsCount: number;
     bedsCount: number;
     charactersCount: number;
+    markersCount: number; // Always 0 - no database markers
     layersCount: number;
-    markersCount: number;
     farmbotsCount: number;
-    markers: ThreeDMarker[];
+    plantingsCount: number;
+    tasksCount: number;
+    harvestsCount: number;
+    weatherLogsCount: number;
+    layers: ThreeDLayer[];
   };
 }
 
-export interface TrafficIncident {
-  id: string;
-  source: 'chpCad' | 'chpCases' | 'chpCenters' | 'caltransClosures' | 'caltransCctv' | 'caltransDistricts' | 'bayArea511' | 'calfireIncidents';
-  type: string;
-  title: string;
-  description: string;
-  location: string;
-  lat: number;
-  lng: number;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  timestamp: string;
-  sourceName: string;
-  details?: any;
-}
+// ============================================
+// Map View Types
+// ============================================
 
-export interface ThreeDMarker {
-  id: string;
-  name: string;
-  type: 'plant' | 'planting' | 'bed' | 'character' | 'marker' | 'layer' | 'farmbot';
-  position: { x: number; y: number; z: number };
-  color?: string;
-  size?: string;
-  metadata?: any;
+export type MapViewMode = '2d' | '3d' | 'combined';
+
+export interface MapLayerConfig {
+  traffic: {
+    [key: string]: {
+      enabled: boolean;
+      visible: boolean;
+    };
+  };
+  threed: {
+    [key: string]: {
+      enabled: boolean;
+      visible: boolean;
+    };
+  };
 }

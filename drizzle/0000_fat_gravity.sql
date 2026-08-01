@@ -1,5 +1,5 @@
 CREATE TYPE "public"."album_status" AS ENUM('draft', 'published', 'archived');--> statement-breakpoint
-CREATE TYPE "public"."asset_type" AS ENUM('music_albums', 'music_tracks', 'music_links', 'music_media', 'threed_plants', 'threed_beds', 'threed_layers', 'threed_markers', 'threed_models', 'threed_characters', 'threed_tasks', 'threed_harvests', 'threed_weather_logs', 'threed_farmbots', 'threed_watering_schedules', 'traffic_chp_cad_incidents', 'traffic_chp_centers', 'traffic_chp_cases', 'traffic_caltrans_lane_closures', 'traffic_caltrans_districts', 'traffic_caltrans_cctv_cameras', 'traffic_bay_area_511_events', 'traffic_calfire_incidents');--> statement-breakpoint
+CREATE TYPE "public"."asset_type" AS ENUM('music_albums', 'music_tracks', 'music_links', 'music_media', 'threed_plants', 'threed_beds', 'threed_plantings', 'threed_layers', 'threed_markers', 'threed_models', 'threed_characters', 'threed_tasks', 'threed_harvests', 'threed_weather_logs', 'threed_farmbots', 'threed_watering_schedules', 'traffic_chp_cad_incidents', 'traffic_chp_centers', 'traffic_chp_cases', 'traffic_caltrans_lane_closures', 'traffic_caltrans_districts', 'traffic_caltrans_cctv_cameras', 'traffic_bay_area_511_events', 'traffic_calfire_incidents');--> statement-breakpoint
 CREATE TYPE "public"."threed_bed_shape" AS ENUM('rectangle', 'square', 'circle', 'raised', 'container', 'custom');--> statement-breakpoint
 CREATE TYPE "public"."threed_bed_status" AS ENUM('active', 'pending', 'maintenance', 'dormant', 'retired');--> statement-breakpoint
 CREATE TYPE "public"."threed_character_animation" AS ENUM('idle', 'walk', 'run', 'fly', 'dance', 'sway', 'float', 'spin', 'bounce');--> statement-breakpoint
@@ -17,10 +17,8 @@ CREATE TYPE "public"."threed_farmbot_status" AS ENUM('online', 'offline', 'maint
 CREATE TYPE "public"."threed_growth_stage" AS ENUM('seed', 'seedling', 'vegetative', 'flowering', 'fruiting', 'mature', 'dormant');--> statement-breakpoint
 CREATE TYPE "public"."incident_status" AS ENUM('active', 'cleared', 'pending', 'unknown');--> statement-breakpoint
 CREATE TYPE "public"."incident_type" AS ENUM('traffic_collision', 'hazard', 'road_closed', 'fire', 'emergency', 'other');--> statement-breakpoint
-CREATE TYPE "public"."threed_layer_type" AS ENUM('garden', 'plants', 'beds', 'farmbots', 'models', 'characters', 'tasks', 'weather', 'traffic', 'custom');--> statement-breakpoint
+CREATE TYPE "public"."threed_layer_type" AS ENUM('garden', 'plants', 'beds', 'farmbots', 'models', 'characters', 'tasks', 'weather', 'harvests', 'plantings', 'custom');--> statement-breakpoint
 CREATE TYPE "public"."threed_layer_visibility" AS ENUM('public', 'private', 'shared');--> statement-breakpoint
-CREATE TYPE "public"."threed_marker_status" AS ENUM('active', 'inactive', 'archived', 'pending');--> statement-breakpoint
-CREATE TYPE "public"."threed_marker_type" AS ENUM('plant', 'bed', 'farmbot', 'model', 'character', 'task', 'weather_station', 'traffic_incident', 'custom');--> statement-breakpoint
 CREATE TYPE "public"."threed_model_status" AS ENUM('active', 'pending', 'maintenance', 'dormant', 'retired');--> statement-breakpoint
 CREATE TYPE "public"."threed_model_type" AS ENUM('procedural', 'gltf', 'glb', 'fbx', 'usdz', 'obj', 'herb-generic', 'vegetable-generic', 'flower-generic', 'fruit-generic', 'tree-generic', 'custom');--> statement-breakpoint
 CREATE TYPE "public"."music_link_status" AS ENUM('active', 'inactive', 'pending', 'expired');--> statement-breakpoint
@@ -486,64 +484,18 @@ CREATE TABLE "threed_layers" (
 	"name" text NOT NULL,
 	"description" text,
 	"layer_id" text NOT NULL,
-	"config" jsonb DEFAULT '{"visible":true,"opacity":1,"color":"#ffffff","transform":{"position":{"x":0,"y":0,"z":0},"rotation":{"x":0,"y":0,"z":0},"scale":{"x":1,"y":1,"z":1}}}'::jsonb,
+	"config" jsonb DEFAULT '{"includeTypes":["plant","bed","task"],"filters":{"status":"active","priority":null,"type":null},"color":"#ffffff","opacity":1,"visible":true}'::jsonb,
 	"category" text,
-	"layer_type" text,
-	"parent_layer_id" integer,
+	"layer_type" "threed_layer_type" DEFAULT 'custom',
 	"order_index" integer DEFAULT 0,
 	"is_visible" boolean DEFAULT true,
-	"is_locked" boolean DEFAULT false,
 	"is_active" boolean DEFAULT true,
 	"is_public" boolean DEFAULT false,
+	"visibility" "threed_layer_visibility" DEFAULT 'private',
 	"metadata" jsonb DEFAULT '{}'::jsonb,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "threed_layers_layer_id_unique" UNIQUE("layer_id")
-);
---> statement-breakpoint
-CREATE TABLE "threed_marker_relationships" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"user_id" text,
-	"parent_marker_id" integer,
-	"child_marker_id" integer,
-	"relationship_type" text DEFAULT 'hierarchy',
-	"order_index" integer DEFAULT 0,
-	"config" jsonb DEFAULT '{}'::jsonb,
-	"is_active" boolean DEFAULT true,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
-);
---> statement-breakpoint
-CREATE TABLE "threed_markers" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"user_id" text,
-	"name" text NOT NULL,
-	"description" text,
-	"marker_id" text NOT NULL,
-	"position" jsonb DEFAULT '{"x":0,"y":0,"z":0}'::jsonb,
-	"rotation" jsonb DEFAULT '{"x":0,"y":0,"z":0}'::jsonb,
-	"scale" jsonb DEFAULT '{"x":1,"y":1,"z":1}'::jsonb,
-	"marker_type" text,
-	"color" text DEFAULT '#ffffff',
-	"size" text DEFAULT 'medium',
-	"icon" text,
-	"label" text,
-	"content" text,
-	"layer_id" integer,
-	"parent_marker_id" integer,
-	"model_id" integer,
-	"character_id" integer,
-	"plant_id" integer,
-	"bed_id" integer,
-	"data" jsonb DEFAULT '{}'::jsonb,
-	"is_visible" boolean DEFAULT true,
-	"is_interactive" boolean DEFAULT false,
-	"is_active" boolean DEFAULT true,
-	"is_public" boolean DEFAULT false,
-	"metadata" jsonb DEFAULT '{}'::jsonb,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "threed_markers_marker_id_unique" UNIQUE("marker_id")
 );
 --> statement-breakpoint
 CREATE TABLE "threed_model_files" (
@@ -1016,7 +968,7 @@ CREATE TABLE "traffic_chp_cases" (
 CREATE TABLE "traffic_chp_centers" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text,
-	"center_id" varchar(8) NOT NULL,
+	"center_id" varchar(50) NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"description" text,
 	"latitude" numeric(10, 7),
@@ -1086,11 +1038,6 @@ ALTER TABLE "threed_harvests" ADD CONSTRAINT "threed_harvests_user_id_user_id_fk
 ALTER TABLE "threed_harvests" ADD CONSTRAINT "threed_harvests_planting_id_threed_plantings_id_fk" FOREIGN KEY ("planting_id") REFERENCES "public"."threed_plantings"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_harvests" ADD CONSTRAINT "threed_harvests_plant_id_threed_plants_id_fk" FOREIGN KEY ("plant_id") REFERENCES "public"."threed_plants"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_layers" ADD CONSTRAINT "threed_layers_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "threed_marker_relationships" ADD CONSTRAINT "threed_marker_relationships_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "threed_marker_relationships" ADD CONSTRAINT "threed_marker_relationships_parent_marker_id_threed_markers_id_fk" FOREIGN KEY ("parent_marker_id") REFERENCES "public"."threed_markers"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "threed_marker_relationships" ADD CONSTRAINT "threed_marker_relationships_child_marker_id_threed_markers_id_fk" FOREIGN KEY ("child_marker_id") REFERENCES "public"."threed_markers"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "threed_markers" ADD CONSTRAINT "threed_markers_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "threed_markers" ADD CONSTRAINT "threed_markers_layer_id_threed_layers_id_fk" FOREIGN KEY ("layer_id") REFERENCES "public"."threed_layers"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_model_files" ADD CONSTRAINT "threed_model_files_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_model_files" ADD CONSTRAINT "threed_model_files_model_id_threed_models_id_fk" FOREIGN KEY ("model_id") REFERENCES "public"."threed_models"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "threed_models" ADD CONSTRAINT "threed_models_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -1222,23 +1169,9 @@ CREATE INDEX "idx_threed_harvests_planting" ON "threed_harvests" USING btree ("p
 CREATE INDEX "idx_threed_harvests_date" ON "threed_harvests" USING btree ("harvest_date");--> statement-breakpoint
 CREATE INDEX "idx_threed_layers_user_id" ON "threed_layers" USING btree ("user_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_threed_layers_layer_id" ON "threed_layers" USING btree ("layer_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_layers_parent" ON "threed_layers" USING btree ("parent_layer_id");--> statement-breakpoint
 CREATE INDEX "idx_threed_layers_active" ON "threed_layers" USING btree ("is_active");--> statement-breakpoint
 CREATE INDEX "idx_threed_layers_visible" ON "threed_layers" USING btree ("is_visible");--> statement-breakpoint
-CREATE INDEX "idx_threed_marker_rel_parent" ON "threed_marker_relationships" USING btree ("parent_marker_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_marker_rel_child" ON "threed_marker_relationships" USING btree ("child_marker_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_threed_marker_rel_unique" ON "threed_marker_relationships" USING btree ("parent_marker_id","child_marker_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_marker_rel_active" ON "threed_marker_relationships" USING btree ("is_active");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_user_id" ON "threed_markers" USING btree ("user_id");--> statement-breakpoint
-CREATE UNIQUE INDEX "idx_threed_markers_marker_id" ON "threed_markers" USING btree ("marker_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_layer" ON "threed_markers" USING btree ("layer_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_parent" ON "threed_markers" USING btree ("parent_marker_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_model" ON "threed_markers" USING btree ("model_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_character" ON "threed_markers" USING btree ("character_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_plant" ON "threed_markers" USING btree ("plant_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_bed" ON "threed_markers" USING btree ("bed_id");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_active" ON "threed_markers" USING btree ("is_active");--> statement-breakpoint
-CREATE INDEX "idx_threed_markers_visible" ON "threed_markers" USING btree ("is_visible");--> statement-breakpoint
+CREATE INDEX "idx_threed_layers_type" ON "threed_layers" USING btree ("layer_type");--> statement-breakpoint
 CREATE INDEX "idx_threed_model_files_model_id" ON "threed_model_files" USING btree ("model_id");--> statement-breakpoint
 CREATE INDEX "idx_threed_model_files_type" ON "threed_model_files" USING btree ("file_type");--> statement-breakpoint
 CREATE INDEX "idx_threed_models_type" ON "threed_models" USING btree ("model_type");--> statement-breakpoint

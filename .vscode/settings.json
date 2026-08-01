@@ -1,0 +1,24 @@
+{
+  "folder-customization.folders": [
+    {
+      "path": "marty-mcgee-neon/src/lib/",
+      "color": "foldercustomization.AnsiColor104"
+    },
+    {
+      "path": "marty-mcgee-neon/src/components/",
+      "color": "foldercustomization.AnsiColor39"
+    },
+    {
+      "path": "marty-mcgee-neon/src/app/",
+      "color": "foldercustomization.AnsiColor107"
+    },
+    {
+      "path": "marty-mcgee-neon/src/lib/schema/",
+      "color": "foldercustomization.AnsiColor67"
+    },
+    {
+      "path": "marty-mcgee-neon/src/app/api/",
+      "color": "foldercustomization.AnsiColor153"
+    }
+  ]
+}

@@ -325,7 +325,7 @@ export function ThreeDScene({
 
       {/* Tooltip */}
       <div className="absolute bottom-3 right-3 z-10 text-[10px] text-white/40 bg-black/40 px-2 py-1 rounded">
-        Left-click: Select • Right-click: Jump
+        Left-click: Select • Right-click: Zoom
       </div>
 
       <Canvas

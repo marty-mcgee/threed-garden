@@ -1,1 +1,0 @@
-ALTER TYPE "public"."asset_type" ADD VALUE 'threed_plantings' BEFORE 'threed_layers';

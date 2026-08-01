@@ -1,3 +1,4 @@
+// components/admin/threed/layers/ThreeDLayersCRUD.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,6 +15,9 @@ import {
   EyeOff,
   Lock,
   Unlock,
+  Palette,
+  Hash,
+  Move,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,46 +29,54 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui/toast';
 
-// ✅ Types - Updated to match schema
+// ✅ Types
 interface Layer {
   id: number;
   layerId: string;
   name: string;
   description: string | null;
-  config: {
-    includeTypes?: string[];
-    filters?: Record<string, any>;
-    color?: string;
-    opacity?: number;
-    visible?: boolean;
-  };
+  config: any;
   category: string | null;
   layerType: string | null;
+  parentLayerId: number | null;
   orderIndex: number;
   isVisible: boolean;
+  isLocked: boolean;
   isActive: boolean;
   isPublic: boolean;
   metadata: any;
   createdAt: string;
   updatedAt: string;
+  parentLayer?: Layer;
+  childLayers?: Layer[];
 }
 
 interface FormData {
   layerId: string;
   name: string;
   description: string;
+  configVisible: string;
+  configOpacity: string;
+  configColor: string;
+  configTransformX: string;
+  configTransformY: string;
+  configTransformZ: string;
+  configRotationX: string;
+  configRotationY: string;
+  configRotationZ: string;
+  configScaleX: string;
+  configScaleY: string;
+  configScaleZ: string;
   category: string;
   layerType: string;
-  includeTypes: string[];
-  includeTypesInput: string;
+  parentLayerId: string;
   orderIndex: string;
   isVisible: boolean;
+  isLocked: boolean;
   isActive: boolean;
   isPublic: boolean;
-  color: string;
-  opacity: string;
   metadata: string;
 }
 
@@ -78,8 +90,7 @@ const LAYER_CATEGORY_OPTIONS = [
   { value: 'characters', label: 'Characters' },
   { value: 'tasks', label: 'Tasks' },
   { value: 'weather', label: 'Weather' },
-  { value: 'harvests', label: 'Harvests' },
-  { value: 'plantings', label: 'Plantings' },
+  { value: 'traffic', label: 'Traffic' },
   { value: 'custom', label: 'Custom' },
 ];
 
@@ -92,21 +103,8 @@ const LAYER_TYPE_OPTIONS = [
   { value: 'characters', label: 'Characters' },
   { value: 'tasks', label: 'Tasks' },
   { value: 'weather', label: 'Weather' },
-  { value: 'harvests', label: 'Harvests' },
-  { value: 'plantings', label: 'Plantings' },
+  { value: 'traffic', label: 'Traffic' },
   { value: 'custom', label: 'Custom' },
-];
-
-const AVAILABLE_TYPES = [
-  { value: 'plant', label: 'Plants', icon: '🌱' },
-  { value: 'bed', label: 'Beds', icon: '🧑‍🌾' },
-  { value: 'task', label: 'Tasks', icon: '📋' },
-  { value: 'farmbot', label: 'FarmBots', icon: '🤖' },
-  { value: 'character', label: 'Characters', icon: '🧚' },
-  { value: 'harvest', label: 'Harvests', icon: '🍎' },
-  { value: 'weather', label: 'Weather', icon: '🌤️' },
-  { value: 'planting', label: 'Plantings', icon: '🌿' },
-  { value: 'model', label: 'Models', icon: '🗿' },
 ];
 
 const COLOR_OPTIONS = [
@@ -134,14 +132,8 @@ const getStatusColor = (isActive: boolean) => {
   return isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700';
 };
 
-interface ThreeDLayersCRUDProps {
-  onModuleUpdate?: () => void;
-  userId?: string;
-  projectId?: number;
-}
-
-export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLayersCRUDProps) {
-  const { toast } = useToast();
+export function ThreeDLayersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
+  const { showToast, ToastComponent } = useToast();
   const [layers, setLayers] = useState<Layer[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -151,21 +143,31 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
   const [filterType, setFilterType] = useState<string>('all');
   const [filterActive, setFilterActive] = useState<string>('all');
 
-  // ✅ Form state - Simplified to match schema
+  // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
     layerId: '',
     name: '',
     description: '',
+    configVisible: 'true',
+    configOpacity: '1.0',
+    configColor: '#ffffff',
+    configTransformX: '0',
+    configTransformY: '0',
+    configTransformZ: '0',
+    configRotationX: '0',
+    configRotationY: '0',
+    configRotationZ: '0',
+    configScaleX: '1',
+    configScaleY: '1',
+    configScaleZ: '1',
     category: '',
     layerType: '',
-    includeTypes: ['plant', 'bed'],
-    includeTypesInput: 'plant, bed',
+    parentLayerId: '',
     orderIndex: '0',
     isVisible: true,
+    isLocked: false,
     isActive: true,
     isPublic: false,
-    color: '#ffffff',
-    opacity: '1.0',
     metadata: '{}',
   });
 
@@ -177,85 +179,68 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
   const fetchLayers = async () => {
     setLoading(true);
     try {
-      const url = projectId 
-        ? `/api/threed/layers?projectId=${projectId}&limit=100`
-        : '/api/threed/layers?limit=100';
-      const response = await fetch(url);
+      const response = await fetch('/api/threed/layers?limit=100');
       const data = await response.json();
       if (data.success) {
         setLayers(Array.isArray(data.data) ? data.data : []);
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to fetch layers',
-          variant: 'destructive',
-        });
+        showToast(data.error || 'Failed to fetch layers', 'error');
         setLayers([]);
       }
     } catch (error) {
       console.error('Error fetching layers:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch layers',
-        variant: 'destructive',
-      });
+      showToast('Failed to fetch layers', 'error');
       setLayers([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredLayers = layers.filter((layer) => {
-    const matchesSearch = layer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      layer.layerId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (layer.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
-    
-    const matchesType = filterType === 'all' || layer.layerType === filterType;
-    const matchesActive = filterActive === 'all' || 
-      (filterActive === 'true' ? layer.isActive : !layer.isActive);
-    
-    return matchesSearch && matchesType && matchesActive;
-  });
+  const filteredLayers = layers.filter((layer) =>
+    layer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    layer.layerId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (layer.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+  );
 
   const handleCreate = async () => {
     if (!formData.layerId) {
-      toast({
-        title: 'Error',
-        description: 'Layer ID is required',
-        variant: 'destructive',
-      });
+      showToast('Layer ID is required', 'error');
       return;
     }
     if (!formData.name) {
-      toast({
-        title: 'Error',
-        description: 'Layer name is required',
-        variant: 'destructive',
-      });
+      showToast('Layer name is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
       const payload = {
-        layerId: formData.layerId,
-        name: formData.name,
-        description: formData.description || null,
-        category: formData.category || null,
-        layerType: formData.layerType || null,
-        orderIndex: parseInt(formData.orderIndex) || 0,
-        isVisible: formData.isVisible,
-        isActive: formData.isActive,
-        isPublic: formData.isPublic,
+        ...formData,
         config: {
-          includeTypes: formData.includeTypes,
-          color: formData.color,
-          opacity: parseFloat(formData.opacity) || 1.0,
-          visible: formData.isVisible,
+          visible: formData.configVisible === 'true',
+          opacity: parseFloat(formData.configOpacity) || 1.0,
+          color: formData.configColor || '#ffffff',
+          transform: {
+            position: {
+              x: parseFloat(formData.configTransformX) || 0,
+              y: parseFloat(formData.configTransformY) || 0,
+              z: parseFloat(formData.configTransformZ) || 0,
+            },
+            rotation: {
+              x: parseFloat(formData.configRotationX) || 0,
+              y: parseFloat(formData.configRotationY) || 0,
+              z: parseFloat(formData.configRotationZ) || 0,
+            },
+            scale: {
+              x: parseFloat(formData.configScaleX) || 1,
+              y: parseFloat(formData.configScaleY) || 1,
+              z: parseFloat(formData.configScaleZ) || 1,
+            },
+          },
         },
-        metadata: formData.metadata ? JSON.parse(formData.metadata) : {},
-        userId: userId,
-        projectId: projectId || null,
+        metadata: JSON.parse(formData.metadata),
+        parentLayerId: formData.parentLayerId ? parseInt(formData.parentLayerId) : null,
+        orderIndex: parseInt(formData.orderIndex) || 0,
       };
 
       const response = await fetch('/api/threed/layers', {
@@ -266,28 +251,17 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
 
       const data = await response.json();
       if (data.success) {
-        toast({
-          title: 'Success',
-          description: 'Layer created successfully',
-        });
+        showToast('Layer created successfully', 'success');
         setShowCreateDialog(false);
         resetForm();
         await fetchLayers();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to create layer',
-          variant: 'destructive',
-        });
+        showToast(data.error || 'Failed to create layer', 'error');
       }
     } catch (error) {
       console.error('Error creating layer:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create layer',
-        variant: 'destructive',
-      });
+      showToast('Failed to create layer', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -296,41 +270,43 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
   const handleUpdate = async () => {
     if (!editingLayer) return;
     if (!formData.layerId) {
-      toast({
-        title: 'Error',
-        description: 'Layer ID is required',
-        variant: 'destructive',
-      });
+      showToast('Layer ID is required', 'error');
       return;
     }
     if (!formData.name) {
-      toast({
-        title: 'Error',
-        description: 'Layer name is required',
-        variant: 'destructive',
-      });
+      showToast('Layer name is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
       const payload = {
-        layerId: formData.layerId,
-        name: formData.name,
-        description: formData.description || null,
-        category: formData.category || null,
-        layerType: formData.layerType || null,
-        orderIndex: parseInt(formData.orderIndex) || 0,
-        isVisible: formData.isVisible,
-        isActive: formData.isActive,
-        isPublic: formData.isPublic,
+        ...formData,
         config: {
-          includeTypes: formData.includeTypes,
-          color: formData.color,
-          opacity: parseFloat(formData.opacity) || 1.0,
-          visible: formData.isVisible,
+          visible: formData.configVisible === 'true',
+          opacity: parseFloat(formData.configOpacity) || 1.0,
+          color: formData.configColor || '#ffffff',
+          transform: {
+            position: {
+              x: parseFloat(formData.configTransformX) || 0,
+              y: parseFloat(formData.configTransformY) || 0,
+              z: parseFloat(formData.configTransformZ) || 0,
+            },
+            rotation: {
+              x: parseFloat(formData.configRotationX) || 0,
+              y: parseFloat(formData.configRotationY) || 0,
+              z: parseFloat(formData.configRotationZ) || 0,
+            },
+            scale: {
+              x: parseFloat(formData.configScaleX) || 1,
+              y: parseFloat(formData.configScaleY) || 1,
+              z: parseFloat(formData.configScaleZ) || 1,
+            },
+          },
         },
-        metadata: formData.metadata ? JSON.parse(formData.metadata) : {},
+        metadata: JSON.parse(formData.metadata),
+        parentLayerId: formData.parentLayerId ? parseInt(formData.parentLayerId) : null,
+        orderIndex: parseInt(formData.orderIndex) || 0,
       };
 
       const response = await fetch(`/api/threed/layers?id=${editingLayer.id}`, {
@@ -341,27 +317,16 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
 
       const data = await response.json();
       if (data.success) {
-        toast({
-          title: 'Success',
-          description: 'Layer updated successfully',
-        });
+        showToast('Layer updated successfully', 'success');
         setEditingLayer(null);
         await fetchLayers();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to update layer',
-          variant: 'destructive',
-        });
+        showToast(data.error || 'Failed to update layer', 'error');
       }
     } catch (error) {
       console.error('Error updating layer:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update layer',
-        variant: 'destructive',
-      });
+      showToast('Failed to update layer', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -377,26 +342,15 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
 
       const data = await response.json();
       if (data.success) {
-        toast({
-          title: 'Success',
-          description: 'Layer deleted successfully',
-        });
+        showToast('Layer deleted successfully', 'success');
         await fetchLayers();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to delete layer',
-          variant: 'destructive',
-        });
+        showToast(data.error || 'Failed to delete layer', 'error');
       }
     } catch (error) {
       console.error('Error deleting layer:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete layer',
-        variant: 'destructive',
-      });
+      showToast('Failed to delete layer', 'error');
     }
   };
 
@@ -405,77 +359,61 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
       layerId: '',
       name: '',
       description: '',
+      configVisible: 'true',
+      configOpacity: '1.0',
+      configColor: '#ffffff',
+      configTransformX: '0',
+      configTransformY: '0',
+      configTransformZ: '0',
+      configRotationX: '0',
+      configRotationY: '0',
+      configRotationZ: '0',
+      configScaleX: '1',
+      configScaleY: '1',
+      configScaleZ: '1',
       category: '',
       layerType: '',
-      includeTypes: ['plant', 'bed'],
-      includeTypesInput: 'plant, bed',
+      parentLayerId: '',
       orderIndex: '0',
       isVisible: true,
+      isLocked: false,
       isActive: true,
       isPublic: false,
-      color: '#ffffff',
-      opacity: '1.0',
       metadata: '{}',
     });
   };
 
   const openEditDialog = (layer: Layer) => {
     setEditingLayer(layer);
-    const config = layer.config || { includeTypes: ['plant', 'bed'], color: '#ffffff', opacity: 1.0, visible: true };
+    const config = layer.config || { visible: true, opacity: 1.0, color: '#ffffff', transform: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } } };
+    const transform = config.transform || { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: { x: 1, y: 1, z: 1 } };
 
     setFormData({
       layerId: layer.layerId || '',
       name: layer.name,
       description: layer.description || '',
+      configVisible: String(config.visible ?? true),
+      configOpacity: String(config.opacity ?? 1.0),
+      configColor: config.color || '#ffffff',
+      configTransformX: String(transform.position?.x ?? 0),
+      configTransformY: String(transform.position?.y ?? 0),
+      configTransformZ: String(transform.position?.z ?? 0),
+      configRotationX: String(transform.rotation?.x ?? 0),
+      configRotationY: String(transform.rotation?.y ?? 0),
+      configRotationZ: String(transform.rotation?.z ?? 0),
+      configScaleX: String(transform.scale?.x ?? 1),
+      configScaleY: String(transform.scale?.y ?? 1),
+      configScaleZ: String(transform.scale?.z ?? 1),
       category: layer.category || '',
       layerType: layer.layerType || '',
-      includeTypes: config.includeTypes || ['plant', 'bed'],
-      includeTypesInput: (config.includeTypes || ['plant', 'bed']).join(', '),
+      parentLayerId: layer.parentLayerId ? String(layer.parentLayerId) : '',
       orderIndex: String(layer.orderIndex || 0),
       isVisible: layer.isVisible ?? true,
+      isLocked: layer.isLocked ?? false,
       isActive: layer.isActive ?? true,
       isPublic: layer.isPublic ?? false,
-      color: config.color || '#ffffff',
-      opacity: String(config.opacity || 1.0),
       metadata: JSON.stringify(layer.metadata || {}),
     });
-  };
-
-  const toggleVisibility = async (layer: Layer) => {
-    try {
-      const response = await fetch(`/api/threed/layers?id=${layer.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isVisible: !layer.isVisible }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        await fetchLayers();
-      }
-    } catch (error) {
-      console.error('Error toggling visibility:', error);
-    }
-  };
-
-  const toggleLock = async (layer: Layer) => {
-    // Lock is now tracked in metadata since we removed it from schema
-    // We'll store it in metadata as a convenience
-    try {
-      const currentLock = layer.metadata?.isLocked || false;
-      const response = await fetch(`/api/threed/layers?id=${layer.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          metadata: { ...layer.metadata, isLocked: !currentLock }
-        }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        await fetchLayers();
-      }
-    } catch (error) {
-      console.error('Error toggling lock:', error);
-    }
   };
 
   const renderActions = (layer: Layer) => (
@@ -483,7 +421,14 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => toggleVisibility(layer)}
+        onClick={() => {
+          // Toggle visibility
+          fetch(`/api/threed/layers?id=${layer.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isVisible: !layer.isVisible }),
+          }).then(() => fetchLayers());
+        }}
         title={layer.isVisible ? 'Hide' : 'Show'}
       >
         {layer.isVisible ? (
@@ -495,10 +440,17 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => toggleLock(layer)}
-        title={layer.metadata?.isLocked ? 'Unlock' : 'Lock'}
+        onClick={() => {
+          // Toggle lock
+          fetch(`/api/threed/layers?id=${layer.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isLocked: !layer.isLocked }),
+          }).then(() => fetchLayers());
+        }}
+        title={layer.isLocked ? 'Unlock' : 'Lock'}
       >
-        {layer.metadata?.isLocked ? (
+        {layer.isLocked ? (
           <Lock className="w-4 h-4 text-red-500" />
         ) : (
           <Unlock className="w-4 h-4 text-gray-400" />
@@ -528,10 +480,10 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
               </span>
             </DropdownMenuItem>
           )}
-          {layer.config?.includeTypes && (
+          {layer.parentLayer && (
             <DropdownMenuItem>
               <span className="text-xs text-muted-foreground">
-                Includes: {layer.config.includeTypes.join(', ')}
+                Parent: {layer.parentLayer.name}
               </span>
             </DropdownMenuItem>
           )}
@@ -557,6 +509,8 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
 
   return (
     <div className="space-y-2">
+      {ToastComponent}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -655,6 +609,26 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
               </div>
 
               <div>
+                <Label htmlFor="parentLayerId">Parent Layer</Label>
+                <Select
+                  value={formData.parentLayerId}
+                  onValueChange={(value) => setFormData({ ...formData, parentLayerId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a parent layer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {layers.map((layer) => (
+                      <SelectItem key={layer.id} value={String(layer.id)}>
+                        {layer.name} ({layer.layerId})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
                 <Label htmlFor="orderIndex">Order Index</Label>
                 <Input
                   id="orderIndex"
@@ -667,68 +641,157 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                 />
               </div>
 
-              {/* Include Types */}
-              <div>
-                <Label>Include Data Types</Label>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {AVAILABLE_TYPES.map((type) => (
-                    <Button
-                      key={type.value}
-                      variant={formData.includeTypes.includes(type.value) ? 'default' : 'outline'}
-                      size="sm"
-                      className="h-6 text-xs"
-                      onClick={() => {
-                        const newTypes = formData.includeTypes.includes(type.value)
-                          ? formData.includeTypes.filter(t => t !== type.value)
-                          : [...formData.includeTypes, type.value];
-                        setFormData({ ...formData, includeTypes: newTypes });
-                      }}
-                    >
-                      {type.icon} {type.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
               {/* Layer Configuration */}
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium">Layer Configuration</Label>
                 <div className="space-y-2 mt-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label htmlFor="color" className="text-xs">Color</Label>
+                      <Label htmlFor="configVisible" className="text-xs">Visible</Label>
                       <Select
-                        value={formData.color}
-                        onValueChange={(value) => setFormData({ ...formData, color: value })}
+                        value={formData.configVisible}
+                        onValueChange={(value) => setFormData({ ...formData, configVisible: value })}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select color" />
+                          <SelectValue placeholder="Visible" />
                         </SelectTrigger>
                         <SelectContent>
-                          {COLOR_OPTIONS.map((color) => (
-                            <SelectItem key={color.value} value={color.value}>
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className="w-4 h-4 rounded-full border"
-                                  style={{ backgroundColor: color.value }}
-                                />
-                                {color.label}
-                              </div>
-                            </SelectItem>
-                          ))}
+                          <SelectItem value="true">Visible</SelectItem>
+                          <SelectItem value="false">Hidden</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <Label htmlFor="opacity" className="text-xs">Opacity</Label>
+                      <Label htmlFor="configOpacity" className="text-xs">Opacity</Label>
                       <Input
-                        id="opacity"
+                        id="configOpacity"
                         type="number"
                         step="0.05"
                         min="0"
                         max="1"
-                        value={formData.opacity}
-                        onChange={(e) => setFormData({ ...formData, opacity: e.target.value })}
+                        value={formData.configOpacity}
+                        onChange={(e) => setFormData({ ...formData, configOpacity: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="configColor" className="text-xs">Color</Label>
+                    <Select
+                      value={formData.configColor}
+                      onValueChange={(value) => setFormData({ ...formData, configColor: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select color" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COLOR_OPTIONS.map((color) => (
+                          <SelectItem key={color.value} value={color.value}>
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-4 h-4 rounded-full border"
+                                style={{ backgroundColor: color.value }}
+                              />
+                              {color.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Transform */}
+              <div className="border-t pt-4">
+                <Label className="text-sm font-medium">Transform</Label>
+                <div className="space-y-2 mt-2">
+                  <div>
+                    <Label className="text-xs">Position</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      <Input
+                        placeholder="X"
+                        type="number"
+                        step="0.01"
+                        value={formData.configTransformX}
+                        onChange={(e) => setFormData({ ...formData, configTransformX: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Y"
+                        type="number"
+                        step="0.01"
+                        value={formData.configTransformY}
+                        onChange={(e) => setFormData({ ...formData, configTransformY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Z"
+                        type="number"
+                        step="0.01"
+                        value={formData.configTransformZ}
+                        onChange={(e) => setFormData({ ...formData, configTransformZ: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Rotation</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      <Input
+                        placeholder="X"
+                        type="number"
+                        step="1"
+                        value={formData.configRotationX}
+                        onChange={(e) => setFormData({ ...formData, configRotationX: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Y"
+                        type="number"
+                        step="1"
+                        value={formData.configRotationY}
+                        onChange={(e) => setFormData({ ...formData, configRotationY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Z"
+                        type="number"
+                        step="1"
+                        value={formData.configRotationZ}
+                        onChange={(e) => setFormData({ ...formData, configRotationZ: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Scale</Label>
+                    <div className="grid grid-cols-3 gap-2 mt-1">
+                      <Input
+                        placeholder="X"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.configScaleX}
+                        onChange={(e) => setFormData({ ...formData, configScaleX: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Y"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.configScaleY}
+                        onChange={(e) => setFormData({ ...formData, configScaleY: e.target.value })}
+                        disabled={isSubmitting}
+                      />
+                      <Input
+                        placeholder="Z"
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.configScaleZ}
+                        onChange={(e) => setFormData({ ...formData, configScaleZ: e.target.value })}
                         disabled={isSubmitting}
                       />
                     </div>
@@ -759,6 +822,15 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                       disabled={isSubmitting}
                     />
                     <Label htmlFor="isVisible">Visible</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="isLocked"
+                      checked={formData.isLocked}
+                      onCheckedChange={(checked) => setFormData({ ...formData, isLocked: checked })}
+                      disabled={isSubmitting}
+                    />
+                    <Label htmlFor="isLocked">Locked</Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch
@@ -870,7 +942,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                 <TableHead className="text-xs py-1">Name</TableHead>
                 <TableHead className="hidden sm:table-cell text-xs py-1">ID</TableHead>
                 <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
-                <TableHead className="hidden lg:table-cell text-xs py-1">Includes</TableHead>
+                <TableHead className="hidden lg:table-cell text-xs py-1">Order</TableHead>
                 <TableHead className="text-center text-xs py-1">Visible</TableHead>
                 <TableHead className="text-center text-xs py-1">Locked</TableHead>
                 <TableHead className="text-center text-xs py-1">Active</TableHead>
@@ -882,10 +954,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                 <TableRow key={layer.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: layer.config?.color || '#ffffff' }}
-                      />
+                      <Layers className="w-3.5 h-3.5 text-cyan-500" />
                       {layer.name}
                       {!layer.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
@@ -904,23 +973,8 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                       '—'
                     )}
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell py-1 text-xs text-muted-foreground">
-                    {layer.config?.includeTypes ? (
-                      <div className="flex gap-1 flex-wrap">
-                        {layer.config.includeTypes.slice(0, 3).map((type) => (
-                          <span key={type} className="text-[10px] bg-muted px-1 rounded">
-                            {type}
-                          </span>
-                        ))}
-                        {layer.config.includeTypes.length > 3 && (
-                          <span className="text-[10px] text-muted-foreground">
-                            +{layer.config.includeTypes.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      '—'
-                    )}
+                  <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
+                    {layer.orderIndex !== undefined ? layer.orderIndex : '—'}
                   </TableCell>
                   <TableCell className="text-center py-1">
                     {layer.isVisible ? (
@@ -930,7 +984,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                     )}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    {layer.metadata?.isLocked ? (
+                    {layer.isLocked ? (
                       <Lock className="w-4 h-4 text-red-500 mx-auto" />
                     ) : (
                       <Unlock className="w-4 h-4 text-gray-400 mx-auto" />
@@ -1027,6 +1081,26 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
             </div>
 
             <div>
+              <Label htmlFor="edit-parentLayerId">Parent Layer</Label>
+              <Select
+                value={formData.parentLayerId}
+                onValueChange={(value) => setFormData({ ...formData, parentLayerId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a parent layer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {layers.map((layer) => (
+                    <SelectItem key={layer.id} value={String(layer.id)}>
+                      {layer.name} ({layer.layerId})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
               <Label htmlFor="edit-orderIndex">Order Index</Label>
               <Input
                 id="edit-orderIndex"
@@ -1038,68 +1112,157 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
               />
             </div>
 
-            {/* Include Types */}
-            <div>
-              <Label>Include Data Types</Label>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {AVAILABLE_TYPES.map((type) => (
-                  <Button
-                    key={type.value}
-                    variant={formData.includeTypes.includes(type.value) ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-6 text-xs"
-                    onClick={() => {
-                      const newTypes = formData.includeTypes.includes(type.value)
-                        ? formData.includeTypes.filter(t => t !== type.value)
-                        : [...formData.includeTypes, type.value];
-                      setFormData({ ...formData, includeTypes: newTypes });
-                    }}
-                  >
-                    {type.icon} {type.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
             {/* Layer Configuration */}
             <div className="border-t pt-4">
               <Label className="text-sm font-medium">Layer Configuration</Label>
               <div className="space-y-2 mt-2">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label htmlFor="edit-color" className="text-xs">Color</Label>
+                    <Label htmlFor="edit-configVisible" className="text-xs">Visible</Label>
                     <Select
-                      value={formData.color}
-                      onValueChange={(value) => setFormData({ ...formData, color: value })}
+                      value={formData.configVisible}
+                      onValueChange={(value) => setFormData({ ...formData, configVisible: value })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select color" />
+                        <SelectValue placeholder="Visible" />
                       </SelectTrigger>
                       <SelectContent>
-                        {COLOR_OPTIONS.map((color) => (
-                          <SelectItem key={color.value} value={color.value}>
-                            <div className="flex items-center gap-2">
-                              <div 
-                                className="w-4 h-4 rounded-full border"
-                                style={{ backgroundColor: color.value }}
-                              />
-                              {color.label}
-                            </div>
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="true">Visible</SelectItem>
+                        <SelectItem value="false">Hidden</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="edit-opacity" className="text-xs">Opacity</Label>
+                    <Label htmlFor="edit-configOpacity" className="text-xs">Opacity</Label>
                     <Input
-                      id="edit-opacity"
+                      id="edit-configOpacity"
                       type="number"
                       step="0.05"
                       min="0"
                       max="1"
-                      value={formData.opacity}
-                      onChange={(e) => setFormData({ ...formData, opacity: e.target.value })}
+                      value={formData.configOpacity}
+                      onChange={(e) => setFormData({ ...formData, configOpacity: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="edit-configColor" className="text-xs">Color</Label>
+                  <Select
+                    value={formData.configColor}
+                    onValueChange={(value) => setFormData({ ...formData, configColor: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COLOR_OPTIONS.map((color) => (
+                        <SelectItem key={color.value} value={color.value}>
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-4 h-4 rounded-full border"
+                              style={{ backgroundColor: color.value }}
+                            />
+                            {color.label}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Transform */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium">Transform</Label>
+              <div className="space-y-2 mt-2">
+                <div>
+                  <Label className="text-xs">Position</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Input
+                      placeholder="X"
+                      type="number"
+                      step="0.01"
+                      value={formData.configTransformX}
+                      onChange={(e) => setFormData({ ...formData, configTransformX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Y"
+                      type="number"
+                      step="0.01"
+                      value={formData.configTransformY}
+                      onChange={(e) => setFormData({ ...formData, configTransformY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Z"
+                      type="number"
+                      step="0.01"
+                      value={formData.configTransformZ}
+                      onChange={(e) => setFormData({ ...formData, configTransformZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Rotation</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Input
+                      placeholder="X"
+                      type="number"
+                      step="1"
+                      value={formData.configRotationX}
+                      onChange={(e) => setFormData({ ...formData, configRotationX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Y"
+                      type="number"
+                      step="1"
+                      value={formData.configRotationY}
+                      onChange={(e) => setFormData({ ...formData, configRotationY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Z"
+                      type="number"
+                      step="1"
+                      value={formData.configRotationZ}
+                      onChange={(e) => setFormData({ ...formData, configRotationZ: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Scale</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-1">
+                    <Input
+                      placeholder="X"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.configScaleX}
+                      onChange={(e) => setFormData({ ...formData, configScaleX: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Y"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.configScaleY}
+                      onChange={(e) => setFormData({ ...formData, configScaleY: e.target.value })}
+                      disabled={isSubmitting}
+                    />
+                    <Input
+                      placeholder="Z"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={formData.configScaleZ}
+                      onChange={(e) => setFormData({ ...formData, configScaleZ: e.target.value })}
                       disabled={isSubmitting}
                     />
                   </div>
@@ -1129,6 +1292,15 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                     disabled={isSubmitting}
                   />
                   <Label htmlFor="edit-isVisible">Visible</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="edit-isLocked"
+                    checked={formData.isLocked}
+                    onCheckedChange={(checked) => setFormData({ ...formData, isLocked: checked })}
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="edit-isLocked">Locked</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch

@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -10,6 +10,7 @@
     "db:migrate": "echo 'Use db:push for development'",
     "db:push": "drizzle-kit push --force",
     "db:studio": "drizzle-kit studio",
+    "db:seed:all": "bun run src/lib/scripts/seed-initial-data.ts",
     "db:seed:threed": "bun run src/lib/data/threed/seed.ts",
     "db:seed:traffic": "bun run src/lib/data/traffic/seed.ts",
     "db:seed:music": "bun run src/lib/data/music/seed.ts",

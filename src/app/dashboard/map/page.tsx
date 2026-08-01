@@ -1,4 +1,4 @@
-// app/dashboard/map/page.tsx - Fixed with working Project Selector Dialog
+// app/dashboard/map/page.tsx
 
 'use client';
 
@@ -12,14 +12,11 @@ import {
   MapPin, 
   Box, 
   Car, 
-  AlertTriangle,
   Maximize2,
   Minimize2,
   FolderOpen,
-  ChevronLeft,
   ChevronRight,
   Search,
-  Info,
   Loader2,
   Plus,
 } from 'lucide-react';
@@ -33,14 +30,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
-import { 
-  fetchUnifiedMapData, 
-  fetchMapProjects,
-  projectHasMapData,
-  clearMapCache,
-} from '@/lib/services/map/MapDataService';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import { UnifiedMapView } from '@/components/map/UnifiedMapView';
 import { MapLayerConfig, MapViewMode, UnifiedMapData } from '@/lib/types/map';
@@ -51,7 +41,7 @@ import {
   getThreeDLabel,
 } from '@/lib/utils/map-helpers';
 
-// ✅ Project Selector Dialog Component
+// ✅ Project Selector Dialog Component - Uses API route instead of direct service
 function ProjectSelectorDialog({ 
   open, 
   onOpenChange, 
@@ -69,8 +59,10 @@ function ProjectSelectorDialog({
     if (open) {
       const loadProjects = async () => {
         try {
-          const data = await fetchMapProjects({ includeInactive: false });
-          setProjects(data);
+          // ✅ Use API route instead of direct service
+          const response = await fetch('/api/map/projects');
+          const data = await response.json();
+          setProjects(data.projects || []);
         } catch (error) {
           console.error('Failed to load projects:', error);
           setProjects([]);
@@ -117,10 +109,7 @@ function ProjectSelectorDialog({
             <div className="text-center py-8 text-muted-foreground">
               <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm font-medium">
-                {searchQuery ? 'No matching projects' : 'No projects with map data'}
-              </p>
-              <p className="text-xs mt-1">
-                {searchQuery ? 'Try a different search term' : 'Add assets to your projects to see them here'}
+                {searchQuery ? 'No matching projects' : 'No projects found'}
               </p>
             </div>
           ) : (
@@ -141,21 +130,9 @@ function ProjectSelectorDialog({
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    {project.hasTraffic && (
-                      <Badge variant="outline" className="text-[10px] border-blue-500 text-blue-500">
-                        🚗
-                      </Badge>
-                    )}
-                    {project.hasThreeD && (
-                      <Badge variant="outline" className="text-[10px] border-green-500 text-green-500">
-                        📦
-                      </Badge>
-                    )}
-                    <Badge variant="secondary" className="text-[10px]">
-                      {project.assetCount || 0}
-                    </Badge>
-                  </div>
+                  <Badge variant="secondary" className="text-[10px]">
+                    {project.assetCount || 0}
+                  </Badge>
                 </div>
               </Button>
             ))
@@ -235,7 +212,7 @@ export default function UnifiedMapPage() {
     }));
   };
 
-  // ✅ Load data from API or use default view
+  // ✅ Load data from API route instead of direct service
   const loadData = useCallback(async () => {
     setLoading(true);
     
@@ -250,31 +227,64 @@ export default function UnifiedMapPage() {
         return;
       }
 
-      // ✅ Check if project has any map data
+      // ✅ Fetch data from API route
       try {
-        const projectStatus = await projectHasMapData(selectedProjectId);
-        setProjectInfo({
-          name: `Project #${selectedProjectId}`,
-          hasData: projectStatus.totalAssets > 0,
-        });
+        const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`);
+        const result = await response.json();
 
-        if (projectStatus.totalAssets === 0) {
+        if (result.success) {
+          // ✅ Transform API response to UnifiedMapData format
+          const unifiedData: UnifiedMapData = {
+            traffic: {
+              raw: result.data || null,
+              total: result.total || 0,
+              chpCadCount: result.counts?.chpCadIncidents || 0,
+              chpCasesCount: result.counts?.chpCases || 0,
+              chpCentersCount: result.counts?.chpCenters || 0,
+              caltransClosuresCount: result.counts?.caltransLaneClosures || 0,
+              caltransCctvCount: result.counts?.caltransCctvCameras || 0,
+              caltransDistrictsCount: result.counts?.caltransDistricts || 0,
+              bayArea511Count: result.counts?.bayArea511Events || 0,
+              calfireIncidentsCount: result.counts?.calfireIncidents || 0,
+            },
+            threed: {
+              raw: result.data || null,
+              total: result.total || 0,
+              plantsCount: result.counts?.plants || 0,
+              bedsCount: result.counts?.beds || 0,
+              charactersCount: result.counts?.characters || 0,
+              markersCount: 0,
+              layersCount: result.counts?.layers || 0,
+              farmbotsCount: result.counts?.farmbots || 0,
+              plantingsCount: result.counts?.plantings || 0,
+              tasksCount: result.counts?.tasks || 0,
+              harvestsCount: result.counts?.harvests || 0,
+              weatherLogsCount: result.counts?.weatherLogs || 0,
+              layers: [],
+            },
+          };
+
+          setData(unifiedData);
+          setProjectInfo({
+            name: `Project #${selectedProjectId}`,
+            hasData: result.total > 0,
+          });
+          setIsDefaultView(false);
+        } else {
+          // Fallback to default if API fails
           const emptyData = getDefaultMapData();
           setData(emptyData);
-          setLoading(false);
-          return;
+          setProjectInfo({ name: 'Error Loading Data', hasData: false });
+          setIsDefaultView(true);
+          showToast(result.error || 'Failed to load data', 'error');
         }
-
-        // ✅ Load real project data from API
-        const result = await fetchUnifiedMapData(selectedProjectId);
-        setData(result);
-        setIsDefaultView(false);
-      } catch (checkError) {
-        console.warn('Project check failed:', checkError);
+      } catch (fetchError) {
+        console.warn('API fetch failed:', fetchError);
         const emptyData = getDefaultMapData();
         setData(emptyData);
         setProjectInfo({ name: 'Error Loading Data', hasData: false });
         setIsDefaultView(true);
+        showToast('Failed to load data', 'error');
       }
     } catch (error) {
       console.error('Failed to load map data:', error);
@@ -293,9 +303,6 @@ export default function UnifiedMapPage() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    if (selectedProjectId) {
-      clearMapCache(selectedProjectId);
-    }
     await loadData();
     showToast('Data refreshed', 'success');
   };
@@ -317,7 +324,7 @@ export default function UnifiedMapPage() {
   }
 
   // ✅ Check if there's any real data to show
-  const hasRealData = data.traffic?.total > 0 || data.threed?.total > 0;
+  const hasRealData = data.traffic.total > 0 || data.threed.total > 0;
 
   return (
     <div className="space-y-4">
@@ -354,7 +361,7 @@ export default function UnifiedMapPage() {
           </div>
           <p className="text-sm text-muted-foreground ml-9">
             {hasRealData ? (
-              `${data.traffic?.total || 0} traffic incidents • ${data.threed?.total || 0} 3D markers`
+              `${data.traffic.total || 0} traffic items • ${data.threed.total || 0} 3D items`
             ) : selectedProjectId ? (
               'No data available for this project'
             ) : (
@@ -506,41 +513,41 @@ export default function UnifiedMapPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Traffic Summary</span>
                 <Badge variant="secondary" className="text-xs">
-                  {data.traffic?.total || 0}
+                  {data.traffic.total || 0}
                 </Badge>
               </div>
               <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-red-500" />
-                  CHP CAD: {data.traffic?.chpCad || 0}
+                  CHP CAD: {data.traffic.chpCadCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-orange-500" />
-                  CHP Cases: {data.traffic?.chpCases || 0}
+                  CHP Cases: {data.traffic.chpCasesCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-yellow-500" />
-                  CHP Centers: {data.traffic?.chpCenters || 0}
+                  CHP Centers: {data.traffic.chpCentersCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  Caltrans Closures: {data.traffic?.caltransClosures || 0}
+                  Caltrans Closures: {data.traffic.caltransClosuresCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                  Caltrans CCTV: {data.traffic?.caltransCctv || 0}
+                  Caltrans CCTV: {data.traffic.caltransCctvCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                  Caltrans Districts: {data.traffic?.caltransDistricts || 0}
+                  Caltrans Districts: {data.traffic.caltransDistrictsCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  511 Events: {data.traffic?.bayArea511 || 0}
+                  511 Events: {data.traffic.bayArea511Count || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-rose-500" />
-                  CalFire: {data.traffic?.calfireIncidents || 0}
+                  CalFire: {data.traffic.calfireIncidentsCount || 0}
                 </div>
               </div>
             </CardContent>
@@ -551,33 +558,49 @@ export default function UnifiedMapPage() {
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">3D Summary</span>
                 <Badge variant="secondary" className="text-xs">
-                  {data.threed?.total || 0}
+                  {data.threed.total || 0}
                 </Badge>
               </div>
               <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-green-500" />
-                  Plants: {data.threed?.plantsCount || 0}
+                  Plants: {data.threed.plantsCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-amber-500" />
-                  Beds: {data.threed?.bedsCount || 0}
+                  Beds: {data.threed.bedsCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-purple-500" />
-                  Characters: {data.threed?.charactersCount || 0}
+                  Characters: {data.threed.charactersCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-pink-500" />
-                  Markers: {data.threed?.markersCount || 0}
+                  Markers: {data.threed.markersCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-cyan-500" />
-                  Layers: {data.threed?.layersCount || 0}
+                  Layers: {data.threed.layersCount || 0}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-slate-500" />
-                  FarmBots: {data.threed?.farmbotsCount || 0}
+                  FarmBots: {data.threed.farmbotsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                  Plantings: {data.threed.plantingsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-orange-600" />
+                  Tasks: {data.threed.tasksCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-yellow-600" />
+                  Harvests: {data.threed.harvestsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-400" />
+                  Weather Logs: {data.threed.weatherLogsCount || 0}
                 </div>
               </div>
             </CardContent>

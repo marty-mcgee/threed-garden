@@ -1,4 +1,5 @@
 // app/api/map/projects/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
@@ -105,16 +106,21 @@ export async function GET(request: NextRequest) {
           );
 
         return {
-          ...proj,
+          id: proj.id,
+          name: proj.name,
+          description: proj.description || '',
+          slug: proj.slug,
           hasTraffic: (trafficModules[0]?.count || 0) > 0,
           hasThreeD: (threedModules[0]?.count || 0) > 0,
+          assetCount: proj.assetCount || 0,
+          isActive: proj.isActive,
         };
       })
     );
 
     return NextResponse.json({
       success: true,
-      data: projectsWithTypes,
+      projects: projectsWithTypes,  // ✅ Changed from 'data' to 'projects' to match page.tsx expectation
       pagination: {
         limit,
         offset,
