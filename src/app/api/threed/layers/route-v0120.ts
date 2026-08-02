@@ -3,15 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedLayers } from '@/lib/schema/threed';
-import { projectAssets } from '@/lib/schema/project';
-import { eq, and, desc, or, sql, inArray } from 'drizzle-orm';
+import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/threed/layers - List ThreeD Layers for a project
+// GET /api/threed/layers - List ThreeD Layers
 // Query Parameters:
 //   - id (optional): Get a single layer
-//   - projectId (optional): Filter by project (via project_assets)
 //   - parentLayerId (optional): Filter by parent layer
 //   - isActive (optional): Filter by active status
 //   - isVisible (optional): Filter by visibility
@@ -28,7 +26,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const projectId = searchParams.get('projectId');
     const parentLayerId = searchParams.get('parentLayerId');
     const isActive = searchParams.get('isActive');
     const isVisible = searchParams.get('isVisible');
@@ -58,6 +55,7 @@ export async function GET(request: NextRequest) {
         );
       }
 
+      // ✅ Fetch parent layer info if available
       const [parentLayer] = layer.parentLayerId ? await db
         .select()
         .from(threedLayers)
@@ -73,84 +71,46 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build query - start with user filter
-    let conditions: any[] = [eq(threedLayers.userId, userId)];
+    // ✅ Build query
+    let query = db
+      .select()
+      .from(threedLayers)
+      .where(eq(threedLayers.userId, userId))
+      .$dynamic();
 
-    // ✅ If projectId is provided, filter layers via project_assets
-    let layerIds: number[] = [];
-    if (projectId) {
-      const parsedProjectId = parseInt(projectId);
-      if (!isNaN(parsedProjectId)) {
-        // Get layer IDs from project_assets for this project
-        const assetLinks = await db
-          .select({
-            assetId: projectAssets.assetId,
-          })
-          .from(projectAssets)
-          .where(
-            and(
-              eq(projectAssets.projectId, parsedProjectId),
-              eq(projectAssets.assetType, 'threed_layers'),
-              eq(projectAssets.userId, userId),
-              eq(projectAssets.isActive, true)
-            )
-          );
-
-        layerIds = assetLinks.map(link => link.assetId);
-
-        // If no layers found for this project, return empty
-        if (layerIds.length === 0) {
-          return NextResponse.json({
-            success: true,
-            data: [],
-            pagination: { limit, offset, total: 0 },
-          });
-        }
-
-        // Add layer ID filter
-        conditions.push(inArray(threedLayers.id, layerIds));
-      }
+    // ✅ Apply filters
+    if (parentLayerId) {
+      query = query.where(eq(threedLayers.parentLayerId, parseInt(parentLayerId)));
+    } else if (parentLayerId === null) {
+      query = query.where(sql`${threedLayers.parentLayerId} IS NULL`);
     }
 
-    // ✅ Apply parentLayerId filter
-    if (parentLayerId !== null && parentLayerId !== undefined) {
-      if (parentLayerId === 'null' || parentLayerId === '') {
-        conditions.push(sql`${threedLayers.parentLayerId} IS NULL`);
-      } else {
-        conditions.push(eq(threedLayers.parentLayerId, parseInt(parentLayerId)));
-      }
-    }
-
-    // ✅ Apply other filters
     if (isActive !== null) {
-      conditions.push(eq(threedLayers.isActive, isActive === 'true'));
+      query = query.where(eq(threedLayers.isActive, isActive === 'true'));
     }
 
     if (isVisible !== null) {
-      conditions.push(eq(threedLayers.isVisible, isVisible === 'true'));
+      query = query.where(eq(threedLayers.isVisible, isVisible === 'true'));
     }
 
     if (search) {
-      conditions.push(
+      query = query.where(
         sql`${threedLayers.name} ILIKE ${`%${search}%`} OR 
             ${threedLayers.layerId} ILIKE ${`%${search}%`} OR
             ${threedLayers.description} ILIKE ${`%${search}%`}`
       );
     }
 
-    // ✅ Get total count
+    // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedLayers)
-      .where(and(...conditions));
+      .where(query._where);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const results = await db
-      .select()
-      .from(threedLayers)
-      .where(and(...conditions))
+    const results = await query
       .orderBy(desc(threedLayers.createdAt))
       .limit(limit)
       .offset(offset);
@@ -216,9 +176,9 @@ export async function POST(request: NextRequest) {
       isActive,
       isPublic,
       metadata,
-      projectId, // ✅ Optional: link to project via project_assets
     } = body;
 
+    // ✅ Validate required fields
     if (!layerId) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: layerId' },
@@ -302,24 +262,6 @@ export async function POST(request: NextRequest) {
       })
       .returning();
 
-    // ✅ If projectId is provided, link the layer to the project via project_assets
-    if (projectId) {
-      const parsedProjectId = parseInt(projectId);
-      if (!isNaN(parsedProjectId)) {
-        await db
-          .insert(projectAssets)
-          .values({
-            userId,
-            projectId: parsedProjectId,
-            assetType: 'threed_layers',
-            assetId: newLayer.id,
-            isActive: true,
-            config: {},
-          })
-          .onConflictDoNothing();
-      }
-    }
-
     console.log('✅ ThreeD layer created:', newLayer);
 
     return NextResponse.json({
@@ -367,6 +309,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // ✅ Verify layer exists and belongs to user
     const [existing] = await db
       .select()
       .from(threedLayers)
@@ -385,6 +328,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // ✅ Verify parent layer exists if provided
     if (body.parentLayerId) {
       const [parent] = await db
         .select()
@@ -466,6 +410,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // ✅ Verify layer exists and belongs to user
     const [existing] = await db
       .select()
       .from(threedLayers)
@@ -484,6 +429,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // ✅ Verify parent layer exists if provided
     if (body.parentLayerId) {
       const [parent] = await db
         .select()
@@ -583,17 +529,6 @@ export async function DELETE(request: NextRequest) {
         { status: 404 }
       );
     }
-
-    // ✅ Also remove from project_assets
-    await db
-      .delete(projectAssets)
-      .where(
-        and(
-          eq(projectAssets.assetType, 'threed_layers'),
-          eq(projectAssets.assetId, parsedId),
-          eq(projectAssets.userId, userId)
-        )
-      );
 
     return NextResponse.json({
       success: true,

@@ -50,7 +50,6 @@ interface UnifiedMapViewProps {
   selectedMarker?: RuntimeMarker | null;
   height?: string;
   gpsCenter?: { lat: number; lng: number };
-  projectId?: number; // ✅ Added for layer support
 }
 
 // ✅ Marker configuration for different types
@@ -71,29 +70,11 @@ export function UnifiedMapView({
   selectedMarker,
   height = '100%',
   gpsCenter = { lat: 39.514719, lng: -123.760382 },
-  projectId, // ✅ New prop
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredIncident, setHoveredIncident] = useState<TrafficIncident | null>(null);
   const [hoveredMarker, setHoveredMarker] = useState<RuntimeMarker | null>(null);
-  
-  // ✅ Auto-rotate with localStorage persistence
-  const [autoRotate, setAutoRotate] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('unified-map-auto-rotate');
-      return saved ? JSON.parse(saved) : false;
-    }
-    return false;
-  });
-
-  // ✅ Toggle auto-rotate with persistence
-  const toggleAutoRotate = useCallback(() => {
-    setAutoRotate(prev => {
-      const newValue = !prev;
-      localStorage.setItem('unified-map-auto-rotate', JSON.stringify(newValue));
-      return newValue;
-    });
-  }, []);
+  const [autoRotate, setAutoRotate] = useState(false);
 
   // ✅ Generate runtime markers from raw sub-module data
   const runtimeMarkers = useMemo((): RuntimeMarker[] => {
@@ -117,6 +98,7 @@ export function UnifiedMapView({
     };
 
     const extractName = (item: any, type: string) => {
+      // For plantings, try to get plant name first
       if (type === 'plantings' && item.plantId) {
         const plant = data.threed.raw?.plants?.find((p: any) => p.id === item.plantId);
         if (plant) {
@@ -131,6 +113,7 @@ export function UnifiedMapView({
              `${type} #${item.id}`;
     };
 
+    // ✅ Process plantings FIRST (they have position data)
     if (data.threed.raw.plantings && data.threed.raw.plantings.length > 0) {
       data.threed.raw.plantings.forEach((item: any) => {
         const config = MARKER_CONFIG.planting;
@@ -161,6 +144,13 @@ export function UnifiedMapView({
       });
     }
 
+    // ✅ Process other types that have position data
+    // ❌ SKIP tasks (simple to-dos)
+    // ❌ SKIP plants (master data)
+    // ❌ SKIP harvests (simple logs)
+    // ❌ SKIP weatherLogs (simple logs)
+    // ❌ SKIP layers (configuration)
+    // ❌ SKIP models (library)
     const typesToProcess = ['beds', 'characters', 'farmbots'];
     
     typesToProcess.forEach((type) => {
@@ -168,8 +158,9 @@ export function UnifiedMapView({
       
       data.threed.raw[type].forEach((item: any) => {
         const position = extractPosition(item);
+        // Only create marker if position is not at origin (0,0,0)
         if (position.x === 0 && position.y === 0 && position.z === 0) {
-          return;
+          return; // Skip items without position data
         }
         
         const config = MARKER_CONFIG[type] || MARKER_CONFIG.planting;
@@ -202,10 +193,11 @@ export function UnifiedMapView({
     return markers;
   }, [data.threed.raw]);
 
-  // ✅ Spread overlapping markers
+  // ✅ Helper to spread overlapping markers
   const spreadOverlappingMarkers = (markers: RuntimeMarker[], spreadDistance: number = 1.5): RuntimeMarker[] => {
     if (markers.length === 0) return markers;
 
+    // Group markers by position (rounded to avoid floating point issues)
     const positionGroups: Record<string, RuntimeMarker[]> = {};
     
     markers.forEach(marker => {
@@ -216,11 +208,13 @@ export function UnifiedMapView({
       positionGroups[key].push(marker);
     });
     
+    // Spread markers in each group
     const spreadMarkers: RuntimeMarker[] = [];
     Object.values(positionGroups).forEach(group => {
       if (group.length === 1) {
         spreadMarkers.push(group[0]);
       } else {
+        // Spread markers in a circle around the original position
         const basePos = group[0].position;
         group.forEach((marker, index) => {
           const angle = (index / group.length) * 2 * Math.PI;
@@ -229,7 +223,7 @@ export function UnifiedMapView({
             ...marker,
             position: {
               x: basePos.x + Math.cos(angle) * radius,
-              y: basePos.y + 0.5 + index * 0.3,
+              y: basePos.y + 0.5 + index * 0.3, // Slight height offset
               z: basePos.z + Math.sin(angle) * radius,
             }
           });
@@ -272,7 +266,7 @@ export function UnifiedMapView({
     }
   }, [onMarkerSelect, selectedMarker]);
 
-  // ✅ Prepare incidents for Leaflet
+  // ✅ Prepare incidents for Leaflet with proper coordinates
   const leafletIncidents = filteredIncidents
     .filter((incident: any) => incident.lat && incident.lng && incident.lat !== 0 && incident.lng !== 0)
     .map((incident: any) => ({
@@ -281,7 +275,7 @@ export function UnifiedMapView({
       lng: incident.lng,
     }));
 
-  // ✅ Prepare markers for Leaflet
+  // ✅ Prepare markers for Leaflet (convert 3D position to 2D) - use spreadMarkers
   const leafletMarkers = spreadMarkers
     .filter((marker) => marker.position && marker.position.x !== undefined && marker.position.z !== undefined)
     .map((marker) => ({
@@ -299,7 +293,7 @@ export function UnifiedMapView({
       },
     }));
 
-  // ✅ Prepare traffic incidents for 3D
+  // ✅ Prepare traffic incidents for 3D (convert lat/lng to 3D position)
   const threeDIncidents = filteredIncidents
     .filter((incident: any) => incident.lat && incident.lng)
     .map((incident: any) => ({
@@ -311,7 +305,7 @@ export function UnifiedMapView({
       },
     }));
 
-  // ✅ Render 2D view
+  // ✅ Render 2D view (Leaflet)
   const render2DView = () => {
     return (
       <LeafletMap
@@ -329,8 +323,9 @@ export function UnifiedMapView({
     );
   };
 
-  // ✅ Render 3D view
+  // ✅ Render 3D view (React Three Fiber)
   const render3DView = () => {
+    // Prepare traffic incidents for 3D (convert lat/lng to 3D position)
     const threeDIncidents = filteredIncidents
       .filter((incident: any) => incident.lat && incident.lng)
       .map((incident: any) => ({
@@ -342,6 +337,7 @@ export function UnifiedMapView({
         },
       }));
 
+    // Prepare 3D markers for ThreeD scene - use spreadMarkers
     const threeDMarkers = spreadMarkers
       .filter((marker) => marker.position && marker.position.x !== undefined)
       .map((marker) => ({
@@ -366,13 +362,12 @@ export function UnifiedMapView({
         selectedMarker={selectedMarker}
         height={height}
         autoRotate={autoRotate}
-        onAutoRotateToggle={toggleAutoRotate}
-        projectId={projectId}
+        onAutoRotateToggle={() => setAutoRotate(!autoRotate)}
       />
     );
   };
 
-  // ✅ Render combined view
+  // ✅ Render combined view (2D + 3D overlay)
   const renderCombinedView = () => {
     return (
       <div className="relative w-full h-full">

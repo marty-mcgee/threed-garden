@@ -168,7 +168,7 @@ export default function UnifiedMapPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
-  const [viewMode, setViewMode] = useState<MapViewMode>('3d');
+  const [viewMode, setViewMode] = useState<MapViewMode>('combined');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
@@ -438,7 +438,7 @@ export default function UnifiedMapPage() {
                     {getTrafficIcon(id)}
                     <span className="ml-1">{getTrafficLabel(id)}</span>
                   </Button>
-                  {/* <Button
+                  <Button
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0"
@@ -449,7 +449,7 @@ export default function UnifiedMapPage() {
                     ) : (
                       <EyeOff className="w-3 h-3" />
                     )}
-                  </Button> */}
+                  </Button>
                 </div>
               ))}
             </div>
@@ -458,7 +458,7 @@ export default function UnifiedMapPage() {
 
             {/* ThreeD Layers */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground">ThreeD:</span>
+              <span className="text-xs font-medium text-muted-foreground">3D:</span>
               {Object.entries(layers.threed).map(([id, config]) => (
                 <div key={id} className="flex items-center gap-1">
                   <Button
@@ -470,7 +470,7 @@ export default function UnifiedMapPage() {
                     {getThreeDIcon(id)}
                     <span className="ml-1">{getThreeDLabel(id)}</span>
                   </Button>
-                  {/* <Button
+                  <Button
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0"
@@ -481,7 +481,7 @@ export default function UnifiedMapPage() {
                     ) : (
                       <EyeOff className="w-3 h-3" />
                     )}
-                  </Button> */}
+                  </Button>
                 </div>
               ))}
             </div>
