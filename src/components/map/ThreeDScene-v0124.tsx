@@ -20,17 +20,7 @@ interface ThreeDSceneProps {
   height?: string;
   autoRotate?: boolean;
   onAutoRotateToggle?: () => void;
-  projectId?: number;
-}
-
-// ✅ View Preset Types
-interface ViewPreset {
-  id: string;
-  name: string;
-  position: { x: number; y: number; z: number };
-  target: { x: number; y: number; z: number };
-  layers: string[];
-  createdAt: string;
+  projectId?: number; // Add projectId prop
 }
 
 // ✅ Marker colors by type
@@ -252,39 +242,16 @@ export function ThreeDScene({
   const [activeLayers, setActiveLayers] = useState<Set<string>>(new Set(['beds', 'characters', 'farmbots', 'plantings', 'layers']));
   const [availableLayers, setAvailableLayers] = useState<string[]>(['beds', 'characters', 'farmbots', 'plantings', 'layers']);
 
-  // ✅ View presets state
-  const [viewPresets, setViewPresets] = useState<ViewPreset[]>([]);
-  const [showPresetDialog, setShowPresetDialog] = useState(false);
-  const [newPresetName, setNewPresetName] = useState('');
-  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
-
   useEffect(() => {
     setHasData(incidents.length > 0 || markers.length > 0);
   }, [incidents, markers]);
-
-  // ✅ Load presets from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('threed-view-presets');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setViewPresets(parsed);
-      } catch (e) {
-        console.error('Failed to load view presets:', e);
-      }
-    }
-  }, []);
-
-  // ✅ Save presets to localStorage
-  useEffect(() => {
-    localStorage.setItem('threed-view-presets', JSON.stringify(viewPresets));
-  }, [viewPresets]);
 
   // ✅ Fetch layers from API
   useEffect(() => {
     const fetchLayers = async () => {
       try {
         if (!projectId) {
+          // Use default layers if no projectId
           setAvailableLayers(['beds', 'characters', 'farmbots', 'plantings', 'layers']);
           setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'plantings', 'layers']));
           return;
@@ -297,6 +264,7 @@ export function ThreeDScene({
           setAvailableLayers(layerTypes);
           setActiveLayers(new Set(layerTypes));
         } else {
+          // Fallback to default types
           setAvailableLayers(['beds', 'characters', 'farmbots', 'plantings', 'layers']);
           setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'plantings', 'layers']));
         }
@@ -361,46 +329,13 @@ export function ThreeDScene({
     setFocusTarget(null);
   };
 
-  // ✅ Enhanced marker click handler
   const handleMarkerClick = (marker: any) => {
-    const metadata: any = {
-      ...marker.metadata,
-      ...(marker.data || {}),
-    };
-    
-    if (marker.type === 'plantings' && marker.data) {
-      metadata.plantName = marker.data.plantName || marker.data.commonName || '';
-    }
-    
-    if (marker.type === 'beds' && marker.data) {
-      const width = marker.data.widthFeet || marker.data.width;
-      const length = marker.data.lengthFeet || marker.data.length;
-      if (width && length) {
-        metadata.dimensions = `${width}ft × ${length}ft`;
-      }
-    }
-    
-    if (marker.type === 'farmbots' && marker.data) {
-      metadata.deviceId = marker.data.deviceId || '';
-      metadata.batteryLevel = marker.data.batteryLevel || 0;
-      metadata.firmwareVersion = marker.data.firmwareVersion || '';
-      metadata.lastSeen = marker.data.lastSeen || '';
-    }
-    
-    if (marker.type === 'characters' && marker.data) {
-      metadata.characterType = marker.data.type || '';
-      metadata.emote = marker.data.defaultEmote || '';
-      metadata.movementType = marker.data.movementType || '';
-      metadata.interactable = marker.data.interactable || false;
-    }
-    
     setSelectedDetails({
-      name: marker.name || marker.label || 'Unknown',
+      name: marker.name,
       type: marker.type,
       position: marker.position,
-      metadata: metadata,
+      metadata: marker.metadata || {},
     });
-    
     if (onMarkerClick) onMarkerClick(marker);
     focusOnMarker(marker);
   };
@@ -410,11 +345,7 @@ export function ThreeDScene({
       name: incident.title,
       type: 'incident',
       position: incident.position,
-      metadata: { 
-        severity: incident.severity, 
-        source: incident.source, 
-        location: incident.location 
-      },
+      metadata: { severity: incident.severity, source: incident.source, location: incident.location },
     });
     if (onIncidentClick) onIncidentClick(incident);
     focusOnMarker(incident);
@@ -427,60 +358,6 @@ export function ThreeDScene({
 
   const clearDetails = () => {
     setSelectedDetails(null);
-  };
-
-  // ✅ Save current view as preset
-  const saveCurrentView = () => {
-    if (!controlsRef.current) return;
-    if (!newPresetName.trim()) {
-      alert('Please enter a name for this view');
-      return;
-    }
-    
-    const preset: ViewPreset = {
-      id: `view-${Date.now()}`,
-      name: newPresetName.trim(),
-      position: {
-        x: controlsRef.current.object.position.x,
-        y: controlsRef.current.object.position.y,
-        z: controlsRef.current.object.position.z,
-      },
-      target: {
-        x: controlsRef.current.target.x,
-        y: controlsRef.current.target.y,
-        z: controlsRef.current.target.z,
-      },
-      layers: Array.from(activeLayers),
-      createdAt: new Date().toISOString(),
-    };
-    
-    setViewPresets([...viewPresets, preset]);
-    setNewPresetName('');
-    setShowPresetDialog(false);
-  };
-
-  // ✅ Load a view preset
-  const loadViewPreset = (preset: ViewPreset) => {
-    if (!controlsRef.current) return;
-    
-    const targetPos = new THREE.Vector3(preset.position.x, preset.position.y, preset.position.z);
-    const targetTarget = new THREE.Vector3(preset.target.x, preset.target.y, preset.target.z);
-    
-    controlsRef.current.object.position.copy(targetPos);
-    controlsRef.current.target.copy(targetTarget);
-    controlsRef.current.update();
-    
-    setActiveLayers(new Set(preset.layers));
-    setSelectedPresetId(preset.id);
-    
-    setTimeout(() => setSelectedPresetId(null), 2000);
-  };
-
-  // ✅ Delete a view preset
-  const deleteViewPreset = (id: string) => {
-    if (confirm('Delete this saved view?')) {
-      setViewPresets(viewPresets.filter(p => p.id !== id));
-    }
   };
 
   return (
@@ -497,7 +374,7 @@ export function ThreeDScene({
         </button>
 
         {showControls && (
-          <div className="bg-black/70 backdrop-blur-sm rounded border border-white/10 p-1 pb-2.5 min-h-[260px] overflow-y-auto w-[160px] space-y-0.5">
+          <div className="bg-black/70 backdrop-blur-sm rounded border border-white/10 p-1 pb-2.5 min-h-[260px] overflow-y-auto w-[140px] space-y-0.5">
             <button onClick={onAutoRotateToggle} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
               {autoRotate ? '⏸️ Pause Rotation' : '▶️ Auto-Rotate'}
             </button>
@@ -519,43 +396,7 @@ export function ThreeDScene({
               🎯 Center View
             </button>
             
-            {/* ✅ Save View button */}
-            <button
-              onClick={() => setShowPresetDialog(true)}
-              className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors"
-            >
-              💾 Save Current View
-            </button>
-            
-            {/* ✅ View presets list */}
-            {viewPresets.length > 0 && (
-              <>
-                <div className="border-t border-white/10 my-1"></div>
-                <div className="text-[10px] text-white/60 px-2 py-0.5">Saved Views</div>
-                {viewPresets.map((preset) => (
-                  <div key={preset.id} className="flex items-center gap-1 group">
-                    <button
-                      onClick={() => loadViewPreset(preset)}
-                      className={`flex-1 text-left px-2 py-0.5 rounded text-xs transition-colors ${
-                        selectedPresetId === preset.id
-                          ? 'text-green-400 bg-green-500/20'
-                          : 'text-white/70 hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      {preset.name}
-                    </button>
-                    <button
-                      onClick={() => deleteViewPreset(preset.id)}
-                      className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 transition-all text-xs px-1"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </>
-            )}
-            
-            {/* Layer controls */}
+            {/* ✅ Layer controls */}
             {availableLayers.length > 0 && (
               <>
                 <div className="border-t border-white/10 my-1"></div>
@@ -608,264 +449,44 @@ export function ThreeDScene({
         )}
       </div>
 
-      {/* ✅ Save View Dialog */}
-      {showPresetDialog && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-black/90 border border-white/10 rounded-lg p-4 max-w-sm w-full mx-4 shadow-2xl">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-white">Save Current View</h3>
-              <button
-                onClick={() => setShowPresetDialog(false)}
-                className="text-white/40 hover:text-white/80 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            
-            <p className="text-xs text-white/50 mb-3">
-              Save the current camera position and active layers as a named view.
-            </p>
-            
-            <input
-              type="text"
-              placeholder="Enter view name..."
-              value={newPresetName}
-              onChange={(e) => setNewPresetName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') saveCurrentView();
-                if (e.key === 'Escape') setShowPresetDialog(false);
-              }}
-              className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
-              autoFocus
-            />
-            
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={() => setShowPresetDialog(false)}
-                className="flex-1 px-3 py-1.5 text-xs text-white/60 hover:text-white/80 border border-white/10 rounded transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveCurrentView}
-                className="flex-1 px-3 py-1.5 text-xs bg-primary text-white rounded hover:bg-primary/80 transition-colors"
-              >
-                Save View
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Rich Details Box */}
+      {/* Details Box - with Focus button */}
       {selectedDetails && (
-        <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-sm text-white p-3 rounded-lg border border-white/10 max-w-[240px] shadow-xl">
+        <div className="absolute top-3 left-3 z-10 bg-black/70 backdrop-blur-sm text-white p-2 rounded border border-white/10 max-w-[200px]">
           <div className="flex items-start justify-between gap-2">
-            <div className="text-sm font-medium text-white truncate">{selectedDetails.name}</div>
+            <div className="text-xs font-medium text-white/90 truncate">{selectedDetails.name}</div>
             <button onClick={clearDetails} className="text-white/40 hover:text-white/80 transition-colors flex-shrink-0">
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3 h-3" />
             </button>
           </div>
-          
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 capitalize">
-              {selectedDetails.type}
-            </span>
-            {selectedDetails.metadata?.status && (
-              <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                selectedDetails.metadata.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                selectedDetails.metadata.status === 'inactive' ? 'bg-red-500/20 text-red-400' :
-                'bg-yellow-500/20 text-yellow-400'
-              }`}>
-                {selectedDetails.metadata.status}
-              </span>
-            )}
-          </div>
-          
+          <div className="text-[10px] text-white/60 mt-0.5">Type: {selectedDetails.type}</div>
           {selectedDetails.position && (
-            <div className="text-[10px] text-white/40 mt-1.5 font-mono">
-              📍 {selectedDetails.position.x.toFixed(2)}, {selectedDetails.position.z.toFixed(2)}
+            <div className="text-[10px] text-white/50 mt-0.5">
+              📍 Position: ({selectedDetails.position.x.toFixed(2)}, {selectedDetails.position.z.toFixed(2)})
             </div>
           )}
-          
-          <div className="mt-2 space-y-1 text-[11px] text-white/70">
-            {selectedDetails.type === 'plantings' && (
-              <>
-                {selectedDetails.metadata?.plantName && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🌱</span>
-                    <span>Plant: {selectedDetails.metadata.plantName}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.growthStage && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📈</span>
-                    <span>Growth: {selectedDetails.metadata.growthStage}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.health && (
-                  <div className="flex items-center gap-1.5">
-                    <span>❤️</span>
-                    <span>Health: {selectedDetails.metadata.health}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.quantity && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🔢</span>
-                    <span>Quantity: {selectedDetails.metadata.quantity}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.plantedDate && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📅</span>
-                    <span>Planted: {new Date(selectedDetails.metadata.plantedDate).toLocaleDateString()}</span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {selectedDetails.type === 'beds' && (
-              <>
-                {selectedDetails.metadata?.dimensions && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📐</span>
-                    <span>Size: {selectedDetails.metadata.dimensions}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.soilType && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🟫</span>
-                    <span>Soil: {selectedDetails.metadata.soilType}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.sunExposure && (
-                  <div className="flex items-center gap-1.5">
-                    <span>☀️</span>
-                    <span>Sun: {selectedDetails.metadata.sunExposure}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.color && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🎨</span>
-                    <span>Color: <span className="inline-block w-3 h-3 rounded-full align-middle" style={{ backgroundColor: selectedDetails.metadata.color }} /></span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {selectedDetails.type === 'farmbots' && (
-              <>
-                {selectedDetails.metadata?.status && (
-                  <div className="flex items-center gap-1.5">
-                    <span>⚡</span>
-                    <span>Status: {selectedDetails.metadata.status}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.batteryLevel !== undefined && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🔋</span>
-                    <span>Battery: {selectedDetails.metadata.batteryLevel}%</span>
-                    <div className="w-12 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full ${
-                          selectedDetails.metadata.batteryLevel > 50 ? 'bg-green-500' :
-                          selectedDetails.metadata.batteryLevel > 20 ? 'bg-yellow-500' :
-                          'bg-red-500'
-                        }`}
-                        style={{ width: `${selectedDetails.metadata.batteryLevel}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-                {selectedDetails.metadata?.firmwareVersion && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📦</span>
-                    <span>Firmware: v{selectedDetails.metadata.firmwareVersion}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.lastSeen && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🕐</span>
-                    <span>Last seen: {new Date(selectedDetails.metadata.lastSeen).toLocaleString()}</span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {selectedDetails.type === 'characters' && (
-              <>
-                {selectedDetails.metadata?.characterType && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🧚</span>
-                    <span>Type: {selectedDetails.metadata.characterType}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.emote && (
-                  <div className="flex items-center gap-1.5">
-                    <span>😊</span>
-                    <span>Emote: {selectedDetails.metadata.emote}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.movementType && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🚶</span>
-                    <span>Movement: {selectedDetails.metadata.movementType}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.interactable !== undefined && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🤝</span>
-                    <span>Interactable: {selectedDetails.metadata.interactable ? 'Yes' : 'No'}</span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {selectedDetails.type === 'incident' && (
-              <>
-                {selectedDetails.metadata?.severity && (
-                  <div className="flex items-center gap-1.5">
-                    <span>⚠️</span>
-                    <span>Severity: {selectedDetails.metadata.severity}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.source && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📡</span>
-                    <span>Source: {selectedDetails.metadata.source}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.location && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📍</span>
-                    <span>Location: {selectedDetails.metadata.location}</span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {!['plantings', 'beds', 'farmbots', 'characters', 'incident'].includes(selectedDetails.type) && (
-              <div className="text-[10px] text-white/40">
-                No additional details available for this type
+          {Object.entries(selectedDetails.metadata || {})
+            .filter(([key]) => key !== 'position' && key !== 'gps')
+            .slice(0, 3)
+            .map(([key, value]) => (
+              <div key={key} className="text-[10px] text-white/50 truncate">
+                {key}: {String(value)}
               </div>
-            )}
-          </div>
-          
+            ))}
           <button
             onClick={() => {
               if (selectedDetails.position) {
                 focusOnMarker(selectedDetails);
               }
             }}
-            className="mt-2.5 text-[10px] text-white/50 hover:text-white/90 transition-colors flex items-center gap-1 border-t border-white/5 pt-2 w-full"
+            className="mt-1.5 text-[10px] text-white/60 hover:text-white/90 transition-colors flex items-center gap-1"
           >
             <Target className="w-3 h-3" />
-            Focus on this marker
+            Focus
           </button>
         </div>
       )}
 
-      {/* Legend */}
+      {/* Legend - now shows counts for visible markers only */}
       {hasData && showLegend && Object.keys(typeCounts).length > 0 && (
         <div className="absolute bottom-3 left-3 z-10 bg-black/70 backdrop-blur-sm text-white p-2 rounded border border-white/10 min-w-[90px]">
           <div className="text-[10px] font-medium text-white/80 mb-1">Legend</div>
@@ -926,7 +547,7 @@ export function ThreeDScene({
           />
         )}
 
-        {/* Camera focus animation */}
+        {/* ✅ Camera focus animation */}
         {focusTarget && (
           <CameraFocusAnimation 
             target={focusTarget}
@@ -935,7 +556,7 @@ export function ThreeDScene({
           />
         )}
 
-        {/* Focus glow indicator */}
+        {/* ✅ Focus glow indicator */}
         {focusTarget && (
           <mesh position={[focusTarget.x, focusTarget.y + 0.5, focusTarget.z]}>
             <ringGeometry args={[0.8, 1.2, 32]} />
@@ -952,6 +573,7 @@ export function ThreeDScene({
           />
         ))}
 
+        {/* ✅ Render only visible markers */}
         {visibleMarkers.map((marker) => (
           <ThreeDMarkerComponent
             key={`marker_${marker.type}_${marker.id}`}
