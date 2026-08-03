@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Menu, Search, User, Bell } from 'lucide-react';
+import { Menu, Search, User, Bell, Radio, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -54,6 +54,27 @@ export function AdminHeader({ onMenuClick, isCollapsed }: AdminHeaderProps) {
           )}
         </div>
 
+        {/* Surface Switcher */}
+        <div className="hidden md:flex items-center gap-1 border rounded-lg p-0.5">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={() => window.location.href = '/dashboard'}
+          >
+            <Radio className="w-3.5 h-3.5 mr-1" />
+            Dashboard
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            className="h-7 px-3 text-xs"
+          >
+            <Settings className="w-3.5 h-3.5 mr-1" />
+            Admin
+          </Button>
+        </div>
+
         {/* Center: Search (optional) */}
         <div className="flex-1 max-w-md hidden md:block">
           <div className="relative">
@@ -95,10 +116,12 @@ export function AdminHeader({ onMenuClick, isCollapsed }: AdminHeaderProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild className="p-0">
-                <SignOutButton variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
-                  Sign Out
-                </SignOutButton>
+              <DropdownMenuItem className="p-0" onClick={(e) => {
+                e.preventDefault();
+                const btn = e.currentTarget.querySelector('button');
+                if (btn) btn.click();
+              }}>
+                <SignOutButton variant="ghost" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

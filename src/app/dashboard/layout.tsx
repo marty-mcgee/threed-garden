@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { 
-  Sun, Moon, Radio
+  Sun, Moon, Radio, Settings, ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NavDropdown from '@/components/navigation/NavDropdown';
@@ -47,6 +47,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </div>
             
+            {/* Surface Switcher */}
+            <div className="hidden sm:flex items-center gap-1 border rounded-lg p-0.5">
+              <Button
+                variant={pathname?.startsWith('/dashboard') ? 'default' : 'ghost'}
+                size="sm"
+                className="h-7 px-3 text-xs"
+                asChild
+              >
+                <Link href="/dashboard">
+                  <Radio className="w-3.5 h-3.5 mr-1" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button
+                variant={pathname?.startsWith('/admin') ? 'default' : 'ghost'}
+                size="sm"
+                className="h-7 px-3 text-xs"
+                asChild
+              >
+                <Link href="/admin">
+                  <Settings className="w-3.5 h-3.5 mr-1" />
+                  Admin
+                </Link>
+              </Button>
+            </div>
+
             {/* Right side controls */}
             <div className="flex items-center gap-3">
               {/* Status Indicator */}

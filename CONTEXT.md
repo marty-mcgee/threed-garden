@@ -1,6 +1,30 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 3, 2026 @ 10:45am PST
+**Last Updated:** August 3, 2026 @ 11:00am PST
+
+---
+
+## 🚀 Version v0.14.0 "Surface Bridge"
+
+### 🎯 What's New in v0.14.0
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Dashboard Homepage** | ✅ Complete | Project discovery hub at `/dashboard` with cards, module pills, skeleton loaders |
+| **Surface Switcher** | ✅ Complete | Dashboard ↔ Admin toggle in both headers for seamless navigation |
+| **Skeleton Loaders** | ✅ Complete | Map page shows layout skeleton during data loading |
+| **Admin Deep-Link Helpers** | ✅ Complete | `getAdminEditUrl()` and `getDashboardViewUrl()` utility functions |
+| **Surface Coverage Audit** | ✅ Complete | All modules assessed for Admin + Dashboard surface completeness |
+
+### Surface Coverage After v0.14.0
+
+| Module | Admin Surface | Dashboard Surface |
+|--------|:---:|:---:|
+| **Projects** | ✅ (CRUD, Asset Manager) | ✅ (Homepage project cards) |
+| **Music** | ✅ (Albums, Tracks, Links, Media) | ✅ (Player, Album Grid, Waveform) |
+| **ThreeD** | ✅ (Plants, Beds, Plantings, Characters, Models, Layers) | ✅ (3D Scene, Runtime Markers, View Presets) |
+| **Traffic** | ✅ (8 sub-modules, full CRUD) | ✅ (2D Map, Emoji Markers, Popups) |
+| **Settings** | ✅ (Admin UI) | ❌ (no public settings surface — by design) |
 
 ---
 

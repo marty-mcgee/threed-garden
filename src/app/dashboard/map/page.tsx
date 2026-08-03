@@ -448,11 +448,43 @@ function UnifiedMapPageInner() {
     };
   }, [isDragging]);
 
-  // ✅ Loading state
+  // ✅ Loading state with skeleton UI
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[600px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4">
+        <div className="flex flex-wrap justify-between items-center gap-4 animate-pulse">
+          <div>
+            <div className="h-7 w-48 bg-muted rounded mb-2" />
+            <div className="h-4 w-64 bg-muted rounded" />
+          </div>
+          <div className="flex gap-2">
+            <div className="h-8 w-24 bg-muted rounded-lg" />
+            <div className="h-8 w-16 bg-muted rounded-lg" />
+            <div className="h-8 w-20 bg-muted rounded-lg" />
+          </div>
+        </div>
+        <div className="border rounded-lg p-3 animate-pulse">
+          <div className="flex gap-2">
+            <div className="h-6 w-16 bg-muted rounded-full" />
+            <div className="h-6 w-16 bg-muted rounded-full" />
+            <div className="h-6 w-16 bg-muted rounded-full" />
+          </div>
+        </div>
+        <div className="border rounded-lg p-3 animate-pulse">
+          <div className="flex gap-2">
+            <div className="h-6 w-20 bg-muted rounded-full" />
+            <div className="h-6 w-20 bg-muted rounded-full" />
+            <div className="h-6 w-20 bg-muted rounded-full" />
+          </div>
+        </div>
+        <div className="border rounded-lg animate-pulse">
+          <div className="h-[650px] bg-muted/30 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="w-10 h-10 animate-spin text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Loading map data...</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

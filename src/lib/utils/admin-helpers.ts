@@ -27,6 +27,21 @@ export function getAdminPath(type: string, id: string | number): string {
   return `${basePath}?id=${id}`;
 }
 
+// ✅ v0.14.0: Get admin edit URL for a specific asset
+export function getAdminEditUrl(type: string, id: string | number): string {
+  const basePath = ADMIN_PATHS[type] || '/admin';
+  // For list-based admin pages, link with id param
+  if (basePath === '/admin' || basePath === '/admin/projects') {
+    return `${basePath}/${id}`;
+  }
+  return `${basePath}?id=${id}`;
+}
+
+// ✅ v0.14.0: Get dashboard view URL for a project
+export function getDashboardViewUrl(projectId: string | number): string {
+  return `/dashboard/map?projectId=${projectId}`;
+}
+
 // ✅ Get display labels for asset types
 export const TYPE_LABELS: Record<string, string> = {
   plantings: 'Planting',
