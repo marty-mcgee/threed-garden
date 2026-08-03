@@ -25,7 +25,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui/toast';
 
 // ✅ Types - Updated to match schema
 interface Layer {
@@ -141,7 +141,7 @@ interface ThreeDLayersCRUDProps {
 }
 
 export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLayersCRUDProps) {
-  const { toast } = useToast();
+  const { showToast, ToastComponent } = useToast();
   const [layers, setLayers] = useState<Layer[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -185,20 +185,12 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
       if (data.success) {
         setLayers(Array.isArray(data.data) ? data.data : []);
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to fetch layers',
-          variant: 'destructive',
-        });
+        showToast(data.error || 'Failed to fetch layers', 'error');
         setLayers([]);
       }
     } catch (error) {
       console.error('Error fetching layers:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch layers',
-        variant: 'destructive',
-      });
+      showToast('Failed to fetch layers', 'error');
       setLayers([]);
     } finally {
       setLoading(false);
@@ -219,19 +211,11 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
 
   const handleCreate = async () => {
     if (!formData.layerId) {
-      toast({
-        title: 'Error',
-        description: 'Layer ID is required',
-        variant: 'destructive',
-      });
+      showToast('Layer ID is required', 'error');
       return;
     }
     if (!formData.name) {
-      toast({
-        title: 'Error',
-        description: 'Layer name is required',
-        variant: 'destructive',
-      });
+      showToast('Layer name is required', 'error');
       return;
     }
 
@@ -266,28 +250,17 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
 
       const data = await response.json();
       if (data.success) {
-        toast({
-          title: 'Success',
-          description: 'Layer created successfully',
-        });
+        showToast('Layer created successfully', 'success');
         setShowCreateDialog(false);
         resetForm();
         await fetchLayers();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to create layer',
-          variant: 'destructive',
-        });
+        showToast(data.error || 'Failed to create layer', 'error');
       }
     } catch (error) {
       console.error('Error creating layer:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create layer',
-        variant: 'destructive',
-      });
+      showToast('Failed to create layer', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -296,19 +269,11 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
   const handleUpdate = async () => {
     if (!editingLayer) return;
     if (!formData.layerId) {
-      toast({
-        title: 'Error',
-        description: 'Layer ID is required',
-        variant: 'destructive',
-      });
+      showToast('Layer ID is required', 'error');
       return;
     }
     if (!formData.name) {
-      toast({
-        title: 'Error',
-        description: 'Layer name is required',
-        variant: 'destructive',
-      });
+      showToast('Layer name is required', 'error');
       return;
     }
 
@@ -341,27 +306,16 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
 
       const data = await response.json();
       if (data.success) {
-        toast({
-          title: 'Success',
-          description: 'Layer updated successfully',
-        });
+        showToast('Layer updated successfully', 'success');
         setEditingLayer(null);
         await fetchLayers();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to update layer',
-          variant: 'destructive',
-        });
+        showToast(data.error || 'Failed to update layer', 'error');
       }
     } catch (error) {
       console.error('Error updating layer:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update layer',
-        variant: 'destructive',
-      });
+      showToast('Failed to update layer', 'error'); 
     } finally {
       setIsSubmitting(false);
     }
@@ -377,26 +331,15 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
 
       const data = await response.json();
       if (data.success) {
-        toast({
-          title: 'Success',
-          description: 'Layer deleted successfully',
-        });
+        showToast('Layer deleted successfully', 'success');
         await fetchLayers();
         if (onModuleUpdate) onModuleUpdate();
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to delete layer',
-          variant: 'destructive',
-        });
+        showToast(data.error || 'Failed to delete layer', 'error');
       }
     } catch (error) {
       console.error('Error deleting layer:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete layer',
-        variant: 'destructive',
-      });
+      showToast('Failed to delete layer', 'error');
     }
   };
 
