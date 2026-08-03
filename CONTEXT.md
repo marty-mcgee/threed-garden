@@ -1,8 +1,58 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 3, 2026 @ 08:15am PST
+**Last Updated:** August 3, 2026 @ 10:45am PST
 
 ---
+
+## 🧭 Strategic Product Definition — The "Dual-Surface" Platform
+
+`marty-mcgee-neon` is a **Dual-Surface Platform**. Every piece of data in the system has two surfaces: an **Admin Surface** (where it is created, edited, and managed) and a **Public/Dashboard Surface** (where it is visualized, explored, and consumed).
+
+### The Two Surfaces
+
+| Surface | Audience | Purpose | Anchors |
+|---------|----------|---------|---------|
+| **Admin Surface** | Authenticated users (owners) | Full CRUD management of all data | `/admin/*`, `/api/*` (write operations) |
+| **Dashboard Surface** | Any visitor (public or authenticated) | Visualization and exploration of published data | `/dashboard/*`, `/api/*` (read operations) |
+
+### Surface Design Principle
+
+Every module (Music, ThreeD, Traffic) must implement both surfaces. A module is not considered "complete" until:
+
+1. ✅ **Admin Surface**: Full CRUD components exist, API routes handle write operations, records carry `userId`
+2. ✅ **Dashboard Surface**: Public-facing views render published/active records, visualization components display the data, read-only API endpoints serve unauthenticated users
+
+### Architectural Implications
+
+- **Data Flow is Unidirectional**: Admin → Database → API → Dashboard. The Dashboard never writes. The Admin never reads from the Dashboard.
+- **Publish Gate**: Every module has an `isPublic`/`isActive`/`status` gate. Only records that pass this gate appear on the Dashboard Surface. This is enforced at the API layer, not the UI layer.
+- **Runtime Rendering**: Dashboard visualizations (map markers, 3D objects, stats) are generated at runtime from source data. There are no stored "display" records—the source of truth is always the module child tables.
+- **Project Scoping**: The Dashboard Surface is always scoped to a Project. A visitor sees a project's modules and their published assets. This makes the platform multi-tenant at the project level without requiring project-level authentication.
+
+### How This Guides Future Development
+
+| Decision | Guidance |
+|----------|----------|
+| Adding a new module | Must implement both surfaces (Admin CRUD + Dashboard visualization) |
+| Adding a new field to a module | Consider: does it affect the Admin form? Does it appear on the Dashboard? |
+| Building a new API endpoint | Classify as read/public (Dashboard) or write/protected (Admin) |
+| Designing a new visualization | It consumes data from the API, never directly from the database |
+| Implementing a new feature | Which surface does it belong to? If both, build Admin first, then Dashboard |
+
+### Current Surface Coverage
+
+| Module | Admin Surface | Dashboard Surface |
+|--------|:---:|:---:|
+| **Projects** | ✅ (CRUD, Asset Manager) | ❌ (no public project browser) |
+| **Music** | ✅ (Albums, Tracks, Links, Media) | ✅ (Player, Album Grid, Waveform) |
+| **ThreeD** | ✅ (Plants, Beds, Plantings, Characters, Models, Layers) | ✅ (3D Scene, Runtime Markers, View Presets) |
+| **Traffic** | ✅ (8 sub-modules, full CRUD) | ✅ (2D Map, Emoji Markers, Popups) |
+| **Settings** | ✅ (Admin UI) | ❌ (no public settings surface — by design) |
+
+### Version Impact
+
+This strategic definition was introduced at **v0.13.0c** to provide a compass for all future releases. Prior versions built the Admin and Dashboard surfaces organically. Going forward, every release should explicitly state which surface it affects and how it bridges the two.
+
 
 ## 🧱 Tech Stack
 
