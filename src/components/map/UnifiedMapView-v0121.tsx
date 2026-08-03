@@ -3,9 +3,29 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { Loader2 } from 'lucide-react';
+import { MapPin, Loader2, AlertTriangle, Info, Box } from 'lucide-react';
 import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker } from '@/lib/types/map';
-import { LeafletMap } from '@/components/map/LeafletMap';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  getTrafficColor, 
+  getThreeDColor, 
+  getTrafficLabel, 
+  getThreeDLabel 
+} from '@/lib/utils/map-helpers';
+
+// ✅ Dynamically import Leaflet (2D) to avoid SSR issues
+const LeafletMap = dynamic(
+  () => import('@/components/map/LeafletMap').then((mod) => mod.LeafletMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full bg-muted/20">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    ),
+  }
+);
 
 // ✅ Dynamically import ThreeD Scene (3D) to avoid SSR issues
 const ThreeDScene = dynamic(
@@ -30,7 +50,7 @@ interface UnifiedMapViewProps {
   selectedMarker?: RuntimeMarker | null;
   height?: string;
   gpsCenter?: { lat: number; lng: number };
-  visibleAssetTypes?: Set<string>;
+  projectId?: number; // ✅ Added for layer support
 }
 
 // ✅ Marker configuration for different types
@@ -51,10 +71,29 @@ export function UnifiedMapView({
   selectedMarker,
   height = '100%',
   gpsCenter = { lat: 39.514719, lng: -123.760382 },
-  visibleAssetTypes,
+  projectId, // ✅ New prop
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [autoRotate, setAutoRotate] = useState(false);
+  const [hoveredIncident, setHoveredIncident] = useState<TrafficIncident | null>(null);
+  const [hoveredMarker, setHoveredMarker] = useState<RuntimeMarker | null>(null);
+  
+  // ✅ Auto-rotate with localStorage persistence
+  const [autoRotate, setAutoRotate] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('unified-map-auto-rotate');
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
+
+  // ✅ Toggle auto-rotate with persistence
+  const toggleAutoRotate = useCallback(() => {
+    setAutoRotate(prev => {
+      const newValue = !prev;
+      localStorage.setItem('unified-map-auto-rotate', JSON.stringify(newValue));
+      return newValue;
+    });
+  }, []);
 
   // ✅ Generate runtime markers from raw sub-module data
   const runtimeMarkers = useMemo((): RuntimeMarker[] => {
@@ -207,13 +246,7 @@ export function UnifiedMapView({
   // ✅ Filter markers based on enabled layers
   const filteredMarkers = runtimeMarkers.filter((marker) => {
     const layerConfig = layers.threed[marker.type as keyof typeof layers.threed];
-    if (!layerConfig?.enabled || !layerConfig?.visible) return false;
-    
-    if (visibleAssetTypes && visibleAssetTypes.size > 0) {
-      return visibleAssetTypes.has(marker.type);
-    }
-    
-    return true;
+    return layerConfig?.enabled && layerConfig?.visible;
   });
 
   // ✅ Apply spreading to filtered markers
@@ -225,14 +258,14 @@ export function UnifiedMapView({
   const activeTrafficCount = filteredIncidents.length;
   const activeThreeDCount = spreadMarkers.length;
 
-  // ✅ Handle incident click with useCallback
+  // ✅ Handle incident click
   const handleIncidentClick = useCallback((incident: TrafficIncident) => {
     if (onIncidentSelect) {
       onIncidentSelect(selectedIncident?.id === incident.id ? null : incident);
     }
   }, [onIncidentSelect, selectedIncident]);
 
-  // ✅ Handle marker click with useCallback
+  // ✅ Handle marker click
   const handleMarkerClick = useCallback((marker: RuntimeMarker) => {
     if (onMarkerSelect) {
       onMarkerSelect(selectedMarker?.id === marker.id ? null : marker);
@@ -278,22 +311,7 @@ export function UnifiedMapView({
       },
     }));
 
-  // ✅ Prepare 3D markers
-  const threeDMarkers = spreadMarkers
-    .filter((marker) => marker.position && marker.position.x !== undefined)
-    .map((marker) => ({
-      id: marker.id,
-      name: marker.name,
-      type: marker.type,
-      position: marker.position,
-      color: marker.color,
-      icon: marker.icon,
-      label: marker.label,
-      metadata: marker.metadata,
-      data: marker.data,
-    }));
-
-  // ✅ Render 2D view (Leaflet)
+  // ✅ Render 2D view
   const render2DView = () => {
     return (
       <LeafletMap
@@ -301,7 +319,9 @@ export function UnifiedMapView({
         markers={leafletMarkers}
         onIncidentClick={handleIncidentClick}
         onMarkerClick={handleMarkerClick}
-        height="100%"
+        selectedIncident={selectedIncident}
+        selectedMarker={selectedMarker}
+        height={height}
         gpsCenter={gpsCenter}
         center={[gpsCenter.lat, gpsCenter.lng]}
         zoom={12}
@@ -322,6 +342,20 @@ export function UnifiedMapView({
         },
       }));
 
+    const threeDMarkers = spreadMarkers
+      .filter((marker) => marker.position && marker.position.x !== undefined)
+      .map((marker) => ({
+        id: marker.id,
+        name: marker.name,
+        type: marker.type,
+        position: marker.position,
+        color: marker.color,
+        icon: marker.icon,
+        label: marker.label,
+        metadata: marker.metadata,
+        data: marker.data,
+      }));
+
     return (
       <ThreeDScene
         incidents={threeDIncidents}
@@ -330,10 +364,62 @@ export function UnifiedMapView({
         onMarkerClick={handleMarkerClick}
         selectedIncident={selectedIncident}
         selectedMarker={selectedMarker}
-        height="100%"
+        height={height}
         autoRotate={autoRotate}
-        onAutoRotateToggle={() => setAutoRotate(!autoRotate)}
+        onAutoRotateToggle={toggleAutoRotate}
+        projectId={projectId}
       />
+    );
+  };
+
+  // ✅ Render combined view
+  const renderCombinedView = () => {
+    return (
+      <div className="relative w-full h-full">
+        {/* 2D Base Layer */}
+        <div className="absolute inset-0">
+          {render2DView()}
+        </div>
+
+        {/* 3D Overlay indicator */}
+        {activeThreeDCount > 0 && (
+          <div className="absolute top-4 right-4 z-[1000]">
+            <Badge variant="secondary" className="bg-black/50 text-white border-0 backdrop-blur-sm">
+              <Box className="w-3 h-3 mr-1" />
+              {activeThreeDCount} 3D items
+            </Badge>
+          </div>
+        )}
+
+        {/* Combined View Legend */}
+        <div className="absolute bottom-4 left-4 z-[1000] flex flex-wrap gap-2">
+          <Badge variant="secondary" className="bg-black/50 text-white border-0 backdrop-blur-sm">
+            <MapPin className="w-3 h-3 mr-1" />
+            2D + 3D
+          </Badge>
+          <Badge variant="secondary" className="bg-black/50 text-white border-0 backdrop-blur-sm">
+            🚗 {activeTrafficCount} traffic
+          </Badge>
+          <Badge variant="secondary" className="bg-black/50 text-white border-0 backdrop-blur-sm">
+            📦 {activeThreeDCount} 3D
+          </Badge>
+        </div>
+
+        {/* Combined View Controls */}
+        <div className="absolute bottom-4 right-4 z-[1000] flex gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="bg-black/50 text-white border-0 backdrop-blur-sm hover:bg-black/70"
+            onClick={() => {
+              // Toggle 3D overlay visibility
+            }}
+          >
+            <Box className="w-3 h-3 mr-1" />
+            3D Overlay
+          </Button>
+        </div>
+      </div>
     );
   };
 
@@ -344,14 +430,85 @@ export function UnifiedMapView({
         return render2DView();
       case '3d':
         return render3DView();
+      case 'combined':
       default:
-        return null;
+        return renderCombinedView();
     }
   };
 
   return (
-    <div ref={containerRef} className="w-full h-full">
-      {renderMap()}
+    <div ref={containerRef} className="relative w-full" style={{ height }}>
+      {/* Map Container */}
+      <div className="w-full h-full rounded-lg overflow-hidden">
+        {renderMap()}
+      </div>
+
+      {/* Selection Details Panel - Traffic */}
+      {selectedIncident && viewMode !== '3d' && (
+        <div className="absolute bottom-24 left-4 z-[1000] max-w-sm">
+          <div className="bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg p-3">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Badge className={`${getTrafficColor(selectedIncident.source)} text-white`}>
+                    {getTrafficLabel(selectedIncident.source)}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(selectedIncident.timestamp).toLocaleString()}
+                  </span>
+                </div>
+                <h4 className="font-medium mt-1">{selectedIncident.title}</h4>
+                <p className="text-sm text-muted-foreground">{selectedIncident.description}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  📍 {selectedIncident.location}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={() => onIncidentSelect && onIncidentSelect(null)}
+              >
+                ✕
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Marker Details */}
+      {selectedMarker && viewMode !== '3d' && (
+        <div className="absolute bottom-24 left-4 z-[1000] max-w-sm">
+          <div className="bg-background/95 backdrop-blur-sm border rounded-lg shadow-lg p-3">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Badge className={`${getThreeDColor(selectedMarker.type)} text-white`}>
+                    {getThreeDLabel(selectedMarker.type)}
+                  </Badge>
+                </div>
+                <h4 className="font-medium mt-1">{selectedMarker.name}</h4>
+                <p className="text-xs text-muted-foreground mt-1">
+                  📍 Position: ({selectedMarker.position.x.toFixed(2)}, {selectedMarker.position.z.toFixed(2)})
+                </p>
+                {selectedMarker.data && (
+                  <p className="text-xs text-muted-foreground mt-1 truncate max-w-xs">
+                    {selectedMarker.data.description || selectedMarker.data.plantId || ''}
+                  </p>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={() => onMarkerSelect && onMarkerSelect(null)}
+              >
+                ✕
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

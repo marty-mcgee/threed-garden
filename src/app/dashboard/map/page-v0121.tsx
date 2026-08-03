@@ -1,7 +1,8 @@
 // app/dashboard/map/page.tsx
+
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Layers, 
@@ -40,7 +41,7 @@ import {
   getThreeDLabel,
 } from '@/lib/utils/map-helpers';
 
-// ✅ Project Selector Dialog Component
+// ✅ Project Selector Dialog Component - Uses API route instead of direct service
 function ProjectSelectorDialog({ 
   open, 
   onOpenChange, 
@@ -58,6 +59,7 @@ function ProjectSelectorDialog({
     if (open) {
       const loadProjects = async () => {
         try {
+          // ✅ Use API route instead of direct service
           const response = await fetch('/api/map/projects');
           const data = await response.json();
           setProjects(data.projects || []);
@@ -166,29 +168,17 @@ export default function UnifiedMapPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
-  
-  // ✅ Default to 3D view
-  const [viewMode, setViewMode] = useState<MapViewMode>('combined');
-  
+  const [viewMode, setViewMode] = useState<MapViewMode>('3d');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
 
-  // ✅ Panel resize state
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [panelHeight, setPanelHeight] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
-
-  // ✅ Asset type visibility state
-  const [visibleAssetTypes] = useState<Set<string>>(
-    new Set(['plantings', 'beds', 'characters', 'farmbots'])
-  );
-
   // ✅ Handle project selection
   const handleProjectSelect = (projectId: string) => {
     setSelectedProjectId(projectId);
     setIsDefaultView(false);
+    // Update URL without navigation
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
     window.history.pushState({}, '', url.toString());
@@ -222,11 +212,12 @@ export default function UnifiedMapPage() {
     }));
   };
 
-  // ✅ Load data from API route
+  // ✅ Load data from API route instead of direct service
   const loadData = useCallback(async () => {
     setLoading(true);
     
     try {
+      // ✅ If no project selected, show empty default view
       if (!selectedProjectId) {
         const defaultData = getDefaultMapData();
         setData(defaultData);
@@ -236,11 +227,13 @@ export default function UnifiedMapPage() {
         return;
       }
 
+      // ✅ Fetch data from API route
       try {
         const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`);
         const result = await response.json();
 
         if (result.success) {
+          // ✅ Transform API response to UnifiedMapData format
           const unifiedData: UnifiedMapData = {
             traffic: {
               raw: result.data || null,
@@ -278,6 +271,7 @@ export default function UnifiedMapPage() {
           });
           setIsDefaultView(false);
         } else {
+          // Fallback to default if API fails
           const emptyData = getDefaultMapData();
           setData(emptyData);
           setProjectInfo({ name: 'Error Loading Data', hasData: false });
@@ -313,36 +307,6 @@ export default function UnifiedMapPage() {
     showToast('Data refreshed', 'success');
   };
 
-  // ✅ Drag handlers for panel resize
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    e.preventDefault();
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !containerRef.current) return;
-      const container = containerRef.current;
-      const rect = container.getBoundingClientRect();
-      const percentage = ((e.clientY - rect.top) / rect.height) * 100;
-      setPanelHeight(Math.min(Math.max(percentage, 20), 80));
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
-
   // ✅ Loading state
   if (loading) {
     return (
@@ -352,12 +316,14 @@ export default function UnifiedMapPage() {
     );
   }
 
+  // ✅ Always show data (even if empty) so map renders
   if (!data) {
     const emptyData = getDefaultMapData();
     setData(emptyData);
     return null;
   }
 
+  // ✅ Check if there's any real data to show
   const hasRealData = data.traffic.total > 0 || data.threed.total > 0;
 
   return (
@@ -403,7 +369,6 @@ export default function UnifiedMapPage() {
             )}
           </p>
         </div>
-        
         <div className="flex flex-wrap items-center gap-2">
           {/* View Mode Toggle */}
           <div className="flex items-center gap-1 border rounded-lg p-0.5">
@@ -455,7 +420,7 @@ export default function UnifiedMapPage() {
         </div>
       </div>
 
-      {/* ✅ Layer Controls */}
+      {/* ✅ Layer Controls - Always show */}
       <Card>
         <CardContent className="p-3">
           <div className="flex flex-wrap items-center gap-4">
@@ -473,6 +438,18 @@ export default function UnifiedMapPage() {
                     {getTrafficIcon(id)}
                     <span className="ml-1">{getTrafficLabel(id)}</span>
                   </Button>
+                  {/* <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={() => toggleVisibility('traffic', id)}
+                  >
+                    {config.visible ? (
+                      <Eye className="w-3 h-3" />
+                    ) : (
+                      <EyeOff className="w-3 h-3" />
+                    )}
+                  </Button> */}
                 </div>
               ))}
             </div>
@@ -493,6 +470,18 @@ export default function UnifiedMapPage() {
                     {getThreeDIcon(id)}
                     <span className="ml-1">{getThreeDLabel(id)}</span>
                   </Button>
+                  {/* <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={() => toggleVisibility('threed', id)}
+                  >
+                    {config.visible ? (
+                      <Eye className="w-3 h-3" />
+                    ) : (
+                      <EyeOff className="w-3 h-3" />
+                    )}
+                  </Button> */}
                 </div>
               ))}
             </div>
@@ -502,98 +491,17 @@ export default function UnifiedMapPage() {
 
       {/* ✅ Map Container */}
       <Card className={isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''}>
-        <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: isFullscreen ? '100vh' : '650px' }}>
-            
-            {/* ✅ Combined View - Vertical stacked panels with resize handle */}
-            {viewMode === 'combined' && (
-              <div 
-                ref={containerRef}
-                className="flex flex-col w-full h-full gap-0 p-0 relative"
-              >
-                {/* 3D Panel - Top */}
-                <div 
-                  className="min-h-0 transition-none"
-                  style={{ height: `${panelHeight}%` }}
-                >
-                  <div className="relative w-full h-full rounded-t-lg overflow-hidden border border-white/10 bg-black/5">
-                    <UnifiedMapView
-                      data={data}
-                      layers={layers}
-                      viewMode="3d"
-                      onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                      onMarkerSelect={(marker) => setSelectedMarker(marker)}
-                      selectedIncident={selectedIncident}
-                      selectedMarker={selectedMarker}
-                      height="100%"
-                      visibleAssetTypes={visibleAssetTypes}
-                    />
-                  </div>
-                </div>
-                
-                {/* Resize Handle */}
-                <div 
-                  className="flex-shrink-0 h-1.5 cursor-row-resize hover:bg-primary/50 transition-colors bg-border/50 my-0.5 rounded-full group"
-                  onMouseDown={handleMouseDown}
-                >
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-12 h-1 rounded-full bg-muted-foreground/30 group-hover:bg-primary/50 transition-colors" />
-                  </div>
-                </div>
-                
-                {/* 2D Panel - Bottom */}
-                <div 
-                  className="min-h-0 transition-none"
-                  style={{ height: `${100 - panelHeight}%` }}
-                >
-                  <div className="relative w-full h-full rounded-b-lg overflow-hidden border border-white/10 bg-black/5">
-                    <UnifiedMapView
-                      data={data}
-                      layers={layers}
-                      viewMode="2d"
-                      onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                      onMarkerSelect={(marker) => setSelectedMarker(marker)}
-                      selectedIncident={selectedIncident}
-                      selectedMarker={selectedMarker}
-                      height="100%"
-                      visibleAssetTypes={visibleAssetTypes}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ✅ 3D View - Full width */}
-            {viewMode === '3d' && (
-              <UnifiedMapView
-                data={data}
-                layers={layers}
-                viewMode="3d"
-                onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                onMarkerSelect={(marker) => setSelectedMarker(marker)}
-                selectedIncident={selectedIncident}
-                selectedMarker={selectedMarker}
-                height="100%"
-                visibleAssetTypes={visibleAssetTypes}
-              />
-            )}
-
-            {/* ✅ 2D View - Full width */}
-            {viewMode === '2d' && (
-              <UnifiedMapView
-                data={data}
-                layers={layers}
-                viewMode="2d"
-                onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                onMarkerSelect={(marker) => setSelectedMarker(marker)}
-                selectedIncident={selectedIncident}
-                selectedMarker={selectedMarker}
-                height="100%"
-                visibleAssetTypes={visibleAssetTypes}
-              />
-            )}
-
-          </div>
+        <CardContent className={`p-0 overflow-hidden ${isFullscreen ? 'h-screen' : ''}`}>
+          <UnifiedMapView
+            data={data}
+            layers={layers}
+            viewMode={viewMode}
+            onIncidentSelect={(incident) => setSelectedIncident(incident)}
+            onMarkerSelect={(marker) => setSelectedMarker(marker)}
+            selectedIncident={selectedIncident}
+            selectedMarker={selectedMarker}
+            height={isFullscreen ? '100vh' : '650px'}
+          />
         </CardContent>
       </Card>
 

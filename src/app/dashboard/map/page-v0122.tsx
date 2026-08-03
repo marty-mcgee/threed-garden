@@ -168,7 +168,7 @@ export default function UnifiedMapPage() {
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
   
   // ✅ Default to 3D view
-  const [viewMode, setViewMode] = useState<MapViewMode>('combined');
+  const [viewMode, setViewMode] = useState<MapViewMode>('3d');
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
@@ -180,7 +180,7 @@ export default function UnifiedMapPage() {
   const [panelHeight, setPanelHeight] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
 
-  // ✅ Asset type visibility state
+  // ✅ Asset type visibility state - KEPT for filtering, but UI removed
   const [visibleAssetTypes] = useState<Set<string>>(
     new Set(['plantings', 'beds', 'characters', 'farmbots'])
   );
@@ -517,6 +517,9 @@ export default function UnifiedMapPage() {
                   style={{ height: `${panelHeight}%` }}
                 >
                   <div className="relative w-full h-full rounded-t-lg overflow-hidden border border-white/10 bg-black/5">
+                    <div className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded text-[10px] text-white/60 pointer-events-none">
+                      🎮 3D Scene
+                    </div>
                     <UnifiedMapView
                       data={data}
                       layers={layers}
@@ -547,6 +550,9 @@ export default function UnifiedMapPage() {
                   style={{ height: `${100 - panelHeight}%` }}
                 >
                   <div className="relative w-full h-full rounded-b-lg overflow-hidden border border-white/10 bg-black/5">
+                    <div className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-black/50 backdrop-blur-sm rounded text-[10px] text-white/60 pointer-events-none">
+                      🗺️ 2D Map
+                    </div>
                     <UnifiedMapView
                       data={data}
                       layers={layers}
