@@ -151,21 +151,20 @@ export function GardenCharacter({
         
         const cacheKey = `${character.model!.filePath}-${character.model!.modelType}`;
         if (modelCache.has(cacheKey)) {
+          console.log(`♻️ Using cached model for ${character.name}`);
           loadedModel = modelCache.get(cacheKey)!.clone();
         } else {
-          const loader = character.model!.modelType.toLowerCase() === 'fbx' ? new FBXLoader() : new GLTFLoader();
-          const result = await loader.loadAsync(character.model!.filePath);
-          loadedModel = character.model!.modelType.toLowerCase() === 'fbx' ? result as THREE.Group : (result as any).scene;
+          console.log(`📦 Loading model for ${character.name}: ${modelType} from ${modelPath}`);
+          if (modelType === 'fbx') {
+            const loader = new FBXLoader();
+            const result = await loader.loadAsync(modelPath);
+            loadedModel = result as THREE.Group;
+          } else {
+            const loader = new GLTFLoader();
+            const gltf = await loader.loadAsync(modelPath);
+            loadedModel = gltf.scene;
+          }
           modelCache.set(cacheKey, loadedModel.clone());
-        }
-
-        if (modelType === 'fbx') {
-          const loader = new FBXLoader();
-          loadedModel = await loader.loadAsync(modelPath);
-        } else {
-          const loader = new GLTFLoader();
-          const gltf = await loader.loadAsync(modelPath);
-          loadedModel = gltf.scene;
         }
         
         // Apply transforms

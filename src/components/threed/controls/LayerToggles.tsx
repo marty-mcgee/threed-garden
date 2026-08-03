@@ -2,7 +2,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Car, Carrot, Cloud, Cpu } from 'lucide-react';
+import { Car, Carrot, Cloud, Cpu, Smile } from 'lucide-react';
 import { LayerVisibility } from '@/lib/types/threed';
 
 interface LayerTogglesProps {
@@ -14,6 +14,7 @@ export function LayerToggles({ layers, onToggle }: LayerTogglesProps) {
   const items = [
     { key: 'traffic' as const, label: 'Traffic', icon: Car },
     { key: 'garden' as const, label: 'Garden', icon: Carrot },
+    { key: 'characters' as const, label: 'Characters', icon: Smile },
     { key: 'weather' as const, label: 'Weather', icon: Cloud },
     { key: 'farmbots' as const, label: 'FarmBots', icon: Cpu },
   ];

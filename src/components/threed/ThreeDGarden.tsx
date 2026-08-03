@@ -11,6 +11,7 @@ import * as THREE from 'three';
 import { GardenLayer } from './layers/GardenLayer';
 import { FarmBotLayer } from './layers/FarmBotLayer';
 import { WeatherLayer } from './layers/WeatherLayer';
+import { CharacterLayer } from './layers/CharacterLayer';
 import { Legend3D } from './controls/Legend3D';
 
 // Import types
@@ -92,6 +93,7 @@ export function ThreeDGarden({
         {layers.garden && <GardenLayer beds={data.beds} plants={data.plants} />}
         {layers.farmbots && <FarmBotLayer farmbots={data.farmbots} />}
         {layers.weather && <WeatherLayer weather={data.weather} />}
+        {layers.characters && <CharacterLayer characters={data.characters} />}
 
         {/* Legend */}
         <Legend3D layers={layers} />
@@ -105,6 +107,7 @@ export function ThreeDGarden({
               {layers.garden && <p>🌱 {data.plants?.length || 0} Plants</p>}
               {layers.garden && <p>🛏️ {data.beds?.length || 0} Beds</p>}
               {layers.farmbots && <p>🤖 {data.farmbots?.length || 0} FarmBots</p>}
+              {layers.characters && <p>🧚 {data.characters?.length || 0} Characters</p>}
               {layers.weather && data.weather && (
                 <p>🌡️ {data.weather.temperature}°F</p>
               )}

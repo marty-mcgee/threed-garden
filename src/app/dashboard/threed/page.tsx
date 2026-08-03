@@ -21,6 +21,7 @@ export default function ThreeDPage() {
     garden: true,
     farmbots: true,
     weather: true,
+    characters: true,
   });
 
   const loadData = useCallback(async () => {
@@ -79,7 +80,7 @@ export default function ThreeDPage() {
         <div>
           <h1 className="text-2xl font-bold">ThreeD Garden</h1>
           <p className="text-sm text-muted-foreground">
-            {data.traffic?.length || 0} incidents • {data.plants?.length || 0} plants • {data.farmbots?.length || 0} FarmBots
+            {data.traffic?.length || 0} incidents • {data.plants?.length || 0} plants • {data.characters?.length || 0} characters • {data.farmbots?.length || 0} FarmBots
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

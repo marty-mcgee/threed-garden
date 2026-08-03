@@ -4,20 +4,22 @@ import { ThreeDData } from '@/lib/types/threed';
 export async function fetchThreeDData(): Promise<ThreeDData> {
   try {
     // Fetch all data sources in parallel
-    const [trafficRes, bedsRes, plantsRes, farmbotsRes, weatherRes] = await Promise.all([
+    const [trafficRes, bedsRes, plantsRes, farmbotsRes, weatherRes, charactersRes] = await Promise.all([
       fetch('/api/traffic/all'),
       fetch('/api/threed/beds'),
       fetch('/api/threed/plants'),
       fetch('/api/threed/farmbots'),
       fetch('/api/threed/weather'),
+      fetch('/api/threed/characters'),
     ]);
 
-    const [traffic, beds, plants, farmbots, weather] = await Promise.all([
+    const [traffic, beds, plants, farmbots, weather, characters] = await Promise.all([
       trafficRes.json(),
       bedsRes.json(),
       plantsRes.json(),
       farmbotsRes.json(),
       weatherRes.json(),
+      charactersRes.json(),
     ]);
 
     return {
@@ -26,6 +28,7 @@ export async function fetchThreeDData(): Promise<ThreeDData> {
       plants: plants.data || [],
       farmbots: farmbots.data || [],
       weather: weather.data || null,
+      characters: characters.data || [],
     };
   } catch (error) {
     console.error('Error fetching ThreeD data:', error);
@@ -36,6 +39,7 @@ export async function fetchThreeDData(): Promise<ThreeDData> {
       plants: [],
       farmbots: [],
       weather: null,
+      characters: [],
     };
   }
 }

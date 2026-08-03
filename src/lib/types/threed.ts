@@ -473,6 +473,7 @@ export interface LayerVisibility {
   garden: boolean;
   farmbots: boolean;
   weather: boolean;
+  characters: boolean;
 }
 
 // ===== MAIN DATA TYPE =====
@@ -482,6 +483,7 @@ export interface ThreeDData {
   plants: Plant3D[];
   farmbots: FarmBot3D[];
   weather: Weather3D | null;
+  characters: CharacterData[];
 }
 
 
