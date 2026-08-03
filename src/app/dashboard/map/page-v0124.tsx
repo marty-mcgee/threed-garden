@@ -168,7 +168,7 @@ export default function UnifiedMapPage() {
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
   
   // ✅ Default to 3D view
-  const [viewMode, setViewMode] = useState<MapViewMode>('3d');
+  const [viewMode, setViewMode] = useState<MapViewMode>('combined');
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
@@ -221,12 +221,6 @@ export default function UnifiedMapPage() {
       }
     }));
   };
-
-  // ✅ Handle focus on marker
-  const handleFocusMarker = useCallback((marker: any) => {
-    // Set the selected marker to trigger focus in both views
-    setSelectedMarker(marker);
-  }, []);
 
   // ✅ Load data from API route
   const loadData = useCallback(async () => {
@@ -529,7 +523,6 @@ export default function UnifiedMapPage() {
                       viewMode="3d"
                       onIncidentSelect={(incident) => setSelectedIncident(incident)}
                       onMarkerSelect={(marker) => setSelectedMarker(marker)}
-                      onFocusMarker={handleFocusMarker}
                       selectedIncident={selectedIncident}
                       selectedMarker={selectedMarker}
                       height="100%"
@@ -560,7 +553,6 @@ export default function UnifiedMapPage() {
                       viewMode="2d"
                       onIncidentSelect={(incident) => setSelectedIncident(incident)}
                       onMarkerSelect={(marker) => setSelectedMarker(marker)}
-                      onFocusMarker={handleFocusMarker}
                       selectedIncident={selectedIncident}
                       selectedMarker={selectedMarker}
                       height="100%"
@@ -579,7 +571,6 @@ export default function UnifiedMapPage() {
                 viewMode="3d"
                 onIncidentSelect={(incident) => setSelectedIncident(incident)}
                 onMarkerSelect={(marker) => setSelectedMarker(marker)}
-                onFocusMarker={handleFocusMarker}
                 selectedIncident={selectedIncident}
                 selectedMarker={selectedMarker}
                 height="100%"
@@ -595,7 +586,6 @@ export default function UnifiedMapPage() {
                 viewMode="2d"
                 onIncidentSelect={(incident) => setSelectedIncident(incident)}
                 onMarkerSelect={(marker) => setSelectedMarker(marker)}
-                onFocusMarker={handleFocusMarker}
                 selectedIncident={selectedIncident}
                 selectedMarker={selectedMarker}
                 height="100%"

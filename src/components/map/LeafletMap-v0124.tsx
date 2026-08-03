@@ -5,7 +5,7 @@
 import { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { TrafficIncident, RuntimeMarker as ThreeDMarker } from '@/lib/types/map';
+import { TrafficIncident, ThreeDMarker } from '@/lib/types/map';
 import { getTrafficColor, getTrafficLabel } from '@/lib/utils/map-helpers';
 
 // Fix Leaflet icon issue with Next.js
@@ -30,7 +30,6 @@ interface LeafletMapProps {
   }>;
   onIncidentClick?: (incident: TrafficIncident) => void;
   onMarkerClick?: (marker: ThreeDMarker) => void;
-  onFocusMarker?: (marker: ThreeDMarker | TrafficIncident) => void;
   selectedIncident?: TrafficIncident | null;
   selectedMarker?: ThreeDMarker | null;
   center?: [number, number];
@@ -46,7 +45,7 @@ function threeDToGPS(x: number, z: number, center: { lat: number; lng: number })
   };
 }
 
-// Emoji mapping for 3D marker types
+// ✅ Emoji mapping for 3D marker types
 const MARKER_EMOJIS: Record<string, string> = {
   plantings: '🌱',
   beds: '🧑‍🌾',
@@ -57,7 +56,7 @@ const MARKER_EMOJIS: Record<string, string> = {
   markers: '📍',
 };
 
-// Severity emoji mapping for traffic incidents
+// ✅ Severity emoji mapping for traffic incidents
 const SEVERITY_EMOJIS: Record<string, string> = {
   critical: '🔴',
   high: '🟠',
@@ -70,7 +69,6 @@ function LeafletMapComponent({
   markers,
   onIncidentClick,
   onMarkerClick,
-  onFocusMarker,
   selectedIncident,
   selectedMarker,
   center = [39.514719, -123.760382],
@@ -86,13 +84,11 @@ function LeafletMapComponent({
   // Store callbacks in refs to prevent re-renders
   const onIncidentClickRef = useRef(onIncidentClick);
   const onMarkerClickRef = useRef(onMarkerClick);
-  const onFocusMarkerRef = useRef(onFocusMarker);
 
   useEffect(() => {
     onIncidentClickRef.current = onIncidentClick;
     onMarkerClickRef.current = onMarkerClick;
-    onFocusMarkerRef.current = onFocusMarker;
-  }, [onIncidentClick, onMarkerClick, onFocusMarker]);
+  }, [onIncidentClick, onMarkerClick]);
 
   // Initialize map once
   useEffect(() => {
@@ -118,7 +114,7 @@ function LeafletMapComponent({
       initializedRef.current = false;
       previousSelectedRef.current = null;
     };
-  }, []);
+  }, []); // Only run once
 
   // Handle pan to selected marker
   useEffect(() => {
@@ -132,6 +128,7 @@ function LeafletMapComponent({
       return;
     }
 
+    // Get coordinates
     let lat: number | undefined;
     let lng: number | undefined;
 
@@ -157,6 +154,7 @@ function LeafletMapComponent({
 
     if (!lat || !lng || isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) return;
 
+    // Only pan if selection changed
     const currentId = selectedMarker?.id || selectedIncident?.id || null;
     if (currentId !== previousSelectedRef.current) {
       previousSelectedRef.current = currentId;
@@ -185,7 +183,7 @@ function LeafletMapComponent({
       return !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
     };
 
-    // Add incident markers with Focus button
+    // ✅ Add incident markers with emojis
     incidents.forEach((incident) => {
       if (!isValid(incident.lat, incident.lng)) return;
       hasMarkers = true;
@@ -194,22 +192,6 @@ function LeafletMapComponent({
       const color = getTrafficColor(incident.source);
       const severityEmoji = SEVERITY_EMOJIS[incident.severity] || '🟡';
       const isSelected = selectedIncident?.id === incident.id;
-
-      const popupContent = `
-        <div class="p-3 max-w-xs">
-          <div class="font-medium text-sm">${incident.title}</div>
-          <div class="text-xs text-gray-500 mt-1">📍 ${incident.location}</div>
-          <div class="text-xs text-gray-500">${getTrafficLabel(incident.source)} • ${new Date(incident.timestamp).toLocaleString()}</div>
-          <button 
-            class="mt-2 w-full text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors focus-marker-btn"
-            data-incident-id="${incident.id}"
-            data-lat="${incident.lat}"
-            data-lng="${incident.lng}"
-          >
-            🎯 Focus on this marker
-          </button>
-        </div>
-      `;
 
       const icon = L.divIcon({
         html: `
@@ -227,45 +209,21 @@ function LeafletMapComponent({
         className: '',
       });
 
-      const marker = L.marker([incident.lat, incident.lng], { icon })
-        .bindPopup(popupContent, { maxWidth: 300, className: 'custom-popup' })
+      L.marker([incident.lat, incident.lng], { icon })
+        .bindPopup(`
+          <div class="p-2 max-w-xs">
+            <div class="font-medium text-sm">${incident.title}</div>
+            <div class="text-xs text-gray-500 mt-1">📍 ${incident.location}</div>
+            <div class="text-xs text-gray-500">${getTrafficLabel(incident.source)} • ${new Date(incident.timestamp).toLocaleString()}</div>
+          </div>
+        `)
         .on('click', () => {
           onIncidentClickRef.current?.(incident);
         })
         .addTo(group);
-
-      marker.on('popupopen', () => {
-        const container = document.querySelector('.leaflet-popup-content');
-        if (!container) return;
-        const btn = container.querySelector('.focus-marker-btn');
-        if (btn) {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const lat = parseFloat(btn.getAttribute('data-lat') || '0');
-            const lng = parseFloat(btn.getAttribute('data-lng') || '0');
-            if (onFocusMarkerRef.current && !isNaN(lat) && !isNaN(lng)) {
-              const focusMarker: ThreeDMarker = {
-                id: incident.id,
-                name: incident.title,
-                type: 'incident',
-                position: { x: lat, y: 0, z: lng },
-                color: color,
-                size: 'medium',
-                metadata: { 
-                  ...incident,
-                  gps: { lat, lng }
-                },
-              };
-              onFocusMarkerRef.current(focusMarker);
-              map.setView([lat, lng], map.getZoom(), { animate: true });
-              marker.closePopup();
-            }
-          });
-        }
-      });
     });
 
-    // Add 3D markers with Focus button
+    // ✅ Add 3D markers with emojis
     markers.forEach((marker) => {
       let lat = marker.lat;
       let lng = marker.lng;
@@ -292,24 +250,6 @@ function LeafletMapComponent({
       const emoji = MARKER_EMOJIS[marker.type] || '📍';
       const isSelected = selectedMarker?.id === marker.id && selectedMarker?.type === marker.type;
 
-      const popupContent = `
-        <div class="p-3 max-w-xs">
-          <div class="font-medium text-sm">${marker.name}</div>
-          <div class="text-xs text-gray-500 mt-1">📦 ${marker.type}</div>
-          <div class="text-xs text-gray-500">📍 (${lat.toFixed(4)}, ${lng.toFixed(4)})</div>
-          ${marker.metadata?.description ? `<div class="text-xs text-gray-600 mt-1">${marker.metadata.description}</div>` : ''}
-          <button 
-            class="mt-2 w-full text-xs bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded transition-colors focus-marker-btn"
-            data-marker-id="${marker.id}"
-            data-type="${marker.type}"
-            data-lat="${lat}"
-            data-lng="${lng}"
-          >
-            🎯 Focus on this marker
-          </button>
-        </div>
-      `;
-
       const icon = L.divIcon({
         html: `
           <div class="relative flex items-center justify-center">
@@ -326,8 +266,15 @@ function LeafletMapComponent({
         className: '',
       });
 
-      const lMarker = L.marker([lat, lng], { icon })
-        .bindPopup(popupContent, { maxWidth: 300, className: 'custom-popup' })
+      L.marker([lat, lng], { icon })
+        .bindPopup(`
+          <div class="p-2 max-w-xs">
+            <div class="font-medium text-sm">${marker.name}</div>
+            <div class="text-xs text-gray-500 mt-1">📦 ${marker.type}</div>
+            <div class="text-xs text-gray-500">📍 (${lat.toFixed(4)}, ${lng.toFixed(4)})</div>
+            ${marker.metadata?.description ? `<div class="text-xs text-gray-600 mt-1">${marker.metadata.description}</div>` : ''}
+          </div>
+        `)
         .on('click', () => {
           if (onMarkerClickRef.current) {
             onMarkerClickRef.current({
@@ -342,38 +289,6 @@ function LeafletMapComponent({
           }
         })
         .addTo(group);
-
-      lMarker.on('popupopen', () => {
-        const container = document.querySelector('.leaflet-popup-content');
-        if (!container) return;
-        const btn = container.querySelector('.focus-marker-btn');
-        if (btn) {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const markerId = btn.getAttribute('data-marker-id') || '';
-            const type = btn.getAttribute('data-type') || '';
-            const lat = parseFloat(btn.getAttribute('data-lat') || '0');
-            const lng = parseFloat(btn.getAttribute('data-lng') || '0');
-            if (onFocusMarkerRef.current && !isNaN(lat) && !isNaN(lng)) {
-              const focusMarker: ThreeDMarker = {
-                id: markerId,
-                name: marker.name,
-                type: type as any,
-                position: { x: lat, y: 0, z: lng },
-                color: color,
-                size: marker.size || 'medium',
-                metadata: { 
-                  ...marker.metadata,
-                  gps: { lat, lng }
-                },
-              };
-              onFocusMarkerRef.current(focusMarker);
-              map.setView([lat, lng], map.getZoom(), { animate: true });
-              lMarker.closePopup();
-            }
-          });
-        }
-      });
     });
 
     // Fit bounds on first render only

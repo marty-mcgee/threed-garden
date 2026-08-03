@@ -6295,3 +6295,89 @@ api/
 **Version:** v0.12.4 "Combined Unified Map + Scene Views with Interactive Markers" 🚀
 
 ---
+
+Based on your v0.12.4 `CONTEXT.md`, the "Combined Unified Map + Scene Views with Interactive Markers" is a fantastic foundation. To elevate the Dashboard Map Page, I recommend focusing on these three areas for your next version, v0.13.0:
+
+## 🗺️ 1. Advanced Map & Scene Controls
+
+Your combined view is working well. Now, let's make it more powerful by adding user-friendly controls that connect the 2D and 3D views.
+
+*   **"Focus on Marker" Button for 2D Map:** While clicking a marker already highlights it, adding a dedicated **"Focus" button** in the marker's popup or details panel would be a great UX improvement. This button could trigger a smooth animation in both the 2D map (panning to the marker) and the 3D scene (zooming in on it), creating a truly unified experience.
+*   **2D Map Layer Visibility Sync:** You already have a sophisticated layer system for the 3D scene. The next logical step is to **sync the visibility of these layers with the Leaflet map**. Adding a small toggle in your layer controls (like a checkbox or eye icon next to each layer) that filters the corresponding markers on both the 2D map and the 3D scene would give users unprecedented control over their data view.
+*   **"Reset View" Button:** A simple but essential button that resets both the 2D map and 3D scene to their default centers and zoom levels. This is a quick way for users to get back to a familiar overview after exploring.
+
+## 📊 2. Smarter Data Display & Filtering
+
+Your data is rich and complex. The next step is to make it more digestible and actionable for the user.
+
+*   **Detailed Marker Popups with Direct Links:** Your current popups show basic data. You can enhance them to display **more comprehensive information** from your database. For example, a "Planting" popup could show its growth stage, health, and planting date. Most importantly, add a **"View Details" button** that links directly to the admin page for that specific asset (`/admin/threed/plantings/[id]`), creating a seamless workflow from map to data management.
+*   **Advanced Filtering Panel:** Your asset type toggle is a great start. Consider expanding it into a small, collapsible **filter panel**. Users could filter by:
+    *   **Status:** Show only "Active," "Inactive," or "Planned" assets.
+    *   **Date Range:** Filter plantings or traffic incidents by a specific date range.
+    *   **Specific Attributes:** For example, filter plants by a specific variety or type (e.g., only "Vegetables" or "Herbs").
+*   **Map Data Summary Panel:** The stats cards at the bottom of the page are very useful. You could enhance them by making them **interactive**. Clicking on a stat card (e.g., "Plantings: 12") could automatically filter the map and 3D scene to only show markers of that type, giving users a powerful way to drill down into their data.
+
+## 🎨 3. UI Polish & Performance
+
+With a feature-rich dashboard, it's crucial to ensure the user interface feels polished and the application is performant.
+
+*   **Marker Clustering for 2D Map:** As your project grows, the number of markers on your Leaflet map will increase. Implementing a **marker clustering library** (like `react-leaflet-markercluster`) will automatically group nearby markers into a single visual cluster, improving map readability and rendering performance.
+*   **"Live Data" Status Indicator:** Many of your data sources are polled regularly. A small, unobtrusive **status indicator** (e.g., a green/red dot or a "Data updated: 2 min ago" label) in the header would reassure users that the information they're seeing is current, and provide feedback when a refresh is happening.
+*   **Refined Combined View Resize UX:** Your vertical combined view with a drag handle is a great feature. Polish the UX by showing a **small tooltip** or visual feedback when the user is dragging the handle (e.g., "Drag to resize panels"). You could also add buttons (e.g., a small "X" or up/down chevrons) to quickly collapse or expand a panel entirely, giving users a quick way to focus on one view.
+
+## 🚀 Suggested Roadmap for v0.13.0
+
+To deliver a high-impact update, I suggest prioritizing the following milestones:
+
+1.  **v0.13.0-alpha: "Power Controls":** Implement the **"Focus on Marker" button** and **sync the 3D layer visibility to the 2D map**. This directly enhances the core map interaction.
+2.  **v0.13.0-beta: "Smart Dashboard":** Add the **detailed popups with "View Details" links** and the **basic advanced filtering panel**. This transforms the map from a viewer into a data management tool.
+3.  **v0.13.0: "Polished Performance":** Integrate **2D marker clustering**, add a **"Live Data" status indicator**, and polish the **combined view resize UI**. This ensures your application remains fast, reliable, and a pleasure to use.
+
+Your current architecture, with its excellent separation of data (sub-modules) from presentation (runtime markers and views), is perfectly suited for these improvements. The features I've described will build directly on your existing work without requiring major architectural overhauls.
+
+---
+
+🎉 **FANTASTIC!** I'm so glad everything is working perfectly!
+
+## What We Just Completed in v0.13.0-alpha
+
+### ✅ Fully Working Features:
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Focus on Marker Button** | ✅ Working | "Focus on this marker" button in 2D map popups |
+| **2D Map Pan to Focus** | ✅ Working | Smoothly pans to marker without changing zoom |
+| **3D Scene Zoom to Focus** | ✅ Working | Automatically zooms 3D scene to focused marker |
+| **Selection Sync** | ✅ Working | Click in 2D → highlights in 3D, and vice versa |
+| **Layer Visibility Sync** | ✅ Working | Toggle layers in 3D → filters both views |
+| **Combined View** | ✅ Working | Vertical panels with resize handle |
+
+## 🚀 What's Next for v0.13.0-beta?
+
+Here's the next set of features we can implement:
+
+### 1. Detailed Popups with "View Details" Links
+- Add more comprehensive data to 2D map popups
+- Add "View Details" button linking to admin pages
+
+### 2. Advanced Filtering Panel
+- Add collapsible filter panel for status, date range, attributes
+- Make stats cards interactive (click to filter)
+
+### 3. "Live Data" Status Indicator
+- Show when data was last updated
+- Visual indicator for data freshness
+
+## 📝 Next Steps
+
+Which feature would you like to tackle next?
+
+1. **Detailed Popups with Admin Links** - Show more data in popups and link to admin pages
+2. **Interactive Stats Cards** - Click on stats to filter map
+3. **Advanced Filtering Panel** - Add more filter options
+4. **Live Data Status Indicator** - Show data freshness
+
+Let me know and I'll provide the full working code for whichever you choose! 🚀
+
+---
+

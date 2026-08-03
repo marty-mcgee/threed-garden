@@ -26,7 +26,6 @@ interface UnifiedMapViewProps {
   viewMode: MapViewMode;
   onIncidentSelect?: (incident: TrafficIncident | null) => void;
   onMarkerSelect?: (marker: RuntimeMarker | null) => void;
-  onFocusMarker?: (marker: RuntimeMarker) => void;
   selectedIncident?: TrafficIncident | null;
   selectedMarker?: RuntimeMarker | null;
   height?: string;
@@ -48,7 +47,6 @@ export function UnifiedMapView({
   viewMode,
   onIncidentSelect,
   onMarkerSelect,
-  onFocusMarker,
   selectedIncident,
   selectedMarker,
   height = '100%',
@@ -241,30 +239,6 @@ export function UnifiedMapView({
     }
   }, [onMarkerSelect, selectedMarker]);
 
-  // ✅ Handle focus marker
-  const handleFocusMarker = useCallback((marker: RuntimeMarker | TrafficIncident) => {
-    if (onFocusMarker) {
-      // Convert to RuntimeMarker if it's a TrafficIncident
-      const runtimeMarker: RuntimeMarker = {
-        id: marker.id,
-        name: marker.title || marker.name,
-        type: marker.type || 'incident',
-        position: { x: marker.lat || marker.position.x, y: 0, z: marker.lng || marker.position.z },
-        color: '#3b82f6',
-        icon: '📍',
-        label: marker.title || marker.name,
-        isVisible: true,
-        isActive: true,
-        data: marker,
-        metadata: {
-          source: 'sub-module',
-          generatedAt: new Date().toISOString(),
-        },
-      };
-      onFocusMarker(runtimeMarker);
-    }
-  }, [onFocusMarker]);
-
   // ✅ Prepare incidents for Leaflet
   const leafletIncidents = filteredIncidents
     .filter((incident: any) => incident.lat && incident.lng && incident.lat !== 0 && incident.lng !== 0)
@@ -327,9 +301,6 @@ export function UnifiedMapView({
         markers={leafletMarkers}
         onIncidentClick={handleIncidentClick}
         onMarkerClick={handleMarkerClick}
-        onFocusMarker={handleFocusMarker}
-        selectedIncident={selectedIncident}
-        selectedMarker={selectedMarker}
         height="100%"
         gpsCenter={gpsCenter}
         center={[gpsCenter.lat, gpsCenter.lng]}
