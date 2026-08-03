@@ -32,6 +32,9 @@ interface UnifiedMapViewProps {
   height?: string;
   gpsCenter?: { lat: number; lng: number };
   visibleAssetTypes?: Set<string>;
+  filterText?: string;
+  filterActiveOnly?: boolean;
+  filterAssetType?: string | null;
 }
 
 const MARKER_CONFIG: Record<string, { color: string; icon: string; label: string }> = {
@@ -57,6 +60,9 @@ export function UnifiedMapView({
   height = '100%',
   gpsCenter = { lat: 39.514719, lng: -123.760382 },
   visibleAssetTypes,
+  filterText = '',
+  filterActiveOnly = false,
+  filterAssetType = null,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(false);
@@ -162,14 +168,81 @@ export function UnifiedMapView({
     return spreadMarkers;
   };
 
-  const filteredIncidents = data.traffic.raw ? Object.values(data.traffic.raw).flat() : [];
+  // ✅ v0.13.0-beta: Apply text, active-only, and asset-type filters
+  const filteredMarkers = useMemo(() => {
+    return runtimeMarkers.filter((marker) => {
+      const layerConfig = layers.threed[marker.type as keyof typeof layers.threed];
+      if (!layerConfig?.enabled || !layerConfig?.visible) return false;
+      if (visibleAssetTypes && visibleAssetTypes.size > 0 && !visibleAssetTypes.has(marker.type)) return false;
 
-  const filteredMarkers = runtimeMarkers.filter((marker) => {
-    const layerConfig = layers.threed[marker.type as keyof typeof layers.threed];
-    if (!layerConfig?.enabled || !layerConfig?.visible) return false;
-    if (visibleAssetTypes && visibleAssetTypes.size > 0) return visibleAssetTypes.has(marker.type);
-    return true;
-  });
+      // Text filter: match marker name or type
+      if (filterText) {
+        const query = filterText.toLowerCase();
+        if (!marker.name.toLowerCase().includes(query) && !marker.type.toLowerCase().includes(query)) {
+          return false;
+        }
+      }
+
+      // Active-only filter
+      if (filterActiveOnly && !marker.isActive) return false;
+
+      // Asset type quick filter (from stat cards)
+      if (filterAssetType) {
+        const typeLower = filterAssetType.toLowerCase();
+        // Map display labels back to marker types
+        const typeMap: Record<string, string> = {
+          'plantings': 'planting',
+          'beds': 'bed',
+          'characters': 'character',
+          'farmbots': 'farmbot',
+        };
+        const targetType = typeMap[typeLower] || typeLower;
+        if (marker.type !== targetType) return false;
+      }
+
+      return true;
+    });
+  }, [runtimeMarkers, layers, visibleAssetTypes, filterText, filterActiveOnly, filterAssetType]);
+
+  // ✅ v0.13.0-beta: Apply text filter to incidents too
+  const filteredIncidents = useMemo(() => {
+    if (!data.traffic.raw) return [];
+    const allIncidents = Object.values(data.traffic.raw).flat();
+
+    if (!filterText && !filterAssetType) return allIncidents;
+
+    return allIncidents.filter((incident: any) => {
+      // Text filter
+      if (filterText) {
+        const query = filterText.toLowerCase();
+        const title = (incident.title || '').toLowerCase();
+        const location = (incident.location || '').toLowerCase();
+        if (!title.includes(query) && !location.includes(query)) return false;
+      }
+
+      // Asset type filter for traffic
+      if (filterAssetType) {
+        const typeLower = filterAssetType.toLowerCase();
+        const sourceMap: Record<string, string> = {
+          'chp cad': 'chpCadIncidents',
+          'chp cases': 'chpCases',
+          'chp centers': 'chpCenters',
+          'caltrans closures': 'caltransLaneClosures',
+          'cctv': 'caltransCctvCameras',
+          'districts': 'caltransDistricts',
+          '511 events': 'bayArea511Events',
+          'calfire': 'calfireIncidents',
+        };
+        // This is approximate since incidents don't carry their source collection name clearly
+        // We'll match against the incident source field
+        const sourceLower = (incident.source || '').toLowerCase();
+        const matchedSource = sourceMap[typeLower];
+        if (!matchedSource || !sourceLower.includes(typeLower.split(' ')[0])) return false;
+      }
+
+      return true;
+    });
+  }, [data.traffic.raw, filterText, filterAssetType]);
 
   const spreadMarkers = useMemo(() => spreadOverlappingMarkers(filteredMarkers, 1.5), [filteredMarkers]);
 

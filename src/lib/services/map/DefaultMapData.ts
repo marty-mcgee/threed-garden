@@ -8,6 +8,7 @@ export const DEFAULT_MAP_CENTER = { lat: 39.514719, lng: -123.760382 };
 export function getDefaultMapData(): UnifiedMapData {
   return {
     traffic: {
+      raw: null,
       total: 0,
       chpCadCount: 0,
       chpCasesCount: 0,
@@ -17,9 +18,9 @@ export function getDefaultMapData(): UnifiedMapData {
       caltransDistrictsCount: 0,
       bayArea511Count: 0,
       calfireIncidentsCount: 0,
-      incidents: [],
     },
     threed: {
+      raw: null,
       total: 0,
       plantsCount: 0,
       plantingsCount: 0,
@@ -28,7 +29,10 @@ export function getDefaultMapData(): UnifiedMapData {
       markersCount: 0,
       layersCount: 0,
       farmbotsCount: 0,
-      markers: [],
+      tasksCount: 0,
+      harvestsCount: 0,
+      weatherLogsCount: 0,
+      layers: [],
     },
   };
 }

@@ -2,7 +2,7 @@
 // Features: Rich Popups + Admin Links, Advanced Filtering, Interactive Stats, Live Data Indicator
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Layers, 
@@ -23,7 +23,6 @@ import {
   Clock,
   Wifi,
   WifiOff,
-  ChevronDown,
   X,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
@@ -195,6 +194,18 @@ function StatCard({
 }
 
 export default function UnifiedMapPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-[600px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    }>
+      <UnifiedMapPageInner />
+    </Suspense>
+  );
+}
+
+function UnifiedMapPageInner() {
   const { showToast, ToastComponent } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -203,7 +214,7 @@ export default function UnifiedMapPage() {
   // ✅ State
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
   const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(!projectIdParam);
-  const [data, setData] = useState<UnifiedMapData | null>(null);
+  const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
   const [isDefaultView, setIsDefaultView] = useState(!projectIdParam);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -446,13 +457,7 @@ export default function UnifiedMapPage() {
     );
   }
 
-  if (!data) {
-    const emptyData = getDefaultMapData();
-    setData(emptyData);
-    return null;
-  }
-
-  const hasRealData = data.traffic.total > 0 || data.threed.total > 0;
+  const hasRealData = data ? (data.traffic.total > 0 || data.threed.total > 0) : false;
 
   return (
     <div className="space-y-4">
@@ -729,6 +734,9 @@ export default function UnifiedMapPage() {
                       selectedMarker={selectedMarker}
                       height="100%"
                       visibleAssetTypes={visibleAssetTypes}
+                      filterText={filterText}
+                      filterActiveOnly={filterActiveOnly}
+                      filterAssetType={filterAssetType}
                     />
                   </div>
                 </div>
@@ -758,6 +766,9 @@ export default function UnifiedMapPage() {
                       selectedMarker={selectedMarker}
                       height="100%"
                       visibleAssetTypes={visibleAssetTypes}
+                      filterText={filterText}
+                      filterActiveOnly={filterActiveOnly}
+                      filterAssetType={filterAssetType}
                     />
                   </div>
                 </div>
@@ -776,6 +787,9 @@ export default function UnifiedMapPage() {
                 selectedMarker={selectedMarker}
                 height="100%"
                 visibleAssetTypes={visibleAssetTypes}
+                filterText={filterText}
+                filterActiveOnly={filterActiveOnly}
+                filterAssetType={filterAssetType}
               />
             )}
 
@@ -791,6 +805,9 @@ export default function UnifiedMapPage() {
                 selectedMarker={selectedMarker}
                 height="100%"
                 visibleAssetTypes={visibleAssetTypes}
+                filterText={filterText}
+                filterActiveOnly={filterActiveOnly}
+                filterAssetType={filterAssetType}
               />
             )}
 
