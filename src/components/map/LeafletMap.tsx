@@ -1,4 +1,4 @@
-// components/map/LeafletMap.tsx
+// components/map/LeafletMap-v0130b.tsx - v0.13.0-beta "Smart Dashboard"
 
 'use client';
 
@@ -6,7 +6,12 @@ import { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { TrafficIncident, RuntimeMarker as ThreeDMarker } from '@/lib/types/map';
-import { getTrafficColor, getTrafficLabel } from '@/lib/utils/map-helpers';
+import { 
+  getTrafficColor, 
+  getTrafficLabel,
+  getAdminUrl,
+  getTypeLabel,
+} from '@/lib/utils/map-helpers';
 
 // Fix Leaflet icon issue with Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -64,6 +69,15 @@ const SEVERITY_EMOJIS: Record<string, string> = {
   medium: '🟡',
   low: '🟢',
 };
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
+    .replace(/'/g, '&#39;');
+}
 
 function LeafletMapComponent({
   incidents,
@@ -185,29 +199,42 @@ function LeafletMapComponent({
       return !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0;
     };
 
-    // Add incident markers with Focus button
+    // ✅ v0.13.0-beta: Enhanced incident markers with rich popups & admin links
     incidents.forEach((incident) => {
       if (!isValid(incident.lat, incident.lng)) return;
       hasMarkers = true;
       bounds.extend([incident.lat, incident.lng]);
 
       const color = getTrafficColor(incident.source);
-      const severityEmoji = SEVERITY_EMOJIS[incident.severity] || '🟡';
+      const sevStr: string = incident.severity || 'medium';
+      const severityEmoji = SEVERITY_EMOJIS[sevStr] || '🟡';
       const isSelected = selectedIncident?.id === incident.id;
+      const sourceLabel = getTrafficLabel(incident.source);
+      const adminUrl = getAdminUrl(incident.source, incident.id);
+      const timeStr = new Date(incident.timestamp).toLocaleString();
 
+      // ✅ Rich popup with type badge, details, focus button, and View Details link
       const popupContent = `
-        <div class="p-3 max-w-xs">
-          <div class="font-medium text-sm">${incident.title}</div>
-          <div class="text-xs text-gray-500 mt-1">📍 ${incident.location}</div>
-          <div class="text-xs text-gray-500">${getTrafficLabel(incident.source)} • ${new Date(incident.timestamp).toLocaleString()}</div>
-          <button 
-            class="mt-2 w-full text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded transition-colors focus-marker-btn"
-            data-incident-id="${incident.id}"
-            data-lat="${incident.lat}"
-            data-lng="${incident.lng}"
-          >
-            🎯 Focus on this marker
-          </button>
+        <div class="p-3 max-w-xs font-sans">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 px-1.5 py-0.5 rounded">${sourceLabel}</span>
+            ${incident.severity ? `<span class="text-[10px] bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">${severityEmoji} ${incident.severity}</span>` : ''}
+            <span class="text-[10px] text-gray-400">ID: ${incident.id}</span>
+          </div>
+          <div class="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-1">${escapeHtml(incident.title)}</div>
+          <div class="text-[11px] text-gray-500 mb-1">📍 ${escapeHtml(incident.location)}</div>
+          <div class="text-[10px] text-gray-400">🕐 ${timeStr}</div>
+          ${incident.status ? `<div class="text-[11px] text-gray-600 mt-1 border-t pt-1.5 border-gray-200 dark:border-gray-700"><span class="font-medium">Status:</span> ${escapeHtml(incident.status)}</div>` : ''}
+          ${incident.description ? `<div class="text-[11px] text-gray-500 mt-1">${escapeHtml(incident.description?.slice(0, 80))}${incident.description?.length > 80 ? '...' : ''}</div>` : ''}
+          <div class="mt-3 flex gap-2">
+            <button class="flex-1 text-[11px] bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded transition-colors focus-marker-btn"
+              data-incident-id="${incident.id}" data-lat="${incident.lat}" data-lng="${incident.lng}">
+              🎯 Focus
+            </button>
+            <a href="${adminUrl}" target="_blank" class="flex-1 text-center text-[11px] bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors no-underline inline-block">
+              📝 View Details
+            </a>
+          </div>
         </div>
       `;
 
@@ -228,7 +255,7 @@ function LeafletMapComponent({
       });
 
       const marker = L.marker([incident.lat, incident.lng], { icon })
-        .bindPopup(popupContent, { maxWidth: 300, className: 'custom-popup' })
+        .bindPopup(popupContent, { maxWidth: 320, className: 'custom-popup' })
         .on('click', () => {
           onIncidentClickRef.current?.(incident);
         })
@@ -244,16 +271,23 @@ function LeafletMapComponent({
             const lat = parseFloat(btn.getAttribute('data-lat') || '0');
             const lng = parseFloat(btn.getAttribute('data-lng') || '0');
             if (onFocusMarkerRef.current && !isNaN(lat) && !isNaN(lng)) {
-              const focusMarker: ThreeDMarker = {
+              const focusMarker = {
                 id: incident.id,
                 name: incident.title,
                 type: 'incident',
                 position: { x: lat, y: 0, z: lng },
                 color: color,
+                icon: '📍',
+                label: incident.title,
+                isVisible: true,
+                isActive: true,
+                data: incident,
                 size: 'medium',
                 metadata: { 
                   ...incident,
-                  gps: { lat, lng }
+                  gps: { lat, lng },
+                  source: 'sub-module' as const,
+                  generatedAt: new Date().toISOString(),
                 },
               };
               onFocusMarkerRef.current(focusMarker);
@@ -265,10 +299,16 @@ function LeafletMapComponent({
       });
     });
 
-    // Add 3D markers with Focus button
+    // ✅ v0.13.0-beta: Enhanced 3D markers with rich popups & admin links
     markers.forEach((marker) => {
       let lat = marker.lat;
       let lng = marker.lng;
+      let actualId = marker.metadata?.data?.id || marker.id;
+      // For compound IDs like "planting-123", extract the numeric part
+      if (typeof actualId === 'string' && actualId.includes('-')) {
+        actualId = actualId.split('-').pop() || actualId;
+      }
+      
       if (marker.metadata?.position) {
         const gps = threeDToGPS(
           marker.metadata.position.x || 0,
@@ -291,22 +331,54 @@ function LeafletMapComponent({
       const color = marker.color || colors[marker.type] || '#6b7280';
       const emoji = MARKER_EMOJIS[marker.type] || '📍';
       const isSelected = selectedMarker?.id === marker.id && selectedMarker?.type === marker.type;
+      const typeLabel = getTypeLabel(marker.type);
+      const adminUrl = getAdminUrl(marker.type, actualId);
 
+      // Build detail rows from marker data
+      const data = marker.metadata?.data || {};
+      let detailsHtml = '';
+      const detailFields: Record<string, string[]> = {
+        planting: ['growthStage', 'health', 'plantedDate', 'notes'],
+        bed: ['width', 'length', 'depth', 'soilType'],
+        character: ['species', 'animationState', 'notes'],
+        farmbot: ['status', 'lastSeen', 'notes'],
+        plantings: ['growthStage', 'health', 'plantedDate', 'notes'],
+        beds: ['width', 'length', 'depth', 'soilType'],
+        characters: ['species', 'animationState', 'notes'],
+        farmbots: ['status', 'lastSeen', 'notes'],
+      };
+      const fields = detailFields[marker.type] || ['notes', 'status'];
+      const detailItems: string[] = [];
+      fields.forEach((field) => {
+        const value = data[field];
+        if (value !== undefined && value !== null && value !== '') {
+          const label = field.replace(/([A-Z])/g, ' $1').replace(/^./, (s: string) => s.toUpperCase());
+          detailItems.push(`<div class="text-[11px] text-gray-600 dark:text-gray-400"><span class="font-medium text-gray-700 dark:text-gray-300">${label}:</span> ${escapeHtml(String(value))}</div>`);
+        }
+      });
+      if (detailItems.length > 0) {
+        detailsHtml = `<div class="mt-2 space-y-0.5 border-t pt-2 border-gray-200 dark:border-gray-700">${detailItems.join('')}</div>`;
+      }
+
+      // ✅ Rich popup with type badge, details, focus, and View Details
       const popupContent = `
-        <div class="p-3 max-w-xs">
-          <div class="font-medium text-sm">${marker.name}</div>
-          <div class="text-xs text-gray-500 mt-1">📦 ${marker.type}</div>
-          <div class="text-xs text-gray-500">📍 (${lat.toFixed(4)}, ${lng.toFixed(4)})</div>
-          ${marker.metadata?.description ? `<div class="text-xs text-gray-600 mt-1">${marker.metadata.description}</div>` : ''}
-          <button 
-            class="mt-2 w-full text-xs bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded transition-colors focus-marker-btn"
-            data-marker-id="${marker.id}"
-            data-type="${marker.type}"
-            data-lat="${lat}"
-            data-lng="${lng}"
-          >
-            🎯 Focus on this marker
-          </button>
+        <div class="p-3 max-w-xs font-sans">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 px-1.5 py-0.5 rounded">${typeLabel}</span>
+            <span class="text-[10px] text-gray-400">ID: ${actualId}</span>
+          </div>
+          <div class="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-1">${escapeHtml(marker.name)}</div>
+          <div class="text-[11px] text-gray-500 mb-1">📍 (${lat.toFixed(4)}, ${lng.toFixed(4)})</div>
+          ${detailsHtml}
+          <div class="mt-3 flex gap-2">
+            <button class="flex-1 text-[11px] bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded transition-colors focus-marker-btn"
+              data-marker-id="${marker.id}" data-type="${marker.type}" data-lat="${lat}" data-lng="${lng}">
+              🎯 Focus
+            </button>
+            <a href="${adminUrl}" target="_blank" class="flex-1 text-center text-[11px] bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors no-underline inline-block">
+              📝 View Details
+            </a>
+          </div>
         </div>
       `;
 
@@ -327,7 +399,7 @@ function LeafletMapComponent({
       });
 
       const lMarker = L.marker([lat, lng], { icon })
-        .bindPopup(popupContent, { maxWidth: 300, className: 'custom-popup' })
+        .bindPopup(popupContent, { maxWidth: 320, className: 'custom-popup' })
         .on('click', () => {
           if (onMarkerClickRef.current) {
             onMarkerClickRef.current({
@@ -336,6 +408,11 @@ function LeafletMapComponent({
               type: marker.type as any,
               position: { x: lat, y: 0, z: lng },
               color: color,
+              icon: emoji,
+              label: marker.name,
+              isVisible: true,
+              isActive: true,
+              data: marker.metadata?.data || marker,
               size: marker.size || 'medium',
               metadata: marker.metadata || {},
             });
@@ -352,23 +429,30 @@ function LeafletMapComponent({
             e.stopPropagation();
             const markerId = btn.getAttribute('data-marker-id') || '';
             const type = btn.getAttribute('data-type') || '';
-            const lat = parseFloat(btn.getAttribute('data-lat') || '0');
-            const lng = parseFloat(btn.getAttribute('data-lng') || '0');
-            if (onFocusMarkerRef.current && !isNaN(lat) && !isNaN(lng)) {
-              const focusMarker: ThreeDMarker = {
+            const latVal = parseFloat(btn.getAttribute('data-lat') || '0');
+            const lngVal = parseFloat(btn.getAttribute('data-lng') || '0');
+            if (onFocusMarkerRef.current && !isNaN(latVal) && !isNaN(lngVal)) {
+              const focusMarker = {
                 id: markerId,
                 name: marker.name,
                 type: type as any,
-                position: { x: lat, y: 0, z: lng },
+                position: { x: latVal, y: 0, z: lngVal },
                 color: color,
+                icon: emoji,
+                label: marker.name,
+                isVisible: true,
+                isActive: true,
+                data: marker.metadata?.data || marker,
                 size: marker.size || 'medium',
                 metadata: { 
                   ...marker.metadata,
-                  gps: { lat, lng }
+                  gps: { lat: latVal, lng: lngVal },
+                  source: 'sub-module' as const,
+                  generatedAt: new Date().toISOString(),
                 },
               };
               onFocusMarkerRef.current(focusMarker);
-              map.setView([lat, lng], map.getZoom(), { animate: true });
+              map.setView([latVal, lngVal], map.getZoom(), { animate: true });
               lMarker.closePopup();
             }
           });

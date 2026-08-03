@@ -1,7 +1,7 @@
 // components/map/UnifiedMapView.tsx
 'use client';
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { Loader2 } from 'lucide-react';
 import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker } from '@/lib/types/map';
@@ -34,13 +34,16 @@ interface UnifiedMapViewProps {
   visibleAssetTypes?: Set<string>;
 }
 
-// ✅ Marker configuration for different types
 const MARKER_CONFIG: Record<string, { color: string; icon: string; label: string }> = {
   planting: { color: '#22c55e', icon: '🌱', label: 'Planting' },
   bed: { color: '#f59e0b', icon: '🧑‍🌾', label: 'Bed' },
   character: { color: '#8b5cf6', icon: '🧚', label: 'Character' },
   farmbot: { color: '#64748b', icon: '🤖', label: 'FarmBot' },
 };
+
+function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
+  return 'source' in m;
+}
 
 export function UnifiedMapView({
   data,
@@ -58,12 +61,8 @@ export function UnifiedMapView({
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(false);
 
-  // ✅ Generate runtime markers from raw sub-module data
   const runtimeMarkers = useMemo((): RuntimeMarker[] => {
-    if (!data.threed.raw) {
-      return [];
-    }
-
+    if (!data.threed.raw) return [];
     const now = new Date().toISOString();
     const markers: RuntimeMarker[] = [];
 
@@ -71,93 +70,60 @@ export function UnifiedMapView({
       let x = item.position?.x ?? item.positionX ?? item.latitude ?? item.lat ?? 0;
       let y = item.position?.y ?? item.positionY ?? item.height ?? 0;
       let z = item.position?.z ?? item.positionZ ?? item.longitude ?? item.lng ?? 0;
-      
       if (typeof x === 'string') x = parseFloat(x);
       if (typeof y === 'string') y = parseFloat(y);
       if (typeof z === 'string') z = parseFloat(z);
-      
       return { x, y, z };
     };
 
     const extractName = (item: any, type: string) => {
       if (type === 'plantings' && item.plantId) {
         const plant = data.threed.raw?.plants?.find((p: any) => p.id === item.plantId);
-        if (plant) {
-          return plant.commonName || plant.name || `${type} #${item.id}`;
-        }
+        if (plant) return plant.commonName || plant.name || `${type} #${item.id}`;
       }
-      return item.name || 
-             item.commonName || 
-             item.modelName || 
-             item.title || 
-             item.plantId || 
-             `${type} #${item.id}`;
+      return item.name || item.commonName || item.modelName || item.title || item.plantId || `${type} #${item.id}`;
     };
 
-    if (data.threed.raw.plantings && data.threed.raw.plantings.length > 0) {
+    // Plantings
+    if (data.threed.raw.plantings?.length > 0) {
       data.threed.raw.plantings.forEach((item: any) => {
         const config = MARKER_CONFIG.planting;
-        const position = extractPosition(item);
-        const name = extractName(item, 'plantings');
-        const isActive = item.isActive ?? true;
-        
         markers.push({
           id: `planting-${item.id}`,
-          name: name,
+          name: extractName(item, 'plantings'),
           type: 'planting',
-          position: position,
+          position: extractPosition(item),
           color: item.color || config.color,
           icon: config.icon,
-          label: name,
+          label: extractName(item, 'plantings'),
           isVisible: item.isVisible ?? true,
-          isActive: isActive,
-          data: {
-            id: item.id,
-            description: item.notes || '',
-            ...item,
-          },
-          metadata: {
-            source: 'sub-module',
-            generatedAt: now,
-          },
+          isActive: item.isActive ?? true,
+          data: { id: item.id, description: item.notes || '', ...item },
+          metadata: { source: 'sub-module' as const, generatedAt: now },
         });
       });
     }
 
+    const raw = data.threed.raw as Record<string, any[]>;
     const typesToProcess = ['beds', 'characters', 'farmbots'];
-    
     typesToProcess.forEach((type) => {
-      if (!data.threed.raw?.[type]) return;
-      
-      data.threed.raw[type].forEach((item: any) => {
+      if (!raw[type]) return;
+      raw[type].forEach((item: any) => {
         const position = extractPosition(item);
-        if (position.x === 0 && position.y === 0 && position.z === 0) {
-          return;
-        }
-        
+        if (position.x === 0 && position.y === 0 && position.z === 0) return;
         const config = MARKER_CONFIG[type] || MARKER_CONFIG.planting;
-        const name = extractName(item, type);
-        const isActive = item.isActive ?? true;
-        
         markers.push({
           id: `${type}-${item.id}`,
-          name: name,
-          type: type,
-          position: position,
+          name: extractName(item, type),
+          type,
+          position,
           color: item.color || config.color,
           icon: config.icon,
-          label: name,
+          label: extractName(item, type),
           isVisible: item.isVisible ?? true,
-          isActive: isActive,
-          data: {
-            id: item.id,
-            description: item.description || '',
-            ...item,
-          },
-          metadata: {
-            source: 'sub-module',
-            generatedAt: now,
-          },
+          isActive: item.isActive ?? true,
+          data: { id: item.id, description: item.description || '', ...item },
+          metadata: { source: 'sub-module' as const, generatedAt: now },
         });
       });
     });
@@ -165,20 +131,14 @@ export function UnifiedMapView({
     return markers;
   }, [data.threed.raw]);
 
-  // ✅ Spread overlapping markers
   const spreadOverlappingMarkers = (markers: RuntimeMarker[], spreadDistance: number = 1.5): RuntimeMarker[] => {
     if (markers.length === 0) return markers;
-
     const positionGroups: Record<string, RuntimeMarker[]> = {};
-    
     markers.forEach(marker => {
       const key = `${Math.round(marker.position.x * 10) / 10},${Math.round(marker.position.y * 10) / 10},${Math.round(marker.position.z * 10) / 10}`;
-      if (!positionGroups[key]) {
-        positionGroups[key] = [];
-      }
+      if (!positionGroups[key]) positionGroups[key] = [];
       positionGroups[key].push(marker);
     });
-    
     const spreadMarkers: RuntimeMarker[] = [];
     Object.values(positionGroups).forEach(group => {
       if (group.length === 1) {
@@ -199,161 +159,100 @@ export function UnifiedMapView({
         });
       }
     });
-    
     return spreadMarkers;
   };
 
-  // ✅ Filter incidents based on enabled layers
   const filteredIncidents = data.traffic.raw ? Object.values(data.traffic.raw).flat() : [];
 
-  // ✅ Filter markers based on enabled layers
   const filteredMarkers = runtimeMarkers.filter((marker) => {
     const layerConfig = layers.threed[marker.type as keyof typeof layers.threed];
     if (!layerConfig?.enabled || !layerConfig?.visible) return false;
-    
-    if (visibleAssetTypes && visibleAssetTypes.size > 0) {
-      return visibleAssetTypes.has(marker.type);
-    }
-    
+    if (visibleAssetTypes && visibleAssetTypes.size > 0) return visibleAssetTypes.has(marker.type);
     return true;
   });
 
-  // ✅ Apply spreading to filtered markers
-  const spreadMarkers = useMemo(() => {
-    return spreadOverlappingMarkers(filteredMarkers, 1.5);
-  }, [filteredMarkers]);
+  const spreadMarkers = useMemo(() => spreadOverlappingMarkers(filteredMarkers, 1.5), [filteredMarkers]);
 
-  // ✅ Get active layer counts
-  const activeTrafficCount = filteredIncidents.length;
-  const activeThreeDCount = spreadMarkers.length;
-
-  // ✅ Handle incident click with useCallback
   const handleIncidentClick = useCallback((incident: TrafficIncident) => {
-    if (onIncidentSelect) {
-      onIncidentSelect(selectedIncident?.id === incident.id ? null : incident);
-    }
+    if (onIncidentSelect) onIncidentSelect(selectedIncident?.id === incident.id ? null : incident);
   }, [onIncidentSelect, selectedIncident]);
 
-  // ✅ Handle marker click with useCallback
   const handleMarkerClick = useCallback((marker: RuntimeMarker) => {
-    if (onMarkerSelect) {
-      onMarkerSelect(selectedMarker?.id === marker.id ? null : marker);
-    }
+    if (onMarkerSelect) onMarkerSelect(selectedMarker?.id === marker.id ? null : marker);
   }, [onMarkerSelect, selectedMarker]);
 
-  // ✅ Handle focus marker
+  // ✅ Type-safe focus marker handler
   const handleFocusMarker = useCallback((marker: RuntimeMarker | TrafficIncident) => {
-    if (onFocusMarker) {
-      // Convert to RuntimeMarker if it's a TrafficIncident
-      const runtimeMarker: RuntimeMarker = {
+    if (!onFocusMarker) return;
+    let result: RuntimeMarker;
+    if (isTrafficIncident(marker)) {
+      result = {
         id: marker.id,
-        name: marker.title || marker.name,
-        type: marker.type || 'incident',
-        position: { x: marker.lat || marker.position.x, y: 0, z: marker.lng || marker.position.z },
+        name: marker.title,
+        type: marker.source || 'incident',
+        position: { x: marker.lat, y: 0, z: marker.lng },
         color: '#3b82f6',
         icon: '📍',
-        label: marker.title || marker.name,
+        label: marker.title,
         isVisible: true,
         isActive: true,
         data: marker,
-        metadata: {
-          source: 'sub-module',
-          generatedAt: new Date().toISOString(),
-        },
+        metadata: { source: 'sub-module' as const, generatedAt: new Date().toISOString() },
       };
-      onFocusMarker(runtimeMarker);
+    } else {
+      result = marker;
     }
+    onFocusMarker(result);
   }, [onFocusMarker]);
 
-  // ✅ Prepare incidents for Leaflet
   const leafletIncidents = filteredIncidents
     .filter((incident: any) => incident.lat && incident.lng && incident.lat !== 0 && incident.lng !== 0)
-    .map((incident: any) => ({
-      ...incident,
-      lat: incident.lat,
-      lng: incident.lng,
-    }));
+    .map((incident: any) => ({ ...incident, lat: incident.lat, lng: incident.lng }));
 
-  // ✅ Prepare markers for Leaflet
   const leafletMarkers = spreadMarkers
     .filter((marker) => marker.position && marker.position.x !== undefined && marker.position.z !== undefined)
     .map((marker) => ({
-      id: marker.id,
-      name: marker.name,
-      type: marker.type,
-      lat: marker.position.x,
-      lng: marker.position.z,
-      color: marker.color,
-      size: 'medium',
-      metadata: {
-        ...marker.metadata,
-        position: marker.position,
-        data: marker.data,
-      },
+      id: marker.id, name: marker.name, type: marker.type,
+      lat: marker.position.x, lng: marker.position.z,
+      color: marker.color, size: 'medium',
+      metadata: { ...marker.metadata, position: marker.position, data: marker.data },
     }));
 
-  // ✅ Prepare traffic incidents for 3D
-  const threeDIncidents = filteredIncidents
-    .filter((incident: any) => incident.lat && incident.lng)
-    .map((incident: any) => ({
-      ...incident,
-      position: {
-        x: incident.lat,
-        y: 0,
-        z: incident.lng,
-      },
-    }));
-
-  // ✅ Prepare 3D markers
   const threeDMarkers = spreadMarkers
     .filter((marker) => marker.position && marker.position.x !== undefined)
     .map((marker) => ({
-      id: marker.id,
-      name: marker.name,
-      type: marker.type,
-      position: marker.position,
-      color: marker.color,
-      icon: marker.icon,
-      label: marker.label,
-      metadata: marker.metadata,
-      data: marker.data,
+      id: marker.id, name: marker.name, type: marker.type,
+      position: marker.position, color: marker.color,
+      icon: marker.icon, label: marker.label,
+      metadata: marker.metadata, data: marker.data,
     }));
 
-  // ✅ Render 2D view (Leaflet)
-  const render2DView = () => {
-    return (
-      <LeafletMap
-        incidents={leafletIncidents}
-        markers={leafletMarkers}
-        onIncidentClick={handleIncidentClick}
-        onMarkerClick={handleMarkerClick}
-        onFocusMarker={handleFocusMarker}
-        selectedIncident={selectedIncident}
-        selectedMarker={selectedMarker}
-        height="100%"
-        gpsCenter={gpsCenter}
-        center={[gpsCenter.lat, gpsCenter.lng]}
-        zoom={12}
-      />
-    );
-  };
+  const render2DView = () => (
+    <LeafletMap
+      incidents={leafletIncidents}
+      markers={leafletMarkers}
+      onIncidentClick={handleIncidentClick}
+      onMarkerClick={handleMarkerClick}
+      onFocusMarker={handleFocusMarker}
+      selectedIncident={selectedIncident}
+      selectedMarker={selectedMarker}
+      height="100%"
+      gpsCenter={gpsCenter}
+      center={[gpsCenter.lat, gpsCenter.lng]}
+      zoom={12}
+    />
+  );
 
-  // ✅ Render 3D view
   const render3DView = () => {
-    const threeDIncidents = filteredIncidents
+    const sceneIncidents = filteredIncidents
       .filter((incident: any) => incident.lat && incident.lng)
       .map((incident: any) => ({
         ...incident,
-        position: {
-          x: (incident.lng - (-119.5)) * 2.0,
-          y: 0,
-          z: (incident.lat - 37.5) * 2.0,
-        },
+        position: { x: (incident.lng - (-119.5)) * 2.0, y: 0, z: (incident.lat - 37.5) * 2.0 },
       }));
-
     return (
       <ThreeDScene
-        incidents={threeDIncidents}
+        incidents={sceneIncidents}
         markers={threeDMarkers}
         onIncidentClick={handleIncidentClick}
         onMarkerClick={handleMarkerClick}
@@ -366,21 +265,13 @@ export function UnifiedMapView({
     );
   };
 
-  // ✅ Render based on view mode
   const renderMap = () => {
     switch (viewMode) {
-      case '2d':
-        return render2DView();
-      case '3d':
-        return render3DView();
-      default:
-        return null;
+      case '2d': return render2DView();
+      case '3d': return render3DView();
+      default: return null;
     }
   };
 
-  return (
-    <div ref={containerRef} className="w-full h-full">
-      {renderMap()}
-    </div>
-  );
+  return <div ref={containerRef} className="w-full h-full">{renderMap()}</div>;
 }

@@ -1,5 +1,4 @@
-// app/dashboard/map/page-v0130b.tsx - v0.13.0-beta "Smart Dashboard"
-// Features: Rich Popups + Admin Links, Advanced Filtering, Interactive Stats, Live Data Indicator
+// app/dashboard/map/page.tsx
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -19,20 +18,12 @@ import {
   Search,
   Loader2,
   Plus,
-  Filter,
-  Clock,
-  Wifi,
-  WifiOff,
-  ChevronDown,
-  X,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -161,39 +152,6 @@ function ProjectSelectorDialog({
   );
 }
 
-// ✅ Interactive Stats Card (clickable to filter)
-function StatCard({ 
-  label, 
-  count, 
-  color, 
-  icon, 
-  isActive, 
-  onClick 
-}: { 
-  label: string; 
-  count: number; 
-  color: string; 
-  icon: string; 
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <div
-      className={`flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer transition-all select-none
-        ${isActive ? 'ring-2 ring-primary bg-primary/5 scale-[1.02]' : 'hover:bg-muted/50'}`}
-      onClick={onClick}
-      title={`Click to ${isActive ? 'clear' : 'filter by'} ${label}`}
-    >
-      <span className={`w-2 h-2 rounded-full ${color}`} />
-      <span className="text-xs">{icon}</span>
-      <span className="text-xs font-medium">{label}</span>
-      <Badge variant={isActive ? 'default' : 'secondary'} className="text-[10px] h-4 px-1 ml-auto">
-        {count}
-      </Badge>
-    </div>
-  );
-}
-
 export default function UnifiedMapPage() {
   const { showToast, ToastComponent } = useToast();
   const router = useRouter();
@@ -209,11 +167,6 @@ export default function UnifiedMapPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
   
-  // ✅ Live Data Status Indicator
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [dataAge, setDataAge] = useState<string>('--');
-  const [isStale, setIsStale] = useState(false);
-  
   // ✅ Default to 3D view
   const [viewMode, setViewMode] = useState<MapViewMode>('3d');
   
@@ -221,12 +174,6 @@ export default function UnifiedMapPage() {
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
-
-  // ✅ Advanced Filtering Panel State
-  const [showFilterPanel, setShowFilterPanel] = useState(false);
-  const [filterText, setFilterText] = useState('');
-  const [filterActiveOnly, setFilterActiveOnly] = useState(false);
-  const [filterAssetType, setFilterAssetType] = useState<string | null>(null); // Single type filter from stat card clicks
 
   // ✅ Panel resize state
   const containerRef = useRef<HTMLDivElement>(null);
@@ -238,32 +185,10 @@ export default function UnifiedMapPage() {
     new Set(['plantings', 'beds', 'characters', 'farmbots'])
   );
 
-  // ✅ Live data age updater
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (lastUpdated) {
-        const diffMs = Date.now() - lastUpdated.getTime();
-        const diffSec = Math.floor(diffMs / 1000);
-        if (diffSec < 60) {
-          setDataAge(`${diffSec}s ago`);
-          setIsStale(false);
-        } else if (diffSec < 3600) {
-          setDataAge(`${Math.floor(diffSec / 60)}m ago`);
-          setIsStale(diffSec > 300); // Stale after 5 minutes
-        } else {
-          setDataAge(`${Math.floor(diffSec / 3600)}h ago`);
-          setIsStale(true);
-        }
-      }
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [lastUpdated]);
-
   // ✅ Handle project selection
   const handleProjectSelect = (projectId: string) => {
     setSelectedProjectId(projectId);
     setIsDefaultView(false);
-    setFilterAssetType(null); // Reset filter on project change
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
     window.history.pushState({}, '', url.toString());
@@ -299,20 +224,9 @@ export default function UnifiedMapPage() {
 
   // ✅ Handle focus on marker
   const handleFocusMarker = useCallback((marker: any) => {
+    // Set the selected marker to trigger focus in both views
     setSelectedMarker(marker);
   }, []);
-
-  // ✅ Interactive stat card click handler
-  const handleStatCardClick = (typeLabel: string) => {
-    // Toggle: if already active, clear filter; otherwise set it
-    if (filterAssetType === typeLabel) {
-      setFilterAssetType(null);
-      showToast(`Showing all asset types`, 'info');
-    } else {
-      setFilterAssetType(typeLabel);
-      showToast(`Filtered to: ${typeLabel}`, 'info');
-    }
-  };
 
   // ✅ Load data from API route
   const loadData = useCallback(async () => {
@@ -364,7 +278,6 @@ export default function UnifiedMapPage() {
           };
 
           setData(unifiedData);
-          setLastUpdated(new Date());
           setProjectInfo({
             name: `Project #${selectedProjectId}`,
             hasData: result.total > 0,
@@ -403,7 +316,6 @@ export default function UnifiedMapPage() {
   const handleRefresh = async () => {
     setRefreshing(true);
     await loadData();
-    setLastUpdated(new Date());
     showToast('Data refreshed', 'success');
   };
 
@@ -465,7 +377,7 @@ export default function UnifiedMapPage() {
         onSelect={handleProjectSelect}
       />
 
-      {/* ✅ v0.13.0-beta: Header with Live Data Status Indicator */}
+      {/* ✅ Header */}
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -487,31 +399,15 @@ export default function UnifiedMapPage() {
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-3 ml-9">
-            <p className="text-sm text-muted-foreground">
-              {hasRealData ? (
-                `${data.traffic.total || 0} traffic items • ${data.threed.total || 0} 3D items`
-              ) : selectedProjectId ? (
-                'No data available for this project'
-              ) : (
-                'Select a project to load data'
-              )}
-            </p>
-            {/* ✅ Live Data Status Indicator */}
-            {selectedProjectId && (
-              <div className="flex items-center gap-1.5">
-                {isStale ? (
-                  <WifiOff className="w-3.5 h-3.5 text-amber-500" />
-                ) : dataAge !== '--' ? (
-                  <Wifi className="w-3.5 h-3.5 text-green-500" />
-                ) : null}
-                <span className={`text-xs ${isStale ? 'text-amber-600' : dataAge !== '--' ? 'text-green-600' : 'text-muted-foreground'}`} title={lastUpdated?.toLocaleString() || 'Unknown'}>
-                  {dataAge !== '--' ? `Updated ${dataAge}` : ''}
-                </span>
-                <Clock className="w-3 h-3 text-muted-foreground" />
-              </div>
+          <p className="text-sm text-muted-foreground ml-9">
+            {hasRealData ? (
+              `${data.traffic.total || 0} traffic items • ${data.threed.total || 0} 3D items`
+            ) : selectedProjectId ? (
+              'No data available for this project'
+            ) : (
+              'Select a project to load data'
             )}
-          </div>
+          </p>
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
@@ -546,22 +442,6 @@ export default function UnifiedMapPage() {
             </Button>
           </div>
 
-          {/* ✅ v0.13.0-beta: Filter Panel Toggle Button */}
-          <Button
-            variant={showFilterPanel ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setShowFilterPanel(!showFilterPanel)}
-            title="Toggle filter panel"
-          >
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            Filter
-            {filterAssetType && (
-              <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
-                1
-              </Badge>
-            )}
-          </Button>
-
           <Button
             variant="outline"
             size="sm"
@@ -580,83 +460,6 @@ export default function UnifiedMapPage() {
           </Button>
         </div>
       </div>
-
-      {/* ✅ v0.13.0-beta: Advanced Filtering Panel */}
-      {showFilterPanel && (
-        <Card className="border-primary/20">
-          <CardContent className="p-3">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Filters</span>
-              </div>
-
-              {/* Search/Text Filter */}
-              <div className="flex items-center gap-2">
-                <Search className="w-3.5 h-3.5 text-muted-foreground" />
-                <Input
-                  placeholder="Search markers by name..."
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  className="h-7 text-xs w-44"
-                />
-                {filterText && (
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setFilterText('')}>
-                    <X className="w-3 h-3" />
-                  </Button>
-                )}
-              </div>
-
-              <div className="w-px h-6 bg-border" />
-
-              {/* Active Only Toggle */}
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={filterActiveOnly}
-                  onCheckedChange={setFilterActiveOnly}
-                  id="active-only"
-                  className="scale-75"
-                />
-                <Label htmlFor="active-only" className="text-xs cursor-pointer">Active Only</Label>
-              </div>
-
-              <div className="w-px h-6 bg-border" />
-
-              {/* Asset Type Quick Filters */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-muted-foreground">Type:</span>
-                {['Plantings', 'Beds', 'Characters', 'FarmBots', 'CHP CAD', 'CalFire'].map((type) => (
-                  <Badge
-                    key={type}
-                    variant={filterAssetType === type ? 'default' : 'outline'}
-                    className="text-[10px] cursor-pointer hover:bg-muted"
-                    onClick={() => handleStatCardClick(type)}
-                  >
-                    {type}
-                    {filterAssetType === type && <X className="w-2.5 h-2.5 ml-1" />}
-                  </Badge>
-                ))}
-              </div>
-
-              {/* Clear All */}
-              {(filterText || filterActiveOnly || filterAssetType) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs text-muted-foreground ml-auto"
-                  onClick={() => {
-                    setFilterText('');
-                    setFilterActiveOnly(false);
-                    setFilterAssetType(null);
-                  }}
-                >
-                  Clear All Filters
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* ✅ Layer Controls */}
       <Card>
@@ -708,11 +511,13 @@ export default function UnifiedMapPage() {
         <CardContent className="p-0 overflow-hidden">
           <div style={{ height: isFullscreen ? '100vh' : '650px' }}>
             
+            {/* ✅ Combined View - Vertical stacked panels with resize handle */}
             {viewMode === 'combined' && (
               <div 
                 ref={containerRef}
                 className="flex flex-col w-full h-full gap-0 p-0 relative"
               >
+                {/* 3D Panel - Top */}
                 <div 
                   className="min-h-0 transition-none"
                   style={{ height: `${panelHeight}%` }}
@@ -733,6 +538,7 @@ export default function UnifiedMapPage() {
                   </div>
                 </div>
                 
+                {/* Resize Handle */}
                 <div 
                   className="flex-shrink-0 h-1.5 cursor-row-resize hover:bg-primary/50 transition-colors bg-border/50 my-0.5 rounded-full group"
                   onMouseDown={handleMouseDown}
@@ -742,6 +548,7 @@ export default function UnifiedMapPage() {
                   </div>
                 </div>
                 
+                {/* 2D Panel - Bottom */}
                 <div 
                   className="min-h-0 transition-none"
                   style={{ height: `${100 - panelHeight}%` }}
@@ -764,6 +571,7 @@ export default function UnifiedMapPage() {
               </div>
             )}
 
+            {/* ✅ 3D View - Full width */}
             {viewMode === '3d' && (
               <UnifiedMapView
                 data={data}
@@ -779,6 +587,7 @@ export default function UnifiedMapPage() {
               />
             )}
 
+            {/* ✅ 2D View - Full width */}
             {viewMode === '2d' && (
               <UnifiedMapView
                 data={data}
@@ -798,75 +607,118 @@ export default function UnifiedMapPage() {
         </CardContent>
       </Card>
 
-      {/* ✅ v0.13.0-beta: Interactive Stats Cards */}
+      {/* ✅ Stats - Only show if there's data */}
       {hasRealData && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Traffic Summary - Interactive Stat Cards */}
           <Card>
             <CardContent className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium flex items-center gap-1">
-                  <Car className="w-3.5 h-3.5" />
-                  Traffic Summary
-                </span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Traffic Summary</span>
                 <Badge variant="secondary" className="text-xs">
                   {data.traffic.total || 0}
                 </Badge>
               </div>
-              <div className="space-y-0.5">
-                <StatCard label="CHP CAD" count={data.traffic.chpCadCount || 0} color="bg-red-500" icon="🚨" isActive={filterAssetType === 'CHP CAD'} onClick={() => handleStatCardClick('CHP CAD')} />
-                <StatCard label="CHP Cases" count={data.traffic.chpCasesCount || 0} color="bg-orange-500" icon="📋" isActive={filterAssetType === 'CHP Cases'} onClick={() => handleStatCardClick('CHP Cases')} />
-                <StatCard label="CHP Centers" count={data.traffic.chpCentersCount || 0} color="bg-yellow-500" icon="🏢" isActive={filterAssetType === 'CHP Centers'} onClick={() => handleStatCardClick('CHP Centers')} />
-                <StatCard label="Caltrans Closures" count={data.traffic.caltransClosuresCount || 0} color="bg-blue-500" icon="🚧" isActive={filterAssetType === 'Caltrans Closures'} onClick={() => handleStatCardClick('Caltrans Closures')} />
-                <StatCard label="CCTV Cameras" count={data.traffic.caltransCctvCount || 0} color="bg-cyan-500" icon="📹" isActive={filterAssetType === 'CCTV'} onClick={() => handleStatCardClick('CCTV')} />
-                <StatCard label="Districts" count={data.traffic.caltransDistrictsCount || 0} color="bg-indigo-500" icon="🏛️" isActive={filterAssetType === 'Districts'} onClick={() => handleStatCardClick('Districts')} />
-                <StatCard label="511 Events" count={data.traffic.bayArea511Count || 0} color="bg-emerald-500" icon="📻" isActive={filterAssetType === '511 Events'} onClick={() => handleStatCardClick('511 Events')} />
-                <StatCard label="CalFire" count={data.traffic.calfireIncidentsCount || 0} color="bg-rose-500" icon="🔥" isActive={filterAssetType === 'CalFire'} onClick={() => handleStatCardClick('CalFire')} />
+              <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  CHP CAD: {data.traffic.chpCadCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-orange-500" />
+                  CHP Cases: {data.traffic.chpCasesCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                  CHP Centers: {data.traffic.chpCentersCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  Caltrans Closures: {data.traffic.caltransClosuresCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-cyan-500" />
+                  Caltrans CCTV: {data.traffic.caltransCctvCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                  Caltrans Districts: {data.traffic.caltransDistrictsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  511 Events: {data.traffic.bayArea511Count || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-rose-500" />
+                  CalFire: {data.traffic.calfireIncidentsCount || 0}
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* 3D Summary - Interactive Stat Cards */}
           <Card>
             <CardContent className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium flex items-center gap-1">
-                  <Box className="w-3.5 h-3.5" />
-                  3D Summary
-                </span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">3D Summary</span>
                 <Badge variant="secondary" className="text-xs">
                   {data.threed.total || 0}
                 </Badge>
               </div>
-              <div className="space-y-0.5">
-                <StatCard label="Plants" count={data.threed.plantsCount || 0} color="bg-green-500" icon="🌱" isActive={filterAssetType === 'Plants'} onClick={() => handleStatCardClick('Plants')} />
-                <StatCard label="Beds" count={data.threed.bedsCount || 0} color="bg-amber-500" icon="🧑‍🌾" isActive={filterAssetType === 'Beds'} onClick={() => handleStatCardClick('Beds')} />
-                <StatCard label="Characters" count={data.threed.charactersCount || 0} color="bg-purple-500" icon="🧚" isActive={filterAssetType === 'Characters'} onClick={() => handleStatCardClick('Characters')} />
-                <StatCard label="FarmBots" count={data.threed.farmbotsCount || 0} color="bg-slate-500" icon="🤖" isActive={filterAssetType === 'FarmBots'} onClick={() => handleStatCardClick('FarmBots')} />
-                <StatCard label="Plantings" count={data.threed.plantingsCount || 0} color="bg-emerald-600" icon="🌿" isActive={filterAssetType === 'Plantings'} onClick={() => handleStatCardClick('Plantings')} />
-                <StatCard label="Layers" count={data.threed.layersCount || 0} color="bg-cyan-500" icon="📐" isActive={filterAssetType === 'Layers'} onClick={() => handleStatCardClick('Layers')} />
-                <StatCard label="Tasks" count={data.threed.tasksCount || 0} color="bg-orange-600" icon="📝" isActive={filterAssetType === 'Tasks'} onClick={() => handleStatCardClick('Tasks')} />
-                <StatCard label="Harvests" count={data.threed.harvestsCount || 0} color="bg-yellow-600" icon="🌾" isActive={filterAssetType === 'Harvests'} onClick={() => handleStatCardClick('Harvests')} />
-                <StatCard label="Weather Logs" count={data.threed.weatherLogsCount || 0} color="bg-blue-400" icon="🌤️" isActive={filterAssetType === 'Weather Logs'} onClick={() => handleStatCardClick('Weather Logs')} />
+              <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  Plants: {data.threed.plantsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                  Beds: {data.threed.bedsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-purple-500" />
+                  Characters: {data.threed.charactersCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-pink-500" />
+                  Markers: {data.threed.markersCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-cyan-500" />
+                  Layers: {data.threed.layersCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-slate-500" />
+                  FarmBots: {data.threed.farmbotsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                  Plantings: {data.threed.plantingsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-orange-600" />
+                  Tasks: {data.threed.tasksCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-yellow-600" />
+                  Harvests: {data.threed.harvestsCount || 0}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-400" />
+                  Weather Logs: {data.threed.weatherLogsCount || 0}
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Active Layers Summary */}
           <Card>
             <CardContent className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium flex items-center gap-1">
-                  <Eye className="w-3.5 h-3.5" />
-                  Active Layers
-                </span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Active Layers</span>
                 <Badge variant="secondary" className="text-xs">
                   {Object.values(layers).flatMap(cat => 
                     Object.values(cat).filter(l => l.enabled && l.visible)
                   ).length}
                 </Badge>
               </div>
-              <div className="flex flex-wrap gap-1">
+              <div className="mt-2 flex flex-wrap gap-1">
                 {Object.entries(layers).flatMap(([category, items]) =>
                   Object.entries(items)
                     .filter(([_, config]) => config.enabled && config.visible)
@@ -882,18 +734,6 @@ export default function UnifiedMapPage() {
                   <span className="text-xs text-muted-foreground">No layers active</span>
                 )}
               </div>
-              {/* Clear filter hint */}
-              {filterAssetType && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-2 w-full text-xs text-muted-foreground"
-                  onClick={() => { setFilterAssetType(null); setFilterText(''); setFilterActiveOnly(false); }}
-                >
-                  <X className="w-3 h-3 mr-1" />
-                  Clear "{filterAssetType}" filter
-                </Button>
-              )}
             </CardContent>
           </Card>
         </div>

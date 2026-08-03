@@ -16,6 +16,9 @@ export interface TrafficIncident {
   severity?: string;
   status?: string;
   type?: string;
+  // Polymorphic union fields - also present on RuntimeMarker
+  name?: string;
+  position?: { x: number; y: number; z: number };
 }
 
 // ============================================
@@ -50,10 +53,13 @@ export interface RuntimeMarker {
   isVisible: boolean;
   isActive: boolean;
   data: any;
-  metadata: {
-    source: 'sub-module';
-    generatedAt: string;
-  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  metadata: any;
+  // v0.13.0-beta: runtime-computed convenience fields
+  size?: string;
+  lat?: number;
+  lng?: number;
+  title?: string;
 }
 
 // ============================================
@@ -62,7 +68,6 @@ export interface RuntimeMarker {
 
 export interface UnifiedMapData {
   traffic: {
-    // Raw data from traffic sub-modules
     raw: {
       chpCadIncidents: any[];
       chpCases: any[];
@@ -84,7 +89,6 @@ export interface UnifiedMapData {
     calfireIncidentsCount: number;
   };
   threed: {
-    // Raw data from threed sub-modules
     raw: {
       plants: any[];
       beds: any[];
@@ -100,7 +104,7 @@ export interface UnifiedMapData {
     plantsCount: number;
     bedsCount: number;
     charactersCount: number;
-    markersCount: number; // Always 0 - no database markers
+    markersCount: number;
     layersCount: number;
     farmbotsCount: number;
     plantingsCount: number;
@@ -118,16 +122,6 @@ export interface UnifiedMapData {
 export type MapViewMode = '2d' | '3d' | 'combined';
 
 export interface MapLayerConfig {
-  traffic: {
-    [key: string]: {
-      enabled: boolean;
-      visible: boolean;
-    };
-  };
-  threed: {
-    [key: string]: {
-      enabled: boolean;
-      visible: boolean;
-    };
-  };
+  traffic: Record<string, { enabled: boolean; visible: boolean }>;
+  threed: Record<string, { enabled: boolean; visible: boolean }>;
 }
