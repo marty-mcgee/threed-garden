@@ -1,6 +1,6 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 3, 2026 @ 11:00am PST
+**Last Updated:** August 4, 2026 @ 8:00am PST
 
 ---
 
@@ -6452,6 +6452,119 @@ Which feature would you like to tackle next?
 4. **Live Data Status Indicator** - Show data freshness
 
 Let me know and I'll provide the full working code for whichever you choose! 🚀
+
+---
+
+## 🎉 Version v0.13.0-beta "Smart Dashboard" — Delivered
+
+### ✅ What Was Implemented in v0.13.0-beta
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Rich Popups + Admin Links** | ✅ Complete | 2D map popups show type badges, detail rows (growth stage, dimensions, soil, battery), and "View Details" links to `/admin` pages |
+| **Advanced Filtering Panel** | ✅ Complete | Collapsible filter panel with text search, active-only toggle, and asset type quick filters (Plantings, Beds, Characters, FarmBots, CHP CAD, CalFire) |
+| **Interactive Stats Cards** | ✅ Complete | Traffic/3D summary cards are clickable to filter the map; active filter shown with ring highlight |
+| **Live Data Status Indicator** | ✅ Complete | Green Wi-Fi / amber Wi-Fi-Off icon with "Updated Xm ago" timestamp; goes stale after 5 minutes |
+| **`getAdminUrl()` + `getTypeLabel()` Helpers** | ✅ Complete | `src/lib/utils/map-helpers.ts` — maps asset types to admin routes and human-readable labels |
+| **`buildRichPopupHTML()` / `buildTrafficPopupHTML()`** | ✅ Complete | HTML popup builders with Focus + View Details buttons for markers and incidents |
+| **Skeleton Loading UI** | ✅ Complete | Map page shows layout skeleton with animated pulse placeholders during data load |
+
+### 📁 Files Changed in v0.13.0-beta
+
+| File | Change |
+|------|--------|
+| `src/app/dashboard/map/page.tsx` | Full Smart Dashboard: filter panel, interactive stats, live indicator, skeleton loader, Suspense boundary |
+| `src/components/map/LeafletMap.tsx` | Rich popups with admin links, detail rows per marker type, Focus+View Details buttons |
+| `src/components/map/UnifiedMapView.tsx` | Filter props (`filterText`, `filterActiveOnly`, `filterAssetType`), `useMemo`-based marker/incident filtering |
+| `src/lib/utils/map-helpers.ts` | `getAdminUrl()`, `getTypeLabel()`, `buildRichPopupHTML()`, `buildTrafficPopupHTML()`, color helpers |
+| `src/lib/types/map.ts` | `RuntimeMarker` convenience fields (`size`, `lat`, `lng`, `title`), `UnifiedMapData` raw/total/counts shape |
+| `src/lib/services/map/DefaultMapData.ts` | `getDefaultMapData()` returns complete `UnifiedMapData` with `raw: null`, `layers: []`, all count fields |
+
+---
+
+## 📐 Version v0.13.0-centaur — "Dual-Surface Platform" Strategic Definition
+
+### 🎯 What Changed
+
+Introduced the **strategic product definition** for `marty-mcgee-neon` as a **Dual-Surface Platform**. Every module (Music, ThreeD, Traffic) must implement both:
+
+| Surface | Audience | Purpose | Anchors |
+|---------|----------|---------|---------|
+| **Admin Surface** | Authenticated users (owners) | Full CRUD management of all data | `/admin/*`, `/api/*` (write operations) |
+| **Dashboard Surface** | Any visitor (public or authenticated) | Visualization and exploration of published data | `/dashboard/*`, `/api/*` (read operations) |
+
+### Design Principles Established
+
+- **Unidirectional Data Flow**: Admin → Database → API → Dashboard. Dashboard never writes.
+- **Publish Gate**: Every module has `isPublic`/`isActive`/`status` enforced at the API layer.
+- **Runtime Rendering**: Dashboard visualizations are generated from source data at runtime.
+- **Project Scoping**: Dashboard Surface is always scoped to a Project for multi-tenant access.
+
+### Surface Coverage Assessment
+
+| Module | Admin Surface | Dashboard Surface |
+|--------|:---:|:---:|
+| **Projects** | ✅ (CRUD, Asset Manager) | ✅ (Homepage project cards via v0.14.0) |
+| **Music** | ✅ (Albums, Tracks, Links, Media) | ✅ (Player, Album Grid, Waveform) |
+| **ThreeD** | ✅ (Plants, Beds, Plantings, Characters, Models, Layers) | ✅ (3D Scene, Runtime Markers, View Presets) |
+| **Traffic** | ✅ (8 sub-modules, full CRUD) | ✅ (2D Map, Emoji Markers, Popups) |
+| **Settings** | ✅ (Admin UI) | ❌ (no public settings surface — by design) |
+
+This definition was introduced at v0.13.0c to provide a compass for all future releases.
+
+---
+
+## 🔧 Version v0.13.0-d "Delta" — Bug Fix & Stability Release
+
+**Date:** August 3–4, 2026
+
+### 1. Fixed Critical Type Mismatch in `DefaultMapData.ts`
+
+**Problem:** `getDefaultMapData()` returned an object missing required `UnifiedMapData` fields (`raw`, `layers`, `tasksCount`, `harvestsCount`, `weatherLogsCount`) and contained non-existent fields (`incidents`, `markers`). This caused a TypeScript compilation error and would break `UnifiedMapView.tsx` at runtime since `data.threed.raw` was `undefined`.
+
+**Fix:** Added all missing fields (`raw: null`, `layers: []`, count fields) and removed non-existent fields.
+
+### 2. Fixed React Anti-Pattern: `setState` During Render
+
+**Problem:** `page.tsx` lines 449–453 called `setData()` during the render phase when `data` was falsy, causing infinite re-renders.
+
+**Fix:** Removed the `if (!data)` block entirely. Changed `data` state initializer from `UnifiedMapData | null` to `UnifiedMapData` (initialized with `getDefaultMapData()`). Made `hasRealData` null-safe.
+
+### 3. Fixed Missing `<Suspense>` Boundary for `useSearchParams()`
+
+**Problem:** `useSearchParams()` was called directly in `UnifiedMapPage` without a `<Suspense>` wrapper. In Next.js 15+, this causes a static generation error at build time.
+
+**Fix:** Split the component into:
+- `UnifiedMapPage` (export default) — wraps content in `<Suspense>` with a spinner fallback
+- `UnifiedMapPageInner` — contains `useSearchParams()` and all page logic
+
+### 4. Fixed Dead UI: Filter State Never Passed to Components
+
+**Problem:** `filterText` and `filterActiveOnly` state existed in the filter panel UI but were never passed as props to `UnifiedMapView`. The entire search/active-only filtering feature was non-functional dead UI.
+
+**Fix:** Added `filterText`, `filterActiveOnly`, `filterAssetType` props to `UnifiedMapView`'s interface and implemented `useMemo`-based filtering logic for both markers (text, active-only, asset type) and incidents (text search). Passed filter props from `page.tsx` to all 4 `UnifiedMapView` instances across all view modes.
+
+### 5. Code Cleanup
+
+- Removed unused `ChevronDown` import
+- Removed unused `useMemo` import (now used in `UnifiedMapView`, not `page.tsx`)
+- `page.tsx` and `page-v0130b.tsx` confirmed byte-for-byte identical (archive copy retained)
+
+### 6. Pre-Existing Issues Identified (Deferred)
+
+| Issue | Location | Status |
+|-------|----------|--------|
+| Next.js 15 `params: Promise<>` migration | `threed/farmbots/[id]/water/`, `threed/models/files/` | Deferred to v0.14.x |
+| Missing module exports | `traffic/bay-area-511/seed/`, `traffic/chp-cases/seed/` | Deferred |
+| TypeScript `unknown` type inference on `MapLayerConfig` iteration | `page.tsx` lines ~882-897 | Pre-existing, non-breaking |
+
+### 📁 Files Changed in v0.13.0-d
+
+| File | Change |
+|------|--------|
+| `src/lib/services/map/DefaultMapData.ts` | Added `raw: null`, `layers: []`, `tasksCount`, `harvestsCount`, `weatherLogsCount`; removed `incidents`, `markers` |
+| `src/app/dashboard/map/page.tsx` | Suspense boundary, non-nullable `data` state, removed setState-in-render, removed unused imports, passes filter props to all views, skeleton loading UI |
+| `src/components/map/UnifiedMapView.tsx` | Added `filterText`/`filterActiveOnly`/`filterAssetType` props, `useMemo`-based filtering for markers and incidents |
 
 ---
 
