@@ -6,8 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { durationMs = 60000 } = await request.json();
     

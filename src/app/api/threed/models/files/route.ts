@@ -131,7 +131,7 @@ export async function POST(
   } catch (error) {
     console.error('Error adding files:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to add files', details: error.message },
+      { success: false, error: 'Failed to add files', details: String(error) },
       { status: 500 }
     );
   }

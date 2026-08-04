@@ -75,7 +75,7 @@ export async function DELETE(
   } catch (error) {
     console.error('Error deleting file:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete file', details: error.message },
+      { success: false, error: 'Failed to delete file', details: String(error) },
       { status: 500 }
     );
   }

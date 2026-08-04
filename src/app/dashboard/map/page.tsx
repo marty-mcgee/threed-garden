@@ -344,32 +344,61 @@ function UnifiedMapPageInner() {
         const result = await response.json();
 
         if (result.success) {
+          // ✅ Split combined API response into separate threed vs traffic data
+          const resultData = result.data || {};
+          
+          const trafficRaw = {
+            chpCadIncidents: (resultData.chpCadIncidents || []) as any[],
+            chpCases: (resultData.chpCases || []) as any[],
+            chpCenters: (resultData.chpCenters || []) as any[],
+            caltransLaneClosures: (resultData.caltransLaneClosures || []) as any[],
+            caltransCctvCameras: (resultData.caltransCctvCameras || []) as any[],
+            caltransDistricts: (resultData.caltransDistricts || []) as any[],
+            bayArea511Events: (resultData.bayArea511Events || []) as any[],
+            calfireIncidents: (resultData.calfireIncidents || []) as any[],
+          };
+          
+          const threedRaw = {
+            plants: (resultData.plants || []) as any[],
+            beds: (resultData.beds || []) as any[],
+            characters: (resultData.characters || []) as any[],
+            layers: (resultData.layers || []) as any[],
+            farmbots: (resultData.farmbots || []) as any[],
+            plantings: (resultData.plantings || []) as any[],
+            tasks: (resultData.tasks || []) as any[],
+            harvests: (resultData.harvests || []) as any[],
+            weatherLogs: (resultData.weatherLogs || []) as any[],
+          };
+          
+          const trafficTotal = Object.values(trafficRaw).reduce((sum, arr) => sum + arr.length, 0);
+          const threedTotal = Object.values(threedRaw).reduce((sum, arr) => sum + arr.length, 0);
+
           const unifiedData: UnifiedMapData = {
             traffic: {
-              raw: result.data || null,
-              total: result.total || 0,
-              chpCadCount: result.counts?.chpCadIncidents || 0,
-              chpCasesCount: result.counts?.chpCases || 0,
-              chpCentersCount: result.counts?.chpCenters || 0,
-              caltransClosuresCount: result.counts?.caltransLaneClosures || 0,
-              caltransCctvCount: result.counts?.caltransCctvCameras || 0,
-              caltransDistrictsCount: result.counts?.caltransDistricts || 0,
-              bayArea511Count: result.counts?.bayArea511Events || 0,
-              calfireIncidentsCount: result.counts?.calfireIncidents || 0,
+              raw: trafficRaw,
+              total: trafficTotal,
+              chpCadCount: trafficRaw.chpCadIncidents.length,
+              chpCasesCount: trafficRaw.chpCases.length,
+              chpCentersCount: trafficRaw.chpCenters.length,
+              caltransClosuresCount: trafficRaw.caltransLaneClosures.length,
+              caltransCctvCount: trafficRaw.caltransCctvCameras.length,
+              caltransDistrictsCount: trafficRaw.caltransDistricts.length,
+              bayArea511Count: trafficRaw.bayArea511Events.length,
+              calfireIncidentsCount: trafficRaw.calfireIncidents.length,
             },
             threed: {
-              raw: result.data || null,
-              total: result.total || 0,
-              plantsCount: result.counts?.plants || 0,
-              bedsCount: result.counts?.beds || 0,
-              charactersCount: result.counts?.characters || 0,
+              raw: threedRaw,
+              total: threedTotal,
+              plantsCount: threedRaw.plants.length,
+              bedsCount: threedRaw.beds.length,
+              charactersCount: threedRaw.characters.length,
               markersCount: 0,
-              layersCount: result.counts?.layers || 0,
-              farmbotsCount: result.counts?.farmbots || 0,
-              plantingsCount: result.counts?.plantings || 0,
-              tasksCount: result.counts?.tasks || 0,
-              harvestsCount: result.counts?.harvests || 0,
-              weatherLogsCount: result.counts?.weatherLogs || 0,
+              layersCount: threedRaw.layers.length,
+              farmbotsCount: threedRaw.farmbots.length,
+              plantingsCount: threedRaw.plantings.length,
+              tasksCount: threedRaw.tasks.length,
+              harvestsCount: threedRaw.harvests.length,
+              weatherLogsCount: threedRaw.weatherLogs.length,
               layers: [],
             },
           };

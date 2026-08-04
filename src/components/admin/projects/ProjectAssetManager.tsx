@@ -25,7 +25,6 @@ import {
   Building2,
   Camera,
   Layers,
-  MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -123,9 +122,9 @@ const ASSET_TYPES = {
     moduleType: 'threed',
     types: [
       { value: 'threed_plants', label: 'Plants' },
+      { value: 'threed_plantings', label: 'Plantings' },
       { value: 'threed_beds', label: 'Beds' },
       { value: 'threed_layers', label: 'Layers' },
-      { value: 'threed_markers', label: 'Markers' },
       { value: 'threed_models', label: '3D Models' },
       { value: 'threed_characters', label: 'Characters' },
       { value: 'threed_tasks', label: 'Tasks' },
@@ -145,6 +144,17 @@ const ASSET_TYPES = {
         displayFields: ['commonName', 'scientificName', 'plantType'],
         idField: 'id',
         nameField: 'commonName',
+      },
+      {
+        id: 'threed_plantings',
+        label: 'Plantings',
+        icon: Sprout,
+        assetType: 'threed_plantings',
+        fetchEndpoint: '/api/threed/plantings',
+        searchFields: ['plantingId'],
+        displayFields: ['plantingId', 'plantId', 'bedId'],
+        idField: 'id',
+        nameField: 'plantingId',
       },
       {
         id: 'threed_beds',
@@ -187,17 +197,6 @@ const ASSET_TYPES = {
         fetchEndpoint: '/api/threed/layers',
         searchFields: ['name', 'layerId'],
         displayFields: ['layerId', 'layerType', 'category'],
-        idField: 'id',
-        nameField: 'name',
-      },
-      {
-        id: 'threed_markers',
-        label: 'Markers',
-        icon: MapPin,
-        assetType: 'threed_markers',
-        fetchEndpoint: '/api/threed/markers',
-        searchFields: ['name', 'markerId', 'label'],
-        displayFields: ['markerId', 'markerType', 'position'],
         idField: 'id',
         nameField: 'name',
       },

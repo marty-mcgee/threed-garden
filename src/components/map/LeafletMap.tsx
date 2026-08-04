@@ -44,12 +44,7 @@ interface LeafletMapProps {
   gpsCenter?: { lat: number; lng: number };
 }
 
-function threeDToGPS(x: number, z: number, center: { lat: number; lng: number }) {
-  return {
-    lat: center.lat + (z * 0.001),
-    lng: center.lng + (x * 0.001),
-  };
-}
+
 
 // Emoji mapping for 3D marker types
 const MARKER_EMOJIS: Record<string, string> = {
@@ -152,17 +147,9 @@ function LeafletMapComponent({
     if (selectedMarker) {
       const markerData = markers.find(m => m.id === selectedMarker.id);
       if (markerData) {
+        // ✅ Coordinates are already converted to GPS by UnifiedMapView
         lat = markerData.lat;
         lng = markerData.lng;
-        if (markerData.metadata?.position) {
-          const gps = threeDToGPS(
-            markerData.metadata.position.x || 0,
-            markerData.metadata.position.z || 0,
-            gpsCenter
-          );
-          lat = gps.lat;
-          lng = gps.lng;
-        }
       }
     } else if (selectedIncident) {
       lat = selectedIncident.lat;
@@ -192,7 +179,7 @@ function LeafletMapComponent({
     });
 
     const group = L.layerGroup().addTo(map);
-    const bounds = L.latLngBounds();
+    const bounds = L.latLngBounds([] as any);
     let hasMarkers = false;
 
     const isValid = (lat: number, lng: number) => {
@@ -309,15 +296,7 @@ function LeafletMapComponent({
         actualId = actualId.split('-').pop() || actualId;
       }
       
-      if (marker.metadata?.position) {
-        const gps = threeDToGPS(
-          marker.metadata.position.x || 0,
-          marker.metadata.position.z || 0,
-          gpsCenter
-        );
-        lat = gps.lat;
-        lng = gps.lng;
-      }
+      // ✅ Coordinates are already converted to GPS by UnifiedMapView — use them directly
       if (!isValid(lat, lng)) return;
       hasMarkers = true;
       bounds.extend([lat, lng]);

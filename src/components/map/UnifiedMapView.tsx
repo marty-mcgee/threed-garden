@@ -72,13 +72,18 @@ export function UnifiedMapView({
     const now = new Date().toISOString();
     const markers: RuntimeMarker[] = [];
 
-    const extractPosition = (item: any) => {
-      let x = item.position?.x ?? item.positionX ?? item.latitude ?? item.lat ?? 0;
-      let y = item.position?.y ?? item.positionY ?? item.height ?? 0;
-      let z = item.position?.z ?? item.positionZ ?? item.longitude ?? item.lng ?? 0;
-      if (typeof x === 'string') x = parseFloat(x);
-      if (typeof y === 'string') y = parseFloat(y);
-      if (typeof z === 'string') z = parseFloat(z);
+    const extractPosition = (item: any): { x: number; y: number; z: number } | null => {
+      // ✅ Prefer flat DB column names (positionX, positionY, positionZ) over nested JSON position.x/y/z
+      // DB rows return decimal columns as strings, so parse them
+      const rawX = item.positionX ?? item.position?.x ?? item.latitude ?? item.lat ?? null;
+      const rawY = item.positionY ?? item.position?.y ?? item.height ?? null;
+      const rawZ = item.positionZ ?? item.position?.z ?? item.longitude ?? item.lng ?? null;
+      if (rawX === null && rawY === null && rawZ === null) return null;
+      const x = typeof rawX === 'string' ? parseFloat(rawX) : (rawX ?? 0);
+      const y = typeof rawY === 'string' ? parseFloat(rawY) : (rawY ?? 0);
+      const z = typeof rawZ === 'string' ? parseFloat(rawZ) : (rawZ ?? 0);
+      // Only skip if ALL three are zero — a single zero axis is valid (e.g. ground marker at y=0)
+      if (x === 0 && y === 0 && z === 0) return null;
       return { x, y, z };
     };
 
@@ -90,23 +95,33 @@ export function UnifiedMapView({
       return item.name || item.commonName || item.modelName || item.title || item.plantId || `${type} #${item.id}`;
     };
 
+    // ✅ Helper to add a marker only when position is valid
+    const pushIfPositioned = (
+      id: string, name: string, type: string, item: any,
+      config: { color: string; icon: string; label: string }
+    ) => {
+      const position = extractPosition(item);
+      if (!position) return;
+      markers.push({
+        id, name, type, position,
+        color: item.color || config.color,
+        icon: config.icon, label: name,
+        isVisible: item.isVisible ?? true,
+        isActive: item.isActive ?? true,
+        data: { id: item.id, description: item.notes || item.description || '', ...item },
+        metadata: { source: 'sub-module' as const, generatedAt: now },
+      });
+    };
+
     // Plantings
     if (data.threed.raw.plantings?.length > 0) {
       data.threed.raw.plantings.forEach((item: any) => {
-        const config = MARKER_CONFIG.planting;
-        markers.push({
-          id: `planting-${item.id}`,
-          name: extractName(item, 'plantings'),
-          type: 'planting',
-          position: extractPosition(item),
-          color: item.color || config.color,
-          icon: config.icon,
-          label: extractName(item, 'plantings'),
-          isVisible: item.isVisible ?? true,
-          isActive: item.isActive ?? true,
-          data: { id: item.id, description: item.notes || '', ...item },
-          metadata: { source: 'sub-module' as const, generatedAt: now },
-        });
+        pushIfPositioned(
+          `planting-${item.id}`,
+          extractName(item, 'plantings'),
+          'planting', item,
+          MARKER_CONFIG.planting
+        );
       });
     }
 
@@ -115,22 +130,12 @@ export function UnifiedMapView({
     typesToProcess.forEach((type) => {
       if (!raw[type]) return;
       raw[type].forEach((item: any) => {
-        const position = extractPosition(item);
-        if (position.x === 0 && position.y === 0 && position.z === 0) return;
         const config = MARKER_CONFIG[type] || MARKER_CONFIG.planting;
-        markers.push({
-          id: `${type}-${item.id}`,
-          name: extractName(item, type),
-          type,
-          position,
-          color: item.color || config.color,
-          icon: config.icon,
-          label: extractName(item, type),
-          isVisible: item.isVisible ?? true,
-          isActive: item.isActive ?? true,
-          data: { id: item.id, description: item.description || '', ...item },
-          metadata: { source: 'sub-module' as const, generatedAt: now },
-        });
+        pushIfPositioned(
+          `${type}-${item.id}`,
+          extractName(item, type),
+          type, item, config
+        );
       });
     });
 
@@ -244,7 +249,8 @@ export function UnifiedMapView({
     });
   }, [data.traffic.raw, filterText, filterAssetType]);
 
-  const spreadMarkers = useMemo(() => spreadOverlappingMarkers(filteredMarkers, 1.5), [filteredMarkers]);
+  // ✅ Spread markers for 3D scene (prevents visual overlap of markers at same position)
+  const spreadMarkers = useMemo(() => spreadOverlappingMarkers(filteredMarkers, 1.0), [filteredMarkers]);
 
   const handleIncidentClick = useCallback((incident: TrafficIncident) => {
     if (onIncidentSelect) onIncidentSelect(selectedIncident?.id === incident.id ? null : incident);
@@ -282,23 +288,53 @@ export function UnifiedMapView({
     .filter((incident: any) => incident.lat && incident.lng && incident.lat !== 0 && incident.lng !== 0)
     .map((incident: any) => ({ ...incident, lat: incident.lat, lng: incident.lng }));
 
-  const leafletMarkers = spreadMarkers
-    .filter((marker) => marker.position && marker.position.x !== undefined && marker.position.z !== undefined)
-    .map((marker) => ({
-      id: marker.id, name: marker.name, type: marker.type,
-      lat: marker.position.x, lng: marker.position.z,
-      color: marker.color, size: 'medium',
-      metadata: { ...marker.metadata, position: marker.position, data: marker.data },
-    }));
+  // ✅ ThreeD markers on 2D map: scale raw 3D coords into a small "garden plot" around gpsCenter
+  //    Treat 1 unit in 3D space ≈ 0.0001° (~11m) so a 100-unit garden spans ~1.1km (½-mile plot)
+  const GPS_SCALE = 0.0001;
+  const leafletMarkers = useMemo(() => {
+    const markers = spreadMarkers
+      .filter((m) => m.position && m.position.x !== undefined && m.position.z !== undefined)
+      .map((m) => {
+        const lat = gpsCenter.lat + (m.position.z * GPS_SCALE);
+        const lng = gpsCenter.lng + (m.position.x * GPS_SCALE);
+        return {
+          id: m.id, name: m.name, type: m.type,
+          lat, lng,
+          color: m.color, size: 'medium',
+          metadata: { ...m.metadata, position: m.position, data: m.data },
+        };
+      });
 
-  const threeDMarkers = spreadMarkers
-    .filter((marker) => marker.position && marker.position.x !== undefined)
-    .map((marker) => ({
-      id: marker.id, name: marker.name, type: marker.type,
-      position: marker.position, color: marker.color,
-      icon: marker.icon, label: marker.label,
-      metadata: marker.metadata, data: marker.data,
-    }));
+    // De-duplicate exact-GPS overlaps with a tiny spread
+    const groups: Record<string, typeof markers> = {};
+    markers.forEach((m) => {
+      const key = `${m.lat.toFixed(5)},${m.lng.toFixed(5)}`;
+      (groups[key] ??= []).push(m);
+    });
+    const result: typeof markers = [];
+    Object.values(groups).forEach((grp) => {
+      if (grp.length === 1) { result.push(grp[0]); return; }
+      grp.forEach((m, i) => {
+        const a = (i / grp.length) * 2 * Math.PI;
+        result.push({
+          ...m,
+          lat: m.lat + Math.sin(a) * 0.00001 * (i + 1),
+          lng: m.lng + Math.cos(a) * 0.00001 * (i + 1),
+        });
+      });
+    });
+    return result;
+  }, [spreadMarkers, gpsCenter]);
+
+  // ✅ 3D scene: ThreeD markers use raw (spread) positions; incidents get a rough transform
+  const threeDMarkers = useMemo(() => spreadMarkers
+    .filter((m) => m.position && m.position.x !== undefined)
+    .map((m) => ({
+      id: m.id, name: m.name, type: m.type,
+      position: m.position, color: m.color,
+      icon: m.icon, label: m.label,
+      metadata: m.metadata, data: m.data,
+    })), [spreadMarkers]);
 
   const render2DView = () => (
     <LeafletMap

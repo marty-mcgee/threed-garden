@@ -30,11 +30,11 @@ import { MusicMediaCRUD } from '@/components/admin/music/media/MusicMediaCRUD';
 import { MusicLinksCRUD } from '@/components/admin/music/links/MusicLinksCRUD';
 
 import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
+import { ThreeDPlantingsCRUD } from '@/components/admin/threed/plantings/ThreeDPlantingsCRUD';
 import { ThreeDBedsCRUD } from '@/components/admin/threed/beds/ThreeDBedsCRUD';
 import { ThreeDModelsCRUD } from '@/components/admin/threed/models/ThreeDModelsCRUD';
 import { ThreeDCharactersCRUD } from '@/components/admin/threed/characters/ThreeDCharactersCRUD';
 import { ThreeDTasksCRUD } from '@/components/admin/threed/tasks/ThreeDTasksCRUD';
-import { ThreeDPlantingsCRUD } from '@/components/admin/threed/plantings/ThreeDPlantingsCRUD';
 import { ThreeDWateringSchedulesCRUD } from '@/components/admin/threed/watering-schedules/ThreeDWateringSchedulesCRUD';
 import { ThreeDHarvestsCRUD } from '@/components/admin/threed/harvests/ThreeDHarvestsCRUD';
 import { ThreeDFarmbotsCRUD } from '@/components/admin/threed/farmbots/ThreeDFarmbotsCRUD';
@@ -93,11 +93,11 @@ const moduleConfig: Record<ModuleType, {
     borderColor: 'border-green-200',
     crudComponents: [
       { id: 'plants', label: 'Plants', component: ThreeDPlantsCRUD, icon: Sprout },
+      { id: 'plantings', label: 'Plantings', component: ThreeDPlantingsCRUD, icon: Box },
       { id: 'beds', label: 'Beds', component: ThreeDBedsCRUD, icon: Box },
       { id: 'models', label: '3D Models', component: ThreeDModelsCRUD, icon: Package },
       { id: 'characters', label: 'Characters', component: ThreeDCharactersCRUD, icon: User },
       { id: 'tasks', label: 'Tasks', component: ThreeDTasksCRUD, icon: Sprout },
-      { id: 'plantings', label: 'Plantings', component: ThreeDPlantingsCRUD, icon: Box },
       { id: 'watering-schedules', label: 'Watering Schedules', component: ThreeDWateringSchedulesCRUD, icon: Package },
       { id: 'harvests', label: 'Harvests', component: ThreeDHarvestsCRUD, icon: User },
       { id: 'farmbots', label: 'Farmbots', component: ThreeDFarmbotsCRUD, icon: User },

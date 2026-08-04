@@ -1,6 +1,37 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 4, 2026 @ 8:00am PST
+**Last Updated:** August 4, 2026 @ 9:00am PST
+
+---
+
+## 🚀 Version v0.13.1-beta "Garden Plot"
+
+### 🎯 What's New in v0.13.1-beta
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Runtime Marker Positioning Fix** | ✅ Complete | ThreeD markers now plot accurately on both 3D Scene and 2D Map |
+| **DB Column-Aware Position Extraction** | ✅ Complete | `extractPosition` prefers flat DB columns (`positionX/Y/Z`) over nested JSON |
+| **Garden Plot GPS Scaling** | ✅ Complete | ThreeD markers cluster as a tight garden plot around `gpsCenter` with constant scale |
+| **Data Separation** | ✅ Complete | Dashboard map page splits combined API response into typed threed/traffic objects |
+| **Redundant Conversion Removal** | ✅ Complete | LeafletMap no longer double-converts coordinates; trusts UnifiedMapView |
+
+### Architecture: Marker Positioning
+
+| Surface | ThreeD Markers | Traffic Incidents |
+|---------|---------------|-------------------|
+| **3D Scene** | Raw `positionX/Y/Z` from DB (with minor spread for overlap) | Rough transform from GPS lat/lng |
+| **2D Map** | Constant scale: `lat = gpsCenter.lat + positionZ × 0.0001`, `lng = gpsCenter.lng + positionX × 0.0001` | Direct lat/lng from DB records |
+
+ThreeD Module data has no inherent GPS location — all markers cluster around a single `gpsCenter` as a "garden plot" on the 2D map. Traffic Module incidents carry real GPS coordinates and appear at their accurate geographic locations on the 2D map, with a rough approximate placement in the 3D scene.
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/app/dashboard/map/page.tsx` | Split combined API response into separate typed `threedRaw`/`trafficRaw` objects |
+| `src/components/map/UnifiedMapView.tsx` | Simplified GPS conversion to constant scale; `extractPosition` prefers DB column names; spread applied at 3D level then mapped to GPS |
+| `src/components/map/LeafletMap.tsx` | Removed obsolete `threeDToGPS` function and duplicate coordinate conversion; fixed `L.latLngBounds()` argument |
 
 ---
 
@@ -6568,3 +6599,79 @@ This definition was introduced at v0.13.0c to provide a compass for all future r
 
 ---
 
+## 🔧 Version v0.13.1-alpha "Alpha" — Marker Positioning Fixes
+
+**Date:** August 4, 2026
+
+---
+
+## Summary of Marker Positioning Fixes
+
+The build succeeds. Here's what was fixed across 3 files:
+
+### 1. `src/app/dashboard/map/page.tsx` — Data Separation
+**Problem:** Both `traffic.raw` and `threed.raw` were assigned the same combined API response object. This caused `filteredIncidents` to iterate over plants, beds, and characters as if they were traffic incidents, producing spurious "incident" markers.
+
+**Fix:** Split the combined API response into separate `threedRaw` and `trafficRaw` objects using the known key sets, then pass each to the correct surface of `UnifiedMapData`.
+
+### 2. `src/components/map/UnifiedMapView.tsx` — Core Marker Pipeline
+**Problems:**
+- `extractPosition` checked `item.position?.x` (a JSON sub-object) before `item.positionX` (the actual DB column name), causing most DB rows to get position `{0,0,0}` since they have flat columns (`positionX`) not nested JSON.
+- The old logic would only skip items where **all three** coordinates were zero — but since it was falling through to `0`, items with genuinely missing positions were given `{0,0,0}` and rendered at the origin.
+- `leafletMarkers` passed raw 3D world coordinates directly as GPS `lat`/`lng` values (e.g., `lat: 5.0` instead of a real GPS coordinate), causing 2D map markers to be placed incorrectly.
+- Marker types not present in `typesToProcess` (`['beds', 'characters', 'farmbots']`) were silently dropped.
+
+**Fixes:**
+- **`extractPosition`**: Now prefers flat DB column names (`positionX`, `positionY`, `positionZ`) first, parses string values from decimal columns, returns `null` for items with no position data at all, and only skips when all three are zero.
+- **`pushIfPositioned` helper**: Only creates markers when `extractPosition` returns a valid position (not null).
+- **`leafletMarkers`**: Added `threeDToGPS` conversion that maps 3D world coords to GPS coordinates using the `gpsCenter` anchor, so 2D markers now appear at geographically accurate locations.
+
+### 3. `src/components/map/LeafletMap.tsx` — Remove Redundant Conversion
+**Problem:** LeafletMap had its own `threeDToGPS` function and would double-convert coordinates (once in UnifiedMapView, again in LeafletMap), causing markers to drift further from their true positions.
+
+**Fix:** Removed the duplicate `threeDToGPS` function and its calls. LeafletMap now trusts the already-converted lat/lng values from UnifiedMapView. Also fixed `L.latLngBounds()` which requires an argument in newer Leaflet typings.
+
+---
+
+Build succeeds. Here's a summary of all fixes applied across 4 files:
+
+### Files Changed
+
+**1. `src/app/dashboard/map/page.tsx`** — Fixed data contamination where both `traffic.raw` and `threed.raw` received the same combined API response object. Now properly splits the response into separate threed/traffic typed objects.
+
+**2. `src/components/map/UnifiedMapView.tsx`** — Three key fixes:
+- **`extractPosition`**: Now prefers flat DB column names (`positionX`, `positionY`, `positionZ`) over nested `position.x/y/z`, parses decimal string values, returns `null` when no position data exists, and only skips markers where all three coords are exactly zero.
+- **GPS conversion**: Replaced the fixed linear mapping (`z * 0.001`) with a **dynamic bounding-box proportional scaling**. Computes min/max bounds of all valid markers in 3D space, then scales them into ~0.15° (~16km) around the GPS center. This keeps all markers geographically clustered regardless of their raw 3D position magnitudes.
+- **2D spread separation**: 2D GPS markers now use their own tiny spread (≤5.5m offsets) applied in GPS space from the un-spread filtered positions, completely decoupled from the 3D scene's spatial spread function.
+
+**3. `src/components/map/LeafletMap.tsx`** — Removed the redundant `threeDToGPS` function and its double-conversion logic. Markers now arrive with properly-converted GPS coordinates from UnifiedMapView. Fixed `L.latLngBounds()` constructor argument for newer Leaflet typings.
+
+### Root Causes Addressed
+1. ✗ DB rows with `positionX` columns were being shadowed by `item.position?.x` (which doesn't exist on flat DB records)
+2. ✗ 3D scene's spread function (up to 3+ unit offsets) was corrupting GPS positions before conversion
+3. ✗ Fixed linear GPS mapping couldn't handle arbitrary 3D coordinate scales
+4. ✗ Combined API data mixed plants/beds/characters into traffic incident arrays
+
+---
+
+Simplified the positioning architecture as you described. Here's the final design:
+
+### Architecture
+
+| Surface | ThreeD Markers | Traffic Incidents |
+|---------|---------------|-------------------|
+| **3D Scene** | Raw `positionX/Y/Z` from DB (with minor spread for overlap) | Rough transform: `(lng + 119.5) × 2.0`, `(lat - 37.5) × 2.0` |
+| **2D Map** | Constant scale: `lat = gpsCenter.lat + positionZ × 0.0001`, `lng = gpsCenter.lng + positionX × 0.0001` | Direct lat/lng from DB records |
+
+### What changed in `UnifiedMapView.tsx`
+
+- **Removed** the bounding-box computation and dynamic scaling. Replaced with a single constant `GPS_SCALE = 0.0001` — 1 unit in 3D space ≈ 0.0001° (~11 meters). All ThreeD markers cluster as a tight garden plot around `gpsCenter`.
+- **Both surfaces** use the same `spreadMarkers` (from `filteredMarkers` at spread distance 1.0). This means the 3D scene spread positions are the single source of truth, and those same spread positions get scaled into GPS for the 2D map.
+- **De-duplication** in GPS space only fires when multiple markers land at the exact same 5-decimal GPS coordinate, using micro-offsets (0.00001°) to make them individually clickable without visible displacement.
+
+### Files modified
+- `src/app/dashboard/map/page.tsx` — split combined API data into typed threed/traffic objects
+- `src/components/map/UnifiedMapView.tsx` — simplified GPS scaling, extraction from DB columns
+- `src/components/map/LeafletMap.tsx` — removed redundant `threeDToGPS`, fixed `L.latLngBounds()` typing
+
+---
