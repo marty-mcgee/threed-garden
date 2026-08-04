@@ -10,6 +10,10 @@ import {
 import * as THREE from 'three';
 import { Settings, ChevronDown, ChevronUp, X, Target, Layers } from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
+import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
+import { PlantMarker3D } from '@/components/threed/markers/PlantMarker3D';
+import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
+import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
 
 interface ThreeDSceneProps {
   incidents: any[];
@@ -159,8 +163,10 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
 
-  // ✅ v0.15.0: Render animated GardenCharacter for character type
-  if (marker.type === 'character' && marker.data) {
+  // ✅ v0.15.0/15.2: Render rich markers for types that have dedicated components
+  const pos: [number, number, number] = [marker.position.x, marker.position.y, marker.position.z];
+
+  if ((marker.type === 'character' || marker.type === 'characters') && marker.data) {
     return (
       <group
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
@@ -185,15 +191,63 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
     );
   }
 
+  if ((marker.type === 'bed' || marker.type === 'beds') && marker.data) {
+    return (
+      <group
+        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+      >
+        <BedMarker3D bed={{ ...marker.data, width: marker.data.widthFeet ?? 4, depth: marker.data.lengthFeet ?? 8, name: marker.name }} position={pos} />
+        {isSelected && (
+          <mesh position={[marker.position.x, marker.position.y + 1.5, marker.position.z]}>
+            <ringGeometry args={[size * 1.5, size * 2, 32]} />
+            <meshBasicMaterial color="#f59e0b" transparent opacity={0.5} side={THREE.DoubleSide} />
+          </mesh>
+        )}
+      </group>
+    );
+  }
+
+  if ((marker.type === 'planting' || marker.type === 'plantings') && marker.data) {
+    return (
+      <group
+        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+      >
+        <PlantMarker3D plant={{ ...marker.data, name: marker.name, species: marker.data.plantType || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data.plantedDate || '' }} position={pos} />
+        {isSelected && (
+          <mesh position={[marker.position.x, marker.position.y + 1.5, marker.position.z]}>
+            <ringGeometry args={[size * 1.5, size * 2, 32]} />
+            <meshBasicMaterial color="#22c55e" transparent opacity={0.5} side={THREE.DoubleSide} />
+          </mesh>
+        )}
+      </group>
+    );
+  }
+
+  if ((marker.type === 'farmbot' || marker.type === 'farmbots') && marker.data) {
+    return (
+      <group
+        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+      >
+        <FarmBotMarker3D farmbot={{ ...marker.data, name: marker.name }} position={pos} />
+        {isSelected && (
+          <mesh position={[marker.position.x, marker.position.y + 1, marker.position.z]}>
+            <ringGeometry args={[size * 1.5, size * 2, 32]} />
+            <meshBasicMaterial color="#64748b" transparent opacity={0.5} side={THREE.DoubleSide} />
+          </mesh>
+        )}
+      </group>
+    );
+  }
+
   const getShape = () => {
     const s = size;
     switch (marker.type) {
-      case 'beds':
-        return <boxGeometry args={[s * 1.5, s * 0.3, s * 1.5]} />;
-      case 'farmbots':
-        return <boxGeometry args={[s * 0.8, s * 0.8, s * 0.8]} />;
-      case 'plantings':
-        return <boxGeometry args={[s, s * 0.8, s]} />;
       case 'layers':
         return <boxGeometry args={[s * 1.2, s * 0.2, s * 1.2]} />;
       default:

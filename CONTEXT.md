@@ -1,6 +1,39 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 4, 2026 @ 11:30am PST
+**Last Updated:** August 4, 2026 @ 11:55am PST
+
+---
+
+## 🚀 Version v0.15.1a "Dashboard ThreeD Garden"
+
+### 🎯 What's New in v0.15.1a
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **ThreeDGarden Wired to Dashboard** | ✅ Complete | `/dashboard/threed/garden` now renders the full 3D garden with beds + plantings |
+| **Project-Scoped API Fallback** | ✅ Complete | Uses `/api/map/threed?projectId=X` when project selected, individual APIs otherwise |
+| **4 Marker Components Fixed** | ✅ Complete | `PlantMarker3D`, `BedMarker3D`, `FarmBotMarker3D`, `TrafficMarker3D` — suppressed `Text` drei API mismatch |
+| **WeatherEffects Fixed** | ✅ Complete | Replaced broken `<bufferAttribute>` JSX with native `THREE.BufferGeometry` rendering |
+| **Dead Code Removed** | ✅ Complete | Deleted `src/components/threed/_test/` (6 broken files, 0 references) |
+| **Weather API Fix** | ✅ Complete | Corrected endpoint URL and added JSON parse crash guards |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/app/dashboard/threed/garden/page.tsx` | Dual-path data fetching: project-scoped `/api/map/threed` vs individual APIs; `px/py/pz` position parser; `Array.isArray()` guards |
+| `src/components/threed/ThreeDGarden.tsx` | Extended props to accept `beds`, `plantings`, `weather`, `onBedSelect`, `onPlantSelect`; built `data` object for layers |
+| `src/components/threed/markers/*.tsx` | 4 files — `@ts-ignore` for `Text` component API mismatch with newer drei |
+| `src/components/threed/effects/WeatherEffects.tsx` | Rewrote broken `<bufferAttribute>` → `THREE.BufferGeometry` + `<primitive>` pattern |
+| `src/app/dashboard/threed/garden/page.tsx` | Import path fixed from deleted `_test/ThreeDGarden` → main `ThreeDGarden` |
+
+### Deferred
+
+| File | Issues |
+|------|--------|
+| `GardenPlant.tsx` / `GLTFPlant.tsx` / `AnimatedFBXPlant.tsx` | Three.js module imports need `@types/three` updates |
+| `ModelPreview.tsx` | Implicit `any` bindings |
+| `FloatingUI.tsx` | Duplicates controls in `ThreeDScene.tsx` |
 
 ---
 
