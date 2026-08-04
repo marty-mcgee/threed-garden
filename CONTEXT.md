@@ -1,10 +1,60 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 4, 2026 @ 9:00am PST
+**Last Updated:** August 4, 2026 @ 11:30am PST
 
 ---
 
-## 🚀 Version v0.13.1-beta "Garden Plot"
+## 🚀 Version v0.15.0 "Character Animations"
+
+### 🎯 What's New in v0.15.0
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Animation State Machine** | ✅ Complete | Characters switch animations based on movement state (idle/walk/fly/run) with 0.3s crossfade |
+| **Interact Animation on Click** | ✅ Complete | Clicking a character plays dance/bounce/spin/wave animation for 2s, then reverts to movement clip |
+| **Follow Movement Type** | ✅ Complete | `followTarget` supports following other characters by `characterId` with `followDistance` |
+| **Sound Effects on Click** | ✅ Complete | `soundEffect` URL plays via `Audio` API when clicking interactable characters |
+| **GardenCharacter in 3D Scene** | ✅ Complete | `ThreeDScene.tsx` renders animated `GardenCharacter` components instead of colored spheres |
+| **Technical Debt Cleanup** | ✅ Complete | Fixed Next.js 16 `params: Promise` in farmbots routes; fixed empty seed module exports; fixed `error: unknown` catch blocks |
+
+### Architecture: Character Animation Pipeline
+
+| Layer | Component | Purpose |
+|-------|-----------|---------|
+| **Data** | `threed_characters` table | Stores `movementType`, `movementSpeed`, `movementRadius`, `patrolWaypoints`, `followTarget`, `animations[]`, `defaultAnimation`, `soundEffect` |
+| **Runtime Marker Generation** | `UnifiedMapView.tsx` `runtimeMarkers` | Extracts character rows from API data, creates `RuntimeMarker` with full `data: { ...item }` |
+| **3D Scene Rendering** | `ThreeDScene.tsx` `ThreeDMarkerComponent` | For `type === 'character'`, renders `<GardenCharacter character={marker.data} />` |
+| **Model + Animation** | `GardenCharacter.tsx` | Loads GLTF/FBX model, creates `AnimationMixer`, runs movement + animation state machine |
+
+### Movement → Animation Mapping
+
+| Movement Type | Stationary | Moving |
+|--------------|------------|--------|
+| `stationary` | idle / sway / float | — |
+| `wander` | idle | walk / fly / run |
+| `patrol` | idle at waypoint | walk |
+| `circle` | — | fly / walk |
+| `follow` | idle | walk / fly / run |
+| `teleport` | — | spin / float |
+| **Interact (on click)** | — | dance / bounce / spin / wave |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/GardenCharacter.tsx` | Complete rewrite — animation state machine with crossfade, follow movement type, interact animations on click (2s cycle + auto-revert), sound effects via `Audio` API |
+| `src/components/map/ThreeDScene.tsx` | Import `GardenCharacter`; render characters as animated components instead of colored spheres |
+| `src/app/api/threed/farmbots/[id]/water/route.ts` | `params` → `Promise<{ id: string }>` with `await params` |
+| `src/app/api/threed/farmbots/[id]/water/move/route.ts` | Same `params: Promise` fix |
+| `src/app/api/threed/models/files/route.ts` | `error.message` → `String(error)` |
+| `src/app/api/threed/models/files/[fileId]/route.ts` | `error.message` → `String(error)` |
+| `src/app/api/traffic/bay-area-511/seed/route.ts` | Empty file → stub GET endpoint |
+| `src/app/api/traffic/chp-cases/seed/route.ts` | Empty file → stub GET endpoint |
+| `src/components/admin/projects/ProjectAssetManager.tsx` | Replaced "Markers" asset type with "Plantings" in ThreeD module |
+
+---
+
+## 🚀 Version v0.14.0 "Surface Bridge + Minor Fixes"
 
 ### 🎯 What's New in v0.13.1-beta
 
@@ -35,7 +85,7 @@ ThreeD Module data has no inherent GPS location — all markers cluster around a
 
 ---
 
-## 🚀 Version v0.14.0 "Surface Bridge"
+## 🚀 Version v0.14.0 "Surface Bridge + Minor Fixes"
 
 ### 🎯 What's New in v0.14.0
 
