@@ -889,7 +889,7 @@ export function ThreeDScene({
           fov: 45,
         }}
         gl={{ antialias: true, alpha: false }}
-        shadows
+        shadows={{ type: THREE.PCFShadowMap }}
       >
         <color attach="background" args={['#87CEEB']} />
 

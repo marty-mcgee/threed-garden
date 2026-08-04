@@ -379,7 +379,11 @@ export function ThreeDMap({
 
       {/* Map Canvas */}
       <div style={{ height, width: '100%' }} className="rounded-lg overflow-hidden border bg-gradient-to-b from-sky-50 to-sky-100 dark:from-slate-900 dark:to-slate-800">
-        <Canvas camera={{ position: [0, 6, 8], fov: 45 }} gl={{ antialias: true, alpha: false }} shadows>
+        <Canvas 
+          camera={{ position: [0, 6, 8], fov: 45 }} 
+          gl={{ antialias: true, alpha: false }} 
+          shadows={{ type: THREE.PCFShadowMap }}
+        >
           {/* Lighting */}
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 15, 5]} intensity={1.2} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
