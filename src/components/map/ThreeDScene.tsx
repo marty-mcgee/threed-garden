@@ -9,6 +9,7 @@ import {
 } from '@react-three/drei';
 import * as THREE from 'three';
 import { Settings, ChevronDown, ChevronUp, X, Target, Layers } from 'lucide-react';
+import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 
 interface ThreeDSceneProps {
   incidents: any[];
@@ -158,13 +159,37 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
 
+  // ✅ v0.15.0: Render animated GardenCharacter for character type
+  if (marker.type === 'character' && marker.data) {
+    return (
+      <group
+        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+      >
+        <GardenCharacter character={marker.data} />
+        {isSelected && (
+          <mesh position={[marker.position.x, marker.position.y + 2, marker.position.z]}>
+            <ringGeometry args={[size * 1.5, size * 2, 32]} />
+            <meshBasicMaterial color="#8b5cf6" transparent opacity={0.5} side={THREE.DoubleSide} />
+          </mesh>
+        )}
+        {hovered && (
+          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
+            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+              {marker.name} ({marker.type})
+            </div>
+          </Html>
+        )}
+      </group>
+    );
+  }
+
   const getShape = () => {
     const s = size;
     switch (marker.type) {
       case 'beds':
         return <boxGeometry args={[s * 1.5, s * 0.3, s * 1.5]} />;
-      case 'characters':
-        return <sphereGeometry args={[s * 0.8, 16, 16]} />;
       case 'farmbots':
         return <boxGeometry args={[s * 0.8, s * 0.8, s * 0.8]} />;
       case 'plantings':
