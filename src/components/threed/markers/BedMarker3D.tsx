@@ -58,6 +58,7 @@ export function BedMarker3D({ bed, position }: BedMarker3DProps) {
 
       {/* Name label */}
       <Billboard position={[0, 0.4, 0]}>
+        {/* @ts-ignore Text API mismatch with drei version */}
         <Text fontSize={0.2} color="#6b7280" anchorX="center" anchorY="bottom" opacity={0.7}>
           {bed.name}
         </Text>

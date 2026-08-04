@@ -1,9 +1,8 @@
 // components/threed/effects/WeatherEffects.tsx
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Points, PointMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { Weather3D } from '@/lib/types/threed';
 
@@ -42,23 +41,22 @@ export function WeatherEffects({ weather }: WeatherEffectsProps) {
     return null;
   }
 
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+    return geo;
+  }, [particles]);
+
   return (
-    <Points ref={pointsRef} position={[0, 2, 0]}>
-      <PointMaterial
+    <points ref={pointsRef} position={[0, 2, 0]}>
+      <primitive object={geometry} attach="geometry" />
+      <pointsMaterial
         transparent
         color={weather.conditions === 'rainy' ? '#93c5fd' : '#e5e7eb'}
         size={0.05}
         sizeAttenuation
         depthWrite={false}
       />
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particles.length / 3}
-          array={particles}
-          itemSize={3}
-        />
-      </bufferGeometry>
-    </Points>
+    </points>
   );
 }

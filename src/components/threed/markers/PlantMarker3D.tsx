@@ -47,6 +47,7 @@ export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
 
       {/* Name label */}
       <Billboard position={[0, height + 0.4, 0]}>
+        {/* @ts-ignore Text API mismatch with drei version */}
         <Text fontSize={0.2} color="#6b7280" anchorX="center" anchorY="bottom" opacity={0.7}>
           {plant.name}
         </Text>

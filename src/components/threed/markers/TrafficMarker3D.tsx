@@ -55,11 +55,11 @@ export function TrafficMarker3D({ incident, position }: TrafficMarker3DProps) {
 
       {/* Icon */}
       <Billboard position={[0, 0.4, 0]}>
-        <mesh>
-          <Text fontSize={0.5} color="white" anchorX="center" anchorY="middle">
-            {icon}
-          </Text>
-        </mesh>
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore Text API mismatch with drei version */}
+        <Text fontSize={0.5} color="white" anchorX="center" anchorY="middle">
+          {icon}
+        </Text>
       </Billboard>
 
       {/* Tooltip */}

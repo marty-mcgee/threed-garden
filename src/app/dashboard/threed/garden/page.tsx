@@ -17,7 +17,7 @@ import { RefreshCw, Box, Sprout, Sun, Droplets, Thermometer, MapPin, AlertCircle
 //     </div>
 //   ),
 // });
-import ThreeDGarden from '@/components/threed/_test/ThreeDGarden'; // Regular import, NOT dynamic
+import { ThreeDGarden } from '@/components/threed/ThreeDGarden'; // Regular import, NOT dynamic
 
 interface GardenBed {
   id: number;
@@ -57,90 +57,101 @@ export default function Garden3DPage() {
   const [selectedPlant, setSelectedPlant] = useState<GardenPlanting | null>(null);
   const [weather, setWeather] = useState<any>(null);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
+  // ✅ v0.15.1: Use project-scoped API when project is selected, individual APIs otherwise
   const fetchData = useCallback(async () => {
     try {
       setRefreshing(true);
       setDebugInfo('Fetching data...');
-      
-      // Fetch beds
-      const bedsRes = await fetch('/api/threed/beds?limit=100&showAll=true');
-      const bedsData = await bedsRes.json();
-      
-      if (bedsData.success) {
-        const mappedBeds = bedsData.data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          shape: item.shape || 'rectangle',
-          widthFeet: parseFloat(item.widthFeet || 4),
-          lengthFeet: parseFloat(item.lengthFeet || 8),
-          positionX: parseFloat(item.positionX || 0),
-          positionY: parseFloat(item.positionY || 0),
-          positionZ: parseFloat(item.positionZ || 0),
+
+      // Helper to parse position columns
+      const px = (item: any) => parseFloat(String(item.positionX ?? item.position?.x ?? 0));
+      const py = (item: any) => parseFloat(String(item.positionY ?? item.position?.y ?? 0));
+      const pz = (item: any) => parseFloat(String(item.positionZ ?? item.position?.z ?? 0));
+
+      if (selectedProjectId) {
+        // ✅ Project-scoped — use /api/map/threed (returns beds + plantings + weatherLogs)
+        const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`);
+        const result = await response.json();
+        if (!result.success) {
+          setDebugInfo(`API error: ${result.error || 'Unknown'}`);
+          showToast(result.error || 'Failed to load data', 'error');
+          setLoading(false); setRefreshing(false);
+          return;
+        }
+        const rawData = result.data || {};
+
+        setBeds((rawData.beds || []).map((item: any) => ({
+          id: item.id, name: item.name, shape: item.shape || 'rectangle',
+          widthFeet: parseFloat(String(item.widthFeet || 4)), lengthFeet: parseFloat(String(item.lengthFeet || 8)),
+          positionX: px(item), positionY: py(item), positionZ: pz(item),
           color: item.color || '#8B5E3C',
-        }));
-        setBeds(mappedBeds);
-        setDebugInfo(`Loaded ${mappedBeds.length} beds`);
-        console.log('✅ Beds loaded:', mappedBeds);
-      }
-      
-      // Fetch plantings with plant data
-      const plantingsRes = await fetch('/api/threed/plantings?limit=500');
-      const plantingsData = await plantingsRes.json();
-      
-      console.log('Raw plantings data:', plantingsData);
-      
-      if (plantingsData.success && plantingsData.data) {
-        // 🔧 FIX: Properly extract the data from the nested structure
-        const mappedPlantings = plantingsData.data.map((item: any) => {
-          // The API returns { planting: {...}, plant: {...}, bed: {...} }
-          const planting = item.planting;
-          const plant = item.plant;
-          
-          return {
-            id: planting.id,
-            plantId: planting.plantId,
-            plantName: plant?.commonName || 'Unknown Plant',
-            plantType: plant?.type || 'Vegetable',
-            quantity: planting.quantity || 1,
-            positionX: parseFloat(planting.positionX || 0),
-            positionY: parseFloat(planting.positionY || 0),
-            positionZ: parseFloat(planting.positionZ || 0),
-            growthStage: planting.growthStage || 'vegetative',
-            daysToMaturity: plant?.daysToMaturity || 60,
-            bedId: planting.bedId,
-            modelType: plant?.modelType || null,
-            customColor: plant?.foliageColor || null,
-          };
-        });
-        
-        setPlantings(mappedPlantings);
-        setDebugInfo(`Loaded ${mappedPlantings.length} plantings`);
-        console.log('✅ Plantings loaded:', mappedPlantings);
-        
-        // Log the first planting for debugging
-        if (mappedPlantings.length > 0) {
-          console.log('Sample planting:', mappedPlantings[0]);
+        })));
+
+        setPlantings((rawData.plantings || []).map((item: any) => ({
+          id: item.id, plantId: item.plantId || item.id,
+          plantName: item.commonName || item.name || `Planting #${item.id}`,
+          plantType: item.type || 'Vegetable', quantity: item.quantity || 1,
+          positionX: px(item), positionY: py(item), positionZ: pz(item),
+          growthStage: item.growthStage || 'vegetative',
+          daysToMaturity: item.daysToMaturity || 60,
+          bedId: item.bedId || item.bed_id || null,
+          modelType: item.modelType || null, customColor: item.color || null,
+        })));
+
+        const wl = rawData.weatherLogs || [];
+        if (wl.length > 0) {
+          setWeather({ temperature: parseFloat(String(wl[0].temperature || 70)), condition: 'sunny', rainfall: 0 });
         }
       } else {
-        setDebugInfo(`Plantings load failed: ${plantingsData.error || 'No data'}`);
+        // ✅ No project selected — fetch from individual public APIs
+        const [bedsRes, plantingsRes, weatherRes] = await Promise.all([
+          fetch('/api/threed/beds?limit=100&showAll=true'),
+          fetch('/api/threed/plantings?limit=500&showAll=true'),
+          fetch('/api/threed/weather?limit=1').catch(() => null),
+        ]);
+
+        const bedsData = await bedsRes.json();
+        const plantingsData = await plantingsRes.json();
+
+        if (bedsData.success) {
+          setBeds((bedsData.data || []).map((item: any) => ({
+            id: item.id, name: item.name, shape: item.shape || 'rectangle',
+            widthFeet: parseFloat(String(item.widthFeet || 4)), lengthFeet: parseFloat(String(item.lengthFeet || 8)),
+            positionX: px(item), positionY: py(item), positionZ: pz(item),
+            color: item.color || '#8B5E3C',
+          })));
+        }
+
+        if (plantingsData.success && plantingsData.data) {
+          setPlantings((Array.isArray(plantingsData.data) ? plantingsData.data : []).map((item: any) => {
+            const planting = item.planting || item;
+            const plant = item.plant || {};
+            return {
+              id: planting.id, plantId: planting.plantId,
+              plantName: plant.commonName || planting.plantName || `Planting #${planting.id}`,
+              plantType: plant.type || 'Vegetable', quantity: planting.quantity || 1,
+              positionX: px(planting), positionY: py(planting), positionZ: pz(planting),
+              growthStage: planting.growthStage || 'vegetative',
+              daysToMaturity: plant.daysToMaturity || 60,
+              bedId: planting.bedId || null,
+              modelType: plant.modelType || null, customColor: planting.color || null,
+            };
+          }));
+        }
+
+        if (weatherRes && weatherRes.ok) {
+          const wd = await weatherRes.json().catch(() => null);
+          if (wd.success && wd.data?.length > 0) {
+            const t = parseFloat(String(wd.data[0].temperature || 70));
+            setWeather({ temperature: t, condition: t > 80 ? 'sunny' : 'cloudy', rainfall: 0 });
+          }
+        }
       }
       
-      // Fetch current weather
-      try {
-        const weatherRes = await fetch('/api/threed/weather?limit=1');
-        const weatherData = await weatherRes.json();
-        if (weatherData.success && weatherData.data && weatherData.data.length > 0) {
-          const latest = weatherData.data[0];
-          setWeather({
-            temperature: latest.temperature,
-            condition: latest.temperature > 80 ? 'sunny' : 'cloudy',
-            rainfall: latest.rainfallInches || 0,
-          });
-        }
-      } catch (weatherErr) {
-        console.warn('Weather fetch failed:', weatherErr);
-      }
+      setDebugInfo(`${beds.length} beds, ${plantings.length} plantings loaded`);
+      showToast('Garden data loaded', 'success');
       
     } catch (error) {
       console.error('Error fetching garden data:', error);
@@ -150,7 +161,7 @@ export default function Garden3DPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [showToast]);
+  }, [showToast, selectedProjectId, beds.length, plantings.length]);
 
   useEffect(() => {
     fetchData();

@@ -17,19 +17,57 @@ import { Legend3D } from './controls/Legend3D';
 // Import types
 import { ThreeDData, LayerVisibility } from '@/lib/types/threed';
 
+interface GardenBed {
+  id: number; name: string; shape: string;
+  widthFeet: number; lengthFeet: number;
+  positionX: number; positionY: number; positionZ: number;
+  color: string;
+}
+
+interface GardenPlanting {
+  id: number; plantId: number; plantName: string; plantType: string;
+  quantity: number;
+  positionX: number; positionY: number; positionZ: number;
+  growthStage: string; daysToMaturity: number; bedId: number;
+  modelType?: string; customColor?: string;
+}
+
 interface ThreeDGardenProps {
-  data: ThreeDData;
-  layers: LayerVisibility;
+  beds?: GardenBed[];
+  plantings?: GardenPlanting[];
+  weather?: any;
+  onBedSelect?: (bed: GardenBed) => void;
+  onPlantSelect?: (plant: GardenPlanting) => void;
   autoRotate?: boolean;
   height?: string;
 }
 
 export function ThreeDGarden({
-  data,
-  layers,
+  beds = [],
+  plantings = [],
+  weather = null,
+  onBedSelect,
+  onPlantSelect,
   autoRotate = false,
   height = '700px',
 }: ThreeDGardenProps) {
+  // Build a simple data object for the layers
+  const data = {
+    beds: beds.map((b) => ({
+      ...b, width: b.widthFeet || 4, depth: b.lengthFeet || 8,
+      plants: plantings.filter((p) => p.bedId === b.id),
+    })),
+    plants: plantings,
+    plantings,
+    farmbots: [],
+    weather,
+    characters: [],
+    traffic: [],
+  };
+  const layers = {
+    traffic: false, garden: beds.length > 0 || plantings.length > 0,
+    farmbots: false, weather: !!weather, characters: false,
+  };
   const controlsRef = useRef<any>(null);
 
   return (
@@ -90,7 +128,7 @@ export function ThreeDGarden({
 
         {/* === LAYERS === */}
         {/* {layers.traffic && <TrafficLayer incidents={data.traffic} />} */}
-        {layers.garden && <GardenLayer beds={data.beds} plants={data.plants} />}
+        {layers.garden && <GardenLayer beds={data.beds as any} plants={data.plants as any} />}
         {layers.farmbots && <FarmBotLayer farmbots={data.farmbots} />}
         {layers.weather && <WeatherLayer weather={data.weather} />}
         {layers.characters && <CharacterLayer characters={data.characters} />}

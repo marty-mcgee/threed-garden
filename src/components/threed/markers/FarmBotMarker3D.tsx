@@ -57,6 +57,7 @@ export function FarmBotMarker3D({ farmbot, position }: FarmBotMarker3DProps) {
 
       {/* Name label */}
       <Billboard position={[0, 0.6, 0]}>
+        {/* @ts-ignore Text API mismatch with drei version */}
         <Text fontSize={0.2} color="#6b7280" anchorX="center" anchorY="bottom" opacity={0.7}>
           {farmbot.name}
         </Text>
