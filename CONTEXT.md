@@ -509,6 +509,27 @@ bun run src/lib/scripts/seed-initial-data.ts
 
 ---
 
+## 🚀 Next Steps
+
+### v0.15.2b: Dashboard ThreeD Garden → Merge with UnifiedMapView ThreeDScene
+
+Currently the Dashboard has two separate ThreeD experiences:
+- **ThreeD Garden** (`/dashboard/threed/garden`) — standalone 3D garden with beds + plantings via `ThreeDGarden.tsx`
+- **Unified Map 3D Scene** (`/dashboard/map` in 3D mode) — runtime markers from all sub-modules via `ThreeDScene.tsx`
+
+**Goal:** Merge `ThreeDGarden.tsx` rendering into the `UnifiedMapView → ThreeDScene` pipeline so:
+1. The garden view (beds, plantings, characters, ground plane, weather effects) renders inside the same ThreeJS Canvas as runtime markers and traffic incidents
+2. Project-scoped API data is shared between both experiences
+3. A single "3D" tab on the Dashboard hosts all ThreeD visualization
+
+**Key files:**
+- `src/components/threed/ThreeDGarden.tsx` — garden scene to extract/merge
+- `src/components/map/ThreeDScene.tsx` — unified 3D scene to extend
+- `src/components/map/UnifiedMapView.tsx` — marker pipeline to integrate garden data
+- `src/app/dashboard/map/page.tsx` — dashboard page hosting both views
+
+---
+
 ## 🚦 Production Status
 
 | Component | Status |

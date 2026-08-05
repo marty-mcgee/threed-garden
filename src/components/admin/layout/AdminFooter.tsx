@@ -11,7 +11,7 @@ export function AdminFooter() {
       <div className="flex items-center gap-2">
         <span>© {currentYear} Marty McGee</span>
         <span className="hidden sm:inline">•</span>
-        <span className="hidden sm:inline">v0.11.0</span>
+        <span className="hidden sm:inline">v0.15.x</span>
       </div>
       <div className="flex items-center gap-4">
         <a 
@@ -24,7 +24,7 @@ export function AdminFooter() {
           <span className="hidden sm:inline">GitHub</span>
         </a>
         <span className="flex items-center gap-1">
-          Built with <Heart className="h-3 w-3 text-green-500 fill-green-500" /> using Next.js
+          Built with <Heart className="h-3 w-3 text-green-500 fill-green-500" /> using ThreeD
         </span>
         <span className="flex items-center gap-1">
           <Zap className="h-3 w-3 text-yellow-500" />

@@ -160,8 +160,107 @@ function ProjectSelectorDialog({
   );
 }
 
+// ✅ v0.15.2: 2D Map Details Overlay — mirrors 3D Scene's Rich Details Box
+function DetailsCard({ selected, onClose }: { selected: any; onClose: () => void }) {
+  if (!selected) return null;
+  // Detect incidents by DB fields only traffic records have (latitude, severity, title+location)
+  const isIncident = selected.latitude != null || selected.severity || (selected.title && selected.location);
+  const isMarker = !isIncident;
+  const typeLabel = selected.type || (isIncident ? 'Traffic Incident' : 'Marker');
+  const typeColor = selected.severity === 'critical' ? '#ef4444' :
+    selected.severity === 'high' ? '#f97316' :
+    selected.severity === 'medium' ? '#eab308' : '#22c55e';
+
+  return (
+    <div className="fixed top-20 left-4 z-[1000] bg-black/85 backdrop-blur-sm text-white p-3 rounded-lg border border-white/10 shadow-xl max-w-[260px] pointer-events-auto">
+      <div className="flex items-start justify-between gap-2">
+        <div className="text-sm font-medium text-white truncate max-w-[180px]">
+          {selected.name || selected.title || selected.label || 'Unknown'}
+        </div>
+        <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors flex-shrink-0">
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      <div className="flex items-center gap-2 mt-1">
+        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 capitalize">{typeLabel}</span>
+        {selected.severity && (
+          <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: typeColor + '30', color: typeColor }}>
+            {selected.severity}
+          </span>
+        )}
+      </div>
+
+      {selected.lat != null && selected.lng != null && (
+        <div className="text-[10px] text-white/40 mt-1.5 font-mono">
+          📍 {Number(selected.lat).toFixed(4)}, {Number(selected.lng).toFixed(4)}
+        </div>
+      )}
+
+      {/* Incident details */}
+      {isIncident && (
+        <div className="mt-2 space-y-1 text-[11px] text-white/70">
+          {selected.location && <div>📍 {selected.location}</div>}
+          {selected.status && <div><span className="font-medium text-white/90">Status:</span> {selected.status}</div>}
+          {selected.description && <div className="text-white/50">{selected.description?.slice(0, 100)}{selected.description?.length > 100 ? '...' : ''}</div>}
+        </div>
+      )}
+
+      {/* Marker details */}
+      {isMarker && selected.metadata?.data && (
+        <div className="mt-2 space-y-1 text-[11px] text-white/70">
+          {selected.metadata.data.plantedDate && <div>📅 Planted: {new Date(selected.metadata.data.plantedDate).toLocaleDateString()}</div>}
+          {selected.metadata.data.growthStage && <div>📈 Growth: {selected.metadata.data.growthStage}</div>}
+          {selected.metadata.data.soilType && <div>🟫 Soil: {selected.metadata.data.soilType}</div>}
+          {selected.metadata.data.deviceId && <div>⚡ {selected.metadata.data.deviceId}</div>}
+          {selected.metadata.data.batteryLevel != null && <div>🔋 Battery: {selected.metadata.data.batteryLevel}%</div>}
+          {selected.metadata.data.notes && <div className="text-white/50">{selected.metadata.data.notes?.slice(0, 80)}</div>}
+        </div>
+      )}
+
+      {/* ✅ v0.15.2: Outgoing admin link — opens project asset details in new tab */}
+      {(() => {
+        const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
+        const adminId = selected.metadata?.data?.id || selected.id;
+        let adminRoute = '/admin';
+        const routeMap: Record<string, string> = {
+          plantings: '/admin/threed/plantings',
+          planting: '/admin/threed/plantings',
+          beds: '/admin/threed/beds',
+          bed: '/admin/threed/beds',
+          characters: '/admin/threed/characters',
+          character: '/admin/threed/characters',
+          farmbots: '/admin/threed/farmbots',
+          farmbot: '/admin/threed/farmbots',
+          chpCad: '/admin/traffic/chp-cad',
+          chpCadIncidents: '/admin/traffic/chp-cad',
+          chpCases: '/admin/traffic/chp-cases',
+          chpCenters: '/admin/traffic/chp-centers',
+          caltransLaneClosures: '/admin/traffic/caltrans',
+          caltransClosures: '/admin/traffic/caltrans',
+          caltransCctv: '/admin/traffic/caltrans-cctv',
+          caltransDistricts: '/admin/traffic/caltrans-districts',
+          bayArea511: '/admin/traffic/bay-area-511',
+          bayArea511Events: '/admin/traffic/bay-area-511',
+          calfireIncidents: '/admin/traffic/calfire',
+          calfire: '/admin/traffic/calfire',
+        };
+        adminRoute = routeMap[adminType] || (isIncident ? '/admin/traffic' : '/admin/threed/plantings');
+        const adminUrl = `${adminRoute}?id=${adminId}`;
+        return (
+          <div key="admin-link" className="mt-3 border-t border-white/10 pt-2">
+            <a href={adminUrl} target="_blank" rel="noopener noreferrer" className="block text-center text-[11px] bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded transition-colors no-underline">
+              📝 View Details
+            </a>
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
+
 // ✅ Interactive Stats Card (clickable to filter)
-function StatCard({ 
+function StatCard({
   label, 
   count, 
   color, 
@@ -225,8 +324,8 @@ function UnifiedMapPageInner() {
   const [dataAge, setDataAge] = useState<string>('--');
   const [isStale, setIsStale] = useState(false);
   
-  // ✅ Default to 3D view
-  const [viewMode, setViewMode] = useState<MapViewMode>('3d');
+  // ✅ Default to 2D view (for testing initial loading state)
+  const [viewMode, setViewMode] = useState<MapViewMode>('2d');
   
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
@@ -325,6 +424,10 @@ function UnifiedMapPageInner() {
     }
   };
 
+  // ✅ Stabilize showToast via ref to prevent re-render loops
+  const showToastRef = useRef(showToast);
+  showToastRef.current = showToast;
+
   // ✅ Load data from API route
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -415,7 +518,7 @@ function UnifiedMapPageInner() {
           setData(emptyData);
           setProjectInfo({ name: 'Error Loading Data', hasData: false });
           setIsDefaultView(true);
-          showToast(result.error || 'Failed to load data', 'error');
+          showToastRef.current(result.error || 'Failed to load data', 'error');
         }
       } catch (fetchError) {
         console.warn('API fetch failed:', fetchError);
@@ -423,103 +526,22 @@ function UnifiedMapPageInner() {
         setData(emptyData);
         setProjectInfo({ name: 'Error Loading Data', hasData: false });
         setIsDefaultView(true);
-        showToast('Failed to load data', 'error');
+        showToastRef.current('Failed to load data', 'error');
       }
     } catch (error) {
       console.error('Failed to load map data:', error);
       const emptyData = getDefaultMapData();
       setData(emptyData);
-      showToast('Failed to load data', 'error');
+      showToastRef.current('Failed to load data', 'error');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [selectedProjectId, showToast]);
+  }, [selectedProjectId]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
-
-  // ✅ v0.15.2: Auto-refresh polling — silently refetch data every 60s when project is selected
-  useEffect(() => {
-    if (!selectedProjectId) return;
-
-    const POLL_INTERVAL_MS = 60_000; // 60 seconds
-
-    const pollSilently = async () => {
-      try {
-        const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`);
-        const result = await response.json();
-
-        if (result.success) {
-          const resultData = result.data || {};
-
-          const trafficRaw = {
-            chpCadIncidents: (resultData.chpCadIncidents || []) as any[],
-            chpCases: (resultData.chpCases || []) as any[],
-            chpCenters: (resultData.chpCenters || []) as any[],
-            caltransLaneClosures: (resultData.caltransLaneClosures || []) as any[],
-            caltransCctvCameras: (resultData.caltransCctvCameras || []) as any[],
-            caltransDistricts: (resultData.caltransDistricts || []) as any[],
-            bayArea511Events: (resultData.bayArea511Events || []) as any[],
-            calfireIncidents: (resultData.calfireIncidents || []) as any[],
-          };
-
-          const threedRaw = {
-            plants: (resultData.plants || []) as any[],
-            beds: (resultData.beds || []) as any[],
-            characters: (resultData.characters || []) as any[],
-            layers: (resultData.layers || []) as any[],
-            farmbots: (resultData.farmbots || []) as any[],
-            plantings: (resultData.plantings || []) as any[],
-            tasks: (resultData.tasks || []) as any[],
-            harvests: (resultData.harvests || []) as any[],
-            weatherLogs: (resultData.weatherLogs || []) as any[],
-          };
-
-          const trafficTotal = Object.values(trafficRaw).reduce((sum: number, arr: any[]) => sum + arr.length, 0);
-          const threedTotal = Object.values(threedRaw).reduce((sum: number, arr: any[]) => sum + arr.length, 0);
-
-          setData({
-            traffic: {
-              raw: trafficRaw,
-              total: trafficTotal,
-              chpCadCount: trafficRaw.chpCadIncidents.length,
-              chpCasesCount: trafficRaw.chpCases.length,
-              chpCentersCount: trafficRaw.chpCenters.length,
-              caltransClosuresCount: trafficRaw.caltransLaneClosures.length,
-              caltransCctvCount: trafficRaw.caltransCctvCameras.length,
-              caltransDistrictsCount: trafficRaw.caltransDistricts.length,
-              bayArea511Count: trafficRaw.bayArea511Events.length,
-              calfireIncidentsCount: trafficRaw.calfireIncidents.length,
-            },
-            threed: {
-              raw: threedRaw,
-              total: threedTotal,
-              plantsCount: threedRaw.plants.length,
-              bedsCount: threedRaw.beds.length,
-              charactersCount: threedRaw.characters.length,
-              markersCount: 0,
-              layersCount: threedRaw.layers.length,
-              farmbotsCount: threedRaw.farmbots.length,
-              plantingsCount: threedRaw.plantings.length,
-              tasksCount: threedRaw.tasks.length,
-              harvestsCount: threedRaw.harvests.length,
-              weatherLogsCount: threedRaw.weatherLogs.length,
-              layers: [],
-            },
-          });
-
-          setLastUpdated(new Date());
-        }
-      } catch (_pollErr) {
-        // Silent failure — don't disrupt the user with errors on poll refresh
-      }
-    };
-
-    const interval = setInterval(pollSilently, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [selectedProjectId]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -958,6 +980,12 @@ function UnifiedMapPageInner() {
           </div>
         </CardContent>
       </Card>
+
+      {/* ✅ v0.15.2: Details Card — rendered outside map to avoid Leaflet interference */}
+      <DetailsCard
+        selected={selectedMarker || selectedIncident}
+        onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
+      />
 
       {/* ✅ v0.13.0-beta: Interactive Stats Cards */}
       {true && hasRealData && (

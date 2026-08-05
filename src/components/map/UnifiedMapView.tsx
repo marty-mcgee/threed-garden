@@ -214,14 +214,18 @@ export function UnifiedMapView({
   }, [runtimeMarkers, layers, visibleAssetTypes, filterText, filterActiveOnly, filterAssetType]);
 
   // ✅ v0.13.0-beta: Apply text filter to incidents too
-  // ✅ v0.15.2: Normalize GPS column names — DB uses latitude/longitude, code expects lat/lng
+  // ✅ v0.15.2: Normalize GPS column names and assign unique composite keys
+  // Traffic tables use serial IDs that collide across collections (CHP CAD id=3 ≠ Caltrans id=3)
   const filteredIncidents = useMemo(() => {
     if (!data.traffic.raw) return [];
-    const allIncidents = Object.values(data.traffic.raw).flat().map((incident: any) => ({
-      ...incident,
-      lat: incident.lat ?? incident.latitude ?? null,
-      lng: incident.lng ?? incident.longitude ?? null,
-    }));
+    const allIncidents = Object.entries(data.traffic.raw).flatMap(([collection, items]) =>
+      (items || []).map((item: any) => ({
+        ...item,
+        lat: item.lat ?? item.latitude ?? null,
+        lng: item.lng ?? item.longitude ?? null,
+        key: `${collection}_${item.id}`,
+      }))
+    );
 
     if (!filterText && !filterAssetType) return allIncidents;
 
@@ -262,7 +266,8 @@ export function UnifiedMapView({
   const spreadMarkers = useMemo(() => spreadOverlappingMarkers(filteredMarkers, 1.0), [filteredMarkers]);
 
   const handleIncidentClick = useCallback((incident: TrafficIncident) => {
-    if (onIncidentSelect) onIncidentSelect(selectedIncident?.id === incident.id ? null : incident);
+    // Use composite key for uniqueness across traffic collections
+    if (onIncidentSelect) onIncidentSelect((selectedIncident as any)?.key === (incident as any).key ? null : incident);
   }, [onIncidentSelect, selectedIncident]);
 
   const handleMarkerClick = useCallback((marker: RuntimeMarker) => {

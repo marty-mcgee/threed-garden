@@ -1084,16 +1084,16 @@ export function ThreeDScene({
 
         {incidents.map((incident, idx) => (
           <IncidentMarker3D
-            key={`incident_${idx}_${incident.id || ''}`}
+            key={`incident_${idx}_${(incident as any).key || incident.id || ''}`}
             incident={incident}
             onClick={() => handleIncidentClick(incident)}
-            isSelected={selectedIncident?.id === incident.id}
+            isSelected={(selectedIncident as any)?.key === (incident as any).key}
           />
         ))}
 
-        {visibleMarkers.map((marker) => (
+        {visibleMarkers.map((marker, idx) => (
           <ThreeDMarkerComponent
-            key={`marker_${marker.type}_${marker.id}`}
+            key={`marker_${idx}_${marker.type}_${marker.id}`}
             marker={marker}
             onClick={() => handleMarkerClick(marker)}
             isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}

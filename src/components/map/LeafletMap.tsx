@@ -65,7 +65,8 @@ const SEVERITY_EMOJIS: Record<string, string> = {
   low: '🟢',
 };
 
-function escapeHtml(str: string): string {
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return '';
   return str
     .replace(/&/g, '&')
     .replace(/</g, '<')
@@ -195,7 +196,7 @@ function LeafletMapComponent({
       const color = getTrafficColor(incident.source);
       const sevStr: string = incident.severity || 'medium';
       const severityEmoji = SEVERITY_EMOJIS[sevStr] || '🟡';
-      const isSelected = selectedIncident?.id === incident.id;
+      const isSelected = (selectedIncident as any)?.key === (incident as any).key;
       const sourceLabel = getTrafficLabel(incident.source);
       const adminUrl = getAdminUrl(incident.source, incident.id);
       const timeStr = new Date(incident.timestamp).toLocaleString();
@@ -444,7 +445,10 @@ function LeafletMapComponent({
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
       initializedRef.current = true;
     }
-  }, [incidents, markers, gpsCenter, selectedIncident, selectedMarker]);
+  // ✅ v0.15.2: Don't include selectedIncident/selectedMarker in deps —
+  // selection highlighting is cosmetic and redraw-on-select causes popup/open close loops.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [incidents, markers, gpsCenter]);
 
   return <div ref={mapRef} style={{ height, width: '100%' }} />;
 }
