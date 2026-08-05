@@ -725,54 +725,56 @@ function UnifiedMapPageInner() {
       )}
 
       {/* ✅ Layer Controls */}
-      <Card>
-        <CardContent className="p-3">
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Traffic Layers */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground">Traffic:</span>
-              {Object.entries(layers.traffic).map(([id, config]) => (
-                <div key={id} className="flex items-center gap-1">
-                  <Button
-                    variant={config.enabled ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-6 px-2 text-[10px]"
-                    onClick={() => toggleLayer('traffic', id)}
-                  >
-                    {getTrafficIcon(id)}
-                    <span className="ml-1">{getTrafficLabel(id)}</span>
-                  </Button>
-                </div>
-              ))}
-            </div>
+      {false && (
+        <Card>
+          <CardContent className="p-3">
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Traffic Layers */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-muted-foreground">Traffic:</span>
+                {Object.entries(layers.traffic).map(([id, config]) => (
+                  <div key={id} className="flex items-center gap-1">
+                    <Button
+                      variant={config.enabled ? 'default' : 'outline'}
+                      size="sm"
+                      className="h-6 px-2 text-[10px]"
+                      onClick={() => toggleLayer('traffic', id)}
+                    >
+                      {getTrafficIcon(id)}
+                      <span className="ml-1">{getTrafficLabel(id)}</span>
+                    </Button>
+                  </div>
+                ))}
+              </div>
 
-            <div className="w-px h-6 bg-border" />
+              <div className="w-px h-6 bg-border" />
 
-            {/* ThreeD Layers */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground">ThreeD:</span>
-              {Object.entries(layers.threed).map(([id, config]) => (
-                <div key={id} className="flex items-center gap-1">
-                  <Button
-                    variant={config.enabled ? 'default' : 'outline'}
-                    size="sm"
-                    className="h-6 px-2 text-[10px]"
-                    onClick={() => toggleLayer('threed', id)}
-                  >
-                    {getThreeDIcon(id)}
-                    <span className="ml-1">{getThreeDLabel(id)}</span>
-                  </Button>
-                </div>
-              ))}
+              {/* ThreeD Layers */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-muted-foreground">ThreeD:</span>
+                {Object.entries(layers.threed).map(([id, config]) => (
+                  <div key={id} className="flex items-center gap-1">
+                    <Button
+                      variant={config.enabled ? 'default' : 'outline'}
+                      size="sm"
+                      className="h-6 px-2 text-[10px]"
+                      onClick={() => toggleLayer('threed', id)}
+                    >
+                      {getThreeDIcon(id)}
+                      <span className="ml-1">{getThreeDLabel(id)}</span>
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* ✅ Map Container */}
       <Card className={isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''}>
         <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: isFullscreen ? '100vh' : '650px' }}>
+          <div style={{ height: isFullscreen ? '100vh' : '740px' }}>
             
             {viewMode === 'combined' && (
               <div 
@@ -877,7 +879,7 @@ function UnifiedMapPageInner() {
       </Card>
 
       {/* ✅ v0.13.0-beta: Interactive Stats Cards */}
-      {hasRealData && (
+      {true && hasRealData && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Traffic Summary - Interactive Stat Cards */}
           <Card>

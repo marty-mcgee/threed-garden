@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, Environment, Html, Plane, Grid, 
+  GizmoHelper, GizmoViewcube, GizmoViewport,
   Text, Sphere, Box, Cylinder, Cone, Ring 
 } from '@react-three/drei';
 import * as THREE from 'three';
@@ -73,6 +74,18 @@ function calculateBounds(positions: { x: number; z: number }[]) {
     centerX: (minX + maxX) / 2,
     centerZ: (minZ + maxZ) / 2,
   };
+}
+
+// ✅ Detects when OrbitControls ref is ready
+function ControlsReadyNotifier({ controlsRef, onReady }: { controlsRef: any; onReady: () => void }) {
+  const called = useRef(false);
+  useFrame(() => {
+    if (controlsRef.current && !called.current) {
+      called.current = true;
+      onReady();
+    }
+  });
+  return null;
 }
 
 // ✅ Camera Focus Animation Component
@@ -321,6 +334,8 @@ export function ThreeDScene({
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [showGizmoCube, setShowGizmoCube] = useState(true);
+  const [controlsReady, setControlsReady] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
   
   // ✅ Camera focus state
@@ -340,6 +355,16 @@ export function ThreeDScene({
   useEffect(() => {
     setHasData(incidents.length > 0 || markers.length > 0);
   }, [incidents, markers]);
+
+  // Fallback: if ControlsReadyNotifier doesn't fire within 1s, check manually
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (controlsRef.current && !controlsReady) {
+        setControlsReady(true);
+      }
+    }, 1000);
+    return () => clearTimeout(timeout);
+  }, [controlsReady]);
 
   // ✅ Load presets from localStorage
   useEffect(() => {
@@ -588,6 +613,9 @@ export function ThreeDScene({
                 {showLegend ? '📋 Hide Legend' : '📋 Show Legend'}
               </button>
             )}
+            <button onClick={() => setShowGizmoCube(!showGizmoCube)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
+              {showGizmoCube ? '🔢 Hide Gizmo' : '🔳 Show Gizmo'}
+            </button>
             <button
               onClick={() => {
                 setSelectedDetails(null);
@@ -958,9 +986,9 @@ export function ThreeDScene({
       )}
 
       {/* Tooltip */}
-      <div className="absolute bottom-3 right-3 z-10 text-[10px] text-white/40 bg-black/40 px-2 py-1 rounded">
+      {/* <div className="absolute bottom-3 right-3 z-10 text-[10px] text-white/40 bg-black/40 px-2 py-1 rounded">
         Left-click: Select • Right-click: Zoom
-      </div>
+      </div> */}
 
       <Canvas
         camera={{
@@ -980,6 +1008,7 @@ export function ThreeDScene({
 
         <OrbitControls
           ref={controlsRef}
+          makeDefault
           enableDamping
           dampingFactor={0.08}
           minDistance={2}
@@ -989,6 +1018,32 @@ export function ThreeDScene({
           autoRotateSpeed={0.8}
           target={[centerX, 0, centerZ]}
         />
+        <ControlsReadyNotifier
+          controlsRef={controlsRef}
+          onReady={() => setControlsReady(true)}
+        />
+
+        {/* ORBIT CONTROLS GIZMO HELPER */}
+        {controlsReady && showGizmoCube && (
+          <GizmoHelper
+            alignment='bottom-right'
+            margin={[64, 64]}
+          >
+            <group scale={0.7}>
+              <GizmoViewcube />
+            </group>
+            <group
+              scale={1.4}
+              position={[-24, -24, -24]}
+            >
+              <GizmoViewport
+                labelColor='white'
+                axisHeadScale={0.5}
+                hideNegativeAxes
+              />
+            </group>
+          </GizmoHelper>
+        )}
 
         <InteractiveGround size={groundSize} centerX={centerX} centerZ={centerZ} onRightClick={handleGroundRightClick} />
 

@@ -39,9 +39,13 @@ interface UnifiedMapViewProps {
 
 const MARKER_CONFIG: Record<string, { color: string; icon: string; label: string }> = {
   planting: { color: '#22c55e', icon: '🌱', label: 'Planting' },
+  plantings: { color: '#22c55e', icon: '🌱', label: 'Planting' },
   bed: { color: '#f59e0b', icon: '🧑‍🌾', label: 'Bed' },
+  beds: { color: '#f59e0b', icon: '🧑‍🌾', label: 'Bed' },
   character: { color: '#8b5cf6', icon: '🧚', label: 'Character' },
+  characters: { color: '#8b5cf6', icon: '🧚', label: 'Character' },
   farmbot: { color: '#64748b', icon: '🤖', label: 'FarmBot' },
+  farmbots: { color: '#64748b', icon: '🤖', label: 'FarmBot' },
 };
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
@@ -117,10 +121,10 @@ export function UnifiedMapView({
     if (data.threed.raw.plantings?.length > 0) {
       data.threed.raw.plantings.forEach((item: any) => {
         pushIfPositioned(
-          `planting-${item.id}`,
+          `plantings-${item.id}`,
           extractName(item, 'plantings'),
-          'planting', item,
-          MARKER_CONFIG.planting
+          'plantings', item,
+          MARKER_CONFIG.plantings
         );
       });
     }
