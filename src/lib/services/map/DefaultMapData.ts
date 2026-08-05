@@ -52,6 +52,7 @@ export function getDefaultLayers(): MapLayerConfig {
     },
     threed: {
       plants: { enabled: true, visible: true },
+      plantings: { enabled: true, visible: true },
       beds: { enabled: true, visible: true },
       characters: { enabled: true, visible: true },
       markers: { enabled: true, visible: true },

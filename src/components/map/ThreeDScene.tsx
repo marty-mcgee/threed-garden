@@ -397,9 +397,14 @@ export function ThreeDScene({
         const response = await fetch(`/api/threed/layers?projectId=${projectId}`);
         const data = await response.json();
         if (data.success && data.data.length > 0) {
-          const layerTypes = data.data.map((layer: any) => layer.layerType || layer.name);
-          setAvailableLayers(layerTypes);
-          setActiveLayers(new Set(layerTypes));
+          // ✅ Use known marker types for activeLayers (not DB layerType values which differ)
+          // DB layers store their display category in layerType, but markers use
+          // their sub-module names: plantings, beds, characters, farmbots
+          const markerTypes = ['beds', 'characters', 'farmbots', 'plantings', 'layers'];
+          const dbLayerTypes = data.data.map((layer: any) => layer.layerType || layer.name);
+          setAvailableLayers(dbLayerTypes);
+          // ✅ Always include the known marker-producing types so they render
+          setActiveLayers(new Set(markerTypes));
         } else {
           setAvailableLayers(['beds', 'characters', 'farmbots', 'plantings', 'layers']);
           setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'plantings', 'layers']));
@@ -976,7 +981,7 @@ export function ThreeDScene({
       {hasData && showLegend && Object.keys(typeCounts).length > 0 && (
         <div className="absolute bottom-3 left-3 z-10 bg-black/70 backdrop-blur-sm text-white p-2 rounded border border-white/10 min-w-[90px]">
           <div className="text-[10px] font-medium text-white/80 mb-1">Legend</div>
-          {Object.entries(typeCounts).map(([type, count]) => (
+          {(Object.entries(typeCounts) as [string, number][]).map(([type, count]) => (
             <div key={type} className="flex items-center gap-1.5 text-[10px] text-white/70 py-0.5">
               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getMarkerColor(type) }} />
               <span className="capitalize">{type}: {count}</span>
