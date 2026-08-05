@@ -1082,9 +1082,9 @@ export function ThreeDScene({
           </mesh>
         )}
 
-        {incidents.map((incident) => (
+        {incidents.map((incident, idx) => (
           <IncidentMarker3D
-            key={`incident_${incident.source}_${incident.id}`}
+            key={`incident_${idx}_${incident.id || ''}`}
             incident={incident}
             onClick={() => handleIncidentClick(incident)}
             isSelected={selectedIncident?.id === incident.id}

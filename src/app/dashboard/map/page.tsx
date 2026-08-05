@@ -440,6 +440,87 @@ function UnifiedMapPageInner() {
     loadData();
   }, [loadData]);
 
+  // ✅ v0.15.2: Auto-refresh polling — silently refetch data every 60s when project is selected
+  useEffect(() => {
+    if (!selectedProjectId) return;
+
+    const POLL_INTERVAL_MS = 60_000; // 60 seconds
+
+    const pollSilently = async () => {
+      try {
+        const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`);
+        const result = await response.json();
+
+        if (result.success) {
+          const resultData = result.data || {};
+
+          const trafficRaw = {
+            chpCadIncidents: (resultData.chpCadIncidents || []) as any[],
+            chpCases: (resultData.chpCases || []) as any[],
+            chpCenters: (resultData.chpCenters || []) as any[],
+            caltransLaneClosures: (resultData.caltransLaneClosures || []) as any[],
+            caltransCctvCameras: (resultData.caltransCctvCameras || []) as any[],
+            caltransDistricts: (resultData.caltransDistricts || []) as any[],
+            bayArea511Events: (resultData.bayArea511Events || []) as any[],
+            calfireIncidents: (resultData.calfireIncidents || []) as any[],
+          };
+
+          const threedRaw = {
+            plants: (resultData.plants || []) as any[],
+            beds: (resultData.beds || []) as any[],
+            characters: (resultData.characters || []) as any[],
+            layers: (resultData.layers || []) as any[],
+            farmbots: (resultData.farmbots || []) as any[],
+            plantings: (resultData.plantings || []) as any[],
+            tasks: (resultData.tasks || []) as any[],
+            harvests: (resultData.harvests || []) as any[],
+            weatherLogs: (resultData.weatherLogs || []) as any[],
+          };
+
+          const trafficTotal = Object.values(trafficRaw).reduce((sum: number, arr: any[]) => sum + arr.length, 0);
+          const threedTotal = Object.values(threedRaw).reduce((sum: number, arr: any[]) => sum + arr.length, 0);
+
+          setData({
+            traffic: {
+              raw: trafficRaw,
+              total: trafficTotal,
+              chpCadCount: trafficRaw.chpCadIncidents.length,
+              chpCasesCount: trafficRaw.chpCases.length,
+              chpCentersCount: trafficRaw.chpCenters.length,
+              caltransClosuresCount: trafficRaw.caltransLaneClosures.length,
+              caltransCctvCount: trafficRaw.caltransCctvCameras.length,
+              caltransDistrictsCount: trafficRaw.caltransDistricts.length,
+              bayArea511Count: trafficRaw.bayArea511Events.length,
+              calfireIncidentsCount: trafficRaw.calfireIncidents.length,
+            },
+            threed: {
+              raw: threedRaw,
+              total: threedTotal,
+              plantsCount: threedRaw.plants.length,
+              bedsCount: threedRaw.beds.length,
+              charactersCount: threedRaw.characters.length,
+              markersCount: 0,
+              layersCount: threedRaw.layers.length,
+              farmbotsCount: threedRaw.farmbots.length,
+              plantingsCount: threedRaw.plantings.length,
+              tasksCount: threedRaw.tasks.length,
+              harvestsCount: threedRaw.harvests.length,
+              weatherLogsCount: threedRaw.weatherLogs.length,
+              layers: [],
+            },
+          });
+
+          setLastUpdated(new Date());
+        }
+      } catch (_pollErr) {
+        // Silent failure — don't disrupt the user with errors on poll refresh
+      }
+    };
+
+    const interval = setInterval(pollSilently, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [selectedProjectId]);
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await loadData();

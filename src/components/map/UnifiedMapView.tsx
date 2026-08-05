@@ -214,9 +214,14 @@ export function UnifiedMapView({
   }, [runtimeMarkers, layers, visibleAssetTypes, filterText, filterActiveOnly, filterAssetType]);
 
   // ✅ v0.13.0-beta: Apply text filter to incidents too
+  // ✅ v0.15.2: Normalize GPS column names — DB uses latitude/longitude, code expects lat/lng
   const filteredIncidents = useMemo(() => {
     if (!data.traffic.raw) return [];
-    const allIncidents = Object.values(data.traffic.raw).flat();
+    const allIncidents = Object.values(data.traffic.raw).flat().map((incident: any) => ({
+      ...incident,
+      lat: incident.lat ?? incident.latitude ?? null,
+      lng: incident.lng ?? incident.longitude ?? null,
+    }));
 
     if (!filterText && !filterAssetType) return allIncidents;
 

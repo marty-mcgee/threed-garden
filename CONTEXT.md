@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 5, 2026 @ 7:25am PST
-**Current Version:** v0.15.1a "Dashboard ThreeD Garden"
+**Last Updated:** August 5, 2026 @ 8:55am PST
+**Current Version:** v0.15.2-alpha "Traffic Module + 2D Map Improvements"
 
 ---
 
@@ -460,6 +460,24 @@ bun run src/lib/scripts/seed-initial-data.ts
 
 ---
 
+## 🚀 v0.15.2-alpha "Traffic Module + 2D Map Improvements"
+
+### What's New
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Traffic GPS Column Normalization** | ✅ Complete | `filteredIncidents` normalizes `latitude`/`longitude` (DB columns) to `lat`/`lng` (code convention) — all 20 traffic incidents now render on 2D map |
+| **Auto-Refresh Polling** | ✅ Complete | Dashboard silently refetches `/api/map/threed?projectId=X` every 60s; data updates without loading spinner or toast disruption |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/map/UnifiedMapView.tsx` | Added GPS column normalization in `filteredIncidents` useMemo — maps `latitude`→`lat`, `longitude`→`lng` |
+| `src/app/dashboard/map/page.tsx` | Added 60-second auto-refresh polling effect with silent failure handling |
+
+---
+
 ## 📋 Complete Version History
 
 | Version | Date | Key Changes |
@@ -487,6 +505,7 @@ bun run src/lib/scripts/seed-initial-data.ts
 | v0.14.0 | 2026-08-04 | "Surface Bridge + Minor Fixes" — Dashboard Homepage, Surface Switcher, Skeleton Loaders, Admin Deep-Links |
 | v0.15.0 | 2026-08-04 | "Character Animations" — Animation State Machine, Interact on Click, Follow Movement, Sound Effects |
 | v0.15.1a | 2026-08-04 | "Dashboard ThreeD Garden" — ThreeDGarden wired to dashboard, 4 marker components fixed, WeatherEffects rewrite |
+| **v0.15.2-alpha** | **2026-08-05** | **"Traffic Module + 2D Map Improvements" — GPS column normalization, auto-refresh polling** |
 
 ---
 
