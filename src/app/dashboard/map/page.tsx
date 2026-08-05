@@ -774,7 +774,7 @@ function UnifiedMapPageInner() {
       {/* ✅ Map Container */}
       <Card className={isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''}>
         <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: isFullscreen ? '100vh' : '740px' }}>
+          <div style={{ height: isFullscreen ? '100vh' : '480px' }}>
             
             {viewMode === 'combined' && (
               <div 
@@ -919,11 +919,11 @@ function UnifiedMapPageInner() {
                 </Badge>
               </div>
               <div className="space-y-0.5">
-                <StatCard label="Plants" count={data.threed.plantsCount || 0} color="bg-green-500" icon="🌱" isActive={filterAssetType === 'Plants'} onClick={() => handleStatCardClick('Plants')} />
+                <StatCard label="Plantings" count={data.threed.plantingsCount || 0} color="bg-emerald-600" icon="🌱" isActive={filterAssetType === 'Plantings'} onClick={() => handleStatCardClick('Plantings')} />
+                <StatCard label="Plants" count={data.threed.plantsCount || 0} color="bg-green-500" icon="🌿" isActive={filterAssetType === 'Plants'} onClick={() => handleStatCardClick('Plants')} />
                 <StatCard label="Beds" count={data.threed.bedsCount || 0} color="bg-amber-500" icon="🧑‍🌾" isActive={filterAssetType === 'Beds'} onClick={() => handleStatCardClick('Beds')} />
                 <StatCard label="Characters" count={data.threed.charactersCount || 0} color="bg-purple-500" icon="🧚" isActive={filterAssetType === 'Characters'} onClick={() => handleStatCardClick('Characters')} />
                 <StatCard label="FarmBots" count={data.threed.farmbotsCount || 0} color="bg-slate-500" icon="🤖" isActive={filterAssetType === 'FarmBots'} onClick={() => handleStatCardClick('FarmBots')} />
-                <StatCard label="Plantings" count={data.threed.plantingsCount || 0} color="bg-emerald-600" icon="🌿" isActive={filterAssetType === 'Plantings'} onClick={() => handleStatCardClick('Plantings')} />
                 <StatCard label="Layers" count={data.threed.layersCount || 0} color="bg-cyan-500" icon="📐" isActive={filterAssetType === 'Layers'} onClick={() => handleStatCardClick('Layers')} />
                 <StatCard label="Tasks" count={data.threed.tasksCount || 0} color="bg-orange-600" icon="📝" isActive={filterAssetType === 'Tasks'} onClick={() => handleStatCardClick('Tasks')} />
                 <StatCard label="Harvests" count={data.threed.harvestsCount || 0} color="bg-yellow-600" icon="🌾" isActive={filterAssetType === 'Harvests'} onClick={() => handleStatCardClick('Harvests')} />

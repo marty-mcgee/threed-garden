@@ -1,5 +1,5 @@
 {
-  "id": "e71e6cb6-1309-4490-9a8b-2f44293210c0",
+  "id": "064a6b38-9acc-4385-afb2-dbdeb47dde09",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1507,11 +1507,23 @@
           "primaryKey": false,
           "notNull": false
         },
-        "public_url": {
-          "name": "public_url",
+        "file_url": {
+          "name": "file_url",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "file_type": {
+          "name": "file_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_size": {
+          "name": "file_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         },
         "status": {
           "name": "status",
