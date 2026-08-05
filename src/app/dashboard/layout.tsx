@@ -113,6 +113,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <footer className="mt-4 py-4 text-center text-xs text-muted-foreground border-t">
           <p className="mt-1">
             Built by Marty McGee with Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3F Fiber + Drei
+            @ github.com/marty-mcgee
           </p>
         </footer>
       </div>
