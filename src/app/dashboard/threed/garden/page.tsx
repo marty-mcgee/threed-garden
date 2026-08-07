@@ -1,189 +1,183 @@
-// src/app/dashboard/threed/garden/page.tsx
+// src/app/dashboard/threed/garden/page.tsx — v0.15.3 "Unified 3D Scene Integration"
+// Now uses the same rich ThreeDScene rendering engine as the Unified Map page
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { useToast } from '@/components/ui/toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Box, Sprout, Sun, Droplets, Thermometer, MapPin, AlertCircle } from 'lucide-react';
+import { RefreshCw, Box, Sprout, Sun, Droplets, Thermometer, MapPin, AlertCircle, Loader2, FolderOpen } from 'lucide-react';
+import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
+import { MapLayerConfig, MapViewMode, UnifiedMapData } from '@/lib/types/map';
 
-// // Dynamically import the 3D viewer to avoid SSR issues
-// const ThreeDGarden = dynamic(() => import('@/components/threed/ThreeDGarden'), {
-//   ssr: false,
-//   loading: () => (
-//     <div className="w-full h-[800px] bg-muted rounded-xl flex items-center justify-center">
-//       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-//     </div>
-//   ),
-// });
-import { ThreeDGarden } from '@/components/threed/ThreeDGarden'; // Regular import, NOT dynamic
-
-interface GardenBed {
-  id: number;
-  name: string;
-  shape: string;
-  widthFeet: number;
-  lengthFeet: number;
-  positionX: number;
-  positionY: number;
-  positionZ: number;
-  color: string;
-}
-
-interface GardenPlanting {
-  id: number;
-  plantId: number;
-  plantName: string;
-  plantType: string;
-  quantity: number;
-  positionX: number;
-  positionY: number;
-  positionZ: number;
-  growthStage: string;
-  daysToMaturity: number;
-  bedId: number;
-  modelType?: string;
-  customColor?: string;
-}
+// ✅ Dynamically import UnifiedMapView to avoid SSR issues with Three.js
+const UnifiedMapView = dynamic(
+  () => import('@/components/map/UnifiedMapView').then((mod) => mod.UnifiedMapView),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-[600px] bg-muted/20 rounded-xl">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    ),
+  }
+);
 
 export default function Garden3DPage() {
   const { showToast, ToastComponent } = useToast();
-  const [beds, setBeds] = useState<GardenBed[]>([]);
-  const [plantings, setPlantings] = useState<GardenPlanting[]>([]);
+  const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedBed, setSelectedBed] = useState<GardenBed | null>(null);
-  const [selectedPlant, setSelectedPlant] = useState<GardenPlanting | null>(null);
-  const [weather, setWeather] = useState<any>(null);
-  const [debugInfo, setDebugInfo] = useState<string>('');
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [selectedIncident, setSelectedIncident] = useState<any>(null);
+  const [selectedMarker, setSelectedMarker] = useState<any>(null);
+  const [layers] = useState<MapLayerConfig>(getDefaultLayers());
+  const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
 
-  // ✅ v0.15.1: Use project-scoped API when project is selected, individual APIs otherwise
-  const fetchData = useCallback(async () => {
+  // ✅ Force 3D view mode for garden page
+  const viewMode: MapViewMode = '3d';
+  
+  // ✅ Asset type visibility — show all ThreeD types
+  const visibleAssetTypes = new Set(['plantings', 'beds', 'characters', 'farmbots']);
+
+  // ✅ Check URL for projectId param
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const projectId = params.get('projectId');
+      if (projectId) setSelectedProjectId(projectId);
+    }
+  }, []);
+
+  // ✅ Normalize position values (DB returns decimals as strings)
+  const normalizePositions = (records: Record<string, any[]>) => {
+    const normalized: Record<string, any[]> = {};
+    for (const [key, items] of Object.entries(records)) {
+      normalized[key] = items.map((item: any) => {
+        const n = { ...item };
+        if ('positionX' in n && n.positionX !== null) n.positionX = Number(n.positionX);
+        if ('positionY' in n && n.positionY !== null) n.positionY = Number(n.positionY);
+        if ('positionZ' in n && n.positionZ !== null) n.positionZ = Number(n.positionZ);
+        if ('latitude' in n && n.latitude !== null) n.latitude = Number(n.latitude);
+        if ('longitude' in n && n.longitude !== null) n.longitude = Number(n.longitude);
+        return n;
+      });
+    }
+    return normalized;
+  };
+
+  // ✅ Load data — same pipeline as map page
+  const loadData = useCallback(async () => {
+    setLoading(true);
     try {
-      setRefreshing(true);
-      setDebugInfo('Fetching data...');
-
-      // Helper to parse position columns
-      const px = (item: any) => parseFloat(String(item.positionX ?? item.position?.x ?? 0));
-      const py = (item: any) => parseFloat(String(item.positionY ?? item.position?.y ?? 0));
-      const pz = (item: any) => parseFloat(String(item.positionZ ?? item.position?.z ?? 0));
-
-      if (selectedProjectId) {
-        // ✅ Project-scoped — use /api/map/threed (returns beds + plantings + weatherLogs)
-        const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`);
-        const result = await response.json();
-        if (!result.success) {
-          setDebugInfo(`API error: ${result.error || 'Unknown'}`);
-          showToast(result.error || 'Failed to load data', 'error');
-          setLoading(false); setRefreshing(false);
-          return;
-        }
-        const rawData = result.data || {};
-
-        setBeds((rawData.beds || []).map((item: any) => ({
-          id: item.id, name: item.name, shape: item.shape || 'rectangle',
-          widthFeet: parseFloat(String(item.widthFeet || 4)), lengthFeet: parseFloat(String(item.lengthFeet || 8)),
-          positionX: px(item), positionY: py(item), positionZ: pz(item),
-          color: item.color || '#8B5E3C',
-        })));
-
-        setPlantings((rawData.plantings || []).map((item: any) => ({
-          id: item.id, plantId: item.plantId || item.id,
-          plantName: item.commonName || item.name || `Planting #${item.id}`,
-          plantType: item.type || 'Vegetable', quantity: item.quantity || 1,
-          positionX: px(item), positionY: py(item), positionZ: pz(item),
-          growthStage: item.growthStage || 'vegetative',
-          daysToMaturity: item.daysToMaturity || 60,
-          bedId: item.bedId || item.bed_id || null,
-          modelType: item.modelType || null, customColor: item.color || null,
-        })));
-
-        const wl = rawData.weatherLogs || [];
-        if (wl.length > 0) {
-          setWeather({ temperature: parseFloat(String(wl[0].temperature || 70)), condition: 'sunny', rainfall: 0 });
-        }
-      } else {
-        // ✅ No project selected — fetch from individual public APIs
-        const [bedsRes, plantingsRes, weatherRes] = await Promise.all([
-          fetch('/api/threed/beds?limit=100&showAll=true'),
-          fetch('/api/threed/plantings?limit=500&showAll=true'),
-          fetch('/api/threed/weather?limit=1').catch(() => null),
-        ]);
-
-        const bedsData = await bedsRes.json();
-        const plantingsData = await plantingsRes.json();
-
-        if (bedsData.success) {
-          setBeds((bedsData.data || []).map((item: any) => ({
-            id: item.id, name: item.name, shape: item.shape || 'rectangle',
-            widthFeet: parseFloat(String(item.widthFeet || 4)), lengthFeet: parseFloat(String(item.lengthFeet || 8)),
-            positionX: px(item), positionY: py(item), positionZ: pz(item),
-            color: item.color || '#8B5E3C',
-          })));
-        }
-
-        if (plantingsData.success && plantingsData.data) {
-          setPlantings((Array.isArray(plantingsData.data) ? plantingsData.data : []).map((item: any) => {
-            const planting = item.planting || item;
-            const plant = item.plant || {};
-            return {
-              id: planting.id, plantId: planting.plantId,
-              plantName: plant.commonName || planting.plantName || `Planting #${planting.id}`,
-              plantType: plant.type || 'Vegetable', quantity: planting.quantity || 1,
-              positionX: px(planting), positionY: py(planting), positionZ: pz(planting),
-              growthStage: planting.growthStage || 'vegetative',
-              daysToMaturity: plant.daysToMaturity || 60,
-              bedId: planting.bedId || null,
-              modelType: plant.modelType || null, customColor: planting.color || null,
-            };
-          }));
-        }
-
-        if (weatherRes && weatherRes.ok) {
-          const wd = await weatherRes.json().catch(() => null);
-          if (wd.success && wd.data?.length > 0) {
-            const t = parseFloat(String(wd.data[0].temperature || 70));
-            setWeather({ temperature: t, condition: t > 80 ? 'sunny' : 'cloudy', rainfall: 0 });
-          }
-        }
+      if (!selectedProjectId) {
+        const defaultData = getDefaultMapData();
+        setData(defaultData);
+        setProjectInfo({ name: 'No Project Selected', hasData: false });
+        setLoading(false);
+        return;
       }
-      
-      setDebugInfo(`${beds.length} beds, ${plantings.length} plantings loaded`);
-      showToast('Garden data loaded', 'success');
-      
+
+      const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`);
+      const result = await response.json();
+
+      if (result.success) {
+        const resultData = result.data || {};
+        
+        const threedRaw = {
+          plants: (resultData.plants || []) as any[],
+          beds: (resultData.beds || []) as any[],
+          characters: (resultData.characters || []) as any[],
+          layers: (resultData.layers || []) as any[],
+          farmbots: (resultData.farmbots || []) as any[],
+          plantings: (resultData.plantings || []) as any[],
+          tasks: (resultData.tasks || []) as any[],
+          harvests: (resultData.harvests || []) as any[],
+          weatherLogs: (resultData.weatherLogs || []) as any[],
+        };
+        
+        const trafficRaw = {
+          chpCadIncidents: (resultData.chpCadIncidents || []) as any[],
+          chpCases: (resultData.chpCases || []) as any[],
+          chpCenters: (resultData.chpCenters || []) as any[],
+          caltransLaneClosures: (resultData.caltransLaneClosures || []) as any[],
+          caltransCctvCameras: (resultData.caltransCctvCameras || []) as any[],
+          caltransDistricts: (resultData.caltransDistricts || []) as any[],
+          bayArea511Events: (resultData.bayArea511Events || []) as any[],
+          calfireIncidents: (resultData.calfireIncidents || []) as any[],
+        };
+
+        const normalizedThreed = normalizePositions(threedRaw);
+        const normalizedTraffic = normalizePositions(trafficRaw);
+        
+        const threedTotal = Object.values(normalizedThreed).reduce((sum, arr) => sum + arr.length, 0);
+        const trafficTotal = Object.values(normalizedTraffic).reduce((sum, arr) => sum + arr.length, 0);
+
+        const unifiedData: UnifiedMapData = {
+          traffic: {
+            raw: normalizedTraffic as UnifiedMapData['traffic']['raw'],
+            total: trafficTotal,
+            chpCadCount: normalizedTraffic.chpCadIncidents.length,
+            chpCasesCount: normalizedTraffic.chpCases.length,
+            chpCentersCount: normalizedTraffic.chpCenters.length,
+            caltransClosuresCount: normalizedTraffic.caltransLaneClosures.length,
+            caltransCctvCount: normalizedTraffic.caltransCctvCameras.length,
+            caltransDistrictsCount: normalizedTraffic.caltransDistricts.length,
+            bayArea511Count: normalizedTraffic.bayArea511Events.length,
+            calfireIncidentsCount: normalizedTraffic.calfireIncidents.length,
+          },
+          threed: {
+            raw: normalizedThreed as UnifiedMapData['threed']['raw'],
+            total: threedTotal,
+            plantsCount: normalizedThreed.plants.length,
+            bedsCount: normalizedThreed.beds.length,
+            charactersCount: normalizedThreed.characters.length,
+            markersCount: 0,
+            layersCount: normalizedThreed.layers.length,
+            farmbotsCount: normalizedThreed.farmbots.length,
+            plantingsCount: normalizedThreed.plantings.length,
+            tasksCount: normalizedThreed.tasks.length,
+            harvestsCount: normalizedThreed.harvests.length,
+            weatherLogsCount: normalizedThreed.weatherLogs.length,
+            layers: [],
+          },
+        };
+
+        setData(unifiedData);
+        setProjectInfo({
+          name: `Project #${selectedProjectId}`,
+          hasData: result.total > 0,
+        });
+        showToast('Garden data loaded', 'success');
+      } else {
+        showToast(result.error || 'Failed to load data', 'error');
+      }
     } catch (error) {
       console.error('Error fetching garden data:', error);
-      setDebugInfo(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       showToast('Failed to load garden data', 'error');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [showToast, selectedProjectId, beds.length, plantings.length]);
+  }, [selectedProjectId, showToast]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    loadData();
+  }, [loadData]);
 
-  const handleBedSelect = (bed: GardenBed) => {
-    setSelectedBed(bed);
-    setSelectedPlant(null);
-    showToast(`Selected: ${bed.name}`, 'info');
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
   };
 
-  const handlePlantSelect = (plant: GardenPlanting) => {
-    setSelectedPlant(plant);
-    setSelectedBed(null);
-    showToast(`${plant.plantName} - ${plant.growthStage} stage`, 'info');
-  };
-
-  // Calculate stats
-  const totalBeds = beds.length;
-  const totalPlants = plantings.reduce((sum, p) => sum + (p.quantity || 0), 0);
-  const activePlantings = plantings.filter(p => p.growthStage !== 'harvested').length;
-  const uniqueBeds = new Set(plantings.map(p => p.bedId).filter(Boolean)).size;
+  // Stats from loaded data
+  const totalBeds = data.threed.bedsCount;
+  const totalPlantings = data.threed.plantingsCount;
+  const totalFarmbots = data.threed.farmbotsCount;
+  const totalCharacters = data.threed.charactersCount;
+  const totalThreeD = data.threed.total;
 
   if (loading) {
     return (
@@ -197,83 +191,62 @@ export default function Garden3DPage() {
     <div className="space-y-6">
       {ToastComponent}
       
+      {/* Header */}
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">3D Garden Explorer</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-foreground">3D Garden Explorer</h1>
+            {selectedProjectId && (
+              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                Project #{selectedProjectId}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">
-            {totalBeds} beds • {totalPlants} plants • {activePlantings} active plantings
+            {totalThreeD > 0 ? (
+              `${totalBeds} beds • ${totalPlantings} plantings • ${totalCharacters} characters • ${totalFarmbots} farmbots`
+            ) : selectedProjectId ? (
+              'No data available for this project'
+            ) : (
+              'Add ?projectId=X to the URL to load project data'
+            )}
           </p>
-          {debugInfo && (
-            <p className="text-xs text-muted-foreground mt-1 font-mono">
-              {debugInfo}
-            </p>
-          )}
         </div>
         
         <div className="flex gap-2">
-          <Button size="sm" onClick={fetchData} disabled={refreshing}>
+          <Button variant="outline" size="sm" onClick={() => setAutoRotate(!autoRotate)}>
+            {autoRotate ? '⏸️ Pause Rotation' : '▶️ Auto-Rotate'}
+          </Button>
+          <Button size="sm" onClick={handleRefresh} disabled={refreshing}>
             <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${refreshing ? 'animate-spin' : ''}`} />
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
         </div>
       </div>
       
-      {/* Warning if no beds or plantings */}
-      {beds.length === 0 && (
+      {/* Warning if no project selected */}
+      {!selectedProjectId && (
         <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
             <p className="text-sm text-yellow-800 dark:text-yellow-400">
-              No garden beds found. Create a bed to see your 3D garden.
+              No project selected. The 3D Garden loads data from a project's ThreeD assets.
+              Select a project from the Unified Map page or add <code className="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">?projectId=X</code> to the URL.
             </p>
-          </div>
-          <div className="mt-2">
-            <Button size="sm" variant="outline" onClick={() => window.location.href = '/dashboard/threed/beds'}>
-              Go to Beds
-            </Button>
           </div>
         </div>
       )}
       
-      {plantings.length === 0 && beds.length > 0 && (
+      {/* Warning if no data */}
+      {selectedProjectId && totalThreeD === 0 && (
         <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <div className="flex items-center gap-2">
             <Sprout className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <p className="text-sm text-blue-800 dark:text-blue-400">
-              No plantings found. Create a planting to see plants in your 3D garden.
+              No ThreeD assets found for this project. Add beds, plantings, characters, or farmbots in the admin panel.
             </p>
           </div>
-          <div className="mt-2">
-            <Button size="sm" variant="outline" onClick={() => window.location.href = '/dashboard/threed/plantings'}>
-              Go to Plantings
-            </Button>
-          </div>
         </div>
-      )}
-      
-      {/* Weather Widget */}
-      {weather && (
-        <Card className="border-blue-200 dark:border-blue-900">
-          <CardContent className="p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <Thermometer className="w-4 h-4 text-orange-500" />
-                  <span className="text-sm font-medium">{weather.temperature}°F</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Droplets className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-medium">{weather.rainfall || 0}" rain</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Sun className="w-4 h-4 text-yellow-500" />
-                  <span className="text-sm font-medium capitalize">{weather.condition}</span>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">Current Conditions</p>
-            </div>
-          </CardContent>
-        </Card>
       )}
       
       {/* Stats Cards */}
@@ -282,7 +255,7 @@ export default function Garden3DPage() {
           <CardContent className="p-3">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs text-muted-foreground">Total Beds</p>
+                <p className="text-xs text-muted-foreground">Beds</p>
                 <p className="text-2xl font-bold text-foreground">{totalBeds}</p>
               </div>
               <Box className="w-5 h-5 text-muted-foreground" />
@@ -293,8 +266,8 @@ export default function Garden3DPage() {
           <CardContent className="p-3">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs text-muted-foreground">Total Plants</p>
-                <p className="text-2xl font-bold text-green-600">{totalPlants}</p>
+                <p className="text-xs text-muted-foreground">Plantings</p>
+                <p className="text-2xl font-bold text-green-600">{totalPlantings}</p>
               </div>
               <Sprout className="w-5 h-5 text-green-600" />
             </div>
@@ -304,10 +277,10 @@ export default function Garden3DPage() {
           <CardContent className="p-3">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs text-muted-foreground">Active Plantings</p>
-                <p className="text-2xl font-bold text-blue-600">{activePlantings}</p>
+                <p className="text-xs text-muted-foreground">Characters</p>
+                <p className="text-2xl font-bold text-purple-600">{totalCharacters}</p>
               </div>
-              <MapPin className="w-5 h-5 text-blue-600" />
+              <span className="text-2xl">🧚</span>
             </div>
           </CardContent>
         </Card>
@@ -315,64 +288,46 @@ export default function Garden3DPage() {
           <CardContent className="p-3">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs text-muted-foreground">Beds with Plants</p>
-                <p className="text-2xl font-bold text-purple-600">{uniqueBeds}</p>
+                <p className="text-xs text-muted-foreground">FarmBots</p>
+                <p className="text-2xl font-bold text-slate-600">{totalFarmbots}</p>
               </div>
-              <MapPin className="w-5 h-5 text-purple-600" />
+              <span className="text-2xl">🤖</span>
             </div>
           </CardContent>
         </Card>
       </div>
       
-      {/* 3D Garden Viewer */}
+      {/* 3D Scene */}
       <Card className="overflow-hidden">
         <CardContent className="p-0">
-          <ThreeDGarden
-            beds={beds}
-            plantings={plantings}
-            weather={weather}
-            onBedSelect={handleBedSelect}
-            onPlantSelect={handlePlantSelect}
-          />
+          <div style={{ height: '650px' }}>
+            <UnifiedMapView
+              data={data}
+              layers={layers}
+              viewMode="3d"
+              onIncidentSelect={(incident) => setSelectedIncident(incident)}
+              onMarkerSelect={(marker) => setSelectedMarker(marker)}
+              selectedIncident={selectedIncident}
+              selectedMarker={selectedMarker}
+              height="100%"
+              visibleAssetTypes={visibleAssetTypes}
+            />
+          </div>
         </CardContent>
       </Card>
       
-      {/* Selection Panel */}
-      {(selectedBed || selectedPlant) && (
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="font-semibold text-foreground mb-2">Selected Item</h3>
-            {selectedBed && (
-              <div className="text-sm space-y-1">
-                <p><span className="font-medium">Bed:</span> {selectedBed.name}</p>
-                <p><span className="font-medium">Dimensions:</span> {selectedBed.widthFeet}' × {selectedBed.lengthFeet}'</p>
-                <p><span className="font-medium">Color:</span> <span className="inline-block w-4 h-4 rounded-full" style={{ backgroundColor: selectedBed.color }} /></p>
-                <p><span className="font-medium">Position:</span> ({selectedBed.positionX}, {selectedBed.positionZ})</p>
-              </div>
-            )}
-            {selectedPlant && (
-              <div className="text-sm space-y-1">
-                <p><span className="font-medium">Plant:</span> {selectedPlant.plantName}</p>
-                <p><span className="font-medium">Type:</span> {selectedPlant.plantType}</p>
-                <p><span className="font-medium">Growth Stage:</span> {selectedPlant.growthStage}</p>
-                <p><span className="font-medium">Quantity:</span> {selectedPlant.quantity}</p>
-                <p><span className="font-medium">Position:</span> ({selectedPlant.positionX}, {selectedPlant.positionZ})</p>
-                {selectedPlant.daysToMaturity && (
-                  <p><span className="font-medium">Days to Maturity:</span> {selectedPlant.daysToMaturity}</p>
-                )}
-              </div>
-            )}
-            <div className="mt-3 flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => {
-                if (selectedBed) window.location.href = '/dashboard/threed/beds';
-                if (selectedPlant) window.location.href = '/dashboard/threed/plantings';
-              }}>
-                Manage {selectedBed ? 'Bed' : 'Planting'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Navigation */}
+      <div className="flex justify-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-xs text-muted-foreground"
+          onClick={() => window.location.href = '/dashboard/map'}
+        >
+          <FolderOpen className="w-3.5 h-3.5 mr-1" />
+          Go to Unified Map
+        </Button>
+      </div>
     </div>
   );
 }

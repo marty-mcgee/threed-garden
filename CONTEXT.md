@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 5, 2026 @ 8:55am PST
-**Current Version:** v0.15.2-alpha "Traffic Module + 2D Map Improvements"
+**Last Updated:** August 6, 2026 @ 9:30pm PST
+**Current Version:** v0.15.3 "Dashboard ThreeD Garden — 100% Width + Rich Markers + UX + Page Unification"
 
 ---
 
@@ -29,7 +29,7 @@
 |--------|:---:|:---:|
 | **Projects** | ✅ (CRUD, Asset Manager) | ✅ (Homepage project cards) |
 | **Music** | ✅ (Albums, Tracks, Links, Media) | ✅ (Player, Album Grid, Waveform) |
-| **ThreeD** | ✅ (Plants, Beds, Plantings, Characters, Models, Layers) | ✅ (3D Scene, Runtime Markers, View Presets, ThreeD Garden) |
+| **ThreeD** | ✅ (Plants, Beds, Plantings, Characters, Models, Layers) | ✅ (3D Scene, Runtime Markers, View Presets, Garden Explorer) |
 | **Traffic** | ✅ (8 sub-modules, full CRUD) | ✅ (2D Map, Emoji Markers, Popups) |
 | **Settings** | ✅ (Admin UI) | ❌ (no public settings surface — by design) |
 
@@ -103,7 +103,7 @@ export const projectAssets = pgTable('project_assets', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').references(() => project.id, { onDelete: 'cascade' }),
-  moduleId: integer('module_id').notNull(), // References the specific module
+  moduleId: integer('module_id').notNull(),
   moduleType: text('module_type').notNull(), // 'music', 'threed', 'traffic'
   assetType: assetTypeEnum('asset_type').notNull(),
   assetId: integer('asset_id').notNull(),
@@ -120,12 +120,10 @@ export const projectAssets = pgTable('project_assets', {
 export const assetTypeEnum = pgEnum('asset_type', [
   // Music
   'music_albums', 'music_tracks', 'music_links', 'music_media',
-
   // ThreeD
   'threed_plants', 'threed_beds', 'threed_plantings', 'threed_layers',
   'threed_markers', 'threed_models', 'threed_characters', 'threed_tasks',
   'threed_harvests', 'threed_weather_logs', 'threed_farmbots', 'threed_watering_schedules',
-
   // Traffic
   'traffic_chp_cad_incidents', 'traffic_chp_cases', 'traffic_chp_centers',
   'traffic_caltrans_lane_closures', 'traffic_caltrans_districts',
@@ -289,8 +287,9 @@ api/
 │   └── stream/[trackId]/route.ts
 ├── map/
 │   ├── traffic/route.ts
-│   ├── threed/route.ts
-│   └── projects/route.ts
+│   ├── threed/route.ts       # GET — combined ThreeD + Traffic data with position normalization
+│   ├── projects/route.ts
+│   └── asset-type/route.ts
 └── auth/
     └── [...nextauth]/route.ts
 ```
@@ -313,65 +312,34 @@ api/
 
 ---
 
-## 🎯 Key Features by Module
+## 🎯 ThreeD Marker Architecture (Runtime Generation)
 
-### Settings System
-- Centralized JSON configuration with admin UI
-- User-specific overrides via database
-- Deployment snapshots and rollback support
+### Data Pipeline
 
-### Dynamic Navigation
-- Auto-builds menu from settings
-- Client-side rendering with no server dependencies
-- Loading states and active page highlighting
+```
+API (/api/map/threed)
+  → Position normalization (string→Number, _hasPosition metadata)
+  → Page (map/page.tsx, garden/page.tsx)
+    → normalizePositions() second pass
+    → UnifiedMapData construction
+  → UnifiedMapView
+    → extractPosition() — DB column fallback chain
+    → extractName() — plant reference lookup
+    → RuntimeMarker generation
+  → ThreeDScene
+    → normalizeType() — singular/plural mapping
+    → activeLayers filtering
+    → Rich marker components (BedMarker3D, PlantMarker3D, FarmBotMarker3D, GardenCharacter)
+```
 
-### Projects Module
-- **Full CRUD** for projects
-- **Module Management** — Add/remove modules to projects via junction tables (`project_threed`, `project_traffic`, `project_music`)
-- **Project Asset Manager** — Polymorphic junction via `project_assets` table with `assetType` enum; clean "Assigned" vs "Available" UI; session-persistent state
-- **Dashboard Homepage** — Project discovery hub at `/dashboard` with cards, module pills, skeleton loaders
+### ThreeD Marker Types — Rich Visual Components
 
-### ThreeD Garden Module
-- Interactive 3D visualization with Three.js + React Three Fiber
-- Plant database with growth stage tracking
-- FarmBot integration and control
-- Weather effects and logging
-- **Runtime markers from Plantings** (no stored markers — generated on-the-fly from sub-module data)
-- **Layers as Configuration** — Store view settings, not markers
-- **View Presets** — Save and load camera positions with layer states (localStorage)
-- **Rich Marker Popups** — Type-specific details on marker click
-- **Layer Visibility Toggle** — Filter by marker type with Show All/Hide All
-- **Camera Focus** — Smooth zoom animation with golden glow indicator
-- **Character Animation** — Animation state machine with movement-based clips (idle/walk/fly/run), click-interact animations (dance/bounce/spin/wave), 0.3s crossfade
-- **GardenCharacter** — Animated GLTF/FBX models with `AnimationMixer`, follow movement type, sound effects on click
-
-### Traffic Module
-- **8 real-time data sources** (CHP CAD, CHP Centers, CHP Cases, Caltrans Closures, Caltrans Districts, Caltrans CCTV, Bay Area 511, CalFire) with full CRUD
-- 2D/3D map visualization with Leaflet + Three.js
-- Runtime marker generation with emoji severity indicators
-
-### Music Module
-- Prominent media player with waveform visualization
-- Full CRUD for albums, tracks, links, and media
-- S3 integration for audio streaming
-- Album detail view with tracks, links, and media gallery
-
-### Unified Map Module
-- **Combined View** — Vertical stacked panels with drag-to-resize (20-80%)
-- **View Mode Switching** — 2D, 3D, Combined with keyboard shortcuts (1,2,3)
-- **Asset Type Toggle** — Show/hide specific 3D asset types (plantings, beds, characters, farmbots)
-- **Interactive 2D Markers** — Emoji-based with selection highlighting and rich popups
-- **Selection Sync** — Clicking a marker in one view highlights it in both
-- **Marker Positioning** — Runtime markers from DB columns (`positionX/Y/Z`), scaled to GPS via constant `GPS_SCALE = 0.0001`
-
-### ThreeD Marker Types
-
-| Type | 2D Emoji | 3D Shape | Color | Source |
-|------|----------|----------|-------|--------|
-| **Plantings** | 🌱 | Cylinder | #22c55e | `threed_plantings` |
-| **Beds** | 🧑‍🌾 | Wide Box | #f59e0b | `threed_beds` |
-| **Characters** | 🧚 | Sphere | #8b5cf6 | `threed_characters` |
-| **FarmBots** | 🤖 | Cube | #64748b | `threed_farmbots` |
+| Type | 2D Emoji | 3D Component | Source Table | Visual Features |
+|------|----------|-------------|-------------|-----------------|
+| **Plantings** | 🌱 | `PlantMarker3D` | `threed_plantings` | 7 growth stage shapes, health ring, sway animation, species name, days-since-planted |
+| **Beds** | 🧑‍🌾 | `BedMarker3D` | `threed_beds` | Soil-type colored base, plant occupancy dots, sun exposure badge, hover glow ring |
+| **Characters** | 🧚 | `GardenCharacter` | `threed_characters` | GLTF/FBX model loading, animation state machine, movement types, emotes, interaction |
+| **FarmBots** | 🤖 | `FarmBotMarker3D` | `threed_farmbots` | Status ring animation, battery bar, floating hover, device ID, last-seen time |
 
 ### Traffic Incident Severity
 
@@ -460,24 +428,6 @@ bun run src/lib/scripts/seed-initial-data.ts
 
 ---
 
-## 🚀 v0.15.2-alpha "Traffic Module + 2D Map Improvements"
-
-### What's New
-
-| Feature | Status | Description |
-|---------|--------|-------------|
-| **Traffic GPS Column Normalization** | ✅ Complete | `filteredIncidents` normalizes `latitude`/`longitude` (DB columns) to `lat`/`lng` (code convention) — all 20 traffic incidents now render on 2D map |
-| **Auto-Refresh Polling** | ✅ Complete | Dashboard silently refetches `/api/map/threed?projectId=X` every 60s; data updates without loading spinner or toast disruption |
-
-### Files Modified
-
-| File | Change |
-|------|--------|
-| `src/components/map/UnifiedMapView.tsx` | Added GPS column normalization in `filteredIncidents` useMemo — maps `latitude`→`lat`, `longitude`→`lng` |
-| `src/app/dashboard/map/page.tsx` | Added 60-second auto-refresh polling effect with silent failure handling |
-
----
-
 ## 📋 Complete Version History
 
 | Version | Date | Key Changes |
@@ -505,28 +455,56 @@ bun run src/lib/scripts/seed-initial-data.ts
 | v0.14.0 | 2026-08-04 | "Surface Bridge + Minor Fixes" — Dashboard Homepage, Surface Switcher, Skeleton Loaders, Admin Deep-Links |
 | v0.15.0 | 2026-08-04 | "Character Animations" — Animation State Machine, Interact on Click, Follow Movement, Sound Effects |
 | v0.15.1a | 2026-08-04 | "Dashboard ThreeD Garden" — ThreeDGarden wired to dashboard, 4 marker components fixed, WeatherEffects rewrite |
-| **v0.15.2-alpha** | **2026-08-05** | **"Traffic Module + 2D Map Improvements" — GPS column normalization, auto-refresh polling** |
+| v0.15.2-alpha | 2026-08-05 | "Traffic Module + 2D Map Improvements" — GPS column normalization, auto-refresh polling |
+| **v0.15.3** | **2026-08-06** | **"Dashboard ThreeD Garden — 100% Width + Rich Markers + UX + Page Unification"** |
 
 ---
 
-## 🚀 Next Steps
+## 🚀 Latest Release — v0.15.3 "ThreeDScene in Dashboard Map and Dashboard ThreeD Garden"
 
-### v0.15.2b: Dashboard ThreeD Garden → Merge with UnifiedMapView ThreeDScene
+### What's New
 
-Currently the Dashboard has two separate ThreeD experiences:
-- **ThreeD Garden** (`/dashboard/threed/garden`) — standalone 3D garden with beds + plantings via `ThreeDGarden.tsx`
-- **Unified Map 3D Scene** (`/dashboard/map` in 3D mode) — runtime markers from all sub-modules via `ThreeDScene.tsx`
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **100% Width UI** | ✅ Complete | All 12 front-end pages converted from `max-w-7xl`/`container mx-auto` to `w-full` |
+| **API Position Normalization** | ✅ Complete | `/api/map/threed` normalizes `positionX/Y/Z` and `latitude/longitude` from string→Number; adds `_hasPosition` metadata |
+| **Page-Level Position Normalization** | ✅ Complete | `normalizePositions()` function in map and garden pages ensures all GPS and 3D coordinates are Number type |
+| **Accurate Runtime Markers** | ✅ Complete | NaN-tolerant position extraction; 3D markers use raw DB positions (not spread); singular/plural type normalization; stable React keys |
+| **Rich 3D Marker Components** | ✅ Complete | `BedMarker3D` (soil colors, dimensions, plant dots, sun badge), `PlantMarker3D` (7 growth stages, health ring, sway animation), `FarmBotMarker3D` (battery bar, status animations) |
+| **3D Scene Visual Enhancements** | ✅ Complete | Fog, ACES tone mapping, hemisphere lighting, shadow-catching ground, PulseRing animation, stats overlay bar |
+| **Keyboard Shortcuts** | ✅ Complete | ESC=deselect, R=reset view, G=toggle grid, F=focus selected |
+| **Left-Click Ground Deselect** | ✅ Complete | Clicking empty ground deselects current marker |
+| **Garden Page Unification** | ✅ Complete | `/dashboard/threed/garden` now uses same `UnifiedMapView→ThreeDScene` engine, supports all 4 marker types |
 
-**Goal:** Merge `ThreeDGarden.tsx` rendering into the `UnifiedMapView → ThreeDScene` pipeline so:
-1. The garden view (beds, plantings, characters, ground plane, weather effects) renders inside the same ThreeJS Canvas as runtime markers and traffic incidents
-2. Project-scoped API data is shared between both experiences
-3. A single "3D" tab on the Dashboard hosts all ThreeD visualization
+### Architecture — Single 3D Engine
 
-**Key files:**
-- `src/components/threed/ThreeDGarden.tsx` — garden scene to extract/merge
-- `src/components/map/ThreeDScene.tsx` — unified 3D scene to extend
-- `src/components/map/UnifiedMapView.tsx` — marker pipeline to integrate garden data
-- `src/app/dashboard/map/page.tsx` — dashboard page hosting both views
+```
+map/page.tsx ────┐
+                 ├── UnifiedMapView ── ThreeDScene ── Rich Markers
+garden/page.tsx ─┘                    (fog, shadows, pulse rings,
+                                       keyboard shortcuts, stats overlay)
+```
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/app/dashboard/layout.tsx` | `max-w-7xl` → `w-full` |
+| `src/app/page.tsx` | 8× `container mx-auto` → `w-full` |
+| `src/app/dashboard/traffic/caltrans/closure/[id]/page.tsx` | 2× `max-w-7xl` → `w-full` |
+| `src/components/music/MusicContent.tsx` | `container mx-auto` → `w-full` |
+| `src/components/music/NowPlayingBar.tsx` | 2× `container max-w-7xl` → `w-full` |
+| `src/app/admin/settings/page.tsx` | `container mx-auto` → `w-full` |
+| `src/app/admin/music/tracks/[id]/page.tsx` | `container mx-auto` → `w-full` |
+| `src/app/admin/threed/*/page.tsx` | 5 files: `container mx-auto` → `w-full` |
+| `src/app/api/map/threed/route.ts` | Position normalization + `_hasPosition` metadata |
+| `src/app/dashboard/map/page.tsx` | `normalizePositions()` pre-processing |
+| `src/app/dashboard/threed/garden/page.tsx` | Complete rewrite — UnifiedMapView integration |
+| `src/components/map/UnifiedMapView.tsx` | NaN-tolerant position extraction; raw positions for 3D |
+| `src/components/map/ThreeDScene.tsx` | Type normalization, fog, tone mapping, hemisphere light, shadow ground, PulseRing, keyboard shortcuts, ground click deselect |
+| `src/components/threed/markers/BedMarker3D.tsx` | Complete rewrite — soil colors, dimensions, plant dots, sun badge, hover ring |
+| `src/components/threed/markers/PlantMarker3D.tsx` | Complete rewrite — 7 growth stages, health ring, sway, days-since-planted |
+| `src/components/threed/markers/FarmBotMarker3D.tsx` | Complete rewrite — battery bar, status animations, last-seen time |
 
 ---
 
@@ -551,7 +529,7 @@ Currently the Dashboard has two separate ThreeD experiences:
 | Music Poller | ✅ Working |
 | Music Player | ✅ Working |
 | 3D Garden | ✅ Rendering |
-| ThreeD Garden (Dashboard) | ✅ Rendering |
+| Rich 3D Markers | ✅ Working |
 | Runtime Markers | ✅ Working |
 | View Presets | ✅ Working |
 | Rich Popups | ✅ Working |
@@ -559,86 +537,6 @@ Currently the Dashboard has two separate ThreeD experiences:
 | Camera Focus | ✅ Working |
 | Combined View | ✅ Working |
 | Character Animations | ✅ Working |
+| Keyboard Shortcuts | ✅ Working |
+| Garden Page (Unified) | ✅ Working |
 | Database | ✅ Connected |
-
----
-
-## 🚀 Latest Release — v0.15.1a "Dashboard ThreeD Garden"
-
-### What's New
-
-| Feature | Status | Description |
-|---------|--------|-------------|
-| **ThreeDGarden Wired to Dashboard** | ✅ Complete | `/dashboard/threed/garden` renders full 3D garden with beds + plantings |
-| **Project-Scoped API Fallback** | ✅ Complete | Uses `/api/map/threed?projectId=X` when project selected |
-| **4 Marker Components Fixed** | ✅ Complete | `PlantMarker3D`, `BedMarker3D`, `FarmBotMarker3D`, `TrafficMarker3D` — suppressed `Text` drei API mismatch |
-| **WeatherEffects Fixed** | ✅ Complete | Replaced broken `<bufferAttribute>` JSX with native `THREE.BufferGeometry` + `<primitive>` |
-| **Dead Code Removed** | ✅ Complete | Deleted `src/components/threed/_test/` (6 broken files, 0 references) |
-| **Weather API Fix** | ✅ Complete | Corrected endpoint URL and added JSON parse crash guards |
-
-### Files Modified
-
-| File | Change |
-|------|--------|
-| `src/app/dashboard/threed/garden/page.tsx` | Dual-path data fetching; `px/py/pz` position parser; `Array.isArray()` guards |
-| `src/components/threed/ThreeDGarden.tsx` | Extended props to accept `beds`, `plantings`, `weather`, `onBedSelect`, `onPlantSelect` |
-| `src/components/threed/markers/*.tsx` | 4 files — `@ts-ignore` for `Text` component API mismatch |
-| `src/components/threed/effects/WeatherEffects.tsx` | Rewrote broken `<bufferAttribute>` → `THREE.BufferGeometry` + `<primitive>` |
-
-### Deferred Issues
-
-| File | Issues |
-|------|--------|
-| `GardenPlant.tsx` / `GLTFPlant.tsx` / `AnimatedFBXPlant.tsx` | Three.js module imports need `@types/three` updates |
-| `ModelPreview.tsx` | Implicit `any` bindings |
-| `FloatingUI.tsx` | Duplicates controls in `ThreeDScene.tsx` |
-
----
-
-## 🚀 Previous Release — v0.15.0 "Character Animations"
-
-### What's New
-
-| Feature | Status | Description |
-|---------|--------|-------------|
-| **Animation State Machine** | ✅ Complete | Characters switch animations based on movement state (idle/walk/fly/run) with 0.3s crossfade |
-| **Interact Animation on Click** | ✅ Complete | Click plays dance/bounce/spin/wave for 2s, then reverts to movement clip |
-| **Follow Movement Type** | ✅ Complete | `followTarget` supports following other characters by `characterId` |
-| **Sound Effects on Click** | ✅ Complete | `soundEffect` URL plays via `Audio` API on click |
-| **GardenCharacter in 3D Scene** | ✅ Complete | `ThreeDScene.tsx` renders animated `GardenCharacter` instead of colored spheres |
-| **Technical Debt Cleanup** | ✅ Complete | Fixed Next.js 16 `params: Promise` in farmbots routes; fixed empty seed modules; fixed `error: unknown` catch blocks |
-
-### Animation Pipeline
-
-| Layer | Component | Purpose |
-|-------|-----------|---------|
-| **Data** | `threed_characters` table | Stores `movementType`, `movementSpeed`, `movementRadius`, `patrolWaypoints`, `followTarget`, `animations[]`, `defaultAnimation`, `soundEffect` |
-| **Runtime Marker Generation** | `UnifiedMapView.tsx` | Extracts character rows from API data, creates `RuntimeMarker` with full `data: { ...item }` |
-| **3D Scene Rendering** | `ThreeDScene.tsx` | For `type === 'character'`, renders `<GardenCharacter character={marker.data} />` |
-| **Model + Animation** | `GardenCharacter.tsx` | Loads GLTF/FBX model, creates `AnimationMixer`, runs movement + animation state machine |
-
-### Movement → Animation Mapping
-
-| Movement Type | Stationary | Moving |
-|--------------|------------|--------|
-| `stationary` | idle / sway / float | — |
-| `wander` | idle | walk / fly / run |
-| `patrol` | idle at waypoint | walk |
-| `circle` | — | fly / walk |
-| `follow` | idle | walk / fly / run |
-| `teleport` | — | spin / float |
-| **Interact (on click)** | — | dance / bounce / spin / wave |
-
-### Files Modified
-
-| File | Change |
-|------|--------|
-| `src/components/threed/shared/GardenCharacter.tsx` | Complete rewrite — animation state machine with crossfade, follow movement, interact animations, sound effects |
-| `src/components/map/ThreeDScene.tsx` | Import `GardenCharacter`; render characters as animated components |
-| `src/app/api/threed/farmbots/[id]/water/route.ts` | `params` → `Promise<{ id: string }>` |
-| `src/app/api/threed/farmbots/[id]/water/move/route.ts` | Same `params: Promise` fix |
-| `src/app/api/threed/models/files/route.ts` | `error.message` → `String(error)` |
-| `src/app/api/threed/models/files/[fileId]/route.ts` | `error.message` → `String(error)` |
-| `src/app/api/traffic/bay-area-511/seed/route.ts` | Empty file → stub GET endpoint |
-| `src/app/api/traffic/chp-cases/seed/route.ts` | Empty file → stub GET endpoint |
-| `src/components/admin/projects/ProjectAssetManager.tsx` | Replaced "Markers" asset type with "Plantings" |

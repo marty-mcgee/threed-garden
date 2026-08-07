@@ -88,6 +88,33 @@ function ControlsReadyNotifier({ controlsRef, onReady }: { controlsRef: any; onR
   return null;
 }
 
+// ✅ v0.15.3: Keyboard shortcuts for canvas interaction
+function SceneKeyboardControls({
+  onEscape, onResetView, onToggleGrid, onFocusSelected,
+  hasSelected,
+}: {
+  onEscape: () => void;
+  onResetView: () => void;
+  onToggleGrid: () => void;
+  onFocusSelected: () => void;
+  hasSelected: boolean;
+}) {
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      switch (e.key.toLowerCase()) {
+        case 'escape': e.preventDefault(); onEscape(); break;
+        case 'r': if (!e.ctrlKey && !e.metaKey) { e.preventDefault(); onResetView(); } break;
+        case 'g': if (!e.ctrlKey && !e.metaKey) { e.preventDefault(); onToggleGrid(); } break;
+        case 'f': if (!e.ctrlKey && !e.metaKey && hasSelected) { e.preventDefault(); onFocusSelected(); } break;
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onEscape, onResetView, onToggleGrid, onFocusSelected, hasSelected]);
+  return null;
+}
+
 // ✅ Camera Focus Animation Component
 function CameraFocusAnimation({ target, controlsRef, onComplete }: any) {
   const { camera } = useThree();
@@ -357,8 +384,8 @@ function PulseRing({ position, color, size = 1.0 }: { position: [number, number,
   );
 }
 
-// Interactive Ground with shadow catching
-function InteractiveGround({ size, centerX, centerZ, onRightClick }: any) {
+// Interactive Ground with shadow catching + left-click deselect
+function InteractiveGround({ size, centerX, centerZ, onRightClick, onClick }: any) {
   return (
     <group>
       {/* Shadow catching plane (transparent, catches shadows) */}
@@ -385,6 +412,15 @@ function InteractiveGround({ size, centerX, centerZ, onRightClick }: any) {
         }}
       >
         <meshStandardMaterial color="#2d5a27" roughness={0.9} metalness={0} />
+      </Plane>
+      {/* ✅ v0.15.3: Invisible click target for left-click deselect */}
+      <Plane
+        args={[size, size]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[centerX, -0.03, centerZ]}
+        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+      >
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </Plane>
     </group>
   );
@@ -1161,7 +1197,16 @@ export function ThreeDScene({
           </GizmoHelper>
         )}
 
-        <InteractiveGround size={groundSize} centerX={centerX} centerZ={centerZ} onRightClick={handleGroundRightClick} />
+        {/* ✅ v0.15.3: Keyboard shortcuts for camera navigation */}
+        <SceneKeyboardControls
+          onEscape={() => { clearDetails(); setIsAnimating(false); setFocusTarget(null); }}
+          onResetView={() => zoomToPosition(centerX, centerZ)}
+          onToggleGrid={() => setShowGrid(!showGrid)}
+          onFocusSelected={() => { if (selectedDetails?.position) focusOnMarker(selectedDetails); }}
+          hasSelected={!!selectedDetails}
+        />
+
+        <InteractiveGround size={groundSize} centerX={centerX} centerZ={centerZ} onRightClick={handleGroundRightClick} onClick={clearDetails} />
 
         {showGrid && (
           <Grid
