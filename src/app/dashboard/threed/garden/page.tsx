@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import { useToast } from '@/components/ui/toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Box, Sprout, Sun, Droplets, Thermometer, MapPin, AlertCircle, Loader2, FolderOpen } from 'lucide-react';
+import { RefreshCw, Box, Sprout, Sun, Droplets, Thermometer, MapPin, AlertCircle, Loader2, FolderOpen, X } from 'lucide-react';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import { MapLayerConfig, MapViewMode, UnifiedMapData } from '@/lib/types/map';
 
@@ -316,6 +316,23 @@ export default function Garden3DPage() {
         </CardContent>
       </Card>
       
+      {/* Selected Marker Details */}
+      {selectedMarker && (
+        <Card className="border-primary/20 bg-black/80 backdrop-blur-sm text-white">
+          <CardContent className="p-3">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="text-sm font-medium truncate">{selectedMarker.name}</div>
+                <div className="text-[10px] text-white/50 capitalize">{selectedMarker.type}</div>
+              </div>
+              <button onClick={() => setSelectedMarker(null)} className="text-white/40 hover:text-white/80">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Navigation */}
       <div className="flex justify-center gap-2">
         <Button

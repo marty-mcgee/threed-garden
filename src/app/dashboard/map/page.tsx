@@ -206,15 +206,47 @@ function DetailsCard({ selected, onClose }: { selected: any; onClose: () => void
         </div>
       )}
 
-      {/* Marker details */}
-      {isMarker && selected.metadata?.data && (
+      {/* Marker details — rich type-specific metadata */}
+      {isMarker && (
         <div className="mt-2 space-y-1 text-[11px] text-white/70">
-          {selected.metadata.data.plantedDate && <div>📅 Planted: {new Date(selected.metadata.data.plantedDate).toLocaleDateString()}</div>}
-          {selected.metadata.data.growthStage && <div>📈 Growth: {selected.metadata.data.growthStage}</div>}
-          {selected.metadata.data.soilType && <div>🟫 Soil: {selected.metadata.data.soilType}</div>}
-          {selected.metadata.data.deviceId && <div>⚡ {selected.metadata.data.deviceId}</div>}
-          {selected.metadata.data.batteryLevel != null && <div>🔋 Battery: {selected.metadata.data.batteryLevel}%</div>}
-          {selected.metadata.data.notes && <div className="text-white/50">{selected.metadata.data.notes?.slice(0, 80)}</div>}
+          {/* Common: access DB fields from selected.data (RuntimeMarker) or selected */}
+          {(() => {
+            const d = selected.data || selected.metadata?.data || {};
+            const type = selected.type || '';
+            const isPlanting = type === 'plantings' || type === 'planting';
+            const isBed = type === 'beds' || type === 'bed';
+            const isFarmbot = type === 'farmbots' || type === 'farmbot';
+            const isCharacter = type === 'characters' || type === 'character';
+            const details: string[] = [];
+            
+            if (isPlanting) {
+              if (d.plantName || d.commonName) details.push(`🌱 ${d.plantName || d.commonName}`);
+              if (d.growthStage) details.push(`📈 ${d.growthStage}`);
+              if (d.health != null) details.push(`❤️ Health: ${d.health}`);
+              if (d.quantity) details.push(`🔢 Qty: ${d.quantity}`);
+              if (d.plantedDate) details.push(`📅 Planted: ${new Date(d.plantedDate).toLocaleDateString()}`);
+            }
+            if (isBed) {
+              if (d.widthFeet || d.width) details.push(`📐 ${d.widthFeet || d.width}ft × ${d.lengthFeet || d.length || d.depth}ft`);
+              if (d.soilType) details.push(`🟫 ${d.soilType}`);
+              if (d.sunExposure) details.push(`☀️ ${d.sunExposure}`);
+              if (d.status) details.push(`📊 ${d.status}`);
+            }
+            if (isFarmbot) {
+              if (d.status) details.push(`⚡ ${d.status}`);
+              if (d.batteryLevel != null) details.push(`🔋 ${d.batteryLevel}%`);
+              if (d.deviceId) details.push(`📱 ${d.deviceId}`);
+              if (d.lastSeen) details.push(`🕐 ${new Date(d.lastSeen).toLocaleString()}`);
+            }
+            if (isCharacter) {
+              if (d.type || d.characterType) details.push(`🧚 ${d.type || d.characterType}`);
+              if (d.defaultEmote) details.push(`😊 ${d.defaultEmote}`);
+              if (d.movementType) details.push(`🚶 ${d.movementType}`);
+            }
+            if (d.notes || d.description) details.push(d.notes || d.description);
+            
+            return details.length > 0 ? details.map((t, i) => <div key={i}>{t}</div>) : <div>No details</div>;
+          })()}
         </div>
       )}
 

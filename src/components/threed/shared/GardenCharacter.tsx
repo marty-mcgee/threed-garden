@@ -127,7 +127,11 @@ export function GardenCharacter({
 
   // Movement state
   const movementState = useRef({
-    targetPosition: new THREE.Vector3(character.positionX, character.positionY, character.positionZ),
+    targetPosition: new THREE.Vector3(
+      Number(character.positionX) || 0,
+      Number(character.positionY) || 0,
+      Number(character.positionZ) || 0
+    ),
     patrolIndex: 0,
     teleportTimer: 0,
     isMoving: false,
@@ -277,9 +281,9 @@ export function GardenCharacter({
           const angle = Math.random() * Math.PI * 2;
           const radius = Math.random() * character.movementRadius;
           movementState.current.targetPosition = new THREE.Vector3(
-            character.positionX + Math.cos(angle) * radius,
-            character.positionY,
-            character.positionZ + Math.sin(angle) * radius
+            (Number(character.positionX) || 0) + Math.cos(angle) * radius,
+            (Number(character.positionY) || 0),
+            (Number(character.positionZ) || 0) + Math.sin(angle) * radius
           );
         }
         break;
@@ -303,9 +307,9 @@ export function GardenCharacter({
           const time = Date.now() * 0.001 * character.movementSpeed;
           const radius = character.movementRadius;
           movementState.current.targetPosition = new THREE.Vector3(
-            character.positionX + Math.cos(time) * radius,
-            character.positionY,
-            character.positionZ + Math.sin(time) * radius
+            (Number(character.positionX) || 0) + Math.cos(time) * radius,
+            (Number(character.positionY) || 0),
+            (Number(character.positionZ) || 0) + Math.sin(time) * radius
           );
         }
         break;
@@ -446,7 +450,7 @@ export function GardenCharacter({
     const boxColor = colorMap[character.type] || '#FF69B4';
 
     return (
-      <group position={[character.positionX, character.positionY, character.positionZ]}>
+      <group position={[Number(character.positionX) || 0, Number(character.positionY) || 0, Number(character.positionZ) || 0]}>
         <mesh castShadow receiveShadow>
           <boxGeometry args={[0.8, 0.8, 0.8]} />
           <meshStandardMaterial color={boxColor} />
@@ -463,7 +467,7 @@ export function GardenCharacter({
   // Loading indicator
   if (loadingModel) {
     return (
-      <group position={[character.positionX, character.positionY, character.positionZ]}>
+      <group position={[Number(character.positionX) || 0, Number(character.positionY) || 0, Number(character.positionZ) || 0]}>
         <mesh>
           <boxGeometry args={[0.5, 0.5, 0.5]} />
           <meshStandardMaterial color="#888888" transparent opacity={0.5} />
@@ -475,7 +479,7 @@ export function GardenCharacter({
   return (
     <group
       ref={groupRef}
-      position={[character.positionX, character.positionY, character.positionZ]}
+      position={[Number(character.positionX) || 0, Number(character.positionY) || 0, Number(character.positionZ) || 0]}
       onClick={handleClick}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}

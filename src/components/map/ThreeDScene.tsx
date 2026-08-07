@@ -214,13 +214,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         onPointerLeave={() => setHovered(false)}
       >
         <GardenCharacter character={marker.data} />
-        {hovered && !isSelected && (
-          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
-            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
-              {marker.name} ({marker.type})
-            </div>
-          </Html>
-        )}
       </group>
     );
   }
@@ -229,17 +222,8 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
     return (
       <group
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
       >
         <BedMarker3D bed={{ ...marker.data, width: marker.data.widthFeet ?? marker.data.width ?? 4, depth: marker.data.lengthFeet ?? marker.data.length ?? marker.data.depth ?? 8, name: marker.name, soilType: marker.data.soilType, sunExposure: marker.data.sunExposure, plantingsCount: marker.data.plantingsCount ?? marker.data._plantingsCount ?? 0 }} position={pos} />
-        {hovered && !isSelected && (
-          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
-            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
-              {marker.name} ({marker.type})
-            </div>
-          </Html>
-        )}
       </group>
     );
   }
@@ -248,17 +232,8 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
     return (
       <group
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
       >
         <PlantMarker3D plant={{ ...marker.data, name: marker.name, species: marker.data.plantType || marker.data.commonName || marker.data.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data.plantedDate || marker.data.plantedAt || '', growthStage: marker.data.growthStage, health: marker.data.health, quantity: marker.data.quantity, status: marker.data.status }} position={pos} />
-        {hovered && !isSelected && (
-          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
-            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
-              {marker.name} ({marker.type})
-            </div>
-          </Html>
-        )}
       </group>
     );
   }
@@ -267,17 +242,8 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
     return (
       <group
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
       >
         <FarmBotMarker3D farmbot={{ ...marker.data, name: marker.name, status: marker.data.status, batteryLevel: marker.data.batteryLevel ?? marker.data.battery, firmwareVersion: marker.data.firmwareVersion, deviceId: marker.data.deviceId, lastSeen: marker.data.lastSeen }} position={pos} />
-        {hovered && !isSelected && (
-          <Html position={[marker.position.x, marker.position.y + 2, marker.position.z]} distanceFactor={10}>
-            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
-              {marker.name} ({marker.type})
-            </div>
-          </Html>
-        )}
       </group>
     );
   }
@@ -303,13 +269,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         {getShape()}
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={isSelected ? 0.4 : 0.05} roughness={0.4} metalness={0.2} />
       </mesh>
-      {hovered && !isSelected && (
-        <Html position={[marker.position.x, marker.position.y + size + 0.8, marker.position.z]} distanceFactor={10}>
-          <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
-            {marker.name} ({marker.type})
-          </div>
-        </Html>
-      )}
     </group>
   );
 }
@@ -839,214 +798,6 @@ export function ThreeDScene({
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Rich Details Box */}
-      {selectedDetails && (
-        <div className="absolute top-3 left-3 z-10 bg-black/80 backdrop-blur-sm text-white p-3 rounded-lg border border-white/10 max-w-[240px] shadow-xl">
-          <div className="flex items-start justify-between gap-2">
-            <div className="text-sm font-medium text-white truncate">{selectedDetails.name}</div>
-            <button onClick={clearDetails} className="text-white/40 hover:text-white/80 transition-colors flex-shrink-0">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 capitalize">
-              {selectedDetails.type}
-            </span>
-            {selectedDetails.metadata?.status && (
-              <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                selectedDetails.metadata.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                selectedDetails.metadata.status === 'inactive' ? 'bg-red-500/20 text-red-400' :
-                'bg-yellow-500/20 text-yellow-400'
-              }`}>
-                {selectedDetails.metadata.status}
-              </span>
-            )}
-          </div>
-          
-          {selectedDetails.position && (
-            <div className="text-[10px] text-white/40 mt-1.5 font-mono">
-              📍 {selectedDetails.position.x.toFixed(2)}, {selectedDetails.position.z.toFixed(2)}
-            </div>
-          )}
-          
-          <div className="mt-2 space-y-1 text-[11px] text-white/70">
-            {selectedDetails.type === 'plantings' && (
-              <>
-                {selectedDetails.metadata?.plantName && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🌱</span>
-                    <span>Plant: {selectedDetails.metadata.plantName}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.growthStage && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📈</span>
-                    <span>Growth: {selectedDetails.metadata.growthStage}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.health && (
-                  <div className="flex items-center gap-1.5">
-                    <span>❤️</span>
-                    <span>Health: {selectedDetails.metadata.health}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.quantity && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🔢</span>
-                    <span>Quantity: {selectedDetails.metadata.quantity}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.plantedDate && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📅</span>
-                    <span>Planted: {new Date(selectedDetails.metadata.plantedDate).toLocaleDateString()}</span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {selectedDetails.type === 'beds' && (
-              <>
-                {selectedDetails.metadata?.dimensions && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📐</span>
-                    <span>Size: {selectedDetails.metadata.dimensions}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.soilType && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🟫</span>
-                    <span>Soil: {selectedDetails.metadata.soilType}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.sunExposure && (
-                  <div className="flex items-center gap-1.5">
-                    <span>☀️</span>
-                    <span>Sun: {selectedDetails.metadata.sunExposure}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.color && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🎨</span>
-                    <span>Color: <span className="inline-block w-3 h-3 rounded-full align-middle" style={{ backgroundColor: selectedDetails.metadata.color }} /></span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {selectedDetails.type === 'farmbots' && (
-              <>
-                {selectedDetails.metadata?.status && (
-                  <div className="flex items-center gap-1.5">
-                    <span>⚡</span>
-                    <span>Status: {selectedDetails.metadata.status}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.batteryLevel !== undefined && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🔋</span>
-                    <span>Battery: {selectedDetails.metadata.batteryLevel}%</span>
-                    <div className="w-12 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full ${
-                          selectedDetails.metadata.batteryLevel > 50 ? 'bg-green-500' :
-                          selectedDetails.metadata.batteryLevel > 20 ? 'bg-yellow-500' :
-                          'bg-red-500'
-                        }`}
-                        style={{ width: `${selectedDetails.metadata.batteryLevel}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-                {selectedDetails.metadata?.firmwareVersion && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📦</span>
-                    <span>Firmware: v{selectedDetails.metadata.firmwareVersion}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.lastSeen && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🕐</span>
-                    <span>Last seen: {new Date(selectedDetails.metadata.lastSeen).toLocaleString()}</span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {selectedDetails.type === 'characters' && (
-              <>
-                {selectedDetails.metadata?.characterType && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🧚</span>
-                    <span>Type: {selectedDetails.metadata.characterType}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.emote && (
-                  <div className="flex items-center gap-1.5">
-                    <span>😊</span>
-                    <span>Emote: {selectedDetails.metadata.emote}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.movementType && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🚶</span>
-                    <span>Movement: {selectedDetails.metadata.movementType}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.interactable !== undefined && (
-                  <div className="flex items-center gap-1.5">
-                    <span>🤝</span>
-                    <span>Interactable: {selectedDetails.metadata.interactable ? 'Yes' : 'No'}</span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {selectedDetails.type === 'incident' && (
-              <>
-                {selectedDetails.metadata?.severity && (
-                  <div className="flex items-center gap-1.5">
-                    <span>⚠️</span>
-                    <span>Severity: {selectedDetails.metadata.severity}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.source && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📡</span>
-                    <span>Source: {selectedDetails.metadata.source}</span>
-                  </div>
-                )}
-                {selectedDetails.metadata?.location && (
-                  <div className="flex items-center gap-1.5">
-                    <span>📍</span>
-                    <span>Location: {selectedDetails.metadata.location}</span>
-                  </div>
-                )}
-              </>
-            )}
-            
-            {!['plantings', 'beds', 'farmbots', 'characters', 'incident'].includes(selectedDetails.type) && (
-              <div className="text-[10px] text-white/40">
-                No additional details available for this type
-              </div>
-            )}
-          </div>
-          
-          <button
-            onClick={() => {
-              if (selectedDetails.position) {
-                focusOnMarker(selectedDetails);
-              }
-            }}
-            className="mt-2.5 text-[10px] text-white/50 hover:text-white/90 transition-colors flex items-center gap-1 border-t border-white/5 pt-2 w-full"
-          >
-            <Target className="w-3 h-3" />
-            Focus on this marker
-          </button>
         </div>
       )}
 
