@@ -188,12 +188,16 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
       >
         <GardenCharacter character={marker.data} />
         {isSelected && (
-          <mesh position={[marker.position.x, marker.position.y + 2, marker.position.z]}>
-            <ringGeometry args={[size * 1.5, size * 2, 32]} />
-            <meshBasicMaterial color="#8b5cf6" transparent opacity={0.5} side={THREE.DoubleSide} />
-          </mesh>
+          <PulseRing position={[marker.position.x, marker.position.y + 1, marker.position.z]} color="#8b5cf6" size={1.2} />
         )}
-        {hovered && (
+        {isSelected && (
+          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
+            <div className="bg-purple-500/20 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-purple-500/30">
+              {marker.name}
+            </div>
+          </Html>
+        )}
+        {hovered && !isSelected && (
           <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
             <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
               {marker.name} ({marker.type})
@@ -211,12 +215,23 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
       >
-        <BedMarker3D bed={{ ...marker.data, width: marker.data.widthFeet ?? 4, depth: marker.data.lengthFeet ?? 8, name: marker.name }} position={pos} />
+        <BedMarker3D bed={{ ...marker.data, width: marker.data.widthFeet ?? marker.data.width ?? 4, depth: marker.data.lengthFeet ?? marker.data.length ?? marker.data.depth ?? 8, name: marker.name, soilType: marker.data.soilType, sunExposure: marker.data.sunExposure, plantingsCount: marker.data.plantingsCount ?? marker.data._plantingsCount ?? 0 }} position={pos} />
         {isSelected && (
-          <mesh position={[marker.position.x, marker.position.y + 1.5, marker.position.z]}>
-            <ringGeometry args={[size * 1.5, size * 2, 32]} />
-            <meshBasicMaterial color="#f59e0b" transparent opacity={0.5} side={THREE.DoubleSide} />
-          </mesh>
+          <PulseRing position={[marker.position.x, marker.position.y + 0.5, marker.position.z]} color="#f59e0b" size={1.2} />
+        )}
+        {isSelected && (
+          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
+            <div className="bg-amber-500/20 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-amber-500/30">
+              {marker.name}
+            </div>
+          </Html>
+        )}
+        {hovered && !isSelected && (
+          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
+            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+              {marker.name} ({marker.type})
+            </div>
+          </Html>
         )}
       </group>
     );
@@ -229,12 +244,23 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
       >
-        <PlantMarker3D plant={{ ...marker.data, name: marker.name, species: marker.data.plantType || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data.plantedDate || '' }} position={pos} />
+        <PlantMarker3D plant={{ ...marker.data, name: marker.name, species: marker.data.plantType || marker.data.commonName || marker.data.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data.plantedDate || marker.data.plantedAt || '', growthStage: marker.data.growthStage, health: marker.data.health, quantity: marker.data.quantity, status: marker.data.status }} position={pos} />
         {isSelected && (
-          <mesh position={[marker.position.x, marker.position.y + 1.5, marker.position.z]}>
-            <ringGeometry args={[size * 1.5, size * 2, 32]} />
-            <meshBasicMaterial color="#22c55e" transparent opacity={0.5} side={THREE.DoubleSide} />
-          </mesh>
+          <PulseRing position={[marker.position.x, marker.position.y + 0.5, marker.position.z]} color="#22c55e" size={0.8} />
+        )}
+        {isSelected && (
+          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
+            <div className="bg-green-500/20 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-green-500/30">
+              {marker.name}
+            </div>
+          </Html>
+        )}
+        {hovered && !isSelected && (
+          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
+            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+              {marker.name} ({marker.type})
+            </div>
+          </Html>
         )}
       </group>
     );
@@ -247,12 +273,23 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
       >
-        <FarmBotMarker3D farmbot={{ ...marker.data, name: marker.name }} position={pos} />
+        <FarmBotMarker3D farmbot={{ ...marker.data, name: marker.name, status: marker.data.status, batteryLevel: marker.data.batteryLevel ?? marker.data.battery, firmwareVersion: marker.data.firmwareVersion, deviceId: marker.data.deviceId, lastSeen: marker.data.lastSeen }} position={pos} />
         {isSelected && (
-          <mesh position={[marker.position.x, marker.position.y + 1, marker.position.z]}>
-            <ringGeometry args={[size * 1.5, size * 2, 32]} />
-            <meshBasicMaterial color="#64748b" transparent opacity={0.5} side={THREE.DoubleSide} />
-          </mesh>
+          <PulseRing position={[marker.position.x, marker.position.y + 0.5, marker.position.z]} color="#64748b" size={1.0} />
+        )}
+        {isSelected && (
+          <Html position={[marker.position.x, marker.position.y + 2, marker.position.z]} distanceFactor={10}>
+            <div className="bg-slate-500/20 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-slate-500/30">
+              {marker.name}
+            </div>
+          </Html>
+        )}
+        {hovered && !isSelected && (
+          <Html position={[marker.position.x, marker.position.y + 2, marker.position.z]} distanceFactor={10}>
+            <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+              {marker.name} ({marker.type})
+            </div>
+          </Html>
         )}
       </group>
     );
@@ -280,13 +317,17 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={isSelected ? 0.4 : 0.05} roughness={0.4} metalness={0.2} />
       </mesh>
       {isSelected && (
-        <mesh>
-          <ringGeometry args={[size * 1.5, size * 2, 32]} />
-          <meshBasicMaterial color="#8b5cf6" transparent opacity={0.5} side={THREE.DoubleSide} />
-        </mesh>
+        <PulseRing position={[marker.position.x, marker.position.y + 0.3, marker.position.z]} color={color} size={0.8} />
       )}
-      {hovered && (
-        <Html position={[0, size + 0.5, 0]} distanceFactor={10}>
+      {isSelected && (
+        <Html position={[marker.position.x, marker.position.y + size + 0.8, marker.position.z]} distanceFactor={10}>
+          <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-white/20">
+            {marker.name}
+          </div>
+        </Html>
+      )}
+      {hovered && !isSelected && (
+        <Html position={[marker.position.x, marker.position.y + size + 0.8, marker.position.z]} distanceFactor={10}>
           <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
             {marker.name} ({marker.type})
           </div>
@@ -296,24 +337,56 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
   );
 }
 
-// Interactive Ground
+// Animated pulse ring for selected/hovered markers
+function PulseRing({ position, color, size = 1.0 }: { position: [number, number, number]; color: string; size?: number }) {
+  const ringRef = useRef<THREE.Mesh>(null);
+  useFrame((state) => {
+    if (ringRef.current) {
+      const t = state.clock.elapsedTime;
+      const scale = 1 + Math.sin(t * 3) * 0.25;
+      ringRef.current.scale.set(scale, scale, scale);
+      const mat = ringRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.3 + Math.sin(t * 2) * 0.2;
+    }
+  });
+  return (
+    <mesh ref={ringRef} position={position} rotation={[-Math.PI / 2, 0, 0]}>
+      <ringGeometry args={[size * 1.2, size * 1.6, 32]} />
+      <meshBasicMaterial color={color} transparent opacity={0.5} side={THREE.DoubleSide} depthWrite={false} />
+    </mesh>
+  );
+}
+
+// Interactive Ground with shadow catching
 function InteractiveGround({ size, centerX, centerZ, onRightClick }: any) {
   return (
-    <Plane
-      args={[size, size]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[centerX, -0.1, centerZ]}
-      receiveShadow
-      onContextMenu={(e) => {
-        e.stopPropagation();
-        const point = e.point;
-        if (point && onRightClick) {
-          onRightClick(point.x, point.z);
-        }
-      }}
-    >
-      <meshStandardMaterial color="#2d5a27" roughness={0.9} metalness={0} />
-    </Plane>
+    <group>
+      {/* Shadow catching plane (transparent, catches shadows) */}
+      <Plane
+        args={[size, size]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[centerX, -0.05, centerZ]}
+        receiveShadow
+      >
+        <shadowMaterial transparent opacity={0.35} />
+      </Plane>
+      {/* Visual ground plane */}
+      <Plane
+        args={[size, size]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[centerX, -0.1, centerZ]}
+        receiveShadow
+        onContextMenu={(e) => {
+          e.stopPropagation();
+          const point = e.point;
+          if (point && onRightClick) {
+            onRightClick(point.x, point.z);
+          }
+        }}
+      >
+        <meshStandardMaterial color="#2d5a27" roughness={0.9} metalness={0} />
+      </Plane>
+    </group>
   );
 }
 
@@ -419,10 +492,24 @@ export function ThreeDScene({
     fetchLayers();
   }, [projectId]);
 
-  // ✅ Filter markers by active layers
+  // ✅ Filter markers by active layers (normalize singular/plural type names)
+  const normalizeType = (type: string): string => {
+    // Ensure marker types match activeLayers keys (both singular → plural)
+    const singularMap: Record<string, string> = {
+      'planting': 'plantings',
+      'bed': 'beds',
+      'character': 'characters',
+      'farmbot': 'farmbots',
+      'layer': 'layers',
+      'marker': 'markers',
+    };
+    return singularMap[type] || type;
+  };
+
   const visibleMarkers = markers.filter((marker) => {
     if (activeLayers.size === 0) return false;
-    return activeLayers.has(marker.type);
+    const normalizedType = normalizeType(marker.type);
+    return activeLayers.has(marker.type) || activeLayers.has(normalizedType);
   });
 
   const allPositions = [
@@ -594,6 +681,27 @@ export function ThreeDScene({
 
   return (
     <div className="relative w-full" style={{ height, minHeight: '300px' }}>
+      {/* Stats overlay */}
+      {hasData && (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full border border-white/10 text-xs flex items-center gap-3">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-green-400" />
+            <span className="text-white/80">{visibleMarkers.length} markers</span>
+          </span>
+          <span className="w-px h-3 bg-white/20" />
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-blue-400" />
+            <span className="text-white/80">{incidents.length} incidents</span>
+          </span>
+          {isAnimating && (
+            <>
+              <span className="w-px h-3 bg-white/20" />
+              <span className="text-yellow-400 animate-pulse">🎯 Focusing...</span>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Controls Panel */}
       <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1">
         <button
@@ -1000,14 +1108,17 @@ export function ThreeDScene({
           position: [centerX + cameraDistance * 0.7, cameraDistance * 0.5, centerZ + cameraDistance * 0.7],
           fov: 45,
         }}
-        gl={{ antialias: true, alpha: false }}
+        gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
       >
+        {/* Scene fog for depth perception */}
+        <fog attach="fog" args={['#87CEEB', cameraDistance * 0.5, cameraDistance * 2.5]} />
         <color attach="background" args={['#87CEEB']} />
 
         <ambientLight intensity={0.6} />
-        <directionalLight position={[10, 15, 5]} intensity={1.2} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
+        <directionalLight position={[10, 15, 5]} intensity={1.2} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
         <directionalLight position={[-5, 5, -5]} intensity={0.3} />
+        <hemisphereLight args={['#87CEEB', '#2d5a27', 0.4]} />
 
         <Environment preset="city" />
 
@@ -1091,9 +1202,9 @@ export function ThreeDScene({
           />
         ))}
 
-        {visibleMarkers.map((marker, idx) => (
+        {visibleMarkers.map((marker) => (
           <ThreeDMarkerComponent
-            key={`marker_${idx}_${marker.type}_${marker.id}`}
+            key={`threed-marker-${marker.type}-${marker.id}`}
             marker={marker}
             onClick={() => handleMarkerClick(marker)}
             isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}

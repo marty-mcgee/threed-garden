@@ -86,9 +86,10 @@ export function UnifiedMapView({
       const x = typeof rawX === 'string' ? parseFloat(rawX) : (rawX ?? 0);
       const y = typeof rawY === 'string' ? parseFloat(rawY) : (rawY ?? 0);
       const z = typeof rawZ === 'string' ? parseFloat(rawZ) : (rawZ ?? 0);
-      // Only skip if ALL three are zero — a single zero axis is valid (e.g. ground marker at y=0)
-      if (x === 0 && y === 0 && z === 0) return null;
-      return { x, y, z };
+      // Only skip if ALL three are NaN — zero is a valid coordinate (e.g. ground marker at origin or y=0)
+      if (isNaN(x) && isNaN(y) && isNaN(z)) return null;
+      // Ensure NaN defaults to 0 for partially missing axes
+      return { x: isNaN(x) ? 0 : x, y: isNaN(y) ? 0 : y, z: isNaN(z) ? 0 : z };
     };
 
     const extractName = (item: any, type: string) => {
@@ -340,15 +341,15 @@ export function UnifiedMapView({
     return result;
   }, [spreadMarkers, gpsCenter]);
 
-  // ✅ 3D scene: ThreeD markers use raw (spread) positions; incidents get a rough transform
-  const threeDMarkers = useMemo(() => spreadMarkers
+  // ✅ 3D scene: use raw filteredMarkers for accurate 3D positions (spreadMarkers is for 2D leaflet overlap prevention)
+  const threeDMarkers = useMemo(() => filteredMarkers
     .filter((m) => m.position && m.position.x !== undefined)
     .map((m) => ({
       id: m.id, name: m.name, type: m.type,
       position: m.position, color: m.color,
       icon: m.icon, label: m.label,
       metadata: m.metadata, data: m.data,
-    })), [spreadMarkers]);
+    })), [filteredMarkers]);
 
   const render2DView = () => (
     <LeafletMap

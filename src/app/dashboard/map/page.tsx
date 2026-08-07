@@ -476,32 +476,56 @@ function UnifiedMapPageInner() {
           const trafficTotal = Object.values(trafficRaw).reduce((sum, arr) => sum + arr.length, 0);
           const threedTotal = Object.values(threedRaw).reduce((sum, arr) => sum + arr.length, 0);
 
+          // ✅ Pre-process: normalize position values (DB returns decimals as strings)
+          const normalizePositions = (records: Record<string, any[]>) => {
+            const normalized: Record<string, any[]> = {};
+            for (const [key, items] of Object.entries(records)) {
+              normalized[key] = items.map((item: any) => {
+                const n = { ...item };
+                // Normalize traffic GPS columns
+                if ('latitude' in n && n.latitude !== null) n.latitude = Number(n.latitude);
+                if ('longitude' in n && n.longitude !== null) n.longitude = Number(n.longitude);
+                if ('lat' in n && n.lat !== null) n.lat = Number(n.lat);
+                if ('lng' in n && n.lng !== null) n.lng = Number(n.lng);
+                // Normalize 3D position columns
+                if ('positionX' in n && n.positionX !== null) n.positionX = Number(n.positionX);
+                if ('positionY' in n && n.positionY !== null) n.positionY = Number(n.positionY);
+                if ('positionZ' in n && n.positionZ !== null) n.positionZ = Number(n.positionZ);
+                return n;
+              });
+            }
+            return normalized;
+          };
+
+          const normalizedTraffic = normalizePositions(trafficRaw);
+          const normalizedThreed = normalizePositions(threedRaw);
+
           const unifiedData: UnifiedMapData = {
             traffic: {
-              raw: trafficRaw,
+              raw: normalizedTraffic,
               total: trafficTotal,
-              chpCadCount: trafficRaw.chpCadIncidents.length,
-              chpCasesCount: trafficRaw.chpCases.length,
-              chpCentersCount: trafficRaw.chpCenters.length,
-              caltransClosuresCount: trafficRaw.caltransLaneClosures.length,
-              caltransCctvCount: trafficRaw.caltransCctvCameras.length,
-              caltransDistrictsCount: trafficRaw.caltransDistricts.length,
-              bayArea511Count: trafficRaw.bayArea511Events.length,
-              calfireIncidentsCount: trafficRaw.calfireIncidents.length,
+              chpCadCount: normalizedTraffic.chpCadIncidents.length,
+              chpCasesCount: normalizedTraffic.chpCases.length,
+              chpCentersCount: normalizedTraffic.chpCenters.length,
+              caltransClosuresCount: normalizedTraffic.caltransLaneClosures.length,
+              caltransCctvCount: normalizedTraffic.caltransCctvCameras.length,
+              caltransDistrictsCount: normalizedTraffic.caltransDistricts.length,
+              bayArea511Count: normalizedTraffic.bayArea511Events.length,
+              calfireIncidentsCount: normalizedTraffic.calfireIncidents.length,
             },
             threed: {
-              raw: threedRaw,
+              raw: normalizedThreed,
               total: threedTotal,
-              plantsCount: threedRaw.plants.length,
-              bedsCount: threedRaw.beds.length,
-              charactersCount: threedRaw.characters.length,
+              plantsCount: normalizedThreed.plants.length,
+              bedsCount: normalizedThreed.beds.length,
+              charactersCount: normalizedThreed.characters.length,
               markersCount: 0,
-              layersCount: threedRaw.layers.length,
-              farmbotsCount: threedRaw.farmbots.length,
-              plantingsCount: threedRaw.plantings.length,
-              tasksCount: threedRaw.tasks.length,
-              harvestsCount: threedRaw.harvests.length,
-              weatherLogsCount: threedRaw.weatherLogs.length,
+              layersCount: normalizedThreed.layers.length,
+              farmbotsCount: normalizedThreed.farmbots.length,
+              plantingsCount: normalizedThreed.plantings.length,
+              tasksCount: normalizedThreed.tasks.length,
+              harvestsCount: normalizedThreed.harvests.length,
+              weatherLogsCount: normalizedThreed.weatherLogs.length,
               layers: [],
             },
           };

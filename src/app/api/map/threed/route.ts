@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
 
     const counts: Record<string, number> = {};
 
-    // ✅ Helper function to fetch items
+    // ✅ Helper function to fetch items and sanitize/normalize position columns
     const fetchItems = async (table: any, ids: number[], orderField: any, tableName: string) => {
       if (ids.length === 0) {
         return [];
@@ -143,9 +143,42 @@ export async function GET(request: NextRequest) {
           query = query.where(eq(table.isActive, true));
         }
 
-        return await query
+        const rawItems = await query
           .orderBy(desc(orderField))
           .limit(limit);
+
+        // ✅ Pre-process: normalize position columns and add metadata fields
+        return rawItems.map((item: any) => {
+          const processed = { ...item };
+
+          // Normalize positionX/Y/Z from string to number (DB returns decimal as string)
+          if ('positionX' in processed && processed.positionX !== null) {
+            processed.positionX = Number(processed.positionX);
+          }
+          if ('positionY' in processed && processed.positionY !== null) {
+            processed.positionY = Number(processed.positionY);
+          }
+          if ('positionZ' in processed && processed.positionZ !== null) {
+            processed.positionZ = Number(processed.positionZ);
+          }
+
+          // Normalize lat/lng for traffic records
+          if ('latitude' in processed && processed.latitude !== null) {
+            processed.latitude = Number(processed.latitude);
+          }
+          if ('longitude' in processed && processed.longitude !== null) {
+            processed.longitude = Number(processed.longitude);
+          }
+
+          // ✅ Add position validation metadata
+          processed._hasPosition = !(
+            (processed.positionX === null || processed.positionX === undefined || isNaN(processed.positionX)) &&
+            (processed.positionY === null || processed.positionY === undefined || isNaN(processed.positionY)) &&
+            (processed.positionZ === null || processed.positionZ === undefined || isNaN(processed.positionZ))
+          );
+
+          return processed;
+        });
       } catch (err) {
         console.error(`❌ Error fetching from ${tableName}:`, err);
         return [];
