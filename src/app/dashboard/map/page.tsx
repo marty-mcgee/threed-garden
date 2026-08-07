@@ -357,8 +357,10 @@ function UnifiedMapPageInner() {
   const [isStale, setIsStale] = useState(false);
   
   // ✅ Default to 2D view (for testing initial loading state)
-  const [viewMode, setViewMode] = useState<MapViewMode>('2d');
-  
+  // const [viewMode, setViewMode] = useState<MapViewMode>('2d');
+  // ✅ Default to 3D view (for testing initial loading state)
+  const [viewMode, setViewMode] = useState<MapViewMode>('3d');
+
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
@@ -651,20 +653,20 @@ function UnifiedMapPageInner() {
             <div className="h-8 w-20 bg-muted rounded-lg" />
           </div>
         </div>
-        <div className="border rounded-lg p-3 animate-pulse">
+        {/* <div className="border rounded-lg p-3 animate-pulse">
           <div className="flex gap-2">
             <div className="h-6 w-16 bg-muted rounded-full" />
             <div className="h-6 w-16 bg-muted rounded-full" />
             <div className="h-6 w-16 bg-muted rounded-full" />
           </div>
-        </div>
-        <div className="border rounded-lg p-3 animate-pulse">
+        </div> */}
+        {/* <div className="border rounded-lg p-3 animate-pulse">
           <div className="flex gap-2">
             <div className="h-6 w-20 bg-muted rounded-full" />
             <div className="h-6 w-20 bg-muted rounded-full" />
             <div className="h-6 w-20 bg-muted rounded-full" />
           </div>
-        </div>
+        </div> */}
         <div className="border rounded-lg animate-pulse">
           <div className="h-[650px] bg-muted/30 flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
