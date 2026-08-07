@@ -343,7 +343,7 @@ export default function MusicContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-      <div className="container mx-auto px-4 py-4">
+      <div className="w-full px-4 py-4">
         <h1 className="text-3xl font-bold mb-6">Music Library</h1>
 
         {loadingAlbum && (

@@ -5,7 +5,7 @@ import { ThreeDHarvestsCRUD } from '@/components/admin/threed/harvests/ThreeDHar
 
 export default function AdminThreeDHarvestsPage() {
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="w-full py-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Harvests</h1>

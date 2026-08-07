@@ -11,7 +11,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="w-full py-8">
       <SettingsManager initialSettings={settings} onSave={handleSave} />
     </div>
   );

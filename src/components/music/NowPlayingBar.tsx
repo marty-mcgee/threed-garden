@@ -244,7 +244,7 @@ export function NowPlayingBar({ className }: NowPlayingBarProps) {
           </div>
         )} */}
 
-        <div className="container max-w-7xl mx-auto px-4 h-20 flex items-center gap-4">
+        <div className="w-full px-4 h-20 flex items-center gap-4">
           {/* Track Info */}
           <div className="flex items-center gap-3 min-w-[180px]">
             <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded">
@@ -377,7 +377,7 @@ function QueuePanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="absolute bottom-full left-0 right-0 max-h-[60vh] overflow-y-auto border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-lg rounded-t-lg">
-      <div className="container max-w-7xl mx-auto p-4">
+      <div className="w-full p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Queue ({queue.length} tracks)</h3>
           <div className="flex items-center gap-2">

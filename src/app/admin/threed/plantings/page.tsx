@@ -5,7 +5,7 @@ import { ThreeDPlantingsCRUD } from '@/components/admin/threed/plantings/ThreeDP
 
 export default function AdminThreeDPlantingsPage() {
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="w-full py-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Plantings</h1>

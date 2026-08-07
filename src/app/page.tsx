@@ -234,7 +234,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-pink-600/50" />
         
         {/* Content */}
-        <div className="relative container mx-auto px-6 py-16 lg:py-20">
+        <div className="relative w-full px-6 py-16 lg:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center rounded-full border border-white/20 bg-white/20 px-3 py-1 text-sm backdrop-blur-sm mb-3">
               <a
@@ -298,7 +298,7 @@ export default function HomePage() {
 
       {/* Tech Stack */}
       <div className="py-6 bg-gray-50 dark:bg-gray-900/50">
-        <div className="container mx-auto px-6">
+        <div className="w-full px-6">
           <div className="text-center mb-4">
             <h2 className="text-lg font-semibold mb-1">Tech Stack</h2>
             <div className="w-8 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto" />
@@ -316,7 +316,7 @@ export default function HomePage() {
 
       {/* Features Grid */}
       <div className="py-8 bg-gray-50 dark:bg-gray-900/50">
-        <div className="container mx-auto px-6">
+        <div className="w-full px-6">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold mb-2">What I Build</h2>
             <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto" />
@@ -340,7 +340,7 @@ export default function HomePage() {
 
       {/* About + Stats */}
       <div className="py-8">
-        <div className="container mx-auto px-6">
+        <div className="w-full px-6">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-center md:text-left">
               <h2 className="text-2xl font-bold mb-2">About Music</h2>
@@ -363,7 +363,7 @@ export default function HomePage() {
       {/* Featured Music Player Section */}
       {selectedAlbum && currentTrack && !loading && (
         <div className="py-8 bg-gradient-to-r from-gray-900 to-gray-800">
-          <div className="container mx-auto px-6">
+          <div className="w-full px-6">
             <div className="text-center mb-4">
               <div className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/20 px-3 py-1 text-xs text-purple-300 mb-2">
                 🎵 Featured Release
@@ -396,7 +396,7 @@ export default function HomePage() {
       {/* Loading State */}
       {loading && (
         <div className="py-8 bg-gradient-to-r from-gray-900 to-gray-800">
-          <div className="container mx-auto px-6 text-center">
+          <div className="w-full px-6 text-center">
             <div className="animate-pulse">
               <div className="h-8 w-48 bg-gray-700 rounded mx-auto mb-2"></div>
               <div className="h-4 w-64 bg-gray-700 rounded mx-auto"></div>
@@ -407,7 +407,7 @@ export default function HomePage() {
 
       {/* Call to Action */}
       <div className="py-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="container mx-auto px-6 text-center">
+        <div className="w-full px-6 text-center">
           <h2 className="text-xl font-bold mb-2">Ready to Explore More?</h2>
           <p className="text-sm mb-4 text-blue-100">Dive into my full music library, explore the 3D garden, or check out live traffic.</p>
           <div className="flex flex-wrap gap-3 justify-center">
@@ -419,7 +419,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="py-4 border-t">
-        <div className="container mx-auto px-6 text-center text-xs text-muted-foreground">
+        <div className="w-full px-6 text-center text-xs text-muted-foreground">
           <p>© 2026 Marty McGee. Built with Next.js, Neon, and 💜.</p>
           <div className="flex justify-center gap-3 mt-1">
             <Link href="/dashboard/music" className="hover:text-foreground transition-colors">Music</Link>
