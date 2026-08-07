@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 6, 2026 @ 10:00pm PST
-**Current Version:** v0.15.5 "ThreeDScene 3D Marker Improvements: Unified Marker Overlays with Rich Data"
+**Last Updated:** August 6, 2026 @ 10:17pm PST
+**Current Version:** v0.15.6 "App Layout CSS tightened to maximum density"
 
 ---
 
@@ -224,32 +224,32 @@ API (/api/map/threed)
 | v0.15.2-alpha | 2026-08-05 | Traffic Module + 2D Map Improvements |
 | v0.15.3 | 2026-08-06 | 100% Width + Rich Markers + UX + Page Unification |
 | v0.15.4 | 2026-08-06 | Simplified Static 3D Markers — removed idle animations |
-| **v0.15.5** | **2026-08-06** | **Unified Marker Overlays with Rich Data** |
+| v0.15.5 | 2026-08-06 | Unified Marker Overlays with Rich Data |
+| **v0.15.6** | **2026-08-06** | **App Layout CSS tightened to maximum density** |
 
 ---
 
-## 🚀 Latest Release — v0.15.5 "Unified Marker Overlays with Rich Data"
+## 🚀 Latest Release — v0.15.6 "App Layout CSS tightened to maximum density"
 
 ### What's New
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Simplified Static Markers** | ✅ Complete | Removed idle animations from all marker components |
-| **Deduplicated Overlays** | ✅ Complete | Single DetailsCard per marker click; no wrapper tooltips |
-| **Rich Details Card** | ✅ Complete | Type-specific metadata from RuntimeMarker data |
-| **NaN Bug Fix** | ✅ Complete | GardenCharacter position guards prevent Three.js crash |
+| **Maximum Density Layout** | ✅ Complete | Header `py-0.5 px-0`, content `py-0.5 px-0`, footer `py-1 mt-1` |
+| **Admin Content Tightening** | ✅ Complete | Main content `p-1 md:p-2` |
+| **Map Page Spacing** | ✅ Complete | `space-y-1.5`, map `600px`, stat cards `p-1.5`, grid `gap-1.5` |
+| **Garden Page Spacing** | ✅ Complete | `space-y-3`, scene `580px`, stat cards `p-2`, grid `gap-2` |
+| **Three.js NaN Guard** | ✅ Complete | All position inputs to Three.js guarded with `Number() \|\| 0` |
 
-### Files Modified in v0.15.4-v0.15.5
+### Files Modified
 
 | File | Change |
 |------|--------|
-| `src/components/threed/markers/FarmBotMarker3D.tsx` | Removed animations, battery bar; simplified tooltip |
-| `src/components/threed/markers/PlantMarker3D.tsx` | Removed sway, health ring, foliage; simplified tooltip |
-| `src/components/threed/markers/BedMarker3D.tsx` | Removed plant dots, sun badge, glow ring; simplified tooltip |
-| `src/components/map/ThreeDScene.tsx` | Removed Rich Details Box, wrapper tooltips, PulseRing, stats bar |
-| `src/app/dashboard/map/page.tsx` | Enhanced DetailsCard with type-specific metadata |
-| `src/app/dashboard/threed/garden/page.tsx` | Added selected-marker info card |
-| `src/components/threed/shared/GardenCharacter.tsx` | NaN guard on position values |
+| `src/app/dashboard/layout.tsx` | Header/content/footer padding minimized; tagline shortened |
+| `src/components/admin/layout/AdminLayout.tsx` | Main content padding reduced |
+| `src/app/dashboard/map/page.tsx` | Section gaps, card padding, map height tightened |
+| `src/app/dashboard/threed/garden/page.tsx` | Section gaps, card padding, scene height tightened |
+| `src/components/map/ThreeDScene.tsx` | NaN guards on incident/marker positions, focus target, glow indicator |
 
 ---
 
