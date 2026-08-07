@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 6, 2026 @ 11:31pm PST
-**Current Version:** v0.15.8 "ThreeDScene Polish — Environment Backgrounds, Grass Texture, Icon Header"
+**Last Updated:** August 7, 2026 @ 12:10pm PST
+**Current Version:** v0.15.11 "Shadow-Friendly 3D Markers — All Assets Cast Shadows"
 
 ---
 
@@ -227,33 +227,38 @@ API (/api/map/threed)
 | v0.15.5 | 2026-08-06 | Unified Marker Overlays with Rich Data |
 | v0.15.6 | 2026-08-06 | App Layout CSS tightened to maximum density |
 | v0.15.7 | 2026-08-06 | Cleaned map page — removed stat cards, viewport-filling height, icon-only header |
-| **v0.15.8** | **2026-08-06** | **ThreeDScene Polish — Dynamic environments, grass texture, header cleanup** |
+| v0.15.8 | 2026-08-06 | ThreeDScene Polish — Dynamic environments, grass texture, header cleanup |
+| v0.15.9 | 2026-08-06 | Minor UX improvements |
+| v0.15.10 | 2026-08-07 | Shadow-friendly 3D Markers — castShadow on all FarmBot/Character meshes |
+| **v0.15.11** | **2026-08-07** | **Shadow Camera Fix — ShadowLight component with far=5000, all markers cast shadows** |
 
 ---
 
-## 🚀 Latest Release — v0.15.8 "ThreeDScene Polish"
+## 🚀 Latest Release — v0.15.11 "Shadow-Friendly 3D Markers"
 
 ### What's New
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Dynamic Environment Backgrounds** | ✅ Complete | 10 HDRI presets selectable from Controls dropdown (`night` default); persisted to localStorage |
-| **Procedural Grass Texture** | ✅ Complete | Canvas-generated grass texture on ground plane (no external files needed) |
-| **Icon-Only Header Buttons** | ✅ Complete | Combined/2D/3D/Filter/Refresh all compact 28×28px icons with tooltip titles |
-| **Fullscreen Button Removed** | ✅ Complete | Eliminated unnecessary button from header |
-| **Stat Cards Removed** | ✅ Complete | Traffic/3D/Active Layers cards deleted — count summaries in page header |
-| **Viewport-Filling Map** | ✅ Complete | Map height `calc(100vh - 190px)` adapts to any screen size |
-| **NaN Bug Fixes** | ✅ Complete | All geometry args guarded with fallback values in PlantMarker3D, BedMarker3D, bounds calculation |
+| **All 3D Markers Cast Shadows** | ✅ Complete | Every FarmBot, Character, Bed, Plant, and Incident now casts accurate shadows on the ground plane |
+| **Dynamic ShadowLight Component** | ✅ Complete | Imperative directional light with proper target direction and massive frustum depth (far=5000) |
+| **Shadow-Ready Loaded Models** | ✅ Complete | `GardenCharacter` traverses all GLTF/FBX meshes and sets `castShadow`/`receiveShadow` |
+| **Massive Shadow Camera Frustum** | ✅ Complete | 4096×4096 shadow map with ±300 unit orthographic frustum covering entire scene |
+| **FarmBot Mesh Inlining** | ✅ Complete | FarmBot meshes inlined directly in ThreeDMarkerComponent to eliminate component-shadow issues |
 
-### Files Modified in v0.15.7-v0.15.8
+### Root Cause — Why Only Some Markers Cast Shadows
+
+1. **Shadow camera `far` plane too small**: Hardcoded to 80, but the ±300 unit frustum needs depth of ~5000 to cover all objects
+2. **`GardenCharacter` loaded models**: GLTF/FBX meshes had no `castShadow`/`receiveShadow` set
+3. **`FarmBotMarker3D` component boundary**: JSX `castShadow` prop forwarding through r3f's reconciler was unreliable
+
+### Files Modified in v0.15.10-v0.15.11
 
 | File | Change |
 |------|--------|
-| `src/components/map/ThreeDScene.tsx` | Dynamic Environment with preset dropdown + localStorage, procedural grass texture, NaN guards on all position/geometry sources, removed border shadow experiment |
-| `src/app/dashboard/map/page.tsx` | Removed 3 stat cards, icon-only header buttons, removed fullscreen toggle, viewport-filling map height, unused import cleanup |
-| `src/components/threed/markers/PlantMarker3D.tsx` | NaN-guarded growth stage lookup and all geometry args |
-| `src/components/threed/markers/BedMarker3D.tsx` | `Number()` guards on width/depth resolution |
-| `src/components/threed/shared/GardenCharacter.tsx` | NaN guards on all 6 position usages |
+| `src/components/map/ThreeDScene.tsx` | Added `ShadowLight` component with imperative shadow camera config (far=5000, ±300 frustum); inlined FarmBot meshes in `ThreeDMarkerComponent` with `castShadow` on every `<mesh>`; dynamic React keys |
+| `src/components/threed/shared/GardenCharacter.tsx` | Added `loadedModel.traverse()` to enable `castShadow`/`receiveShadow` on all GLTF/FBX mesh children |
+| `src/components/threed/markers/FarmBotMarker3D.tsx` | Simplified to pure JSX with `castShadow` on every `<mesh>`; replaced Billboard+Text with Html |
 
 ---
 

@@ -178,7 +178,7 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
     >
-      <mesh>
+      <mesh castShadow>
         <sphereGeometry args={[size * (hovered ? 1.3 : 1), 16, 16]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={isSelected ? 0.5 : 0.2} roughness={0.3} metalness={0.1} />
       </mesh>
@@ -208,7 +208,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
   // ✅ v0.15.0/15.2: Render rich markers for types that have dedicated components
   const pos: [number, number, number] = [Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0];
 
-  if ((marker.type === 'character' || marker.type === 'characters') && marker.data) {
+  if (marker.type === 'character' || marker.type === 'characters') {
     return (
       <group
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
@@ -220,32 +220,82 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
     );
   }
 
-  if ((marker.type === 'bed' || marker.type === 'beds') && marker.data) {
+  if (marker.type === 'bed' || marker.type === 'beds') {
     return (
       <group
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
       >
-        <BedMarker3D bed={{ ...marker.data, width: marker.data.widthFeet ?? marker.data.width ?? 4, depth: marker.data.lengthFeet ?? marker.data.length ?? marker.data.depth ?? 8, name: marker.name, soilType: marker.data.soilType, sunExposure: marker.data.sunExposure, plantingsCount: marker.data.plantingsCount ?? marker.data._plantingsCount ?? 0 }} position={pos} />
+        <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={pos} />
       </group>
     );
   }
 
-  if ((marker.type === 'planting' || marker.type === 'plantings') && marker.data) {
+  if (marker.type === 'planting' || marker.type === 'plantings') {
     return (
       <group
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
       >
-        <PlantMarker3D plant={{ ...marker.data, name: marker.name, species: marker.data.plantType || marker.data.commonName || marker.data.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data.plantedDate || marker.data.plantedAt || '', growthStage: marker.data.growthStage, health: marker.data.health, quantity: marker.data.quantity, status: marker.data.status }} position={pos} />
+        <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: marker.data?.quantity, status: marker.data?.status }} position={pos} />
       </group>
     );
   }
 
-  if ((marker.type === 'farmbot' || marker.type === 'farmbots') && marker.data) {
+  if (marker.type === 'farmbot' || marker.type === 'farmbots') {
+    const fbData = marker.data || {};
+    const fbStatus = fbData.status?.toLowerCase() || 'offline';
+    const fbStatusColor = ({ online: '#22c55e', offline: '#ef4444', busy: '#f59e0b', maintenance: '#3b82f6', error: '#ef4444' } as Record<string, string>)[fbStatus] || '#6b7280';
+
     return (
       <group
+        position={pos}
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
       >
-        <FarmBotMarker3D farmbot={{ ...marker.data, name: marker.name, status: marker.data.status, batteryLevel: marker.data.batteryLevel ?? marker.data.battery, firmwareVersion: marker.data.firmwareVersion, deviceId: marker.data.deviceId, lastSeen: marker.data.lastSeen }} position={pos} />
+        <mesh position={[0, 0.15, 0]} castShadow>
+          <boxGeometry args={[0.6, 0.3, 0.4]} />
+          <meshStandardMaterial color="#4B5563" roughness={0.3} metalness={0.6} />
+        </mesh>
+        <mesh position={[0, 0.27, 0]} castShadow>
+          <boxGeometry args={[0.55, 0.04, 0.35]} />
+          <meshStandardMaterial color={fbStatusColor} roughness={0.2} metalness={0.4} />
+        </mesh>
+        <mesh position={[0, 0.4, 0.2]} castShadow>
+          <sphereGeometry args={[0.15, 12, 12]} />
+          <meshStandardMaterial color={fbStatusColor} roughness={0.2} metalness={0.3} />
+        </mesh>
+        <mesh position={[0, 0.52, 0.2]} castShadow>
+          <cylinderGeometry args={[0.02, 0.02, 0.12]} />
+          <meshStandardMaterial color="#9CA3AF" roughness={0.2} metalness={0.8} />
+        </mesh>
+        <mesh rotation={[0, 0, Math.PI / 2]} position={[-0.3, 0.05, 0.25]} castShadow>
+          <cylinderGeometry args={[0.08, 0.08, 0.04]} />
+          <meshStandardMaterial color="#1f2937" roughness={0.8} />
+        </mesh>
+        <mesh rotation={[0, 0, Math.PI / 2]} position={[0.3, 0.05, 0.25]} castShadow>
+          <cylinderGeometry args={[0.08, 0.08, 0.04]} />
+          <meshStandardMaterial color="#1f2937" roughness={0.8} />
+        </mesh>
+        <mesh rotation={[0, 0, Math.PI / 2]} position={[-0.3, 0.05, -0.25]} castShadow>
+          <cylinderGeometry args={[0.08, 0.08, 0.04]} />
+          <meshStandardMaterial color="#1f2937" roughness={0.8} />
+        </mesh>
+        <mesh rotation={[0, 0, Math.PI / 2]} position={[0.3, 0.05, -0.25]} castShadow>
+          <cylinderGeometry args={[0.08, 0.08, 0.04]} />
+          <meshStandardMaterial color="#1f2937" roughness={0.8} />
+        </mesh>
+        <Html position={[0, 0.65, 0]} center distanceFactor={8}>
+          <div className="text-[10px] text-gray-700 whitespace-nowrap bg-white/70 px-1 rounded pointer-events-none">
+            {marker.name}
+          </div>
+        </Html>
+        {hovered && (
+          <Html position={[0, 0.85, 0]} center distanceFactor={8}>
+            <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
+              {marker.name} — {fbStatus} — {Math.round(fbData.batteryLevel ?? fbData.battery ?? 50)}%
+            </div>
+          </Html>
+        )}
       </group>
     );
   }
@@ -323,6 +373,39 @@ function createGrassTexture(): THREE.Texture {
   texture.wrapT = THREE.RepeatWrapping;
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
+}
+
+// Shadow light with proper target direction and massive frustum depth
+function ShadowLight({ centerX, centerZ }: { centerX: number; centerZ: number }) {
+  const lightRef = useRef<THREE.DirectionalLight>(null);
+
+  useEffect(() => {
+    const light = lightRef.current;
+    if (!light) return;
+    // Point the light straight down at the scene center
+    light.target.position.set(centerX, 0, centerZ);
+    light.target.updateMatrixWorld();
+    // Set massive frustum
+    light.shadow.camera.left = -300;
+    light.shadow.camera.right = 300;
+    light.shadow.camera.top = 300;
+    light.shadow.camera.bottom = -300;
+    light.shadow.camera.near = 1;
+    light.shadow.camera.far = 5000;
+    light.shadow.camera.updateProjectionMatrix();
+    light.shadow.needsUpdate = true;
+  }, [centerX, centerZ]);
+
+  return (
+    <directionalLight
+      ref={lightRef}
+      position={[centerX, 30, centerZ]}
+      intensity={1.2}
+      castShadow
+      shadow-mapSize-width={4096}
+      shadow-mapSize-height={4096}
+    />
+  );
 }
 
 // Interactive Ground with shadow catching + left-click deselect + border shadow
@@ -908,7 +991,7 @@ export function ThreeDScene({
         <Environment preset={envPreset as any} background blur={0.8} />
 
         <ambientLight intensity={0.6} />
-        <directionalLight position={[10, 15, 5]} intensity={1.2} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
+        <ShadowLight centerX={centerX} centerZ={centerZ} />
         <directionalLight position={[-5, 5, -5]} intensity={0.3} />
         <hemisphereLight args={['#87CEEB', '#2d5a27', 0.4]} />
 
@@ -1001,9 +1084,9 @@ export function ThreeDScene({
           />
         ))}
 
-        {visibleMarkers.map((marker) => (
+        {visibleMarkers.map((marker, idx) => (
           <ThreeDMarkerComponent
-            key={`threed-marker-${marker.type}-${marker.id}`}
+            key={`threed-marker-${marker.type}-${marker.id ?? idx}`}
             marker={marker}
             onClick={() => handleMarkerClick(marker)}
             isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}

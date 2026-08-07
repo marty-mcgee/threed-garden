@@ -182,6 +182,14 @@ export function GardenCharacter({
         loadedModel.scale.setScalar(scale);
         loadedModel.rotation.y = (rotationY * Math.PI) / 180;
 
+        // Enable shadows on all meshes in the loaded model
+        loadedModel.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
         // Setup animation mixer
         const animations = (loadedModel as any).animations || [];
         if (animations.length > 0) {
