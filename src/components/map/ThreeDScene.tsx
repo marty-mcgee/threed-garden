@@ -420,6 +420,7 @@ export function ThreeDScene({
     }
     return 'night';
   });
+  const [showIncidents, setShowIncidents] = useState(false);
 
   useEffect(() => {
     setHasData(incidents.length > 0 || markers.length > 0);
@@ -515,8 +516,9 @@ export function ThreeDScene({
     return activeLayers.has(marker.type) || activeLayers.has(normalizedType);
   });
 
+  const visibleIncidents = showIncidents ? incidents : [];
   const allPositions = [
-    ...incidents.map((i: any) => ({ x: Number(i.position.x) || 0, z: Number(i.position.z) || 0 })),
+    ...visibleIncidents.map((i: any) => ({ x: Number(i.position.x) || 0, z: Number(i.position.z) || 0 })),
     ...visibleMarkers.map((m: any) => ({ x: Number(m.position.x) || 0, z: Number(m.position.z) || 0 }))
   ];
   const bounds = calculateBounds(allPositions);
@@ -712,6 +714,11 @@ export function ThreeDScene({
             <button onClick={() => setShowGizmoCube(!showGizmoCube)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
               {showGizmoCube ? '🔢 Hide Gizmo' : '🔳 Show Gizmo'}
             </button>
+            {incidents.length > 0 && (
+              <button onClick={() => setShowIncidents(!showIncidents)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
+                {showIncidents ? '🚨 Hide Incidents' : '🚨 Show Incidents'}
+              </button>
+            )}
             <div className="border-t border-white/10 my-1" />
             <div className="text-[10px] text-white/60 px-2 py-0.5">Environment</div>
             <select
@@ -985,7 +992,7 @@ export function ThreeDScene({
           </mesh>
         )}
 
-        {incidents.map((incident, idx) => (
+        {visibleIncidents.map((incident, idx) => (
           <IncidentMarker3D
             key={`incident_${idx}_${(incident as any).key || incident.id || ''}`}
             incident={incident}

@@ -439,38 +439,25 @@ export function GardenCharacter({
   // ============================================
   // RENDER
   // ============================================
-  if (!isWeatherActive) return null;
+  // ✅ v0.15.9: Always render character markers — visibility is a layer toggle concern
+  // Characters in the 3D scene should always show even if "inactive" so the user can
+  // see them and toggle visibility. The weather/time checks are soft — hide but don't skip.
+  const isVisible = character.status === 'active' && character.visible && isTimeActive;
 
-  // Fallback — colored box
+  // Fallback — colored box (always show, even when inactive)
   if (!character.model?.filePath || modelError || (!model && !loadingModel)) {
     const colorMap: Record<string, string> = {
       animal: '#D2691E', bird: '#87CEEB', insect: '#32CD32',
       mythical: '#9370DB', human: '#FFB6C1', robot: '#A9A9A9', decoration: '#FFD700'
     };
     const boxColor = colorMap[character.type] || '#FF69B4';
+    const opacity = isVisible ? 1 : 0.4;
 
     return (
       <group position={[Number(character.positionX) || 0, Number(character.positionY) || 0, Number(character.positionZ) || 0]}>
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[0.8, 0.8, 0.8]} />
-          <meshStandardMaterial color={boxColor} />
-        </mesh>
-        <Html position={[0, 0.6, 0]} center>
-          <div className="bg-black/70 text-white px-2 py-0.5 rounded text-xs whitespace-nowrap">
-            {character.name}
-          </div>
-        </Html>
-      </group>
-    );
-  }
-
-  // Loading indicator
-  if (loadingModel) {
-    return (
-      <group position={[Number(character.positionX) || 0, Number(character.positionY) || 0, Number(character.positionZ) || 0]}>
-        <mesh>
-          <boxGeometry args={[0.5, 0.5, 0.5]} />
-          <meshStandardMaterial color="#888888" transparent opacity={0.5} />
+          <cylinderGeometry args={[0.3, 0.4, 0.8, 8]} />
+          <meshStandardMaterial color={boxColor} transparent={!isVisible} opacity={opacity} />
         </mesh>
       </group>
     );
