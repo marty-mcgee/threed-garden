@@ -1,7 +1,7 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, Environment, Html, Plane, Grid, 
@@ -295,8 +295,45 @@ function PulseRing({ position, color, size = 1.0 }: { position: [number, number,
   );
 }
 
-// Interactive Ground with shadow catching + left-click deselect
+// ✅ Procedural grass texture generator (canvas-based, no external files needed)
+function createGrassTexture(): THREE.Texture {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d')!;
+  
+  // Base soil color
+  ctx.fillStyle = '#3d5a1e';
+  ctx.fillRect(0, 0, 512, 512);
+  
+  // Random grass blades
+  for (let i = 0; i < 2000; i++) {
+    const x = Math.random() * 512;
+    const y = Math.random() * 512;
+    const shade = 0.4 + Math.random() * 0.6;
+    const r = Math.floor(30 * shade);
+    const g = Math.floor(90 * shade);
+    const b = Math.floor(20 * shade);
+    ctx.fillStyle = `rgb(${r},${g},${b})`;
+    ctx.fillRect(x, y, 2 + Math.random() * 3, 2 + Math.random() * 4);
+  }
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+// Interactive Ground with shadow catching + left-click deselect + border shadow
 function InteractiveGround({ size, centerX, centerZ, onRightClick, onClick }: any) {
+  const grassTexture = useMemo(() => {
+    const tex = createGrassTexture();
+    const repeat = Math.max(size / 4, 1);
+    tex.repeat.set(repeat, repeat);
+    return tex;
+  }, [size]);
+
   return (
     <group>
       {/* Shadow catching plane (transparent, catches shadows) */}
@@ -308,7 +345,7 @@ function InteractiveGround({ size, centerX, centerZ, onRightClick, onClick }: an
       >
         <shadowMaterial transparent opacity={0.35} />
       </Plane>
-      {/* Visual ground plane */}
+      {/* Visual ground plane with grass texture */}
       <Plane
         args={[size, size]}
         rotation={[-Math.PI / 2, 0, 0]}
@@ -322,8 +359,14 @@ function InteractiveGround({ size, centerX, centerZ, onRightClick, onClick }: an
           }
         }}
       >
-        <meshStandardMaterial color="#2d5a27" roughness={0.9} metalness={0} />
+        <meshStandardMaterial
+          map={grassTexture}
+          roughness={0.85}
+          metalness={0}
+          color="#ffffff"
+        />
       </Plane>
+
       {/* ✅ v0.15.3: Invisible click target for left-click deselect */}
       <Plane
         args={[size, size]}
@@ -371,6 +414,12 @@ export function ThreeDScene({
   const [showPresetDialog, setShowPresetDialog] = useState(false);
   const [newPresetName, setNewPresetName] = useState('');
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
+  const [envPreset, setEnvPreset] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('threed-env-preset') || 'night';
+    }
+    return 'night';
+  });
 
   useEffect(() => {
     setHasData(incidents.length > 0 || markers.length > 0);
@@ -403,6 +452,13 @@ export function ThreeDScene({
   useEffect(() => {
     localStorage.setItem('threed-view-presets', JSON.stringify(viewPresets));
   }, [viewPresets]);
+
+  // ✅ Persist environment preset to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('threed-env-preset', envPreset);
+    }
+  }, [envPreset]);
 
   // ✅ Fetch layers from API
   useEffect(() => {
@@ -656,6 +712,18 @@ export function ThreeDScene({
             <button onClick={() => setShowGizmoCube(!showGizmoCube)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
               {showGizmoCube ? '🔢 Hide Gizmo' : '🔳 Show Gizmo'}
             </button>
+            <div className="border-t border-white/10 my-1" />
+            <div className="text-[10px] text-white/60 px-2 py-0.5">Environment</div>
+            <select
+              value={envPreset}
+              onChange={(e) => setEnvPreset(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white/80 focus:outline-none focus:border-white/30 appearance-none"
+              style={{ scrollbarWidth: 'thin' }}
+            >
+              {['sunset','dawn','night','city','forest','park','warehouse','apartment','studio','lobby'].map(p => (
+                <option key={p} value={p} className="bg-gray-800 text-white">{p}</option>
+              ))}
+            </select>
             <button
               onClick={() => {
                 setSelectedDetails(null);
@@ -830,16 +898,12 @@ export function ThreeDScene({
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
       >
-        {/* Scene fog for depth perception */}
-        <fog attach="fog" args={['#87CEEB', cameraDistance * 0.5, cameraDistance * 2.5]} />
-        <color attach="background" args={['#87CEEB']} />
+        <Environment preset={envPreset as any} background blur={0.8} />
 
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 15, 5]} intensity={1.2} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} shadow-camera-left={-30} shadow-camera-right={30} shadow-camera-top={30} shadow-camera-bottom={-30} />
         <directionalLight position={[-5, 5, -5]} intensity={0.3} />
         <hemisphereLight args={['#87CEEB', '#2d5a27', 0.4]} />
-
-        <Environment preset="city" />
 
         <OrbitControls
           ref={controlsRef}

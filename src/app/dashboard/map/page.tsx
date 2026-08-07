@@ -7,13 +7,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Layers, 
   RefreshCw, 
-  Eye, 
-  EyeOff, 
   MapPin, 
   Box, 
   Car, 
-  Maximize2,
-  Minimize2,
   FolderOpen,
   ChevronRight,
   Search,
@@ -742,68 +738,54 @@ function UnifiedMapPageInner() {
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 border rounded-lg p-0.5">
+          {/* View Mode Toggle - Icon Only */}
+          <div className="flex items-center gap-0.5 border rounded-lg p-0.5">
             <Button
               variant={viewMode === 'combined' ? 'default' : 'ghost'}
-              size="sm"
-              className="h-7 px-2 text-xs"
+              size="icon"
+              className="h-7 w-7"
               onClick={() => setViewMode('combined')}
+              title="Combined View"
             >
-              <Layers className="w-3.5 h-3.5 mr-1" />
-              Combined
+              <Layers className="w-3.5 h-3.5" />
             </Button>
             <Button
               variant={viewMode === '2d' ? 'default' : 'ghost'}
-              size="sm"
-              className="h-7 px-2 text-xs"
+              size="icon"
+              className="h-7 w-7"
               onClick={() => setViewMode('2d')}
+              title="2D View"
             >
-              <Car className="w-3.5 h-3.5 mr-1" />
-              2D
+              <Car className="w-3.5 h-3.5" />
             </Button>
             <Button
               variant={viewMode === '3d' ? 'default' : 'ghost'}
-              size="sm"
-              className="h-7 px-2 text-xs"
+              size="icon"
+              className="h-7 w-7"
               onClick={() => setViewMode('3d')}
+              title="3D View"
             >
-              <Box className="w-3.5 h-3.5 mr-1" />
-              3D
+              <Box className="w-3.5 h-3.5" />
             </Button>
           </div>
 
-          {/* ✅ v0.13.0-beta: Filter Panel Toggle Button */}
+          {/* Filter Toggle - Icon Only */}
           <Button
             variant={showFilterPanel ? 'default' : 'outline'}
-            size="sm"
+            size="icon"
+            className="h-7 w-7 relative"
             onClick={() => setShowFilterPanel(!showFilterPanel)}
             title="Toggle filter panel"
           >
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            Filter
+            <Filter className="w-3.5 h-3.5" />
             {filterAssetType && (
-              <Badge variant="secondary" className="ml-1 text-[10px] h-4 px-1">
-                1
-              </Badge>
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-primary rounded-full" />
             )}
           </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsFullscreen(!isFullscreen)}
-          >
-            {isFullscreen ? (
-              <Minimize2 className="w-3.5 h-3.5" />
-            ) : (
-              <Maximize2 className="w-3.5 h-3.5" />
-            )}
-          </Button>
-
-          <Button size="sm" onClick={handleRefresh} disabled={refreshing}>
-            <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${refreshing ? 'animate-spin' : ''}`} />
-            {refreshing ? 'Refreshing...' : 'Refresh'}
+          {/* Refresh - Icon Only */}
+          <Button size="icon" className="h-7 w-7" onClick={handleRefresh} disabled={refreshing} title="Refresh data">
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
           </Button>
         </div>
       </div>

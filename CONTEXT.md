@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 6, 2026 @ 10:17pm PST
-**Current Version:** v0.15.6 "App Layout CSS tightened to maximum density"
+**Last Updated:** August 6, 2026 @ 11:31pm PST
+**Current Version:** v0.15.8 "ThreeDScene Polish — Environment Backgrounds, Grass Texture, Icon Header"
 
 ---
 
@@ -225,31 +225,35 @@ API (/api/map/threed)
 | v0.15.3 | 2026-08-06 | 100% Width + Rich Markers + UX + Page Unification |
 | v0.15.4 | 2026-08-06 | Simplified Static 3D Markers — removed idle animations |
 | v0.15.5 | 2026-08-06 | Unified Marker Overlays with Rich Data |
-| **v0.15.6** | **2026-08-06** | **App Layout CSS tightened to maximum density** |
+| v0.15.6 | 2026-08-06 | App Layout CSS tightened to maximum density |
+| v0.15.7 | 2026-08-06 | Cleaned map page — removed stat cards, viewport-filling height, icon-only header |
+| **v0.15.8** | **2026-08-06** | **ThreeDScene Polish — Dynamic environments, grass texture, header cleanup** |
 
 ---
 
-## 🚀 Latest Release — v0.15.6 "App Layout CSS tightened to maximum density"
+## 🚀 Latest Release — v0.15.8 "ThreeDScene Polish"
 
 ### What's New
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **Maximum Density Layout** | ✅ Complete | Header `py-0.5 px-0`, content `py-0.5 px-0`, footer `py-1 mt-1` |
-| **Admin Content Tightening** | ✅ Complete | Main content `p-1 md:p-2` |
-| **Map Page Spacing** | ✅ Complete | `space-y-1.5`, map `600px`, stat cards `p-1.5`, grid `gap-1.5` |
-| **Garden Page Spacing** | ✅ Complete | `space-y-3`, scene `580px`, stat cards `p-2`, grid `gap-2` |
-| **Three.js NaN Guard** | ✅ Complete | All position inputs to Three.js guarded with `Number() \|\| 0` |
+| **Dynamic Environment Backgrounds** | ✅ Complete | 10 HDRI presets selectable from Controls dropdown (`night` default); persisted to localStorage |
+| **Procedural Grass Texture** | ✅ Complete | Canvas-generated grass texture on ground plane (no external files needed) |
+| **Icon-Only Header Buttons** | ✅ Complete | Combined/2D/3D/Filter/Refresh all compact 28×28px icons with tooltip titles |
+| **Fullscreen Button Removed** | ✅ Complete | Eliminated unnecessary button from header |
+| **Stat Cards Removed** | ✅ Complete | Traffic/3D/Active Layers cards deleted — count summaries in page header |
+| **Viewport-Filling Map** | ✅ Complete | Map height `calc(100vh - 190px)` adapts to any screen size |
+| **NaN Bug Fixes** | ✅ Complete | All geometry args guarded with fallback values in PlantMarker3D, BedMarker3D, bounds calculation |
 
-### Files Modified
+### Files Modified in v0.15.7-v0.15.8
 
 | File | Change |
 |------|--------|
-| `src/app/dashboard/layout.tsx` | Header/content/footer padding minimized; tagline shortened |
-| `src/components/admin/layout/AdminLayout.tsx` | Main content padding reduced |
-| `src/app/dashboard/map/page.tsx` | Section gaps, card padding, map height tightened |
-| `src/app/dashboard/threed/garden/page.tsx` | Section gaps, card padding, scene height tightened |
-| `src/components/map/ThreeDScene.tsx` | NaN guards on incident/marker positions, focus target, glow indicator |
+| `src/components/map/ThreeDScene.tsx` | Dynamic Environment with preset dropdown + localStorage, procedural grass texture, NaN guards on all position/geometry sources, removed border shadow experiment |
+| `src/app/dashboard/map/page.tsx` | Removed 3 stat cards, icon-only header buttons, removed fullscreen toggle, viewport-filling map height, unused import cleanup |
+| `src/components/threed/markers/PlantMarker3D.tsx` | NaN-guarded growth stage lookup and all geometry args |
+| `src/components/threed/markers/BedMarker3D.tsx` | `Number()` guards on width/depth resolution |
+| `src/components/threed/shared/GardenCharacter.tsx` | NaN guards on all 6 position usages |
 
 ---
 
