@@ -53,11 +53,13 @@ const getMarkerColor = (type: string): string => {
 };
 
 function calculateBounds(positions: { x: number; z: number }[]) {
-  if (positions.length === 0) {
+  // ✅ Filter out NaN/Infinity positions before computing bounds
+  const valid = positions.filter(p => isFinite(p.x) && isFinite(p.z));
+  if (valid.length === 0) {
     return { minX: -20, maxX: 20, minZ: -20, maxZ: 20, width: 40, height: 40, centerX: 0, centerZ: 0 };
   }
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
-  positions.forEach(p => {
+  valid.forEach(p => {
     if (p.x < minX) minX = p.x;
     if (p.x > maxX) maxX = p.x;
     if (p.z < minZ) minZ = p.z;
@@ -204,7 +206,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
   const size = isSelected ? 1.0 : 0.6;
 
   // ✅ v0.15.0/15.2: Render rich markers for types that have dedicated components
-  const pos: [number, number, number] = [marker.position.x, marker.position.y, marker.position.z];
+  const pos: [number, number, number] = [Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0];
 
   if ((marker.type === 'character' || marker.type === 'characters') && marker.data) {
     return (
@@ -458,14 +460,15 @@ export function ThreeDScene({
   });
 
   const allPositions = [
-    ...incidents.map((i: any) => ({ x: i.position.x, z: i.position.z })),
-    ...visibleMarkers.map((m: any) => ({ x: m.position.x, z: m.position.z }))
+    ...incidents.map((i: any) => ({ x: Number(i.position.x) || 0, z: Number(i.position.z) || 0 })),
+    ...visibleMarkers.map((m: any) => ({ x: Number(m.position.x) || 0, z: Number(m.position.z) || 0 }))
   ];
   const bounds = calculateBounds(allPositions);
-  const { centerX, centerZ } = bounds;
-  const maxDimension = Math.max(bounds.width, bounds.height);
-  const cameraDistance = Math.max(maxDimension * 1.5, 20);
-  const groundSize = Math.max(maxDimension + 10, 30);
+  const centerX = isFinite(bounds.centerX) ? bounds.centerX : 0;
+  const centerZ = isFinite(bounds.centerZ) ? bounds.centerZ : 0;
+  const maxDimension = Math.min(Math.max(bounds.width, bounds.height), 500);
+  const cameraDistance = Math.min(Math.max(maxDimension * 1.5, 20), 750);
+  const groundSize = Math.min(Math.max(maxDimension + 10, 30), 500);
 
   const typeCounts = visibleMarkers.reduce((acc: any, m: any) => {
     acc[m.type] = (acc[m.type] || 0) + 1;

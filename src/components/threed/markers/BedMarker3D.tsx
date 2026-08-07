@@ -35,8 +35,8 @@ const SOIL_COLORS: Record<string, string> = {
 export function BedMarker3D({ bed, position }: BedMarker3DProps) {
   const [hovered, setHovered] = useState(false);
 
-  const bedWidth = bed.width || bed.widthFeet || 4;
-  const bedDepth = bed.depth || bed.length || bed.lengthFeet || 8;
+  const bedWidth = Number(bed.width || bed.widthFeet) || 4;
+  const bedDepth = Number(bed.depth || bed.length || bed.lengthFeet) || 8;
   const soilColor = bed.soilType ? (SOIL_COLORS[bed.soilType.toLowerCase()] || '#8B7355') : (bed.color || '#8B7355');
 
   return (

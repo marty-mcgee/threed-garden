@@ -935,7 +935,7 @@ function UnifiedMapPageInner() {
       {/* ✅ Map Container */}
       <Card className={isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''}>
         <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: isFullscreen ? '100vh' : '600px' }}>
+          <div style={{ height: isFullscreen ? '100vh' : 'calc(100vh - 190px)' }}>
             
             {viewMode === 'combined' && (
               <div 
@@ -1044,107 +1044,6 @@ function UnifiedMapPageInner() {
         selected={selectedMarker || selectedIncident}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
       />
-
-      {/* ✅ v0.13.0-beta: Interactive Stats Cards */}
-      {true && hasRealData && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5">
-          {/* Traffic Summary - Interactive Stat Cards */}
-          <Card>
-            <CardContent className="p-1.5">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium flex items-center gap-1">
-                  <Car className="w-3.5 h-3.5" />
-                  Traffic Summary
-                </span>
-                <Badge variant="secondary" className="text-xs">
-                  {data.traffic.total || 0}
-                </Badge>
-              </div>
-              <div className="space-y-0.5">
-                <StatCard label="CHP CAD" count={data.traffic.chpCadCount || 0} color="bg-red-500" icon="🚨" isActive={filterAssetType === 'CHP CAD'} onClick={() => handleStatCardClick('CHP CAD')} />
-                <StatCard label="CHP Cases" count={data.traffic.chpCasesCount || 0} color="bg-orange-500" icon="📋" isActive={filterAssetType === 'CHP Cases'} onClick={() => handleStatCardClick('CHP Cases')} />
-                <StatCard label="CHP Centers" count={data.traffic.chpCentersCount || 0} color="bg-yellow-500" icon="🏢" isActive={filterAssetType === 'CHP Centers'} onClick={() => handleStatCardClick('CHP Centers')} />
-                <StatCard label="Caltrans Closures" count={data.traffic.caltransClosuresCount || 0} color="bg-blue-500" icon="🚧" isActive={filterAssetType === 'Caltrans Closures'} onClick={() => handleStatCardClick('Caltrans Closures')} />
-                <StatCard label="CCTV Cameras" count={data.traffic.caltransCctvCount || 0} color="bg-cyan-500" icon="📹" isActive={filterAssetType === 'CCTV'} onClick={() => handleStatCardClick('CCTV')} />
-                <StatCard label="Districts" count={data.traffic.caltransDistrictsCount || 0} color="bg-indigo-500" icon="🏛️" isActive={filterAssetType === 'Districts'} onClick={() => handleStatCardClick('Districts')} />
-                <StatCard label="511 Events" count={data.traffic.bayArea511Count || 0} color="bg-emerald-500" icon="📻" isActive={filterAssetType === '511 Events'} onClick={() => handleStatCardClick('511 Events')} />
-                <StatCard label="CalFire" count={data.traffic.calfireIncidentsCount || 0} color="bg-rose-500" icon="🔥" isActive={filterAssetType === 'CalFire'} onClick={() => handleStatCardClick('CalFire')} />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 3D Summary - Interactive Stat Cards */}
-          <Card>
-            <CardContent className="p-2">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium flex items-center gap-1">
-                  <Box className="w-3.5 h-3.5" />
-                  3D Summary
-                </span>
-                <Badge variant="secondary" className="text-xs">
-                  {data.threed.total || 0}
-                </Badge>
-              </div>
-              <div className="space-y-0.5">
-                <StatCard label="Plantings" count={data.threed.plantingsCount || 0} color="bg-emerald-600" icon="🌱" isActive={filterAssetType === 'Plantings'} onClick={() => handleStatCardClick('Plantings')} />
-                <StatCard label="Plants" count={data.threed.plantsCount || 0} color="bg-green-500" icon="🌿" isActive={filterAssetType === 'Plants'} onClick={() => handleStatCardClick('Plants')} />
-                <StatCard label="Beds" count={data.threed.bedsCount || 0} color="bg-amber-500" icon="🧑‍🌾" isActive={filterAssetType === 'Beds'} onClick={() => handleStatCardClick('Beds')} />
-                <StatCard label="Characters" count={data.threed.charactersCount || 0} color="bg-purple-500" icon="🧚" isActive={filterAssetType === 'Characters'} onClick={() => handleStatCardClick('Characters')} />
-                <StatCard label="FarmBots" count={data.threed.farmbotsCount || 0} color="bg-slate-500" icon="🤖" isActive={filterAssetType === 'FarmBots'} onClick={() => handleStatCardClick('FarmBots')} />
-                <StatCard label="Layers" count={data.threed.layersCount || 0} color="bg-cyan-500" icon="📐" isActive={filterAssetType === 'Layers'} onClick={() => handleStatCardClick('Layers')} />
-                <StatCard label="Tasks" count={data.threed.tasksCount || 0} color="bg-orange-600" icon="📝" isActive={filterAssetType === 'Tasks'} onClick={() => handleStatCardClick('Tasks')} />
-                <StatCard label="Harvests" count={data.threed.harvestsCount || 0} color="bg-yellow-600" icon="🌾" isActive={filterAssetType === 'Harvests'} onClick={() => handleStatCardClick('Harvests')} />
-                <StatCard label="Weather Logs" count={data.threed.weatherLogsCount || 0} color="bg-blue-400" icon="🌤️" isActive={filterAssetType === 'Weather Logs'} onClick={() => handleStatCardClick('Weather Logs')} />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Active Layers Summary */}
-          <Card>
-            <CardContent className="p-2">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium flex items-center gap-1">
-                  <Eye className="w-3.5 h-3.5" />
-                  Active Layers
-                </span>
-                <Badge variant="secondary" className="text-xs">
-                  {Object.values(layers).flatMap(cat => 
-                    Object.values(cat).filter(l => l.enabled && l.visible)
-                  ).length}
-                </Badge>
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {Object.entries(layers).flatMap(([category, items]) =>
-                  Object.entries(items)
-                    .filter(([_, config]) => config.enabled && config.visible)
-                    .map(([id, _]) => (
-                      <Badge key={`${category}-${id}`} variant="outline" className="text-[10px]">
-                        {id}
-                      </Badge>
-                    ))
-                )}
-                {Object.values(layers).flatMap(cat =>
-                  Object.values(cat).filter(l => l.enabled && l.visible)
-                ).length === 0 && (
-                  <span className="text-xs text-muted-foreground">No layers active</span>
-                )}
-              </div>
-              {/* Clear filter hint */}
-              {filterAssetType && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-2 w-full text-xs text-muted-foreground"
-                  onClick={() => { setFilterAssetType(null); setFilterText(''); setFilterActiveOnly(false); }}
-                >
-                  <X className="w-3 h-3 mr-1" />
-                  Clear "{filterAssetType}" filter
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {/* ✅ Navigation */}
       <div className="flex justify-center gap-2">

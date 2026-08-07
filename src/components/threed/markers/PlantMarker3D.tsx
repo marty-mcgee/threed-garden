@@ -41,15 +41,15 @@ const GROWTH_SHAPES: Record<string, { stemHeight: number; canopySize: number; ca
 export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
   const [hovered, setHovered] = useState(false);
 
-  const stage = plant.growthStage?.toLowerCase() || 'seedling';
-  const shape = GROWTH_SHAPES[stage] || GROWTH_SHAPES.seedling;
+  const stage = (plant.growthStage?.toLowerCase()) || 'seedling';
+  const shape = (stage && GROWTH_SHAPES[stage]) ? GROWTH_SHAPES[stage] : GROWTH_SHAPES.seedling;
   const species = plant.species || plant.plantType || plant.commonName || plant.plantName || '';
 
   return (
     <group position={position}>
       {/* Stem */}
       <Cylinder
-        args={[0.03, 0.05, shape.stemHeight]}
+        args={[0.03, 0.05, shape.stemHeight || 0.25]}
         position={[0, shape.stemHeight / 2, 0]}
         castShadow
         onPointerOver={() => setHovered(true)}
@@ -59,12 +59,12 @@ export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
       </Cylinder>
 
       {/* Canopy */}
-      <Sphere args={[shape.canopySize, 8, 8]} position={[0, shape.stemHeight + 0.05, 0]} castShadow>
+      <Sphere args={[shape.canopySize || 0.12, 8, 8]} position={[0, (shape.stemHeight || 0.25) + 0.05, 0]} castShadow>
         <meshStandardMaterial color={shape.canopyColor} roughness={0.6} />
       </Sphere>
 
       {/* Name label */}
-      <Billboard position={[0, shape.stemHeight + shape.canopySize + 0.25, 0]}>
+      <Billboard position={[0, (shape.stemHeight || 0.25) + (shape.canopySize || 0.12) + 0.25, 0]}>
         {/* @ts-ignore */}
         <Text fontSize={0.16} color="#374151" anchorX="center" anchorY="bottom" opacity={0.7}>
           {plant.name}
@@ -73,7 +73,7 @@ export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
 
       {/* Simple tooltip on hover */}
       {hovered && (
-        <Html position={[0, shape.stemHeight + shape.canopySize + 0.5, 0]} center distanceFactor={10}>
+        <Html position={[0, (shape.stemHeight || 0.25) + (shape.canopySize || 0.12) + 0.5, 0]} center distanceFactor={10}>
           <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
             {plant.name}{species ? ` — ${species}` : ''} — {plant.growthStage || 'Unknown'}
           </div>
