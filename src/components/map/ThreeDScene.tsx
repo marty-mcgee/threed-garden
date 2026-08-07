@@ -214,16 +214,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         onPointerLeave={() => setHovered(false)}
       >
         <GardenCharacter character={marker.data} />
-        {isSelected && (
-          <PulseRing position={[marker.position.x, marker.position.y + 1, marker.position.z]} color="#8b5cf6" size={1.2} />
-        )}
-        {isSelected && (
-          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
-            <div className="bg-purple-500/20 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-purple-500/30">
-              {marker.name}
-            </div>
-          </Html>
-        )}
         {hovered && !isSelected && (
           <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
             <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
@@ -243,16 +233,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         onPointerLeave={() => setHovered(false)}
       >
         <BedMarker3D bed={{ ...marker.data, width: marker.data.widthFeet ?? marker.data.width ?? 4, depth: marker.data.lengthFeet ?? marker.data.length ?? marker.data.depth ?? 8, name: marker.name, soilType: marker.data.soilType, sunExposure: marker.data.sunExposure, plantingsCount: marker.data.plantingsCount ?? marker.data._plantingsCount ?? 0 }} position={pos} />
-        {isSelected && (
-          <PulseRing position={[marker.position.x, marker.position.y + 0.5, marker.position.z]} color="#f59e0b" size={1.2} />
-        )}
-        {isSelected && (
-          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
-            <div className="bg-amber-500/20 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-amber-500/30">
-              {marker.name}
-            </div>
-          </Html>
-        )}
         {hovered && !isSelected && (
           <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
             <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
@@ -272,16 +252,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         onPointerLeave={() => setHovered(false)}
       >
         <PlantMarker3D plant={{ ...marker.data, name: marker.name, species: marker.data.plantType || marker.data.commonName || marker.data.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data.plantedDate || marker.data.plantedAt || '', growthStage: marker.data.growthStage, health: marker.data.health, quantity: marker.data.quantity, status: marker.data.status }} position={pos} />
-        {isSelected && (
-          <PulseRing position={[marker.position.x, marker.position.y + 0.5, marker.position.z]} color="#22c55e" size={0.8} />
-        )}
-        {isSelected && (
-          <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
-            <div className="bg-green-500/20 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-green-500/30">
-              {marker.name}
-            </div>
-          </Html>
-        )}
         {hovered && !isSelected && (
           <Html position={[marker.position.x, marker.position.y + 2.5, marker.position.z]} distanceFactor={10}>
             <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
@@ -301,16 +271,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         onPointerLeave={() => setHovered(false)}
       >
         <FarmBotMarker3D farmbot={{ ...marker.data, name: marker.name, status: marker.data.status, batteryLevel: marker.data.batteryLevel ?? marker.data.battery, firmwareVersion: marker.data.firmwareVersion, deviceId: marker.data.deviceId, lastSeen: marker.data.lastSeen }} position={pos} />
-        {isSelected && (
-          <PulseRing position={[marker.position.x, marker.position.y + 0.5, marker.position.z]} color="#64748b" size={1.0} />
-        )}
-        {isSelected && (
-          <Html position={[marker.position.x, marker.position.y + 2, marker.position.z]} distanceFactor={10}>
-            <div className="bg-slate-500/20 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-slate-500/30">
-              {marker.name}
-            </div>
-          </Html>
-        )}
         {hovered && !isSelected && (
           <Html position={[marker.position.x, marker.position.y + 2, marker.position.z]} distanceFactor={10}>
             <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
@@ -343,16 +303,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
         {getShape()}
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={isSelected ? 0.4 : 0.05} roughness={0.4} metalness={0.2} />
       </mesh>
-      {isSelected && (
-        <PulseRing position={[marker.position.x, marker.position.y + 0.3, marker.position.z]} color={color} size={0.8} />
-      )}
-      {isSelected && (
-        <Html position={[marker.position.x, marker.position.y + size + 0.8, marker.position.z]} distanceFactor={10}>
-          <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none border border-white/20">
-            {marker.name}
-          </div>
-        </Html>
-      )}
       {hovered && !isSelected && (
         <Html position={[marker.position.x, marker.position.y + size + 0.8, marker.position.z]} distanceFactor={10}>
           <div className="bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
@@ -717,27 +667,6 @@ export function ThreeDScene({
 
   return (
     <div className="relative w-full" style={{ height, minHeight: '300px' }}>
-      {/* Stats overlay */}
-      {hasData && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full border border-white/10 text-xs flex items-center gap-3">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-green-400" />
-            <span className="text-white/80">{visibleMarkers.length} markers</span>
-          </span>
-          <span className="w-px h-3 bg-white/20" />
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-400" />
-            <span className="text-white/80">{incidents.length} incidents</span>
-          </span>
-          {isAnimating && (
-            <>
-              <span className="w-px h-3 bg-white/20" />
-              <span className="text-yellow-400 animate-pulse">🎯 Focusing...</span>
-            </>
-          )}
-        </div>
-      )}
-
       {/* Controls Panel */}
       <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1">
         <button
