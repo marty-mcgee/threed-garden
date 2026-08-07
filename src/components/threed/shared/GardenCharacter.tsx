@@ -455,7 +455,7 @@ export function GardenCharacter({
 
     return (
       <group position={[Number(character.positionX) || 0, Number(character.positionY) || 0, Number(character.positionZ) || 0]}>
-        <mesh castShadow receiveShadow>
+        <mesh castShadow receiveShadow position={[0, 0.4, 0]}>
           <cylinderGeometry args={[0.3, 0.4, 0.8, 8]} />
           <meshStandardMaterial color={boxColor} transparent={!isVisible} opacity={opacity} />
         </mesh>
