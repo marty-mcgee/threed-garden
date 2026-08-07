@@ -284,11 +284,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
           <cylinderGeometry args={[0.08, 0.08, 0.04]} />
           <meshStandardMaterial color="#1f2937" roughness={0.8} />
         </mesh>
-        <Html position={[0, 0.65, 0]} center distanceFactor={8}>
-          <div className="text-[10px] text-gray-700 whitespace-nowrap bg-white/70 px-1 rounded pointer-events-none">
-            {marker.name}
-          </div>
-        </Html>
         {hovered && (
           <Html position={[0, 0.85, 0]} center distanceFactor={8}>
             <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
@@ -408,8 +403,8 @@ function ShadowLight({ centerX, centerZ }: { centerX: number; centerZ: number })
   );
 }
 
-// Interactive Ground with shadow catching + left-click deselect + border shadow
-function InteractiveGround({ size, centerX, centerZ, onRightClick, onClick }: any) {
+// Interactive Ground with shadow catching + left-click deselect
+function InteractiveGround({ size, centerX, centerZ, onClick }: any) {
   const grassTexture = useMemo(() => {
     const tex = createGrassTexture();
     const repeat = Math.max(size / 4, 1);
@@ -434,13 +429,6 @@ function InteractiveGround({ size, centerX, centerZ, onRightClick, onClick }: an
         rotation={[-Math.PI / 2, 0, 0]}
         position={[centerX, -0.1, centerZ]}
         receiveShadow
-        onContextMenu={(e) => {
-          e.stopPropagation();
-          const point = e.point;
-          if (point && onRightClick) {
-            onRightClick(point.x, point.z);
-          }
-        }}
       >
         <meshStandardMaterial
           map={grassTexture}
@@ -703,11 +691,6 @@ export function ThreeDScene({
     });
     if (onIncidentClick) onIncidentClick(incident);
     focusOnMarker(incident);
-  };
-
-  const handleGroundRightClick = (x: number, z: number) => {
-    setSelectedDetails(null);
-    zoomToPosition(x, z);
   };
 
   const clearDetails = () => {
@@ -982,7 +965,7 @@ export function ThreeDScene({
 
       <Canvas
         camera={{
-          position: [centerX + cameraDistance * 0.7, cameraDistance * 0.5, centerZ + cameraDistance * 0.7],
+          position: [centerX + cameraDistance * 0.4, cameraDistance * 0.5, centerZ + cameraDistance * 0.4],
           fov: 45,
         }}
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
@@ -1043,7 +1026,7 @@ export function ThreeDScene({
           hasSelected={!!selectedDetails}
         />
 
-        <InteractiveGround size={groundSize} centerX={centerX} centerZ={centerZ} onRightClick={handleGroundRightClick} onClick={clearDetails} />
+        <InteractiveGround size={groundSize} centerX={centerX} centerZ={centerZ} onClick={clearDetails} />
 
         {showGrid && (
           <Grid

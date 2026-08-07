@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { 
-  Sun, Moon, Radio, Settings, ExternalLink
+  Sun, Moon, Sprout, Carrot, Settings, Radio, ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import NavDropdown from '@/components/navigation/NavDropdown';
@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Logo and Title */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-green-600 to-green-600 flex items-center justify-center shadow-lg">
-                <Radio className="w-5 h-5 text-white" />
+                <Carrot className="w-5 h-5 text-orange-0" />
               </div>
               <div>
                 <Link href="/" className="text-sm hover:text-primary">
@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </h1>
                 </Link>
                 <p className="text-xs text-muted-foreground hidden sm:block">
-                  3D Farming • Real-time Incidents • Music • Multi-tasking
+                  3D Farming • Real-time Incidents • Music Streaming • Chores
                 </p>
               </div>
             </div>
@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Surface Switcher */}
             <div className="hidden sm:flex items-center gap-1 border rounded-lg p-0.5">
               <Button
-                variant={pathname?.startsWith('/dashboard') ? 'default' : 'ghost'}
+                variant={pathname?.startsWith('/dashboard') ? 'secondary' : 'ghost'}
                 size="sm"
                 className="h-7 px-3 text-xs"
                 asChild
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </Link>
               </Button>
               <Button
-                variant={pathname?.startsWith('/admin') ? 'default' : 'ghost'}
+                variant={pathname?.startsWith('/admin') ? 'secondary' : 'ghost'}
                 size="sm"
                 className="h-7 px-3 text-xs"
                 asChild

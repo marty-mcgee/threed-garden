@@ -40,15 +40,17 @@ export function BedMarker3D({ bed, position }: BedMarker3DProps) {
   const soilColor = bed.soilType ? (SOIL_COLORS[bed.soilType.toLowerCase()] || '#8B7355') : (bed.color || '#8B7355');
 
   return (
-    <group position={position}>
+    <group
+      position={position}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
       {/* Main bed body */}
       <Box
         args={[bedWidth, 0.3, bedDepth]}
         position={[0, 0.15, 0]}
         castShadow
         receiveShadow
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
       >
         <meshStandardMaterial color={soilColor} roughness={0.85} metalness={0} />
       </Box>
@@ -67,15 +69,7 @@ export function BedMarker3D({ bed, position }: BedMarker3DProps) {
         <meshStandardMaterial color="#5C4033" roughness={0.85} />
       </Box>
 
-      {/* Name label */}
-      <Billboard position={[0, 0.5, 0]}>
-        {/* @ts-ignore */}
-        <Text fontSize={0.22} color="#374151" anchorX="center" anchorY="bottom" opacity={0.8}>
-          {bed.name}
-        </Text>
-      </Billboard>
-
-      {/* Simple tooltip on hover */}
+      {/* Tooltip on hover */}
       {hovered && (
         <Html position={[0, 0.7, 0]} center distanceFactor={10}>
           <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">

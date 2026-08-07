@@ -481,13 +481,6 @@ export function GardenCharacter({
     >
       {model && <primitive object={model} />}
 
-      {/* Name label */}
-      <Html position={[0, 1.2, 0]} center>
-        <div className="bg-black/60 text-white px-2 py-0.5 rounded text-xs whitespace-nowrap">
-          {character.name}
-        </div>
-      </Html>
-
       {/* Emote Bubble */}
       {currentEmote && (
         <Html position={[0, 1.5, 0]} center>

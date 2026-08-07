@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 7, 2026 @ 12:10pm PST
-**Current Version:** v0.15.11 "Shadow-Friendly 3D Markers — All Assets Cast Shadows"
+**Last Updated:** August 7, 2026 @ 12:30pm PST
+**Current Version:** v0.15.12 "Clean UX — No Floating Labels, No Right-Click Zoom, Group-Level Hover"
 
 ---
 
@@ -230,35 +230,29 @@ API (/api/map/threed)
 | v0.15.8 | 2026-08-06 | ThreeDScene Polish — Dynamic environments, grass texture, header cleanup |
 | v0.15.9 | 2026-08-06 | Minor UX improvements |
 | v0.15.10 | 2026-08-07 | Shadow-friendly 3D Markers — castShadow on all FarmBot/Character meshes |
-| **v0.15.11** | **2026-08-07** | **Shadow Camera Fix — ShadowLight component with far=5000, all markers cast shadows** |
+| v0.15.11 | 2026-08-07 | Shadow Camera Fix — ShadowLight component with far=5000, all markers cast shadows |
+| **v0.15.12** | **2026-08-07** | **Clean UX — Removed floating name labels, right-click zoom, group-level pointer events** |
 
 ---
 
-## 🚀 Latest Release — v0.15.11 "Shadow-Friendly 3D Markers"
+## 🚀 Latest Release — v0.15.12 "Clean UX — Group-Level Hover, No Floating Labels"
 
 ### What's New
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **All 3D Markers Cast Shadows** | ✅ Complete | Every FarmBot, Character, Bed, Plant, and Incident now casts accurate shadows on the ground plane |
-| **Dynamic ShadowLight Component** | ✅ Complete | Imperative directional light with proper target direction and massive frustum depth (far=5000) |
-| **Shadow-Ready Loaded Models** | ✅ Complete | `GardenCharacter` traverses all GLTF/FBX meshes and sets `castShadow`/`receiveShadow` |
-| **Massive Shadow Camera Frustum** | ✅ Complete | 4096×4096 shadow map with ±300 unit orthographic frustum covering entire scene |
-| **FarmBot Mesh Inlining** | ✅ Complete | FarmBot meshes inlined directly in ThreeDMarkerComponent to eliminate component-shadow issues |
+| **No More Floating Name Labels** | ✅ Complete | Removed always-visible Billboard/Text and Html name labels from BedMarker3D, PlantMarker3D, GardenCharacter, and FarmBots — names appear only in the metadata info box on click |
+| **Right-Click No Longer Zooms** | ✅ Complete | Removed `handleGroundRightClick` handler and `onContextMenu` from ground plane — camera stays put on right-click |
+| **Group-Level Pointer Events** | ✅ Complete | Moved `onPointerOver`/`onPointerOut` from individual meshes to parent `<group>` in BedMarker3D and PlantMarker3D for cleaner hover detection |
 
-### Root Cause — Why Only Some Markers Cast Shadows
-
-1. **Shadow camera `far` plane too small**: Hardcoded to 80, but the ±300 unit frustum needs depth of ~5000 to cover all objects
-2. **`GardenCharacter` loaded models**: GLTF/FBX meshes had no `castShadow`/`receiveShadow` set
-3. **`FarmBotMarker3D` component boundary**: JSX `castShadow` prop forwarding through r3f's reconciler was unreliable
-
-### Files Modified in v0.15.10-v0.15.11
+### Files Modified in v0.15.12
 
 | File | Change |
 |------|--------|
-| `src/components/map/ThreeDScene.tsx` | Added `ShadowLight` component with imperative shadow camera config (far=5000, ±300 frustum); inlined FarmBot meshes in `ThreeDMarkerComponent` with `castShadow` on every `<mesh>`; dynamic React keys |
-| `src/components/threed/shared/GardenCharacter.tsx` | Added `loadedModel.traverse()` to enable `castShadow`/`receiveShadow` on all GLTF/FBX mesh children |
-| `src/components/threed/markers/FarmBotMarker3D.tsx` | Simplified to pure JSX with `castShadow` on every `<mesh>`; replaced Billboard+Text with Html |
+| `src/components/map/ThreeDScene.tsx` | Removed `handleGroundRightClick`, ground plane `onContextMenu`, `onRightClick` prop; removed always-visible FarmBot Html name label; removed unused `FarmBotMarker3D` import |
+| `src/components/threed/markers/BedMarker3D.tsx` | Removed Billboard+Text name label; moved hover events from bed body Box to parent `<group>` |
+| `src/components/threed/markers/PlantMarker3D.tsx` | Removed Billboard+Text name label; moved hover events from stem Cylinder to parent `<group>` |
+| `src/components/threed/shared/GardenCharacter.tsx` | Removed always-visible Html name label |
 
 ---
 

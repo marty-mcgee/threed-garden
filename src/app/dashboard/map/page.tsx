@@ -692,10 +692,10 @@ function UnifiedMapPageInner() {
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold flex items-center gap-2">
+            {/* <h1 className="text-2xl font-bold flex items-center gap-2">
               <MapPin className="w-6 h-6 text-primary" />
               -||-
-            </h1>
+            </h1> */}
             <Badge 
               variant="outline" 
               className="text-xs cursor-pointer hover:bg-muted"
@@ -709,8 +709,8 @@ function UnifiedMapPageInner() {
                 No Data
               </Badge>
             )}
-          </div>
-          <div className="flex items-center gap-3 ml-9">
+          {/* </div>
+          <div className="flex items-center gap-3 ml-9"> */}
             <p className="text-sm text-muted-foreground">
               {hasRealData ? (
                 `${data.traffic.total || 0} traffic items • ${data.threed.total || 0} 3D items`

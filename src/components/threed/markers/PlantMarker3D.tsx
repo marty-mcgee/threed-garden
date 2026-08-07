@@ -46,14 +46,16 @@ export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
   const species = plant.species || plant.plantType || plant.commonName || plant.plantName || '';
 
   return (
-    <group position={position}>
+    <group
+      position={position}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
       {/* Stem */}
       <Cylinder
         args={[0.03, 0.05, shape.stemHeight || 0.25]}
         position={[0, shape.stemHeight / 2, 0]}
         castShadow
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
       >
         <meshStandardMaterial color="#228B22" roughness={0.7} />
       </Cylinder>
@@ -63,15 +65,7 @@ export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
         <meshStandardMaterial color={shape.canopyColor} roughness={0.6} />
       </Sphere>
 
-      {/* Name label */}
-      <Billboard position={[0, (shape.stemHeight || 0.25) + (shape.canopySize || 0.12) + 0.25, 0]}>
-        {/* @ts-ignore */}
-        <Text fontSize={0.16} color="#374151" anchorX="center" anchorY="bottom" opacity={0.7}>
-          {plant.name}
-        </Text>
-      </Billboard>
-
-      {/* Simple tooltip on hover */}
+      {/* Tooltip on hover */}
       {hovered && (
         <Html position={[0, (shape.stemHeight || 0.25) + (shape.canopySize || 0.12) + 0.5, 0]} center distanceFactor={10}>
           <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
