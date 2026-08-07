@@ -639,7 +639,7 @@ function UnifiedMapPageInner() {
   // ✅ Loading state with skeleton UI
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div className="flex flex-wrap justify-between items-center gap-4 animate-pulse">
           <div>
             <div className="h-7 w-48 bg-muted rounded mb-2" />
@@ -680,7 +680,7 @@ function UnifiedMapPageInner() {
   const hasRealData = data ? (data.traffic.total > 0 || data.threed.total > 0) : false;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1.5">
       {ToastComponent}
 
       {/* Project Selector Dialog */}
@@ -933,7 +933,7 @@ function UnifiedMapPageInner() {
       {/* ✅ Map Container */}
       <Card className={isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''}>
         <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: isFullscreen ? '100vh' : '480px' }}>
+          <div style={{ height: isFullscreen ? '100vh' : '600px' }}>
             
             {viewMode === 'combined' && (
               <div 
@@ -1045,10 +1045,10 @@ function UnifiedMapPageInner() {
 
       {/* ✅ v0.13.0-beta: Interactive Stats Cards */}
       {true && hasRealData && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1.5">
           {/* Traffic Summary - Interactive Stat Cards */}
           <Card>
-            <CardContent className="p-3">
+            <CardContent className="p-1.5">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium flex items-center gap-1">
                   <Car className="w-3.5 h-3.5" />
@@ -1073,7 +1073,7 @@ function UnifiedMapPageInner() {
 
           {/* 3D Summary - Interactive Stat Cards */}
           <Card>
-            <CardContent className="p-3">
+            <CardContent className="p-2">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium flex items-center gap-1">
                   <Box className="w-3.5 h-3.5" />
@@ -1099,7 +1099,7 @@ function UnifiedMapPageInner() {
 
           {/* Active Layers Summary */}
           <Card>
-            <CardContent className="p-3">
+            <CardContent className="p-2">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium flex items-center gap-1">
                   <Eye className="w-3.5 h-3.5" />

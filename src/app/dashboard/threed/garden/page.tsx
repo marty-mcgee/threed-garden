@@ -188,7 +188,7 @@ export default function Garden3DPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {ToastComponent}
       
       {/* Header */}
@@ -250,9 +250,9 @@ export default function Garden3DPage() {
       )}
       
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         <Card>
-          <CardContent className="p-3">
+          <CardContent className="p-2">
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-xs text-muted-foreground">Beds</p>
@@ -263,7 +263,7 @@ export default function Garden3DPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3">
+          <CardContent className="p-2">
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-xs text-muted-foreground">Plantings</p>
@@ -274,7 +274,7 @@ export default function Garden3DPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3">
+          <CardContent className="p-2">
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-xs text-muted-foreground">Characters</p>
@@ -285,7 +285,7 @@ export default function Garden3DPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-3">
+          <CardContent className="p-2">
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-xs text-muted-foreground">FarmBots</p>
@@ -300,7 +300,7 @@ export default function Garden3DPage() {
       {/* 3D Scene */}
       <Card className="overflow-hidden">
         <CardContent className="p-0">
-          <div style={{ height: '650px' }}>
+          <div style={{ height: '580px' }}>
             <UnifiedMapView
               data={data}
               layers={layers}

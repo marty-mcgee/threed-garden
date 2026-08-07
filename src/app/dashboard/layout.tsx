@@ -28,7 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       {/* Header */}
       <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-10">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
+        <div className="w-full px-0 sm:px-1 lg:px-2 py-0.5">
           <div className="flex items-center justify-between">
             {/* Logo and Title */}
             <div className="flex items-center gap-3">
@@ -41,8 +41,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     Marty McGee
                   </h1>
                 </Link>
-                <p className="text-xs text-muted-foreground">
-                  Track Dragon: Music Library • Real-time Traffic • ThreeD Integration
+                <p className="text-xs text-muted-foreground hidden sm:block">
+                  Music • Traffic • ThreeD
                 </p>
               </div>
             </div>
@@ -103,14 +103,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* Main Content */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-2">
+      <div className="w-full px-0 sm:px-1 lg:px-2 py-0.5">
         {/* Page Content */}
-        <div className="rounded-2xl bg-background/50 backdrop-blur-sm">
+        <div className="bg-background/50 backdrop-blur-sm">
           {children}
         </div>
         
         {/* Footer */}
-        <footer className="mt-4 py-4 text-center text-xs text-muted-foreground border-t">
+        <footer className="mt-1 py-1 text-center text-xs text-muted-foreground border-t">
           <p className="mt-1">
             Built by Marty McGee with Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3F Fiber + Drei
             @ github.com/marty-mcgee

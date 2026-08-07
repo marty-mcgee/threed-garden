@@ -171,7 +171,7 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 
   return (
     <group
-      position={[incident.position.x, incident.position.y, incident.position.z]}
+      position={[Number(incident.position.x) || 0, Number(incident.position.y) || 0, Number(incident.position.z) || 0]}
       onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
@@ -260,7 +260,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
 
   return (
     <group
-      position={[marker.position.x, marker.position.y, marker.position.z]}
+      position={[Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0]}
       onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
@@ -489,9 +489,9 @@ export function ThreeDScene({
   const focusOnMarker = (marker: any) => {
     if (!marker || !controlsRef.current) return;
     setFocusTarget({
-      x: marker.position.x,
-      y: marker.position.y || 0,
-      z: marker.position.z
+      x: Number(marker.position.x) || 0,
+      y: Number(marker.position.y) || 0,
+      z: Number(marker.position.z) || 0
     });
     setIsAnimating(true);
   };
@@ -912,7 +912,7 @@ export function ThreeDScene({
 
         {/* Focus glow indicator */}
         {focusTarget && (
-          <mesh position={[focusTarget.x, focusTarget.y + 0.5, focusTarget.z]}>
+          <mesh position={[Number(focusTarget.x) || 0, (Number(focusTarget.y) || 0) + 0.5, Number(focusTarget.z) || 0]}>
             <ringGeometry args={[0.8, 1.2, 32]} />
             <meshBasicMaterial color="#FFD700" transparent opacity={0.4} side={THREE.DoubleSide} />
           </mesh>
