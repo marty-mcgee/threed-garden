@@ -30,6 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-10">
         <div className="w-full px-0 sm:px-1 lg:px-2 py-0.5">
           <div className="flex items-center justify-between">
+
             {/* Logo and Title */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-green-600 to-green-600 flex items-center justify-center shadow-lg">
@@ -38,11 +39,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div>
                 <Link href="/" className="text-sm hover:text-primary">
                   <h1 className="text-xl font-bold text-foreground">
-                    Marty McGee
+                    ThreeD Garden
                   </h1>
                 </Link>
                 <p className="text-xs text-muted-foreground hidden sm:block">
-                  Music • Traffic • ThreeD
+                  3D Farming • Real-time Incidents • Music • Multi-tasking
                 </p>
               </div>
             </div>
