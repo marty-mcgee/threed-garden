@@ -139,7 +139,7 @@ export const characterAnimationEnum = pgEnum('threed_character_animation', [
 ]);
 
 export const characterMovementTypeEnum = pgEnum('threed_character_movement_type', [
-  'stationary', 'wander', 'patrol', 'circle', 'follow', 'teleport'
+  'stationary', 'wander', 'patrol', 'circle', 'follow', 'teleport', 'ecctrl'
 ]);
 
 export const characterWeatherSensitivityEnum = pgEnum('threed_character_weather_sensitivity', [
@@ -147,7 +147,7 @@ export const characterWeatherSensitivityEnum = pgEnum('threed_character_weather_
 ]);
 
 export const characterEmoteEnum = pgEnum('threed_character_emote', [
-  'none', 'happy', 'sad', 'surprised', 'angry', 'wave', 'dance', 'sleep'
+  'none', 'happy', 'sad', 'surprised', 'angry', 'wave', 'dance', 'sleep', 'tired'
 ]);
 
 

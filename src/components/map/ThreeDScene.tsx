@@ -8,9 +8,11 @@ import {
   GizmoHelper, GizmoViewcube, GizmoViewport,
   Text, Sphere, Box, Cylinder, Cone, Ring 
 } from '@react-three/drei';
+import { Physics, RigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
 import { Settings, ChevronDown, ChevronUp, X, Target, Layers } from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
+import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
 import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
 import { PlantMarker3D } from '@/components/threed/markers/PlantMarker3D';
 import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
@@ -209,6 +211,13 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
   const pos: [number, number, number] = [Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0];
 
   if (marker.type === 'character' || marker.type === 'characters') {
+    // v0.16.0-alpha: Route ecctrl characters to physics-based EcctrlCharacter
+    if (marker.data?.movementType === 'ecctrl') {
+      return (
+        <EcctrlCharacter character={marker.data} />
+      );
+    }
+
     return (
       <group
         onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
@@ -1026,55 +1035,60 @@ export function ThreeDScene({
           hasSelected={!!selectedDetails}
         />
 
-        <InteractiveGround size={groundSize} centerX={centerX} centerZ={centerZ} onClick={clearDetails} />
+        <Physics gravity={[0, -9.81, 0]}>
+          {/* v0.16.0-alpha: Interactive ground plane as fixed physics body */}
+          <RigidBody type="fixed" colliders="cuboid">
+            <InteractiveGround size={groundSize} centerX={centerX} centerZ={centerZ} onClick={clearDetails} />
+          </RigidBody>
 
-        {showGrid && (
-          <Grid
-            args={[groundSize, Math.floor(groundSize / 0.5)]}
-            position={[centerX, -0.05, centerZ]}
-            cellColor="#4a7c43"
-            sectionColor="#3a6a34"
-            fadeDistance={groundSize * 1.2}
-            fadeStrength={0.8}
-            cellSize={0.5}
-            sectionSize={2.5}
-          />
-        )}
+          {showGrid && (
+            <Grid
+              args={[groundSize, Math.floor(groundSize / 0.5)]}
+              position={[centerX, -0.05, centerZ]}
+              cellColor="#4a7c43"
+              sectionColor="#3a6a34"
+              fadeDistance={groundSize * 1.2}
+              fadeStrength={0.8}
+              cellSize={0.5}
+              sectionSize={2.5}
+            />
+          )}
 
-        {/* Camera focus animation */}
-        {focusTarget && (
-          <CameraFocusAnimation 
-            target={focusTarget}
-            controlsRef={controlsRef}
-            onComplete={handleFocusComplete}
-          />
-        )}
+          {/* Camera focus animation */}
+          {focusTarget && (
+            <CameraFocusAnimation 
+              target={focusTarget}
+              controlsRef={controlsRef}
+              onComplete={handleFocusComplete}
+            />
+          )}
 
-        {/* Focus glow indicator */}
-        {focusTarget && (
-          <mesh position={[Number(focusTarget.x) || 0, (Number(focusTarget.y) || 0) + 0.5, Number(focusTarget.z) || 0]}>
-            <ringGeometry args={[0.8, 1.2, 32]} />
-            <meshBasicMaterial color="#FFD700" transparent opacity={0.4} side={THREE.DoubleSide} />
-          </mesh>
-        )}
+          {/* Focus glow indicator */}
+          {focusTarget && (
+            <mesh position={[Number(focusTarget.x) || 0, (Number(focusTarget.y) || 0) + 0.5, Number(focusTarget.z) || 0]}>
+              <ringGeometry args={[0.8, 1.2, 32]} />
+              <meshBasicMaterial color="#FFD700" transparent opacity={0.4} side={THREE.DoubleSide} />
+            </mesh>
+          )}
 
-        {visibleIncidents.map((incident, idx) => (
-          <IncidentMarker3D
-            key={`incident_${idx}_${(incident as any).key || incident.id || ''}`}
-            incident={incident}
-            onClick={() => handleIncidentClick(incident)}
-            isSelected={(selectedIncident as any)?.key === (incident as any).key}
-          />
-        ))}
+          {visibleIncidents.map((incident, idx) => (
+            <IncidentMarker3D
+              key={`incident_${idx}_${(incident as any).key || incident.id || ''}`}
+              incident={incident}
+              onClick={() => handleIncidentClick(incident)}
+              isSelected={(selectedIncident as any)?.key === (incident as any).key}
+            />
+          ))}
 
-        {visibleMarkers.map((marker, idx) => (
-          <ThreeDMarkerComponent
-            key={`threed-marker-${marker.type}-${marker.id ?? idx}`}
-            marker={marker}
-            onClick={() => handleMarkerClick(marker)}
-            isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
-          />
-        ))}
+          {visibleMarkers.map((marker, idx) => (
+            <ThreeDMarkerComponent
+              key={`threed-marker-${marker.type}-${marker.id ?? idx}`}
+              marker={marker}
+              onClick={() => handleMarkerClick(marker)}
+              isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
+            />
+          ))}
+        </Physics>
 
         {!hasData && (
           <Html position={[0, 2, 0]} distanceFactor={10}>

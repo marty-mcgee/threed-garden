@@ -8,6 +8,13 @@
       "when": 1785938399623,
       "tag": "0000_broken_black_cat",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786188800988,
+      "tag": "0001_open_microchip",
+      "breakpoints": true
     }
   ]
 }

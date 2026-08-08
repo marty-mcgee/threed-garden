@@ -273,3 +273,56 @@ API (/api/map/threed)
 | Character Animations | ✅ Working |
 | Keyboard Shortcuts | ✅ Working |
 | Database | ✅ Connected |
+
+---
+
+## v0.16.0-alpha "React Three Physics" — Integration Complete
+
+### Packages Installed
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `@react-three/rapier` | 2.2.0 | Physics engine — `<Physics>`, `<RigidBody>`, colliders, gravity |
+| `ecctrl` | 2.0.0 | Character controller — `<Ecctrl>`, `<EcctrlAnimationStateController>`, physics-based movement |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | Added `Physics`/`RigidBody` imports; wrapped scene in `<Physics gravity={[0, -9.81, 0]}>` with ground as `type="fixed"` `RigidBody`; added `EcctrlCharacter` import and routing for characters with `movementType: 'ecctrl'` |
+| `package.json` | Added `@react-three/rapier` (v2.2.0) and `ecctrl` (v2.0.0) |
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` (343 lines) | Physics-based character controller wrapping `<Ecctrl>`. Features: capsule collider, `EcctrlAnimationStateController` with custom resolver mapping WALK/RUN/IDLE/JUMP to model animation clips, AI wandering via `setMovement` joystick API, GLTF/FBX model loading with cache, interaction (click, emotes, speech bubbles, sound), fallback shape for characters without models |
+
+### Architecture Overview
+
+```
+<Canvas>
+  <Environment />
+  <lights />
+  <OrbitControls />
+  
+  <Physics gravity={[0, -9.81, 0]}>          ← @react-three/rapier
+    <RigidBody type="fixed" colliders="cuboid">  ← Ground
+      <InteractiveGround />
+    </RigidBody>
+    
+    <ThreeDMarkerComponent>                  ← Per-marker routing
+      if (movementType === 'ecctrl') →
+        <EcctrlCharacter />                  ← ecctrl physics character
+      else →
+        <GardenCharacter />                  ← legacy AI-driven character
+    </ThreeDMarkerComponent>
+  </Physics>
+</Canvas>
+```
+
+### How to Use
+
+Set `movementType: 'ecctrl'` on a character record in the database to route it through the physics-based `EcctrlCharacter`. Characters with other movement types (`wander`, `patrol`, `follow`, `teleport`, `stationary`) continue using the existing `GardenCharacter`.
+
+---
