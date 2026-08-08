@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 7, 2026 @ 12:30pm PST
-**Current Version:** v0.15.12 "Clean UX — No Floating Labels, No Right-Click Zoom, Group-Level Hover"
+**Last Updated:** August 8, 2026 @ 7:15am PST
+**Current Version:** v0.16.0-centaur "Polished Details Card"
 
 ---
 
@@ -232,27 +232,61 @@ API (/api/map/threed)
 | v0.15.10 | 2026-08-07 | Shadow-friendly 3D Markers — castShadow on all FarmBot/Character meshes |
 | v0.15.11 | 2026-08-07 | Shadow Camera Fix — ShadowLight component with far=5000, all markers cast shadows |
 | **v0.15.12** | **2026-08-07** | **Clean UX — Removed floating name labels, right-click zoom, group-level pointer events** |
+| **v0.16.0-alpha** | **2026-08-07** | **React Three Physics — @react-three/rapier + ecctrl integration** |
+| **v0.16.0-beta** | **2026-08-08** | **Keyboard Controls — WASD movement, Take/Release Control in DetailsCard** |
+| **v0.16.0-centaur** | **2026-08-08** | **Polished Details Card — KvRow grid, 3D coords, improved buttons** |
 
 ---
 
-## 🚀 Latest Release — v0.15.12 "Clean UX — Group-Level Hover, No Floating Labels"
+## 🚀 Latest Release — v0.16.0-centaur "Polished Details Card"
 
-### What's New
+### What's New in v0.16.0
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| **No More Floating Name Labels** | ✅ Complete | Removed always-visible Billboard/Text and Html name labels from BedMarker3D, PlantMarker3D, GardenCharacter, and FarmBots — names appear only in the metadata info box on click |
-| **Right-Click No Longer Zooms** | ✅ Complete | Removed `handleGroundRightClick` handler and `onContextMenu` from ground plane — camera stays put on right-click |
-| **Group-Level Pointer Events** | ✅ Complete | Moved `onPointerOver`/`onPointerOut` from individual meshes to parent `<group>` in BedMarker3D and PlantMarker3D for cleaner hover detection |
+| **@react-three/rapier Physics** | ✅ Complete | `<Physics gravity={[0, -9.81, 0]}>` with fixed ground `<RigidBody>`, gravity, collision |
+| **ecctrl Character Controller** | ✅ Complete | Capsule collider character with WASD/Space/Shift keyboard input via `ref.setMovement()` |
+| **Take Control / Release Control** | ✅ Complete | Two-tier interaction: click char → DetailsCard → 🎮 Take Control button → WASD active → ⏸️ Release Control |
+| **KvRow Metadata Grid** | ✅ Complete | All marker metadata rendered as labeled key-value pairs (Position, Type, Speed, Movement, etc.) |
+| **3D Position Coordinates** | ✅ Complete | X/Y/Z position shown for all marker types in DetailsCard |
+| **Blue Selection Ring** | ✅ Complete | Controlled ecctrl character shows blue ring on ground |
+| **Polished DetailsCard UX** | ✅ Complete | Consistent key-value layout, section dividers, improved button styling, "🔧 Edit in Admin" link |
 
-### Files Modified in v0.15.12
+### Files Created in v0.16.0
+
+| File | Purpose |
+|------|---------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | ecctrl-powered character with WASD keyboard controls, physics, GLTF/FBX model loading, click-to-select, blue selection ring |
+
+### Files Modified in v0.16.0
 
 | File | Change |
 |------|--------|
-| `src/components/map/ThreeDScene.tsx` | Removed `handleGroundRightClick`, ground plane `onContextMenu`, `onRightClick` prop; removed always-visible FarmBot Html name label; removed unused `FarmBotMarker3D` import |
-| `src/components/threed/markers/BedMarker3D.tsx` | Removed Billboard+Text name label; moved hover events from bed body Box to parent `<group>` |
-| `src/components/threed/markers/PlantMarker3D.tsx` | Removed Billboard+Text name label; moved hover events from stem Cylinder to parent `<group>` |
-| `src/components/threed/shared/GardenCharacter.tsx` | Removed always-visible Html name label |
+| `src/components/map/ThreeDScene.tsx` | Added `<Physics>` + ground `<RigidBody>`, `controlledCharacterId` prop threading |
+| `src/components/map/UnifiedMapView.tsx` | Added `controlledCharacterId` prop |
+| `src/app/dashboard/map/page.tsx` | Added `controlledCharacterId` state, `KvRow` component, redesigned `DetailsCard` with metadata grid + character controls + admin edit link |
+| `package.json` | Added `@react-three/rapier` (v2.2.0), `ecctrl` (v2.0.0) |
+
+### How to Use Ecctrl Characters
+
+Set `movementType: 'ecctrl'` on a character record in the database. Click the character in the 3D scene → DetailsCard appears with 🎮 Take Control button → click to activate WASD movement → click ground or ✕ to deselect.
+
+### Architecture
+
+```
+map/page.tsx
+  ├── controlledCharacterId state
+  ├── DetailsCard (static overlay with KvRow grid + Take/Release Control)
+  └── UnifiedMapView → ThreeDScene → EcctrlCharacter(isControlled)
+        └── Physics > RigidBody (ground) > Ecctrl (capsule collider + WASD)
+```
+
+### v0.16.0-centaur Changes
+
+- Introduced `KvRow` component for consistent key-value metadata display
+- Added 3D position coordinates (`X:`, `Y:`, `Z:`) for all marker types
+- Redesigned character controls with clear section dividers and button styling
+- Changed admin link from "📝 View Details" to "🔧 Edit in Admin" with subdued styling
 
 ---
 

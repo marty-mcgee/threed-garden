@@ -156,7 +156,16 @@ function ProjectSelectorDialog({
   );
 }
 
-// ✅ v0.15.2: 2D Map Details Overlay — mirrors 3D Scene's Rich Details Box
+// ✅ v0.16.0-centaur: Polished Details Card — key-value grid, position coords, clear controls
+function KvRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start gap-1.5">
+      <span className="text-[10px] text-white/40 shrink-0 w-[52px] text-right">{label}</span>
+      <span className="text-[11px] text-white/80">{value}</span>
+    </div>
+  );
+}
+
 function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl }: {
   selected: any;
   onClose: () => void;
@@ -165,26 +174,75 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
   onReleaseControl: () => void;
 }) {
   if (!selected) return null;
-  // Detect incidents by DB fields only traffic records have (latitude, severity, title+location)
+  const d = selected.data || selected.metadata?.data || {};
   const isIncident = selected.latitude != null || selected.severity || (selected.title && selected.location);
-  const isMarker = !isIncident;
   const typeLabel = selected.type || (isIncident ? 'Traffic Incident' : 'Marker');
   const typeColor = selected.severity === 'critical' ? '#ef4444' :
     selected.severity === 'high' ? '#f97316' :
     selected.severity === 'medium' ? '#eab308' : '#22c55e';
 
+  // Build key-value metadata rows from the data record
+  const metaRows: { label: string; value: string }[] = [];
+
+  // 3D position (if available — for markers with DB position columns)
+  if (!isIncident) {
+    const px = d.positionX ?? d.position?.x;
+    const py = d.positionY ?? d.position?.y;
+    const pz = d.positionZ ?? d.position?.z;
+    if (px != null && pz != null) {
+      metaRows.push({ label: 'Position', value: `X:${Number(px).toFixed(1)} Y:${Number(py || 0).toFixed(1)} Z:${Number(pz).toFixed(1)}` });
+    }
+  }
+
+  // Incident fields
+  if (isIncident) {
+    if (selected.location) metaRows.push({ label: 'Location', value: selected.location });
+    if (selected.status) metaRows.push({ label: 'Status', value: selected.status });
+  }
+
+  // Marker type-specific
+  const type = selected.type || '';
+  if (type === 'plantings' || type === 'planting') {
+    if (d.plantName || d.commonName) metaRows.push({ label: 'Plant', value: d.plantName || d.commonName });
+    if (d.growthStage) metaRows.push({ label: 'Stage', value: d.growthStage });
+    if (d.health != null) metaRows.push({ label: 'Health', value: `${d.health}` });
+    if (d.quantity) metaRows.push({ label: 'Qty', value: `${d.quantity}` });
+    if (d.plantedDate) metaRows.push({ label: 'Planted', value: new Date(d.plantedDate).toLocaleDateString() });
+  }
+  if (type === 'beds' || type === 'bed') {
+    const w = d.widthFeet || d.width, l = d.lengthFeet || d.length || d.depth;
+    if (w && l) metaRows.push({ label: 'Size', value: `${w}ft × ${l}ft` });
+    if (d.soilType) metaRows.push({ label: 'Soil', value: d.soilType });
+    if (d.sunExposure) metaRows.push({ label: 'Sun', value: d.sunExposure });
+  }
+  if (type === 'farmbots' || type === 'farmbot') {
+    if (d.status) metaRows.push({ label: 'Status', value: d.status });
+    if (d.batteryLevel != null) metaRows.push({ label: 'Battery', value: `${d.batteryLevel}%` });
+    if (d.deviceId) metaRows.push({ label: 'Device', value: d.deviceId });
+    if (d.lastSeen) metaRows.push({ label: 'Last Seen', value: new Date(d.lastSeen).toLocaleString() });
+  }
+  if (type === 'characters' || type === 'character') {
+    if (d.type || d.characterType) metaRows.push({ label: 'Type', value: d.type || d.characterType });
+    if (d.movementType) metaRows.push({ label: 'Movement', value: d.movementType });
+    if (d.movementSpeed != null) metaRows.push({ label: 'Speed', value: `${d.movementSpeed}` });
+    if (d.defaultEmote && d.defaultEmote !== 'none') metaRows.push({ label: 'Emote', value: d.defaultEmote });
+  }
+  if (d.notes || d.description) metaRows.push({ label: 'Notes', value: (d.notes || d.description).slice(0, 80) });
+
   return (
     <div className="fixed top-20 left-4 z-[1000] bg-black/85 backdrop-blur-sm text-white p-3 rounded-lg border border-white/10 shadow-xl max-w-[260px] pointer-events-auto">
+      {/* Header */}
       <div className="flex items-start justify-between gap-2">
-        <div className="text-sm font-medium text-white truncate max-w-[180px]">
+        <div className="text-sm font-medium text-white truncate max-w-[170px]">
           {selected.name || selected.title || selected.label || 'Unknown'}
         </div>
-        <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors flex-shrink-0">
+        <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors shrink-0">
           <X className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      <div className="flex items-center gap-2 mt-1">
+      {/* Type badge + severity */}
+      <div className="flex items-center gap-2 mt-1.5">
         <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 capitalize">{typeLabel}</span>
         {selected.severity && (
           <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: typeColor + '30', color: typeColor }}>
@@ -193,83 +251,43 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         )}
       </div>
 
+      {/* GPS coordinates (incidents) */}
       {selected.lat != null && selected.lng != null && (
         <div className="text-[10px] text-white/40 mt-1.5 font-mono">
           📍 {Number(selected.lat).toFixed(4)}, {Number(selected.lng).toFixed(4)}
         </div>
       )}
 
-      {/* Incident details */}
-      {isIncident && (
-        <div className="mt-2 space-y-1 text-[11px] text-white/70">
-          {selected.location && <div>📍 {selected.location}</div>}
-          {selected.status && <div><span className="font-medium text-white/90">Status:</span> {selected.status}</div>}
-          {selected.description && <div className="text-white/50">{selected.description?.slice(0, 100)}{selected.description?.length > 100 ? '...' : ''}</div>}
+      {/* Metadata grid */}
+      {metaRows.length > 0 && (
+        <div className="mt-2.5 border-t border-white/10 pt-2 space-y-0.5">
+          {metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}
         </div>
       )}
 
-      {/* Marker details — rich type-specific metadata */}
-      {isMarker && (
-        <div className="mt-2 space-y-1 text-[11px] text-white/70">
-          {/* Common: access DB fields from selected.data (RuntimeMarker) or selected */}
-          {(() => {
-            const d = selected.data || selected.metadata?.data || {};
-            const type = selected.type || '';
-            const isPlanting = type === 'plantings' || type === 'planting';
-            const isBed = type === 'beds' || type === 'bed';
-            const isFarmbot = type === 'farmbots' || type === 'farmbot';
-            const isCharacter = type === 'characters' || type === 'character';
-            const details: string[] = [];
-            
-            if (isPlanting) {
-              if (d.plantName || d.commonName) details.push(`🌱 ${d.plantName || d.commonName}`);
-              if (d.growthStage) details.push(`📈 ${d.growthStage}`);
-              if (d.health != null) details.push(`❤️ Health: ${d.health}`);
-              if (d.quantity) details.push(`🔢 Qty: ${d.quantity}`);
-              if (d.plantedDate) details.push(`📅 Planted: ${new Date(d.plantedDate).toLocaleDateString()}`);
-            }
-            if (isBed) {
-              if (d.widthFeet || d.width) details.push(`📐 ${d.widthFeet || d.width}ft × ${d.lengthFeet || d.length || d.depth}ft`);
-              if (d.soilType) details.push(`🟫 ${d.soilType}`);
-              if (d.sunExposure) details.push(`☀️ ${d.sunExposure}`);
-              if (d.status) details.push(`📊 ${d.status}`);
-            }
-            if (isFarmbot) {
-              if (d.status) details.push(`⚡ ${d.status}`);
-              if (d.batteryLevel != null) details.push(`🔋 ${d.batteryLevel}%`);
-              if (d.deviceId) details.push(`📱 ${d.deviceId}`);
-              if (d.lastSeen) details.push(`🕐 ${new Date(d.lastSeen).toLocaleString()}`);
-            }
-            if (isCharacter) {
-              if (d.type || d.characterType) details.push(`🧚 ${d.type || d.characterType}`);
-              if (d.defaultEmote && d.defaultEmote !== 'none') details.push(`😊 ${d.defaultEmote}`);
-              if (d.movementType) details.push(`🚶 ${d.movementType}`);
-              if (d.movementSpeed) details.push(`⚡ Speed: ${d.movementSpeed}`);
-            }
-            if (d.notes || d.description) details.push(d.notes || d.description);
-            
-            return details.length > 0 ? details.map((t, i) => <div key={i}>{t}</div>) : <div>No details</div>;
-          })()}
+      {/* Description (incidents) — only if no metaRows covered it */}
+      {isIncident && selected.description && !metaRows.length && (
+        <div className="mt-2 text-[11px] text-white/50">
+          {selected.description.slice(0, 100)}{selected.description.length > 100 ? '...' : ''}
         </div>
       )}
 
-      {/* v0.16.0-beta: Character Controls — Take/Release Control buttons */}
-      {isMarker && selected.type === 'characters' && (() => {
-        const d = selected.data || selected.metadata?.data || {};
+      {/* Character Controls — ecctrl runtime take-over */}
+      {!isIncident && (type === 'characters' || type === 'character') && (() => {
         if (d.movementType !== 'ecctrl') return null;
         const charId = d.id;
         const isControlling = controlledCharacterId === charId;
         return (
-          <div className="mt-2 border-t border-white/10 pt-2 space-y-1.5">
+          <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-2">
             {isControlling ? (
               <>
-                <div className="text-[10px] text-blue-300 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                  Controlling — WASD / Space / Shift
+                <div className="text-[10px] text-blue-300 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shrink-0" />
+                  <span>WASD / Space / Shift active</span>
                 </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); onReleaseControl(); }}
-                  className="block w-full text-center text-[11px] bg-amber-600 hover:bg-amber-500 text-white px-2 py-1 rounded transition-colors"
+                  className="block w-full text-center text-[11px] font-medium bg-amber-600 hover:bg-amber-500 text-white py-1.5 px-2 rounded transition-colors"
                 >
                   ⏸️ Release Control
                 </button>
@@ -277,7 +295,7 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
             ) : (
               <button
                 onClick={(e) => { e.stopPropagation(); onTakeControl(charId); }}
-                className="block w-full text-center text-[11px] bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded transition-colors"
+                className="block w-full text-center text-[11px] font-medium bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-2 rounded transition-colors"
               >
                 🎮 Take Control
               </button>
@@ -286,39 +304,31 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         );
       })()}
 
-      {/* ✅ v0.15.2: Outgoing admin link — opens project asset details in new tab */}
+      {/* Admin Edit link */}
       {(() => {
         const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
         const adminId = selected.metadata?.data?.id || selected.id;
-        let adminRoute = '/admin';
         const routeMap: Record<string, string> = {
-          plantings: '/admin/threed/plantings',
-          planting: '/admin/threed/plantings',
-          beds: '/admin/threed/beds',
-          bed: '/admin/threed/beds',
-          characters: '/admin/threed/characters',
-          character: '/admin/threed/characters',
-          farmbots: '/admin/threed/farmbots',
-          farmbot: '/admin/threed/farmbots',
-          chpCad: '/admin/traffic/chp-cad',
-          chpCadIncidents: '/admin/traffic/chp-cad',
-          chpCases: '/admin/traffic/chp-cases',
-          chpCenters: '/admin/traffic/chp-centers',
-          caltransLaneClosures: '/admin/traffic/caltrans',
-          caltransClosures: '/admin/traffic/caltrans',
-          caltransCctv: '/admin/traffic/caltrans-cctv',
-          caltransDistricts: '/admin/traffic/caltrans-districts',
-          bayArea511: '/admin/traffic/bay-area-511',
-          bayArea511Events: '/admin/traffic/bay-area-511',
-          calfireIncidents: '/admin/traffic/calfire',
-          calfire: '/admin/traffic/calfire',
+          plantings: '/admin/threed/plantings', planting: '/admin/threed/plantings',
+          beds: '/admin/threed/beds', bed: '/admin/threed/beds',
+          characters: '/admin/threed/characters', character: '/admin/threed/characters',
+          farmbots: '/admin/threed/farmbots', farmbot: '/admin/threed/farmbots',
+          chpCad: '/admin/traffic/chp-cad', chpCadIncidents: '/admin/traffic/chp-cad',
+          chpCases: '/admin/traffic/chp-cases', chpCenters: '/admin/traffic/chp-centers',
+          caltransLaneClosures: '/admin/traffic/caltrans', caltransClosures: '/admin/traffic/caltrans',
+          caltransCctv: '/admin/traffic/caltrans-cctv', caltransDistricts: '/admin/traffic/caltrans-districts',
+          bayArea511: '/admin/traffic/bay-area-511', bayArea511Events: '/admin/traffic/bay-area-511',
+          calfireIncidents: '/admin/traffic/calfire', calfire: '/admin/traffic/calfire',
         };
-        adminRoute = routeMap[adminType] || (isIncident ? '/admin/traffic' : '/admin/threed/plantings');
-        const adminUrl = `${adminRoute}?id=${adminId}`;
+        const adminRoute = routeMap[adminType] || (isIncident ? '/admin/traffic' : '/admin/threed/plantings');
         return (
-          <div key="admin-link" className="mt-3 border-t border-white/10 pt-2">
-            <a href={adminUrl} target="_blank" rel="noopener noreferrer" className="block text-center text-[11px] bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded transition-colors no-underline">
-              📝 View Details
+          <div className="mt-2.5 border-t border-white/10 pt-2.5">
+            <a
+              href={`${adminRoute}?id=${adminId}`}
+              target="_blank" rel="noopener noreferrer"
+              className="block text-center text-[11px] font-medium bg-white/5 hover:bg-white/10 text-white/70 hover:text-white py-1.5 px-2 rounded transition-colors no-underline"
+            >
+              🔧 Edit in Admin
             </a>
           </div>
         );
@@ -392,9 +402,7 @@ function UnifiedMapPageInner() {
   const [dataAge, setDataAge] = useState<string>('--');
   const [isStale, setIsStale] = useState(false);
   
-  // ✅ Default to 2D view (for testing initial loading state)
-  // const [viewMode, setViewMode] = useState<MapViewMode>('2d');
-  // ✅ Default to 3D view (for testing initial loading state)
+  // ✅ Default to view ['3d','2d','combined']
   const [viewMode, setViewMode] = useState<MapViewMode>('3d');
 
   const [isFullscreen, setIsFullscreen] = useState(false);
