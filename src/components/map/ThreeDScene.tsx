@@ -31,6 +31,8 @@ interface ThreeDSceneProps {
   projectId?: number;
   /** ID of the ecctrl character currently being controlled by keyboard */
   controlledCharacterId?: number | null;
+  /** Called when an ecctrl character's control state changes, with its current world position */
+  onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
 }
 
 // ✅ View Preset Types
@@ -92,6 +94,28 @@ function ControlsReadyNotifier({ controlsRef, onReady }: { controlsRef: any; onR
     }
   });
   return null;
+}
+
+// v0.16.0-delta: Camera follow — lerps OrbitControls target toward character position
+function CameraFollow({ controlsRef, cameraFollowRef, enabled }: { controlsRef: any; cameraFollowRef: React.MutableRefObject<THREE.Vector3 | null>; enabled: boolean }) {
+  const followTarget = useRef(new THREE.Vector3());
+
+  useFrame(() => {
+    if (!enabled || !controlsRef.current || !cameraFollowRef.current) return;
+    // Smoothly lerp controls target toward the character's position
+    const t = cameraFollowRef.current;
+    performLerp(followTarget.current, t, 0.08);
+    controlsRef.current.target.lerp(followTarget.current, 0.08);
+  });
+
+  return null;
+}
+
+// v0.16.0-delta: Simple lerp helper
+function performLerp(out: THREE.Vector3, target: THREE.Vector3, factor: number) {
+  out.x += (target.x - out.x) * factor;
+  out.y += (target.y - out.y) * factor;
+  out.z += (target.z - out.z) * factor;
 }
 
 // ✅ v0.15.3: Keyboard shortcuts for canvas interaction
@@ -204,7 +228,7 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 }
 
 // ✅ ThreeD Marker Component
-function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacterId }: any) {
+function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacterId, onControlChange, cameraFollowRef }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -221,6 +245,10 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
           character={marker.data}
           isControlled={isCtrl}
           onClick={() => { if (onClick) onClick(); }}
+          onControlChange={(pos) => {
+            if (onControlChange) onControlChange(marker.id, pos);
+          }}
+          cameraFollowRef={cameraFollowRef}
         />
       );
     }
@@ -479,7 +507,10 @@ export function ThreeDScene({
   onAutoRotateToggle,
   projectId,
   controlledCharacterId,
+  onControlChange,
 }: ThreeDSceneProps) {
+  // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
+  const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
   const controlsRef = useRef<any>(null);
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
@@ -653,6 +684,16 @@ export function ThreeDScene({
 
   // ✅ Enhanced marker click handler
   const handleMarkerClick = (marker: any) => {
+    // v0.16.0-delta: If this is the already-controlled ecctrl character, skip marker reset
+    // and focus on the live position (selectedMarker.position updated by onControlChange)
+    const isControlledEcctrl = marker.data?.movementType === 'ecctrl'
+      && controlledCharacterId === marker.data?.id;
+
+    if (isControlledEcctrl && selectedMarker?.position) {
+      focusOnMarker(selectedMarker);
+      return;
+    }
+
     const metadata: any = {
       ...marker.metadata,
       ...(marker.data || {}),
@@ -1012,6 +1053,15 @@ export function ThreeDScene({
           onReady={() => setControlsReady(true)}
         />
 
+        {/* v0.16.0-delta: Camera follow — smoothly tracks controlled character when movementPattern=follow */}
+        {controlledCharacterId != null && (
+          <CameraFollow
+            controlsRef={controlsRef}
+            cameraFollowRef={cameraFollowRef}
+            enabled={true}
+          />
+        )}
+
         {/* ORBIT CONTROLS GIZMO HELPER */}
         {controlsReady && showGizmoCube && (
           <GizmoHelper
@@ -1095,6 +1145,8 @@ export function ThreeDScene({
               onClick={() => handleMarkerClick(marker)}
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
               controlledCharacterId={controlledCharacterId}
+              onControlChange={onControlChange}
+              cameraFollowRef={cameraFollowRef}
             />
           ))}
         </Physics>

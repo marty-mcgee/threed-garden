@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.16.0-centaur",
+  "version": "0.16.0-delta",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -10,14 +10,7 @@
     "db:migrate": "echo 'Use db:push for development'",
     "db:push": "drizzle-kit push --force",
     "db:studio": "drizzle-kit studio",
-    "db:seed:all": "bun run src/lib/scripts/seed-initial-data.ts",
-    "db:seed:threed": "bun run src/lib/data/threed/seed.ts",
-    "db:seed:traffic": "bun run src/lib/data/traffic/seed.ts",
-    "db:seed:music": "bun run src/lib/data/music/seed.ts",
-    "db:sync:sequences": "bun run src/lib/scripts/sync-sequences.ts",
-    "db:migrate:relationships": "bun run src/lib/scripts/migrate-project-module-relationships.ts",
-    "db:rollback:relationships": "bun run src/lib/scripts/migrate-project-module-relationships.ts --rollback",
-    "db:migrate:project-assets": "bun run src/lib/scripts/migrate-project-assets-add-module.ts"
+    "db:seed:all": "bun run src/lib/scripts/seed-initial-data.ts"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",

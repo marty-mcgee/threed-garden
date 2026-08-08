@@ -393,3 +393,29 @@ Set `movementType: 'ecctrl'` on a character record in the database to route it t
 3. Release Control / ✕ → keyboard input stops → character stationary
 
 ---
+## v0.16.0-delta "Camera Follow + Marker Sync"
+
+### Features
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Camera Follow** | ✅ Complete | `CameraFollow` component lerps `OrbitControls.target` to controlled character via shared `MutableRefObject` — zero React state overhead |
+| **Click Position Sync** | ✅ Complete | Clicking a moved ecctrl character syncs `selectedMarker.position` to current physics position before focus/zoom |
+| **Movement Pattern** | ✅ Complete | `movementPattern: 'follow'` enables auto camera tracking; `stationary` keeps free-roaming camera |
+
+### Architecture
+```
+EcctrlCharacter (useFrame)
+  └── cameraFollowRef.current = currPos
+        ↓
+CameraFollow (useFrame, single lerp)
+  └── controls.target.lerp(characterPos, 0.08)
+```
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Added `cameraFollowRef` prop, `movementPattern` field, position sync on click |
+| `src/components/map/ThreeDScene.tsx` | Added `CameraFollow` + `performLerp`, threaded `cameraFollowRef` |
+| `src/app/dashboard/map/page.tsx` | `handleControlChange` syncs `selectedMarker.position` on control state change |
+
+---

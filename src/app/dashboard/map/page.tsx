@@ -184,13 +184,17 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
   // Build key-value metadata rows from the data record
   const metaRows: { label: string; value: string }[] = [];
 
-  // 3D position (if available — for markers with DB position columns)
+  // 3D position — prefer live RuntimeMarker position (updated by ecctrl), fallback to DB columns
   if (!isIncident) {
-    const px = d.positionX ?? d.position?.x;
-    const py = d.positionY ?? d.position?.y;
-    const pz = d.positionZ ?? d.position?.z;
+    const live = selected.position; // RuntimeMarker live position
+    const dbX = d.positionX ?? d.position?.x;
+    const dbY = d.positionY ?? d.position?.y;
+    const dbZ = d.positionZ ?? d.position?.z;
+    const px = live?.x != null ? live.x : dbX;
+    const py = live?.y != null ? live.y : (dbY ?? 0);
+    const pz = live?.z != null ? live.z : dbZ;
     if (px != null && pz != null) {
-      metaRows.push({ label: 'Position', value: `X:${Number(px).toFixed(1)} Y:${Number(py || 0).toFixed(1)} Z:${Number(pz).toFixed(1)}` });
+      metaRows.push({ label: 'Position', value: `X:${Number(px).toFixed(1)} Y:${Number(py).toFixed(1)} Z:${Number(pz).toFixed(1)}` });
     }
   }
 
@@ -410,6 +414,14 @@ function UnifiedMapPageInner() {
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
+
+  // v0.16.0-delta: Sync RuntimeMarker position when ecctrl character moves
+  const handleControlChange = useCallback((_markerId: string, pos: { x: number; y: number; z: number }) => {
+    setSelectedMarker((prev: any) => {
+      if (!prev) return prev;
+      return { ...prev, position: { ...prev.position, x: pos.x, y: pos.y, z: pos.z } };
+    });
+  }, []);
 
   // ✅ Advanced Filtering Panel State
   const [showFilterPanel, setShowFilterPanel] = useState(false);
@@ -1048,6 +1060,7 @@ function UnifiedMapPageInner() {
                 filterActiveOnly={filterActiveOnly}
                 filterAssetType={filterAssetType}
                 controlledCharacterId={controlledCharacterId}
+                onControlChange={handleControlChange}
               />
             )}
 
@@ -1067,6 +1080,7 @@ function UnifiedMapPageInner() {
                 filterActiveOnly={filterActiveOnly}
                 filterAssetType={filterAssetType}
                 controlledCharacterId={controlledCharacterId}
+                onControlChange={handleControlChange}
               />
             )}
 

@@ -1,4 +1,4 @@
-// src/components/threed/shared/EcctrlCharacter.tsx — v0.16.0-beta
+// src/components/threed/shared/EcctrlCharacter.tsx — v0.16.0-delta
 'use client';
 
 import { useRef, useState, useCallback, useEffect } from 'react';
@@ -14,7 +14,7 @@ interface CharacterData {
   id: number; characterId: string; name: string; type: string; status: string;
   modelId: number | null;
   model?: { id: number; modelName: string; modelType: string; filePath: string; scale: string; rotationY: string; animations: string[] };
-  defaultAnimation: string; animationSpeed: number; movementType: string;
+  defaultAnimation: string; animationSpeed: number; movementType: string; movementPattern?: string;
   movementRadius: number; movementSpeed: number;
   positionX: number; positionY: number; positionZ: number;
   rotation: number; scale: number; visible: boolean;
@@ -23,10 +23,12 @@ interface CharacterData {
 
 interface EcctrlCharacterProps {
   character: CharacterData;
-  /** Whether WASD keyboard controls are active */
   isControlled?: boolean;
-  /** Called when the character's click-target mesh is clicked */
   onClick?: () => void;
+  onControlChange?: (pos: { x: number; y: number; z: number }) => void;
+  /** Shared ref — the character writes its world position here each frame when controlled.
+   *  The parent reads it for camera follow without triggering React re-renders. */
+  cameraFollowRef?: React.MutableRefObject<THREE.Vector3 | null>;
 }
 
 const modelCache = new Map<string, THREE.Group>();
@@ -116,7 +118,7 @@ function useWASD(active: boolean) {
 // ============================================
 // COMPONENT
 // ============================================
-export function EcctrlCharacter({ character, isControlled = false, onClick }: EcctrlCharacterProps) {
+export function EcctrlCharacter({ character, isControlled = false, onClick, onControlChange, cameraFollowRef }: EcctrlCharacterProps) {
   const ecctrlRef = useRef<EcctrlHandle>(null);
   const startY = Math.max(Number(character.positionY) || 0, 1.5);
   const { model, loading, error, animations } = useCharacterModel(character, character.status === 'active' && character.visible);
@@ -137,19 +139,36 @@ export function EcctrlCharacter({ character, isControlled = false, onClick }: Ec
     const jump = k.space && !k.spaceFired;
     if (jump) k.spaceFired = true;
     ec.setMovement({ joystick: { x: jx, y: jy }, run: k.shift, jump });
+
+    // v0.16.0-delta: Write position to camera follow ref (zero-cost, no React state)
+    if (cameraFollowRef) {
+      const p = ec.currPos;
+      cameraFollowRef.current = new THREE.Vector3(p.x, p.y, p.z);
+    }
   });
+
+  // Sync marker position when control state changes (Take Control or Release Control)
+  useEffect(() => {
+    if (onControlChange && ecctrlRef.current) {
+      const p = ecctrlRef.current.currPos;
+      onControlChange({ x: p.x, y: p.y, z: p.z });
+    }
+  }, [isControlled, onControlChange]);
 
   const handleAnimChange = useCallback((s: EcctrlAnimationState) => { setCurAnim(s); }, []);
 
   const handleClick = useCallback((e: any) => {
     e.stopPropagation();
+    if (onControlChange && ecctrlRef.current) {
+      const p = ecctrlRef.current.currPos;
+      onControlChange({ x: p.x, y: p.y, z: p.z });
+    }
     if (onClick) onClick();
-  }, [onClick]);
+  }, [onClick, onControlChange]);
 
   const handleEnter = useCallback(() => setHovered(true), []);
   const handleLeave = useCallback(() => setHovered(false), []);
 
-  // Simple 3D overlays: selection ring + hover hint only
   const overlays = (
     <>
       {currentEmote && (
@@ -173,7 +192,6 @@ export function EcctrlCharacter({ character, isControlled = false, onClick }: Ec
     </>
   );
 
-  // Render
   const pos: [number, number, number] = [Number(character.positionX) || 0, startY, Number(character.positionZ) || 0];
 
   if (!character.model?.filePath || error || (!model && !loading)) {
