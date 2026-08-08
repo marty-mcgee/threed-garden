@@ -29,6 +29,8 @@ interface ThreeDSceneProps {
   autoRotate?: boolean;
   onAutoRotateToggle?: () => void;
   projectId?: number;
+  /** ID of the ecctrl character currently being controlled by keyboard */
+  controlledCharacterId?: number | null;
 }
 
 // ✅ View Preset Types
@@ -202,7 +204,7 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 }
 
 // ✅ ThreeD Marker Component
-function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
+function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacterId }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -211,10 +213,15 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected }: any) {
   const pos: [number, number, number] = [Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0];
 
   if (marker.type === 'character' || marker.type === 'characters') {
-    // v0.16.0-alpha: Route ecctrl characters to physics-based EcctrlCharacter
+    // v0.16.0-beta: Route ecctrl characters to physics-based EcctrlCharacter
     if (marker.data?.movementType === 'ecctrl') {
+      const isCtrl = controlledCharacterId != null && controlledCharacterId === marker.data?.id;
       return (
-        <EcctrlCharacter character={marker.data} />
+        <EcctrlCharacter
+          character={marker.data}
+          isControlled={isCtrl}
+          onClick={() => { if (onClick) onClick(); }}
+        />
       );
     }
 
@@ -471,6 +478,7 @@ export function ThreeDScene({
   autoRotate = false,
   onAutoRotateToggle,
   projectId,
+  controlledCharacterId,
 }: ThreeDSceneProps) {
   const controlsRef = useRef<any>(null);
   const [hasData, setHasData] = useState(false);
@@ -1086,6 +1094,7 @@ export function ThreeDScene({
               marker={marker}
               onClick={() => handleMarkerClick(marker)}
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
+              controlledCharacterId={controlledCharacterId}
             />
           ))}
         </Physics>

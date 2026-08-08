@@ -326,3 +326,36 @@ API (/api/map/threed)
 Set `movementType: 'ecctrl'` on a character record in the database to route it through the physics-based `EcctrlCharacter`. Characters with other movement types (`wander`, `patrol`, `follow`, `teleport`, `stationary`) continue using the existing `GardenCharacter`.
 
 ---
+
+## v0.16.0-beta "React Three Physics" — Delivered
+
+### Packages Introduced
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `@react-three/rapier` | 2.2.0 | Physics engine — gravity, colliders, rigid bodies |
+| `ecctrl` | 2.0.0 | Character controller — capsule collider, WASD movement, animation states |
+
+### Files Created
+- `src/components/threed/shared/EcctrlCharacter.tsx` (~270 lines) — ecctrl-powered character with keyboard controls, physics, model loading
+
+### Files Modified
+- `src/components/map/ThreeDScene.tsx` — `<Physics>` + `<RigidBody>` ground, `controlledCharacterId` threading
+- `src/components/map/UnifiedMapView.tsx` — `controlledCharacterId` prop
+- `src/app/dashboard/map/page.tsx` — `controlledCharacterId` state, enhanced `DetailsCard` with Take/Release Control
+
+### Architecture
+```
+<Canvas>
+  <Physics gravity={[0, -9.81, 0]}>
+    <RigidBody type="fixed" colliders="cuboid">  ← Ground
+    <EcctrlCharacter isControlled={idMatches} />  ← Player-controlled
+  </Physics>
+</Canvas>
+```
+
+### UX Flow
+1. Click ecctrl character → `DetailsCard` appears with **🎮 Take Control**
+2. Click Take Control → WASD/Space/Shift active → blue ring on character → card shows controlling status
+3. Release Control / ✕ → keyboard input stops → character stationary
+
+---

@@ -157,7 +157,13 @@ function ProjectSelectorDialog({
 }
 
 // ✅ v0.15.2: 2D Map Details Overlay — mirrors 3D Scene's Rich Details Box
-function DetailsCard({ selected, onClose }: { selected: any; onClose: () => void }) {
+function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl }: {
+  selected: any;
+  onClose: () => void;
+  controlledCharacterId: number | null;
+  onTakeControl: (id: number) => void;
+  onReleaseControl: () => void;
+}) {
   if (!selected) return null;
   // Detect incidents by DB fields only traffic records have (latitude, severity, title+location)
   const isIncident = selected.latitude != null || selected.severity || (selected.title && selected.location);
@@ -236,8 +242,9 @@ function DetailsCard({ selected, onClose }: { selected: any; onClose: () => void
             }
             if (isCharacter) {
               if (d.type || d.characterType) details.push(`🧚 ${d.type || d.characterType}`);
-              if (d.defaultEmote) details.push(`😊 ${d.defaultEmote}`);
+              if (d.defaultEmote && d.defaultEmote !== 'none') details.push(`😊 ${d.defaultEmote}`);
               if (d.movementType) details.push(`🚶 ${d.movementType}`);
+              if (d.movementSpeed) details.push(`⚡ Speed: ${d.movementSpeed}`);
             }
             if (d.notes || d.description) details.push(d.notes || d.description);
             
@@ -245,6 +252,39 @@ function DetailsCard({ selected, onClose }: { selected: any; onClose: () => void
           })()}
         </div>
       )}
+
+      {/* v0.16.0-beta: Character Controls — Take/Release Control buttons */}
+      {isMarker && selected.type === 'characters' && (() => {
+        const d = selected.data || selected.metadata?.data || {};
+        if (d.movementType !== 'ecctrl') return null;
+        const charId = d.id;
+        const isControlling = controlledCharacterId === charId;
+        return (
+          <div className="mt-2 border-t border-white/10 pt-2 space-y-1.5">
+            {isControlling ? (
+              <>
+                <div className="text-[10px] text-blue-300 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                  Controlling — WASD / Space / Shift
+                </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onReleaseControl(); }}
+                  className="block w-full text-center text-[11px] bg-amber-600 hover:bg-amber-500 text-white px-2 py-1 rounded transition-colors"
+                >
+                  ⏸️ Release Control
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={(e) => { e.stopPropagation(); onTakeControl(charId); }}
+                className="block w-full text-center text-[11px] bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded transition-colors"
+              >
+                🎮 Take Control
+              </button>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ✅ v0.15.2: Outgoing admin link — opens project asset details in new tab */}
       {(() => {
@@ -360,6 +400,7 @@ function UnifiedMapPageInner() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
+  const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
 
   // ✅ Advanced Filtering Panel State
@@ -943,6 +984,7 @@ function UnifiedMapPageInner() {
                       filterText={filterText}
                       filterActiveOnly={filterActiveOnly}
                       filterAssetType={filterAssetType}
+                      controlledCharacterId={controlledCharacterId}
                     />
                   </div>
                 </div>
@@ -975,6 +1017,7 @@ function UnifiedMapPageInner() {
                       filterText={filterText}
                       filterActiveOnly={filterActiveOnly}
                       filterAssetType={filterAssetType}
+                      controlledCharacterId={controlledCharacterId}
                     />
                   </div>
                 </div>
@@ -996,6 +1039,7 @@ function UnifiedMapPageInner() {
                 filterText={filterText}
                 filterActiveOnly={filterActiveOnly}
                 filterAssetType={filterAssetType}
+                controlledCharacterId={controlledCharacterId}
               />
             )}
 
@@ -1014,6 +1058,7 @@ function UnifiedMapPageInner() {
                 filterText={filterText}
                 filterActiveOnly={filterActiveOnly}
                 filterAssetType={filterAssetType}
+                controlledCharacterId={controlledCharacterId}
               />
             )}
 
@@ -1025,6 +1070,9 @@ function UnifiedMapPageInner() {
       <DetailsCard
         selected={selectedMarker || selectedIncident}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
+        controlledCharacterId={controlledCharacterId}
+        onTakeControl={(id) => setControlledCharacterId(id)}
+        onReleaseControl={() => setControlledCharacterId(null)}
       />
 
       {/* ✅ Navigation */}

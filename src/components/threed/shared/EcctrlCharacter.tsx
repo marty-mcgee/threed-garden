@@ -1,7 +1,7 @@
-// src/components/threed/shared/EcctrlCharacter.tsx — v0.16.0-alpha "React Three Physics"
+// src/components/threed/shared/EcctrlCharacter.tsx — v0.16.0-beta
 'use client';
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
@@ -10,332 +10,194 @@ import type { EcctrlHandle, EcctrlAnimationState, EcctrlAnimationStateContext } 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
-// ============================================
-// TYPES
-// ============================================
 interface CharacterData {
-  id: number;
-  characterId: string;
-  name: string;
-  type: string;
-  status: string;
+  id: number; characterId: string; name: string; type: string; status: string;
   modelId: number | null;
-  model?: {
-    id: number;
-    modelName: string;
-    modelType: string;
-    filePath: string;
-    scale: string;
-    rotationY: string;
-    animations: string[];
-  };
-  defaultAnimation: string;
-  animationSpeed: number;
-  movementType: string;
-  movementRadius: number;
-  movementSpeed: number;
-  positionX: number;
-  positionY: number;
-  positionZ: number;
-  rotation: number;
-  scale: number;
-  visible: boolean;
-  interactable: boolean;
-  interactionMessage: string;
-  defaultEmote: string;
-  soundEffect: string | null;
+  model?: { id: number; modelName: string; modelType: string; filePath: string; scale: string; rotationY: string; animations: string[] };
+  defaultAnimation: string; animationSpeed: number; movementType: string;
+  movementRadius: number; movementSpeed: number;
+  positionX: number; positionY: number; positionZ: number;
+  rotation: number; scale: number; visible: boolean;
+  interactable: boolean; interactionMessage: string; defaultEmote: string; soundEffect: string | null;
 }
 
 interface EcctrlCharacterProps {
   character: CharacterData;
+  /** Whether WASD keyboard controls are active */
+  isControlled?: boolean;
+  /** Called when the character's click-target mesh is clicked */
+  onClick?: () => void;
 }
 
-// ============================================
-// MODEL CACHE
-// ============================================
 const modelCache = new Map<string, THREE.Group>();
 
-// ============================================
-// ANIMATION RESOLVER — maps ecctrl physics state to animation clips
-// ============================================
-function createAnimationResolver(animations: string[]): (context: EcctrlAnimationStateContext) => EcctrlAnimationState {
-  const has = (name: string) => animations.some((a) => a.toLowerCase() === name.toLowerCase());
-
-  return (context: EcctrlAnimationStateContext): EcctrlAnimationState => {
-    const { isOnGround, isFalling, isMoving, runActive, jumpActive } = context;
-
-    // Jump states
+function createAnimationResolver(animations: string[]): (ctx: EcctrlAnimationStateContext) => EcctrlAnimationState {
+  return (ctx) => {
+    const { isOnGround, isFalling, isMoving, runActive, jumpActive } = ctx;
     if (jumpActive && !isOnGround && !isFalling) return 'JUMP_START';
     if (jumpActive && isFalling) return 'JUMP_FALL';
     if (!jumpActive && isOnGround && !isFalling && isMoving && runActive) return 'RUN';
     if (!jumpActive && isOnGround && !isFalling && isMoving && !runActive) return 'WALK';
     if (!jumpActive && isOnGround && !isFalling && !isMoving) return 'IDLE';
     if (!jumpActive && !isOnGround && isFalling) return 'JUMP_FALL';
-
     return 'IDLE';
   };
 }
 
-// ============================================
-// 3D MODEL LOADER HOOK
-// ============================================
 function useCharacterModel(character: CharacterData, isActive: boolean) {
   const [model, setModel] = useState<THREE.Group | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [animations, setAnimations] = useState<string[]>([]);
-  const mixerRef = useRef<THREE.AnimationMixer | null>(null);
-
   useEffect(() => {
     if (!isActive || !character.model?.filePath) return;
-
     const loadModel = async () => {
-      setLoading(true);
-      setError(null);
-
+      setLoading(true); setError(null);
       try {
-        const modelPath = character.model!.filePath;
-        const modelType = character.model!.modelType?.toLowerCase() || 'glb';
-        const cacheKey = `${modelPath}-${modelType}`;
-
-        let loadedModel: THREE.Group;
-
-        if (modelCache.has(cacheKey)) {
-          loadedModel = modelCache.get(cacheKey)!.clone();
-        } else {
-          if (modelType === 'fbx') {
-            const loader = new FBXLoader();
-            loadedModel = await loader.loadAsync(modelPath) as THREE.Group;
-          } else {
-            const loader = new GLTFLoader();
-            const gltf = await loader.loadAsync(modelPath);
-            loadedModel = gltf.scene;
-          }
-          modelCache.set(cacheKey, loadedModel.clone());
-        }
-
-        // Apply scale and rotation
-        const scaleVal = parseFloat(character.model!.scale || '1') * (character.scale || 1);
-        const rotY = parseFloat(character.model!.rotationY || '0') + (character.rotation || 0);
-        loadedModel.scale.setScalar(scaleVal);
-        loadedModel.rotation.y = (rotY * Math.PI) / 180;
-
-        // Enable shadows
-        loadedModel.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
-        });
-
-        // Extract animation names
-        const clips = (loadedModel as any).animations || [];
-        const clipNames = clips.map((c: any) => c.name);
-        setAnimations(clipNames);
-
-        setModel(loadedModel);
-      } catch (err) {
-        console.error(`EcctrlCharacter: failed to load model:`, err);
-        setError(String(err));
-      } finally {
-        setLoading(false);
-      }
+        const mp = character.model!.filePath, mt = character.model!.modelType?.toLowerCase() || 'glb', ck = `${mp}-${mt}`;
+        let m: THREE.Group;
+        if (modelCache.has(ck)) { m = modelCache.get(ck)!.clone(); }
+        else { m = mt === 'fbx' ? await new FBXLoader().loadAsync(mp) as THREE.Group : (await new GLTFLoader().loadAsync(mp)).scene; modelCache.set(ck, m.clone()); }
+        m.scale.setScalar(parseFloat(character.model!.scale || '1') * (character.scale || 1));
+        m.rotation.y = (parseFloat(character.model!.rotationY || '0') + (character.rotation || 0)) * Math.PI / 180;
+        m.traverse((c) => { if (c instanceof THREE.Mesh) { c.castShadow = true; c.receiveShadow = true; } });
+        setAnimations(((m as any).animations || []).map((a: any) => a.name));
+        setModel(m);
+      } catch (e) { setError(String(e)); }
+      finally { setLoading(false); }
     };
-
     loadModel();
   }, [character, isActive]);
-
   return { model, loading, error, animations };
 }
 
 // ============================================
-// ECCTRL CHARACTER COMPONENT
+// KEYBOARD INPUT HOOK
 // ============================================
-export function EcctrlCharacter({ character }: EcctrlCharacterProps) {
+function useWASD(active: boolean) {
+  const keys = useRef({ w: false, s: false, a: false, d: false, shift: false, space: false, spaceFired: false });
+
+  useEffect(() => {
+    if (!active) {
+      keys.current = { w: false, s: false, a: false, d: false, shift: false, space: false, spaceFired: false };
+      return;
+    }
+    const down = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      switch (e.key.toLowerCase()) {
+        case 'w': case 'arrowup': keys.current.w = true; e.preventDefault(); break;
+        case 's': case 'arrowdown': keys.current.s = true; e.preventDefault(); break;
+        case 'a': case 'arrowleft': keys.current.a = true; e.preventDefault(); break;
+        case 'd': case 'arrowright': keys.current.d = true; e.preventDefault(); break;
+        case 'shift': keys.current.shift = true; e.preventDefault(); break;
+        case ' ':
+          if (!keys.current.space) { keys.current.space = true; keys.current.spaceFired = false; }
+          e.preventDefault(); break;
+      }
+    };
+    const up = (e: KeyboardEvent) => {
+      switch (e.key.toLowerCase()) {
+        case 'w': case 'arrowup': keys.current.w = false; e.preventDefault(); break;
+        case 's': case 'arrowdown': keys.current.s = false; e.preventDefault(); break;
+        case 'a': case 'arrowleft': keys.current.a = false; e.preventDefault(); break;
+        case 'd': case 'arrowright': keys.current.d = false; e.preventDefault(); break;
+        case 'shift': keys.current.shift = false; e.preventDefault(); break;
+        case ' ': keys.current.space = false; keys.current.spaceFired = false; e.preventDefault(); break;
+      }
+    };
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
+  }, [active]);
+
+  return keys;
+}
+
+// ============================================
+// COMPONENT
+// ============================================
+export function EcctrlCharacter({ character, isControlled = false, onClick }: EcctrlCharacterProps) {
   const ecctrlRef = useRef<EcctrlHandle>(null);
-  const groupRef = useRef<THREE.Group>(null);
+  const startY = Math.max(Number(character.positionY) || 0, 1.5);
+  const { model, loading, error, animations } = useCharacterModel(character, character.status === 'active' && character.visible);
 
-  const isVisible = character.status === 'active' && character.visible;
-  const { model, loading, error, animations } = useCharacterModel(character, isVisible);
-
-  // Interaction state
   const [hovered, setHovered] = useState(false);
   const [currentEmote, setCurrentEmote] = useState<string | null>(null);
-  const [showMessage, setShowMessage] = useState<string | null>(null);
-  const [currentAnimState, setCurrentAnimState] = useState<EcctrlAnimationState>('IDLE');
+  const [, setCurAnim] = useState<EcctrlAnimationState>('IDLE');
 
-  // Movement ai state
-  const aiTimerRef = useRef(0);
-  const aiTargetRef = useRef(new THREE.Vector3(
-    Number(character.positionX) || 0,
-    Number(character.positionY) || 0,
-    Number(character.positionZ) || 0,
-  ));
-  const aiVelocityRef = useRef(new THREE.Vector3());
+  const keys = useWASD(isControlled);
 
-  // Manual movement input for programmatic control
-  const setMovement = useCallback((joystickX: number, joystickY: number, jump: boolean, run: boolean) => {
-    if (ecctrlRef.current) {
-      ecctrlRef.current.setMovement({ joystick: { x: joystickX, y: joystickY }, jump, run });
-    }
-  }, []);
-
-  // AI wandering using ecctrl's movement API
-  useFrame((_, delta) => {
-    if (!ecctrlRef.current || !isVisible) return;
-
-    const ecctrl = ecctrlRef.current;
-    const pos = ecctrl.currPos;
-    const target = aiTargetRef.current;
-
-    // Periodic new target
-    aiTimerRef.current += delta;
-    if (aiTimerRef.current > 3) {
-      aiTimerRef.current = 0;
-      const angle = Math.random() * Math.PI * 2;
-      const radius = (character.movementRadius || 5) * Math.random();
-      target.set(
-        (Number(character.positionX) || 0) + Math.cos(angle) * radius,
-        (Number(character.positionY) || 0),
-        (Number(character.positionZ) || 0) + Math.sin(angle) * radius,
-      );
-    }
-
-    // Direction toward target
-    const dir = new THREE.Vector3().subVectors(target, pos);
-    dir.y = 0;
-    const dist = dir.length();
-    if (dist > 0.5) {
-      dir.normalize();
-      setMovement(0, dist > 0.5 ? 1.0 : 0.0, false, false);
-    } else {
-      setMovement(0, 0, false, false);
-    }
+  // Only send movement input when controlled.
+  useFrame(() => {
+    if (!ecctrlRef.current || !isControlled) return;
+    const ec = ecctrlRef.current;
+    const k = keys.current;
+    const jx = (k.d ? 1 : 0) + (k.a ? -1 : 0);
+    const jy = (k.w ? 1 : 0) + (k.s ? -1 : 0);
+    const jump = k.space && !k.spaceFired;
+    if (jump) k.spaceFired = true;
+    ec.setMovement({ joystick: { x: jx, y: jy }, run: k.shift, jump });
   });
 
-  // Animation state change handler
-  const handleAnimationChange = useCallback(
-    (_state: EcctrlAnimationState, _context: EcctrlAnimationStateContext) => {
-      setCurrentAnimState(_state);
-    },
-    [],
-  );
+  const handleAnimChange = useCallback((s: EcctrlAnimationState) => { setCurAnim(s); }, []);
 
-  // Interaction handler
-  const handleClick = () => {
-    if (!character.interactable) return;
+  const handleClick = useCallback((e: any) => {
+    e.stopPropagation();
+    if (onClick) onClick();
+  }, [onClick]);
 
-    if (character.defaultEmote && character.defaultEmote !== 'none') {
-      setCurrentEmote(character.defaultEmote);
-      setTimeout(() => setCurrentEmote(null), 2000);
-    }
+  const handleEnter = useCallback(() => setHovered(true), []);
+  const handleLeave = useCallback(() => setHovered(false), []);
 
-    if (character.interactionMessage) {
-      setShowMessage(character.interactionMessage);
-      setTimeout(() => setShowMessage(null), 3000);
-    }
-
-    if (character.soundEffect) {
-      try {
-        const audio = new Audio(character.soundEffect);
-        audio.volume = 0.4;
-        audio.play().catch(() => {});
-      } catch {}
-    }
-  };
-
-  // Fallback — colored box for characters without models
-  if (!character.model?.filePath || error || (!model && !loading)) {
-    const colorMap: Record<string, string> = {
-      animal: '#D2691E', bird: '#87CEEB', insect: '#32CD32',
-      mythical: '#9370DB', human: '#FFB6C1', robot: '#A9A9A9', decoration: '#FFD700',
-    };
-    const boxColor = colorMap[character.type] || '#FF69B4';
-    const opacity = isVisible ? 1 : 0.4;
-
-    return (
-      <Ecctrl
-        position={[Number(character.positionX) || 0, Number(character.positionY) || 0.5, Number(character.positionZ) || 0]}
-        floatHeight={0.1}
-        maxWalkVel={character.movementSpeed || 1.5}
-        enable
-      >
-        <mesh castShadow receiveShadow position={[0, 0.4, 0]}>
-          <cylinderGeometry args={[0.3, 0.4, 0.8, 8]} />
-          <meshStandardMaterial color={boxColor} transparent={!isVisible} opacity={opacity} />
-        </mesh>
-        <Html position={[0, 1.2, 0]} center>
-          <div className="text-xs text-white/60 whitespace-nowrap pointer-events-none bg-black/40 px-1.5 py-0.5 rounded">
-            {character.name}
+  // Simple 3D overlays: selection ring + hover hint only
+  const overlays = (
+    <>
+      {currentEmote && (
+        <Html position={[0, 2.0, 0]} center transform occlude distanceFactor={1} zIndexRange={[10, 20]}>
+          <div style={{ fontSize: 22, pointerEvents: 'none', userSelect: 'none' }} className="bg-white dark:bg-gray-800 rounded-full px-3 py-2 shadow-lg">
+            {currentEmote==='happy'?'😊':currentEmote==='sad'?'😢':currentEmote==='surprised'?'😲':currentEmote==='angry'?'😠':currentEmote==='wave'?'👋':currentEmote==='dance'?'💃':currentEmote==='sleep'?'😴':''}
           </div>
         </Html>
+      )}
+      {hovered && !isControlled && (
+        <Html position={[0, 2.0, 0]} center transform occlude distanceFactor={1} zIndexRange={[10, 20]}>
+          <div style={{ fontSize: 14, pointerEvents: 'none', userSelect: 'none' }} className="bg-black/85 text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap font-medium">🔍 Click to view {character.name}</div>
+        </Html>
+      )}
+      {isControlled && (
+        <mesh position={[0, -0.35, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.9, 1.15, 32]} />
+          <meshBasicMaterial color="#3b82f6" transparent opacity={0.55} side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
+      )}
+    </>
+  );
+
+  // Render
+  const pos: [number, number, number] = [Number(character.positionX) || 0, startY, Number(character.positionZ) || 0];
+
+  if (!character.model?.filePath || error || (!model && !loading)) {
+    const colorMap: Record<string, string> = { animal: '#D2691E', bird: '#87CEEB', insect: '#32CD32', mythical: '#9370DB', human: '#FFB6C1', robot: '#A9A9A9', decoration: '#FFD700' };
+    return (
+      <Ecctrl ref={ecctrlRef} position={pos} floatHeight={0.3} maxWalkVel={2} enable>
+        <mesh castShadow receiveShadow position={[0, 0.45, 0]} onClick={handleClick} onPointerEnter={handleEnter} onPointerLeave={handleLeave}>
+          <cylinderGeometry args={[0.3, 0.42, 0.9, 10]} />
+          <meshStandardMaterial color={colorMap[character.type] || '#FF69B4'} />
+        </mesh>
+        {overlays}
       </Ecctrl>
     );
   }
 
   return (
-    <Ecctrl
-      ref={ecctrlRef}
-      position={[Number(character.positionX) || 0, Number(character.positionY) || 0.5, Number(character.positionZ) || 0]}
-      floatHeight={0.3}
-      maxWalkVel={character.movementSpeed || 2}
-      maxRunVel={(character.movementSpeed || 2) * 1.5}
-      enable
-      capsuleHalfHeight={0.6}
-      capsuleRadius={0.3}
-    >
-      {/* Animation state controller */}
-      <EcctrlAnimationStateController
-        ecctrl={ecctrlRef}
-        enabled={isVisible}
-        resolver={createAnimationResolver(animations)}
-        onChange={handleAnimationChange}
-      />
-
-      {/* Character model */}
-      <group ref={groupRef}>
-        {model && <primitive object={model} />}
-      </group>
-
-      {/* Emote Bubble */}
-      {currentEmote && (
-        <Html position={[0, 1.8, 0]} center>
-          <div className="bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg animate-bounce">
-            {currentEmote === 'happy' && <span className="text-2xl">😊</span>}
-            {currentEmote === 'sad' && <span className="text-2xl">😢</span>}
-            {currentEmote === 'surprised' && <span className="text-2xl">😲</span>}
-            {currentEmote === 'angry' && <span className="text-2xl">😠</span>}
-            {currentEmote === 'wave' && <span className="text-2xl">👋</span>}
-            {currentEmote === 'dance' && <span className="text-2xl">💃</span>}
-            {currentEmote === 'sleep' && <span className="text-2xl">😴</span>}
-          </div>
-        </Html>
-      )}
-
-      {/* Speech/Interaction Bubble */}
-      {showMessage && (
-        <Html position={[0, 2.3, 0]} center>
-          <div className="bg-black/80 text-white px-3 py-1.5 rounded-lg text-sm whitespace-nowrap shadow-lg">
-            💬 {showMessage}
-          </div>
-        </Html>
-      )}
-
-      {/* Hover Tooltip */}
-      {hovered && character.interactable && (
-        <Html position={[0, 1.5, 0]} center>
-          <div className="bg-black/60 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-            Click to interact with {character.name}
-          </div>
-        </Html>
-      )}
-
-      {/* Name Label */}
-      <Html position={[0, -0.6, 0]} center>
-        <div className="text-[10px] text-white/50 whitespace-nowrap pointer-events-none">
-          {character.name}
-        </div>
-      </Html>
+    <Ecctrl ref={ecctrlRef} position={pos} floatHeight={0.3} maxWalkVel={2} maxRunVel={3.5} enable capsuleHalfHeight={0.6} capsuleRadius={0.3}>
+      <EcctrlAnimationStateController ecctrl={ecctrlRef} enabled={character.status === 'active'} resolver={createAnimationResolver(animations)} onChange={handleAnimChange} />
+      <mesh onClick={handleClick} onPointerEnter={handleEnter} onPointerLeave={handleLeave}>
+        <boxGeometry args={[1.2, 1.5, 1.2]} />
+        <meshBasicMaterial visible={false} />
+      </mesh>
+      {model && <primitive object={model} />}
+      {overlays}
     </Ecctrl>
   );
 }
