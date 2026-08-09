@@ -406,7 +406,7 @@ function UnifiedMapPageInner() {
   const [dataAge, setDataAge] = useState<string>('--');
   const [isStale, setIsStale] = useState(false);
   
-  // ✅ Default to view ['3d','2d','combined']
+  // ✅ Default view ['3d','2d','combined']
   const [viewMode, setViewMode] = useState<MapViewMode>('3d');
 
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -436,7 +436,7 @@ function UnifiedMapPageInner() {
 
   // ✅ Asset type visibility state
   const [visibleAssetTypes] = useState<Set<string>>(
-    new Set(['plantings', 'beds', 'characters', 'farmbots'])
+    new Set(['plantings', 'beds', 'characters', 'farmbots', 'models'])
   );
 
   // ✅ Live data age updater
@@ -562,6 +562,7 @@ function UnifiedMapPageInner() {
             tasks: (resultData.tasks || []) as any[],
             harvests: (resultData.harvests || []) as any[],
             weatherLogs: (resultData.weatherLogs || []) as any[],
+            models: (resultData.models || []) as any[],
           };
           
           const trafficTotal = Object.values(trafficRaw).reduce((sum, arr) => sum + arr.length, 0);
@@ -895,7 +896,7 @@ function UnifiedMapPageInner() {
               {/* Asset Type Quick Filters */}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-muted-foreground">Type:</span>
-                {['Plantings', 'Beds', 'Characters', 'FarmBots', 'CHP CAD', 'CalFire'].map((type) => (
+                {['Plantings', 'Beds', 'Characters', 'FarmBots', 'Models', 'CHP CAD', 'CalFire'].map((type) => (
                   <Badge
                     key={type}
                     variant={filterAssetType === type ? 'default' : 'outline'}

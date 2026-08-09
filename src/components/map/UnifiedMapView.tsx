@@ -50,6 +50,8 @@ const MARKER_CONFIG: Record<string, { color: string; icon: string; label: string
   characters: { color: '#8b5cf6', icon: '🧚', label: 'Character' },
   farmbot: { color: '#64748b', icon: '🤖', label: 'FarmBot' },
   farmbots: { color: '#64748b', icon: '🤖', label: 'FarmBot' },
+  model: { color: '#06b6d4', icon: '🧊', label: 'Model' },
+  models: { color: '#06b6d4', icon: '🧊', label: 'Model' },
 };
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
@@ -137,7 +139,7 @@ export function UnifiedMapView({
     }
 
     const raw = data.threed.raw as Record<string, any[]>;
-    const typesToProcess = ['beds', 'characters', 'farmbots'];
+    const typesToProcess = ['beds', 'characters', 'farmbots', 'models'];
     typesToProcess.forEach((type) => {
       if (!raw[type]) return;
       raw[type].forEach((item: any) => {

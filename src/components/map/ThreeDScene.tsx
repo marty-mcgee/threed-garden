@@ -16,6 +16,7 @@ import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
 import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
 import { PlantMarker3D } from '@/components/threed/markers/PlantMarker3D';
 import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
+import { ModelMarker3D } from '@/components/threed/markers/ModelMarker3D';
 import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
 
 interface ThreeDSceneProps {
@@ -281,6 +282,18 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
       >
         <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: marker.data?.quantity, status: marker.data?.status }} position={pos} />
       </group>
+    );
+  }
+
+  // v0.16.1-alpha: Render 3D models as standalone markers
+  if (marker.type === 'model' || marker.type === 'models') {
+    return (
+      <ModelMarker3D
+        model={marker.data}
+        position={pos}
+        name={marker.name}
+        animationSpeed={marker.data?.animationSpeed || 1}
+      />
     );
   }
 

@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 8, 2026 @ 7:15am PST
-**Current Version:** v0.16.0-centaur "Polished Details Card"
+**Last Updated:** August 8, 2026 @ 8:45am PST
+**Current Version:** v0.16.0-delta "Camera Follow + Marker Sync"
 
 ---
 
@@ -235,6 +235,7 @@ API (/api/map/threed)
 | **v0.16.0-alpha** | **2026-08-07** | **React Three Physics — @react-three/rapier + ecctrl integration** |
 | **v0.16.0-beta** | **2026-08-08** | **Keyboard Controls — WASD movement, Take/Release Control in DetailsCard** |
 | **v0.16.0-centaur** | **2026-08-08** | **Polished Details Card — KvRow grid, 3D coords, improved buttons** |
+| **v0.16.0-delta** | **2026-08-08** | **Camera Follow + Marker Sync — cursor tracking, position sync on click** |
 
 ---
 

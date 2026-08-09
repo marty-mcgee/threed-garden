@@ -13,6 +13,7 @@ import {
   threedTasks,
   threedHarvests,
   threedWeatherLogs,
+  threedModels,
 } from '@/lib/schema/threed';
 import { 
   trafficChpCadIncidents,
@@ -111,6 +112,7 @@ export async function GET(request: NextRequest) {
       tasks: [],
       harvests: [],
       weatherLogs: [],
+      models: [],
     };
 
     const trafficData: Record<string, any[]> = {
@@ -250,6 +252,7 @@ export async function GET(request: NextRequest) {
           'threed_tasks': { table: threedTasks, orderField: threedTasks.createdAt, key: 'tasks', tableName: 'threedTasks' },
           'threed_harvests': { table: threedHarvests, orderField: threedHarvests.createdAt, key: 'harvests', tableName: 'threedHarvests' },
           'threed_weather_logs': { table: threedWeatherLogs, orderField: threedWeatherLogs.createdAt, key: 'weatherLogs', tableName: 'threedWeatherLogs' },
+          'threed_models': { table: threedModels, orderField: threedModels.createdAt, key: 'models', tableName: 'threedModels' },
         };
 
         await processAssets(assetIdsByType, typeMap, threedData);
@@ -307,7 +310,7 @@ export async function GET(request: NextRequest) {
 
     // ✅ Add zero counts for missing types
     const allKeys = [
-      'plants', 'beds', 'characters', 'layers', 'farmbots', 'plantings', 'tasks', 'harvests', 'weatherLogs',
+      'plants', 'beds', 'characters', 'layers', 'farmbots', 'plantings', 'tasks', 'harvests', 'weatherLogs', 'models',
       'chpCadIncidents', 'chpCases', 'chpCenters', 'caltransLaneClosures', 'caltransCctvCameras',
       'caltransDistricts', 'bayArea511Events', 'calfireIncidents'
     ];
