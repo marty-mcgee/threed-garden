@@ -15,7 +15,20 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    remotePatterns: [new URL('https://threedpublic.s3.us-west-2.amazonaws.com/**')],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'threedpublic.s3.us-west-2.amazonaws.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'placeholder.co'
+      },
+      {
+        protocol: 'https',
+        hostname: 'marty-mcgee.com'
+      },
+    ],
   },
   async rewrites() {
     return [

@@ -118,7 +118,7 @@ export function MusicPlayer({
                   alt={album.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/256x256?text=No+Cover';
+                    (e.target as HTMLImageElement).src = 'https://placehold.co/256x256?text=No+Cover';
                   }}
                 />
               </div>

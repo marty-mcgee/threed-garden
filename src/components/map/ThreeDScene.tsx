@@ -97,22 +97,71 @@ function ControlsReadyNotifier({ controlsRef, onReady }: { controlsRef: any; onR
   return null;
 }
 
-// v0.16.0-delta: Camera follow — lerps OrbitControls target toward character position
-function CameraFollow({ controlsRef, cameraFollowRef, enabled }: { controlsRef: any; cameraFollowRef: React.MutableRefObject<THREE.Vector3 | null>; enabled: boolean }) {
-  const followTarget = useRef(new THREE.Vector3());
+// v0.16.1-beta: Camera Controller — supports multiple view modes for selected characters
+type CameraViewMode = 'follow' | 'topdown' | 'firstperson' | 'orbit' | 'stationary';
 
-  useFrame(() => {
+function CameraController({
+  controlsRef,
+  cameraFollowRef,
+  mode,
+  enabled,
+}: {
+  controlsRef: any;
+  cameraFollowRef: React.MutableRefObject<THREE.Vector3 | null>;
+  mode: CameraViewMode;
+  enabled: boolean;
+}) {
+  const followTarget = useRef(new THREE.Vector3());
+  const orbitAngle = useRef(0);
+
+  useFrame((_, delta) => {
     if (!enabled || !controlsRef.current || !cameraFollowRef.current) return;
-    // Smoothly lerp controls target toward the character's position
-    const t = cameraFollowRef.current;
-    performLerp(followTarget.current, t, 0.08);
-    controlsRef.current.target.lerp(followTarget.current, 0.08);
+
+    const controls = controlsRef.current;
+    const charPos = cameraFollowRef.current;
+
+    switch (mode) {
+      case 'follow':
+        // Smoothly lerp controls target toward the character's position
+        performLerp(followTarget.current, charPos, 0.08);
+        controls.target.lerp(followTarget.current, 0.08);
+        break;
+
+      case 'topdown':
+        // Camera directly above character looking straight down
+        controls.target.set(charPos.x, charPos.y, charPos.z);
+        controls.object.position.set(charPos.x, charPos.y + 15, charPos.z);
+        controls.update();
+        break;
+
+      case 'firstperson':
+        // Camera at character position, slightly elevated
+        controls.target.set(charPos.x, charPos.y + 3, charPos.z);
+        controls.object.position.set(charPos.x + 0.5, charPos.y + 1.5, charPos.z + 0.5);
+        controls.update();
+        break;
+
+      case 'orbit':
+        // Camera orbits around character at a fixed distance
+        orbitAngle.current += delta * 0.5; // slow rotation
+        const radius = 8;
+        const camX = charPos.x + Math.cos(orbitAngle.current) * radius;
+        const camZ = charPos.z + Math.sin(orbitAngle.current) * radius;
+        controls.target.set(charPos.x, charPos.y, charPos.z);
+        controls.object.position.set(camX, charPos.y + 5, camZ);
+        controls.update();
+        break;
+
+      default:
+        // stationary: camera stays put
+        break;
+    }
   });
 
   return null;
 }
 
-// v0.16.0-delta: Simple lerp helper
+// Simple lerp helper
 function performLerp(out: THREE.Vector3, target: THREE.Vector3, factor: number) {
   out.x += (target.x - out.x) * factor;
   out.y += (target.y - out.y) * factor;
@@ -1066,11 +1115,15 @@ export function ThreeDScene({
           onReady={() => setControlsReady(true)}
         />
 
-        {/* v0.16.0-delta: Camera follow — smoothly tracks controlled character when movementPattern=follow */}
+        {/* v0.16.1-beta: Camera controller — supports multiple view modes based on movementPattern */}
         {controlledCharacterId != null && (
-          <CameraFollow
+          <CameraController
             controlsRef={controlsRef}
             cameraFollowRef={cameraFollowRef}
+            mode={
+              (visibleMarkers.find((m) => m.data?.id === controlledCharacterId)?.data?.movementPattern as CameraViewMode)
+              || 'stationary'
+            }
             enabled={true}
           />
         )}

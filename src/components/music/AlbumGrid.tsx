@@ -83,7 +83,7 @@ export function AlbumGrid({ albums, onSelectAlbum, selectedAlbumId, onPlayAlbum 
               )}
               onError={(e) => {
                 // Fallback if image fails to load
-                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x400?text=No+Cover';
+                (e.target as HTMLImageElement).src = 'https://placehold.co/400x400?text=No+Cover';
               }}
             />
             
