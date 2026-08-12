@@ -1127,32 +1127,7 @@ function UnifiedMapPageInner() {
         onTakeControl={(id) => setControlledCharacterId(id)}
         onReleaseControl={() => setControlledCharacterId(null)}
       />
-
-      {/* ✅ Navigation */}
-      {/* <div className="flex justify-center gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs text-muted-foreground"
-          onClick={() => setIsProjectSelectorOpen(true)}
-        >
-          <FolderOpen className="w-3.5 h-3.5 mr-1" />
-          {selectedProjectId ? 'Change Project' : 'Select Project'}
-        </Button>
-        {selectedProjectId && (
-          <>
-            <span className="text-border">|</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs text-muted-foreground"
-              onClick={() => router.push(`/admin/projects/${selectedProjectId}`)}
-            >
-              Go to Project Details →
-            </Button>
-          </>
-        )}
-      </div> */}
+      
     </div>
   );
 }
