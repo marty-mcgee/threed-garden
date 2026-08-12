@@ -11,7 +11,11 @@ import {
   Box, 
   Car, 
   FolderOpen,
+  Settings,
   ChevronRight,
+  ChevronDown,
+  ChevronLeft,
+  ChevronUp,
   Search,
   Loader2,
   Plus,
@@ -750,104 +754,130 @@ function UnifiedMapPageInner() {
         onSelect={handleProjectSelect}
       />
 
-      {/* ✅ v0.13.0-beta: Header with Live Data Status Indicator */}
-      <div className="flex flex-wrap justify-between items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            {/* <h1 className="text-2xl font-bold flex items-center gap-2">
-              <MapPin className="w-6 h-6 text-primary" />
-              -||-
-            </h1> */}
-            <Badge 
-              variant="outline" 
-              className="text-xs cursor-pointer hover:bg-muted"
-              onClick={() => setIsProjectSelectorOpen(true)}
-            >
-              {selectedProjectId ? projectInfo?.name || `Project #${selectedProjectId}` : '🔍 Select Project'}
-              <ChevronRight className="w-3 h-3 ml-1" />
+      {/* ✅ Header with Live Data Status Indicator */}
+      <div className="flex flex-wrap justify-between items-center gap-4 m-0">
+        
+        <div className="flex items-center gap-2">
+          {/* <h1 className="text-2xl font-bold flex items-center gap-2">
+            <MapPin className="w-6 h-6 text-primary" />
+            -||-
+          </h1> */}
+          <Badge 
+            variant="outline" 
+            className="text-xs cursor-pointer hover:bg-muted"
+            onClick={() => setIsProjectSelectorOpen(true)}
+          >
+            <FolderOpen className="w-3.5 h-3.5 mr-1" />
+            {selectedProjectId ? projectInfo?.name || `Project #${selectedProjectId}` : '🔍 Select Project'}
+            <ChevronRight className="w-3 h-3 ml-1" />
+          </Badge>
+
+          {!hasRealData && selectedProjectId && (
+            <Badge variant="secondary" className="text-xs text-muted-foreground">
+              No Data
             </Badge>
-            {!hasRealData && selectedProjectId && (
-              <Badge variant="secondary" className="text-xs text-muted-foreground">
-                No Data
-              </Badge>
+          )}
+        {/* </div>
+        <div className="flex items-center gap-3 ml-9"> */}
+          <p className="text-xs text-muted-foreground">
+            {hasRealData ? (
+              `${data.traffic.total || 0} traffic items • ${data.threed.total || 0} 3D items`
+            ) : selectedProjectId ? (
+              'No data available for this project'
+            ) : (
+              'Select a project to load data'
             )}
-          {/* </div>
-          <div className="flex items-center gap-3 ml-9"> */}
-            <p className="text-sm text-muted-foreground">
-              {hasRealData ? (
-                `${data.traffic.total || 0} traffic items • ${data.threed.total || 0} 3D items`
-              ) : selectedProjectId ? (
-                'No data available for this project'
-              ) : (
-                'Select a project to load data'
-              )}
-            </p>
-            {/* ✅ Live Data Status Indicator */}
-            {selectedProjectId && (
-              <div className="flex items-center gap-1.5">
-                {isStale ? (
-                  <WifiOff className="w-3.5 h-3.5 text-amber-500" />
-                ) : dataAge !== '--' ? (
-                  <Wifi className="w-3.5 h-3.5 text-green-500" />
-                ) : null}
-                <span className={`text-xs ${isStale ? 'text-amber-600' : dataAge !== '--' ? 'text-green-600' : 'text-muted-foreground'}`} title={lastUpdated?.toLocaleString() || 'Unknown'}>
-                  {dataAge !== '--' ? `Updated ${dataAge}` : ''}
-                </span>
-                <Clock className="w-3 h-3 text-muted-foreground" />
-              </div>
-            )}
-          </div>
+          </p>
+          {/* ✅ Live Data Status Indicator */}
+          {selectedProjectId && (
+            <div className="flex items-center gap-1.5">
+
+              {/* {isStale ? (
+                <WifiOff className="w-3.5 h-3.5 text-amber-500" />
+              ) : dataAge !== '--' ? (
+                <Wifi className="w-3.5 h-3.5 text-green-500" />
+              ) : null} */}
+              
+              <Clock className={`w-3 h-3 ${isStale ? 'text-amber-600' : dataAge !== '--' ? 'text-green-600' : 'text-muted-foreground'}`} />
+
+              <span 
+                className={`text-xs ${isStale ? 'text-amber-600' : dataAge !== '--' ? 'text-green-600' : 'text-muted-foreground'}`} 
+                title={lastUpdated?.toLocaleString() || 'Unknown'}
+              >
+                {dataAge !== '--' ? `Updated ${dataAge}` : ''}
+              </span>
+          
+              <Button
+                variant="ghost"
+                // size="sm"
+                className="text-xs text-muted-foreground"
+                onClick={() => router.push(`/admin/projects/${selectedProjectId}`)}
+              >
+                <Settings className="w-3 h-3" />
+                Details
+              </Button>
+            
+            </div>
+          )}
         </div>
+        
         
         <div className="flex flex-wrap items-center gap-2">
           {/* View Mode Toggle - Icon Only */}
-          <div className="flex items-center gap-0.5 border rounded-lg p-0.5">
+          <div className="flex items-center gap-1 border rounded-lg p-0">
             <Button
-              variant={viewMode === 'combined' ? 'default' : 'ghost'}
+              variant={viewMode === 'combined' ? 'secondary' : 'ghost'}
               size="icon"
               className="h-7 w-7"
               onClick={() => setViewMode('combined')}
               title="Combined View"
             >
-              <Layers className="w-3.5 h-3.5" />
+              <Layers className={`w-3.5 h-3.5 ${viewMode === 'combined' ? '' : 'text-muted-foreground'}`} />
             </Button>
             <Button
-              variant={viewMode === '2d' ? 'default' : 'ghost'}
+              variant={viewMode === '2d' ? 'secondary' : 'ghost'}
               size="icon"
               className="h-7 w-7"
               onClick={() => setViewMode('2d')}
               title="2D View"
             >
-              <Car className="w-3.5 h-3.5" />
+              <Car className={`w-3.5 h-3.5 ${viewMode === '2d' ? '' : 'text-muted-foreground'}`} />
             </Button>
             <Button
-              variant={viewMode === '3d' ? 'default' : 'ghost'}
+              variant={viewMode === '3d' ? 'secondary' : 'ghost'}
               size="icon"
               className="h-7 w-7"
               onClick={() => setViewMode('3d')}
               title="3D View"
             >
-              <Box className="w-3.5 h-3.5" />
+              <Box className={`w-3.5 h-3.5 ${viewMode === '3d' ? '' : 'text-muted-foreground'}`} />
             </Button>
           </div>
 
           {/* Filter Toggle - Icon Only */}
           <Button
-            variant={showFilterPanel ? 'default' : 'outline'}
+            variant={showFilterPanel ? 'secondary' : 'outline'}
             size="icon"
             className="h-7 w-7 relative"
             onClick={() => setShowFilterPanel(!showFilterPanel)}
             title="Toggle filter panel"
           >
-            <Filter className="w-3.5 h-3.5" />
+            <Filter className={`w-3.5 h-3.5 ${showFilterPanel ? '' : 'text-muted-foreground'}`} />
             {filterAssetType && (
               <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-primary rounded-full" />
             )}
           </Button>
 
           {/* Refresh - Icon Only */}
-          <Button size="icon" className="h-7 w-7" onClick={handleRefresh} disabled={refreshing} title="Refresh data">
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+          <Button 
+            variant={refreshing ? 'secondary' : 'outline'}
+            size="icon" 
+            className="h-7 w-7" 
+            onClick={handleRefresh} 
+            disabled={refreshing} 
+            title="Refresh data"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : 'text-muted-foreground'}`} />
           </Button>
         </div>
       </div>
@@ -979,7 +1009,7 @@ function UnifiedMapPageInner() {
       {/* ✅ Map Container */}
       <Card className={isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''}>
         <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: isFullscreen ? '100vh' : 'calc(100vh - 190px)' }}>
+          <div style={{ height: isFullscreen ? '100vh' : 'calc(100vh - 122px)' }}>
             
             {viewMode === 'combined' && (
               <div 
@@ -1099,7 +1129,7 @@ function UnifiedMapPageInner() {
       />
 
       {/* ✅ Navigation */}
-      <div className="flex justify-center gap-2">
+      {/* <div className="flex justify-center gap-2">
         <Button
           variant="ghost"
           size="sm"
@@ -1122,7 +1152,7 @@ function UnifiedMapPageInner() {
             </Button>
           </>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

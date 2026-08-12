@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       {/* Header */}
-      <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-10">
+      <header className="bg-background/80 backdrop-blur-md sticky top-0 z-10 py-0.5 border-b">
         <div className="w-full px-0 sm:px-1 lg:px-2 py-0.5">
           <div className="flex items-center justify-between">
 
@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </h1>
                 </Link>
                 <p className="text-xs text-muted-foreground hidden sm:block">
-                  3D Farming • Real-time Incidents • Music Streaming • Chores
+                  3D Farming • Real-time Incidents • Music
                 </p>
               </div>
             </div>
@@ -53,7 +53,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Button
                 variant={pathname?.startsWith('/dashboard') ? 'secondary' : 'ghost'}
                 size="sm"
-                className="h-7 px-3 text-xs"
+                className={`h-7 px-3 text-xs ${pathname?.startsWith('/dashboard') ? '' : 'text-muted-foreground'}`}
                 asChild
               >
                 <Link href="/dashboard">
@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Button
                 variant={pathname?.startsWith('/admin') ? 'secondary' : 'ghost'}
                 size="sm"
-                className="h-7 px-3 text-xs"
+                className={`h-7 px-3 text-xs ${pathname?.startsWith('/admin') ? '' : 'text-muted-foreground'}`}
                 asChild
               >
                 <Link href="/admin">
@@ -75,9 +75,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             {/* Right side controls */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-0.5">
               {/* Status Indicator */}
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/30">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/30 mr-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 <span className="text-xs text-green-600 dark:text-green-400 font-medium">All Systems Live</span>
               </div>
@@ -90,9 +90,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className="rounded-full"
               >
                 {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 text-yellow-500" />
+                  <Sun className="w-3 h-3 text-yellow-500" />
                 ) : (
-                  <Moon className="w-4 h-4" />
+                  <Moon className="w-3 h-3" />
                 )}
               </Button>
 
@@ -104,17 +104,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       {/* Main Content */}
-      <div className="w-full px-0 sm:px-1 lg:px-2 py-0.5">
+      <div className="w-full px-0 sm:px-1 lg:px-2 py-0">
         {/* Page Content */}
         <div className="bg-background/50 backdrop-blur-sm">
           {children}
         </div>
         
         {/* Footer */}
-        <footer className="mt-1 py-1 text-center text-xs text-muted-foreground border-t">
-          <p className="mt-1">
+        <footer className="py-1.5 text-center text-xs text-muted-foreground">
+          <p className="">
             Built by Marty McGee with Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3F Fiber + Drei
-            @ github.com/marty-mcgee
+            @ <a href="https://github.com/marty-mcgee/marty-mcgee-neon" target="_blank">github</a>
           </p>
         </footer>
       </div>

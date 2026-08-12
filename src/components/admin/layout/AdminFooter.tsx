@@ -9,9 +9,9 @@ export function AdminFooter() {
   return (
     <footer className="border-t py-3 px-4 text-xs text-muted-foreground flex flex-wrap items-center justify-between gap-2">
       <div className="flex items-center gap-2">
-        <span>© {currentYear} Marty McGee</span>
+        <span>© {currentYear} Marty McGee Neon</span>
         <span className="hidden sm:inline">•</span>
-        <span className="hidden sm:inline">v0.15.x</span>
+        <span className="hidden sm:inline">v0.16.x</span>
       </div>
       <div className="flex items-center gap-4">
         <a 
