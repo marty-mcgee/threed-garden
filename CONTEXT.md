@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 12, 2026 @ 5:40am PST
-**Current Version:** v0.16.2-alpha "Physics Boundaries + Camera Modes"
+**Last Updated:** August 12, 2026 @ 10:55am PST
+**Current Version:** v0.16.2-beta "Improved Camera Modes, Marker Selection, and Character Animations" — ✅ Released to Production
 
 ---
 
@@ -236,6 +236,7 @@ API (/api/map/threed)
 | **v0.16.0-beta** | **2026-08-08** | **Keyboard Controls — WASD movement, Take/Release Control in DetailsCard** |
 | **v0.16.0-centaur** | **2026-08-08** | **Polished Details Card — KvRow grid, 3D coords, improved buttons** |
 | **v0.16.0-delta** | **2026-08-08** | **Camera Follow + Marker Sync — cursor tracking, position sync on click** |
+| **v0.16.2-beta** | **2026-08-12** | **Improved Camera Modes, Marker Selection, and Character Animations** |
 
 ---
 
@@ -545,3 +546,73 @@ ThreeDMarkerComponent
 Set `movementType: 'ecctrl'` on a character record in the database. Click character → Take Control → Camera dropdown appears → select Follow/Top-Down/First-Person/Stationary. Character physically collides with all marker types.
 
 ---
+
+## v0.16.2-beta "Improved Camera Modes, Marker Selection, and Character Animations"
+
+### 1. Camera Modes
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Orbit Mode Re-added** | ✅ Complete | `orbit` re-added to `CameraViewMode` union, `validModes`, and the DetailsCard dropdown. Orbits around the character at 8-unit radius, 5 units high, slow rotation (0.3 rad/s) |
+| **True Top-Down Mode** | ✅ Complete | `topdown` now positions the camera 15 units directly overhead (`charPos + (0, 15, 0)`), with `maxPolarAngle = 0.1` locking it near-vertical |
+
+### 2. Marker Selection
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Selection Rings (all types)** | ✅ Complete | Blue ground ring (`#3b82f6`) rendered under selected beds, plantings, farmbots, non-ecctrl characters, and fallback markers |
+| **Models Selectable** | ✅ Complete | `model`/`models` markers now wrapped in a clickable `<group>`, surfacing the DetailsCard and a selection ring on click |
+| **Live Position Tracking** | ✅ Complete | `EcctrlCharacter` writes its physics position to a shared `livePositionsRef` (keyed by marker id) every frame while controlled, so re-selecting a moved character focuses its current location instead of its DB origin |
+| **Opt-in Zoom + Center** | ✅ Complete | Clicking/engaging a marker no longer auto-zooms; a 🎯 Zoom + Center button in the DetailsCard triggers the focus animation on demand |
+| **Fading Selection Rings** | ✅ Complete | The blue selection ring holds at full opacity for 5s, then fades out over ~4s on all marker types (beds, plantings, farmbots, models, non-ecctrl characters, fallback, and ecctrl characters) via a shared `FadingRing` component. Controlled characters no longer keep a persistent ring — it fades away too |
+
+### 3. Character Animations
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **AnimationMixer Playback** | ✅ Complete | `EcctrlCharacter` now builds a `THREE.AnimationMixer` from the loaded model and plays clips via crossfade instead of only resolving state names |
+| **State → Clip Mapping** | ✅ Complete | `STATE_CLIPS` maps each `EcctrlAnimationState` to ordered clip-name candidates (case-insensitive, with fallbacks) |
+| **Idle on Load** | ✅ Complete | Default/idle animation begins as soon as the model loads |
+| **Mixer Advance** | ✅ Complete | `mixer.update(delta)` runs each frame, even when not controlled |
+
+### Architecture
+
+```
+EcctrlCharacter
+  ├── useCharacterModel → mixerRef + actionsRef (clip-name lookup)
+  ├── EcctrlAnimationStateController (resolver maps physics → IDLE/WALK/RUN/JUMP_*)
+  │     └── onChange → playAnimation(state)
+  │           └── STATE_CLIPS lookup → crossFadeTo(action, 0.2s)
+  └── useFrame → mixer.update(delta)
+```
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Added `AnimationMixer` playback, `STATE_CLIPS` mapping, crossfade, mixer update loop, idle-on-load; writes live physics position to shared `livePositionsRef`; added fading selection ring (`isSelected` + `FadingRing`) |
+| `src/components/map/ThreeDScene.tsx` | Re-added `orbit` mode; true `topdown` overhead; selection rings for all marker types; models clickable; `livePositionsRef` store used to focus moved characters correctly; removed auto-zoom on select; `focusRequest` prop for manual zoom |
+| `src/components/threed/shared/GardenCharacter.tsx` | Added `positionedByParent` prop so non-ecctrl characters wrapped in a `RigidBody` are rendered in local space (prevents position being applied twice); world-space follow registry |
+| `src/components/threed/shared/FadingRing.tsx` | (new) Shared selection ring that holds 5s, fades to invisible over ~4s, and resets on deselect/reselect |
+| `src/components/map/UnifiedMapView.tsx` | Threaded `focusRequest` prop |
+| `src/app/dashboard/map/page.tsx` | Added Orbit option to camera dropdown; generic `normalizePositions`; 🎯 Zoom + Center button in DetailsCard wired to `focusRequest` |
+| `CONTEXT.md` | Documented v0.16.2-beta |
+| `package.json` | Bumped version to `0.16.2-beta` |
+
+---
+
+## ✅ v0.16.2-beta — Released to Production (August 12, 2026)
+
+**Release note:** v0.16.2-beta "Improved Camera Modes, Marker Selection, and Character Animations" is shipped to production. All features in the section above are live and verified:
+
+- **Camera Modes**: re-added Orbit, true Top-Down overhead.
+- **Marker Selection**: selection rings on all marker types, selectable models, live position tracking, opt-in Zoom + Center, fading selection rings.
+- **Character Animations**: AnimationMixer playback with state→clip mapping, idle-on-load, and mixer advance.
+
+`package.json` version is `0.16.2-beta`.
+
+---
+
+## 🚧 Next Release — v0.16.2-centaur
+
+*(Placeholder — scope to be defined)*

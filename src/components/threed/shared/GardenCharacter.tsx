@@ -3,8 +3,8 @@
 
 import { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -52,6 +52,10 @@ interface GardenCharacterProps {
   character: CharacterData;
   currentWeather?: string;
   currentHour?: number;
+  /** v0.16.2-beta: When true, a parent (e.g. a RigidBody already placed at the character's
+   *  world position) provides the world transform — render/move relative to origin so the
+   *  position isn't applied twice. */
+  positionedByParent?: boolean;
 }
 
 // ============================================
@@ -113,7 +117,13 @@ export function GardenCharacter({
   character,
   currentWeather = 'sunny',
   currentHour = 12,
+  positionedByParent = false,
 }: GardenCharacterProps) {
+  // v0.16.2-beta: When positioned by a parent (e.g. RigidBody at the character's world
+  // position), operate in local space so the world position isn't doubled.
+  const homeX = positionedByParent ? 0 : (Number(character.positionX) || 0);
+  const homeY = positionedByParent ? 0 : (Number(character.positionY) || 0);
+  const homeZ = positionedByParent ? 0 : (Number(character.positionZ) || 0);
   const groupRef = useRef<THREE.Group>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const currentActionRef = useRef<THREE.AnimationAction | null>(null);
@@ -127,11 +137,7 @@ export function GardenCharacter({
 
   // Movement state
   const movementState = useRef({
-    targetPosition: new THREE.Vector3(
-      Number(character.positionX) || 0,
-      Number(character.positionY) || 0,
-      Number(character.positionZ) || 0
-    ),
+    targetPosition: new THREE.Vector3(homeX, homeY, homeZ),
     patrolIndex: 0,
     teleportTimer: 0,
     isMoving: false,
@@ -263,9 +269,9 @@ export function GardenCharacter({
       mixerRef.current.update(delta);
     }
 
-    // Update world position registry
+    // Update world position registry (account for any parent transform, e.g. RigidBody)
     if (groupRef.current) {
-      activeCharacterPositions.set(character.id, groupRef.current.position.clone());
+      activeCharacterPositions.set(character.id, groupRef.current.getWorldPosition(new THREE.Vector3()));
     }
 
     // Skip movement logic for stationary or inactive
@@ -289,9 +295,9 @@ export function GardenCharacter({
           const angle = Math.random() * Math.PI * 2;
           const radius = Math.random() * character.movementRadius;
           movementState.current.targetPosition = new THREE.Vector3(
-            (Number(character.positionX) || 0) + Math.cos(angle) * radius,
-            (Number(character.positionY) || 0),
-            (Number(character.positionZ) || 0) + Math.sin(angle) * radius
+            homeX + Math.cos(angle) * radius,
+            homeY,
+            homeZ + Math.sin(angle) * radius
           );
         }
         break;
@@ -315,9 +321,9 @@ export function GardenCharacter({
           const time = Date.now() * 0.001 * character.movementSpeed;
           const radius = character.movementRadius;
           movementState.current.targetPosition = new THREE.Vector3(
-            (Number(character.positionX) || 0) + Math.cos(time) * radius,
-            (Number(character.positionY) || 0),
-            (Number(character.positionZ) || 0) + Math.sin(time) * radius
+            homeX + Math.cos(time) * radius,
+            homeY,
+            homeZ + Math.sin(time) * radius
           );
         }
         break;
@@ -462,7 +468,7 @@ export function GardenCharacter({
     const opacity = isVisible ? 1 : 0.4;
 
     return (
-      <group position={[Number(character.positionX) || 0, Number(character.positionY) || 0, Number(character.positionZ) || 0]}>
+      <group position={[homeX, homeY, homeZ]}>
         <mesh castShadow receiveShadow position={[0, 0.4, 0]}>
           <cylinderGeometry args={[0.3, 0.4, 0.8, 8]} />
           <meshStandardMaterial color={boxColor} transparent={!isVisible} opacity={opacity} />
@@ -474,7 +480,7 @@ export function GardenCharacter({
   return (
     <group
       ref={groupRef}
-      position={[Number(character.positionX) || 0, Number(character.positionY) || 0, Number(character.positionZ) || 0]}
+      position={[homeX, homeY, homeZ]}
       onClick={handleClick}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}

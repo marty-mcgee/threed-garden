@@ -41,6 +41,8 @@ interface UnifiedMapViewProps {
   onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
   /** Camera mode override (selected by user in DetailsCard) */
   cameraMode?: string;
+  /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
+  focusRequest?: number;
 }
 
 const MARKER_CONFIG: Record<string, { color: string; icon: string; label: string }> = {
@@ -78,6 +80,7 @@ export function UnifiedMapView({
   controlledCharacterId,
   onControlChange,
   cameraMode,
+  focusRequest = 0,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(false);
@@ -399,6 +402,7 @@ export function UnifiedMapView({
         controlledCharacterId={controlledCharacterId}
         onControlChange={onControlChange}
         cameraMode={cameraMode as any}
+        focusRequest={focusRequest}
       />
     );
   };

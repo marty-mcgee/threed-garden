@@ -1,7 +1,7 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, Environment, Html, Plane, Grid, 
@@ -13,6 +13,7 @@ import * as THREE from 'three';
 import { Settings, ChevronDown, ChevronUp, X, Target, Layers } from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
+import { FadingRing } from '@/components/threed/shared/FadingRing';
 import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
 import { PlantMarker3D } from '@/components/threed/markers/PlantMarker3D';
 import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
@@ -36,6 +37,8 @@ interface ThreeDSceneProps {
   onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
   /** Override camera view mode (selected by user in DetailsCard) */
   cameraMode?: CameraViewMode;
+  /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
+  focusRequest?: number;
 }
 
 // ✅ View Preset Types
@@ -100,7 +103,8 @@ function ControlsReadyNotifier({ controlsRef, onReady }: { controlsRef: any; onR
 }
 
 // v0.16.1-beta: Camera Controller — supports multiple view modes for selected characters
-type CameraViewMode = 'follow' | 'topdown' | 'firstperson' | 'stationary';
+// v0.16.2-beta: re-added 'orbit' mode
+type CameraViewMode = 'follow' | 'topdown' | 'firstperson' | 'orbit' | 'stationary';
 
 function CameraController({
   controlsRef,
@@ -117,6 +121,7 @@ function CameraController({
   // Track previous position for velocity/direction calculation
   const prevPos = useRef<THREE.Vector3 | null>(null); // null = uninitialized
   const facingDir = useRef(new THREE.Vector3(0, 0, 1)); // default forward
+  const orbitElapsed = useRef(0); // accumulated time for orbit mode
   // Store original constraints to restore on unmount/mode change
   const originalConstraints = useRef<{ maxPolarAngle?: number; minDistance?: number; maxDistance?: number; enableDamping?: boolean }>({});
 
@@ -141,7 +146,7 @@ function CameraController({
 
     switch (mode) {
       case 'topdown':
-        controls.maxPolarAngle = 0.3;
+        controls.maxPolarAngle = 0.1;
         break;
       case 'firstperson':
         // Kill damping so manual camera positioning works immediately
@@ -202,9 +207,25 @@ function CameraController({
         break;
 
       case 'topdown':
-        // Target follows character, polar angle locked to near-vertical
+        // Target follows character, camera positioned directly overhead
         performLerp(followTarget.current, charPos, 0.08);
         controls.target.lerp(followTarget.current, 0.08);
+        const overhead = new THREE.Vector3(charPos.x, charPos.y + 15, charPos.z);
+        controls.object.position.lerp(overhead, 0.1);
+        break;
+
+      case 'orbit':
+        // Slow orbit around the character at a fixed radius and height
+        orbitElapsed.current += delta;
+        performLerp(followTarget.current, charPos, 0.08);
+        controls.target.lerp(followTarget.current, 0.08);
+        const orbitAng = orbitElapsed.current * 0.3;
+        const orbitPos = new THREE.Vector3(
+          charPos.x + Math.cos(orbitAng) * 8,
+          charPos.y + 5,
+          charPos.z + Math.sin(orbitAng) * 8,
+        );
+        controls.object.position.lerp(orbitPos, 0.08);
         break;
 
       case 'firstperson':
@@ -351,7 +372,7 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 }
 
 // ✅ ThreeD Marker Component
-function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacterId, onControlChange, cameraFollowRef }: any) {
+function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -367,11 +388,14 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
         <EcctrlCharacter
           character={marker.data}
           isControlled={isCtrl}
+          isSelected={isSelected}
           onClick={() => { if (onClick) onClick(); }}
           onControlChange={(pos) => {
             if (onControlChange) onControlChange(marker.id, pos);
           }}
           cameraFollowRef={cameraFollowRef}
+          livePositionsRef={livePositionsRef}
+          markerId={marker.id}
         />
       );
     }
@@ -384,7 +408,8 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
           onPointerEnter={() => setHovered(true)}
           onPointerLeave={() => setHovered(false)}
         >
-          <GardenCharacter character={marker.data} />
+          <GardenCharacter character={marker.data} positionedByParent />
+          {isSelected && <FadingRing position={[0, 0.01, 0]} innerRadius={0.7} outerRadius={1.0} />}
         </group>
       </RigidBody>
     );
@@ -396,6 +421,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
       <RigidBody type="fixed" colliders="cuboid" position={pos}>
         <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
           <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
+          {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={3.2} outerRadius={4.0} segments={48} />}
         </group>
       </RigidBody>
     );
@@ -407,6 +433,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
       <RigidBody type="fixed" colliders="cuboid" position={pos}>
         <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
           <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: marker.data?.quantity, status: marker.data?.status }} position={[0, 0, 0]} />
+          {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.5} outerRadius={0.75} />}
         </group>
       </RigidBody>
     );
@@ -416,12 +443,15 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
   if (marker.type === 'model' || marker.type === 'models') {
     return (
       <RigidBody type="fixed" colliders="ball" position={pos}>
-        <ModelMarker3D
-          model={marker.data}
-          position={[0, 0, 0]}
-          name={marker.name}
-          animationSpeed={marker.data?.animationSpeed || 1}
-        />
+        <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
+          <ModelMarker3D
+            model={marker.data}
+            position={[0, 0, 0]}
+            name={marker.name}
+            animationSpeed={marker.data?.animationSpeed || 1}
+          />
+          {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
+        </group>
       </RigidBody>
     );
   }
@@ -478,6 +508,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
               </div>
             </Html>
           )}
+          {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.5} outerRadius={0.75} />}
         </group>
       </RigidBody>
     );
@@ -504,6 +535,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
         {getShape()}
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={isSelected ? 0.4 : 0.05} roughness={0.4} metalness={0.2} />
       </mesh>
+      {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={size * 1.2} outerRadius={size * 1.5} />}
     </group>
   );
 }
@@ -653,9 +685,13 @@ export function ThreeDScene({
   controlledCharacterId,
   onControlChange,
   cameraMode,
+  focusRequest = 0,
 }: ThreeDSceneProps) {
   // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
   const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
+  // v0.16.2-beta: Persistent store of each ecctrl character's live physics position,
+  // keyed by marker id — so re-selecting a moved character focuses its current spot.
+  const livePositionsRef = useRef<Map<string, { x: number; y: number; z: number }>>(new Map());
   const controlsRef = useRef<any>(null);
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
@@ -827,58 +863,62 @@ export function ThreeDScene({
     setFocusTarget(null);
   };
 
+  // v0.16.2-beta: Record an ecctrl character's live physics position and forward it up
+  // so the parent can keep the DetailsCard coordinates in sync on control changes.
+  // useCallback keeps the identity stable so EcctrlCharacter's effect doesn't re-fire endlessly.
+  const storeLivePosition = useCallback((markerId: string, pos: { x: number; y: number; z: number }) => {
+    livePositionsRef.current.set(markerId, pos);
+    if (onControlChange) onControlChange(markerId, pos);
+  }, [onControlChange]);
+
   // ✅ Enhanced marker click handler
   const handleMarkerClick = (marker: any) => {
-    // v0.16.0-delta: If this is the already-controlled ecctrl character, skip marker reset
-    // and focus on the live position (selectedMarker.position updated by onControlChange)
-    const isControlledEcctrl = marker.data?.movementType === 'ecctrl'
-      && controlledCharacterId === marker.data?.id;
-
-    if (isControlledEcctrl && selectedMarker?.position) {
-      focusOnMarker(selectedMarker);
-      return;
-    }
+    // v0.16.2-beta: Prefer the tracked live position (if any) so camera focus and the
+    // DetailsCard reflect where the ecctrl character actually is, not its DB origin.
+    const livePos = livePositionsRef.current.get(marker.id);
+    const currentMarker = livePos
+      ? { ...marker, position: { x: livePos.x, y: livePos.y, z: livePos.z } }
+      : marker;
 
     const metadata: any = {
-      ...marker.metadata,
-      ...(marker.data || {}),
+      ...currentMarker.metadata,
+      ...(currentMarker.data || {}),
     };
     
-    if (marker.type === 'plantings' && marker.data) {
-      metadata.plantName = marker.data.plantName || marker.data.commonName || '';
+    if (currentMarker.type === 'plantings' && currentMarker.data) {
+      metadata.plantName = currentMarker.data.plantName || currentMarker.data.commonName || '';
     }
     
-    if (marker.type === 'beds' && marker.data) {
-      const width = marker.data.widthFeet || marker.data.width;
-      const length = marker.data.lengthFeet || marker.data.length;
+    if (currentMarker.type === 'beds' && currentMarker.data) {
+      const width = currentMarker.data.widthFeet || currentMarker.data.width;
+      const length = currentMarker.data.lengthFeet || currentMarker.data.length;
       if (width && length) {
         metadata.dimensions = `${width}ft × ${length}ft`;
       }
     }
     
-    if (marker.type === 'farmbots' && marker.data) {
-      metadata.deviceId = marker.data.deviceId || '';
-      metadata.batteryLevel = marker.data.batteryLevel || 0;
-      metadata.firmwareVersion = marker.data.firmwareVersion || '';
-      metadata.lastSeen = marker.data.lastSeen || '';
+    if (currentMarker.type === 'farmbots' && currentMarker.data) {
+      metadata.deviceId = currentMarker.data.deviceId || '';
+      metadata.batteryLevel = currentMarker.data.batteryLevel || 0;
+      metadata.firmwareVersion = currentMarker.data.firmwareVersion || '';
+      metadata.lastSeen = currentMarker.data.lastSeen || '';
     }
     
-    if (marker.type === 'characters' && marker.data) {
-      metadata.characterType = marker.data.type || '';
-      metadata.emote = marker.data.defaultEmote || '';
-      metadata.movementType = marker.data.movementType || '';
-      metadata.interactable = marker.data.interactable || false;
+    if (currentMarker.type === 'characters' && currentMarker.data) {
+      metadata.characterType = currentMarker.data.type || '';
+      metadata.emote = currentMarker.data.defaultEmote || '';
+      metadata.movementType = currentMarker.data.movementType || '';
+      metadata.interactable = currentMarker.data.interactable || false;
     }
     
     setSelectedDetails({
-      name: marker.name || marker.label || 'Unknown',
-      type: marker.type,
-      position: marker.position,
+      name: currentMarker.name || currentMarker.label || 'Unknown',
+      type: currentMarker.type,
+      position: currentMarker.position,
       metadata: metadata,
     });
     
-    if (onMarkerClick) onMarkerClick(marker);
-    focusOnMarker(marker);
+    if (onMarkerClick) onMarkerClick(currentMarker);
   };
 
   const handleIncidentClick = (incident: any) => {
@@ -893,8 +933,15 @@ export function ThreeDScene({
       },
     });
     if (onIncidentClick) onIncidentClick(incident);
-    focusOnMarker(incident);
   };
+
+  // v0.16.2-beta: Manual zoom + center via DetailsCard button (no auto-zoom on select).
+  useEffect(() => {
+    if (focusRequest > 0 && selectedDetails?.position) {
+      focusOnMarker(selectedDetails);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusRequest]);
 
   const clearDetails = () => {
     setSelectedDetails(null);
@@ -1203,7 +1250,7 @@ export function ThreeDScene({
         {controlledCharacterId != null && (() => {
           const controlledMarker = visibleMarkers.find((m) => m.data?.id === controlledCharacterId);
           const pattern = controlledMarker?.data?.movementPattern;
-          const validModes: CameraViewMode[] = ['follow', 'topdown', 'firstperson', 'stationary'];
+          const validModes: CameraViewMode[] = ['follow', 'topdown', 'firstperson', 'orbit', 'stationary'];
           // Priority: user-selected cameraMode > DB movementPattern > default 'follow'
           const mode: CameraViewMode = (cameraMode && validModes.includes(cameraMode))
             ? cameraMode
@@ -1303,8 +1350,9 @@ export function ThreeDScene({
               onClick={() => handleMarkerClick(marker)}
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
               controlledCharacterId={controlledCharacterId}
-              onControlChange={onControlChange}
+              onControlChange={storeLivePosition}
               cameraFollowRef={cameraFollowRef}
+              livePositionsRef={livePositionsRef}
             />
           ))}
         </Physics>

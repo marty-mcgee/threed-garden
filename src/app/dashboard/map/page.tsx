@@ -170,7 +170,7 @@ function KvRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange }: {
+function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter }: {
   selected: any;
   onClose: () => void;
   controlledCharacterId: number | null;
@@ -178,6 +178,7 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
   onReleaseControl: () => void;
   cameraMode?: string;
   onCameraModeChange?: (mode: string) => void;
+  onZoomCenter?: () => void;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || {};
@@ -275,6 +276,18 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         </div>
       )}
 
+      {/* v0.16.2-beta: Manual zoom + center action */}
+      {!isIncident && onZoomCenter && (
+        <div className="mt-2.5 border-t border-white/10 pt-2.5">
+          <button
+            onClick={(e) => { e.stopPropagation(); onZoomCenter(); }}
+            className="block w-full text-center text-[11px] font-medium bg-white/5 hover:bg-white/10 text-white/70 hover:text-white py-1.5 px-2 rounded transition-colors"
+          >
+            🎯 Zoom + Center
+          </button>
+        </div>
+      )}
+
       {/* Description (incidents) — only if no metaRows covered it */}
       {isIncident && selected.description && !metaRows.length && (
         <div className="mt-2 text-[11px] text-white/50">
@@ -306,6 +319,7 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
                       <option value="follow" className="bg-gray-800 text-white">🎥 Follow</option>
                       <option value="topdown" className="bg-gray-800 text-white">🔽 Top-Down</option>
                       <option value="firstperson" className="bg-gray-800 text-white">👁️ First-Person</option>
+                      <option value="orbit" className="bg-gray-800 text-white">🛰️ Orbit</option>
                       <option value="stationary" className="bg-gray-800 text-white">📷 Stationary</option>
                     </select>
                   </div>
@@ -435,7 +449,16 @@ function UnifiedMapPageInner() {
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
   const [cameraMode, setCameraMode] = useState<string>('follow');
+  const [focusRequest, setFocusRequest] = useState(0);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
+
+  // v0.16.2-beta: Manual "zoom + center" request (button in DetailsCard).
+  // Set the camera to stationary so any active character camera-follow stops
+  // interfering with the requested focus of the newly selected marker.
+  const handleZoomCenter = useCallback(() => {
+    setCameraMode('stationary');
+    setFocusRequest((n) => n + 1);
+  }, []);
 
   // v0.16.0-delta: Sync RuntimeMarker position when ecctrl character moves
   const handleControlChange = useCallback((_markerId: string, pos: { x: number; y: number; z: number }) => {
@@ -591,7 +614,7 @@ function UnifiedMapPageInner() {
           const threedTotal = Object.values(threedRaw).reduce((sum, arr) => sum + arr.length, 0);
 
           // ✅ Pre-process: normalize position values (DB returns decimals as strings)
-          const normalizePositions = (records: Record<string, any[]>) => {
+          const normalizePositions = <T extends Record<string, any[]>>(records: T): T => {
             const normalized: Record<string, any[]> = {};
             for (const [key, items] of Object.entries(records)) {
               normalized[key] = items.map((item: any) => {
@@ -608,7 +631,7 @@ function UnifiedMapPageInner() {
                 return n;
               });
             }
-            return normalized;
+            return normalized as T;
           };
 
           const normalizedTraffic = normalizePositions(trafficRaw);
@@ -1056,6 +1079,7 @@ function UnifiedMapPageInner() {
                       filterAssetType={filterAssetType}
                       controlledCharacterId={controlledCharacterId}
                       cameraMode={cameraMode}
+                      focusRequest={focusRequest}
                     />
                   </div>
                 </div>
@@ -1113,6 +1137,7 @@ function UnifiedMapPageInner() {
                 controlledCharacterId={controlledCharacterId}
                 onControlChange={handleControlChange}
                 cameraMode={cameraMode}
+                focusRequest={focusRequest}
               />
             )}
 
@@ -1149,6 +1174,7 @@ function UnifiedMapPageInner() {
         onReleaseControl={() => setControlledCharacterId(null)}
         cameraMode={cameraMode}
         onCameraModeChange={(mode) => setCameraMode(mode)}
+        onZoomCenter={handleZoomCenter}
       />
       
     </div>
