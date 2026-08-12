@@ -1,8 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 12, 2026 @ 11:12am PST
-**Current Version:** v0.16.2-centaur "Character Marker Hover Titles" (minor) — ✅ Released to Production
-**Next Release:** v0.16.3-alpha "Character Interaction Improvements + Character Model Files"
+**Last Updated:** August 12, 2026 @ 11:50am PST
+**Current Version:** v0.16.3-alpha "Character Interaction Improvements + Character Model Files" — ✅ Released to Production
 
 ---
 
@@ -239,6 +238,7 @@ API (/api/map/threed)
 | **v0.16.0-delta** | **2026-08-08** | **Camera Follow + Marker Sync — cursor tracking, position sync on click** |
 | **v0.16.2-beta** | **2026-08-12** | **Improved Camera Modes, Marker Selection, and Character Animations** |
 | **v0.16.2-centaur** | **2026-08-12** | **Minor — Character Marker Hover Titles styled to match other 3D markers** |
+| **v0.16.3-alpha** | **2026-08-12** | **Character Interaction Improvements — `isMovable`-driven Ecctrl engagement + auto-disengage on different selection** |
 
 ---
 
@@ -624,6 +624,20 @@ EcctrlCharacter
 
 ---
 
-## 🚧 Next Release — v0.16.3-alpha "Character Interaction Improvements + Character Model Files"
+## ✅ v0.16.3-alpha "Character Interaction Improvements + Character Model Files" — Released to Production
 
-*(Scope to be defined — starting next development cycle.)*
+### Goals
+- Treat all ThreeD Characters as animated Ecctrl Characters by default, engaging physics/collision interaction for every character that is marked movable.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **`isMovable` as Ecctrl trigger** | ✅ Complete | Replaced the `movementType === 'ecctrl'` trigger with the `isMovable === true` boolean. Movable characters route to the physics-based `EcctrlCharacter`; non-movable characters continue using `GardenCharacter`. |
+| **Disengage on different selection** | ✅ Complete | Selecting/engaging a different marker, incident, or non-controlled character clears the active `controlledCharacterId`, so the previously moved character disengages and only the newly engaged entity is focused. |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | Character routing now keys off `marker.data?.isMovable === true` instead of `movementType === 'ecctrl'` |
+| `src/app/dashboard/map/page.tsx` | DetailsCard character controls now show when `d.isMovable === true`; added effect to disengage the controlled character when a different marker/incident is selected |
+| `package.json` | Bumped version to `0.16.3-alpha` |

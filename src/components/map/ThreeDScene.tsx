@@ -381,8 +381,9 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
   const pos: [number, number, number] = [Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0];
 
   if (marker.type === 'character' || marker.type === 'characters') {
-    // v0.16.0-beta: Route ecctrl characters to physics-based EcctrlCharacter
-    if (marker.data?.movementType === 'ecctrl') {
+    // v0.16.3-alpha: Route movable characters (isMovable === true) to the
+    // physics-based EcctrlCharacter; non-movable characters use GardenCharacter.
+    if (marker.data?.isMovable === true) {
       const isCtrl = controlledCharacterId != null && controlledCharacterId === marker.data?.id;
       return (
         <EcctrlCharacter

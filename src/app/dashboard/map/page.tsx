@@ -295,9 +295,9 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         </div>
       )}
 
-      {/* Character Controls — ecctrl runtime take-over */}
+      {/* Character Controls — ecctrl runtime take-over (movable characters only) */}
       {!isIncident && (type === 'characters' || type === 'character') && (() => {
-        if (d.movementType !== 'ecctrl') return null;
+        if (d.isMovable !== true) return null;
         const charId = d.id;
         const isControlling = controlledCharacterId === charId;
         return (
@@ -467,6 +467,19 @@ function UnifiedMapPageInner() {
       return { ...prev, position: { ...prev.position, x: pos.x, y: pos.y, z: pos.z } };
     });
   }, []);
+
+  // v0.16.3-alpha: Selecting a different marker/incident disengages the currently
+  // controlled character so only the newly engaged entity is the active focus.
+  useEffect(() => {
+    if (controlledCharacterId == null) return;
+    const sel = selectedMarker || selectedIncident;
+    if (!sel) return;
+    const selCharId = sel.data?.id ?? sel.metadata?.data?.id ?? sel.id;
+    const isChar = sel.type === 'characters' || sel.type === 'character';
+    if (!isChar || selCharId !== controlledCharacterId) {
+      setControlledCharacterId(null);
+    }
+  }, [selectedMarker, selectedIncident, controlledCharacterId]);
 
   // ✅ Advanced Filtering Panel State
   const [showFilterPanel, setShowFilterPanel] = useState(false);
