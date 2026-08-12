@@ -31,12 +31,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
+import { ModelFileList, ModelFileRow } from '@/components/admin/threed/models/ModelFileList';
 
 // ✅ Types
 interface Model {
   id: number;
   modelName: string;
   modelType: string;
+  files?: ModelFileRow[];
 }
 
 interface Character {
@@ -313,6 +315,9 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
     character.characterId.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (character.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
+
+  // Pre-queried model files for the currently selected model (threed_model_files).
+  const selectedModel = models.find((m) => String(m.id) === formData.modelId);
 
   const handleCreate = async () => {
     if (!formData.characterId) {
@@ -696,24 +701,32 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
               </div>
 
               {/* Model */}
-              <div>
-                <Label htmlFor="modelId">Model</Label>
-                <Select
-                  value={formData.modelId}
-                  onValueChange={(value) => setFormData({ ...formData, modelId: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a model (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {models.map((model) => (
-                      <SelectItem key={model.id} value={String(model.id)}>
-                        {model.modelName} ({model.modelType})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="space-y-2">
+                <div>
+                  <Label htmlFor="modelId">Model</Label>
+                  <Select
+                    value={formData.modelId}
+                    onValueChange={(value) => setFormData({ ...formData, modelId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a model (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {models.map((model) => (
+                        <SelectItem key={model.id} value={String(model.id)}>
+                          {model.modelName} ({model.modelType})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {selectedModel && (
+                  <ModelFileList
+                    files={selectedModel.files ?? []}
+                    emptyText="No files attached to this model (add them in 3D Models)"
+                  />
+                )}
               </div>
 
               {/* Animation */}
@@ -1348,24 +1361,32 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
             </div>
 
             {/* Model */}
-            <div>
-              <Label htmlFor="edit-modelId">Model</Label>
-              <Select
-                value={formData.modelId}
-                onValueChange={(value) => setFormData({ ...formData, modelId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a model (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  {models.map((model) => (
-                    <SelectItem key={model.id} value={String(model.id)}>
-                      {model.modelName} ({model.modelType})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="space-y-2">
+              <div>
+                <Label htmlFor="edit-modelId">Model</Label>
+                <Select
+                  value={formData.modelId}
+                  onValueChange={(value) => setFormData({ ...formData, modelId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a model (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {models.map((model) => (
+                      <SelectItem key={model.id} value={String(model.id)}>
+                        {model.modelName} ({model.modelType})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {selectedModel && (
+                <ModelFileList
+                  files={selectedModel.files ?? []}
+                  emptyText="No files attached to this model (add them in 3D Models)"
+                />
+              )}
             </div>
 
             {/* Animation */}

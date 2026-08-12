@@ -29,6 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
+import { ModelFileList, ModelFileRow } from '@/components/admin/threed/models/ModelFileList';
 
 // ✅ Types
 interface Plant {
@@ -48,6 +49,7 @@ interface Model {
   id: number;
   modelName: string;
   modelType: string;
+  files?: ModelFileRow[];
 }
 
 interface Planting {
@@ -266,10 +268,13 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
   };
 
   const filteredPlantings = plantings.filter((planting) =>
-    planting.plantingId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (planting.plantingId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
     (planting.plant?.commonName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-    (planting.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+    (planting.bed?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
+
+  // Pre-queried model files for the currently selected custom model.
+  const selectedModel = models.find((m) => String(m.id) === formData.customModelId);
 
   const handleCreate = async () => {
     if (!formData.plantingId) {
@@ -603,6 +608,13 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
                   </SelectContent>
                 </Select>
               </div>
+
+              {selectedModel && (
+                <ModelFileList
+                  files={selectedModel.files ?? []}
+                  emptyText="No files attached to this model (add them in 3D Models)"
+                />
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -1055,6 +1067,13 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
                 </SelectContent>
               </Select>
             </div>
+
+            {selectedModel && (
+              <ModelFileList
+                files={selectedModel.files ?? []}
+                emptyText="No files attached to this model (add them in 3D Models)"
+              />
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>

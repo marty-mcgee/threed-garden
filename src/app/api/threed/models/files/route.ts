@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No files provided' }, { status: 400 });
     }
 
-    // Optional explicit category override (model|texture|binary|media)
+    // Optional explicit category override (model|texture|binary|other)
     const categoryOverride = formData.get('category');
 
     const [model] = await db
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
         fileType = 'binary';
         isBinaryBuffer = true;
       } else {
-        fileType = 'media';
+        fileType = 'other';
       }
 
       const [record] = await storeFile(modelId, file, fileType, textureType, uploaded.length, isBinaryBuffer);

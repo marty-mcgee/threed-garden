@@ -1,8 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 12, 2026 @ 1:51pm PST
-**Current Version:** v0.16.4-alpha "Character Models, Model Files, Model Texture Files + Supportive Media Files" — ✅ Released to Production
-**Next Release:** v0.16.4-beta "Admin Surface: 3D Models CRUD Forms"
+**Last Updated:** August 12, 2026 @ 2:58pm PST
+**Current Version:** v0.16.4-beta "Admin Surface: 3D Models CRUD Forms" — ✅ Released to Production
 
 ---
 
@@ -243,6 +242,7 @@ API (/api/map/threed)
 | **v0.16.3-beta** | **2026-08-12** | **Character Model Files — join `threed_models` to characters and load GLB/FBX/OBJ as the 3D Character Marker** |
 | **v0.16.3-centaur** | **2026-08-12** | **README Updates — user-friendly app intro focused on React Three Fiber, Drizzle ORM, and Neon Postgres** |
 | **v0.16.4-alpha** | **2026-08-12** | **Character Models, Model Files, Model Texture Files + Supportive Media Files — Vercel Blob uploads** |
+| **v0.16.4-beta** | **2026-08-12** | **Admin Surface: 3D Models CRUD Forms — full model/files/textures/media management UX** |
 
 ---
 
@@ -731,6 +731,32 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 
 ---
 
-## 🚧 Next Release — v0.16.4-beta "Admin Surface: 3D Models CRUD Forms"
+## ✅ v0.16.4-beta "Admin Surface: 3D Models CRUD Forms" — Released to Production
 
-*(Scope to be defined — improve the Admin 3D Models create/edit forms.)*
+### Focus
+- Improve the Admin 3D Models **Add/Edit dialog forms** for full UX around model files, texture files, and supportive media files — with pre-queried DB relationships and React dropdowns.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Add/Edit forms restructured** | ✅ Complete | `ThreeDModelsCRUD` forms reorganized into labeled sections (Basic Info, Model File, Related Files/Textures, Transform, LOD & Animation, Status & Flags) |
+| **Primary model file dropdown** | ✅ Complete | `mainModelFileId` is now a React `<Select>` populated from the model's associated `model`-type `threed_model_files` (pre-queried via `/api/threed/models?id=`) |
+| **File category upload + management** | ✅ Complete | Files dialog gains a category `<Select>` (Auto-detect / Model / Texture / Binary / Supportive Media) and grouped file lists with inline delete |
+| **Derived texture count** | ✅ Complete | Textures count is derived from associated files (read-only badge) instead of a free-text field |
+| **Supportive media → `other`** | ✅ Complete | Backend auto-classifies unrecognized/auxiliary uploads as `fileType: 'other'` (aligning with `threed_model_files.fileType` values) |
+| **All CRUD forms surface model files** | ✅ Complete | `ModelFileList` (shared component) now renders the selected model's files/textures/media inside every model-referencing CRUD form: Models (main file select + files dialog), Characters (create/edit), Plants (create/edit), and Plantings (create/edit) |
+| **Dedicated Model Files CRUD page** | ✅ Complete | New admin page (`/admin/threed/model-files`) with `ThreeDModelFilesCRUD` — full-featured UX: model selector, file-category auto-detect, drag-and-drop + click-to-upload with per-file progress, list/grid views, search + sort, grouped by type, texture thumbnails, copy URL, open-in-new-tab, set-as-primary model file, delete with confirmation, plus summary stats and skeleton/empty/error states. Linked from the 3D Models page |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/admin/threed/models/ThreeDModelsCRUD.tsx` | Rebuilt forms into sections; `mainModelFileId` dropdown; category upload; grouped file management; derived texture count |
+| `src/app/api/threed/models/files/route.ts` | Supportive/other media now persists `fileType: 'other'` (was `'media'`) |
+| `src/components/admin/threed/models/ModelFileList.tsx` | (new) Shared component rendering a model's grouped files (model / texture / binary / other) with icons, texture badge, and size |
+| `src/components/admin/threed/characters/ThreeDCharactersCRUD.tsx` | Renders `ModelFileList` for the selected model (create + edit) |
+| `src/components/admin/threed/plants/ThreeDPlantsCRUD.tsx` | Renders `ModelFileList` for the selected model (create + edit) |
+| `src/components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx` | Renders `ModelFileList` for the selected custom model (create + edit) |
+| `src/components/admin/threed/models/ThreeDModelFilesCRUD.tsx` | (new) Dedicated Model Files CRUD — model selector, category upload, search/filter, grouped list, inline delete |
+| `src/app/admin/threed/model-files/page.tsx` | (new) Admin page for Model Files (reads optional `?modelId=` to preselect) |
+| `src/app/admin/threed/models/page.tsx` | Added "Model Files" link to the dedicated page |
+| `package.json` | Bumped version to `0.16.4-beta` |
