@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </h1>
                 </Link>
                 <p className="text-xs text-muted-foreground hidden sm:block">
-                  3D Farming • Real-time Incidents • Music
+                  3D Farming • Real-time Incidents • Audio
                 </p>
               </div>
             </div>
