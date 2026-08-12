@@ -1,7 +1,8 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 12, 2026 @ 10:55am PST
-**Current Version:** v0.16.2-beta "Improved Camera Modes, Marker Selection, and Character Animations" — ✅ Released to Production
+**Last Updated:** August 12, 2026 @ 11:12am PST
+**Current Version:** v0.16.2-centaur "Character Marker Hover Titles" (minor) — ✅ Released to Production
+**Next Release:** v0.16.3-alpha "Character Interaction Improvements + Character Model Files"
 
 ---
 
@@ -237,6 +238,7 @@ API (/api/map/threed)
 | **v0.16.0-centaur** | **2026-08-08** | **Polished Details Card — KvRow grid, 3D coords, improved buttons** |
 | **v0.16.0-delta** | **2026-08-08** | **Camera Follow + Marker Sync — cursor tracking, position sync on click** |
 | **v0.16.2-beta** | **2026-08-12** | **Improved Camera Modes, Marker Selection, and Character Animations** |
+| **v0.16.2-centaur** | **2026-08-12** | **Minor — Character Marker Hover Titles styled to match other 3D markers** |
 
 ---
 
@@ -613,6 +615,15 @@ EcctrlCharacter
 
 ---
 
-## 🚧 Next Release — v0.16.2-centaur
+## ✅ v0.16.2-centaur — Released (minor, August 12, 2026)
 
-*(Placeholder — scope to be defined)*
+### Minor Changes
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Character Marker Hover Title** | ✅ Complete | `GardenCharacter` and `EcctrlCharacter` hover tooltips now match the other 3D marker title style — consistent sizing (`text-xs`, `px-2 py-1`, `rounded`), screen-facing `Html` with `distanceFactor={10}` (not marker-attached), and positioned closer to the marker at `[0, 1.2, 0]`. Displays the character name (title) instead of "Click to interact…" |
+
+---
+
+## 🚧 Next Release — v0.16.3-alpha "Character Interaction Improvements + Character Model Files"
+
+*(Scope to be defined — starting next development cycle.)*

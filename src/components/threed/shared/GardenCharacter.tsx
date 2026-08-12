@@ -511,11 +511,11 @@ export function GardenCharacter({
         </Html>
       )}
 
-      {/* Hover Tooltip */}
-      {hovered && character.interactable && (
-        <Html position={[0, 1.2, 0]} center>
-          <div className="bg-black/60 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
-            Click to interact with {character.name}
+      {/* Hover Tooltip — match other 3D marker title style */}
+      {hovered && (
+        <Html position={[0, 1.2, 0]} center distanceFactor={10}>
+          <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap shadow-lg pointer-events-none">
+            {character.name}
           </div>
         </Html>
       )}

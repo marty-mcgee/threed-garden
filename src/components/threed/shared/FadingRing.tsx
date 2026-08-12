@@ -30,7 +30,7 @@ export function FadingRing({
   innerRadius = 0.7,
   outerRadius = 1.0,
   segments = 32,
-  fadeDelay = 3,
+  fadeDelay = 4,
   duration = 1,
   color = '#3b82f6',
   initialOpacity = 0.6,

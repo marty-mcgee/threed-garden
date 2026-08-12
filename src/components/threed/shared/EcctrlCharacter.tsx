@@ -273,8 +273,10 @@ export function EcctrlCharacter({ character, isControlled = false, isSelected = 
         </Html>
       )}
       {hovered && !isControlled && (
-        <Html position={[0, 2.0, 0]} center transform occlude distanceFactor={1} zIndexRange={[10, 20]}>
-          <div style={{ fontSize: 14, pointerEvents: 'none', userSelect: 'none' }} className="bg-black/85 text-white px-4 py-2 rounded-lg shadow-lg whitespace-nowrap font-medium">🔍 Click to view {character.name}</div>
+        <Html position={[0, 1.2, 0]} center distanceFactor={10}>
+          <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap shadow-lg pointer-events-none">
+            {character.name}
+          </div>
         </Html>
       )}
       {(isControlled || isSelected) && (
