@@ -1,7 +1,8 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 12, 2026 @ 12:45pm PST
-**Current Version:** v0.16.3-beta "Character Model Files (GLB/FBX/OBJ)" — ✅ Released to Production
+**Last Updated:** August 12, 2026 @ 1:51pm PST
+**Current Version:** v0.16.4-alpha "Character Models, Model Files, Model Texture Files + Supportive Media Files" — ✅ Released to Production
+**Next Release:** v0.16.4-beta "Admin Surface: 3D Models CRUD Forms"
 
 ---
 
@@ -240,6 +241,8 @@ API (/api/map/threed)
 | **v0.16.2-centaur** | **2026-08-12** | **Minor — Character Marker Hover Titles styled to match other 3D markers** |
 | **v0.16.3-alpha** | **2026-08-12** | **Character Interaction Improvements — `isMovable`-driven Ecctrl engagement + auto-disengage on different selection** |
 | **v0.16.3-beta** | **2026-08-12** | **Character Model Files — join `threed_models` to characters and load GLB/FBX/OBJ as the 3D Character Marker** |
+| **v0.16.3-centaur** | **2026-08-12** | **README Updates — user-friendly app intro focused on React Three Fiber, Drizzle ORM, and Neon Postgres** |
+| **v0.16.4-alpha** | **2026-08-12** | **Character Models, Model Files, Model Texture Files + Supportive Media Files — Vercel Blob uploads** |
 
 ---
 
@@ -666,3 +669,68 @@ When a Character's `model_id` points to a `threed_models` record, load that mode
 | `src/components/threed/shared/GardenCharacter.tsx` | Added `OBJLoader`; routes `fbx`/`obj`/`glb` to the correct loader |
 | `src/components/threed/markers/ModelMarker3D.tsx` | Added `OBJLoader` support for standalone models |
 | `package.json` | Bumped version to `0.16.3-beta` |
+
+---
+
+## ✅ v0.16.3-centaur "README Updates" — Released to Production
+
+### Changes
+| Change | Status | Description |
+|--------|--------|-------------|
+| **New README.md** | ✅ Complete | Replaced the generic Neon marketplace template with a user-friendly app introduction — a Dual-Surface Platform overview, a re-ordered "Core technologies" table with a brief rationale per technology, getting started, database/architecture notes, ThreeD characters, structure, and commands. |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `README.md` | Rewrote for project-specific, user-friendly documentation |
+| `package.json` | Bumped version to `0.16.3-centaur` |
+
+---
+
+## ✅ v0.16.4-alpha "Character Models, Model Files, Model Texture Files + Supportive Media Files" — Released to Production
+
+### Focus
+- **Character models** — the GLB/GLTF/FBX/OBJ models rendered as characters.
+- **Model files** — the primary model files (and associated binary buffers).
+- **Model texture files** — baseColor/normal/roughness/metallic/emissive/occlusion maps.
+- **Supportive media files** — thumbnails, previews, and auxiliary assets.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Reusable model upload helper** | ✅ Complete | `src/lib/utils/modelUpload.ts` with `uploadModelFile` / `uploadModelTexture` / `uploadModelMedia` built on the same `@vercel/blob` `put()` pattern used for Music media |
+| **Primary model file upload endpoint** | ✅ Complete | `POST /api/threed/models/upload` — uploads a GLB/GLTF/FBX/OBJ/USDZ file and returns its public URL + inferred `modelType`/`fileSize` |
+| **Per-model files endpoint (fixed + extended)** | ✅ Complete | `POST /api/threed/models/files` now reads `modelId` from multipart form data (was broken: expected an `[id]` segment), and auto-classifies model/texture/binary/media by extension + persists to `threed_model_files` and updates `mainModelFileId`/`textureCount`/`hasExternalFiles` |
+| **Model file delete route signature fixed** | ✅ Complete | `DELETE /api/threed/models/files/[fileId]` no longer expects a non-existent `[id]` param; derives the model id from the file record (with null guard) |
+| **Admin model upload UI** | ✅ Complete | `ThreeDModelsCRUD` gains "Upload Model File" (create dialog) and "Upload Model Files / Textures" (files dialog) wired to the new endpoints |
+
+### Reuse: Vercel Blob Storage upload (from existing Music/ThreeD code)
+The app already has a working Vercel Blob upload pattern we will reuse for model files, instead of building a new upload path:
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `@vercel/blob` `put()` / `del()` | `src/lib/utils/upload.ts`, `src/app/api/threed/models/files/route.ts`, `src/app/api/threed/models/files/[fileId]/route.ts` | Upload/delete files to Vercel Blob |
+| `uploadImage()` helper | `src/lib/utils/upload.ts` | Music media upload via `put(filename, file, { access: 'public', addRandomSuffix: false })` |
+| Model file upload route | `src/app/api/threed/models/files/route.ts` | Already uploads model textures (`models/{id}/textures/...`) and binaries (`models/{id}/bin/...`) — the baseline to extend for the full model/texture/media workflow |
+| Env credentials | `.env.local` (`BLOB_STORE_ID`, `BLOB_READ_WRITE_TOKEN`) | Vercel Blob access keys (already configured) |
+
+### Key reference flow (from Music Tracks → Blob)
+1. Client reads a local `File`.
+2. `put(path, file, { access: 'public' })` uploads it to Vercel Blob and returns `blob.url`.
+3. The returned `url` is persisted to the DB (`filePath`).
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/lib/utils/modelUpload.ts` | (new) Reusable Vercel Blob model/texture/media upload helpers |
+| `src/app/api/threed/models/upload/route.ts` | (new) Standalone primary model file upload endpoint |
+| `src/app/api/threed/models/files/route.ts` | Fixed `modelId` read from form data; extended to auto-classify model/texture/binary/media |
+| `src/app/api/threed/models/files/[fileId]/route.ts` | Fixed DELETE signature + null-guard on derived `modelId` |
+| `src/components/admin/threed/models/ThreeDModelsCRUD.tsx` | Added upload handlers + file inputs for primary model & files/textures |
+| `package.json` | Bumped version to `0.16.4-alpha` |
+
+---
+
+## 🚧 Next Release — v0.16.4-beta "Admin Surface: 3D Models CRUD Forms"
+
+*(Scope to be defined — improve the Admin 3D Models create/edit forms.)*

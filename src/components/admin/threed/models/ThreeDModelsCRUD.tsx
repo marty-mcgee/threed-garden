@@ -176,6 +176,11 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterActive, setFilterActive] = useState<string>('all');
 
+  // v0.16.4-alpha: Vercel Blob upload state
+  const [uploadingPrimary, setUploadingPrimary] = useState(false);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [filesModelId, setFilesModelId] = useState<number | null>(null);
+
   // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
     modelName: '',
@@ -233,6 +238,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       const data = await response.json();
       if (data.success) {
         setSelectedModelFiles(data.data.files || []);
+        setFilesModelId(modelId);
         setShowFilesDialog(true);
       } else {
         showToast('Failed to fetch model files', 'error');
@@ -247,6 +253,63 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     model.modelName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     model.modelType.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // v0.16.4-alpha: Upload the primary model file (GLB/GLTF/FBX/OBJ) to Vercel Blob.
+  const handlePrimaryFileUpload = async (file: File) => {
+    if (!file) return;
+    setUploadingPrimary(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const response = await fetch('/api/threed/models/upload', { method: 'POST', body: fd });
+      const data = await response.json();
+      if (data.success) {
+        setFormData((prev) => ({
+          ...prev,
+          filePath: data.data.url,
+          fileSize: String(data.data.fileSize || ''),
+          modelType: data.data.modelType
+            ? MODEL_TYPE_OPTIONS.some((o) => o.value === data.data.modelType)
+              ? data.data.modelType
+              : 'custom'
+            : prev.modelType,
+        }));
+        showToast('Model file uploaded', 'success');
+      } else {
+        showToast(data.error || 'Failed to upload model file', 'error');
+      }
+    } catch (error) {
+      console.error('Error uploading primary model file:', error);
+      showToast('Failed to upload model file', 'error');
+    } finally {
+      setUploadingPrimary(false);
+    }
+  };
+
+  // v0.16.4-alpha: Upload additional model files/textures/media to an existing model.
+  const handleModelFilesUpload = async (files: FileList | File[]) => {
+    if (!filesModelId || files.length === 0) return;
+    setUploadingFiles(true);
+    try {
+      const fd = new FormData();
+      fd.append('modelId', String(filesModelId));
+      Array.from(files).forEach((f) => fd.append('files', f));
+      const response = await fetch('/api/threed/models/files', { method: 'POST', body: fd });
+      const data = await response.json();
+      if (data.success) {
+        showToast(`Added ${data.data?.length ?? 0} file(s)`, 'success');
+        await fetchModelFiles(filesModelId);
+        await fetchModels();
+      } else {
+        showToast(data.error || 'Failed to upload model files', 'error');
+      }
+    } catch (error) {
+      console.error('Error uploading model files:', error);
+      showToast('Failed to upload model files', 'error');
+    } finally {
+      setUploadingFiles(false);
+    }
+  };
 
   const handleCreate = async () => {
     if (!formData.modelName) {
@@ -548,6 +611,38 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                   disabled={isSubmitting}
                   required
                 />
+              </div>
+
+              {/* v0.16.4-alpha: Upload primary model file */}
+              <div className="flex items-center gap-2">
+                <input
+                  id="model-file-upload"
+                  type="file"
+                  accept=".glb,.gltf,.fbx,.obj,.usdz"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handlePrimaryFileUpload(file);
+                    e.target.value = '';
+                  }}
+                  disabled={uploadingPrimary}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs"
+                  onClick={() => document.getElementById('model-file-upload')?.click()}
+                  disabled={uploadingPrimary}
+                >
+                  {uploadingPrimary ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
+                  Upload Model File
+                </Button>
+                {formData.filePath && (
+                  <span className="text-xs text-muted-foreground truncate max-w-[160px]">
+                    ✓ uploaded
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -1262,6 +1357,34 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
             <DialogTitle>Model Files</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
+            {/* v0.16.4-alpha: Upload additional files (model/textures/media) */}
+            <div>
+              <input
+                id="model-files-upload"
+                type="file"
+                multiple
+                className="hidden"
+                accept=".glb,.gltf,.fbx,.obj,.usdz,.jpg,.jpeg,.png,.webp,.tga,.bmp,.bin"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && files.length) handleModelFilesUpload(files);
+                  e.target.value = '';
+                }}
+                disabled={uploadingFiles}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs w-full"
+                onClick={() => document.getElementById('model-files-upload')?.click()}
+                disabled={uploadingFiles}
+              >
+                {uploadingFiles ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
+                Upload Model Files / Textures
+              </Button>
+            </div>
+
             {selectedModelFiles.length === 0 ? (
               <div className="text-center py-4 text-muted-foreground text-sm">
                 <File className="w-8 h-8 mx-auto mb-2 opacity-50" />

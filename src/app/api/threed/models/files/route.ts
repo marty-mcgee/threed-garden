@@ -1,132 +1,144 @@
-// src/app/api/threed/models/[id]/files/route.ts
+// src/app/api/threed/models/files/route.ts — v0.16.4-alpha
+// Adds model files, textures, binary buffers, and supportive media to an existing model.
+// Reads `modelId` and optional `category`/`textureType` from multipart form data and
+// persists each uploaded file to Vercel Blob (reusing the existing `@vercel/blob` pattern).
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedModels, threedModelFiles } from '@/lib/schema';
+import { threedModels, threedModelFiles } from '@/lib/schema/threed';
 import { eq } from 'drizzle-orm';
 import { put } from '@vercel/blob';
+import { ensureTableSequence } from '@/lib/db/sequence';
 
-// POST /api/threed/models/[id]/files - Add files to an existing model
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+const MODEL_EXTS = new Set(['glb', 'gltf', 'fbx', 'obj', 'usdz']);
+const TEXTURE_EXTS = new Set(['jpg', 'jpeg', 'png', 'webp', 'tga', 'bmp']);
+const BINARY_EXTS = new Set(['bin']);
+
+function extensionOf(name: string): string {
+  const parts = name.split('.');
+  return parts.length > 1 ? parts.pop()!.toLowerCase() : '';
+}
+
+function detectTextureType(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower.includes('normal')) return 'normalMap';
+  if (lower.includes('roughness')) return 'roughness';
+  if (lower.includes('metallic')) return 'metallic';
+  if (lower.includes('emissive')) return 'emissive';
+  if (lower.includes('occlusion') || lower.includes('ao')) return 'occlusion';
+  return 'baseColor';
+}
+
+async function storeFile(
+  modelId: number,
+  file: File,
+  fileType: string,
+  textureType: string | null,
+  loadOrder: number,
+  isBinaryBuffer = false,
 ) {
+  const ext = extensionOf(file.name) || 'bin';
+  const path = `models/${modelId}/${fileType}/${Date.now()}-${file.name}`;
+  const blob = await put(path, file, { access: 'public', addRandomSuffix: false });
+
+  await ensureTableSequence('threed_model_files');
+
+  return db
+    .insert(threedModelFiles)
+    .values({
+      modelId,
+      fileName: file.name,
+      fileType,
+      textureType,
+      filePath: blob.url,
+      fileSize: file.size,
+      isBinaryBuffer,
+      loadOrder,
+    })
+    .returning();
+}
+
+export async function POST(request: NextRequest) {
   try {
-    const { id } = await params;
-    const modelId = parseInt(id);
-    
-    if (isNaN(modelId)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid model ID' },
-        { status: 400 }
-      );
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     const formData = await request.formData();
+    const modelIdRaw = formData.get('modelId');
+    const modelId = typeof modelIdRaw === 'string' ? parseInt(modelIdRaw) : NaN;
+
+    if (isNaN(modelId)) {
+      return NextResponse.json({ success: false, error: 'Missing or invalid modelId' }, { status: 400 });
+    }
+
     const files = formData.getAll('files') as File[];
-    
     if (files.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'No files provided' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'No files provided' }, { status: 400 });
     }
-    
-    // Separate textures and binaries
-    const textureFiles: File[] = [];
-    const binaryFiles: File[] = [];
-    
-    for (const file of files) {
-      const extension = file.name.split('.').pop()?.toLowerCase();
-      
-      if (extension === 'bin') {
-        binaryFiles.push(file);
-      } else if (['jpg', 'jpeg', 'png', 'webp', 'tga', 'bmp'].includes(extension || '')) {
-        textureFiles.push(file);
-      }
-    }
-    
-    // Check if model exists
-    const [model] = await db.select()
+
+    // Optional explicit category override (model|texture|binary|media)
+    const categoryOverride = formData.get('category');
+
+    const [model] = await db
+      .select()
       .from(threedModels)
       .where(eq(threedModels.id, modelId))
       .limit(1);
-    
+
     if (!model) {
-      return NextResponse.json(
-        { success: false, error: 'Model not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Model not found' }, { status: 404 });
     }
-    
-    const timestamp = Date.now();
-    const uploadedFiles = [];
-    
-    // Upload texture files
-    for (let i = 0; i < textureFiles.length; i++) {
-      const file = textureFiles[i];
-      const fileName = `${timestamp}-${file.name}`;
-      const blob = await put(`models/${modelId}/textures/${fileName}`, file, {
-        access: 'public',
-        addRandomSuffix: false,
-      });
-      
-      // Determine texture type from filename
-      let textureType = 'baseColor';
-      const lowerName = file.name.toLowerCase();
-      if (lowerName.includes('normal')) textureType = 'normalMap';
-      else if (lowerName.includes('roughness')) textureType = 'roughness';
-      else if (lowerName.includes('metallic')) textureType = 'metallic';
-      else if (lowerName.includes('emissive')) textureType = 'emissive';
-      else if (lowerName.includes('occlusion')) textureType = 'occlusion';
-      else if (lowerName.includes('ao')) textureType = 'occlusion';
-      
-      const [fileRecord] = await db.insert(threedModelFiles).values({
-        modelId,
-        fileName: file.name,
-        fileType: 'texture',
-        textureType,
-        filePath: blob.url,
-        fileSize: file.size,
-        loadOrder: (model.textureCount || 0) + i + 1,
-      }).returning();
-      
-      uploadedFiles.push(fileRecord);
+
+    const uploaded: unknown[] = [];
+    let textureCount = model.textureCount || 0;
+    let firstModelFileId = model.mainModelFileId ?? null;
+
+    for (const file of files) {
+      const ext = extensionOf(file.name);
+      let fileType: string;
+      let textureType: string | null = null;
+      let isBinaryBuffer = false;
+
+      if (typeof categoryOverride === 'string' && categoryOverride) {
+        fileType = categoryOverride;
+        if (fileType === 'texture') textureType = detectTextureType(file.name);
+        if (fileType === 'binary') isBinaryBuffer = true;
+      } else if (MODEL_EXTS.has(ext)) {
+        fileType = 'model';
+      } else if (TEXTURE_EXTS.has(ext)) {
+        fileType = 'texture';
+        textureType = detectTextureType(file.name);
+      } else if (BINARY_EXTS.has(ext)) {
+        fileType = 'binary';
+        isBinaryBuffer = true;
+      } else {
+        fileType = 'media';
+      }
+
+      const [record] = await storeFile(modelId, file, fileType, textureType, uploaded.length, isBinaryBuffer);
+
+      if (fileType === 'texture') textureCount += 1;
+      if (fileType === 'model' && firstModelFileId == null) firstModelFileId = record.id;
+
+      uploaded.push(record);
     }
-    
-    // Upload binary files
-    for (let i = 0; i < binaryFiles.length; i++) {
-      const file = binaryFiles[i];
-      const fileName = `${timestamp}-${file.name}`;
-      const blob = await put(`models/${modelId}/bin/${fileName}`, file, {
-        access: 'public',
-        addRandomSuffix: false,
-      });
-      
-      const [fileRecord] = await db.insert(threedModelFiles).values({
-        modelId,
-        fileName: file.name,
-        fileType: 'binary',
-        filePath: blob.url,
-        fileSize: file.size,
-        isBinaryBuffer: true,
-        loadOrder: 100 + i,
-      }).returning();
-      
-      uploadedFiles.push(fileRecord);
-    }
-    
-    // Update model counts
-    await db.update(threedModels)
+
+    // Update the model's file metadata
+    await db
+      .update(threedModels)
       .set({
         hasExternalFiles: true,
-        textureCount: (model.textureCount || 0) + textureFiles.length,
+        textureCount,
+        mainModelFileId: firstModelFileId,
       })
       .where(eq(threedModels.id, modelId));
-    
+
     return NextResponse.json({
       success: true,
-      data: uploadedFiles,
-      message: `Added ${uploadedFiles.length} files to model`,
+      data: uploaded,
+      message: `Added ${uploaded.length} file(s) to model`,
     });
   } catch (error) {
     console.error('Error adding files:', error);
