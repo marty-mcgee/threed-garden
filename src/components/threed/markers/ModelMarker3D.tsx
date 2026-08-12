@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 // ============================================
 // TYPES
@@ -65,6 +66,9 @@ function useModelLoad(model: ModelData) {
           if (modelType === 'fbx') {
             const loader = new FBXLoader();
             m = await loader.loadAsync(model.filePath) as THREE.Group;
+          } else if (modelType === 'obj') {
+            const loader = new OBJLoader();
+            m = await loader.loadAsync(model.filePath) as unknown as THREE.Group;
           } else {
             const loader = new GLTFLoader();
             const gltf = await loader.loadAsync(model.filePath);

@@ -9,6 +9,7 @@ import { Ecctrl, EcctrlAnimationStateController } from 'ecctrl';
 import type { EcctrlHandle, EcctrlAnimationState, EcctrlAnimationStateContext } from 'ecctrl';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { FadingRing } from './FadingRing';
 
 interface CharacterData {
@@ -82,7 +83,12 @@ function useCharacterModel(character: CharacterData, isActive: boolean) {
         const mp = character.model!.filePath, mt = character.model!.modelType?.toLowerCase() || 'glb', ck = `${mp}-${mt}`;
         let m: THREE.Group;
         if (modelCache.has(ck)) { m = modelCache.get(ck)!.clone(); }
-        else { m = mt === 'fbx' ? await new FBXLoader().loadAsync(mp) as THREE.Group : (await new GLTFLoader().loadAsync(mp)).scene; modelCache.set(ck, m.clone()); }
+        else {
+          if (mt === 'fbx') m = await new FBXLoader().loadAsync(mp) as THREE.Group;
+          else if (mt === 'obj') m = await new OBJLoader().loadAsync(mp) as unknown as THREE.Group;
+          else m = (await new GLTFLoader().loadAsync(mp)).scene;
+          modelCache.set(ck, m.clone());
+        }
         m.scale.setScalar(parseFloat(character.model!.scale || '1') * (character.scale || 1));
         m.rotation.y = (parseFloat(character.model!.rotationY || '0') + (character.rotation || 0)) * Math.PI / 180;
         m.traverse((c) => { if (c instanceof THREE.Mesh) { c.castShadow = true; c.receiveShadow = true; } });

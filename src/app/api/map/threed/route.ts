@@ -256,6 +256,18 @@ export async function GET(request: NextRequest) {
         };
 
         await processAssets(assetIdsByType, typeMap, threedData);
+
+        // v0.16.3-beta: Attach each character's referenced model (GLB/FBX/OBJ) so the
+        // 3D scene renders the actual model file instead of a fallback shape.
+        if (threedData.characters.length > 0 && threedData.models.length > 0) {
+          const modelById = new Map(threedData.models.map((m: any) => [m.id, m]));
+          threedData.characters = threedData.characters.map((character: any) => {
+            if (character.modelId != null && modelById.has(character.modelId)) {
+              return { ...character, model: modelById.get(character.modelId) };
+            }
+            return character;
+          });
+        }
       }
     }
 

@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 12, 2026 @ 11:50am PST
-**Current Version:** v0.16.3-alpha "Character Interaction Improvements + Character Model Files" — ✅ Released to Production
+**Last Updated:** August 12, 2026 @ 12:45pm PST
+**Current Version:** v0.16.3-beta "Character Model Files (GLB/FBX/OBJ)" — ✅ Released to Production
 
 ---
 
@@ -239,6 +239,7 @@ API (/api/map/threed)
 | **v0.16.2-beta** | **2026-08-12** | **Improved Camera Modes, Marker Selection, and Character Animations** |
 | **v0.16.2-centaur** | **2026-08-12** | **Minor — Character Marker Hover Titles styled to match other 3D markers** |
 | **v0.16.3-alpha** | **2026-08-12** | **Character Interaction Improvements — `isMovable`-driven Ecctrl engagement + auto-disengage on different selection** |
+| **v0.16.3-beta** | **2026-08-12** | **Character Model Files — join `threed_models` to characters and load GLB/FBX/OBJ as the 3D Character Marker** |
 
 ---
 
@@ -641,3 +642,27 @@ EcctrlCharacter
 | `src/components/map/ThreeDScene.tsx` | Character routing now keys off `marker.data?.isMovable === true` instead of `movementType === 'ecctrl'` |
 | `src/app/dashboard/map/page.tsx` | DetailsCard character controls now show when `d.isMovable === true`; added effect to disengage the controlled character when a different marker/incident is selected |
 | `package.json` | Bumped version to `0.16.3-alpha` |
+
+---
+
+## ✅ v0.16.3-beta "Character Model Files (GLB/FBX/OBJ)" — Released to Production
+
+### Goal
+When a Character's `model_id` points to a `threed_models` record, load that model file (GLB/GLTF/FBX/OBJ, hosted on S3 or Vercel Blob) as the actual 3D Character Marker — replacing the rudimentary `<group>`/`<mesh>`/`<cylinder>` fallback shape.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Character → model join** | ✅ Complete | `/api/map/threed` now attaches the referenced `threed_models` record to each character via `character.model`, so the 3D scene has the model `filePath`/`modelType`/`scale` it needs |
+| **GLB/GLTF loading** | ✅ Complete | `GardenCharacter` and `EcctrlCharacter` load `.glb`/`.gltf` via `GLTFLoader` (fallback shape only when the model is missing/errored) |
+| **FBX loading** | ✅ Complete | `.fbx` models load via `FBXLoader` |
+| **OBJ loading** | ✅ Complete (new) | `.obj` models load via the new `OBJLoader` path in `GardenCharacter`, `EcctrlCharacter`, and `ModelMarker3D` |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/app/api/map/threed/route.ts` | Attaches each character's `threed_models` row as `character.model` when `modelId` is set |
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Added `OBJLoader`; routes `fbx`/`obj`/`glb` to the correct loader |
+| `src/components/threed/shared/GardenCharacter.tsx` | Added `OBJLoader`; routes `fbx`/`obj`/`glb` to the correct loader |
+| `src/components/threed/markers/ModelMarker3D.tsx` | Added `OBJLoader` support for standalone models |
+| `package.json` | Bumped version to `0.16.3-beta` |

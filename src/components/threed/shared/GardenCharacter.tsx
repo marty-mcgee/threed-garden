@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -174,6 +175,9 @@ export function GardenCharacter({
           if (modelType === 'fbx') {
             const loader = new FBXLoader();
             loadedModel = await loader.loadAsync(modelPath) as THREE.Group;
+          } else if (modelType === 'obj') {
+            const loader = new OBJLoader();
+            loadedModel = await loader.loadAsync(modelPath) as unknown as THREE.Group;
           } else {
             const loader = new GLTFLoader();
             const gltf = await loader.loadAsync(modelPath);
