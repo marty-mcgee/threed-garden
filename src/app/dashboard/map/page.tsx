@@ -170,12 +170,14 @@ function KvRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl }: {
+function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange }: {
   selected: any;
   onClose: () => void;
   controlledCharacterId: number | null;
   onTakeControl: (id: number) => void;
   onReleaseControl: () => void;
+  cameraMode?: string;
+  onCameraModeChange?: (mode: string) => void;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || {};
@@ -293,6 +295,21 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shrink-0" />
                   <span>WASD / Space / Shift active</span>
                 </div>
+                {onCameraModeChange && (
+                  <div className="space-y-1">
+                    <div className="text-[10px] text-white/50">Camera:</div>
+                    <select
+                      value={cameraMode || 'follow'}
+                      onChange={(e) => { e.stopPropagation(); onCameraModeChange(e.target.value); }}
+                      className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white/80 focus:outline-none focus:border-white/30 appearance-none"
+                    >
+                      <option value="follow" className="bg-gray-800 text-white">🎥 Follow</option>
+                      <option value="topdown" className="bg-gray-800 text-white">🔽 Top-Down</option>
+                      <option value="firstperson" className="bg-gray-800 text-white">👁️ First-Person</option>
+                      <option value="stationary" className="bg-gray-800 text-white">📷 Stationary</option>
+                    </select>
+                  </div>
+                )}
                 <button
                   onClick={(e) => { e.stopPropagation(); onReleaseControl(); }}
                   className="block w-full text-center text-[11px] font-medium bg-amber-600 hover:bg-amber-500 text-white py-1.5 px-2 rounded transition-colors"
@@ -417,6 +434,7 @@ function UnifiedMapPageInner() {
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
+  const [cameraMode, setCameraMode] = useState<string>('follow');
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
 
   // v0.16.0-delta: Sync RuntimeMarker position when ecctrl character moves
@@ -1011,6 +1029,7 @@ function UnifiedMapPageInner() {
         <CardContent className="p-0 overflow-hidden">
           <div style={{ height: isFullscreen ? '100vh' : 'calc(100vh - 122px)' }}>
             
+            {/* Pass cameraMode to combined view's 3D UnifiedMapView */}
             {viewMode === 'combined' && (
               <div 
                 ref={containerRef}
@@ -1036,6 +1055,7 @@ function UnifiedMapPageInner() {
                       filterActiveOnly={filterActiveOnly}
                       filterAssetType={filterAssetType}
                       controlledCharacterId={controlledCharacterId}
+                      cameraMode={cameraMode}
                     />
                   </div>
                 </div>
@@ -1092,6 +1112,7 @@ function UnifiedMapPageInner() {
                 filterAssetType={filterAssetType}
                 controlledCharacterId={controlledCharacterId}
                 onControlChange={handleControlChange}
+                cameraMode={cameraMode}
               />
             )}
 
@@ -1126,6 +1147,8 @@ function UnifiedMapPageInner() {
         controlledCharacterId={controlledCharacterId}
         onTakeControl={(id) => setControlledCharacterId(id)}
         onReleaseControl={() => setControlledCharacterId(null)}
+        cameraMode={cameraMode}
+        onCameraModeChange={(mode) => setCameraMode(mode)}
       />
       
     </div>

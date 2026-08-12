@@ -39,6 +39,8 @@ interface UnifiedMapViewProps {
   controlledCharacterId?: number | null;
   /** Called when an ecctrl character's control state changes */
   onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
+  /** Camera mode override (selected by user in DetailsCard) */
+  cameraMode?: string;
 }
 
 const MARKER_CONFIG: Record<string, { color: string; icon: string; label: string }> = {
@@ -75,6 +77,7 @@ export function UnifiedMapView({
   filterAssetType = null,
   controlledCharacterId,
   onControlChange,
+  cameraMode,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(false);
@@ -395,6 +398,7 @@ export function UnifiedMapView({
         onAutoRotateToggle={() => setAutoRotate(!autoRotate)}
         controlledCharacterId={controlledCharacterId}
         onControlChange={onControlChange}
+        cameraMode={cameraMode as any}
       />
     );
   };

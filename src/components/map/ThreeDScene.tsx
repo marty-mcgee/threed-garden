@@ -34,6 +34,8 @@ interface ThreeDSceneProps {
   controlledCharacterId?: number | null;
   /** Called when an ecctrl character's control state changes, with its current world position */
   onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
+  /** Override camera view mode (selected by user in DetailsCard) */
+  cameraMode?: CameraViewMode;
 }
 
 // ✅ View Preset Types
@@ -98,7 +100,7 @@ function ControlsReadyNotifier({ controlsRef, onReady }: { controlsRef: any; onR
 }
 
 // v0.16.1-beta: Camera Controller — supports multiple view modes for selected characters
-type CameraViewMode = 'follow' | 'topdown' | 'firstperson' | 'orbit' | 'stationary';
+type CameraViewMode = 'follow' | 'topdown' | 'firstperson' | 'stationary';
 
 function CameraController({
   controlsRef,
@@ -112,7 +114,59 @@ function CameraController({
   enabled: boolean;
 }) {
   const followTarget = useRef(new THREE.Vector3());
-  const orbitAngle = useRef(0);
+  // Track previous position for velocity/direction calculation
+  const prevPos = useRef<THREE.Vector3 | null>(null); // null = uninitialized
+  const facingDir = useRef(new THREE.Vector3(0, 0, 1)); // default forward
+  // Store original constraints to restore on unmount/mode change
+  const originalConstraints = useRef<{ maxPolarAngle?: number; minDistance?: number; maxDistance?: number; enableDamping?: boolean }>({});
+
+  // Apply and restore orbit constraints for angle-locked modes (topdown, firstperson)
+  useEffect(() => {
+    if (!controlsRef.current) return;
+    const controls = controlsRef.current;
+
+    // Save originals on first run
+    if (originalConstraints.current.enableDamping === undefined) {
+      originalConstraints.current = {
+        maxPolarAngle: controls.maxPolarAngle,
+        minDistance: controls.minDistance,
+        maxDistance: controls.maxDistance,
+        enableDamping: controls.enableDamping,
+      };
+    }
+
+    if (!enabled) return;
+
+    const orig = originalConstraints.current;
+
+    switch (mode) {
+      case 'topdown':
+        controls.maxPolarAngle = 0.3;
+        break;
+      case 'firstperson':
+        // Kill damping so manual camera positioning works immediately
+        controls.enableDamping = false;
+        controls.minDistance = 1;
+        controls.maxDistance = 4;
+        if (orig.maxPolarAngle !== undefined) controls.maxPolarAngle = orig.maxPolarAngle;
+        break;
+      default:
+        // Restore original constraints for other modes
+        if (orig.enableDamping !== undefined) controls.enableDamping = orig.enableDamping;
+        if (orig.maxPolarAngle !== undefined) controls.maxPolarAngle = orig.maxPolarAngle;
+        if (orig.minDistance !== undefined) controls.minDistance = orig.minDistance;
+        if (orig.maxDistance !== undefined) controls.maxDistance = orig.maxDistance;
+    }
+
+    return () => {
+      if (controlsRef.current) {
+        if (orig.enableDamping !== undefined) controlsRef.current.enableDamping = orig.enableDamping;
+        if (orig.maxPolarAngle !== undefined) controlsRef.current.maxPolarAngle = orig.maxPolarAngle;
+        if (orig.minDistance !== undefined) controlsRef.current.minDistance = orig.minDistance;
+        if (orig.maxDistance !== undefined) controlsRef.current.maxDistance = orig.maxDistance;
+      }
+    };
+  }, [mode, enabled]);
 
   useFrame((_, delta) => {
     if (!enabled || !controlsRef.current || !cameraFollowRef.current) return;
@@ -120,40 +174,59 @@ function CameraController({
     const controls = controlsRef.current;
     const charPos = cameraFollowRef.current;
 
+    // Initialize/update prevPos for velocity tracking
+    if (!prevPos.current) {
+      prevPos.current = charPos.clone();
+    }
+    const dx = charPos.x - prevPos.current.x;
+    const dz = charPos.z - prevPos.current.z;
+    const dist = Math.sqrt(dx * dx + dz * dz);
+    if (dist > 0.01) {
+      // Smoothly blend facing direction toward movement direction
+      const rawDir = new THREE.Vector3(dx / dist, 0, dz / dist);
+      facingDir.current.lerp(rawDir, 0.15);
+      facingDir.current.normalize();
+    }
+    prevPos.current.copy(charPos);
+
     switch (mode) {
       case 'follow':
-        // Smoothly lerp controls target toward the character's position
+        // Target + camera both track character at constant offset → character stays same size
+        performLerp(followTarget.current, charPos, 0.08);
+        controls.target.lerp(followTarget.current, 0.08);
+        // Maintain camera at constant distance from character
+        const camOffset = new THREE.Vector3().subVectors(controls.object.position, charPos);
+        camOffset.y = Math.max(camOffset.y, 2); // keep at least 2 units above
+        if (camOffset.length() > 1) camOffset.normalize().multiplyScalar(8); // constant 8-unit radius
+        controls.object.position.lerp(charPos.clone().add(camOffset), 0.08);
+        break;
+
+      case 'topdown':
+        // Target follows character, polar angle locked to near-vertical
         performLerp(followTarget.current, charPos, 0.08);
         controls.target.lerp(followTarget.current, 0.08);
         break;
 
-      case 'topdown':
-        // Camera directly above character looking straight down
-        controls.target.set(charPos.x, charPos.y, charPos.z);
-        controls.object.position.set(charPos.x, charPos.y + 15, charPos.z);
-        controls.update();
-        break;
-
       case 'firstperson':
-        // Camera at character position, slightly elevated
-        controls.target.set(charPos.x, charPos.y + 3, charPos.z);
-        controls.object.position.set(charPos.x + 0.5, charPos.y + 1.5, charPos.z + 0.5);
-        controls.update();
-        break;
-
-      case 'orbit':
-        // Camera orbits around character at a fixed distance
-        orbitAngle.current += delta * 0.5; // slow rotation
-        const radius = 8;
-        const camX = charPos.x + Math.cos(orbitAngle.current) * radius;
-        const camZ = charPos.z + Math.sin(orbitAngle.current) * radius;
-        controls.target.set(charPos.x, charPos.y, charPos.z);
-        controls.object.position.set(camX, charPos.y + 5, camZ);
-        controls.update();
+        // Camera behind character based on smoothed facing direction
+        const behindDist = 4.0;
+        const camHeight = 1.2; // lower to ground — see beds, plants, and farmbots
+        const lookAhead = new THREE.Vector3(
+          charPos.x + facingDir.current.x * 3.0,
+          charPos.y + 0.8, // look slightly above ground
+          charPos.z + facingDir.current.z * 3.0,
+        );
+        controls.target.lerp(lookAhead, 0.12);
+        const behindPos = new THREE.Vector3(
+          charPos.x - facingDir.current.x * behindDist,
+          charPos.y + camHeight,
+          charPos.z - facingDir.current.z * behindDist,
+        );
+        controls.object.position.lerp(behindPos, 0.12);
         break;
 
       default:
-        // stationary: camera stays put
+        // stationary: no target tracking, no camera movement — free-roaming
         break;
     }
   });
@@ -303,101 +376,110 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
       );
     }
 
+    // v0.16.2-alpha: Non-ecctrl characters — restore click/hover on group, wrap in RigidBody
     return (
-      <group
-        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
-      >
-        <GardenCharacter character={marker.data} />
-      </group>
+      <RigidBody type="fixed" colliders="cuboid" position={pos}>
+        <group
+          onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+          onPointerEnter={() => setHovered(true)}
+          onPointerLeave={() => setHovered(false)}
+        >
+          <GardenCharacter character={marker.data} />
+        </group>
+      </RigidBody>
     );
   }
 
+  // v0.16.2-alpha: Beds — restore click, wrap in RigidBody
   if (marker.type === 'bed' || marker.type === 'beds') {
     return (
-      <group
-        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-      >
-        <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={pos} />
-      </group>
+      <RigidBody type="fixed" colliders="cuboid" position={pos}>
+        <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
+          <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
+        </group>
+      </RigidBody>
     );
   }
 
+  // v0.16.2-alpha: Plantings — restore click, wrap in RigidBody
   if (marker.type === 'planting' || marker.type === 'plantings') {
     return (
-      <group
-        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-      >
-        <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: marker.data?.quantity, status: marker.data?.status }} position={pos} />
-      </group>
+      <RigidBody type="fixed" colliders="cuboid" position={pos}>
+        <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
+          <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: marker.data?.quantity, status: marker.data?.status }} position={[0, 0, 0]} />
+        </group>
+      </RigidBody>
     );
   }
 
-  // v0.16.1-alpha: Render 3D models as standalone markers
+  // v0.16.2-alpha: Models get fixed RigidBody sphere collider
   if (marker.type === 'model' || marker.type === 'models') {
     return (
-      <ModelMarker3D
-        model={marker.data}
-        position={pos}
-        name={marker.name}
-        animationSpeed={marker.data?.animationSpeed || 1}
-      />
+      <RigidBody type="fixed" colliders="ball" position={pos}>
+        <ModelMarker3D
+          model={marker.data}
+          position={[0, 0, 0]}
+          name={marker.name}
+          animationSpeed={marker.data?.animationSpeed || 1}
+        />
+      </RigidBody>
     );
   }
 
+  // v0.16.2-alpha: Farmbots get fixed RigidBody cuboid collider
   if (marker.type === 'farmbot' || marker.type === 'farmbots') {
     const fbData = marker.data || {};
     const fbStatus = fbData.status?.toLowerCase() || 'offline';
     const fbStatusColor = ({ online: '#22c55e', offline: '#ef4444', busy: '#f59e0b', maintenance: '#3b82f6', error: '#ef4444' } as Record<string, string>)[fbStatus] || '#6b7280';
 
     return (
-      <group
-        position={pos}
-        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
-      >
-        <mesh position={[0, 0.15, 0]} castShadow>
-          <boxGeometry args={[0.6, 0.3, 0.4]} />
-          <meshStandardMaterial color="#4B5563" roughness={0.3} metalness={0.6} />
-        </mesh>
-        <mesh position={[0, 0.27, 0]} castShadow>
-          <boxGeometry args={[0.55, 0.04, 0.35]} />
-          <meshStandardMaterial color={fbStatusColor} roughness={0.2} metalness={0.4} />
-        </mesh>
-        <mesh position={[0, 0.4, 0.2]} castShadow>
-          <sphereGeometry args={[0.15, 12, 12]} />
-          <meshStandardMaterial color={fbStatusColor} roughness={0.2} metalness={0.3} />
-        </mesh>
-        <mesh position={[0, 0.52, 0.2]} castShadow>
-          <cylinderGeometry args={[0.02, 0.02, 0.12]} />
-          <meshStandardMaterial color="#9CA3AF" roughness={0.2} metalness={0.8} />
-        </mesh>
-        <mesh rotation={[0, 0, Math.PI / 2]} position={[-0.3, 0.05, 0.25]} castShadow>
-          <cylinderGeometry args={[0.08, 0.08, 0.04]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.8} />
-        </mesh>
-        <mesh rotation={[0, 0, Math.PI / 2]} position={[0.3, 0.05, 0.25]} castShadow>
-          <cylinderGeometry args={[0.08, 0.08, 0.04]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.8} />
-        </mesh>
-        <mesh rotation={[0, 0, Math.PI / 2]} position={[-0.3, 0.05, -0.25]} castShadow>
-          <cylinderGeometry args={[0.08, 0.08, 0.04]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.8} />
-        </mesh>
-        <mesh rotation={[0, 0, Math.PI / 2]} position={[0.3, 0.05, -0.25]} castShadow>
-          <cylinderGeometry args={[0.08, 0.08, 0.04]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.8} />
-        </mesh>
-        {hovered && (
-          <Html position={[0, 0.85, 0]} center distanceFactor={8}>
-            <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
-              {marker.name} — {fbStatus} — {Math.round(fbData.batteryLevel ?? fbData.battery ?? 50)}%
-            </div>
-          </Html>
-        )}
-      </group>
+      <RigidBody type="fixed" colliders="cuboid" position={pos}>
+        <group
+          onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+          onPointerEnter={() => setHovered(true)}
+          onPointerLeave={() => setHovered(false)}
+        >
+          <mesh position={[0, 0.15, 0]} castShadow>
+            <boxGeometry args={[0.6, 0.3, 0.4]} />
+            <meshStandardMaterial color="#4B5563" roughness={0.3} metalness={0.6} />
+          </mesh>
+          <mesh position={[0, 0.27, 0]} castShadow>
+            <boxGeometry args={[0.55, 0.04, 0.35]} />
+            <meshStandardMaterial color={fbStatusColor} roughness={0.2} metalness={0.4} />
+          </mesh>
+          <mesh position={[0, 0.4, 0.2]} castShadow>
+            <sphereGeometry args={[0.15, 12, 12]} />
+            <meshStandardMaterial color={fbStatusColor} roughness={0.2} metalness={0.3} />
+          </mesh>
+          <mesh position={[0, 0.52, 0.2]} castShadow>
+            <cylinderGeometry args={[0.02, 0.02, 0.12]} />
+            <meshStandardMaterial color="#9CA3AF" roughness={0.2} metalness={0.8} />
+          </mesh>
+          <mesh rotation={[0, 0, Math.PI / 2]} position={[-0.3, 0.05, 0.25]} castShadow>
+            <cylinderGeometry args={[0.08, 0.08, 0.04]} />
+            <meshStandardMaterial color="#1f2937" roughness={0.8} />
+          </mesh>
+          <mesh rotation={[0, 0, Math.PI / 2]} position={[0.3, 0.05, 0.25]} castShadow>
+            <cylinderGeometry args={[0.08, 0.08, 0.04]} />
+            <meshStandardMaterial color="#1f2937" roughness={0.8} />
+          </mesh>
+          <mesh rotation={[0, 0, Math.PI / 2]} position={[-0.3, 0.05, -0.25]} castShadow>
+            <cylinderGeometry args={[0.08, 0.08, 0.04]} />
+            <meshStandardMaterial color="#1f2937" roughness={0.8} />
+          </mesh>
+          <mesh rotation={[0, 0, Math.PI / 2]} position={[0.3, 0.05, -0.25]} castShadow>
+            <cylinderGeometry args={[0.08, 0.08, 0.04]} />
+            <meshStandardMaterial color="#1f2937" roughness={0.8} />
+          </mesh>
+          {hovered && (
+            <Html position={[0, 0.85, 0]} center distanceFactor={8}>
+              <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
+                {marker.name} — {fbStatus} — {Math.round(fbData.batteryLevel ?? fbData.battery ?? 50)}%
+              </div>
+            </Html>
+          )}
+        </group>
+      </RigidBody>
     );
   }
 
@@ -570,6 +652,7 @@ export function ThreeDScene({
   projectId,
   controlledCharacterId,
   onControlChange,
+  cameraMode,
 }: ThreeDSceneProps) {
   // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
   const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
@@ -1115,18 +1198,27 @@ export function ThreeDScene({
           onReady={() => setControlsReady(true)}
         />
 
-        {/* v0.16.1-beta: Camera controller — supports multiple view modes based on movementPattern */}
-        {controlledCharacterId != null && (
-          <CameraController
-            controlsRef={controlsRef}
-            cameraFollowRef={cameraFollowRef}
-            mode={
-              (visibleMarkers.find((m) => m.data?.id === controlledCharacterId)?.data?.movementPattern as CameraViewMode)
-              || 'stationary'
-            }
-            enabled={true}
-          />
-        )}
+        {/* v0.16.2-alpha: Camera controller — follows controlled ecctrl character
+            Uses user-selected cameraMode from DetailsCard, falls back to DB movementPattern */}
+        {controlledCharacterId != null && (() => {
+          const controlledMarker = visibleMarkers.find((m) => m.data?.id === controlledCharacterId);
+          const pattern = controlledMarker?.data?.movementPattern;
+          const validModes: CameraViewMode[] = ['follow', 'topdown', 'firstperson', 'stationary'];
+          // Priority: user-selected cameraMode > DB movementPattern > default 'follow'
+          const mode: CameraViewMode = (cameraMode && validModes.includes(cameraMode))
+            ? cameraMode
+            : validModes.includes(pattern as CameraViewMode)
+              ? pattern as CameraViewMode
+              : 'follow';
+          return (
+            <CameraController
+              controlsRef={controlsRef}
+              cameraFollowRef={cameraFollowRef}
+              mode={mode}
+              enabled={true}
+            />
+          );
+        })()}
 
         {/* ORBIT CONTROLS GIZMO HELPER */}
         {controlsReady && showGizmoCube && (

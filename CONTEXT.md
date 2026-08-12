@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 8, 2026 @ 8:45am PST
-**Current Version:** v0.16.0-delta "Camera Follow + Marker Sync"
+**Last Updated:** August 12, 2026 @ 5:40am PST
+**Current Version:** v0.16.2-alpha "Physics Boundaries + Camera Modes"
 
 ---
 
@@ -418,5 +418,130 @@ CameraFollow (useFrame, single lerp)
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Added `cameraFollowRef` prop, `movementPattern` field, position sync on click |
 | `src/components/map/ThreeDScene.tsx` | Added `CameraFollow` + `performLerp`, threaded `cameraFollowRef` |
 | `src/app/dashboard/map/page.tsx` | `handleControlChange` syncs `selectedMarker.position` on control state change |
+
+---
+
+## v0.16.1-alpha "ThreeD Models" — Complete
+
+### Architecture
+```
+API (/api/map/threed)
+  └── threed_models table fetched via project_assets junction
+      ↓
+UnifiedMapView — models added to typesToProcess, MARKER_CONFIG
+      ↓
+ThreeDMarkerComponent — 'model'/'models' type → ModelMarker3D
+      ↓
+ModelMarker3D — GLTF/FBX loading, shadow, animation playback
+```
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `src/components/threed/markers/ModelMarker3D.tsx` | Renders `threed_models` entries in 3D scene — GLTF/FBX loading from `filePath`, configurable scale/rotation/offset, auto-plays `defaultAnimation`, shadow casting, shared model cache, fallback box shape |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | Added `ModelMarker3D` import + `model`/`models` type routing in `ThreeDMarkerComponent` |
+| `src/components/map/UnifiedMapView.tsx` | Added `model`/`models` to `MARKER_CONFIG` and `typesToProcess` array |
+| `src/app/api/map/threed/route.ts` | Added `threedModels` import + `threed_models` to typeMap so models are fetched from DB |
+| `src/app/dashboard/map/page.tsx` | Added `models` to `visibleAssetTypes`, filters, `threedRaw`, active layers |
+
+### How to Use
+1. Upload a GLB/GLTF/FBX model via `/admin/threed/models`
+2. Assign it to a project via `project_assets` junction
+3. The model renders in the 3D scene at its assigned position with shadows and animation
+
+### Model Display
+- Standalone models use their `positionX`/`positionY`/`positionZ` from DB
+- Models attached to characters (via `character.modelId`) render through `GardenCharacter`/`EcctrlCharacter`
+- Models without position columns default to origin (0, 1.5, 0)
+
+---
+
+## v0.16.1-beta "Character Camera Views" — Implemented
+
+### Architecture
+
+**`CameraController`** replaces the old `CameraFollow` component with a mode-switching architecture that reads the controlled character's `movementPattern` field from the marker data.
+
+### Camera View Modes
+
+| `movementPattern` | Camera Behavior |
+|---|---|
+| `follow` | Smoothly lerps camera target toward character (previous behavior) |
+| `topdown` | Camera positioned 15 units directly above character, looking straight down |
+| `firstperson` | Camera at character position +0.5 offset, 1.5 units above ground, looking ahead |
+| `orbit` | Camera orbits around character at 8-unit radius, 5 units high, slow rotation |
+| `stationary` (default/null) | Camera stays put — free-roaming (no change) |
+
+### How It Works
+
+```
+Character Marker (movementPattern: 'topdown')
+  ↓
+EcctrlCharacter writes currPos each frame → cameraFollowRef
+  ↓
+CameraController reads movementPattern from visibleMarkers
+  ↓
+switch(mode): adjusts controls.target + controls.object.position
+```
+
+### Files Changed
+- `src/components/map/ThreeDScene.tsx`:
+  - Replaced `CameraFollow` component with `CameraController` (supports 5 view modes)
+  - `CameraController` extracts `movementPattern` from the controlled character's marker data
+  - Defaults to `'stationary'` if no pattern set
+
+---
+
+## v0.16.1-centaur "Layout + Buttons" — Implemented
+
+**Dashboard Layout**, **Dashboard Page**, **Admin Layout** tightened up and buttons sized.
+
+---
+
+## v0.16.2-alpha "Physics Boundaries + Camera Modes"
+
+### Features
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Physics Boundaries** | ✅ Complete | All non-ecctrl markers (beds, plantings, farmbots, non-ecctrl characters, models) wrapped in Rapier `RigidBody type="fixed"` with appropriate colliders — ecctrl character physically collides with all marker types |
+| **Camera Mode Selector** | ✅ Complete | Dropdown in DetailsCard controlling section to select camera behavior: Follow, Top-Down, First-Person, Stationary |
+| **Follow Mode** | ✅ Complete | Camera tracks character at constant 8-unit radius, target follows at ground level — character stays same visual size |
+| **Top-Down Mode** | ✅ Complete | Camera target tracks character, `maxPolarAngle = 0.3` locks camera near-vertical |
+| **First-Person Mode** | ✅ Complete | Smooth behind-the-character pivot at 1.2 height, 4-unit behind — shows character, beds, plants, and farmbots |
+| **Stationary Mode** | ✅ Complete | No camera tracking, full free-roam OrbitControls with restored defaults |
+
+### Architecture
+```
+CameraController (ThreeDScene.tsx)
+  ├── cameraMode state (follow/topdown/firstperson/stationary)
+  │     └── user-selected via DetailsCard dropdown
+  ├── prevPos ref → velocity-based facingDir for first-person pivot
+  ├── OrbitControls constraints (maxPolarAngle for topdown, enableDamping for first-person)
+  └── Constant-radius camera for follow mode (8-unit offset)
+
+ThreeDMarkerComponent
+  └── RigidBody type="fixed" wrappers for all non-ecctrl marker types
+        ├── Beds: colliders="cuboid"
+        ├── Plantings: colliders="cuboid"
+        ├── Farmbots: colliders="cuboid"
+        ├── Non-ecctrl Characters: colliders="cuboid"
+        └── Models: colliders="ball"
+```
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | CameraController with 4 modes, velocity-based facing direction, constant-radius follow, top-down angle lock, first-person behind-pivot, RigidBody colliders for all marker types |
+| `src/app/dashboard/map/page.tsx` | Added `cameraMode` state, camera dropdown in DetailsCard controlling section, removed Orbit option |
+| `src/components/map/UnifiedMapView.tsx` | Added `cameraMode` prop threading |
+
+### How to Use
+Set `movementType: 'ecctrl'` on a character record in the database. Click character → Take Control → Camera dropdown appears → select Follow/Top-Down/First-Person/Stationary. Character physically collides with all marker types.
 
 ---
