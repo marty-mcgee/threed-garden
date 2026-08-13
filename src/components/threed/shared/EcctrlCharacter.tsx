@@ -1,4 +1,4 @@
-// src/components/threed/shared/EcctrlCharacter.tsx — v0.16.2-beta
+// src/components/threed/shared/EcctrlCharacter.tsx — v0.16.2-beta 
 'use client';
 
 import { useRef, useState, useCallback, useEffect } from 'react';

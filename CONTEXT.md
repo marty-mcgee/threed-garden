@@ -779,3 +779,6 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Grounded model via `GROUND_OFFSET`; spawn lift via `SPAWN_LIFT`; named capsule constants |
 | `src/components/threed/shared/GardenCharacter.tsx` | Grounded model via bounding-box `min.y` |
 | `package.json` | Bumped version to `0.16.4-centaur` |
+
+---
+

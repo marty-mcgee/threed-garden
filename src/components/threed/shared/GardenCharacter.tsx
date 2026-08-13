@@ -1,4 +1,4 @@
-// src/components/threed/shared/GardenCharacter.tsx — v0.15.0 "Character Animations"
+// src/components/threed/shared/GardenCharacter.tsx — v0.16.0 "Character Animations" 
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
