@@ -9,6 +9,44 @@ import {
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
+// Normalize an incoming character body so empty-string/nullable optional fields
+// don't collide with enum/decimal/integer column types (e.g. '' for an enum fails).
+function normalizeCharacterBody(body: Record<string, any>) {
+  const out: Record<string, any> = { ...body };
+
+  // Optional fields whose empty string must become NULL.
+  const nullableKeys = [
+    'description',
+    'defaultAnimation',
+    'movementPattern',
+    'movementRadius',
+    'followTarget',
+    'interactionMessage',
+    'soundEffect',
+    'activeStartHour',
+    'activeEndHour',
+    'teleportInterval',
+    'colorTint',
+  ];
+  for (const key of nullableKeys) {
+    if (out[key] === '' || out[key] === undefined) out[key] = null;
+  }
+
+  // Array columns must always be arrays (some records contain `{}` instead of `[]`).
+  for (const key of ['animations', 'patrolWaypoints', 'teleportPositions']) {
+    if (!Array.isArray(out[key])) out[key] = [];
+  }
+
+  // modelId is an integer foreign key.
+  if (out.modelId === '' || out.modelId === undefined || out.modelId === null) {
+    out.modelId = null;
+  } else {
+    out.modelId = parseInt(out.modelId);
+  }
+
+  return out;
+}
+
 // ============================================
 // GET /api/threed/characters - List ThreeD Characters
 // Query Parameters:
@@ -398,7 +436,7 @@ export async function PUT(request: NextRequest) {
     const [updated] = await db
       .update(threedCharacters)
       .set({
-        ...body,
+        ...normalizeCharacterBody(body),
         updatedAt: new Date(),
       })
       .where(
@@ -499,7 +537,7 @@ export async function PATCH(request: NextRequest) {
     const [updated] = await db
       .update(threedCharacters)
       .set({
-        ...body,
+        ...normalizeCharacterBody(body),
         updatedAt: new Date(),
       })
       .where(
