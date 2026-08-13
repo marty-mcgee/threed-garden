@@ -192,6 +192,14 @@ export function GardenCharacter({
         loadedModel.scale.setScalar(scale);
         loadedModel.rotation.y = (rotationY * Math.PI) / 180;
 
+        // Ground the model: shift it so its lowest point sits at the group origin
+        // (local Y=0), which maps to the character's database positionY.
+        loadedModel.updateMatrixWorld(true);
+        const modelBox = new THREE.Box3().setFromObject(loadedModel);
+        if (isFinite(modelBox.min.y)) {
+          loadedModel.position.y -= modelBox.min.y;
+        }
+
         // Enable shadows on all meshes in the loaded model
         loadedModel.traverse((child) => {
           if (child instanceof THREE.Mesh) {

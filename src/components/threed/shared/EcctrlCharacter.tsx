@@ -41,6 +41,18 @@ interface EcctrlCharacterProps {
 
 const modelCache = new Map<string, THREE.Group>();
 
+// The ecctrl capsule body's origin is its CENTER. When it rests on the ground, that
+// center sits `capsuleHalfHeight + capsuleRadius + floatHeight` above the ground.
+// We shift the visual model down by that amount so a character with positionY=0
+// stands on the ground instead of floating.
+const CAPSULE_HALF_HEIGHT = 0.6;
+const CAPSULE_RADIUS = 0.3;
+const FLOAT_HEIGHT = 0.3;
+const GROUND_OFFSET = CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS + FLOAT_HEIGHT; // 1.2
+// Small extra drop distance so characters are introduced above their rest height and
+// settle onto the ground/colliders under gravity (avoids first-frame interpenetration).
+const SPAWN_LIFT = 0.75;
+
 // Maps each Ecctrl animation state to the preferred clip names to look for on the model.
 // Clip matching is case-insensitive and falls back to the next candidate when a clip is missing.
 const STATE_CLIPS: Record<EcctrlAnimationState, string[]> = {
@@ -169,7 +181,9 @@ function useWASD(active: boolean) {
 // ============================================
 export function EcctrlCharacter({ character, isControlled = false, isSelected = false, onClick, onControlChange, cameraFollowRef, livePositionsRef, markerId }: EcctrlCharacterProps) {
   const ecctrlRef = useRef<EcctrlHandle>(null);
-  const startY = Math.max(Number(character.positionY) || 0, 1.5);
+  // Spawn the capsule body above its rest height (ground offset + a small lift) so
+  // gravity settles it onto the ground/static colliders without first-frame overlap.
+  const startY = (Number(character.positionY) || 0) + GROUND_OFFSET + SPAWN_LIFT;
   const { model, loading, error, animations, mixerRef, actionsRef } = useCharacterModel(character, character.status === 'active' && character.visible);
 
   const [hovered, setHovered] = useState(false);
@@ -307,13 +321,17 @@ export function EcctrlCharacter({ character, isControlled = false, isSelected = 
   }
 
   return (
-    <Ecctrl ref={ecctrlRef} position={pos} floatHeight={0.3} maxWalkVel={2} maxRunVel={3.5} enable capsuleHalfHeight={0.6} capsuleRadius={0.3}>
+    <Ecctrl ref={ecctrlRef} position={pos} floatHeight={FLOAT_HEIGHT} maxWalkVel={2} maxRunVel={3.5} enable capsuleHalfHeight={CAPSULE_HALF_HEIGHT} capsuleRadius={CAPSULE_RADIUS}>
       <EcctrlAnimationStateController ecctrl={ecctrlRef} enabled={character.status === 'active'} resolver={createAnimationResolver(animations)} onChange={handleAnimChange} />
       <mesh onClick={handleClick} onPointerEnter={handleEnter} onPointerLeave={handleLeave}>
-        <boxGeometry args={[1.2, 1.5, 1.2]} />
+        <boxGeometry args={[CAPSULE_RADIUS * 4, CAPSULE_HALF_HEIGHT * 2.5, CAPSULE_RADIUS * 4]} />
         <meshBasicMaterial visible={false} />
       </mesh>
-      {model && <primitive object={model} />}
+      {model && (
+        <group position={[0, -GROUND_OFFSET, 0]}>
+          <primitive object={model} />
+        </group>
+      )}
       {overlays}
     </Ecctrl>
   );

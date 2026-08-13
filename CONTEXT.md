@@ -1,7 +1,7 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 12, 2026 @ 2:58pm PST
-**Current Version:** v0.16.4-beta "Admin Surface: 3D Models CRUD Forms" — ✅ Released to Production
+**Last Updated:** August 13, 2026 @ 8:23am PST
+**Current Version:** v0.16.4-centaur "Character Grounding + Gravity Spawn" — ✅ Released to Production
 
 ---
 
@@ -243,6 +243,7 @@ API (/api/map/threed)
 | **v0.16.3-centaur** | **2026-08-12** | **README Updates — user-friendly app intro focused on React Three Fiber, Drizzle ORM, and Neon Postgres** |
 | **v0.16.4-alpha** | **2026-08-12** | **Character Models, Model Files, Model Texture Files + Supportive Media Files — Vercel Blob uploads** |
 | **v0.16.4-beta** | **2026-08-12** | **Admin Surface: 3D Models CRUD Forms — full model/files/textures/media management UX** |
+| **v0.16.4-centaur** | **2026-08-13** | **Minor — Character grounding (Y=0) + gravity-driven spawn lift** |
 
 ---
 
@@ -760,3 +761,21 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | `src/app/admin/threed/model-files/page.tsx` | (new) Admin page for Model Files (reads optional `?modelId=` to preselect) |
 | `src/app/admin/threed/models/page.tsx` | Added "Model Files" link to the dedicated page |
 | `package.json` | Bumped version to `0.16.4-beta` |
+
+---
+
+## ✅ v0.16.4-centaur "Character Grounding + Gravity Spawn" — Released (minor, August 13, 2026)
+
+### Changes
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Ecctrl characters grounded** | ✅ Complete | `<Ecctrl>` models shifted down by `GROUND_OFFSET` (1.2 = capsuleHalfHeight + capsuleRadius + floatHeight), so a character at `positionY=0` stands on the ground instead of floating |
+| **Non-ecctrl characters grounded** | ✅ Complete | `GardenCharacter` shifts loaded models down by their bounding-box `min.y`, grounding all GLB/FBX/OBJ characters model-agnostically |
+| **Gravity-driven spawn lift** | ✅ Complete | Ecctrl characters spawn above their rest height (`+ SPAWN_LIFT = 0.75`) and settle onto the ground/colliders under gravity, avoiding first-frame interpenetration |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Grounded model via `GROUND_OFFSET`; spawn lift via `SPAWN_LIFT`; named capsule constants |
+| `src/components/threed/shared/GardenCharacter.tsx` | Grounded model via bounding-box `min.y` |
+| `package.json` | Bumped version to `0.16.4-centaur` |
