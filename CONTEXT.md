@@ -1,7 +1,8 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-**Last Updated:** August 13, 2026 @ 8:23am PST
+**Last Updated:** August 13, 2026 @ 9:15am PST
 **Current Version:** v0.16.4-centaur "Character Grounding + Gravity Spawn" — ✅ Released to Production
+**In Progress:** v0.16.5 "Character Animations + Actions"
 
 ---
 
@@ -244,6 +245,7 @@ API (/api/map/threed)
 | **v0.16.4-alpha** | **2026-08-12** | **Character Models, Model Files, Model Texture Files + Supportive Media Files — Vercel Blob uploads** |
 | **v0.16.4-beta** | **2026-08-12** | **Admin Surface: 3D Models CRUD Forms — full model/files/textures/media management UX** |
 | **v0.16.4-centaur** | **2026-08-13** | **Minor — Character grounding (Y=0) + gravity-driven spawn lift** |
+| **v0.16.5** | **2026-08-13** | **Character Animations + Actions — animation state machine + shared clip matcher** |
 
 ---
 
@@ -779,6 +781,38 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Grounded model via `GROUND_OFFSET`; spawn lift via `SPAWN_LIFT`; named capsule constants |
 | `src/components/threed/shared/GardenCharacter.tsx` | Grounded model via bounding-box `min.y` |
 | `package.json` | Bumped version to `0.16.4-centaur` |
+
+---
+
+## 🚧 Next Release — v0.16.5 "Character Animations + Actions"
+
+### Focus
+- **Two character components kept simple** — `EcctrlCharacter` (physics/WASD) and `GardenCharacter` (autonomous AI) remain separate files; the `isMovable` boolean chooses between them.
+- **Improved animation state machine** — canonical idle/walk/run/jump/land transitions with consistent crossfade.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Character routing kept simple** | ✅ Complete | `ThreeDScene` selects `EcctrlCharacter` when `isMovable === true` and `GardenCharacter` otherwise; `CharacterLayer` uses `GardenCharacter` directly |
+| **Ecctrl animation resolver** | ✅ Complete | `createAnimationResolver` now uses ecctrl's canonical `wasOnGround` sequence (JUMP_START → JUMP_IDLE/JUMP_FALL → JUMP_LAND → IDLE/WALK/RUN) |
+| **Consistent crossfade** | ✅ Complete | `CROSSFADE_DURATION = 0.25` replaces the magic `0.2`/`0.3` in `EcctrlCharacter` and `GardenCharacter` |
+| **Garden (autonomous) clip matching** | ✅ Complete | Case-insensitive `findClip()` helper for model clip lookup (handles varying capitalization) in `GardenCharacter` (default, movement, and interaction animations) |
+| **Shared fuzzy clip matcher** | ✅ Complete | `src/lib/utils/animation.ts` `matchClipName()` — the single source of truth mapping logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback). Both characters use it. |
+
+### Where Animations Come From (model-file guidance)
+- **GLB / GLTF** — animations are **embedded in the file**, exposed by the loaders as `object.animations` (`THREE.AnimationClip[]`). ✅ Recommended for characters.
+- **FBX** — animations + skeletons are embedded too (`object.animations`), but it's an older exchange format and heavier to load. Works, but prefer GLB/GLTF.
+- **OBJ** — **no animation support** (geometry + materials only). Do not use for characters that need actions/animations.
+- A character's `animations[]`, `defaultAnimation`, `defaultEmote`, and `soundEffect` DB columns are **logical references**, not the clips themselves. The actual clips live inside the model file; `matchClipName()` connects the logical references to the file's real clip names.
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Canonical `wasOnGround` resolver + `CROSSFADE_DURATION` constant |
+| `src/components/threed/shared/GardenCharacter.tsx` | Consistent crossfade + `findClip()` using the shared matcher |
+| `src/lib/utils/animation.ts` | (new) Shared fuzzy clip-name matcher (`matchClipName`) |
+| `src/components/map/ThreeDScene.tsx` | Kept direct `EcctrlCharacter`/`GardenCharacter` routing (no wrapper) |
+| `src/components/threed/layers/CharacterLayer.tsx` | Kept direct `GardenCharacter` usage |
 
 ---
 

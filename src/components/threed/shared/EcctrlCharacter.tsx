@@ -11,6 +11,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { FadingRing } from './FadingRing';
+import { matchClipName } from '@/lib/utils/animation';
 
 interface CharacterData {
   id: number; characterId: string; name: string; type: string; status: string;
@@ -53,6 +54,9 @@ const GROUND_OFFSET = CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS + FLOAT_HEIGHT; // 1.
 // settle onto the ground/colliders under gravity (avoids first-frame interpenetration).
 const SPAWN_LIFT = 0.75;
 
+// Duration (seconds) to crossfade between animation clips.
+const CROSSFADE_DURATION = 0.25;
+
 // Maps each Ecctrl animation state to the preferred clip names to look for on the model.
 // Clip matching is case-insensitive and falls back to the next candidate when a clip is missing.
 const STATE_CLIPS: Record<EcctrlAnimationState, string[]> = {
@@ -65,16 +69,17 @@ const STATE_CLIPS: Record<EcctrlAnimationState, string[]> = {
   JUMP_LAND: ['jump_land', 'land', 'landing'],
 };
 
-function createAnimationResolver(animations: string[]): (ctx: EcctrlAnimationStateContext) => EcctrlAnimationState {
-  return (ctx) => {
-    const { isOnGround, isFalling, isMoving, runActive, jumpActive } = ctx;
-    if (jumpActive && !isOnGround && !isFalling) return 'JUMP_START';
-    if (jumpActive && isFalling) return 'JUMP_FALL';
-    if (!jumpActive && isOnGround && !isFalling && isMoving && runActive) return 'RUN';
-    if (!jumpActive && isOnGround && !isFalling && isMoving && !runActive) return 'WALK';
-    if (!jumpActive && isOnGround && !isFalling && !isMoving) return 'IDLE';
-    if (!jumpActive && !isOnGround && isFalling) return 'JUMP_FALL';
-    return 'IDLE';
+function createAnimationResolver(): (ctx: EcctrlAnimationStateContext) => EcctrlAnimationState {
+  // Mirrors ecctrl's canonical state resolution: jump start -> air (idle/fall) -> land.
+  return ({ isOnGround, wasOnGround, isFalling, isMoving, runActive, jumpActive }) => {
+    if (jumpActive && wasOnGround) return 'JUMP_START';
+    if (isOnGround) {
+      if (!wasOnGround) return 'JUMP_LAND';
+      if (isMoving) return runActive ? 'RUN' : 'WALK';
+      return 'IDLE';
+    }
+    if (isFalling) return 'JUMP_FALL';
+    return 'JUMP_IDLE';
   };
 }
 
@@ -184,7 +189,7 @@ export function EcctrlCharacter({ character, isControlled = false, isSelected = 
   // Spawn the capsule body above its rest height (ground offset + a small lift) so
   // gravity settles it onto the ground/static colliders without first-frame overlap.
   const startY = (Number(character.positionY) || 0) + GROUND_OFFSET + SPAWN_LIFT;
-  const { model, loading, error, animations, mixerRef, actionsRef } = useCharacterModel(character, character.status === 'active' && character.visible);
+  const { model, loading, error, mixerRef, actionsRef } = useCharacterModel(character, character.status === 'active' && character.visible);
 
   const [hovered, setHovered] = useState(false);
   const [currentEmote, setCurrentEmote] = useState<string | null>(null);
@@ -202,16 +207,13 @@ export function EcctrlCharacter({ character, isControlled = false, isSelected = 
 
     let action: THREE.AnimationAction | undefined;
     const preferred = STATE_CLIPS[state] || STATE_CLIPS.IDLE;
-    for (const name of preferred) {
-      const a = actions.get(name);
-      if (a) { action = a; break; }
-    }
-    if (!action) {
-      if (state === 'IDLE' && actions.size > 0) {
-        action = actions.values().next().value;
-      } else {
-        return;
-      }
+
+    // Match logical state names against the model's embedded clip names (fuzzy).
+    const matched = matchClipName(Array.from(actions.keys()), preferred);
+    if (matched) {
+      action = actions.get(matched);
+    } else if (state === 'IDLE' && actions.size > 0) {
+      action = actions.values().next().value;
     }
     if (!action) return;
 
@@ -220,7 +222,7 @@ export function EcctrlCharacter({ character, isControlled = false, isSelected = 
 
     action.reset().setEffectiveTimeScale(character.animationSpeed || 1).play();
     if (currentActionRef.current) {
-      currentActionRef.current.crossFadeTo(action, 0.2, false);
+      currentActionRef.current.crossFadeTo(action, CROSSFADE_DURATION, false);
     }
     currentActionRef.current = action;
     lastClipNameRef.current = clipName;
@@ -322,7 +324,7 @@ export function EcctrlCharacter({ character, isControlled = false, isSelected = 
 
   return (
     <Ecctrl ref={ecctrlRef} position={pos} floatHeight={FLOAT_HEIGHT} maxWalkVel={2} maxRunVel={3.5} enable capsuleHalfHeight={CAPSULE_HALF_HEIGHT} capsuleRadius={CAPSULE_RADIUS}>
-      <EcctrlAnimationStateController ecctrl={ecctrlRef} enabled={character.status === 'active'} resolver={createAnimationResolver(animations)} onChange={handleAnimChange} />
+      <EcctrlAnimationStateController ecctrl={ecctrlRef} enabled={character.status === 'active'} resolver={createAnimationResolver()} onChange={handleAnimChange} />
       <mesh onClick={handleClick} onPointerEnter={handleEnter} onPointerLeave={handleLeave}>
         <boxGeometry args={[CAPSULE_RADIUS * 4, CAPSULE_HALF_HEIGHT * 2.5, CAPSULE_RADIUS * 4]} />
         <meshBasicMaterial visible={false} />

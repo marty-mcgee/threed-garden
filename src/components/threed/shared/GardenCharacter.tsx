@@ -8,6 +8,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { matchClipName } from '@/lib/utils/animation';
 
 interface CharacterData {
   id: number;
@@ -38,7 +39,7 @@ interface CharacterData {
   interactable: boolean;
   interactionMessage: string;
   defaultEmote: string;
-  soundEffect: string | null;
+  soundEffect?: string | null;
   positionX: number;
   positionY: number;
   positionZ: number;
@@ -66,6 +67,8 @@ const modelCache = new Map<string, THREE.Group>();
 const animationMixers = new Map<number, THREE.AnimationMixer>();
 /** Registry of world-space positions for all active characters (used by follow) */
 const activeCharacterPositions = new Map<number, THREE.Vector3>();
+// v0.16.5: Consistent crossfade duration (matches EcctrlCharacter).
+const CROSSFADE_DURATION = 0.25;
 
 // ============================================
 // ANIMATION STATE MACHINE
@@ -109,6 +112,13 @@ function getAnimationForMovement(
   }
 
   return has('idle') ? 'idle' : available[0];
+}
+
+/** Resolve a logical animation name to the model's embedded clip (fuzzy, case-insensitive). */
+function findClip(animations: any[], name: string): any | undefined {
+  const matched = matchClipName((animations || []).map((a: any) => a.name), [name]);
+  if (matched == null) return undefined;
+  return animations.find((a: any) => a.name === matched);
 }
 
 // ============================================
@@ -218,7 +228,7 @@ export function GardenCharacter({
           // Play default animation
           const clipName = getAnimationForMovement(character.movementType, false, animations.map((a: any) => a.name));
           if (clipName) {
-            const clip = animations.find((a: any) => a.name === clipName);
+            const clip = findClip(animations, clipName);
             if (clip) {
               const action = mixer.clipAction(clip);
               action.timeScale = character.animationSpeed;
@@ -257,7 +267,7 @@ export function GardenCharacter({
     if (movementState.current.lastAnimation === clipName) return;
 
     const animations = (model as any)?.animations || [];
-    const clip = animations.find((a: any) => a.name === clipName);
+    const clip = findClip(animations, clipName);
     if (!clip) return;
 
     const newAction = mixerRef.current.clipAction(clip);
@@ -265,7 +275,7 @@ export function GardenCharacter({
     newAction.reset().play();
 
     if (currentActionRef.current) {
-      currentActionRef.current.crossFadeTo(newAction, 0.3, false);
+      currentActionRef.current.crossFadeTo(newAction, CROSSFADE_DURATION, false);
     }
 
     currentActionRef.current = newAction;
@@ -426,7 +436,7 @@ export function GardenCharacter({
     // ✅ v0.15.0: Play interaction animation from model clips
     const animations = (model as any)?.animations?.map((a: any) => a.name) || [];
     const interactNames = ['dance', 'bounce', 'spin', 'wave', 'happy'];
-    const interactClip = interactNames.find((n) => animations.includes(n));
+    const interactClip = interactNames.find((n) => findClip(animations, n));
     if (interactClip && mixerRef.current) {
       switchAnimation(interactClip, character.animationSpeed * 1.5);
       // Revert to movement-appropriate animation after 2s
