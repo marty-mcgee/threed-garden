@@ -72,6 +72,28 @@ export const ACTION_CANDIDATES: Record<AnimationActionKey, string[]> = {
 /** The default order used for positional (by-clip-index) mapping when names are generic. */
 export const ANIMATION_ORDER: AnimationActionKey[] = [...ANIMATION_ACTIONS];
 
+/**
+ * ACTION_FALLBACK — ordered fallback for each action when its exact clip is missing.
+ * This keeps characters animating even when a model lacks a full clip set (e.g. only
+ * "Take 001"). Every chain terminates at `idle`.
+ */
+export const ACTION_FALLBACK: Record<AnimationActionKey, readonly AnimationActionKey[]> = {
+  idle: [],
+  walk: ['idle'],
+  run: ['walk', 'idle'],
+  fly: ['idle'],
+  dance: ['idle'],
+  sway: ['idle'],
+  float: ['idle'],
+  spin: ['idle'],
+  bounce: ['idle'],
+  jump_start: ['jump_idle', 'jump_fall', 'idle'],
+  jump_idle: ['jump_start', 'idle'],
+  jump_fall: ['jump_idle', 'idle'],
+  jump_land: ['idle'],
+  wave: ['idle'],
+};
+
 // ============================================================
 // NAME MATCHING
 // ============================================================
@@ -156,11 +178,17 @@ export function buildAnimationMap(clipNames: string[]): AnimationMap {
     }
   }
 
-  return {
-    clipNames: cleaned,
-    resolve(action: string): string | null {
-      if (!action) return null;
-      return byAction.get(action.toLowerCase()) ?? null;
-    },
+  // Resolve an action, falling back through ACTION_FALLBACK when its clip is missing.
+  const resolve = (action: string): string | null => {
+    if (!action) return null;
+    const lower = action.toLowerCase();
+    const chain: string[] = [lower, ...(ACTION_FALLBACK[lower as AnimationActionKey] ?? [])];
+    for (const candidate of chain) {
+      const hit = byAction.get(candidate);
+      if (hit) return hit;
+    }
+    return null;
   };
+
+  return { clipNames: cleaned, resolve };
 }
