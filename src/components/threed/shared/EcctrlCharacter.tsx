@@ -11,7 +11,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { FadingRing } from './FadingRing';
-import { matchClipName } from '@/lib/utils/animation';
+import { buildAnimationMap, type AnimationMap } from '@/lib/utils/animation';
 
 interface CharacterData {
   id: number; characterId: string; name: string; type: string; status: string;
@@ -91,6 +91,9 @@ function useCharacterModel(character: CharacterData, isActive: boolean) {
   // AnimationMixer + resolved actions are kept in refs (no re-render needed).
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const actionsRef = useRef<Map<string, THREE.AnimationAction>>(new Map());
+  // Primary entry point: maps logical actions (idle/walk/run/jump/...) to the model's
+  // embedded clip names (name-match first, positional fallback for Anim_N names).
+  const animMapRef = useRef<AnimationMap | null>(null);
 
   useEffect(() => {
     if (!isActive || !character.model?.filePath) return;
@@ -122,6 +125,7 @@ function useCharacterModel(character: CharacterData, isActive: boolean) {
           });
           mixerRef.current = mixer;
         }
+        animMapRef.current = buildAnimationMap(clips.map((a) => a.name));
 
         setModel(m);
       } catch (e) { setError(String(e)); }
@@ -133,10 +137,11 @@ function useCharacterModel(character: CharacterData, isActive: boolean) {
       mixerRef.current?.stopAllAction();
       mixerRef.current = null;
       actionsRef.current.clear();
+      animMapRef.current = null;
     };
   }, [character, isActive]);
 
-  return { model, loading, error, animations, mixerRef, actionsRef };
+  return { model, loading, error, animations, mixerRef, actionsRef, animMapRef };
 }
 
 // ============================================
@@ -189,7 +194,7 @@ export function EcctrlCharacter({ character, isControlled = false, isSelected = 
   // Spawn the capsule body above its rest height (ground offset + a small lift) so
   // gravity settles it onto the ground/static colliders without first-frame overlap.
   const startY = (Number(character.positionY) || 0) + GROUND_OFFSET + SPAWN_LIFT;
-  const { model, loading, error, mixerRef, actionsRef } = useCharacterModel(character, character.status === 'active' && character.visible);
+  const { model, loading, error, mixerRef, actionsRef, animMapRef } = useCharacterModel(character, character.status === 'active' && character.visible);
 
   const [hovered, setHovered] = useState(false);
   const [currentEmote, setCurrentEmote] = useState<string | null>(null);
@@ -206,12 +211,10 @@ export function EcctrlCharacter({ character, isControlled = false, isSelected = 
     if (!mixer || actions.size === 0) return;
 
     let action: THREE.AnimationAction | undefined;
-    const preferred = STATE_CLIPS[state] || STATE_CLIPS.IDLE;
-
-    // Match logical state names against the model's embedded clip names (fuzzy).
-    const matched = matchClipName(Array.from(actions.keys()), preferred);
-    if (matched) {
-      action = actions.get(matched);
+    // Primary entry point: resolve the logical state through the animation map.
+    const mappedClipName = animMapRef.current?.resolve(state.toLowerCase()) ?? null;
+    if (mappedClipName) {
+      action = actions.get(mappedClipName.toLowerCase()) ?? undefined;
     } else if (state === 'IDLE' && actions.size > 0) {
       action = actions.values().next().value;
     }

@@ -8,7 +8,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { matchClipName } from '@/lib/utils/animation';
+import { buildAnimationMap, type AnimationMap } from '@/lib/utils/animation';
 
 interface CharacterData {
   id: number;
@@ -114,9 +114,9 @@ function getAnimationForMovement(
   return has('idle') ? 'idle' : available[0];
 }
 
-/** Resolve a logical animation name to the model's embedded clip (fuzzy, case-insensitive). */
-function findClip(animations: any[], name: string): any | undefined {
-  const matched = matchClipName((animations || []).map((a: any) => a.name), [name]);
+/** Resolve a logical animation name to the model's embedded clip via the primary map. */
+function findClip(animMap: AnimationMap | null, animations: any[], name: string): any | undefined {
+  const matched = animMap?.resolve(name) ?? null;
   if (matched == null) return undefined;
   return animations.find((a: any) => a.name === matched);
 }
@@ -138,6 +138,8 @@ export function GardenCharacter({
   const groupRef = useRef<THREE.Group>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const currentActionRef = useRef<THREE.AnimationAction | null>(null);
+  // Primary entry point: maps logical actions to the model's embedded clip names.
+  const animMapRef = useRef<AnimationMap | null>(null);
   const [model, setModel] = useState<THREE.Group | null>(null);
   const [modelError, setModelError] = useState<string | null>(null);
   const [loadingModel, setLoadingModel] = useState(false);
@@ -225,10 +227,11 @@ export function GardenCharacter({
           mixerRef.current = mixer;
           animationMixers.set(character.id, mixer);
 
-          // Play default animation
+          // Build the animation map once for this model, then play the default animation.
+          animMapRef.current = buildAnimationMap(animations.map((a: any) => a.name));
           const clipName = getAnimationForMovement(character.movementType, false, animations.map((a: any) => a.name));
           if (clipName) {
-            const clip = findClip(animations, clipName);
+            const clip = findClip(animMapRef.current, animations, clipName);
             if (clip) {
               const action = mixer.clipAction(clip);
               action.timeScale = character.animationSpeed;
@@ -255,6 +258,7 @@ export function GardenCharacter({
         mixerRef.current.stopAllAction();
         animationMixers.delete(character.id);
       }
+      animMapRef.current = null;
       activeCharacterPositions.delete(character.id);
     };
   }, [character, isWeatherActive]);
@@ -267,7 +271,7 @@ export function GardenCharacter({
     if (movementState.current.lastAnimation === clipName) return;
 
     const animations = (model as any)?.animations || [];
-    const clip = findClip(animations, clipName);
+    const clip = findClip(animMapRef.current, animations, clipName);
     if (!clip) return;
 
     const newAction = mixerRef.current.clipAction(clip);
@@ -436,7 +440,7 @@ export function GardenCharacter({
     // ✅ v0.15.0: Play interaction animation from model clips
     const animations = (model as any)?.animations?.map((a: any) => a.name) || [];
     const interactNames = ['dance', 'bounce', 'spin', 'wave', 'happy'];
-    const interactClip = interactNames.find((n) => findClip(animations, n));
+    const interactClip = interactNames.find((n) => findClip(animMapRef.current, (model as any)?.animations || [], n));
     if (interactClip && mixerRef.current) {
       switchAnimation(interactClip, character.animationSpeed * 1.5);
       // Revert to movement-appropriate animation after 2s

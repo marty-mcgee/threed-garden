@@ -797,7 +797,14 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | **Ecctrl animation resolver** | ✅ Complete | `createAnimationResolver` now uses ecctrl's canonical `wasOnGround` sequence (JUMP_START → JUMP_IDLE/JUMP_FALL → JUMP_LAND → IDLE/WALK/RUN) |
 | **Consistent crossfade** | ✅ Complete | `CROSSFADE_DURATION = 0.25` replaces the magic `0.2`/`0.3` in `EcctrlCharacter` and `GardenCharacter` |
 | **Garden (autonomous) clip matching** | ✅ Complete | Case-insensitive `findClip()` helper for model clip lookup (handles varying capitalization) in `GardenCharacter` (default, movement, and interaction animations) |
-| **Shared fuzzy clip matcher** | ✅ Complete | `src/lib/utils/animation.ts` `matchClipName()` — the single source of truth mapping logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback). Both characters use it. |
+| **Shared fuzzy clip matcher** | ✅ Complete | `src/lib/utils/animation.ts` `matchClipName()` — matches logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback) |
+| **Primary animation mapping entry point (v0.16.5b)** | ✅ Complete | `animation.ts` is the single entry/return point for ThreeD Animation Mapping. `buildAnimationMap(clipNames)` takes the file's clip names (entry data) and exposes `resolve(action) → clipName` (exit data) for every consumer. |
+| **Canonical Action Catalog (v0.16.5b)** | ✅ Complete | `ACTION_CANDIDATES: Record<AnimationAction, string[]>` — the approved catalog covering the DB enum (`idle, walk, run, fly, dance, sway, float, spin, bounce`), ecctrl jump states (`jump_start, jump_idle, jump_fall, jump_land`), and interaction (`wave`); each action maps to ordered clip-name matchers (name-match first, positional fallback for generic `Anim_N`/`Take_N`/`Action.N`). `take 001`/`take_001` are `idle` candidates so single-clip Synty exports at least play. |
+| **GLB audit (informational)** | ✅ Complete | Audited all 7 models: the two character GLBs contain only one clip (`"Take 001"`). This does not change the approved Option 1 mapping — it simply means characters will favor the first available clip until a model with more clips is provided. |
+
+### Notes
+- The animation mapping is intentionally simple (Option 1): a hardcoded default constant, internal only, no UI. Per-model config or an inspector UI can be added later if needed.
+- When a character model does contain multiple clips, `buildAnimationMap` will map them automatically (name-match first, positional fallback for generic `Anim_N`/`Take_N`/`Action.N` names).
 
 ### Where Animations Come From (model-file guidance)
 - **GLB / GLTF** — animations are **embedded in the file**, exposed by the loaders as `object.animations` (`THREE.AnimationClip[]`). ✅ Recommended for characters.
@@ -809,10 +816,75 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | File | Change |
 |------|--------|
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Canonical `wasOnGround` resolver + `CROSSFADE_DURATION` constant |
-| `src/components/threed/shared/GardenCharacter.tsx` | Consistent crossfade + `findClip()` using the shared matcher |
-| `src/lib/utils/animation.ts` | (new) Shared fuzzy clip-name matcher (`matchClipName`) |
+| `src/components/threed/shared/GardenCharacter.tsx` | Consistent crossfade + `findClip()` now resolves through `buildAnimationMap` |
+| `src/components/threed/shared/EcctrlCharacter.tsx` | `playAnimation` resolves states through `buildAnimationMap` (primary entry point) |
+| `src/lib/utils/animation.ts` | (new) `matchClipName` + `ACTION_CANDIDATES` (canonical catalog) + `ANIMATION_ORDER` + `buildAnimationMap` (primary mapping entry/return point) |
 | `src/components/map/ThreeDScene.tsx` | Kept direct `EcctrlCharacter`/`GardenCharacter` routing (no wrapper) |
 | `src/components/threed/layers/CharacterLayer.tsx` | Kept direct `GardenCharacter` usage |
 
 ---
 
+HINTS ONLY
+
+---
+
+Yes — **that is exactly the information we needed.** 🎯
+
+What you're seeing in the NLA Editor tells us that the 140 animations are attached to:
+
+**`Pelvis_$AssimpFbx$_Scaling`**
+
+while the other groups have 0 or 1 animations.
+
+That makes sense for a skeletal character: the **Pelvis/root bone is effectively the animation driver**, and the other bones contain the corresponding movement data.
+
+### What this means
+
+Your file is structured roughly like this:
+
+```text
+Character
+│
+├── Pelvis_$AssimpFbx$_Scaling
+│      └── 140 animation clips
+│
+├── Other bone/group
+│      └── 1 animation
+│
+├── Other bone/group
+│      └── 0 animations
+│
+└── ...
+```
+
+So **you do NOT need to create 140 Actions manually.**
+
+The animations are already there.
+
+### And this explains the `Take 001` confusion
+
+The Action Editor was showing you `Take 001` because that's the Action Blender currently had selected/active.
+
+The **NLA Editor is giving us the much better view of the imported animation data**.
+
+---
+
+## One thing I want you to check next
+
+In the NLA Editor, under:
+
+**`Pelvis_$AssimpFbx$_Scaling`**
+
+you should see the animation strips.
+
+Look at the **names of those strips**.
+
+Are they:
+
+`Anim_0`, `Anim_1`, `Anim_2`, etc.?
+
+Or do they have some other names?
+
+If they are `Anim_0`, `Anim_1`, etc., then **we've essentially solved the mystery**. The 140 GLB animations are already imported and represented as NLA animation strips.
+
+From there, I can walk you through the **exact Blender export settings needed to turn this into a new GLB while preserving all 140 animations**.
