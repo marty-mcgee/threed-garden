@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { ThreeDModelsCRUD } from '@/components/admin/threed/models/ThreeDModelsCRUD';
-import { Package, FolderOpen } from 'lucide-react';
+import { Package, FolderOpen, Clapperboard } from 'lucide-react';
 
 export default function ThreeDModelsPage() {
   return (
@@ -16,13 +16,22 @@ export default function ThreeDModelsPage() {
             Manage your 3D model library for plants, characters, and garden objects
           </p>
         </div>
-        <Link
-          href="/admin/threed/model-files"
-          className="flex items-center gap-1.5 text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors no-underline"
-        >
-          <FolderOpen className="w-4 h-4" />
-          Model Files
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/threed/model-animations"
+            className="flex items-center gap-1.5 text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors no-underline"
+          >
+            <Clapperboard className="w-4 h-4" />
+            Model Animations
+          </Link>
+          <Link
+            href="/admin/threed/model-files"
+            className="flex items-center gap-1.5 text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors no-underline"
+          >
+            <FolderOpen className="w-4 h-4" />
+            Model Files
+          </Link>
+        </div>
       </div>
       <ThreeDModelsCRUD />
     </div>

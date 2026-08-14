@@ -227,8 +227,9 @@ export function GardenCharacter({
           mixerRef.current = mixer;
           animationMixers.set(character.id, mixer);
 
-          // Build the animation map once for this model, then play the default animation.
-          animMapRef.current = buildAnimationMap(animations.map((a: any) => a.name));
+          // Build the animation map once for this model (with per-model overrides), then play default.
+          const overrides = ((character.model as any)?.metadata?.animationMap) ?? undefined;
+          animMapRef.current = buildAnimationMap(animations.map((a: any) => a.name), overrides);
           const clipName = getAnimationForMovement(character.movementType, false, animations.map((a: any) => a.name));
           if (clipName) {
             const clip = findClip(animMapRef.current, animations, clipName);

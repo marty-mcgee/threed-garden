@@ -800,6 +800,9 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | **Shared fuzzy clip matcher** | ✅ Complete | `src/lib/utils/animation.ts` `matchClipName()` — matches logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback) |
 | **Primary animation mapping entry point (v0.16.5b)** | ✅ Complete | `animation.ts` is the single entry/return point for ThreeD Animation Mapping. `buildAnimationMap(clipNames)` takes the file's clip names (entry data) and exposes `resolve(action) → clipName` (exit data) for every consumer. |
 | **Canonical Action Catalog (v0.16.5b)** | ✅ Complete | `ACTION_CANDIDATES: Record<AnimationAction, string[]>` — the approved catalog covering the DB enum (`idle, walk, run, fly, dance, sway, float, spin, bounce`), ecctrl jump states (`jump_start, jump_idle, jump_fall, jump_land`), and interaction (`wave`); each action maps to ordered clip-name matchers (name-match first, positional fallback for generic `Anim_N`/`Take_N`/`Action.N`). `take 001`/`take_001` are `idle` candidates so single-clip Synty exports at least play. |
+| **Centralized action fallback chain (v0.16.5b)** | ✅ Complete | `ACTION_FALLBACK` — when an action's exact clip is absent, `resolve` walks a sensible fallback (`run→walk→idle`, `jump_*→…→idle`, all → `idle`). Single-clip models now always return a real clip instead of `null`, so characters keep animating while their physics body moves. |
+| **Per-model animation overrides (v0.16.5b)** | ✅ Complete | `buildAnimationMap(clipNames, overrides?)` accepts `overrides` (`action→clipName`), which win over name/positional matching. Both characters pass `character.model.metadata.animationMap`. This makes the mapping user-editable (since clip variable names in GLBs are unknowable). |
+| **Model Animations admin CRUD page (v0.16.5b)** | ✅ Complete | New `/admin/threed/model-animations` page (`ThreeDModelAnimations`) — selects a model, discovers its embedded animation clips client-side via GLTF/FBX loaders, and maps each clip → an App Action (or Auto-detect/None), saving to `threed_models.metadata.animationMap`. Linked from the 3D Models page. |
 | **GLB audit (informational)** | ✅ Complete | Audited all 7 models: the two character GLBs contain only one clip (`"Take 001"`). This does not change the approved Option 1 mapping — it simply means characters will favor the first available clip until a model with more clips is provided. |
 
 ### Notes
@@ -818,7 +821,10 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Canonical `wasOnGround` resolver + `CROSSFADE_DURATION` constant |
 | `src/components/threed/shared/GardenCharacter.tsx` | Consistent crossfade + `findClip()` now resolves through `buildAnimationMap` |
 | `src/components/threed/shared/EcctrlCharacter.tsx` | `playAnimation` resolves states through `buildAnimationMap` (primary entry point) |
-| `src/lib/utils/animation.ts` | (new) `matchClipName` + `ACTION_CANDIDATES` (canonical catalog) + `ANIMATION_ORDER` + `buildAnimationMap` (primary mapping entry/return point) |
+| `src/lib/utils/animation.ts` | (new) `matchClipName` + `ACTION_CANDIDATES` (canonical catalog) + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` (primary mapping entry/return point) |
+| `src/components/admin/threed/models/ThreeDModelAnimations.tsx` | (new) Model Animations admin UI (map model clips → App Actions) |
+| `src/app/admin/threed/model-animations/page.tsx` | (new) Admin page for Model Animations |
+| `src/app/admin/threed/models/page.tsx` | Added "Model Animations" link |
 | `src/components/map/ThreeDScene.tsx` | Kept direct `EcctrlCharacter`/`GardenCharacter` routing (no wrapper) |
 | `src/components/threed/layers/CharacterLayer.tsx` | Kept direct `GardenCharacter` usage |
 
@@ -888,3 +894,68 @@ Or do they have some other names?
 If they are `Anim_0`, `Anim_1`, etc., then **we've essentially solved the mystery**. The 140 GLB animations are already imported and represented as NLA animation strips.
 
 From there, I can walk you through the **exact Blender export settings needed to turn this into a new GLB while preserving all 140 animations**.
+
+---
+
+Implemented the user-editable animation mapping solution for the ThreeD Characters sub-module.
+
+## Problem solved
+GLB/FBX clip names are unknowable in advance (e.g. 140 `Anim_N` clips), so hardcoded guessing doesn't scale. The answer is a **per-model mapping stored on the model**, editable via an admin UI.
+
+## What changed
+
+**Runtime (`src/lib/utils/animation.ts`)**
+- `buildAnimationMap(clipNames, overrides?)` — per-model `overrides` (`action → clipName`) take priority over name/positional matching.
+
+**Character components**
+- `EcctrlCharacter` and `GardenCharacter` now pass `character.model.metadata.animationMap` into `buildAnimationMap`.
+
+**Admin UI (new)**
+- `src/components/admin/threed/models/ThreeDModelAnimations.tsx` — model selector + client-side clip discovery (GLTF/FBX loaders) + a dropdown per App Action (Auto-detect / None / each clip), saving to `threed_models.metadata.animationMap`.
+- `src/app/admin/threed/model-animations/page.tsx` — the page.
+- `src/app/admin/threed/models/page.tsx` — added a "Model Animations" link.
+
+## End-to-end scenario
+Upload character GLB → **3D Models → Model Animations** → map `Anim_0/1/2/…` to `Idle/Walk/Run/…` → Save → dashboard 3D map uses the saved mapping automatically.
+
+## Verification
+- `npx tsc --noEmit` reports no errors in any modified file.
+- `CONTEXT.md` documents the per-model overrides and the new admin CRUD page.
+
+---
+
+## ✅ v0.16.5-beta "v0.16.5b: Character Animations + Actions => Animation Action Mapping" — Released
+
+### Overview
+Character animations are driven by a **primary entry/return point** (`src/lib/utils/animation.ts`) and made **user-editable per model** because GLB/FBX clip names (e.g. `Anim_0`, `Anim_1`, `Take 001`, `mixamo.com|Armature|Walk`) cannot be known in advance.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Canonical Action Catalog** | ✅ Complete | `ANIMATION_ACTIONS` + `ACTION_CANDIDATES` — 14 logical actions (DB enum `idle/walk/run/fly/dance/sway/float/spin/bounce` + ecctrl `jump_*` states + interaction `wave`), each with ordered clip-name matchers |
+| **Primary mapping entry/return point** | ✅ Complete | `buildAnimationMap(clipNames, overrides?)` — strategy: per-model overrides → name-match → positional fallback (for generic `Anim_N`/`Take_N`/`Action.N`), then `resolve(action) → clipName` |
+| **Centralized fallback chain** | ✅ Complete | `ACTION_FALLBACK` ensures every action resolves to a real clip (`run→walk→idle`, `jump_*→…→idle`), so characters never freeze while moving |
+| **Per-model overrides in characters** | ✅ Complete | `EcctrlCharacter` + `GardenCharacter` pass `character.model.metadata.animationMap` into `buildAnimationMap` |
+| **Model Animations admin CRUD page** | ✅ Complete | `/admin/threed/model-animations` (`ThreeDModelAnimations`) — discovers embedded clips client-side (GLTF/FBX loaders), maps each clip → App Action, saves to `threed_models.metadata.animationMap`; linked from 3D Models page |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/lib/utils/animation.ts` | `matchClipName` + `ACTION_CANDIDATES` + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` |
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Resolves states through `buildAnimationMap` + passes model overrides |
+| `src/components/threed/shared/GardenCharacter.tsx` | Resolves movement/interaction clips through `buildAnimationMap` + passes model overrides |
+| `src/components/admin/threed/models/ThreeDModelAnimations.tsx` | (new) Admin mapping UI |
+| `src/app/admin/threed/model-animations/page.tsx` | (new) Admin page |
+| `src/app/admin/threed/models/page.tsx` | Added "Model Animations" link |
+
+### User Flow
+1. Upload a character GLB (may contain many `Anim_N` clips).
+2. **Admin → 3D Models → Model Animations** → map clips to App Actions.
+3. Save → dashboard 3D map uses the saved mapping automatically — no code changes or guessing required.
+
+### Notes
+- GLB / GLTF embed animation clips (`object.animations`); FBX embeds them too. OBJ has **no** animation support.
+- DB columns `animations[]`, `defaultAnimation`, `defaultEmote`, `soundEffect` are logical references; the real clips live inside the model file and are connected via `buildAnimationMap`.
+
+---
+

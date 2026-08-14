@@ -161,17 +161,32 @@ export interface AnimationMap {
  *
  * Exit (return) shape: { clipNames, resolve(action) -> clipName | null }
  */
-export function buildAnimationMap(clipNames: string[]): AnimationMap {
+export function buildAnimationMap(
+  clipNames: string[],
+  /** Per-model explicit mapping (threed_models.metadata.animationMap): action → clipName. */
+  overrides?: Record<string, string>,
+): AnimationMap {
   const cleaned = (clipNames || []).filter(Boolean);
   const byAction = new Map<string, string>();
 
-  // 1) Name-based matching pass.
+  // 0) Explicit per-model overrides win (user-mapped in the admin UI).
+  if (overrides) {
+    for (const [action, clipName] of Object.entries(overrides)) {
+      if (!action || !clipName) continue;
+      if (cleaned.includes(clipName)) {
+        byAction.set(action.toLowerCase(), clipName);
+      }
+    }
+  }
+
+  // 1) Name-based matching pass (only for actions not already overridden).
   for (const action of ANIMATION_ORDER) {
+    if (byAction.has(action)) continue;
     const hit = matchClipName(cleaned, ACTION_CANDIDATES[action]);
     if (hit) byAction.set(action, hit);
   }
 
-  // 2) Positional fallback — ONLY when nothing name-matched AND the clips look generic.
+  // 2) Positional fallback — ONLY when nothing was mapped AND the clips look generic.
   if (byAction.size === 0 && cleaned.length > 0 && cleaned.every(looksLikePositionalClip)) {
     for (let i = 0; i < ANIMATION_ORDER.length && i < cleaned.length; i++) {
       byAction.set(ANIMATION_ORDER[i], cleaned[i]);

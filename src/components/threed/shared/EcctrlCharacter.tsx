@@ -125,7 +125,8 @@ function useCharacterModel(character: CharacterData, isActive: boolean) {
           });
           mixerRef.current = mixer;
         }
-        animMapRef.current = buildAnimationMap(clips.map((a) => a.name));
+        const overrides = ((character.model as any)?.metadata?.animationMap) ?? undefined;
+        animMapRef.current = buildAnimationMap(clips.map((a) => a.name), overrides);
 
         setModel(m);
       } catch (e) { setError(String(e)); }
