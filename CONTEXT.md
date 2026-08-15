@@ -959,3 +959,65 @@ Character animations are driven by a **primary entry/return point** (`src/lib/ut
 
 ---
 
+## Character Model File Animation Notes:
+
+Yes — **that is exactly the information we needed.** 🎯
+
+What you're seeing in the NLA Editor tells us that the 140 animations are attached to:
+
+**`Pelvis_$AssimpFbx$_Scaling`**
+
+while the other groups have 0 or 1 animations.
+
+That makes sense for a skeletal character: the **Pelvis/root bone is effectively the animation driver**, and the other bones contain the corresponding movement data.
+
+### What this means
+
+Your file is structured roughly like this:
+
+```text
+Character
+│
+├── Pelvis_$AssimpFbx$_Scaling
+│      └── 140 animation clips
+│
+├── Other bone/group
+│      └── 1 animation
+│
+├── Other bone/group
+│      └── 0 animations
+│
+└── ...
+```
+
+So **you do NOT need to create 140 Actions manually.**
+
+The animations are already there.
+
+### And this explains the `Take 001` confusion
+
+The Action Editor was showing you `Take 001` because that's the Action Blender currently had selected/active.
+
+The **NLA Editor is giving us the much better view of the imported animation data**.
+
+---
+
+## One thing I want you to check next
+
+In the NLA Editor, under:
+
+**`Pelvis_$AssimpFbx$_Scaling`**
+
+you should see the animation strips.
+
+Look at the **names of those strips**.
+
+Are they:
+
+`Anim_0`, `Anim_1`, `Anim_2`, etc.?
+
+Or do they have some other names?
+
+If they are `Anim_0`, `Anim_1`, etc., then **we've essentially solved the mystery**. The 140 GLB animations are already imported and represented as NLA animation strips.
+
+From there, I can walk you through the **exact Blender export settings needed to turn this into a new GLB while preserving all 140 animations**.

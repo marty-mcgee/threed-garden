@@ -163,6 +163,30 @@ export interface ThreeDBed {
   updatedAt: string;
 }
 
+export type ThreeDModelFileType =
+  | 'model'
+  | 'texture'
+  | 'binary'
+  | 'animation'
+  | 'other'
+
+export interface ThreeDModelFile {
+  id: number
+  modelId: number
+  fileName: string
+  fileType: ThreeDModelFileType
+  textureType: string | null
+  filePath: string
+  fileSize: number | null
+  isBinaryBuffer: boolean
+  loadOrder: number
+  metadata?: {
+    action?: string
+    sourceClip?: string
+    looping?: boolean
+  }
+}
+
 export interface ThreeDModel {
   id: number;
   userId: string;
@@ -181,6 +205,7 @@ export interface ThreeDModel {
   animations: any[];
   defaultAnimation: string | null;
   hasExternalFiles: boolean;
+  modelFiles?: ThreeDModelFile[];
   textureCount: number;
   isActive: boolean;
   isDefault: boolean;
@@ -667,6 +692,7 @@ export enum CharacterMovementType {
   CIRCLE = 'circle',
   FOLLOW = 'follow',
   TELEPORT = 'teleport',
+  ECCTRL = 'ecctrl',
 }
 
 export enum CharacterWeatherSensitivity {

@@ -288,10 +288,13 @@ export const threedModelFiles = pgTable('threed_model_files', {
   
   // File information
   fileName: varchar('file_name', { length: 255 }).notNull(),
-  fileType: varchar('file_type', { length: 50 }).notNull(), // 'model', 'texture', 'binary', 'other'
+  fileType: varchar('file_type', { length: 50 }).notNull(), // 'model', 'texture', 'binary', 'other', 'animation'
   textureType: varchar('texture_type', { length: 50 }), // 'baseColor', 'normalMap', 'roughness', 'metallic', 'emissive', 'occlusion'
   filePath: varchar('file_path', { length: 500 }).notNull(),
   fileSize: integer('file_size'),
+  
+  // Metadata (for Animations)
+  metadata: jsonb('metadata').default({}),
   
   // For GLTF binary
   isBinaryBuffer: boolean('is_binary_buffer').default(false),
