@@ -1,11 +1,10 @@
 // app/api/threed/world-actions/route.ts
-// v0.16.6b — World Actions: Watering + Fruit Harvest persistence
+// v0.16.6b — World Actions v2: authenticated targeted watering persistence
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import {
   threedCharacters,
-  threedHarvests,
   threedPlantings,
   threedWateringHistory,
 } from '@/lib/schema/threed';
@@ -30,13 +29,9 @@ type WorldActionBody = {
 // HELPERS
 // ========================================================
 
-function createRecordId(prefix: 'water' | 'harvest') {
+function createWateringHistoryId() {
   const randomPart = crypto.randomUUID().replace(/-/g, '').slice(0, 16);
-  return `${prefix}-${Date.now()}-${randomPart}`;
-}
-
-function isFruitPickingAction(action: string) {
-  return action === 'pickFruit' || action === 'pickFruit2' || action === 'pickFruit3';
+  return `water-${Date.now()}-${randomPart}`;
 }
 
 // ========================================================
@@ -47,13 +42,14 @@ function isFruitPickingAction(action: string) {
  * Persist a completed semantic character action.
  *
  * IMPORTANT:
- * This route is called only AFTER the client-side animation reports completion.
- * The browser supplies only actor/action/target identity. Ownership, plant identity,
- * status, userId, and persistence metadata are resolved server-side.
+ * This route is called AFTER the client-side animation reports completion.
+ * The browser supplies only the actor/action/target identity. Ownership,
+ * plant identity, status, userId, and execution metadata are resolved on
+ * the server instead of trusting client-provided values.
  *
- * v0.16.6b persists:
- *   watering                    -> threed_watering_history
- *   pickFruit / pickFruit2 / 3 -> threed_harvests
+ * World Actions v2 intentionally persists only targeted `watering`.
+ * Other semantic actions remain animation-only until their corresponding
+ * domain mutations are implemented.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -85,9 +81,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supportedAction = action === 'watering' || isFruitPickingAction(action);
-
-    if (!supportedAction) {
+    // World Actions v2 persists only watering.
+    if (action !== 'watering') {
       return NextResponse.json(
         {
           success: false,
@@ -101,7 +96,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: `${action === 'watering' ? 'Watering' : 'Fruit picking'} requires a planting target`,
+          error: 'Watering requires a planting target',
         },
         { status: 400 },
       );
@@ -171,62 +166,22 @@ export async function POST(request: NextRequest) {
     // PERSIST COMPLETED WATERING
     // ------------------------------------------------------
 
-    if (action === 'watering') {
-      const [wateringRecord] = await db
-        .insert(threedWateringHistory)
-        .values({
-          userId: session.user.id,
-          historyId: createRecordId('water'),
-          plantingId: planting.id,
-          plantId: planting.plantId,
-          status: 'success',
-          executedBy: 'user',
-          executedAt: new Date().toISOString(),
-        })
-        .returning();
-
-      return NextResponse.json({
-        success: true,
-        action,
-        persistenceType: 'wateringHistory',
-        actor: {
-          id: character.id,
-          name: character.name,
-        },
-        target: {
-          type: 'planting',
-          id: planting.id,
-          plantingId: planting.plantingId,
-          plantId: planting.plantId,
-        },
-        data: wateringRecord,
-      });
-    }
-
-    // ------------------------------------------------------
-    // PERSIST COMPLETED FRUIT HARVEST
-    // ------------------------------------------------------
-
-    const [harvestRecord] = await db
-      .insert(threedHarvests)
+    const [wateringRecord] = await db
+      .insert(threedWateringHistory)
       .values({
         userId: session.user.id,
-        harvestId: createRecordId('harvest'),
+        historyId: createWateringHistoryId(),
         plantingId: planting.id,
         plantId: planting.plantId,
-        // A single Pick Fruit action represents one harvested item for now.
-        // We keep this intentionally conservative until inventory/quantity UI exists.
-        quantity: '1.00',
-        unit: 'pieces',
-        notes: `Recorded by character action ${action} (character #${character.id})`,
-        isActive: true,
+        status: 'success',
+        executedBy: 'user',
+        executedAt: new Date().toISOString(),
       })
       .returning();
 
     return NextResponse.json({
       success: true,
       action,
-      persistenceType: 'harvest',
       actor: {
         id: character.id,
         name: character.name,
@@ -237,7 +192,7 @@ export async function POST(request: NextRequest) {
         plantingId: planting.plantingId,
         plantId: planting.plantId,
       },
-      data: harvestRecord,
+      data: wateringRecord,
     });
   } catch (error) {
     console.error('[WorldActions] Failed to persist world action:', error);

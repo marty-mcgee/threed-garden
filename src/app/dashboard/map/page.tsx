@@ -299,7 +299,7 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         </div>
       )}
 
-      {/* World Action Target — v0.16.7 proof of concept */}
+      {/* World Action Target — v0.16.6b World Actions v2 */}
       {!isIncident && (type === 'plantings' || type === 'planting') && onSetActionTarget && (() => {
         const targetId = Number(d.id);
         const targetName = selected.name || selected.label || d.plantName || d.commonName || `Planting #${targetId}`;
@@ -718,8 +718,8 @@ function UnifiedMapPageInner() {
   const showToastRef = useRef(showToast);
   showToastRef.current = showToast;
 
-  // v0.16.6b World Actions v3: persist completed targeted watering + fruit harvesting.
-  // Writes happen only AFTER GardenCharacter/EcctrlCharacter reports that
+  // v0.16.6b World Actions v2: persist completed targeted watering.
+  // The write happens only AFTER GardenCharacter/EcctrlCharacter reports that
   // the requested one-shot animation actually finished.
   useEffect(() => {
     const handleActionComplete = async (event: Event) => {
@@ -737,16 +737,10 @@ function UnifiedMapPageInner() {
       const actionLabel = detail.action.replace(/([a-z])([A-Z])/g, '$1 $2');
 
       // ----------------------------------------------------
-      // PERSISTED WORLD ACTIONS REQUIRE A PLANTING TARGET
+      // FIRST PERSISTED WORLD ACTION: TARGETED WATERING
       // ----------------------------------------------------
-      const persistablePlantingAction =
-        detail.action === 'watering' ||
-        detail.action === 'pickFruit' ||
-        detail.action === 'pickFruit2' ||
-        detail.action === 'pickFruit3';
-
       if (
-        persistablePlantingAction &&
+        detail.action === 'watering' &&
         detail.target?.type === 'planting' &&
         Number.isFinite(Number(detail.characterId)) &&
         Number.isFinite(Number(detail.target.id))
@@ -771,33 +765,24 @@ function UnifiedMapPageInner() {
 
           if (!response.ok || !result?.success) {
             throw new Error(
-              result?.error || `World-action persistence failed (${response.status})`,
+              result?.error || `Watering persistence failed (${response.status})`,
             );
           }
 
-          if (detail.action === 'watering') {
-            showToastRef.current(
-              `${actor} watered ${detail.target.name} — watering recorded`,
-              'success',
-            );
-          } else {
-            showToastRef.current(
-              `${actor} picked fruit from ${detail.target.name} — harvest recorded`,
-              'success',
-            );
-          }
+          showToastRef.current(
+            `${actor} watered ${detail.target.name} — watering recorded`,
+            'success',
+          );
 
-          console.info('[WorldAction] Persisted targeted world action', {
+          console.info('[WorldAction] Persisted targeted watering', {
             completion: detail,
             persistence: result,
           });
         } catch (error) {
-          console.error('[WorldAction] Animation completed but persistence failed:', error);
+          console.error('[WorldAction] Watering animation completed but persistence failed:', error);
 
           showToastRef.current(
-            detail.action === 'watering'
-              ? `${actor} completed watering, but the watering record could not be saved`
-              : `${actor} completed fruit picking, but the harvest record could not be saved`,
+            `${actor} completed watering, but the watering record could not be saved`,
             'error',
           );
         }
