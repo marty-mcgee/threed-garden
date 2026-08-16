@@ -1,343 +1,1828 @@
-// src/components/threed/shared/EcctrlCharacter.tsx — v0.16.2-beta 
+// src/components/threed/shared/EcctrlCharacter.tsx
+// External Farmer animation integration
+
 'use client';
 
-import { useRef, useState, useCallback, useEffect } from 'react';
+import {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react';
+
 import { useFrame } from '@react-three/fiber';
+
 import * as THREE from 'three';
+
 import { Html } from '@react-three/drei';
-import { Ecctrl, EcctrlAnimationStateController } from 'ecctrl';
-import type { EcctrlHandle, EcctrlAnimationState, EcctrlAnimationStateContext } from 'ecctrl';
+
+import {
+  Ecctrl,
+  EcctrlAnimationStateController,
+} from 'ecctrl';
+
+import type {
+  EcctrlHandle,
+  EcctrlAnimationState,
+  EcctrlAnimationStateContext,
+} from 'ecctrl';
+
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+
 import { FadingRing } from './FadingRing';
-import { buildAnimationMap, type AnimationMap } from '@/lib/utils/animation';
+
+import {
+  buildAnimationMap,
+  type AnimationMap,
+} from '@/lib/utils/animation';
+
+import {
+  getExternalAnimationSourcesForModel,
+  loadExternalCharacterAnimations,
+} from '@/lib/utils/externalCharacterAnimations';
+
+// ========================================================
+// TYPES
+// ========================================================
 
 interface CharacterData {
-  id: number; characterId: string; name: string; type: string; status: string;
+  id: number;
+  characterId: string;
+  name: string;
+  type: string;
+  status: string;
+
   modelId: number | null;
-  model?: { id: number; modelName: string; modelType: string; filePath: string; scale: string; rotationY: string; animations: string[] };
-  defaultAnimation: string; animationSpeed: number; movementType: string; movementPattern?: string;
-  movementRadius: number; movementSpeed: number;
-  positionX: number; positionY: number; positionZ: number;
-  rotation: number; scale: number; visible: boolean;
-  interactable: boolean; interactionMessage: string; defaultEmote: string; soundEffect: string | null;
+
+  model?: {
+    id: number;
+    modelName: string;
+    modelType: string;
+    filePath: string;
+
+    scale: string;
+    rotationY: string;
+
+    animations: string[];
+
+    /**
+     * Existing model metadata.
+     *
+     * We only care about animationMap here, but keeping
+     * an index signature allows other metadata fields.
+     */
+    metadata?: {
+      animationMap?: Record<string, string>;
+      [key: string]: unknown;
+    };
+  };
+
+  defaultAnimation: string;
+  animationSpeed: number;
+
+  movementType: string;
+  movementPattern?: string;
+
+  movementRadius: number;
+  movementSpeed: number;
+
+  positionX: number;
+  positionY: number;
+  positionZ: number;
+
+  rotation: number;
+  scale: number;
+
+  visible: boolean;
+
+  interactable: boolean;
+  interactionMessage: string;
+
+  defaultEmote: string;
+
+  soundEffect: string | null;
 }
 
 interface EcctrlCharacterProps {
   character: CharacterData;
+
   isControlled?: boolean;
   isSelected?: boolean;
+
   onClick?: () => void;
-  onControlChange?: (pos: { x: number; y: number; z: number }) => void;
-  /** Shared ref — the character writes its world position here each frame when controlled.
-   *  The parent reads it for camera follow without triggering React re-renders. */
-  cameraFollowRef?: React.MutableRefObject<THREE.Vector3 | null>;
-  /** v0.16.2-beta: Persistent live-position map (keyed by marker id) so the parent can
-   *  re-focus a moved character correctly even after it has been deselected. Written
-   *  every frame while controlled — no React re-renders. */
-  livePositionsRef?: React.MutableRefObject<Map<string, { x: number; y: number; z: number }>>;
+
+  onControlChange?: (
+    pos: {
+      x: number;
+      y: number;
+      z: number;
+    }
+  ) => void;
+
+  /**
+   * Shared ref.
+   *
+   * The character writes its world position here each frame
+   * while controlled.
+   *
+   * The parent can read it for camera following without
+   * triggering React re-renders.
+   */
+  cameraFollowRef?: React.MutableRefObject<
+    THREE.Vector3 | null
+  >;
+
+  /**
+   * Persistent live-position map.
+   */
+  livePositionsRef?: React.MutableRefObject<
+    Map<
+      string,
+      {
+        x: number;
+        y: number;
+        z: number;
+      }
+    >
+  >;
+
   markerId?: string;
 }
 
-const modelCache = new Map<string, THREE.Group>();
+// ========================================================
+// MODEL CACHE
+// ========================================================
 
-// The ecctrl capsule body's origin is its CENTER. When it rests on the ground, that
-// center sits `capsuleHalfHeight + capsuleRadius + floatHeight` above the ground.
-// We shift the visual model down by that amount so a character with positionY=0
-// stands on the ground instead of floating.
+const modelCache =
+  new Map<string, THREE.Group>();
+
+// ========================================================
+// ECCTRL BODY / GROUND CONSTANTS
+// ========================================================
+
+/**
+ * The Ecctrl capsule body's origin is its CENTER.
+ *
+ * When resting on the ground, the center sits:
+ *
+ * capsuleHalfHeight
+ * + capsuleRadius
+ * + floatHeight
+ *
+ * above the ground.
+ */
 const CAPSULE_HALF_HEIGHT = 0.6;
 const CAPSULE_RADIUS = 0.3;
 const FLOAT_HEIGHT = 0.3;
-const GROUND_OFFSET = CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS + FLOAT_HEIGHT; // 1.2
-// Small extra drop distance so characters are introduced above their rest height and
-// settle onto the ground/colliders under gravity (avoids first-frame interpenetration).
+
+const GROUND_OFFSET =
+  CAPSULE_HALF_HEIGHT +
+  CAPSULE_RADIUS +
+  FLOAT_HEIGHT;
+
+/**
+ * Small extra initial lift so gravity can settle
+ * the body naturally.
+ */
 const SPAWN_LIFT = 0.75;
 
-// Duration (seconds) to crossfade between animation clips.
+// ========================================================
+// ANIMATION CONSTANTS
+// ========================================================
+
+/**
+ * Duration in seconds for animation crossfades.
+ */
 const CROSSFADE_DURATION = 0.25;
 
-// Maps each Ecctrl animation state to the preferred clip names to look for on the model.
-// Clip matching is case-insensitive and falls back to the next candidate when a clip is missing.
-const STATE_CLIPS: Record<EcctrlAnimationState, string[]> = {
-  IDLE: ['idle', 'idle_loop', 'stand', 'standing'],
-  WALK: ['walk', 'walking', 'walk_loop'],
-  RUN: ['run', 'running', 'sprint', 'run_loop'],
-  JUMP_START: ['jump_start', 'jumpstart', 'jump', 'jump_up'],
-  JUMP_IDLE: ['jump_idle', 'jump', 'float'],
-  JUMP_FALL: ['jump_fall', 'fall', 'falling'],
-  JUMP_LAND: ['jump_land', 'land', 'landing'],
-};
+/**
+ * Existing Ecctrl state clip candidates.
+ *
+ * We retain this definition for compatibility/documentation.
+ *
+ * Our external Farmer clips are normalized to:
+ *
+ * idle
+ * walk
+ * run
+ *
+ * so the central buildAnimationMap() resolver can resolve
+ * them directly.
+ */
+const STATE_CLIPS:
+  Record<EcctrlAnimationState, string[]> = {
+    IDLE: [
+      'idle',
+      'idle_loop',
+      'stand',
+      'standing',
+    ],
 
-function createAnimationResolver(): (ctx: EcctrlAnimationStateContext) => EcctrlAnimationState {
-  // Mirrors ecctrl's canonical state resolution: jump start -> air (idle/fall) -> land.
-  return ({ isOnGround, wasOnGround, isFalling, isMoving, runActive, jumpActive }) => {
-    if (jumpActive && wasOnGround) return 'JUMP_START';
+    WALK: [
+      'walk',
+      'walking',
+      'walk_loop',
+    ],
+
+    RUN: [
+      'run',
+      'running',
+      'sprint',
+      'run_loop',
+    ],
+
+    JUMP_START: [
+      'jump_start',
+      'jumpstart',
+      'jump',
+      'jump_up',
+    ],
+
+    JUMP_IDLE: [
+      'jump_idle',
+      'jump',
+      'float',
+    ],
+
+    JUMP_FALL: [
+      'jump_fall',
+      'fall',
+      'falling',
+    ],
+
+    JUMP_LAND: [
+      'jump_land',
+      'land',
+      'landing',
+    ],
+  };
+
+// Avoid unused-variable errors in stricter TS configs while
+// retaining the state-candidate documentation above.
+void STATE_CLIPS;
+
+// ========================================================
+// ECCTRL ANIMATION STATE RESOLVER
+// ========================================================
+
+function createAnimationResolver():
+  (
+    ctx: EcctrlAnimationStateContext
+  ) => EcctrlAnimationState {
+
+  /**
+   * Mirrors Ecctrl's canonical state flow:
+   *
+   * jump start
+   * ↓
+   * air
+   * ↓
+   * fall
+   * ↓
+   * land
+   */
+  return ({
+    isOnGround,
+    wasOnGround,
+    isFalling,
+    isMoving,
+    runActive,
+    jumpActive,
+  }) => {
+    if (
+      jumpActive &&
+      wasOnGround
+    ) {
+      return 'JUMP_START';
+    }
+
     if (isOnGround) {
-      if (!wasOnGround) return 'JUMP_LAND';
-      if (isMoving) return runActive ? 'RUN' : 'WALK';
+      if (!wasOnGround) {
+        return 'JUMP_LAND';
+      }
+
+      if (isMoving) {
+        return runActive
+          ? 'RUN'
+          : 'WALK';
+      }
+
       return 'IDLE';
     }
-    if (isFalling) return 'JUMP_FALL';
+
+    if (isFalling) {
+      return 'JUMP_FALL';
+    }
+
     return 'JUMP_IDLE';
   };
 }
 
-function useCharacterModel(character: CharacterData, isActive: boolean) {
-  const [model, setModel] = useState<THREE.Group | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [animations, setAnimations] = useState<string[]>([]);
-  // AnimationMixer + resolved actions are kept in refs (no re-render needed).
-  const mixerRef = useRef<THREE.AnimationMixer | null>(null);
-  const actionsRef = useRef<Map<string, THREE.AnimationAction>>(new Map());
-  // Primary entry point: maps logical actions (idle/walk/run/jump/...) to the model's
-  // embedded clip names (name-match first, positional fallback for Anim_N names).
-  const animMapRef = useRef<AnimationMap | null>(null);
+// ========================================================
+// CHARACTER MODEL HOOK
+// ========================================================
+
+function useCharacterModel(
+  character: CharacterData,
+  isActive: boolean,
+) {
+  const [
+    model,
+    setModel,
+  ] =
+    useState<THREE.Group | null>(
+      null
+    );
+
+  const [
+    loading,
+    setLoading,
+  ] =
+    useState(false);
+
+  const [
+    error,
+    setError,
+  ] =
+    useState<string | null>(
+      null
+    );
+
+  const [
+    animations,
+    setAnimations,
+  ] =
+    useState<string[]>([]);
+
+  /**
+   * Mixer and actions remain refs because they do not
+   * need to trigger React renders.
+   */
+  const mixerRef =
+    useRef<THREE.AnimationMixer | null>(
+      null
+    );
+
+  const actionsRef =
+    useRef<
+      Map<
+        string,
+        THREE.AnimationAction
+      >
+    >(
+      new Map()
+    );
+
+  /**
+   * Maps logical app actions:
+   *
+   * idle
+   * walk
+   * run
+   *
+   * to actual available clip names.
+   */
+  const animMapRef =
+    useRef<AnimationMap | null>(
+      null
+    );
 
   useEffect(() => {
-    if (!isActive || !character.model?.filePath) return;
-    const loadModel = async () => {
-      setLoading(true); setError(null);
-      try {
-        const mp = character.model!.filePath, mt = character.model!.modelType?.toLowerCase() || 'glb', ck = `${mp}-${mt}`;
-        let m: THREE.Group;
-        if (modelCache.has(ck)) { m = modelCache.get(ck)!.clone(); }
-        else {
-          if (mt === 'fbx') m = await new FBXLoader().loadAsync(mp) as THREE.Group;
-          else if (mt === 'obj') m = await new OBJLoader().loadAsync(mp) as unknown as THREE.Group;
-          else m = (await new GLTFLoader().loadAsync(mp)).scene;
-          modelCache.set(ck, m.clone());
-        }
-        m.scale.setScalar(parseFloat(character.model!.scale || '1') * (character.scale || 1));
-        m.rotation.y = (parseFloat(character.model!.rotationY || '0') + (character.rotation || 0)) * Math.PI / 180;
-        m.traverse((c) => { if (c instanceof THREE.Mesh) { c.castShadow = true; c.receiveShadow = true; } });
+    if (
+      !isActive ||
+      !character.model?.filePath
+    ) {
+      return;
+    }
 
-        // Build the animation mixer + action lookup table
-        actionsRef.current.clear();
-        mixerRef.current = null;
-        const clips = ((m as any).animations || []) as THREE.AnimationClip[];
-        setAnimations(clips.map((a) => a.name));
-        if (clips.length > 0) {
-          const mixer = new THREE.AnimationMixer(m);
-          clips.forEach((clip) => {
-            actionsRef.current.set(clip.name.toLowerCase(), mixer.clipAction(clip));
-          });
-          mixerRef.current = mixer;
-        }
-        const overrides = ((character.model as any)?.metadata?.animationMap) ?? undefined;
-        animMapRef.current = buildAnimationMap(clips.map((a) => a.name), overrides);
+    let cancelled = false;
 
-        setModel(m);
-      } catch (e) { setError(String(e)); }
-      finally { setLoading(false); }
-    };
+    const loadModel =
+      async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+          const modelPath =
+            character.model!
+              .filePath;
+
+          const modelType =
+            character.model!
+              .modelType
+              ?.toLowerCase() ||
+            'glb';
+
+          const cacheKey =
+            `${modelPath}-${modelType}`;
+
+          let loadedModel:
+            THREE.Group;
+
+          // ==================================================
+          // LOAD PRIMARY CHARACTER MODEL
+          // ==================================================
+
+          if (
+            modelCache.has(
+              cacheKey
+            )
+          ) {
+            loadedModel =
+              modelCache
+                .get(
+                  cacheKey
+                )!
+                .clone();
+          } else {
+            if (
+              modelType ===
+              'fbx'
+            ) {
+              loadedModel =
+                await new FBXLoader()
+                  .loadAsync(
+                    modelPath
+                  ) as THREE.Group;
+            } else if (
+              modelType ===
+              'obj'
+            ) {
+              loadedModel =
+                await new OBJLoader()
+                  .loadAsync(
+                    modelPath
+                  ) as unknown as THREE.Group;
+            } else {
+              /**
+               * Preserve GLTF animations on the scene object.
+               *
+               * Your existing component later reads
+               * loadedModel.animations, so copy the GLTF
+               * animation array onto the scene.
+               */
+              const gltf =
+                await new GLTFLoader()
+                  .loadAsync(
+                    modelPath
+                  );
+
+              loadedModel =
+                gltf.scene;
+
+              loadedModel.animations =
+                gltf.animations;
+            }
+
+            /**
+             * Cache a clone of the primary model.
+             */
+            modelCache.set(
+              cacheKey,
+              loadedModel.clone()
+            );
+          }
+
+          if (cancelled) {
+            return;
+          }
+
+          // ==================================================
+          // MODEL TRANSFORMS
+          // ==================================================
+
+          loadedModel.scale.setScalar(
+            parseFloat(
+              character.model!
+                .scale ||
+                '1'
+            ) *
+            (
+              character.scale ||
+              1
+            )
+          );
+
+          loadedModel.rotation.y =
+            (
+              parseFloat(
+                character.model!
+                  .rotationY ||
+                  '0'
+              ) +
+              (
+                character.rotation ||
+                0
+              )
+            ) *
+            Math.PI /
+            180;
+
+          /**
+           * Enable shadows.
+           */
+          loadedModel.traverse(
+            (
+              child
+            ) => {
+              if (
+                child instanceof
+                THREE.Mesh
+              ) {
+                child.castShadow =
+                  true;
+
+                child.receiveShadow =
+                  true;
+              }
+            }
+          );
+
+          // ==================================================
+          // BUILD ANIMATION LIBRARY
+          // ==================================================
+
+          /**
+           * Begin with clips embedded directly in the model.
+           *
+           * Clone them so we can safely manipulate them.
+           */
+          const embeddedClips =
+            (
+              (
+                loadedModel
+                  .animations ||
+                []
+              ) as THREE.AnimationClip[]
+            ).map(
+              (
+                clip
+              ) =>
+                clip.clone()
+            );
+
+          /**
+           * Look for a verified external animation library
+           * for this model.
+           *
+           * Right now:
+           *
+           * Farmer Female → external library
+           * everything else → []
+           */
+          const externalSources =
+            getExternalAnimationSourcesForModel(
+              character.model!
+                .modelName,
+
+              character.model!
+                .filePath
+            );
+
+          /**
+           * Load and normalize the external FBX clips.
+           *
+           * Example:
+           *
+           * Walking.fbx
+           * internal clip "mixamo.com"
+           *
+           * becomes:
+           *
+           * clip.name = "walk"
+           */
+          const externalLibrary =
+            await loadExternalCharacterAnimations(
+              externalSources
+            );
+
+          if (cancelled) {
+            return;
+          }
+
+          // ==================================================
+          // MERGE EMBEDDED + EXTERNAL CLIPS
+          // ==================================================
+
+          /**
+           * Use a case-insensitive map so duplicate logical
+           * animation names are resolved cleanly.
+           *
+           * External normalized clips are inserted second,
+           * so they override embedded clips with the same name.
+           */
+          const clipByName =
+            new Map<
+              string,
+              THREE.AnimationClip
+            >();
+
+          for (
+            const clip
+            of embeddedClips
+          ) {
+            clipByName.set(
+              clip.name.toLowerCase(),
+              clip
+            );
+          }
+
+          for (
+            const clip
+            of externalLibrary
+              .clips
+          ) {
+            clipByName.set(
+              clip.name.toLowerCase(),
+              clip
+            );
+          }
+
+          const clips =
+            Array.from(
+              clipByName.values()
+            );
+
+          // ==================================================
+          // CREATE MIXER + ACTION LOOKUP
+          // ==================================================
+
+          actionsRef
+            .current
+            .clear();
+
+          mixerRef.current =
+            null;
+
+          setAnimations(
+            clips.map(
+              (
+                clip
+              ) =>
+                clip.name
+            )
+          );
+
+          if (
+            clips.length >
+            0
+          ) {
+            const mixer =
+              new THREE
+                .AnimationMixer(
+                  loadedModel
+                );
+
+            for (
+              const clip
+              of clips
+            ) {
+              const action =
+                mixer.clipAction(
+                  clip
+                );
+
+              actionsRef
+                .current
+                .set(
+                  clip.name.toLowerCase(),
+                  action
+                );
+            }
+
+            mixerRef.current =
+              mixer;
+          }
+
+          // ==================================================
+          // BUILD APP ANIMATION MAP
+          // ==================================================
+
+          const overrides =
+            character.model
+              ?.metadata
+              ?.animationMap;
+
+          animMapRef.current =
+            buildAnimationMap(
+              clips.map(
+                (
+                  clip
+                ) =>
+                  clip.name
+              ),
+              overrides
+            );
+
+          // ==================================================
+          // DEBUG INFO
+          // ==================================================
+
+          if (
+            externalLibrary
+              .clips.length >
+            0
+          ) {
+            console.info(
+              `[EcctrlCharacter] External animation library loaded for "${character.model!.modelName}"`,
+              {
+                externalClips:
+                  externalLibrary
+                    .clips
+                    .map(
+                      (
+                        clip
+                      ) =>
+                        clip.name
+                    ),
+
+                allClips:
+                  clips.map(
+                    (
+                      clip
+                    ) =>
+                      clip.name
+                  ),
+              }
+            );
+          }
+
+          // ==================================================
+          // FINISH
+          // ==================================================
+
+          setModel(
+            loadedModel
+          );
+        } catch (
+          loadError
+        ) {
+          if (
+            !cancelled
+          ) {
+            console.error(
+              '[EcctrlCharacter] Failed to load character:',
+              loadError
+            );
+
+            setError(
+              String(
+                loadError
+              )
+            );
+          }
+        } finally {
+          if (
+            !cancelled
+          ) {
+            setLoading(
+              false
+            );
+          }
+        }
+      };
+
     loadModel();
 
     return () => {
-      mixerRef.current?.stopAllAction();
-      mixerRef.current = null;
-      actionsRef.current.clear();
-      animMapRef.current = null;
-    };
-  }, [character, isActive]);
+      cancelled =
+        true;
 
-  return { model, loading, error, animations, mixerRef, actionsRef, animMapRef };
+      mixerRef
+        .current
+        ?.stopAllAction();
+
+      mixerRef.current =
+        null;
+
+      actionsRef
+        .current
+        .clear();
+
+      animMapRef.current =
+        null;
+    };
+  }, [
+    character,
+    isActive,
+  ]);
+
+  return {
+    model,
+    loading,
+    error,
+    animations,
+
+    mixerRef,
+    actionsRef,
+    animMapRef,
+  };
 }
 
-// ============================================
+// ========================================================
 // KEYBOARD INPUT HOOK
-// ============================================
-function useWASD(active: boolean) {
-  const keys = useRef({ w: false, s: false, a: false, d: false, shift: false, space: false, spaceFired: false });
+// ========================================================
+
+function useWASD(
+  active: boolean
+) {
+  const keys =
+    useRef({
+      w: false,
+      s: false,
+      a: false,
+      d: false,
+
+      shift: false,
+
+      space: false,
+      spaceFired: false,
+    });
 
   useEffect(() => {
     if (!active) {
-      keys.current = { w: false, s: false, a: false, d: false, shift: false, space: false, spaceFired: false };
+      keys.current = {
+        w: false,
+        s: false,
+        a: false,
+        d: false,
+
+        shift: false,
+
+        space: false,
+        spaceFired: false,
+      };
+
       return;
     }
-    const down = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      switch (e.key.toLowerCase()) {
-        case 'w': case 'arrowup': keys.current.w = true; e.preventDefault(); break;
-        case 's': case 'arrowdown': keys.current.s = true; e.preventDefault(); break;
-        case 'a': case 'arrowleft': keys.current.a = true; e.preventDefault(); break;
-        case 'd': case 'arrowright': keys.current.d = true; e.preventDefault(); break;
-        case 'shift': keys.current.shift = true; e.preventDefault(); break;
-        case ' ':
-          if (!keys.current.space) { keys.current.space = true; keys.current.spaceFired = false; }
-          e.preventDefault(); break;
-      }
+
+    const down =
+      (
+        e: KeyboardEvent
+      ) => {
+        if (
+          e.target instanceof
+            HTMLInputElement ||
+          e.target instanceof
+            HTMLTextAreaElement
+        ) {
+          return;
+        }
+
+        switch (
+          e.key.toLowerCase()
+        ) {
+          case 'w':
+          case 'arrowup':
+            keys.current.w =
+              true;
+            e.preventDefault();
+            break;
+
+          case 's':
+          case 'arrowdown':
+            keys.current.s =
+              true;
+            e.preventDefault();
+            break;
+
+          case 'a':
+          case 'arrowleft':
+            keys.current.a =
+              true;
+            e.preventDefault();
+            break;
+
+          case 'd':
+          case 'arrowright':
+            keys.current.d =
+              true;
+            e.preventDefault();
+            break;
+
+          case 'shift':
+            keys.current.shift =
+              true;
+            e.preventDefault();
+            break;
+
+          case ' ':
+            if (
+              !keys.current
+                .space
+            ) {
+              keys.current.space =
+                true;
+
+              keys.current
+                .spaceFired =
+                false;
+            }
+
+            e.preventDefault();
+            break;
+        }
+      };
+
+    const up =
+      (
+        e: KeyboardEvent
+      ) => {
+        switch (
+          e.key.toLowerCase()
+        ) {
+          case 'w':
+          case 'arrowup':
+            keys.current.w =
+              false;
+            e.preventDefault();
+            break;
+
+          case 's':
+          case 'arrowdown':
+            keys.current.s =
+              false;
+            e.preventDefault();
+            break;
+
+          case 'a':
+          case 'arrowleft':
+            keys.current.a =
+              false;
+            e.preventDefault();
+            break;
+
+          case 'd':
+          case 'arrowright':
+            keys.current.d =
+              false;
+            e.preventDefault();
+            break;
+
+          case 'shift':
+            keys.current.shift =
+              false;
+            e.preventDefault();
+            break;
+
+          case ' ':
+            keys.current.space =
+              false;
+
+            keys.current
+              .spaceFired =
+              false;
+
+            e.preventDefault();
+            break;
+        }
+      };
+
+    window.addEventListener(
+      'keydown',
+      down
+    );
+
+    window.addEventListener(
+      'keyup',
+      up
+    );
+
+    return () => {
+      window.removeEventListener(
+        'keydown',
+        down
+      );
+
+      window.removeEventListener(
+        'keyup',
+        up
+      );
     };
-    const up = (e: KeyboardEvent) => {
-      switch (e.key.toLowerCase()) {
-        case 'w': case 'arrowup': keys.current.w = false; e.preventDefault(); break;
-        case 's': case 'arrowdown': keys.current.s = false; e.preventDefault(); break;
-        case 'a': case 'arrowleft': keys.current.a = false; e.preventDefault(); break;
-        case 'd': case 'arrowright': keys.current.d = false; e.preventDefault(); break;
-        case 'shift': keys.current.shift = false; e.preventDefault(); break;
-        case ' ': keys.current.space = false; keys.current.spaceFired = false; e.preventDefault(); break;
-      }
-    };
-    window.addEventListener('keydown', down);
-    window.addEventListener('keyup', up);
-    return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
-  }, [active]);
+  }, [
+    active,
+  ]);
 
   return keys;
 }
 
-// ============================================
+// ========================================================
 // COMPONENT
-// ============================================
-export function EcctrlCharacter({ character, isControlled = false, isSelected = false, onClick, onControlChange, cameraFollowRef, livePositionsRef, markerId }: EcctrlCharacterProps) {
-  const ecctrlRef = useRef<EcctrlHandle>(null);
-  // Spawn the capsule body above its rest height (ground offset + a small lift) so
-  // gravity settles it onto the ground/static colliders without first-frame overlap.
-  const startY = (Number(character.positionY) || 0) + GROUND_OFFSET + SPAWN_LIFT;
-  const { model, loading, error, mixerRef, actionsRef, animMapRef } = useCharacterModel(character, character.status === 'active' && character.visible);
+// ========================================================
 
-  const [hovered, setHovered] = useState(false);
-  const [currentEmote, setCurrentEmote] = useState<string | null>(null);
+export function EcctrlCharacter({
+  character,
 
-  const currentActionRef = useRef<THREE.AnimationAction | null>(null);
-  const lastClipNameRef = useRef<string | null>(null);
+  isControlled =
+    false,
 
-  const keys = useWASD(isControlled);
+  isSelected =
+    false,
 
-  // Crossfade to the most appropriate model clip for a given animation state.
-  const playAnimation = useCallback((state: EcctrlAnimationState) => {
-    const mixer = mixerRef.current;
-    const actions = actionsRef.current;
-    if (!mixer || actions.size === 0) return;
+  onClick,
 
-    let action: THREE.AnimationAction | undefined;
-    // Primary entry point: resolve the logical state through the animation map.
-    const mappedClipName = animMapRef.current?.resolve(state.toLowerCase()) ?? null;
-    if (mappedClipName) {
-      action = actions.get(mappedClipName.toLowerCase()) ?? undefined;
-    } else if (state === 'IDLE' && actions.size > 0) {
-      action = actions.values().next().value;
-    }
-    if (!action) return;
+  onControlChange,
 
-    const clipName = action.getClip().name;
-    if (lastClipNameRef.current === clipName) return;
+  cameraFollowRef,
 
-    action.reset().setEffectiveTimeScale(character.animationSpeed || 1).play();
-    if (currentActionRef.current) {
-      currentActionRef.current.crossFadeTo(action, CROSSFADE_DURATION, false);
-    }
-    currentActionRef.current = action;
-    lastClipNameRef.current = clipName;
-  }, [character.animationSpeed, mixerRef, actionsRef]);
+  livePositionsRef,
 
-  const handleAnimChange = useCallback((s: EcctrlAnimationState) => {
-    playAnimation(s);
-  }, [playAnimation]);
+  markerId,
+}: EcctrlCharacterProps) {
+  const ecctrlRef =
+    useRef<EcctrlHandle>(
+      null
+    );
 
-  // Start with the default/idle animation when the model first becomes available.
+  /**
+   * Spawn above the resting body position and let gravity
+   * settle the capsule.
+   */
+  const startY =
+    (
+      Number(
+        character.positionY
+      ) ||
+      0
+    ) +
+    GROUND_OFFSET +
+    SPAWN_LIFT;
+
+  const {
+    model,
+    loading,
+    error,
+
+    mixerRef,
+    actionsRef,
+    animMapRef,
+  } =
+    useCharacterModel(
+      character,
+
+      character.status ===
+        'active' &&
+        character.visible
+    );
+
+  const [
+    hovered,
+    setHovered,
+  ] =
+    useState(false);
+
+  const [
+    currentEmote,
+    setCurrentEmote,
+  ] =
+    useState<
+      string | null
+    >(null);
+
+  /**
+   * Keep the setter available for future interaction logic.
+   */
+  void setCurrentEmote;
+
+  const currentActionRef =
+    useRef<
+      THREE.AnimationAction | null
+    >(null);
+
+  const lastClipNameRef =
+    useRef<
+      string | null
+    >(null);
+
+  const keys =
+    useWASD(
+      isControlled
+    );
+
+  // ======================================================
+  // PLAY ANIMATION
+  // ======================================================
+
+  const playAnimation =
+    useCallback(
+      (
+        state:
+          EcctrlAnimationState
+      ) => {
+        const mixer =
+          mixerRef.current;
+
+        const actions =
+          actionsRef.current;
+
+        if (
+          !mixer ||
+          actions.size ===
+            0
+        ) {
+          return;
+        }
+
+        let action:
+          THREE.AnimationAction
+          | undefined;
+
+        /**
+         * Resolve the logical Ecctrl state through the App's
+         * existing animation map.
+         *
+         * Example:
+         *
+         * IDLE → idle
+         * WALK → walk
+         * RUN  → run
+         */
+        const mappedClipName =
+          animMapRef
+            .current
+            ?.resolve(
+              state.toLowerCase()
+            ) ??
+          null;
+
+        if (
+          mappedClipName
+        ) {
+          action =
+            actions.get(
+              mappedClipName.toLowerCase()
+            );
+        } else if (
+          state ===
+            'IDLE' &&
+          actions.size >
+            0
+        ) {
+          /**
+           * Existing fallback:
+           * use the first available action.
+           */
+          action =
+            actions
+              .values()
+              .next()
+              .value;
+        }
+
+        if (!action) {
+          return;
+        }
+
+        const clipName =
+          action
+            .getClip()
+            .name;
+
+        /**
+         * Avoid restarting the same animation.
+         */
+        if (
+          lastClipNameRef
+            .current ===
+          clipName
+        ) {
+          return;
+        }
+
+        action
+          .reset()
+          .setEffectiveTimeScale(
+            character
+              .animationSpeed ||
+              1
+          )
+          .play();
+
+        /**
+         * Crossfade from the previous animation.
+         */
+        if (
+          currentActionRef
+            .current
+        ) {
+          currentActionRef
+            .current
+            .crossFadeTo(
+              action,
+              CROSSFADE_DURATION,
+              false
+            );
+        }
+
+        currentActionRef.current =
+          action;
+
+        lastClipNameRef.current =
+          clipName;
+      },
+      [
+        character.animationSpeed,
+        mixerRef,
+        actionsRef,
+        animMapRef,
+      ]
+    );
+
+  // ======================================================
+  // ECCTRL ANIMATION CHANGE
+  // ======================================================
+
+  const handleAnimChange =
+    useCallback(
+      (
+        state:
+          EcctrlAnimationState
+      ) => {
+        playAnimation(
+          state
+        );
+      },
+      [
+        playAnimation,
+      ]
+    );
+
+  /**
+   * Start with Idle when the model becomes available.
+   */
   useEffect(() => {
-    if (model) playAnimation('IDLE');
-  }, [model, playAnimation]);
+    if (model) {
+      playAnimation(
+        'IDLE'
+      );
+    }
+  }, [
+    model,
+    playAnimation,
+  ]);
 
-  // Advance the mixer every frame (even when not controlled).
-  useFrame((_, delta) => {
-    if (mixerRef.current) mixerRef.current.update(delta);
-  });
+  // ======================================================
+  // UPDATE MIXER
+  // ======================================================
 
-  // Only send movement input when controlled.
+  useFrame(
+    (
+      _,
+      delta
+    ) => {
+      if (
+        mixerRef.current
+      ) {
+        mixerRef
+          .current
+          .update(
+            delta
+          );
+      }
+    }
+  );
+
+  // ======================================================
+  // CONTROLLED MOVEMENT
+  // ======================================================
+
   useFrame(() => {
-    if (!ecctrlRef.current || !isControlled) return;
-    const ec = ecctrlRef.current;
-    const k = keys.current;
-    const jx = (k.d ? 1 : 0) + (k.a ? -1 : 0);
-    const jy = (k.w ? 1 : 0) + (k.s ? -1 : 0);
-    const jump = k.space && !k.spaceFired;
-    if (jump) k.spaceFired = true;
-    ec.setMovement({ joystick: { x: jx, y: jy }, run: k.shift, jump });
-
-    // Write position to camera follow ref (zero-cost, no React state)
-    const p = ec.currPos;
-    if (cameraFollowRef) {
-      cameraFollowRef.current = new THREE.Vector3(p.x, p.y, p.z);
+    if (
+      !ecctrlRef.current ||
+      !isControlled
+    ) {
+      return;
     }
-    // v0.16.2-beta: Keep the live-position map up to date every frame while controlled
-    // so re-selecting the character focuses where it actually is now.
-    if (livePositionsRef && markerId) {
-      livePositionsRef.current.set(markerId, { x: p.x, y: p.y, z: p.z });
+
+    const ec =
+      ecctrlRef.current;
+
+    const k =
+      keys.current;
+
+    const joystickX =
+      (
+        k.d
+          ? 1
+          : 0
+      ) +
+      (
+        k.a
+          ? -1
+          : 0
+      );
+
+    const joystickY =
+      (
+        k.w
+          ? 1
+          : 0
+      ) +
+      (
+        k.s
+          ? -1
+          : 0
+      );
+
+    const jump =
+      k.space &&
+      !k.spaceFired;
+
+    if (jump) {
+      k.spaceFired =
+        true;
+    }
+
+    ec.setMovement({
+      joystick: {
+        x: joystickX,
+        y: joystickY,
+      },
+
+      run:
+        k.shift,
+
+      jump,
+    });
+
+    /**
+     * Camera follow.
+     */
+    const position =
+      ec.currPos;
+
+    if (
+      cameraFollowRef
+    ) {
+      cameraFollowRef.current =
+        new THREE.Vector3(
+          position.x,
+          position.y,
+          position.z
+        );
+    }
+
+    /**
+     * Persistent live-position registry.
+     */
+    if (
+      livePositionsRef &&
+      markerId
+    ) {
+      livePositionsRef
+        .current
+        .set(
+          markerId,
+          {
+            x: position.x,
+            y: position.y,
+            z: position.z,
+          }
+        );
     }
   });
 
-  // Sync marker position when control state changes (Take Control or Release Control)
+  // ======================================================
+  // CONTROL STATE POSITION SYNC
+  // ======================================================
+
   useEffect(() => {
-    if (onControlChange && ecctrlRef.current) {
-      const p = ecctrlRef.current.currPos;
-      onControlChange({ x: p.x, y: p.y, z: p.z });
-    }
-  }, [isControlled, onControlChange]);
+    if (
+      onControlChange &&
+      ecctrlRef.current
+    ) {
+      const position =
+        ecctrlRef
+          .current
+          .currPos;
 
-  const handleClick = useCallback((e: any) => {
-    e.stopPropagation();
-    if (onControlChange && ecctrlRef.current) {
-      const p = ecctrlRef.current.currPos;
-      onControlChange({ x: p.x, y: p.y, z: p.z });
+      onControlChange({
+        x: position.x,
+        y: position.y,
+        z: position.z,
+      });
     }
-    if (onClick) onClick();
-  }, [onClick, onControlChange]);
+  }, [
+    isControlled,
+    onControlChange,
+  ]);
 
-  const handleEnter = useCallback(() => setHovered(true), []);
-  const handleLeave = useCallback(() => setHovered(false), []);
+  // ======================================================
+  // CLICK
+  // ======================================================
+
+  const handleClick =
+    useCallback(
+      (
+        event: any
+      ) => {
+        event.stopPropagation();
+
+        if (
+          onControlChange &&
+          ecctrlRef.current
+        ) {
+          const position =
+            ecctrlRef
+              .current
+              .currPos;
+
+          onControlChange({
+            x: position.x,
+            y: position.y,
+            z: position.z,
+          });
+        }
+
+        if (
+          onClick
+        ) {
+          onClick();
+        }
+      },
+      [
+        onClick,
+        onControlChange,
+      ]
+    );
+
+  const handleEnter =
+    useCallback(
+      () =>
+        setHovered(
+          true
+        ),
+      []
+    );
+
+  const handleLeave =
+    useCallback(
+      () =>
+        setHovered(
+          false
+        ),
+      []
+    );
+
+  // ======================================================
+  // OVERLAYS
+  // ======================================================
 
   const overlays = (
     <>
       {currentEmote && (
-        <Html position={[0, 2.0, 0]} center transform occlude distanceFactor={1} zIndexRange={[10, 20]}>
-          <div style={{ fontSize: 22, pointerEvents: 'none', userSelect: 'none' }} className="bg-white dark:bg-gray-800 rounded-full px-3 py-2 shadow-lg">
-            {currentEmote==='happy'?'😊':currentEmote==='sad'?'😢':currentEmote==='surprised'?'😲':currentEmote==='angry'?'😠':currentEmote==='wave'?'👋':currentEmote==='dance'?'💃':currentEmote==='sleep'?'😴':''}
+        <Html
+          position={[
+            0,
+            2.0,
+            0,
+          ]}
+          center
+          transform
+          occlude
+          distanceFactor={
+            1
+          }
+          zIndexRange={[
+            10,
+            20,
+          ]}
+        >
+          <div
+            style={{
+              fontSize:
+                22,
+
+              pointerEvents:
+                'none',
+
+              userSelect:
+                'none',
+            }}
+            className="
+              bg-white
+              dark:bg-gray-800
+              rounded-full
+              px-3
+              py-2
+              shadow-lg
+            "
+          >
+            {
+              currentEmote ===
+              'happy'
+                ? '😊'
+
+                : currentEmote ===
+                  'sad'
+                ? '😢'
+
+                : currentEmote ===
+                  'surprised'
+                ? '😲'
+
+                : currentEmote ===
+                  'angry'
+                ? '😠'
+
+                : currentEmote ===
+                  'wave'
+                ? '👋'
+
+                : currentEmote ===
+                  'dance'
+                ? '💃'
+
+                : currentEmote ===
+                  'sleep'
+                ? '😴'
+
+                : ''
+            }
           </div>
         </Html>
       )}
-      {hovered && !isControlled && (
-        <Html position={[0, 1.2, 0]} center distanceFactor={10}>
-          <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap shadow-lg pointer-events-none">
-            {character.name}
-          </div>
-        </Html>
-      )}
-      {(isControlled || isSelected) && (
-        <FadingRing position={[0, -0.35, 0]} innerRadius={0.7} outerRadius={1.15} />
+
+      {hovered &&
+        !isControlled && (
+          <Html
+            position={[
+              0,
+              1.2,
+              0,
+            ]}
+            center
+            distanceFactor={
+              10
+            }
+          >
+            <div
+              className="
+                bg-black/80
+                text-white
+                px-2
+                py-1
+                rounded
+                text-xs
+                whitespace-nowrap
+                shadow-lg
+                pointer-events-none
+              "
+            >
+              {
+                character.name
+              }
+            </div>
+          </Html>
+        )}
+
+      {(isControlled ||
+        isSelected) && (
+        <FadingRing
+          position={[
+            0,
+            -0.35,
+            0,
+          ]}
+          innerRadius={
+            0.7
+          }
+          outerRadius={
+            1.15
+          }
+        />
       )}
     </>
   );
 
-  const pos: [number, number, number] = [Number(character.positionX) || 0, startY, Number(character.positionZ) || 0];
+  // ======================================================
+  // POSITION
+  // ======================================================
 
-  if (!character.model?.filePath || error || (!model && !loading)) {
-    const colorMap: Record<string, string> = { animal: '#D2691E', bird: '#87CEEB', insect: '#32CD32', mythical: '#9370DB', human: '#FFB6C1', robot: '#A9A9A9', decoration: '#FFD700' };
+  const position:
+    [
+      number,
+      number,
+      number,
+    ] = [
+      Number(
+        character.positionX
+      ) ||
+        0,
+
+      startY,
+
+      Number(
+        character.positionZ
+      ) ||
+        0,
+    ];
+
+  // ======================================================
+  // FALLBACK CHARACTER
+  // ======================================================
+
+  if (
+    !character.model
+      ?.filePath ||
+    error ||
+    (
+      !model &&
+      !loading
+    )
+  ) {
+    const colorMap:
+      Record<
+        string,
+        string
+      > = {
+        animal:
+          '#D2691E',
+
+        bird:
+          '#87CEEB',
+
+        insect:
+          '#32CD32',
+
+        mythical:
+          '#9370DB',
+
+        human:
+          '#FFB6C1',
+
+        robot:
+          '#A9A9A9',
+
+        decoration:
+          '#FFD700',
+      };
+
     return (
-      <Ecctrl ref={ecctrlRef} position={pos} floatHeight={0.3} maxWalkVel={2} enable>
-        <mesh castShadow receiveShadow position={[0, 0.45, 0]} onClick={handleClick} onPointerEnter={handleEnter} onPointerLeave={handleLeave}>
-          <cylinderGeometry args={[0.3, 0.42, 0.9, 10]} />
-          <meshStandardMaterial color={colorMap[character.type] || '#FF69B4'} />
+      <Ecctrl
+        ref={
+          ecctrlRef
+        }
+        position={
+          position
+        }
+        floatHeight={
+          0.3
+        }
+        maxWalkVel={
+          2
+        }
+        enable
+      >
+        <mesh
+          castShadow
+          receiveShadow
+          position={[
+            0,
+            0.45,
+            0,
+          ]}
+          onClick={
+            handleClick
+          }
+          onPointerEnter={
+            handleEnter
+          }
+          onPointerLeave={
+            handleLeave
+          }
+        >
+          <cylinderGeometry
+            args={[
+              0.3,
+              0.42,
+              0.9,
+              10,
+            ]}
+          />
+
+          <meshStandardMaterial
+            color={
+              colorMap[
+                character
+                  .type
+              ] ||
+              '#FF69B4'
+            }
+          />
         </mesh>
+
         {overlays}
       </Ecctrl>
     );
   }
 
+  // ======================================================
+  // REAL CHARACTER
+  // ======================================================
+
   return (
-    <Ecctrl ref={ecctrlRef} position={pos} floatHeight={FLOAT_HEIGHT} maxWalkVel={2} maxRunVel={3.5} enable capsuleHalfHeight={CAPSULE_HALF_HEIGHT} capsuleRadius={CAPSULE_RADIUS}>
-      <EcctrlAnimationStateController ecctrl={ecctrlRef} enabled={character.status === 'active'} resolver={createAnimationResolver()} onChange={handleAnimChange} />
-      <mesh onClick={handleClick} onPointerEnter={handleEnter} onPointerLeave={handleLeave}>
-        <boxGeometry args={[CAPSULE_RADIUS * 4, CAPSULE_HALF_HEIGHT * 2.5, CAPSULE_RADIUS * 4]} />
-        <meshBasicMaterial visible={false} />
+    <Ecctrl
+      ref={
+        ecctrlRef
+      }
+      position={
+        position
+      }
+      floatHeight={
+        FLOAT_HEIGHT
+      }
+      maxWalkVel={
+        2
+      }
+      maxRunVel={
+        3.5
+      }
+      enable
+      capsuleHalfHeight={
+        CAPSULE_HALF_HEIGHT
+      }
+      capsuleRadius={
+        CAPSULE_RADIUS
+      }
+    >
+      {/* --------------------------------------------------
+          ECCTRL ANIMATION STATE CONTROLLER
+      -------------------------------------------------- */}
+
+      <EcctrlAnimationStateController
+        ecctrl={
+          ecctrlRef
+        }
+        enabled={
+          character.status ===
+          'active'
+        }
+        resolver={
+          createAnimationResolver()
+        }
+        onChange={
+          handleAnimChange
+        }
+      />
+
+      {/* --------------------------------------------------
+          CLICK / HOVER HIT AREA
+      -------------------------------------------------- */}
+
+      <mesh
+        onClick={
+          handleClick
+        }
+        onPointerEnter={
+          handleEnter
+        }
+        onPointerLeave={
+          handleLeave
+        }
+      >
+        <boxGeometry
+          args={[
+            CAPSULE_RADIUS *
+              4,
+
+            CAPSULE_HALF_HEIGHT *
+              2.5,
+
+            CAPSULE_RADIUS *
+              4,
+          ]}
+        />
+
+        <meshBasicMaterial
+          visible={
+            false
+          }
+        />
       </mesh>
+
+      {/* --------------------------------------------------
+          CHARACTER VISUAL
+      -------------------------------------------------- */}
+
       {model && (
-        <group position={[0, -GROUND_OFFSET, 0]}>
-          <primitive object={model} />
+        <group
+          position={[
+            0,
+            -GROUND_OFFSET,
+            0,
+          ]}
+        >
+          <primitive
+            object={
+              model
+            }
+          />
         </group>
       )}
+
       {overlays}
     </Ecctrl>
   );
