@@ -1310,7 +1310,7 @@ export function EcctrlCharacter({
 
   const playTaskAction =
     useCallback(
-      (taskName: string) => {
+      (taskName: string, target?: unknown) => {
         const mixer =
           mixerRef.current;
 
@@ -1448,6 +1448,18 @@ export function EcctrlCharacter({
               true
             );
 
+            // Report the completed semantic action back to the page-level world-action layer.
+            window.dispatchEvent(
+              new CustomEvent('garden-character-action-complete', {
+                detail: {
+                  characterId: character.id,
+                  characterName: character.name,
+                  action: taskName,
+                  target: target ?? null,
+                },
+              })
+            );
+
             /**
              * Do not stop the completed task until the locomotion
              * crossfade has had time to take over completely.
@@ -1484,6 +1496,7 @@ export function EcctrlCharacter({
       },
       [
         actionsRef,
+        character.id,
         character.animationSpeed,
         character.name,
         mixerRef,
@@ -1502,6 +1515,7 @@ export function EcctrlCharacter({
           event as CustomEvent<{
             characterId?: number;
             action?: string;
+            target?: unknown;
           }>;
 
         if (
@@ -1522,7 +1536,8 @@ export function EcctrlCharacter({
         }
 
         playTaskAction(
-          action
+          action,
+          customEvent.detail?.target
         );
       };
 

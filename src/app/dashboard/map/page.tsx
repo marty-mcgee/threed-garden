@@ -170,7 +170,15 @@ function KvRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter }: {
+type CharacterActionTarget = {
+  markerId: string;
+  type: string;
+  id: number;
+  name: string;
+  position?: { x: number; y: number; z: number };
+};
+
+function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, onSetActionTarget, onClearActionTarget }: {
   selected: any;
   onClose: () => void;
   controlledCharacterId: number | null;
@@ -179,6 +187,9 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
   cameraMode?: string;
   onCameraModeChange?: (mode: string) => void;
   onZoomCenter?: () => void;
+  actionTarget?: CharacterActionTarget | null;
+  onSetActionTarget?: (target: CharacterActionTarget) => void;
+  onClearActionTarget?: () => void;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || {};
@@ -288,6 +299,51 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         </div>
       )}
 
+      {/* World Action Target — v0.16.7 proof of concept */}
+      {!isIncident && (type === 'plantings' || type === 'planting') && onSetActionTarget && (() => {
+        const targetId = Number(d.id);
+        const targetName = selected.name || selected.label || d.plantName || d.commonName || `Planting #${targetId}`;
+        const isCurrentTarget = actionTarget?.type === 'planting' && actionTarget.id === targetId;
+
+        return (
+          <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-1.5">
+            <div className="text-[10px] font-medium text-white/60">World Action Target</div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!Number.isFinite(targetId)) return;
+                onSetActionTarget({
+                  markerId: String(selected.id || `plantings-${targetId}`),
+                  type: 'planting',
+                  id: targetId,
+                  name: targetName,
+                  position: selected.position ? {
+                    x: Number(selected.position.x) || 0,
+                    y: Number(selected.position.y) || 0,
+                    z: Number(selected.position.z) || 0,
+                  } : undefined,
+                });
+              }}
+              className={`block w-full text-center text-[11px] font-medium py-1.5 px-2 rounded transition-colors ${
+                isCurrentTarget
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-white/5 hover:bg-white/10 text-white/75 hover:text-white'
+              }`}
+            >
+              {isCurrentTarget ? '🎯 Current Action Target' : '🎯 Use as Action Target'}
+            </button>
+            {isCurrentTarget && onClearActionTarget && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onClearActionTarget(); }}
+                className="block w-full text-center text-[10px] text-white/45 hover:text-white/70 py-1"
+              >
+                Clear target
+              </button>
+            )}
+          </div>
+        );
+      })()}
+
       {/* Description (incidents) — only if no metaRows covered it */}
       {isIncident && selected.description && !metaRows.length && (
         <div className="mt-2 text-[11px] text-white/50">
@@ -299,6 +355,14 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
       {!isIncident && (type === 'characters' || type === 'character') && (
         <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-2.5">
           <div className="text-[10px] font-medium text-white/60">Character Actions</div>
+
+          <div className="rounded bg-white/5 px-2 py-1.5 text-[10px] text-white/55">
+            {actionTarget ? (
+              <>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></>
+            ) : (
+              <>🎯 Target: <span className="text-white/35">None — actions remain animation-only</span></>
+            )}
+          </div>
 
           {[
             {
@@ -355,6 +419,7 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
                           detail: {
                             characterId: charId,
                             action,
+                            target: actionTarget || null,
                           },
                         }),
                       );
@@ -525,6 +590,7 @@ function UnifiedMapPageInner() {
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
   const [cameraMode, setCameraMode] = useState<string>('follow');
   const [focusRequest, setFocusRequest] = useState(0);
+  const [actionTarget, setActionTarget] = useState<CharacterActionTarget | null>(null);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
 
   // v0.16.2-beta: Manual "zoom + center" request (button in DetailsCard).
@@ -651,6 +717,38 @@ function UnifiedMapPageInner() {
   // ✅ Stabilize showToast via ref to prevent re-render loops
   const showToastRef = useRef(showToast);
   showToastRef.current = showToast;
+
+  // v0.16.7 world-action proof: receive semantic animation completion with optional target context.
+  useEffect(() => {
+    const handleActionComplete = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        characterId?: number;
+        characterName?: string;
+        action?: string;
+        target?: CharacterActionTarget | null;
+      }>;
+
+      const detail = customEvent.detail;
+      if (!detail?.action) return;
+
+      const actor = detail.characterName || `Character #${detail.characterId ?? '?'}`;
+      const actionLabel = detail.action.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+      if (detail.target) {
+        showToastRef.current(
+          `${actor} completed ${actionLabel} on ${detail.target.name} (${detail.target.type} #${detail.target.id})`,
+          'success',
+        );
+        console.info('[WorldAction] Completed targeted action', detail);
+      } else {
+        showToastRef.current(`${actor} completed ${actionLabel}`, 'success');
+        console.info('[WorldAction] Completed animation-only action', detail);
+      }
+    };
+
+    window.addEventListener('garden-character-action-complete', handleActionComplete);
+    return () => window.removeEventListener('garden-character-action-complete', handleActionComplete);
+  }, []);
 
   // ✅ Load data from API route
   const loadData = useCallback(async () => {
@@ -1263,6 +1361,15 @@ function UnifiedMapPageInner() {
         cameraMode={cameraMode}
         onCameraModeChange={(mode) => setCameraMode(mode)}
         onZoomCenter={handleZoomCenter}
+        actionTarget={actionTarget}
+        onSetActionTarget={(target) => {
+          setActionTarget(target);
+          showToast(`Action target set: ${target.name}`, 'success');
+        }}
+        onClearActionTarget={() => {
+          setActionTarget(null);
+          showToast('Action target cleared', 'info');
+        }}
       />
       
     </div>

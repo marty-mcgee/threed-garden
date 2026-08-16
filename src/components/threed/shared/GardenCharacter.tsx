@@ -1156,7 +1156,7 @@ export function GardenCharacter({
    * fires, the task action is fully stopped and normal locomotion is
    * restored.
    */
-  const playTaskAction = (taskName: string) => {
+  const playTaskAction = (taskName: string, target?: unknown) => {
     const mixer = mixerRef.current;
 
     if (!mixer || taskLockedRef.current) {
@@ -1250,6 +1250,18 @@ export function GardenCharacter({
         switchAnimation(clipName, timeScale);
       }
 
+      // Report the completed semantic action back to the page-level world-action layer.
+      window.dispatchEvent(
+        new CustomEvent('garden-character-action-complete', {
+          detail: {
+            characterId: character.id,
+            characterName: character.name,
+            action: taskName,
+            target: target ?? null,
+          },
+        }),
+      );
+
       // Only after the crossfade has had time to complete do we fully stop
       // and disable the old one-shot action.
       if (taskCleanupTimeoutRef.current) {
@@ -1278,6 +1290,7 @@ export function GardenCharacter({
       const customEvent = event as CustomEvent<{
         characterId?: number;
         action?: string;
+        target?: unknown;
       }>;
 
       if (customEvent.detail?.characterId !== character.id) {
@@ -1289,7 +1302,7 @@ export function GardenCharacter({
         return;
       }
 
-      playTaskAction(action);
+      playTaskAction(action, customEvent.detail?.target);
     };
 
     window.addEventListener(
