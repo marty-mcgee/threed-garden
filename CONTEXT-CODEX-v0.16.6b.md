@@ -1,0 +1,988 @@
+# Project Context — marty-mcgee-neon
+
+> **Purpose:** Primary repository context for developers and Codex/AI coding agents.
+> Read this file before making architectural changes. Treat current repository code as the source of truth when this document and implementation disagree.
+
+## 🤖 Codex Working Contract
+
+1. **Inspect before editing.** Read the relevant implementation, imports, types, schema, and API routes before proposing changes.
+2. **Preserve working architecture.** Prefer incremental changes over rewrites, especially in ThreeD character animation, physics, camera, selection, and DetailsCard flows.
+3. **Do not guess repository APIs.** Verify database-client imports, auth conventions, schema fields, route locations, and component props from the repository.
+4. **Keep animation and world state separated.** Character animation code decides *how an action is animated*. API/gameplay code decides *what world-state mutation that action causes*.
+5. **One-shot actions complete before persistence.** World mutations triggered by character actions occur only after the corresponding one-shot animation reports completion.
+6. **Do not require database access to reason about the app.** Prefer repository files, schema, types, routes, and tests. Never request or expose secrets.
+7. **Protect stable behavior.** Existing GardenCharacter wandering, Ecctrl WASD/control, camera modes, selection, DetailsCard, and task→locomotion crossfades are regression-sensitive.
+8. **Validate changes.** Run the narrowest relevant TypeScript/build/lint/test checks available after edits and report exactly what was run.
+9. **Update this file for release-level architectural changes.** Keep detailed implementation chatter out of this document; use git history/issues for transient debugging notes.
+
+## 📌 Current Checkpoint
+
+| Item | Status |
+|---|---|
+| Current version | **v0.16.6b — World Actions v2** |
+| Previous checkpoint | **v0.16.6a — Character Animations + Actions / Animation Action Mapping** |
+| Character FBX model loading | ✅ Working |
+| External FBX animation files | ✅ Working |
+| Semantic action mapping | ✅ Working |
+| GardenCharacter autonomous locomotion + tasks | ✅ Working |
+| EcctrlCharacter WASD locomotion + tasks | ✅ Working |
+| DetailsCard character action controls | ✅ Working |
+| Persistent planting action target | ✅ Working |
+| Targeted Water world action | ✅ Working |
+| Watering persistence after animation completion | ✅ Working |
+| Pick Fruit animation | ✅ Working as animation |
+| Harvest DB persistence | ⏸️ Deferred / experimental; not part of stable v0.16.6b |
+
+## 🧠 Current Character / World-Action Architecture
+
+```text
+Base FBX Character Model
+        +
+External FBX Animation Files
+        ↓
+external animation loader / normalized clips
+        ↓
+semantic CharacterTaskAction / AnimationMap
+        ↓
+GardenCharacter OR EcctrlCharacter
+        ↓
+idle / walk / run locomotion
+        +
+one-shot actions
+(watering / pickFruit / plantTree / etc.)
+        ↓
+animation completion callback
+        ↓
+optional World Action layer
+        ↓
+authenticated API mutation
+```
+
+### Stable separation of responsibilities
+
+- **Animation layer:** model loading, clips, mixers, semantic action resolution, crossfades, one-shot completion, locomotion recovery.
+- **Interaction layer:** marker selection, DetailsCard, Take/Release Control, action buttons, persistent action target.
+- **World Action layer:** validates actor/action/target and performs an authenticated server-side mutation.
+- **Database/API layer:** still evolving. Do not expand persistence casually from animation code.
+
+### v0.16.6b supported world mutation
+
+```text
+Planting → Use as Action Target
+         → Farmer → Water
+         → watering animation completes
+         → POST /api/threed/world-actions
+         → auth + ownership validation
+         → threed_watering_history
+         → locomotion resumes
+```
+
+**Scope boundary:** `Pick Fruit → threed_harvests` persistence was explored after the Water workflow, but is intentionally deferred. Do not treat harvest persistence as a requirement or dependency of v0.16.6b.
+
+## 🗂️ High-Value Files for Character Work
+
+| File | Responsibility |
+|---|---|
+| `src/lib/utils/animation.ts` | Core semantic animation mapping/fallback logic |
+| `src/components/threed/shared/GardenCharacter.tsx` | Autonomous/non-controlled character locomotion and task actions |
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Physics/WASD character locomotion and task actions |
+| `src/components/map/ThreeDScene.tsx` | 3D marker routing, physics scene, character request routing |
+| `src/components/map/UnifiedMapView.tsx` | Runtime marker/data bridge into ThreeDScene |
+| `src/app/dashboard/map/page.tsx` | Selection, DetailsCard, control state, action target, world-action completion handling |
+| `src/app/api/threed/world-actions/route.ts` | Authenticated semantic world-action endpoint; stable v0.16.6b action = watering |
+| `src/lib/schema/threed/*` | ThreeD Drizzle schema; inspect before any persistence change |
+
+---
+
+## 🧭 Strategic Product Definition — The "Dual-Surface" Platform
+
+`marty-mcgee-neon` is a **Dual-Surface Platform**. Every piece of data in the system has two surfaces: an **Admin Surface** (where it is created, edited, and managed) and a **Public/Dashboard Surface** (where it is visualized, explored, and consumed).
+
+### The Two Surfaces
+
+| Surface | Audience | Purpose | Anchors |
+|---------|----------|---------|---------|
+| **Admin Surface** | Authenticated users (owners) | Full CRUD management of all data | `/admin/*`, `/api/*` (write operations) |
+| **Dashboard Surface** | Any visitor (public or authenticated) | Visualization and exploration of published data | `/dashboard/*`, `/api/*` (read operations) |
+
+### Design Principles
+
+- **Default Data Flow**: Admin → Database → API → Dashboard. Dashboard is primarily a visualization surface. Explicit authenticated interaction endpoints (for example World Actions) may perform narrowly scoped writes when the user intentionally triggers an in-world action.
+- **Publish Gate**: Every module has `isPublic`/`isActive`/`status` enforced at the API layer.
+- **Runtime Rendering**: Dashboard visualizations (map markers, 3D objects, stats) are generated at runtime from source data. There are no stored "display" records.
+- **Project Scoping**: Dashboard Surface is always scoped to a Project for multi-tenant access.
+
+### Current Surface Coverage
+
+| Module | Admin Surface | Dashboard Surface |
+|--------|:---:|:---:|
+| **Projects** | ✅ (CRUD, Asset Manager) | ✅ (Homepage project cards) |
+| **Music** | ✅ (Albums, Tracks, Links, Media) | ✅ (Player, Album Grid, Waveform) |
+| **ThreeD** | ✅ (Plants, Beds, Plantings, Characters, Models, Layers) | ✅ (3D Scene, Runtime Markers, View Presets, Garden Explorer) |
+| **Traffic** | ✅ (8 sub-modules, full CRUD) | ✅ (2D Map, Emoji Markers, Popups) |
+| **Settings** | ✅ (Admin UI) | ❌ (no public settings surface — by design) |
+
+---
+
+## 🧱 Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| **Framework** | Next.js 16.2.12 (App Router), TypeScript, React |
+| **Database** | Neon Postgres + Drizzle ORM |
+| **UI** | shadcn/ui, Tailwind, Three.JS, React Three Fiber, Leaflet (OpenStreetMaps) |
+| **3D Scene** | React Three Fiber, @react-three/drei, Three.js |
+| **2D Map** | Leaflet, react-leaflet |
+| **Music Streaming** | AWS S3, Vercel Blob Storage |
+| **Deployment** | Vercel |
+| **Package Manager** | Bun |
+| **Auth** | Next Auth.js |
+
+---
+
+## 🗄️ Database Schema Architecture
+
+### Hybrid Approach: Data Ownership + Free-Standing Data
+
+- All records have `userId` for ownership and audit trails
+- Child data is free-standing (no direct foreign keys to modules)
+- Relationships are handled via junction tables
+
+```
+User (user)
+  └── Projects (project) - HAS userId
+       └── (junction: project_threed, project_traffic, project_music)
+            └── Modules (threed, traffic, music) - HAS userId
+                 └── Child Data - HAS userId
+                      └── (free-standing, reusable across projects)
+```
+
+### Key ID Patterns
+
+| Table Type | ID Type | Foreign Key Type |
+|------------|---------|------------------|
+| `user` (Next Auth.js) | `text('id')` | N/A |
+| All other tables | `serial('id')` | `integer` |
+| Tables referencing `user.id` | N/A | `text('user_id')` |
+
+### Junction Tables (Many-to-Many)
+
+| Table | Purpose |
+|-------|---------|
+| `project_threed` | Links Projects to ThreeD modules |
+| `project_traffic` | Links Projects to Traffic modules |
+| `project_music` | Links Projects to Music modules |
+| `project_assets` | Single junction table with polymorphic relationship linking child records to projects |
+
+### Main Tables per Module
+
+| Module | Main Table | Purpose |
+|--------|------------|---------|
+| **Auth** | `user` | User authentication and profiles |
+| **Settings** | `settings` | Global and user-specific settings |
+| **Projects** | `project` | Top-level project container |
+| **ThreeD** | `threed` | Garden/3D module configuration |
+| **Traffic** | `traffic` | Traffic monitoring module configuration |
+| **Music** | `music` | Music library module configuration |
+
+### Complete Table Listing
+
+#### ThreeD Module (`lib/schema/threed/`)
+
+| Table | Purpose | Has Position | Becomes Marker |
+|-------|---------|:---:|:---:|
+| `threed` | Main ThreeD module configuration | ❌ | ❌ |
+| `threed_plants` | Master plant database | ❌ | ❌ (Master data) |
+| `threed_models` | GLTF model library | ❌ | ❌ (Library) |
+| `threed_beds` | Garden layout with 3D positioning | ✅ | ✅ |
+| `threed_plantings` | **Plants in beds with position data → BECOME MARKERS** | ✅ | ✅ (Primary) |
+| `threed_characters` | 3D characters and creatures | ✅ | ✅ |
+| `threed_farmbots` | FarmBot devices | ✅ | ✅ |
+
+#### Traffic Module (`lib/schema/traffic/`)
+
+| Table | Purpose |
+|-------|---------|
+| `traffic_chp_cad_incidents` | Live CHP incidents |
+| `traffic_chp_centers` | CHP communication centers |
+| `traffic_chp_cases` | Historical collisions cases |
+| `traffic_caltrans_lane_closures` | Caltrans lane closures |
+| `traffic_caltrans_cctv_cameras` | Traffic cameras |
+| `traffic_caltrans_districts` | Caltrans districts |
+| `traffic_bay_area_511_events` | 511.org events |
+| `traffic_calfire_incidents` | CalFire wildfire incidents |
+
+#### Music Module (`lib/schema/music/`)
+
+| Table | Purpose |
+|-------|---------|
+| `music` | Main Music module configuration |
+| `music_albums` | Album metadata |
+| `music_tracks` | Track metadata |
+| `music_media` | Album images and media |
+| `music_links` | External links (Spotify, social, etc.) |
+
+---
+
+## 🔧 API Architecture
+
+### API Structure
+
+```
+api/
+├── map/
+│   ├── threed/route.ts       # GET — combined ThreeD + Traffic data with position normalization
+│   ├── projects/route.ts     # List projects with map data
+│   └── asset-type/route.ts   # Get assets by type
+├── threed/
+│   ├── route.ts                # ThreeD module CRUD
+│   └── world-actions/route.ts  # POST — semantic world actions; v0.16.6b supports targeted watering
+├── traffic/ (8 sub-modules)
+├── music/ (albums, tracks, links, media)
+├── project/ (CRUD + assets + modules)
+└── auth/
+```
+
+---
+
+## 🎯 ThreeD Marker Architecture (Runtime Generation)
+
+### Data Pipeline
+
+```
+API (/api/map/threed)
+  → Position normalization (string→Number, _hasPosition metadata)
+  → Page (map/page.tsx, garden/page.tsx)
+    → normalizePositions() second pass
+    → UnifiedMapData construction
+  → UnifiedMapView
+    → extractPosition() — DB column fallback chain
+    → extractName() — plant reference lookup
+    → RuntimeMarker generation
+  → ThreeDScene
+    → normalizeType() — singular/plural mapping
+    → activeLayers filtering
+    → Rich marker components (BedMarker3D, PlantMarker3D, FarmBotMarker3D, GardenCharacter)
+```
+
+### ThreeD Marker Types
+
+| Type | 3D Component | Source Table | Visual Features |
+|------|-------------|-------------|-----------------|
+| **Plantings** | `PlantMarker3D` | `threed_plantings` | Growth stage shapes, species name |
+| **Beds** | `BedMarker3D` | `threed_beds` | Soil-type colored base, dimensional walls |
+| **Characters** | `GardenCharacter` | `threed_characters` | GLTF/FBX model loading, animation state machine, movement |
+| **FarmBots** | `FarmBotMarker3D` | `threed_farmbots` | Status-colored body, wheels, name label |
+
+### Overlay Architecture
+
+| Overlay | Source | When |
+|---------|--------|------|
+| Marker component tooltip | `BedMarker3D` / `PlantMarker3D` / `FarmBotMarker3D` | Hover only |
+| DetailsCard | `map/page.tsx` (or `garden/page.tsx`) | Click only — single unified card with rich type-specific metadata |
+
+---
+
+## 📡 Data Sources
+
+| Source | Type | Method | Status |
+|--------|------|--------|--------|
+| CHP CAD (Live) | Live dispatcher feed | HTML scraping (Cheerio) | ✅ Working |
+| CHP CKAN | Historical collisions | Official JSON API (CKAN) | ✅ Working |
+| Caltrans CWWP2 | Real-time lane closures | Official JSON API | ✅ Working |
+| Bay Area 511 | Real-time incidents | Official JSON API (511.org) | ✅ Working |
+| Caltrans CCTV | Traffic cameras | Official JSON API | ✅ Working |
+| CalFire | Wildfire incidents | Official JSON API | ✅ Working |
+| OpenWeatherMap | Weather data | Official API | ✅ Working |
+| FarmBot API | Device integration | Official API | ✅ Working |
+
+---
+
+## 📋 Complete Version History
+
+| Version | Date | Key Changes |
+|---------|------|-------------|
+| v0.1.0 | 2026-06-02 | Initial project setup |
+| v0.5.5 | 2026-07-18 | Hybrid Architecture with Free-Standing Data |
+| v0.6.0 | 2026-07-20 | Project Module Assets — polymorphic junction table |
+| v0.10.0 | 2026-07-28 | Traffic Module Complete — 8 sub-modules |
+| v0.11.0 | 2026-07-29 | Projects Module + Asset Manager Complete |
+| v0.12.0 | 2026-07-31 | Unified Map Module — 2D + 3D combined view |
+| v0.12.1 | 2026-08-01 | Runtime Marker Generation |
+| v0.13.0-beta | 2026-08-03 | Smart Dashboard — Rich popups, filters, stats |
+| v0.14.0 | 2026-08-04 | Surface Bridge — Dashboard Homepage |
+| v0.15.0 | 2026-08-04 | Character Animations — State Machine, Follow, Sound |
+| v0.15.2-alpha | 2026-08-05 | Traffic Module + 2D Map Improvements |
+| v0.15.3 | 2026-08-06 | 100% Width + Rich Markers + UX + Page Unification |
+| v0.15.4 | 2026-08-06 | Simplified Static 3D Markers — removed idle animations |
+| v0.15.5 | 2026-08-06 | Unified Marker Overlays with Rich Data |
+| v0.15.6 | 2026-08-06 | App Layout CSS tightened to maximum density |
+| v0.15.7 | 2026-08-06 | Cleaned map page — removed stat cards, viewport-filling height, icon-only header |
+| v0.15.8 | 2026-08-06 | ThreeDScene Polish — Dynamic environments, grass texture, header cleanup |
+| v0.15.9 | 2026-08-06 | Minor UX improvements |
+| v0.15.10 | 2026-08-07 | Shadow-friendly 3D Markers — castShadow on all FarmBot/Character meshes |
+| v0.15.11 | 2026-08-07 | Shadow Camera Fix — ShadowLight component with far=5000, all markers cast shadows |
+| **v0.15.12** | **2026-08-07** | **Clean UX — Removed floating name labels, right-click zoom, group-level pointer events** |
+| **v0.16.0-alpha** | **2026-08-07** | **React Three Physics — @react-three/rapier + ecctrl integration** |
+| **v0.16.0-beta** | **2026-08-08** | **Keyboard Controls — WASD movement, Take/Release Control in DetailsCard** |
+| **v0.16.0-centaur** | **2026-08-08** | **Polished Details Card — KvRow grid, 3D coords, improved buttons** |
+| **v0.16.0-delta** | **2026-08-08** | **Camera Follow + Marker Sync — cursor tracking, position sync on click** |
+| **v0.16.2-beta** | **2026-08-12** | **Improved Camera Modes, Marker Selection, and Character Animations** |
+| **v0.16.2-centaur** | **2026-08-12** | **Minor — Character Marker Hover Titles styled to match other 3D markers** |
+| **v0.16.3-alpha** | **2026-08-12** | **Character Interaction Improvements — `isMovable`-driven Ecctrl engagement + auto-disengage on different selection** |
+| **v0.16.3-beta** | **2026-08-12** | **Character Model Files — join `threed_models` to characters and load GLB/FBX/OBJ as the 3D Character Marker** |
+| **v0.16.3-centaur** | **2026-08-12** | **README Updates — user-friendly app intro focused on React Three Fiber, Drizzle ORM, and Neon Postgres** |
+| **v0.16.4-alpha** | **2026-08-12** | **Character Models, Model Files, Model Texture Files + Supportive Media Files — Vercel Blob uploads** |
+| **v0.16.4-beta** | **2026-08-12** | **Admin Surface: 3D Models CRUD Forms — full model/files/textures/media management UX** |
+| **v0.16.4-centaur** | **2026-08-13** | **Minor — Character grounding (Y=0) + gravity-driven spawn lift** |
+| **v0.16.5** | **2026-08-13** | **Character Animations + Actions — animation state machine + shared clip matcher** |
+
+---
+
+## 📚 Historical Detail — v0.16.0-centaur "Polished Details Card"
+
+### What's New in v0.16.0
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **@react-three/rapier Physics** | ✅ Complete | `<Physics gravity={[0, -9.81, 0]}>` with fixed ground `<RigidBody>`, gravity, collision |
+| **ecctrl Character Controller** | ✅ Complete | Capsule collider character with WASD/Space/Shift keyboard input via `ref.setMovement()` |
+| **Take Control / Release Control** | ✅ Complete | Two-tier interaction: click char → DetailsCard → 🎮 Take Control button → WASD active → ⏸️ Release Control |
+| **KvRow Metadata Grid** | ✅ Complete | All marker metadata rendered as labeled key-value pairs (Position, Type, Speed, Movement, etc.) |
+| **3D Position Coordinates** | ✅ Complete | X/Y/Z position shown for all marker types in DetailsCard |
+| **Blue Selection Ring** | ✅ Complete | Controlled ecctrl character shows blue ring on ground |
+| **Polished DetailsCard UX** | ✅ Complete | Consistent key-value layout, section dividers, improved button styling, "🔧 Edit in Admin" link |
+
+### Files Created in v0.16.0
+
+| File | Purpose |
+|------|---------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | ecctrl-powered character with WASD keyboard controls, physics, GLTF/FBX model loading, click-to-select, blue selection ring |
+
+### Files Modified in v0.16.0
+
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | Added `<Physics>` + ground `<RigidBody>`, `controlledCharacterId` prop threading |
+| `src/components/map/UnifiedMapView.tsx` | Added `controlledCharacterId` prop |
+| `src/app/dashboard/map/page.tsx` | Added `controlledCharacterId` state, `KvRow` component, redesigned `DetailsCard` with metadata grid + character controls + admin edit link |
+| `package.json` | Added `@react-three/rapier` (v2.2.0), `ecctrl` (v2.0.0) |
+
+### How to Use Ecctrl Characters
+
+Set `movementType: 'ecctrl'` on a character record in the database. Click the character in the 3D scene → DetailsCard appears with 🎮 Take Control button → click to activate WASD movement → click ground or ✕ to deselect.
+
+### Architecture
+
+```
+map/page.tsx
+  ├── controlledCharacterId state
+  ├── DetailsCard (static overlay with KvRow grid + Take/Release Control)
+  └── UnifiedMapView → ThreeDScene → EcctrlCharacter(isControlled)
+        └── Physics > RigidBody (ground) > Ecctrl (capsule collider + WASD)
+```
+
+### v0.16.0-centaur Changes
+
+- Introduced `KvRow` component for consistent key-value metadata display
+- Added 3D position coordinates (`X:`, `Y:`, `Z:`) for all marker types
+- Redesigned character controls with clear section dividers and button styling
+- Changed admin link from "📝 View Details" to "🔧 Edit in Admin" with subdued styling
+
+---
+
+## 🚦 Production Status
+
+| Component | Status |
+|-----------|--------|
+| ThreeD Module | ✅ Working |
+| Traffic Module | ✅ Working |
+| Music Module | ✅ Working |
+| All Pollers | ✅ Working |
+| 3D Garden | ✅ Rendering |
+| Runtime Markers | ✅ Working |
+| View Presets | ✅ Working |
+| Unified Details Card | ✅ Working |
+| Camera Focus | ✅ Working |
+| Combined View | ✅ Working |
+| Character Animations | ✅ Working |
+| Keyboard Shortcuts | ✅ Working |
+| Database | ✅ Connected |
+
+---
+
+## v0.16.0-alpha "React Three Physics" — Integration Complete
+
+### Packages Installed
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `@react-three/rapier` | 2.2.0 | Physics engine — `<Physics>`, `<RigidBody>`, colliders, gravity |
+| `ecctrl` | 2.0.0 | Character controller — `<Ecctrl>`, `<EcctrlAnimationStateController>`, physics-based movement |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | Added `Physics`/`RigidBody` imports; wrapped scene in `<Physics gravity={[0, -9.81, 0]}>` with ground as `type="fixed"` `RigidBody`; added `EcctrlCharacter` import and routing for characters with `movementType: 'ecctrl'` |
+| `package.json` | Added `@react-three/rapier` (v2.2.0) and `ecctrl` (v2.0.0) |
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` (343 lines) | Physics-based character controller wrapping `<Ecctrl>`. Features: capsule collider, `EcctrlAnimationStateController` with custom resolver mapping WALK/RUN/IDLE/JUMP to model animation clips, AI wandering via `setMovement` joystick API, GLTF/FBX model loading with cache, interaction (click, emotes, speech bubbles, sound), fallback shape for characters without models |
+
+### Architecture Overview
+
+```
+<Canvas>
+  <Environment />
+  <lights />
+  <OrbitControls />
+  
+  <Physics gravity={[0, -9.81, 0]}>          ← @react-three/rapier
+    <RigidBody type="fixed" colliders="cuboid">  ← Ground
+      <InteractiveGround />
+    </RigidBody>
+    
+    <ThreeDMarkerComponent>                  ← Per-marker routing
+      if (movementType === 'ecctrl') →
+        <EcctrlCharacter />                  ← ecctrl physics character
+      else →
+        <GardenCharacter />                  ← legacy AI-driven character
+    </ThreeDMarkerComponent>
+  </Physics>
+</Canvas>
+```
+
+### How to Use
+
+Set `movementType: 'ecctrl'` on a character record in the database to route it through the physics-based `EcctrlCharacter`. Characters with other movement types (`wander`, `patrol`, `follow`, `teleport`, `stationary`) continue using the existing `GardenCharacter`.
+
+---
+
+## v0.16.0-beta "React Three Physics" — Delivered
+
+### Packages Introduced
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `@react-three/rapier` | 2.2.0 | Physics engine — gravity, colliders, rigid bodies |
+| `ecctrl` | 2.0.0 | Character controller — capsule collider, WASD movement, animation states |
+
+### Files Created
+- `src/components/threed/shared/EcctrlCharacter.tsx` (~270 lines) — ecctrl-powered character with keyboard controls, physics, model loading
+
+### Files Modified
+- `src/components/map/ThreeDScene.tsx` — `<Physics>` + `<RigidBody>` ground, `controlledCharacterId` threading
+- `src/components/map/UnifiedMapView.tsx` — `controlledCharacterId` prop
+- `src/app/dashboard/map/page.tsx` — `controlledCharacterId` state, enhanced `DetailsCard` with Take/Release Control
+
+### Architecture
+```
+<Canvas>
+  <Physics gravity={[0, -9.81, 0]}>
+    <RigidBody type="fixed" colliders="cuboid">  ← Ground
+    <EcctrlCharacter isControlled={idMatches} />  ← Player-controlled
+  </Physics>
+</Canvas>
+```
+
+### UX Flow
+1. Click ecctrl character → `DetailsCard` appears with **🎮 Take Control**
+2. Click Take Control → WASD/Space/Shift active → blue ring on character → card shows controlling status
+3. Release Control / ✕ → keyboard input stops → character stationary
+
+---
+## v0.16.0-delta "Camera Follow + Marker Sync"
+
+### Features
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Camera Follow** | ✅ Complete | `CameraFollow` component lerps `OrbitControls.target` to controlled character via shared `MutableRefObject` — zero React state overhead |
+| **Click Position Sync** | ✅ Complete | Clicking a moved ecctrl character syncs `selectedMarker.position` to current physics position before focus/zoom |
+| **Movement Pattern** | ✅ Complete | `movementPattern: 'follow'` enables auto camera tracking; `stationary` keeps free-roaming camera |
+
+### Architecture
+```
+EcctrlCharacter (useFrame)
+  └── cameraFollowRef.current = currPos
+        ↓
+CameraFollow (useFrame, single lerp)
+  └── controls.target.lerp(characterPos, 0.08)
+```
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Added `cameraFollowRef` prop, `movementPattern` field, position sync on click |
+| `src/components/map/ThreeDScene.tsx` | Added `CameraFollow` + `performLerp`, threaded `cameraFollowRef` |
+| `src/app/dashboard/map/page.tsx` | `handleControlChange` syncs `selectedMarker.position` on control state change |
+
+---
+
+## v0.16.1-alpha "ThreeD Models" — Complete
+
+### Architecture
+```
+API (/api/map/threed)
+  └── threed_models table fetched via project_assets junction
+      ↓
+UnifiedMapView — models added to typesToProcess, MARKER_CONFIG
+      ↓
+ThreeDMarkerComponent — 'model'/'models' type → ModelMarker3D
+      ↓
+ModelMarker3D — GLTF/FBX loading, shadow, animation playback
+```
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `src/components/threed/markers/ModelMarker3D.tsx` | Renders `threed_models` entries in 3D scene — GLTF/FBX loading from `filePath`, configurable scale/rotation/offset, auto-plays `defaultAnimation`, shadow casting, shared model cache, fallback box shape |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | Added `ModelMarker3D` import + `model`/`models` type routing in `ThreeDMarkerComponent` |
+| `src/components/map/UnifiedMapView.tsx` | Added `model`/`models` to `MARKER_CONFIG` and `typesToProcess` array |
+| `src/app/api/map/threed/route.ts` | Added `threedModels` import + `threed_models` to typeMap so models are fetched from DB |
+| `src/app/dashboard/map/page.tsx` | Added `models` to `visibleAssetTypes`, filters, `threedRaw`, active layers |
+
+### How to Use
+1. Upload a GLB/GLTF/FBX model via `/admin/threed/models`
+2. Assign it to a project via `project_assets` junction
+3. The model renders in the 3D scene at its assigned position with shadows and animation
+
+### Model Display
+- Standalone models use their `positionX`/`positionY`/`positionZ` from DB
+- Models attached to characters (via `character.modelId`) render through `GardenCharacter`/`EcctrlCharacter`
+- Models without position columns default to origin (0, 1.5, 0)
+
+---
+
+## v0.16.1-beta "Character Camera Views" — Implemented
+
+### Architecture
+
+**`CameraController`** replaces the old `CameraFollow` component with a mode-switching architecture that reads the controlled character's `movementPattern` field from the marker data.
+
+### Camera View Modes
+
+| `movementPattern` | Camera Behavior |
+|---|---|
+| `follow` | Smoothly lerps camera target toward character (previous behavior) |
+| `topdown` | Camera positioned 15 units directly above character, looking straight down |
+| `firstperson` | Camera at character position +0.5 offset, 1.5 units above ground, looking ahead |
+| `orbit` | Camera orbits around character at 8-unit radius, 5 units high, slow rotation |
+| `stationary` (default/null) | Camera stays put — free-roaming (no change) |
+
+### How It Works
+
+```
+Character Marker (movementPattern: 'topdown')
+  ↓
+EcctrlCharacter writes currPos each frame → cameraFollowRef
+  ↓
+CameraController reads movementPattern from visibleMarkers
+  ↓
+switch(mode): adjusts controls.target + controls.object.position
+```
+
+### Files Changed
+- `src/components/map/ThreeDScene.tsx`:
+  - Replaced `CameraFollow` component with `CameraController` (supports 5 view modes)
+  - `CameraController` extracts `movementPattern` from the controlled character's marker data
+  - Defaults to `'stationary'` if no pattern set
+
+---
+
+## v0.16.1-centaur "Layout + Buttons" — Implemented
+
+**Dashboard Layout**, **Dashboard Page**, **Admin Layout** tightened up and buttons sized.
+
+---
+
+## v0.16.2-alpha "Physics Boundaries + Camera Modes"
+
+### Features
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Physics Boundaries** | ✅ Complete | All non-ecctrl markers (beds, plantings, farmbots, non-ecctrl characters, models) wrapped in Rapier `RigidBody type="fixed"` with appropriate colliders — ecctrl character physically collides with all marker types |
+| **Camera Mode Selector** | ✅ Complete | Dropdown in DetailsCard controlling section to select camera behavior: Follow, Top-Down, First-Person, Stationary |
+| **Follow Mode** | ✅ Complete | Camera tracks character at constant 8-unit radius, target follows at ground level — character stays same visual size |
+| **Top-Down Mode** | ✅ Complete | Camera target tracks character, `maxPolarAngle = 0.3` locks camera near-vertical |
+| **First-Person Mode** | ✅ Complete | Smooth behind-the-character pivot at 1.2 height, 4-unit behind — shows character, beds, plants, and farmbots |
+| **Stationary Mode** | ✅ Complete | No camera tracking, full free-roam OrbitControls with restored defaults |
+
+### Architecture
+```
+CameraController (ThreeDScene.tsx)
+  ├── cameraMode state (follow/topdown/firstperson/stationary)
+  │     └── user-selected via DetailsCard dropdown
+  ├── prevPos ref → velocity-based facingDir for first-person pivot
+  ├── OrbitControls constraints (maxPolarAngle for topdown, enableDamping for first-person)
+  └── Constant-radius camera for follow mode (8-unit offset)
+
+ThreeDMarkerComponent
+  └── RigidBody type="fixed" wrappers for all non-ecctrl marker types
+        ├── Beds: colliders="cuboid"
+        ├── Plantings: colliders="cuboid"
+        ├── Farmbots: colliders="cuboid"
+        ├── Non-ecctrl Characters: colliders="cuboid"
+        └── Models: colliders="ball"
+```
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | CameraController with 4 modes, velocity-based facing direction, constant-radius follow, top-down angle lock, first-person behind-pivot, RigidBody colliders for all marker types |
+| `src/app/dashboard/map/page.tsx` | Added `cameraMode` state, camera dropdown in DetailsCard controlling section, removed Orbit option |
+| `src/components/map/UnifiedMapView.tsx` | Added `cameraMode` prop threading |
+
+### How to Use
+Set `movementType: 'ecctrl'` on a character record in the database. Click character → Take Control → Camera dropdown appears → select Follow/Top-Down/First-Person/Stationary. Character physically collides with all marker types.
+
+---
+
+## v0.16.2-beta "Improved Camera Modes, Marker Selection, and Character Animations"
+
+### 1. Camera Modes
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Orbit Mode Re-added** | ✅ Complete | `orbit` re-added to `CameraViewMode` union, `validModes`, and the DetailsCard dropdown. Orbits around the character at 8-unit radius, 5 units high, slow rotation (0.3 rad/s) |
+| **True Top-Down Mode** | ✅ Complete | `topdown` now positions the camera 15 units directly overhead (`charPos + (0, 15, 0)`), with `maxPolarAngle = 0.1` locking it near-vertical |
+
+### 2. Marker Selection
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Selection Rings (all types)** | ✅ Complete | Blue ground ring (`#3b82f6`) rendered under selected beds, plantings, farmbots, non-ecctrl characters, and fallback markers |
+| **Models Selectable** | ✅ Complete | `model`/`models` markers now wrapped in a clickable `<group>`, surfacing the DetailsCard and a selection ring on click |
+| **Live Position Tracking** | ✅ Complete | `EcctrlCharacter` writes its physics position to a shared `livePositionsRef` (keyed by marker id) every frame while controlled, so re-selecting a moved character focuses its current location instead of its DB origin |
+| **Opt-in Zoom + Center** | ✅ Complete | Clicking/engaging a marker no longer auto-zooms; a 🎯 Zoom + Center button in the DetailsCard triggers the focus animation on demand |
+| **Fading Selection Rings** | ✅ Complete | The blue selection ring holds at full opacity for 5s, then fades out over ~4s on all marker types (beds, plantings, farmbots, models, non-ecctrl characters, fallback, and ecctrl characters) via a shared `FadingRing` component. Controlled characters no longer keep a persistent ring — it fades away too |
+
+### 3. Character Animations
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **AnimationMixer Playback** | ✅ Complete | `EcctrlCharacter` now builds a `THREE.AnimationMixer` from the loaded model and plays clips via crossfade instead of only resolving state names |
+| **State → Clip Mapping** | ✅ Complete | `STATE_CLIPS` maps each `EcctrlAnimationState` to ordered clip-name candidates (case-insensitive, with fallbacks) |
+| **Idle on Load** | ✅ Complete | Default/idle animation begins as soon as the model loads |
+| **Mixer Advance** | ✅ Complete | `mixer.update(delta)` runs each frame, even when not controlled |
+
+### Architecture
+
+```
+EcctrlCharacter
+  ├── useCharacterModel → mixerRef + actionsRef (clip-name lookup)
+  ├── EcctrlAnimationStateController (resolver maps physics → IDLE/WALK/RUN/JUMP_*)
+  │     └── onChange → playAnimation(state)
+  │           └── STATE_CLIPS lookup → crossFadeTo(action, 0.2s)
+  └── useFrame → mixer.update(delta)
+```
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Added `AnimationMixer` playback, `STATE_CLIPS` mapping, crossfade, mixer update loop, idle-on-load; writes live physics position to shared `livePositionsRef`; added fading selection ring (`isSelected` + `FadingRing`) |
+| `src/components/map/ThreeDScene.tsx` | Re-added `orbit` mode; true `topdown` overhead; selection rings for all marker types; models clickable; `livePositionsRef` store used to focus moved characters correctly; removed auto-zoom on select; `focusRequest` prop for manual zoom |
+| `src/components/threed/shared/GardenCharacter.tsx` | Added `positionedByParent` prop so non-ecctrl characters wrapped in a `RigidBody` are rendered in local space (prevents position being applied twice); world-space follow registry |
+| `src/components/threed/shared/FadingRing.tsx` | (new) Shared selection ring that holds 5s, fades to invisible over ~4s, and resets on deselect/reselect |
+| `src/components/map/UnifiedMapView.tsx` | Threaded `focusRequest` prop |
+| `src/app/dashboard/map/page.tsx` | Added Orbit option to camera dropdown; generic `normalizePositions`; 🎯 Zoom + Center button in DetailsCard wired to `focusRequest` |
+| `CONTEXT.md` | Documented v0.16.2-beta |
+| `package.json` | Bumped version to `0.16.2-beta` |
+
+---
+
+## ✅ v0.16.2-beta — Released to Production (August 12, 2026)
+
+**Release note:** v0.16.2-beta "Improved Camera Modes, Marker Selection, and Character Animations" is shipped to production. All features in the section above are live and verified:
+
+- **Camera Modes**: re-added Orbit, true Top-Down overhead.
+- **Marker Selection**: selection rings on all marker types, selectable models, live position tracking, opt-in Zoom + Center, fading selection rings.
+- **Character Animations**: AnimationMixer playback with state→clip mapping, idle-on-load, and mixer advance.
+
+`package.json` version is `0.16.2-beta`.
+
+---
+
+## ✅ v0.16.2-centaur — Released (minor, August 12, 2026)
+
+### Minor Changes
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Character Marker Hover Title** | ✅ Complete | `GardenCharacter` and `EcctrlCharacter` hover tooltips now match the other 3D marker title style — consistent sizing (`text-xs`, `px-2 py-1`, `rounded`), screen-facing `Html` with `distanceFactor={10}` (not marker-attached), and positioned closer to the marker at `[0, 1.2, 0]`. Displays the character name (title) instead of "Click to interact…" |
+
+---
+
+## ✅ v0.16.3-alpha "Character Interaction Improvements + Character Model Files" — Released to Production
+
+### Goals
+- Treat all ThreeD Characters as animated Ecctrl Characters by default, engaging physics/collision interaction for every character that is marked movable.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **`isMovable` as Ecctrl trigger** | ✅ Complete | Replaced the `movementType === 'ecctrl'` trigger with the `isMovable === true` boolean. Movable characters route to the physics-based `EcctrlCharacter`; non-movable characters continue using `GardenCharacter`. |
+| **Disengage on different selection** | ✅ Complete | Selecting/engaging a different marker, incident, or non-controlled character clears the active `controlledCharacterId`, so the previously moved character disengages and only the newly engaged entity is focused. |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/map/ThreeDScene.tsx` | Character routing now keys off `marker.data?.isMovable === true` instead of `movementType === 'ecctrl'` |
+| `src/app/dashboard/map/page.tsx` | DetailsCard character controls now show when `d.isMovable === true`; added effect to disengage the controlled character when a different marker/incident is selected |
+| `package.json` | Bumped version to `0.16.3-alpha` |
+
+---
+
+## ✅ v0.16.3-beta "Character Model Files (GLB/FBX/OBJ)" — Released to Production
+
+### Goal
+When a Character's `model_id` points to a `threed_models` record, load that model file (GLB/GLTF/FBX/OBJ, hosted on S3 or Vercel Blob) as the actual 3D Character Marker — replacing the rudimentary `<group>`/`<mesh>`/`<cylinder>` fallback shape.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Character → model join** | ✅ Complete | `/api/map/threed` now attaches the referenced `threed_models` record to each character via `character.model`, so the 3D scene has the model `filePath`/`modelType`/`scale` it needs |
+| **GLB/GLTF loading** | ✅ Complete | `GardenCharacter` and `EcctrlCharacter` load `.glb`/`.gltf` via `GLTFLoader` (fallback shape only when the model is missing/errored) |
+| **FBX loading** | ✅ Complete | `.fbx` models load via `FBXLoader` |
+| **OBJ loading** | ✅ Complete (new) | `.obj` models load via the new `OBJLoader` path in `GardenCharacter`, `EcctrlCharacter`, and `ModelMarker3D` |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/app/api/map/threed/route.ts` | Attaches each character's `threed_models` row as `character.model` when `modelId` is set |
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Added `OBJLoader`; routes `fbx`/`obj`/`glb` to the correct loader |
+| `src/components/threed/shared/GardenCharacter.tsx` | Added `OBJLoader`; routes `fbx`/`obj`/`glb` to the correct loader |
+| `src/components/threed/markers/ModelMarker3D.tsx` | Added `OBJLoader` support for standalone models |
+| `package.json` | Bumped version to `0.16.3-beta` |
+
+---
+
+## ✅ v0.16.3-centaur "README Updates" — Released to Production
+
+### Changes
+| Change | Status | Description |
+|--------|--------|-------------|
+| **New README.md** | ✅ Complete | Replaced the generic Neon marketplace template with a user-friendly app introduction — a Dual-Surface Platform overview, a re-ordered "Core technologies" table with a brief rationale per technology, getting started, database/architecture notes, ThreeD characters, structure, and commands. |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `README.md` | Rewrote for project-specific, user-friendly documentation |
+| `package.json` | Bumped version to `0.16.3-centaur` |
+
+---
+
+## ✅ v0.16.4-alpha "Character Models, Model Files, Model Texture Files + Supportive Media Files" — Released to Production
+
+### Focus
+- **Character models** — the GLB/GLTF/FBX/OBJ models rendered as characters.
+- **Model files** — the primary model files (and associated binary buffers).
+- **Model texture files** — baseColor/normal/roughness/metallic/emissive/occlusion maps.
+- **Supportive media files** — thumbnails, previews, and auxiliary assets.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Reusable model upload helper** | ✅ Complete | `src/lib/utils/modelUpload.ts` with `uploadModelFile` / `uploadModelTexture` / `uploadModelMedia` built on the same `@vercel/blob` `put()` pattern used for Music media |
+| **Primary model file upload endpoint** | ✅ Complete | `POST /api/threed/models/upload` — uploads a GLB/GLTF/FBX/OBJ/USDZ file and returns its public URL + inferred `modelType`/`fileSize` |
+| **Per-model files endpoint (fixed + extended)** | ✅ Complete | `POST /api/threed/models/files` now reads `modelId` from multipart form data (was broken: expected an `[id]` segment), and auto-classifies model/texture/binary/media by extension + persists to `threed_model_files` and updates `mainModelFileId`/`textureCount`/`hasExternalFiles` |
+| **Model file delete route signature fixed** | ✅ Complete | `DELETE /api/threed/models/files/[fileId]` no longer expects a non-existent `[id]` param; derives the model id from the file record (with null guard) |
+| **Admin model upload UI** | ✅ Complete | `ThreeDModelsCRUD` gains "Upload Model File" (create dialog) and "Upload Model Files / Textures" (files dialog) wired to the new endpoints |
+
+### Reuse: Vercel Blob Storage upload (from existing Music/ThreeD code)
+The app already has a working Vercel Blob upload pattern we will reuse for model files, instead of building a new upload path:
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `@vercel/blob` `put()` / `del()` | `src/lib/utils/upload.ts`, `src/app/api/threed/models/files/route.ts`, `src/app/api/threed/models/files/[fileId]/route.ts` | Upload/delete files to Vercel Blob |
+| `uploadImage()` helper | `src/lib/utils/upload.ts` | Music media upload via `put(filename, file, { access: 'public', addRandomSuffix: false })` |
+| Model file upload route | `src/app/api/threed/models/files/route.ts` | Already uploads model textures (`models/{id}/textures/...`) and binaries (`models/{id}/bin/...`) — the baseline to extend for the full model/texture/media workflow |
+| Env credentials | `.env.local` (`BLOB_STORE_ID`, `BLOB_READ_WRITE_TOKEN`) | Vercel Blob access keys (already configured) |
+
+### Key reference flow (from Music Tracks → Blob)
+1. Client reads a local `File`.
+2. `put(path, file, { access: 'public' })` uploads it to Vercel Blob and returns `blob.url`.
+3. The returned `url` is persisted to the DB (`filePath`).
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/lib/utils/modelUpload.ts` | (new) Reusable Vercel Blob model/texture/media upload helpers |
+| `src/app/api/threed/models/upload/route.ts` | (new) Standalone primary model file upload endpoint |
+| `src/app/api/threed/models/files/route.ts` | Fixed `modelId` read from form data; extended to auto-classify model/texture/binary/media |
+| `src/app/api/threed/models/files/[fileId]/route.ts` | Fixed DELETE signature + null-guard on derived `modelId` |
+| `src/components/admin/threed/models/ThreeDModelsCRUD.tsx` | Added upload handlers + file inputs for primary model & files/textures |
+| `package.json` | Bumped version to `0.16.4-alpha` |
+
+---
+
+## ✅ v0.16.4-beta "Admin Surface: 3D Models CRUD Forms" — Released to Production
+
+### Focus
+- Improve the Admin 3D Models **Add/Edit dialog forms** for full UX around model files, texture files, and supportive media files — with pre-queried DB relationships and React dropdowns.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Add/Edit forms restructured** | ✅ Complete | `ThreeDModelsCRUD` forms reorganized into labeled sections (Basic Info, Model File, Related Files/Textures, Transform, LOD & Animation, Status & Flags) |
+| **Primary model file dropdown** | ✅ Complete | `mainModelFileId` is now a React `<Select>` populated from the model's associated `model`-type `threed_model_files` (pre-queried via `/api/threed/models?id=`) |
+| **File category upload + management** | ✅ Complete | Files dialog gains a category `<Select>` (Auto-detect / Model / Texture / Binary / Supportive Media) and grouped file lists with inline delete |
+| **Derived texture count** | ✅ Complete | Textures count is derived from associated files (read-only badge) instead of a free-text field |
+| **Supportive media → `other`** | ✅ Complete | Backend auto-classifies unrecognized/auxiliary uploads as `fileType: 'other'` (aligning with `threed_model_files.fileType` values) |
+| **All CRUD forms surface model files** | ✅ Complete | `ModelFileList` (shared component) now renders the selected model's files/textures/media inside every model-referencing CRUD form: Models (main file select + files dialog), Characters (create/edit), Plants (create/edit), and Plantings (create/edit) |
+| **Dedicated Model Files CRUD page** | ✅ Complete | New admin page (`/admin/threed/model-files`) with `ThreeDModelFilesCRUD` — full-featured UX: model selector, file-category auto-detect, drag-and-drop + click-to-upload with per-file progress, list/grid views, search + sort, grouped by type, texture thumbnails, copy URL, open-in-new-tab, set-as-primary model file, delete with confirmation, plus summary stats and skeleton/empty/error states. Linked from the 3D Models page |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/admin/threed/models/ThreeDModelsCRUD.tsx` | Rebuilt forms into sections; `mainModelFileId` dropdown; category upload; grouped file management; derived texture count |
+| `src/app/api/threed/models/files/route.ts` | Supportive/other media now persists `fileType: 'other'` (was `'media'`) |
+| `src/components/admin/threed/models/ModelFileList.tsx` | (new) Shared component rendering a model's grouped files (model / texture / binary / other) with icons, texture badge, and size |
+| `src/components/admin/threed/characters/ThreeDCharactersCRUD.tsx` | Renders `ModelFileList` for the selected model (create + edit) |
+| `src/components/admin/threed/plants/ThreeDPlantsCRUD.tsx` | Renders `ModelFileList` for the selected model (create + edit) |
+| `src/components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx` | Renders `ModelFileList` for the selected custom model (create + edit) |
+| `src/components/admin/threed/models/ThreeDModelFilesCRUD.tsx` | (new) Dedicated Model Files CRUD — model selector, category upload, search/filter, grouped list, inline delete |
+| `src/app/admin/threed/model-files/page.tsx` | (new) Admin page for Model Files (reads optional `?modelId=` to preselect) |
+| `src/app/admin/threed/models/page.tsx` | Added "Model Files" link to the dedicated page |
+| `package.json` | Bumped version to `0.16.4-beta` |
+
+---
+
+## ✅ v0.16.4-centaur "Character Grounding + Gravity Spawn" — Released (minor, August 13, 2026)
+
+### Changes
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Ecctrl characters grounded** | ✅ Complete | `<Ecctrl>` models shifted down by `GROUND_OFFSET` (1.2 = capsuleHalfHeight + capsuleRadius + floatHeight), so a character at `positionY=0` stands on the ground instead of floating |
+| **Non-ecctrl characters grounded** | ✅ Complete | `GardenCharacter` shifts loaded models down by their bounding-box `min.y`, grounding all GLB/FBX/OBJ characters model-agnostically |
+| **Gravity-driven spawn lift** | ✅ Complete | Ecctrl characters spawn above their rest height (`+ SPAWN_LIFT = 0.75`) and settle onto the ground/colliders under gravity, avoiding first-frame interpenetration |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Grounded model via `GROUND_OFFSET`; spawn lift via `SPAWN_LIFT`; named capsule constants |
+| `src/components/threed/shared/GardenCharacter.tsx` | Grounded model via bounding-box `min.y` |
+| `package.json` | Bumped version to `0.16.4-centaur` |
+
+---
+
+## 🚧 Next Release — v0.16.5 "Character Animations + Actions"
+
+### Focus
+- **Two character components kept simple** — `EcctrlCharacter` (physics/WASD) and `GardenCharacter` (autonomous AI) remain separate files; the `isMovable` boolean chooses between them.
+- **Improved animation state machine** — canonical idle/walk/run/jump/land transitions with consistent crossfade.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Character routing kept simple** | ✅ Complete | `ThreeDScene` selects `EcctrlCharacter` when `isMovable === true` and `GardenCharacter` otherwise; `CharacterLayer` uses `GardenCharacter` directly |
+| **Ecctrl animation resolver** | ✅ Complete | `createAnimationResolver` now uses ecctrl's canonical `wasOnGround` sequence (JUMP_START → JUMP_IDLE/JUMP_FALL → JUMP_LAND → IDLE/WALK/RUN) |
+| **Consistent crossfade** | ✅ Complete | `CROSSFADE_DURATION = 0.25` replaces the magic `0.2`/`0.3` in `EcctrlCharacter` and `GardenCharacter` |
+| **Garden (autonomous) clip matching** | ✅ Complete | Case-insensitive `findClip()` helper for model clip lookup (handles varying capitalization) in `GardenCharacter` (default, movement, and interaction animations) |
+| **Shared fuzzy clip matcher** | ✅ Complete | `src/lib/utils/animation.ts` `matchClipName()` — matches logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback) |
+| **Primary animation mapping entry point (v0.16.5b)** | ✅ Complete | `animation.ts` is the single entry/return point for ThreeD Animation Mapping. `buildAnimationMap(clipNames)` takes the file's clip names (entry data) and exposes `resolve(action) → clipName` (exit data) for every consumer. |
+| **Canonical Action Catalog (v0.16.5b)** | ✅ Complete | `ACTION_CANDIDATES: Record<AnimationAction, string[]>` — the approved catalog covering the DB enum (`idle, walk, run, fly, dance, sway, float, spin, bounce`), ecctrl jump states (`jump_start, jump_idle, jump_fall, jump_land`), and interaction (`wave`); each action maps to ordered clip-name matchers (name-match first, positional fallback for generic `Anim_N`/`Take_N`/`Action.N`). `take 001`/`take_001` are `idle` candidates so single-clip Synty exports at least play. |
+| **Centralized action fallback chain (v0.16.5b)** | ✅ Complete | `ACTION_FALLBACK` — when an action's exact clip is absent, `resolve` walks a sensible fallback (`run→walk→idle`, `jump_*→…→idle`, all → `idle`). Single-clip models now always return a real clip instead of `null`, so characters keep animating while their physics body moves. |
+| **Per-model animation overrides (v0.16.5b)** | ✅ Complete | `buildAnimationMap(clipNames, overrides?)` accepts `overrides` (`action→clipName`), which win over name/positional matching. Both characters pass `character.model.metadata.animationMap`. This makes the mapping user-editable (since clip variable names in GLBs are unknowable). |
+| **Model Animations admin CRUD page (v0.16.5b)** | ✅ Complete | New `/admin/threed/model-animations` page (`ThreeDModelAnimations`) — selects a model, discovers its embedded animation clips client-side via GLTF/FBX loaders, and maps each clip → an App Action (or Auto-detect/None), saving to `threed_models.metadata.animationMap`. Linked from the 3D Models page. |
+| **GLB audit (informational)** | ✅ Complete | Audited all 7 models: the two character GLBs contain only one clip (`"Take 001"`). This does not change the approved Option 1 mapping — it simply means characters will favor the first available clip until a model with more clips is provided. |
+
+### Notes
+- The animation mapping is intentionally simple (Option 1): a hardcoded default constant, internal only, no UI. Per-model config or an inspector UI can be added later if needed.
+- When a character model does contain multiple clips, `buildAnimationMap` will map them automatically (name-match first, positional fallback for generic `Anim_N`/`Take_N`/`Action.N` names).
+
+### Where Animations Come From (model-file guidance)
+- **GLB / GLTF** — animations are **embedded in the file**, exposed by the loaders as `object.animations` (`THREE.AnimationClip[]`). ✅ Recommended for characters.
+- **FBX** — animations + skeletons are embedded too (`object.animations`), but it's an older exchange format and heavier to load. Works, but prefer GLB/GLTF.
+- **OBJ** — **no animation support** (geometry + materials only). Do not use for characters that need actions/animations.
+- A character's `animations[]`, `defaultAnimation`, `defaultEmote`, and `soundEffect` DB columns are **logical references**, not the clips themselves. The actual clips live inside the model file; `matchClipName()` connects the logical references to the file's real clip names.
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Canonical `wasOnGround` resolver + `CROSSFADE_DURATION` constant |
+| `src/components/threed/shared/GardenCharacter.tsx` | Consistent crossfade + `findClip()` now resolves through `buildAnimationMap` |
+| `src/components/threed/shared/EcctrlCharacter.tsx` | `playAnimation` resolves states through `buildAnimationMap` (primary entry point) |
+| `src/lib/utils/animation.ts` | (new) `matchClipName` + `ACTION_CANDIDATES` (canonical catalog) + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` (primary mapping entry/return point) |
+| `src/components/admin/threed/models/ThreeDModelAnimations.tsx` | (new) Model Animations admin UI (map model clips → App Actions) |
+| `src/app/admin/threed/model-animations/page.tsx` | (new) Admin page for Model Animations |
+| `src/app/admin/threed/models/page.tsx` | Added "Model Animations" link |
+| `src/components/map/ThreeDScene.tsx` | Kept direct `EcctrlCharacter`/`GardenCharacter` routing (no wrapper) |
+| `src/components/threed/layers/CharacterLayer.tsx` | Kept direct `GardenCharacter` usage |
+
+
+---
+
+## ✅ v0.16.5-beta "v0.16.5b: Character Animations + Actions => Animation Action Mapping" — Released
+
+### Overview
+Character animations are driven by a **primary entry/return point** (`src/lib/utils/animation.ts`) and made **user-editable per model** because GLB/FBX clip names (e.g. `Anim_0`, `Anim_1`, `Take 001`, `mixamo.com|Armature|Walk`) cannot be known in advance.
+
+### Changes Implemented
+| Change | Status | Description |
+|--------|--------|-------------|
+| **Canonical Action Catalog** | ✅ Complete | `ANIMATION_ACTIONS` + `ACTION_CANDIDATES` — 14 logical actions (DB enum `idle/walk/run/fly/dance/sway/float/spin/bounce` + ecctrl `jump_*` states + interaction `wave`), each with ordered clip-name matchers |
+| **Primary mapping entry/return point** | ✅ Complete | `buildAnimationMap(clipNames, overrides?)` — strategy: per-model overrides → name-match → positional fallback (for generic `Anim_N`/`Take_N`/`Action.N`), then `resolve(action) → clipName` |
+| **Centralized fallback chain** | ✅ Complete | `ACTION_FALLBACK` ensures every action resolves to a real clip (`run→walk→idle`, `jump_*→…→idle`), so characters never freeze while moving |
+| **Per-model overrides in characters** | ✅ Complete | `EcctrlCharacter` + `GardenCharacter` pass `character.model.metadata.animationMap` into `buildAnimationMap` |
+| **Model Animations admin CRUD page** | ✅ Complete | `/admin/threed/model-animations` (`ThreeDModelAnimations`) — discovers embedded clips client-side (GLTF/FBX loaders), maps each clip → App Action, saves to `threed_models.metadata.animationMap`; linked from 3D Models page |
+
+### Files Modified
+| File | Change |
+|------|--------|
+| `src/lib/utils/animation.ts` | `matchClipName` + `ACTION_CANDIDATES` + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` |
+| `src/components/threed/shared/EcctrlCharacter.tsx` | Resolves states through `buildAnimationMap` + passes model overrides |
+| `src/components/threed/shared/GardenCharacter.tsx` | Resolves movement/interaction clips through `buildAnimationMap` + passes model overrides |
+| `src/components/admin/threed/models/ThreeDModelAnimations.tsx` | (new) Admin mapping UI |
+| `src/app/admin/threed/model-animations/page.tsx` | (new) Admin page |
+| `src/app/admin/threed/models/page.tsx` | Added "Model Animations" link |
+
+### User Flow
+1. Upload a character GLB (may contain many `Anim_N` clips).
+2. **Admin → 3D Models → Model Animations** → map clips to App Actions.
+3. Save → dashboard 3D map uses the saved mapping automatically — no code changes or guessing required.
+
+### Notes
+- GLB / GLTF embed animation clips (`object.animations`); FBX embeds them too. OBJ has **no** animation support.
+- DB columns `animations[]`, `defaultAnimation`, `defaultEmote`, `soundEffect` are logical references; the real clips live inside the model file and are connected via `buildAnimationMap`.
+
+---
+---
+
+## ✅ v0.16.6a — Character Animations + Actions / Animation Action Mapping
+
+### Stable result
+
+The app can use the original FBX character model with separate FBX animation files and expose those clips through semantic application actions. The character runtime no longer depends on converting the animation library into a single GLB as the primary workflow.
+
+Verified behavior includes:
+
+- `idle`, `walk`, and `run` locomotion.
+- Autonomous `GardenCharacter` wandering with walk animation.
+- `EcctrlCharacter` player control with task-action interruption and recovery.
+- Semantic one-shot actions including watering, planting, harvesting, animal-care, and interaction animations.
+- Repeated task actions.
+- Clean crossfade back to locomotion without the brief FBX bind/T-pose flash.
+- DetailsCard action buttons while retaining Take Control / Release Control.
+
+## ✅ v0.16.6b — World Actions v2
+
+### Stable result
+
+World Actions v2 adds a persistent planting target and proves one end-to-end semantic world action: **Water**.
+
+The action target persists while the user changes selection from the planting to the Farmer. Watering is persisted only after the watering animation completes. The server authenticates the request and validates ownership before writing watering history.
+
+### Intentional pause point
+
+The ThreeD animation architecture is considered a successful, stable milestone. Broader world-state mutations, harvest persistence, inventory, plant lifecycle, and task execution should be developed later as the API/schema design matures.
+
+Do not refactor the proven animation system merely to support unfinished persistence features.
