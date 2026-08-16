@@ -1096,6 +1096,27 @@ export function EcctrlCharacter({
       string | null
     >(null);
 
+  /**
+   * Semantic task animations temporarily own the mixer.
+   *
+   * Ecctrl still owns the physics body, but normal locomotion
+   * animation changes are ignored until the task completes.
+   */
+  const taskLockedRef =
+    useRef(false);
+
+  const activeTaskRef =
+    useRef<string | null>(null);
+
+  const lastLocomotionStateRef =
+    useRef<EcctrlAnimationState>('IDLE');
+
+  const finishedListenerRef =
+    useRef<((event: any) => void) | null>(null);
+
+  const taskCleanupTimerRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const keys =
     useWASD(
       isControlled
@@ -1109,8 +1130,16 @@ export function EcctrlCharacter({
     useCallback(
       (
         state:
-          EcctrlAnimationState
+          EcctrlAnimationState,
+        force = false
       ) => {
+        if (
+          taskLockedRef.current &&
+          !force
+        ) {
+          return;
+        }
+
         const mixer =
           mixerRef.current;
 
@@ -1240,6 +1269,18 @@ export function EcctrlCharacter({
         state:
           EcctrlAnimationState
       ) => {
+        /**
+         * Always remember Ecctrl's most recent locomotion state.
+         * While a semantic task is active we intentionally do not
+         * let that state replace the task animation.
+         */
+        lastLocomotionStateRef.current =
+          state;
+
+        if (taskLockedRef.current) {
+          return;
+        }
+
         playAnimation(
           state
         );
@@ -1261,6 +1302,276 @@ export function EcctrlCharacter({
   }, [
     model,
     playAnimation,
+  ]);
+
+  // ======================================================
+  // SEMANTIC TASK ACTIONS
+  // ======================================================
+
+  const playTaskAction =
+    useCallback(
+      (taskName: string) => {
+        const mixer =
+          mixerRef.current;
+
+        const actions =
+          actionsRef.current;
+
+        if (
+          !mixer ||
+          actions.size === 0 ||
+          taskLockedRef.current
+        ) {
+          return false;
+        }
+
+        /**
+         * External Farmer clips are normalized, so semantic task
+         * names such as "watering" and "pickFruit" can be
+         * matched directly and case-insensitively.
+         */
+        const taskAction =
+          actions.get(
+            taskName.toLowerCase()
+          );
+
+        if (!taskAction) {
+          console.warn(
+            `[EcctrlCharacter] Task animation "${taskName}" is not available for ${character.name}.`
+          );
+
+          return false;
+        }
+
+        if (taskCleanupTimerRef.current) {
+          clearTimeout(
+            taskCleanupTimerRef.current
+          );
+
+          taskCleanupTimerRef.current =
+            null;
+        }
+
+        if (finishedListenerRef.current) {
+          mixer.removeEventListener(
+            'finished',
+            finishedListenerRef.current as any
+          );
+
+          finishedListenerRef.current =
+            null;
+        }
+
+        taskLockedRef.current =
+          true;
+
+        activeTaskRef.current =
+          taskName;
+
+        taskAction.enabled =
+          true;
+
+        taskAction.setLoop(
+          THREE.LoopOnce,
+          1
+        );
+
+        taskAction.clampWhenFinished =
+          true;
+
+        taskAction
+          .reset()
+          .setEffectiveTimeScale(
+            character.animationSpeed ||
+              1
+          )
+          .play();
+
+        if (
+          currentActionRef.current &&
+          currentActionRef.current !==
+            taskAction
+        ) {
+          currentActionRef.current
+            .crossFadeTo(
+              taskAction,
+              CROSSFADE_DURATION,
+              false
+            );
+        }
+
+        currentActionRef.current =
+          taskAction;
+
+        lastClipNameRef.current =
+          taskAction.getClip().name;
+
+        const handleFinished =
+          (event: any) => {
+            if (
+              event.action !==
+              taskAction
+            ) {
+              return;
+            }
+
+            mixer.removeEventListener(
+              'finished',
+              handleFinished as any
+            );
+
+            if (
+              finishedListenerRef.current ===
+              handleFinished
+            ) {
+              finishedListenerRef.current =
+                null;
+            }
+
+            activeTaskRef.current =
+              null;
+
+            /**
+             * Unlock first, then start the current Ecctrl locomotion
+             * animation underneath the task's final held pose. This
+             * is the same ordering that prevents a one-frame FBX
+             * bind/T-pose flash in GardenCharacter.
+             */
+            taskLockedRef.current =
+              false;
+
+            lastClipNameRef.current =
+              null;
+
+            playAnimation(
+              lastLocomotionStateRef.current,
+              true
+            );
+
+            /**
+             * Do not stop the completed task until the locomotion
+             * crossfade has had time to take over completely.
+             */
+            taskCleanupTimerRef.current =
+              setTimeout(
+                () => {
+                  taskAction.stop();
+                  taskAction.enabled =
+                    false;
+
+                  taskCleanupTimerRef.current =
+                    null;
+                },
+                CROSSFADE_DURATION *
+                  1000 +
+                  40
+              );
+          };
+
+        finishedListenerRef.current =
+          handleFinished;
+
+        mixer.addEventListener(
+          'finished',
+          handleFinished as any
+        );
+
+        console.info(
+          `[EcctrlCharacter] Playing task action "${taskName}" for ${character.name}.`
+        );
+
+        return true;
+      },
+      [
+        actionsRef,
+        character.animationSpeed,
+        character.name,
+        mixerRef,
+        playAnimation,
+      ]
+    );
+
+  // ======================================================
+  // DETAILS CARD ACTION EVENT
+  // ======================================================
+
+  useEffect(() => {
+    const handleCharacterAction =
+      (event: Event) => {
+        const customEvent =
+          event as CustomEvent<{
+            characterId?: number;
+            action?: string;
+          }>;
+
+        if (
+          Number(
+            customEvent.detail
+              ?.characterId
+          ) !== character.id
+        ) {
+          return;
+        }
+
+        const action =
+          customEvent.detail
+            ?.action;
+
+        if (!action) {
+          return;
+        }
+
+        playTaskAction(
+          action
+        );
+      };
+
+    window.addEventListener(
+      'garden-character-action',
+      handleCharacterAction
+    );
+
+    return () => {
+      window.removeEventListener(
+        'garden-character-action',
+        handleCharacterAction
+      );
+
+      const mixer =
+        mixerRef.current;
+
+      if (
+        mixer &&
+        finishedListenerRef.current
+      ) {
+        mixer.removeEventListener(
+          'finished',
+          finishedListenerRef.current as any
+        );
+      }
+
+      finishedListenerRef.current =
+        null;
+
+      if (taskCleanupTimerRef.current) {
+        clearTimeout(
+          taskCleanupTimerRef.current
+        );
+
+        taskCleanupTimerRef.current =
+          null;
+      }
+
+      taskLockedRef.current =
+        false;
+
+      activeTaskRef.current =
+        null;
+    };
+  }, [
+    character.id,
+    mixerRef,
+    playTaskAction,
   ]);
 
   // ======================================================
@@ -1301,6 +1612,50 @@ export function EcctrlCharacter({
 
     const k =
       keys.current;
+
+    /**
+     * Keep the physics body stationary while a semantic task
+     * animation is playing. The camera/live-position bookkeeping
+     * below still runs normally.
+     */
+    if (taskLockedRef.current) {
+      ec.setMovement({
+        joystick: {
+          x: 0,
+          y: 0,
+        },
+        run: false,
+        jump: false,
+      });
+
+      const position =
+        ec.currPos;
+
+      if (cameraFollowRef) {
+        cameraFollowRef.current =
+          new THREE.Vector3(
+            position.x,
+            position.y,
+            position.z
+          );
+      }
+
+      if (
+        livePositionsRef &&
+        markerId
+      ) {
+        livePositionsRef.current.set(
+          markerId,
+          {
+            x: position.x,
+            y: position.y,
+            z: position.z,
+          }
+        );
+      }
+
+      return;
+    }
 
     const joystickX =
       (

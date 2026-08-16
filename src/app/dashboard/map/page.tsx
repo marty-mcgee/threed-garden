@@ -295,40 +295,78 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         </div>
       )}
 
-      {/* Garden Character Actions — verified semantic animation controls */}
-      {!isIncident && (type === 'characters' || type === 'character') && d.isMovable !== true && (
-        <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-1.5">
-          <div className="text-[10px] text-white/50">Character Actions:</div>
+      {/* Character Actions — shared semantic animation controls */}
+      {!isIncident && (type === 'characters' || type === 'character') && (
+        <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-2.5">
+          <div className="text-[10px] font-medium text-white/60">Character Actions</div>
 
-          <div className="grid grid-cols-1 gap-1.5">
-            {[
-              { action: 'watering', label: '💧 Water' },
-              { action: 'pickFruit', label: '🍎 Pick Fruit' },
-              { action: 'plantTree', label: '🌳 Plant Tree' },
-            ].map(({ action, label }) => (
-              <button
-                key={action}
-                onClick={(e) => {
-                  e.stopPropagation();
+          {[
+            {
+              title: 'Planting',
+              actions: [
+                { action: 'watering', label: '💧 Water' },
+                { action: 'digAndPlantSeeds', label: '🪏 Dig + Seeds' },
+                { action: 'plantAPlant', label: '🌱 Plant' },
+                { action: 'plantTree', label: '🌳 Plant Tree' },
+              ],
+            },
+            {
+              title: 'Harvesting',
+              actions: [
+                { action: 'pullPlant', label: '🌿 Pull Plant' },
+                { action: 'pullPlant2', label: '🌿 Pull Plant 2' },
+                { action: 'pickFruit', label: '🍎 Pick Fruit' },
+                { action: 'pickFruit2', label: '🍐 Pick Fruit 2' },
+                { action: 'pickFruit3', label: '🍊 Pick Fruit 3' },
+              ],
+            },
+            {
+              title: 'Animal Care',
+              actions: [
+                { action: 'cowMilking', label: '🥛 Milk Cow' },
+              ],
+            },
+            {
+              title: 'Interaction',
+              actions: [
+                { action: 'point', label: '👉 Point' },
+                { action: 'pointGesture', label: '🫵 Point Gesture' },
+                { action: 'talk', label: '💬 Talk' },
+              ],
+            },
+          ].map((group) => (
+            <div key={group.title} className="space-y-1">
+              <div className="text-[9px] uppercase tracking-wide text-white/35">
+                {group.title}
+              </div>
 
-                  const charId = Number(d.id);
-                  if (!Number.isFinite(charId)) return;
+              <div className="grid grid-cols-2 gap-1.5">
+                {group.actions.map(({ action, label }) => (
+                  <button
+                    key={action}
+                    onClick={(e) => {
+                      e.stopPropagation();
 
-                  window.dispatchEvent(
-                    new CustomEvent('garden-character-action', {
-                      detail: {
-                        characterId: charId,
-                        action,
-                      },
-                    }),
-                  );
-                }}
-                className="block w-full text-center text-[11px] font-medium bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-100 hover:text-white py-1.5 px-2 rounded transition-colors"
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+                      const charId = Number(d.id);
+                      if (!Number.isFinite(charId)) return;
+
+                      window.dispatchEvent(
+                        new CustomEvent('garden-character-action', {
+                          detail: {
+                            characterId: charId,
+                            action,
+                          },
+                        }),
+                      );
+                    }}
+                    className="min-h-8 w-full rounded bg-emerald-600/25 px-2 py-1.5 text-center text-[10px] font-medium leading-tight text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
