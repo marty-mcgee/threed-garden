@@ -279,20 +279,27 @@ function findClip(
   animations: THREE.AnimationClip[],
   name: string,
 ): THREE.AnimationClip | undefined {
-  const matched =
-    animMap?.resolve(name) ??
-    null;
+  // External FBX clips are normalized to logical names such as
+  // "idle", "walk", and "watering". Prefer those direct names.
+  const directMatch = animations.find(
+    (animation) =>
+      animation.name.toLowerCase() === name.toLowerCase(),
+  );
+
+  if (directMatch) {
+    return directMatch;
+  }
+
+  // Fall back to the existing animation map for legacy / embedded clips.
+  const matched = animMap?.resolve(name) ?? null;
 
   if (!matched) {
     return undefined;
   }
 
   return animations.find(
-    (
-      animation,
-    ) =>
-      animation.name ===
-      matched,
+    (animation) =>
+      animation.name.toLowerCase() === matched.toLowerCase(),
   );
 }
 
@@ -378,6 +385,25 @@ export function GardenCharacter({
     useRef<
       THREE.AnimationClip[]
     >([]);
+
+  /**
+   * Temporary semantic-action lock. While watering is playing,
+   * the normal Garden movement loop is paused but the mixer still updates.
+   */
+  const taskLockedRef =
+    useRef(false);
+
+  const taskFinishedRef =
+    useRef<((event: any) => void) | null>(null);
+
+  /**
+   * Deferred cleanup for a completed one-shot action.
+   * We wait until the crossfade back to locomotion has finished before
+   * stopping the task action, otherwise the skeleton can briefly fall back
+   * to the FBX bind/T-pose between animations.
+   */
+  const taskCleanupTimeoutRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ======================================================
   // MODEL STATE
@@ -997,6 +1023,24 @@ export function GardenCharacter({
       cancelled =
         true;
 
+      if (
+        mixerRef.current &&
+        taskFinishedRef.current
+      ) {
+        mixerRef.current.removeEventListener(
+          'finished',
+          taskFinishedRef.current,
+        );
+        taskFinishedRef.current = null;
+      }
+
+      if (taskCleanupTimeoutRef.current) {
+        clearTimeout(taskCleanupTimeoutRef.current);
+        taskCleanupTimeoutRef.current = null;
+      }
+
+      taskLockedRef.current = false;
+
       mixerRef
         .current
         ?.stopAllAction();
@@ -1103,6 +1147,165 @@ export function GardenCharacter({
     };
 
   // ======================================================
+  // SEMANTIC TASK ACTION — DETAILS CARD EVENT
+  // ======================================================
+
+  /**
+   * Plays a normalized external task clip once, temporarily pausing
+   * Garden locomotion. When the real AnimationMixer finished event
+   * fires, the task action is fully stopped and normal locomotion is
+   * restored.
+   */
+  const playTaskAction = (taskName: string) => {
+    const mixer = mixerRef.current;
+
+    if (!mixer || taskLockedRef.current) {
+      return;
+    }
+
+    const clip = findClip(
+      animMapRef.current,
+      animationsRef.current,
+      taskName,
+    );
+
+    if (!clip) {
+      console.warn(
+        `[GardenCharacter] No normalized "${taskName}" clip is available for ${character.name}.`,
+      );
+      return;
+    }
+
+    const taskAction = mixer.clipAction(clip);
+
+    taskLockedRef.current = true;
+
+    // Remove any stale completion listener before starting another task.
+    if (taskFinishedRef.current) {
+      mixer.removeEventListener(
+        'finished',
+        taskFinishedRef.current,
+      );
+      taskFinishedRef.current = null;
+    }
+
+    taskAction.enabled = true;
+    taskAction.setEffectiveWeight(1);
+    taskAction.setEffectiveTimeScale(character.animationSpeed || 1);
+    taskAction.setLoop(THREE.LoopOnce, 1);
+    taskAction.clampWhenFinished = true;
+    taskAction.reset().play();
+
+    if (
+      currentActionRef.current &&
+      currentActionRef.current !== taskAction
+    ) {
+      currentActionRef.current.crossFadeTo(
+        taskAction,
+        CROSSFADE_DURATION,
+        false,
+      );
+    }
+
+    currentActionRef.current = taskAction;
+    movementState.current.lastAnimation = taskName;
+
+    const handleFinished = (event: any) => {
+      if (event.action !== taskAction) {
+        return;
+      }
+
+      mixer.removeEventListener('finished', handleFinished);
+      taskFinishedRef.current = null;
+
+      /**
+       * IMPORTANT: do NOT stop the completed task action yet.
+       *
+       * It is clamped on its final pose right now. Keeping that pose active
+       * for the short crossfade back to locomotion prevents the skeleton from
+       * flashing through the FBX bind/T-pose between actions.
+       */
+      taskLockedRef.current = false;
+
+      const available = animationsRef.current.map(
+        (animation) => animation.name,
+      );
+
+      const clipName = getAnimationForMovement(
+        character.movementType,
+        movementState.current.isMoving,
+        available,
+      );
+
+      // Force locomotion to restart, but leave currentActionRef pointing at
+      // taskAction so switchAnimation() crossfades FROM the task pose.
+      movementState.current.lastAnimation = null;
+
+      if (clipName) {
+        const timeScale = movementState.current.isMoving
+          ? (character.animationSpeed || 1) *
+            (character.movementSpeed || 1)
+          : character.animationSpeed || 1;
+
+        switchAnimation(clipName, timeScale);
+      }
+
+      // Only after the crossfade has had time to complete do we fully stop
+      // and disable the old one-shot action.
+      if (taskCleanupTimeoutRef.current) {
+        clearTimeout(taskCleanupTimeoutRef.current);
+      }
+
+      taskCleanupTimeoutRef.current = setTimeout(() => {
+        taskAction.stop();
+        taskAction.enabled = false;
+        taskAction.clampWhenFinished = false;
+        taskCleanupTimeoutRef.current = null;
+      }, Math.ceil(CROSSFADE_DURATION * 1000) + 50);
+    };
+
+    taskFinishedRef.current = handleFinished;
+    mixer.addEventListener('finished', handleFinished);
+  };
+
+  /**
+   * Minimal bridge from the page-level DetailsCard to this GardenCharacter.
+   * The event is targeted by characterId, so multiple Garden characters can
+   * coexist without responding to one another's action buttons.
+   */
+  useEffect(() => {
+    const handleGardenAction = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        characterId?: number;
+        action?: string;
+      }>;
+
+      if (customEvent.detail?.characterId !== character.id) {
+        return;
+      }
+
+      const action = customEvent.detail?.action;
+      if (!action) {
+        return;
+      }
+
+      playTaskAction(action);
+    };
+
+    window.addEventListener(
+      'garden-character-action',
+      handleGardenAction,
+    );
+
+    return () => {
+      window.removeEventListener(
+        'garden-character-action',
+        handleGardenAction,
+      );
+    };
+  }, [character.id]);
+
+  // ======================================================
   // FRAME LOOP
   // ======================================================
 
@@ -1134,6 +1337,12 @@ export function GardenCharacter({
               new THREE.Vector3(),
             ),
         );
+      }
+
+      // Keep the mixer advancing above, but pause physical Garden movement
+      // while a one-shot task such as watering is playing.
+      if (taskLockedRef.current) {
+        return;
       }
 
       // console.log('[GardenCharacter movement]', {
@@ -1657,185 +1866,6 @@ export function GardenCharacter({
   );
 
   // ======================================================
-  // INTERACTION
-  // ======================================================
-
-  const handleClick =
-    () => {
-      if (
-        !character.interactable
-      ) {
-        return;
-      }
-
-      const animations =
-        animationsRef.current;
-
-      /**
-       * Preserve your existing legacy interaction
-       * candidates for now.
-       *
-       * In the next phase, we can replace this with:
-       *
-       * point
-       * talk
-       * watering
-       * etc.
-       */
-      const interactNames = [
-        'dance',
-        'bounce',
-        'spin',
-        'wave',
-        'happy',
-      ];
-
-      const interactionAnimation =
-        interactNames.find(
-          (
-            name,
-          ) =>
-            Boolean(
-              findClip(
-                animMapRef.current,
-                animations,
-                name,
-              ),
-            ),
-        );
-
-      if (
-        interactionAnimation &&
-        mixerRef.current
-      ) {
-        switchAnimation(
-          interactionAnimation,
-
-          (
-            character
-              .animationSpeed ||
-            1
-          ) *
-            1.5,
-        );
-
-        setTimeout(
-          () => {
-            const available =
-              animationsRef.current
-                .map(
-                  (
-                    animation,
-                  ) =>
-                    animation.name,
-                );
-
-            const clipName =
-              getAnimationForMovement(
-                character
-                  .movementType,
-
-                movementState.current
-                  .isMoving,
-
-                available,
-              );
-
-            if (
-              clipName
-            ) {
-              switchAnimation(
-                clipName,
-
-                character
-                  .animationSpeed ||
-                  1,
-              );
-            }
-          },
-          2000,
-        );
-      }
-
-      // ================================================
-      // EMOTE
-      // ================================================
-
-      if (
-        character
-          .defaultEmote &&
-        character
-          .defaultEmote !==
-          'none'
-      ) {
-        setCurrentEmote(
-          character
-            .defaultEmote,
-        );
-
-        setTimeout(
-          () =>
-            setCurrentEmote(
-              null,
-            ),
-          2000,
-        );
-      }
-
-      // ================================================
-      // MESSAGE
-      // ================================================
-
-      if (
-        character
-          .interactionMessage
-      ) {
-        setShowMessage(
-          character
-            .interactionMessage,
-        );
-
-        setTimeout(
-          () =>
-            setShowMessage(
-              null,
-            ),
-          3000,
-        );
-      }
-
-      // ================================================
-      // SOUND
-      // ================================================
-
-      if (
-        character
-          .soundEffect
-      ) {
-        try {
-          const audio =
-            new Audio(
-              character
-                .soundEffect,
-            );
-
-          audio.volume =
-            0.4;
-
-          void audio
-            .play()
-            .catch(
-              () => {
-                // Browser may require user gesture.
-              },
-            );
-        } catch {
-          // Ignore sound errors.
-        }
-      }
-    };
-
-  // ======================================================
   // DISPLAY VISIBILITY
   // ======================================================
 
@@ -1958,9 +1988,6 @@ export function GardenCharacter({
         character.visible
       }
 
-      onClick={
-        handleClick
-      }
 
       onPointerOver={() =>
         setHovered(

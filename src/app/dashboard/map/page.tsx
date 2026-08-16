@@ -295,6 +295,43 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         </div>
       )}
 
+      {/* Garden Character Actions — verified semantic animation controls */}
+      {!isIncident && (type === 'characters' || type === 'character') && d.isMovable !== true && (
+        <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-1.5">
+          <div className="text-[10px] text-white/50">Character Actions:</div>
+
+          <div className="grid grid-cols-1 gap-1.5">
+            {[
+              { action: 'watering', label: '💧 Water' },
+              { action: 'pickFruit', label: '🍎 Pick Fruit' },
+              { action: 'plantTree', label: '🌳 Plant Tree' },
+            ].map(({ action, label }) => (
+              <button
+                key={action}
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  const charId = Number(d.id);
+                  if (!Number.isFinite(charId)) return;
+
+                  window.dispatchEvent(
+                    new CustomEvent('garden-character-action', {
+                      detail: {
+                        characterId: charId,
+                        action,
+                      },
+                    }),
+                  );
+                }}
+                className="block w-full text-center text-[11px] font-medium bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-100 hover:text-white py-1.5 px-2 rounded transition-colors"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Character Controls — ecctrl runtime take-over (movable characters only) */}
       {!isIncident && (type === 'characters' || type === 'character') && (() => {
         if (d.isMovable !== true) return null;
