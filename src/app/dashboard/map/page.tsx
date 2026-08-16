@@ -718,9 +718,11 @@ function UnifiedMapPageInner() {
   const showToastRef = useRef(showToast);
   showToastRef.current = showToast;
 
-  // v0.16.7 world-action proof: receive semantic animation completion with optional target context.
+  // v0.16.6b World Actions v3: persist completed targeted watering + fruit harvesting.
+  // Writes happen only AFTER GardenCharacter/EcctrlCharacter reports that
+  // the requested one-shot animation actually finished.
   useEffect(() => {
-    const handleActionComplete = (event: Event) => {
+    const handleActionComplete = async (event: Event) => {
       const customEvent = event as CustomEvent<{
         characterId?: number;
         characterName?: string;
@@ -734,12 +736,84 @@ function UnifiedMapPageInner() {
       const actor = detail.characterName || `Character #${detail.characterId ?? '?'}`;
       const actionLabel = detail.action.replace(/([a-z])([A-Z])/g, '$1 $2');
 
+      // ----------------------------------------------------
+      // PERSISTED WORLD ACTIONS REQUIRE A PLANTING TARGET
+      // ----------------------------------------------------
+      const persistablePlantingAction =
+        detail.action === 'watering' ||
+        detail.action === 'pickFruit' ||
+        detail.action === 'pickFruit2' ||
+        detail.action === 'pickFruit3';
+
+      if (
+        persistablePlantingAction &&
+        detail.target?.type === 'planting' &&
+        Number.isFinite(Number(detail.characterId)) &&
+        Number.isFinite(Number(detail.target.id))
+      ) {
+        try {
+          const response = await fetch('/api/threed/world-actions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: detail.action,
+              characterId: Number(detail.characterId),
+              target: {
+                type: detail.target.type,
+                id: Number(detail.target.id),
+              },
+            }),
+          });
+
+          const result = await response.json().catch(() => null);
+
+          if (!response.ok || !result?.success) {
+            throw new Error(
+              result?.error || `World-action persistence failed (${response.status})`,
+            );
+          }
+
+          if (detail.action === 'watering') {
+            showToastRef.current(
+              `${actor} watered ${detail.target.name} — watering recorded`,
+              'success',
+            );
+          } else {
+            showToastRef.current(
+              `${actor} picked fruit from ${detail.target.name} — harvest recorded`,
+              'success',
+            );
+          }
+
+          console.info('[WorldAction] Persisted targeted world action', {
+            completion: detail,
+            persistence: result,
+          });
+        } catch (error) {
+          console.error('[WorldAction] Animation completed but persistence failed:', error);
+
+          showToastRef.current(
+            detail.action === 'watering'
+              ? `${actor} completed watering, but the watering record could not be saved`
+              : `${actor} completed fruit picking, but the harvest record could not be saved`,
+            'error',
+          );
+        }
+
+        return;
+      }
+
+      // ----------------------------------------------------
+      // ALL OTHER ACTIONS REMAIN ANIMATION-ONLY
+      // ----------------------------------------------------
       if (detail.target) {
         showToastRef.current(
           `${actor} completed ${actionLabel} on ${detail.target.name} (${detail.target.type} #${detail.target.id})`,
           'success',
         );
-        console.info('[WorldAction] Completed targeted action', detail);
+        console.info('[WorldAction] Completed targeted animation-only action', detail);
       } else {
         showToastRef.current(`${actor} completed ${actionLabel}`, 'success');
         console.info('[WorldAction] Completed animation-only action', detail);
