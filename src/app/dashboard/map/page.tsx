@@ -40,7 +40,7 @@ import {
 } from '@/components/ui/dialog';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import { UnifiedMapView } from '@/components/map/UnifiedMapView';
-import { MapLayerConfig, MapViewMode, UnifiedMapData } from '@/lib/types/map';
+import { MapLayerConfig, MapViewMode, ThreeDActionTarget, UnifiedMapData } from '@/lib/types/map';
 import {
   getTrafficIcon,
   getTrafficLabel,
@@ -170,15 +170,7 @@ function KvRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-type CharacterActionTarget = {
-  markerId: string;
-  type: string;
-  id: number;
-  name: string;
-  position?: { x: number; y: number; z: number };
-};
-
-function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, onSetActionTarget, onClearActionTarget }: {
+function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, onSetActionTarget, onClearActionTarget, onFocusActionTarget }: {
   selected: any;
   onClose: () => void;
   controlledCharacterId: number | null;
@@ -187,9 +179,10 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
   cameraMode?: string;
   onCameraModeChange?: (mode: string) => void;
   onZoomCenter?: () => void;
-  actionTarget?: CharacterActionTarget | null;
-  onSetActionTarget?: (target: CharacterActionTarget) => void;
+  actionTarget?: ThreeDActionTarget | null;
+  onSetActionTarget?: (target: ThreeDActionTarget) => void;
   onClearActionTarget?: () => void;
+  onFocusActionTarget?: () => void;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || {};
@@ -311,17 +304,19 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (!Number.isFinite(targetId)) return;
+                if (!Number.isFinite(targetId) || !selected.position) return;
+                const targetPosition = {
+                  x: Number(selected.position.x),
+                  y: Number(selected.position.y),
+                  z: Number(selected.position.z),
+                };
+                if (!Object.values(targetPosition).every(Number.isFinite)) return;
                 onSetActionTarget({
                   markerId: String(selected.id || `plantings-${targetId}`),
                   type: 'planting',
                   id: targetId,
                   name: targetName,
-                  position: selected.position ? {
-                    x: Number(selected.position.x) || 0,
-                    y: Number(selected.position.y) || 0,
-                    z: Number(selected.position.z) || 0,
-                  } : undefined,
+                  position: targetPosition,
                 });
               }}
               className={`block w-full text-center text-[11px] font-medium py-1.5 px-2 rounded transition-colors ${
@@ -358,7 +353,27 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
 
           <div className="rounded bg-white/5 px-2 py-1.5 text-[10px] text-white/55">
             {actionTarget ? (
-              <>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></>
+              <>
+                <div>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></div>
+                <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+                  {onFocusActionTarget && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onFocusActionTarget(); }}
+                      className="rounded bg-emerald-600/25 px-2 py-1 text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white"
+                    >
+                      Focus Target
+                    </button>
+                  )}
+                  {onClearActionTarget && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onClearActionTarget(); }}
+                      className="rounded bg-white/5 px-2 py-1 text-white/55 transition-colors hover:bg-white/10 hover:text-white/80"
+                    >
+                      Clear Target
+                    </button>
+                  )}
+                </div>
+              </>
             ) : (
               <>🎯 Target: <span className="text-white/35">None — actions remain animation-only</span></>
             )}
@@ -590,7 +605,8 @@ function UnifiedMapPageInner() {
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
   const [cameraMode, setCameraMode] = useState<string>('follow');
   const [focusRequest, setFocusRequest] = useState(0);
-  const [actionTarget, setActionTarget] = useState<CharacterActionTarget | null>(null);
+  const [actionTarget, setActionTarget] = useState<ThreeDActionTarget | null>(null);
+  const [actionTargetFocusRequest, setActionTargetFocusRequest] = useState(0);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
 
   // v0.16.2-beta: Manual "zoom + center" request (button in DetailsCard).
@@ -600,6 +616,12 @@ function UnifiedMapPageInner() {
     setCameraMode('stationary');
     setFocusRequest((n) => n + 1);
   }, []);
+
+  const handleFocusActionTarget = useCallback(() => {
+    if (!actionTarget) return;
+    setCameraMode('stationary');
+    setActionTargetFocusRequest((n) => n + 1);
+  }, [actionTarget]);
 
   // v0.16.0-delta: Sync RuntimeMarker position when ecctrl character moves
   const handleControlChange = useCallback((_markerId: string, pos: { x: number; y: number; z: number }) => {
@@ -664,6 +686,7 @@ function UnifiedMapPageInner() {
     setSelectedProjectId(projectId);
     setIsDefaultView(false);
     setFilterAssetType(null); // Reset filter on project change
+    setActionTarget(null); // Action targets are scoped to the current project.
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
     window.history.pushState({}, '', url.toString());
@@ -718,7 +741,28 @@ function UnifiedMapPageInner() {
   const showToastRef = useRef(showToast);
   showToastRef.current = showToast;
 
-  // v0.16.6b World Actions v2: persist completed targeted watering.
+  // Keep the client-side action target aligned with refreshed project data.
+  // Filters do not affect raw plantings, so hiding a target never clears it.
+  useEffect(() => {
+    if (!actionTarget || loading) return;
+    const plantings = data.threed.raw?.plantings;
+    if (!plantings) return;
+
+    const targetStillExists = plantings.some(
+      (planting: any) => Number(planting.id) === actionTarget.id,
+    );
+
+    if (!targetStillExists) {
+      setActionTarget(null);
+      showToastRef.current(
+        `Action target cleared: ${actionTarget.name} is no longer available`,
+        'info',
+      );
+    }
+  }, [actionTarget, data.threed.raw?.plantings, loading]);
+
+  // Persist supported targeted world actions only after the one-shot animation
+  // reports completion. Animation-only actions still use the fallback below.
   // The write happens only AFTER GardenCharacter/EcctrlCharacter reports that
   // the requested one-shot animation actually finished.
   useEffect(() => {
@@ -727,7 +771,7 @@ function UnifiedMapPageInner() {
         characterId?: number;
         characterName?: string;
         action?: string;
-        target?: CharacterActionTarget | null;
+        target?: ThreeDActionTarget | null;
       }>;
 
       const detail = customEvent.detail;
@@ -735,6 +779,7 @@ function UnifiedMapPageInner() {
 
       const actor = detail.characterName || `Character #${detail.characterId ?? '?'}`;
       const actionLabel = detail.action.replace(/([a-z])([A-Z])/g, '$1 $2');
+      const isHarvestAction = ['pickFruit', 'pickFruit2', 'pickFruit3'].includes(detail.action);
 
       // ----------------------------------------------------
       // FIRST PERSISTED WORLD ACTION: TARGETED WATERING
@@ -791,6 +836,62 @@ function UnifiedMapPageInner() {
       }
 
       // ----------------------------------------------------
+      // TARGETED FRUIT PICKING → PROJECT HARVEST RECORD
+      // ----------------------------------------------------
+      if (
+        isHarvestAction &&
+        selectedProjectId &&
+        detail.target?.type === 'planting' &&
+        Number.isFinite(Number(detail.characterId)) &&
+        Number.isFinite(Number(detail.target.id))
+      ) {
+        try {
+          const response = await fetch('/api/threed/world-actions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              action: detail.action,
+              characterId: Number(detail.characterId),
+              projectId: Number(selectedProjectId),
+              target: {
+                type: detail.target.type,
+                id: Number(detail.target.id),
+              },
+            }),
+          });
+
+          const result = await response.json().catch(() => null);
+
+          if (!response.ok || !result?.success) {
+            throw new Error(
+              result?.error || `Harvest persistence failed (${response.status})`,
+            );
+          }
+
+          showToastRef.current(
+            `${actor} picked fruit from ${detail.target.name} — harvest recorded`,
+            'success',
+          );
+
+          console.info('[WorldAction] Persisted targeted harvest', {
+            completion: detail,
+            persistence: result,
+          });
+        } catch (error) {
+          console.error('[WorldAction] Pick Fruit animation completed but persistence failed:', error);
+
+          showToastRef.current(
+            `${actor} completed ${actionLabel}, but the harvest record could not be saved`,
+            'error',
+          );
+        }
+
+        return;
+      }
+
+      // ----------------------------------------------------
       // ALL OTHER ACTIONS REMAIN ANIMATION-ONLY
       // ----------------------------------------------------
       if (detail.target) {
@@ -807,7 +908,7 @@ function UnifiedMapPageInner() {
 
     window.addEventListener('garden-character-action-complete', handleActionComplete);
     return () => window.removeEventListener('garden-character-action-complete', handleActionComplete);
-  }, []);
+  }, [selectedProjectId]);
 
   // ✅ Load data from API route
   const loadData = useCallback(async () => {
@@ -1325,6 +1426,8 @@ function UnifiedMapPageInner() {
                       controlledCharacterId={controlledCharacterId}
                       cameraMode={cameraMode}
                       focusRequest={focusRequest}
+                      actionTarget={actionTarget}
+                      actionTargetFocusRequest={actionTargetFocusRequest}
                     />
                   </div>
                 </div>
@@ -1383,6 +1486,8 @@ function UnifiedMapPageInner() {
                 onControlChange={handleControlChange}
                 cameraMode={cameraMode}
                 focusRequest={focusRequest}
+                actionTarget={actionTarget}
+                actionTargetFocusRequest={actionTargetFocusRequest}
               />
             )}
 
@@ -1429,6 +1534,7 @@ function UnifiedMapPageInner() {
           setActionTarget(null);
           showToast('Action target cleared', 'info');
         }}
+        onFocusActionTarget={handleFocusActionTarget}
       />
       
     </div>

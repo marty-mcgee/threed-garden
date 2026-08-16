@@ -1,111 +1,8 @@
-# Project Context — marty-mcgee-neon
+# Project Context – threed-garden-neon, marty-mcgee-neon
 
-> **Purpose:** Primary repository context for developers and Codex/AI coding agents.
-> Read this file before making architectural changes. Treat current repository code as the source of truth when this document and implementation disagree.
-
-## 🤖 Codex Working Contract
-
-1. **Inspect before editing.** Read the relevant implementation, imports, types, schema, and API routes before proposing changes.
-2. **Preserve working architecture.** Prefer incremental changes over rewrites, especially in ThreeD character animation, physics, camera, selection, and DetailsCard flows.
-3. **Do not guess repository APIs.** Verify database-client imports, auth conventions, schema fields, route locations, and component props from the repository.
-4. **Keep animation and world state separated.** Character animation code decides *how an action is animated*. API/gameplay code decides *what world-state mutation that action causes*.
-5. **One-shot actions complete before persistence.** World mutations triggered by character actions occur only after the corresponding one-shot animation reports completion.
-6. **Do not require database access to reason about the app.** Prefer repository files, schema, types, routes, and tests. Never request or expose secrets.
-7. **Protect stable behavior.** Existing GardenCharacter wandering, Ecctrl WASD/control, camera modes, selection, DetailsCard, and task→locomotion crossfades are regression-sensitive.
-8. **Validate changes.** Run the narrowest relevant TypeScript/build/lint/test checks available after edits and report exactly what was run.
-9. **Update this file for release-level architectural changes.** Keep detailed implementation chatter out of this document; use git history/issues for transient debugging notes.
-
-## 📌 Current Checkpoint
-
-| Item | Status |
-|---|---|
-| Current stable version | **v0.16.7 — Visual Action Targeting** |
-| Previous checkpoint | **v0.16.6b — World Actions v2** |
-| Character FBX model loading | ✅ Working |
-| External FBX animation files | ✅ Working |
-| Semantic action mapping | ✅ Working |
-| GardenCharacter autonomous locomotion + tasks | ✅ Working |
-| EcctrlCharacter WASD locomotion + tasks | ✅ Working |
-| DetailsCard character action controls | ✅ Working |
-| Persistent planting action target | ✅ Working |
-| Targeted Water world action | ✅ Working |
-| Watering persistence after animation completion | ✅ Working |
-| Pick Fruit animation | ✅ Working |
-| Project-scoped harvest persistence | 🧪 v0.16.8 implementation; manual validation pending |
-
-## 🧠 Current Character / World-Action Architecture
-
-```text
-Base FBX Character Model
-        +
-External FBX Animation Files
-        ↓
-external animation loader / normalized clips
-        ↓
-semantic CharacterTaskAction / AnimationMap
-        ↓
-GardenCharacter OR EcctrlCharacter
-        ↓
-idle / walk / run locomotion
-        +
-one-shot actions
-(watering / pickFruit / plantTree / etc.)
-        ↓
-animation completion callback
-        ↓
-optional World Action layer
-        ↓
-authenticated API mutation
-```
-
-### Stable separation of responsibilities
-
-- **Animation layer:** model loading, clips, mixers, semantic action resolution, crossfades, one-shot completion, locomotion recovery.
-- **Interaction layer:** marker selection, DetailsCard, Take/Release Control, action buttons, persistent action target.
-- **World Action layer:** validates actor/action/target and performs an authenticated server-side mutation.
-- **Database/API layer:** still evolving. Do not expand persistence casually from animation code.
-
-### v0.16.6b supported world mutation
-
-```text
-Planting → Use as Action Target
-         → Farmer → Water
-         → watering animation completes
-         → POST /api/threed/world-actions
-         → auth + ownership validation
-         → threed_watering_history
-         → locomotion resumes
-```
-
-**Scope boundary:** `Pick Fruit → threed_harvests` persistence was explored after the Water workflow, but is intentionally deferred. Do not treat harvest persistence as a requirement or dependency of v0.16.6b.
-
-### v0.16.8 in-progress world mutation
-
-```text
-Planting → Use as Action Target
-         → Farmer → Pick Fruit / Pick Fruit 2 / Pick Fruit 3
-         → one-shot animation completes
-         → POST /api/threed/world-actions with active project identity
-         → auth + project/actor ownership + target assignment validation
-         → threed_harvests (1 each)
-         → project_assets association to the active ThreeD module
-         → locomotion resumes
-```
-
-The harvest row and its project association are created transactionally. The server derives the plant and ThreeD module from the validated planting instead of accepting those identities from the browser.
-
-## 🗂️ High-Value Files for Character Work
-
-| File | Responsibility |
-|---|---|
-| `src/lib/utils/animation.ts` | Core semantic animation mapping/fallback logic |
-| `src/components/threed/shared/GardenCharacter.tsx` | Autonomous/non-controlled character locomotion and task actions |
-| `src/components/threed/shared/EcctrlCharacter.tsx` | Physics/WASD character locomotion and task actions |
-| `src/components/map/ThreeDScene.tsx` | 3D marker routing, physics scene, character request routing |
-| `src/components/map/UnifiedMapView.tsx` | Runtime marker/data bridge into ThreeDScene |
-| `src/app/dashboard/map/page.tsx` | Selection, DetailsCard, control state, action target, world-action completion handling |
-| `src/app/api/threed/world-actions/route.ts` | Authenticated semantic world-action endpoint; stable v0.16.6b action = watering |
-| `src/lib/schema/threed/*` | ThreeD Drizzle schema; inspect before any persistence change |
+**Last Updated:** August 13, 2026 @ 9:15am PST
+**Current Version:** v0.16.4-centaur "Character Grounding + Gravity Spawn" — ✅ Released to Production
+**In Progress:** v0.16.5 "Character Animations + Actions"
 
 ---
 
@@ -122,7 +19,7 @@ The harvest row and its project association are created transactionally. The ser
 
 ### Design Principles
 
-- **Default Data Flow**: Admin → Database → API → Dashboard. Dashboard is primarily a visualization surface. Explicit authenticated interaction endpoints (for example World Actions) may perform narrowly scoped writes when the user intentionally triggers an in-world action.
+- **Unidirectional Data Flow**: Admin → Database → API → Dashboard. Dashboard never writes.
 - **Publish Gate**: Every module has `isPublic`/`isActive`/`status` enforced at the API layer.
 - **Runtime Rendering**: Dashboard visualizations (map markers, 3D objects, stats) are generated at runtime from source data. There are no stored "display" records.
 - **Project Scoping**: Dashboard Surface is always scoped to a Project for multi-tenant access.
@@ -249,9 +146,7 @@ api/
 │   ├── threed/route.ts       # GET — combined ThreeD + Traffic data with position normalization
 │   ├── projects/route.ts     # List projects with map data
 │   └── asset-type/route.ts   # Get assets by type
-├── threed/
-│   ├── route.ts                # ThreeD module CRUD
-│   └── world-actions/route.ts  # POST — semantic world actions; v0.16.6b supports targeted watering
+├── threed/ (CRUD)
 ├── traffic/ (8 sub-modules)
 ├── music/ (albums, tracks, links, media)
 ├── project/ (CRUD + assets + modules)
@@ -351,13 +246,10 @@ API (/api/map/threed)
 | **v0.16.4-beta** | **2026-08-12** | **Admin Surface: 3D Models CRUD Forms — full model/files/textures/media management UX** |
 | **v0.16.4-centaur** | **2026-08-13** | **Minor — Character grounding (Y=0) + gravity-driven spawn lift** |
 | **v0.16.5** | **2026-08-13** | **Character Animations + Actions — animation state machine + shared clip matcher** |
-| **v0.16.6a** | **2026-08-16** | **External FBX character animation library + semantic task actions** |
-| **v0.16.6b** | **2026-08-16** | **World Actions v2 — persistent planting target + completed Water persistence** |
-| **v0.16.7** | **2026-08-16** | **Visual Action Targeting — persistent target pulse, focus controls, and refresh reconciliation** |
 
 ---
 
-## 📚 Historical Detail — v0.16.0-centaur "Polished Details Card"
+## 🚀 Latest Release — v0.16.0-centaur "Polished Details Card"
 
 ### What's New in v0.16.0
 
@@ -936,6 +828,99 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | `src/components/map/ThreeDScene.tsx` | Kept direct `EcctrlCharacter`/`GardenCharacter` routing (no wrapper) |
 | `src/components/threed/layers/CharacterLayer.tsx` | Kept direct `GardenCharacter` usage |
 
+---
+
+HINTS ONLY
+
+---
+
+Yes — **that is exactly the information we needed.** 🎯
+
+What you're seeing in the NLA Editor tells us that the 140 animations are attached to:
+
+**`Pelvis_$AssimpFbx$_Scaling`**
+
+while the other groups have 0 or 1 animations.
+
+That makes sense for a skeletal character: the **Pelvis/root bone is effectively the animation driver**, and the other bones contain the corresponding movement data.
+
+### What this means
+
+Your file is structured roughly like this:
+
+```text
+Character
+│
+├── Pelvis_$AssimpFbx$_Scaling
+│      └── 140 animation clips
+│
+├── Other bone/group
+│      └── 1 animation
+│
+├── Other bone/group
+│      └── 0 animations
+│
+└── ...
+```
+
+So **you do NOT need to create 140 Actions manually.**
+
+The animations are already there.
+
+### And this explains the `Take 001` confusion
+
+The Action Editor was showing you `Take 001` because that's the Action Blender currently had selected/active.
+
+The **NLA Editor is giving us the much better view of the imported animation data**.
+
+---
+
+## One thing I want you to check next
+
+In the NLA Editor, under:
+
+**`Pelvis_$AssimpFbx$_Scaling`**
+
+you should see the animation strips.
+
+Look at the **names of those strips**.
+
+Are they:
+
+`Anim_0`, `Anim_1`, `Anim_2`, etc.?
+
+Or do they have some other names?
+
+If they are `Anim_0`, `Anim_1`, etc., then **we've essentially solved the mystery**. The 140 GLB animations are already imported and represented as NLA animation strips.
+
+From there, I can walk you through the **exact Blender export settings needed to turn this into a new GLB while preserving all 140 animations**.
+
+---
+
+Implemented the user-editable animation mapping solution for the ThreeD Characters sub-module.
+
+## Problem solved
+GLB/FBX clip names are unknowable in advance (e.g. 140 `Anim_N` clips), so hardcoded guessing doesn't scale. The answer is a **per-model mapping stored on the model**, editable via an admin UI.
+
+## What changed
+
+**Runtime (`src/lib/utils/animation.ts`)**
+- `buildAnimationMap(clipNames, overrides?)` — per-model `overrides` (`action → clipName`) take priority over name/positional matching.
+
+**Character components**
+- `EcctrlCharacter` and `GardenCharacter` now pass `character.model.metadata.animationMap` into `buildAnimationMap`.
+
+**Admin UI (new)**
+- `src/components/admin/threed/models/ThreeDModelAnimations.tsx` — model selector + client-side clip discovery (GLTF/FBX loaders) + a dropdown per App Action (Auto-detect / None / each clip), saving to `threed_models.metadata.animationMap`.
+- `src/app/admin/threed/model-animations/page.tsx` — the page.
+- `src/app/admin/threed/models/page.tsx` — added a "Model Animations" link.
+
+## End-to-end scenario
+Upload character GLB → **3D Models → Model Animations** → map `Anim_0/1/2/…` to `Idle/Walk/Run/…` → Save → dashboard 3D map uses the saved mapping automatically.
+
+## Verification
+- `npx tsc --noEmit` reports no errors in any modified file.
+- `CONTEXT.md` documents the per-model overrides and the new admin CRUD page.
 
 ---
 
@@ -973,68 +958,66 @@ Character animations are driven by a **primary entry/return point** (`src/lib/ut
 - DB columns `animations[]`, `defaultAnimation`, `defaultEmote`, `soundEffect` are logical references; the real clips live inside the model file and are connected via `buildAnimationMap`.
 
 ---
+
+## Character Model File Animation Notes:
+
+Yes — **that is exactly the information we needed.** 🎯
+
+What you're seeing in the NLA Editor tells us that the 140 animations are attached to:
+
+**`Pelvis_$AssimpFbx$_Scaling`**
+
+while the other groups have 0 or 1 animations.
+
+That makes sense for a skeletal character: the **Pelvis/root bone is effectively the animation driver**, and the other bones contain the corresponding movement data.
+
+### What this means
+
+Your file is structured roughly like this:
+
+```text
+Character
+│
+├── Pelvis_$AssimpFbx$_Scaling
+│      └── 140 animation clips
+│
+├── Other bone/group
+│      └── 1 animation
+│
+├── Other bone/group
+│      └── 0 animations
+│
+└── ...
+```
+
+So **you do NOT need to create 140 Actions manually.**
+
+The animations are already there.
+
+### And this explains the `Take 001` confusion
+
+The Action Editor was showing you `Take 001` because that's the Action Blender currently had selected/active.
+
+The **NLA Editor is giving us the much better view of the imported animation data**.
+
 ---
 
-## ✅ v0.16.6a — Character Animations + Actions / Animation Action Mapping
+## One thing I want you to check next
 
-### Stable result
+In the NLA Editor, under:
 
-The app can use the original FBX character model with separate FBX animation files and expose those clips through semantic application actions. The character runtime no longer depends on converting the animation library into a single GLB as the primary workflow.
+**`Pelvis_$AssimpFbx$_Scaling`**
 
-Verified behavior includes:
+you should see the animation strips.
 
-- `idle`, `walk`, and `run` locomotion.
-- Autonomous `GardenCharacter` wandering with walk animation.
-- `EcctrlCharacter` player control with task-action interruption and recovery.
-- Semantic one-shot actions including watering, planting, harvesting, animal-care, and interaction animations.
-- Repeated task actions.
-- Clean crossfade back to locomotion without the brief FBX bind/T-pose flash.
-- DetailsCard action buttons while retaining Take Control / Release Control.
+Look at the **names of those strips**.
 
-## ✅ v0.16.6b — World Actions v2
+Are they:
 
-### Stable result
+`Anim_0`, `Anim_1`, `Anim_2`, etc.?
 
-World Actions v2 adds a persistent planting target and proves one end-to-end semantic world action: **Water**.
+Or do they have some other names?
 
-The action target persists while the user changes selection from the planting to the Farmer. Watering is persisted only after the watering animation completes. The server authenticates the request and validates ownership before writing watering history.
+If they are `Anim_0`, `Anim_1`, etc., then **we've essentially solved the mystery**. The 140 GLB animations are already imported and represented as NLA animation strips.
 
-### Intentional pause point
-
-The ThreeD animation architecture is considered a successful, stable milestone. Broader world-state mutations, harvest persistence, inventory, plant lifecycle, and task execution should be developed later as the API/schema design matures.
-
-Do not refactor the proven animation system merely to support unfinished persistence features.
-
-## ✅ v0.16.7 — Visual Action Targeting
-
-### Released to production — stable checkpoint
-
-The persistent planting action target now has a distinct emerald pulse in the 3D scene. Character DetailsCard controls can focus the camera on the target or clear it without changing the selected character.
-
-This release remains a client-side ThreeD UX milestone:
-
-- Target identity and position use a shared `ThreeDActionTarget` runtime type.
-- Target state is threaded through `UnifiedMapView` into `ThreeDScene`.
-- The existing scene focus animation is reused; no second camera system was introduced.
-- Selection remains a temporary blue ring while the action target uses a persistent emerald pulse.
-- Targets survive selection and filtering changes, clear on project changes, and reconcile against refreshed planting data.
-
-## 🧪 v0.16.8 — Project-Scoped Harvest World Action (in progress)
-
-Targeted `pickFruit`, `pickFruit2`, and `pickFruit3` actions now enter the World Action persistence path after their one-shot animation completes. The authenticated server validates project, character, and planting ownership plus the planting's active project assignment, creates a `threed_harvests` record with a default quantity of `1 each`, and links that record to the planting's ThreeD module through `project_assets` in the same database transaction.
-
-This addition does not change the database schema, external FBX loading, semantic task dispatch, task-to-locomotion crossfades, or the existing targeted Water behavior.
-- The v0.16.6b targeted Water completion and persistence flow is unchanged.
-- No database schema or API behavior changed.
-
-v0.16.7 is the complete stable release point for all ThreeD character, animation, control, selection, and targeted Water work delivered through this checkpoint. Development from v0.16.8 onward may focus on other application areas without treating unfinished persistence expansion as part of this release.
-
-### Files changed
-
-| File | Change |
-|---|---|
-| `src/lib/types/map.ts` | Shared planting action-target identity and position type |
-| `src/app/dashboard/map/page.tsx` | Target controls, focus request, project scoping, and refresh reconciliation |
-| `src/components/map/UnifiedMapView.tsx` | Target state bridge into the 3D scene |
-| `src/components/map/ThreeDScene.tsx` | Persistent target pulse and target camera focus |
-| `package.json` | Version bumped to `0.16.7` |
+From there, I can walk you through the **exact Blender export settings needed to turn this into a new GLB while preserving all 140 animations**.

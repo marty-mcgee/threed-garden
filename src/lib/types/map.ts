@@ -62,6 +62,19 @@ export interface RuntimeMarker {
   title?: string;
 }
 
+/** Client-side identity and position for a supported ThreeD world-action target. */
+export type ThreeDActionTargetType = 'planting';
+
+export interface ThreeDActionTarget {
+  /** Runtime marker identity, for example `plantings-12`. */
+  markerId: string;
+  type: ThreeDActionTargetType;
+  /** Database identity used by the World Actions endpoint. */
+  id: number;
+  name: string;
+  position: { x: number; y: number; z: number };
+}
+
 // ============================================
 // Unified Map Data
 // ============================================

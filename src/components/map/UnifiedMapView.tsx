@@ -4,7 +4,7 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { Loader2 } from 'lucide-react';
-import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker } from '@/lib/types/map';
+import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
 import { LeafletMap } from '@/components/map/LeafletMap';
 
 // ✅ Dynamically import ThreeD Scene (3D) to avoid SSR issues
@@ -43,6 +43,10 @@ interface UnifiedMapViewProps {
   cameraMode?: string;
   /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
   focusRequest?: number;
+  /** Persistent client-side target for ThreeD character actions. */
+  actionTarget?: ThreeDActionTarget | null;
+  /** Increments to request camera focus on the current action target. */
+  actionTargetFocusRequest?: number;
 }
 
 const MARKER_CONFIG: Record<string, { color: string; icon: string; label: string }> = {
@@ -81,6 +85,8 @@ export function UnifiedMapView({
   onControlChange,
   cameraMode,
   focusRequest = 0,
+  actionTarget,
+  actionTargetFocusRequest = 0,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(false);
@@ -403,6 +409,8 @@ export function UnifiedMapView({
         onControlChange={onControlChange}
         cameraMode={cameraMode as any}
         focusRequest={focusRequest}
+        actionTarget={actionTarget}
+        actionTargetFocusRequest={actionTargetFocusRequest}
       />
     );
   };

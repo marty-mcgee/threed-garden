@@ -19,6 +19,7 @@ import { PlantMarker3D } from '@/components/threed/markers/PlantMarker3D';
 import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
 import { ModelMarker3D } from '@/components/threed/markers/ModelMarker3D';
 import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
+import type { ThreeDActionTarget } from '@/lib/types/map';
 
 interface ThreeDSceneProps {
   incidents: any[];
@@ -39,6 +40,10 @@ interface ThreeDSceneProps {
   cameraMode?: CameraViewMode;
   /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
   focusRequest?: number;
+  /** Persistent client-side target for ThreeD character actions. */
+  actionTarget?: ThreeDActionTarget | null;
+  /** Increments to request camera focus on the current action target. */
+  actionTargetFocusRequest?: number;
 }
 
 // ✅ View Preset Types
@@ -372,7 +377,7 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 }
 
 // ✅ ThreeD Marker Component
-function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef }: any) {
+function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -435,6 +440,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, controlledCharacte
         <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
           <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: marker.data?.quantity, status: marker.data?.status }} position={[0, 0, 0]} />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.5} outerRadius={0.75} />}
+          {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.72} />}
         </group>
       </RigidBody>
     );
@@ -687,6 +693,8 @@ export function ThreeDScene({
   onControlChange,
   cameraMode,
   focusRequest = 0,
+  actionTarget,
+  actionTargetFocusRequest = 0,
 }: ThreeDSceneProps) {
   // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
   const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
@@ -943,6 +951,20 @@ export function ThreeDScene({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusRequest]);
+
+  // Focus the persistent action target without changing marker selection.
+  useEffect(() => {
+    const position = actionTarget?.position;
+    if (
+      actionTargetFocusRequest > 0 &&
+      position &&
+      [position.x, position.y, position.z].every((value) => Number.isFinite(Number(value)))
+    ) {
+      focusOnMarker({ position });
+    }
+    // The request counter is the imperative trigger; replacing a target alone must not focus it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionTargetFocusRequest]);
 
   const clearDetails = () => {
     setSelectedDetails(null);
@@ -1350,6 +1372,16 @@ export function ThreeDScene({
               marker={marker}
               onClick={() => handleMarkerClick(marker)}
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
+              isActionTarget={
+                actionTarget?.type === 'planting' &&
+                (
+                  marker.id === actionTarget.markerId ||
+                  (
+                    (marker.type === 'planting' || marker.type === 'plantings') &&
+                    Number(marker.data?.id) === actionTarget.id
+                  )
+                )
+              }
               controlledCharacterId={controlledCharacterId}
               onControlChange={storeLivePosition}
               cameraFollowRef={cameraFollowRef}

@@ -19,6 +19,9 @@ import {
   Move,
   Clock,
   Palette,
+  CheckCircle2,
+  AlertTriangle,
+  Gamepad2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +41,11 @@ interface Model {
   id: number;
   modelName: string;
   modelType: string;
+  filePath?: string | null;
+  metadata?: {
+    animationMap?: Record<string, string>;
+    [key: string]: unknown;
+  } | null;
   files?: ModelFileRow[];
 }
 
@@ -215,6 +223,69 @@ const getTypeColor = (type: string) => {
     default: return 'bg-gray-100 text-gray-700';
   }
 };
+
+function hasVerifiedExternalAnimations(model?: Model): boolean {
+  if (!model) return false;
+
+  const name = model.modelName.toLowerCase();
+  const path = (model.filePath ?? '').toLowerCase();
+
+  return name.includes('farmer_female') ||
+    name.includes('farmer female') ||
+    path.includes('sk_chr_farmer_female_01.fbx');
+}
+
+function CharacterRuntimeReadiness({ model, isMovable }: { model?: Model; isMovable: boolean }) {
+  const usesVerifiedLibrary = hasVerifiedExternalAnimations(model);
+  const mappedActions = Object.keys(model?.metadata?.animationMap ?? {});
+  const rendererName = isMovable ? 'EcctrlCharacter' : 'GardenCharacter';
+
+  return (
+    <div className="rounded-md border bg-muted/30 p-3 space-y-2" aria-live="polite">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 text-xs font-medium">
+          <Gamepad2 className="h-3.5 w-3.5 text-purple-500" />
+          Runtime readiness
+        </div>
+        <Badge variant="outline" className="text-[10px]">{rendererName}</Badge>
+      </div>
+
+      {!model ? (
+        <div className="flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-400">
+          <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+          Select a model before expecting the character to render in the ThreeD scene.
+        </div>
+      ) : usesVerifiedLibrary ? (
+        <div className="space-y-1.5 text-xs">
+          <div className="flex items-start gap-1.5 text-green-700 dark:text-green-400">
+            <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+            Verified external FBX profile: idle, walk, run, and farming task sources are configured.
+          </div>
+          <p className="text-muted-foreground">
+            When those assets load successfully, targeted Water can use the one-shot watering clip. World mutation still occurs only after animation completion.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-1.5 text-xs">
+          <div className="flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-400">
+            <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+            This model does not match the verified Farmer Female external animation library.
+          </div>
+          <p className="text-muted-foreground">
+            Runtime animation depends on embedded clips and the model&apos;s semantic mapping
+            {mappedActions.length > 0 ? ` (${mappedActions.length} mapped action${mappedActions.length === 1 ? '' : 's'})` : ''}.
+          </p>
+        </div>
+      )}
+
+      <p className="text-[11px] text-muted-foreground">
+        {isMovable
+          ? 'Movable routes to EcctrlCharacter for Take Control and WASD.'
+          : 'Not movable routes to GardenCharacter and its configured autonomous movement.'}
+      </p>
+    </div>
+  );
+}
 
 export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
@@ -706,7 +777,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
                   <Label htmlFor="modelId">Model</Label>
                   <Select
                     value={formData.modelId}
-                    onValueChange={(value) => setFormData({ ...formData, modelId: value })}
+                    onValueChange={(value) => setFormData({ ...formData, modelId: value === 'none' ? '' : value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a model (optional)" />
@@ -727,6 +798,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
                     emptyText="No files attached to this model (add them in 3D Models)"
                   />
                 )}
+                <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />
               </div>
 
               {/* Animation */}
@@ -748,7 +820,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
                       <Label htmlFor="defaultAnimation" className="text-xs">Default Animation</Label>
                       <Select
                         value={formData.defaultAnimation}
-                        onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value })}
+                        onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value === 'none' ? '' : value })}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select animation" />
@@ -1366,7 +1438,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
                 <Label htmlFor="edit-modelId">Model</Label>
                 <Select
                   value={formData.modelId}
-                  onValueChange={(value) => setFormData({ ...formData, modelId: value })}
+                  onValueChange={(value) => setFormData({ ...formData, modelId: value === 'none' ? '' : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a model (optional)" />
@@ -1387,6 +1459,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
                   emptyText="No files attached to this model (add them in 3D Models)"
                 />
               )}
+              <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />
             </div>
 
             {/* Animation */}
@@ -1407,7 +1480,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
                     <Label htmlFor="edit-defaultAnimation" className="text-xs">Default Animation</Label>
                     <Select
                       value={formData.defaultAnimation}
-                      onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value })}
+                      onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value === 'none' ? '' : value })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select animation" />
