@@ -1,10 +1,11 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
     "typecheck": "tsc --noEmit --pretty false",
+    "validate:assets": "node src/lib/scripts/validate-static-assets.mjs",
     "build": "next build",
     "start": "next start -p 4444",
     "db:generate": "drizzle-kit generate",

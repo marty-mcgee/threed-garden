@@ -37,18 +37,22 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.16.7 "Visual Action Targeting".
+Current production version: v0.17.0 "Character Animation, Music Library, and Admin Improvements".
 
-Current release candidate: v0.16.8 "Project-Scoped Harvest Management".
+Current release candidate: v0.17.1 "Production Asset Validation".
 
-v0.16.7 remains the production boundary. Treat the uncommitted v0.16.8 worktree as user-owned release-candidate work and do not overwrite or fold it into unrelated v0.17 structural changes.
+v0.17.0 remains the production boundary. Treat uncommitted v0.17.1 validation and CI work as user-owned release-candidate work and do not overwrite or fold it into unrelated changes.
+
+Production character animations are Git-tracked under `public/assets/animations`. When the external animation manifest or those files change, run `npm run validate:assets`. The GitHub workflow treats missing production animation assets as a blocking failure. TypeScript remains a visible, non-blocking CI diagnostic until the documented v0.17.0 baseline is repaired; Vercel remains the production-build gate.
 
 Treat regressions in:
 - FBX loading
+- external animation asset availability
 - idle/walk/run
 - Garden wander
 - Ecctrl WASD
 - DetailsCard
 - Take/Release Control
 - targeted Water
+- targeted Pick Fruit and project-scoped harvest persistence
 as release-blocking.

@@ -19,8 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.16.7 — Visual Action Targeting** |
-| Previous checkpoint | **v0.16.6b — World Actions v2** |
+| Current stable version | **v0.17.0 — Character Animation, Music Library, and Admin Improvements** |
+| Current release candidate | **v0.17.1 — Production Asset Validation** |
+| Previous checkpoint | **v0.16.8 — Project-Scoped Harvest Management** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -31,7 +32,9 @@
 | Targeted Water world action | ✅ Working |
 | Watering persistence after animation completion | ✅ Working |
 | Pick Fruit animation | ✅ Working |
-| Project-scoped harvest persistence | 🧪 v0.16.8 release candidate; expanded CRUD validation pending |
+| Project-scoped harvest persistence | ✅ Released in v0.17.0 |
+| Production animation asset validation | 🧪 v0.17.1 release candidate; local check passing |
+| GitHub Actions validation | 🧪 v0.17.1 release candidate; first remote run pending |
 
 ## 🧠 Current Character / World-Action Architecture
 
@@ -79,7 +82,7 @@ Planting → Use as Action Target
 
 **Scope boundary:** `Pick Fruit → threed_harvests` persistence was explored after the Water workflow, but is intentionally deferred. Do not treat harvest persistence as a requirement or dependency of v0.16.6b.
 
-### v0.16.8 in-progress world mutation
+### v0.16.8 world mutation — released in v0.17.0
 
 ```text
 Planting → Use as Action Target
@@ -99,12 +102,14 @@ The harvest row and its project association are created transactionally. The ser
 | File | Responsibility |
 |---|---|
 | `src/lib/utils/animation.ts` | Core semantic animation mapping/fallback logic |
+| `src/lib/utils/externalCharacterAnimations.ts` | Static external FBX action manifest and animation loader |
+| `src/lib/scripts/validate-static-assets.mjs` | Validates that every configured production animation exists in a clean checkout |
 | `src/components/threed/shared/GardenCharacter.tsx` | Autonomous/non-controlled character locomotion and task actions |
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Physics/WASD character locomotion and task actions |
 | `src/components/map/ThreeDScene.tsx` | 3D marker routing, physics scene, character request routing |
 | `src/components/map/UnifiedMapView.tsx` | Runtime marker/data bridge into ThreeDScene |
 | `src/app/dashboard/map/page.tsx` | Selection, DetailsCard, control state, action target, world-action completion handling |
-| `src/app/api/threed/world-actions/route.ts` | Authenticated semantic world-action endpoint; stable v0.16.6b action = watering |
+| `src/app/api/threed/world-actions/route.ts` | Authenticated semantic world-action endpoint for targeted Water and Pick Fruit persistence |
 | `src/lib/schema/threed/*` | ThreeD Drizzle schema; inspect before any persistence change |
 
 ---
@@ -143,7 +148,7 @@ The harvest row and its project association are created transactionally. The ser
 
 | Category | Technology |
 |----------|------------|
-| **Framework** | Next.js 16.2.12 (App Router), TypeScript, React |
+| **Framework** | Next.js 16.3.0 (App Router), TypeScript, React |
 | **Database** | Neon Postgres + Drizzle ORM |
 | **UI** | shadcn/ui, Tailwind, Three.JS, React Three Fiber, Leaflet (OpenStreetMaps) |
 | **3D Scene** | React Three Fiber, @react-three/drei, Three.js |
@@ -354,6 +359,9 @@ API (/api/map/threed)
 | **v0.16.6a** | **2026-08-16** | **External FBX character animation library + semantic task actions** |
 | **v0.16.6b** | **2026-08-16** | **World Actions v2 — persistent planting target + completed Water persistence** |
 | **v0.16.7** | **2026-08-16** | **Visual Action Targeting — persistent target pulse, focus controls, and refresh reconciliation** |
+| **v0.16.8** | **2026-08-18** | **Project-Scoped Harvest Management — idempotent Pick Fruit persistence and expanded Harvest CRUD** |
+| **v0.17.0** | **2026-08-18** | **Production release — project-scoped assets, owner-scoped Music, canonical Track imports, ThreeD/Admin UX, and accumulated v0.16.8 work** |
+| **v0.17.1** | **2026-08-18** | **Release candidate — reproducible production animation assets and GitHub Actions validation** |
 
 ---
 
@@ -1019,7 +1027,7 @@ This release remains a client-side ThreeD UX milestone:
 - Selection remains a temporary blue ring while the action target uses a persistent emerald pulse.
 - Targets survive selection and filtering changes, clear on project changes, and reconcile against refreshed planting data.
 
-## 🧪 v0.16.8 — Project-Scoped Harvest Management (release candidate)
+## ✅ v0.16.8 — Project-Scoped Harvest Management (released with v0.17.0)
 
 Targeted `pickFruit`, `pickFruit2`, and `pickFruit3` actions now enter the World Action persistence path after their one-shot animation completes. The authenticated server validates project, character, and planting ownership plus the planting's active project assignment, creates a `threed_harvests` record with a default quantity of `1 each`, and links that record to the planting's ThreeD module through `project_assets` in the same database transaction.
 
@@ -1034,12 +1042,12 @@ The Harvest CRUD/API surfaces now share the same ownership and project-associati
 - Pick Fruit requests carry a per-button-press UUID through animation completion. The server uses that token with a transaction-scoped advisory lock and the existing unique `harvest_id` to make retries idempotent without a schema migration.
 - Harvest `PATCH` now follows the same update implementation as `PUT`, matching the existing Admin client.
 
-`package.json` identifies this revision as `0.16.8`. Production promotion remains dependent on the v0.16.8 manual regression checklist.
+This work passed its manual regression checks and shipped as part of the v0.17.0 production release.
 
 - The v0.16.6b targeted Water completion and persistence flow is unchanged.
 - No database schema or API behavior changed.
 
-v0.16.7 is the complete stable release point for all ThreeD character, animation, control, selection, and targeted Water work delivered through this checkpoint. Development from v0.16.8 onward may focus on other application areas without treating unfinished persistence expansion as part of this release.
+v0.17.0 is the production boundary for the ThreeD character, animation, control, selection, targeted Water, and project-scoped Pick Fruit persistence delivered through this checkpoint.
 
 ### Files changed
 
@@ -1051,15 +1059,15 @@ v0.16.7 is the complete stable release point for all ThreeD character, animation
 | `src/components/map/ThreeDScene.tsx` | Persistent target pulse and target camera focus |
 | `package.json` | Version bumped to `0.16.7` |
 
-## 🚧 v0.17.0 — Agent-Oriented App Structure (incremental)
+## ✅ v0.17.0 — App Structure, Ownership, and Admin Improvements (released to production)
 
-The first v0.17 structural step establishes a repository-level workflow for ChatGPT Codex Agents in VS Code without changing application behavior:
+The v0.17.0 production release includes the accumulated v0.16.8 Harvest work plus incremental structural, API-scoping, Music, and Admin improvements. Its agent-oriented repository workflow establishes:
 
 - `AGENTS.md` requires prove → act → document sequencing and protects dirty-worktree release-candidate changes.
 - `docs/agents/VALIDATION.md` defines the narrow-first validation ladder, known TypeScript baseline, and ThreeD regression gates.
 - `npm run typecheck` is the canonical discoverable TypeScript command.
 
-Future v0.17 structure changes should remain independently reviewable and must not combine file moves or architectural cleanup with feature behavior changes.
+Future v0.17 changes should remain independently reviewable and must not combine file moves or architectural cleanup with feature behavior changes.
 
 ### Project asset-scoping correction
 
@@ -1128,3 +1136,17 @@ The import JSON contract is versioned with top-level `version: 1` and uses appli
 ### Music Admin cover fallback
 
 Music Admin Album grids, Album details, and Track details render a neutral placeholder when an Album has a missing or whitespace-only cover URL. The Album grid also switches to the placeholder when a non-empty cover URL fails to load. Valid cover URLs retain their existing rendering, while empty values are never passed to an image `src` attribute. Album cards request owner-scoped Track enrichment so their Track counts reflect the records assigned to each Album.
+
+## 🧪 v0.17.1 — Production Asset Validation (release candidate)
+
+The external character animation library is now reproducible from a clean Git checkout instead of depending on ignored local files:
+
+- Production FBX files are Git-tracked under `public/assets/animations`; only the separate `public/assets-archive` directory remains ignored.
+- `src/lib/utils/externalCharacterAnimations.ts` remains the single static manifest used by both character runtime paths.
+- `npm run validate:assets` verifies that all 35 animation files referenced by the manifest exist under `public/`.
+- The tracked animation library currently contains 48 FBX files totaling approximately 25.86 MiB. Windows `Zone.Identifier` artifacts are excluded from the animation set.
+- `.github/workflows/validation.yml` runs on pull requests and pushes to `main`. Asset validation is blocking after `actions/checkout`, which also proves the required files are committed.
+- The workflow installs the locked Bun dependencies and reports the existing TypeScript baseline. TypeScript is intentionally non-blocking until that baseline is repaired.
+- Vercel remains the production-build gate because it owns the configured deployment environment. `next.config.ts` still sets `typescript.ignoreBuildErrors`, so a successful build does not replace the standalone TypeScript diagnostic.
+
+This release candidate changes validation and delivery safeguards only. It does not change animation URLs, loaders, mixers, semantic action mapping, character routing, crossfades, World Action timing, database schema, or API behavior.
