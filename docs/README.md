@@ -27,6 +27,7 @@ This directory is the canonical entry point for project documentation. Choose th
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.17.3 production checkpoint](releases/v0.17.3.md)
 - [v0.17.2 production checkpoint](releases/v0.17.2.md)
 
 When documentation and implementation disagree, the current code and schema are authoritative. Correct the documentation as part of the same scoped change.

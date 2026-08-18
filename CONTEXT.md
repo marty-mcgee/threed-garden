@@ -19,10 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.17.2 — API and Type Safety Cleanup** |
-| Current release candidate | **v0.17.3 — Documentation Foundation** |
-| Current development milestone | **Release validation and deployment** |
-| Previous checkpoint | **v0.17.1 — Production Asset Validation** |
+| Current stable version | **v0.17.3 — Documentation Foundation** |
+| Current release candidate | **None designated** |
+| Previous checkpoint | **v0.17.2 — API and Type Safety Cleanup** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -365,6 +364,7 @@ API (/api/map/threed)
 | **v0.17.0** | **2026-08-18** | **Production release — project-scoped assets, owner-scoped Music, canonical Track imports, ThreeD/Admin UX, and accumulated v0.16.8 work** |
 | **v0.17.1** | **2026-08-18** | **Production release — reproducible production animation assets and GitHub Actions validation** |
 | **v0.17.2** | **2026-08-18** | **Production release — API consolidation, current-schema poller alignment, and blocking TypeScript validation** |
+| **v0.17.3** | **2026-08-18** | **Production release — documentation foundation for human users, developers, and coding agents** |
 
 ---
 
@@ -1164,9 +1164,9 @@ This checkpoint does not change the database schema, environment contract, exter
 
 GitHub `main` and Vercel production successfully passed the blocking TypeScript build gate for this release.
 
-## 🚀 v0.17.3 — Documentation Foundation (release candidate)
+## ✅ v0.17.3 — Documentation Foundation (released to production)
 
-The v0.17.3 release candidate introduces a repository documentation hub for human users, developers, and coding agents without changing application behavior:
+The v0.17.3 production release introduces a repository documentation hub for human users, developers, and coding agents without changing application behavior:
 
 - `docs/README.md` is the canonical audience router.
 - `docs/users` explains Admin, Dashboard, project assignment, ThreeD controls, and World Action behavior.
@@ -1175,4 +1175,4 @@ The v0.17.3 release candidate introduces a repository documentation hub for huma
 - `docs/releases` records confirmed production checkpoints separately from in-progress work.
 - `public/llms.txt` provides a compact discovery index for automated readers; it does not replace the source code, schema, `AGENTS.md`, or `CONTEXT.md`.
 
-The root README now links to the documentation hub and accurately describes authenticated ThreeD World Actions as the intentional exception to the Dashboard's primarily read-oriented role. Package and Admin footer metadata identify v0.17.3, while v0.17.2 remains the production boundary until GitHub and Vercel deployment are confirmed.
+The root README links to the documentation hub and accurately describes authenticated ThreeD World Actions as the intentional exception to the Dashboard's primarily read-oriented role. Package and Admin footer metadata identify v0.17.3. GitHub and Vercel production deployment have been confirmed.
