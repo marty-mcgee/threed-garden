@@ -19,8 +19,8 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.17.0 — Character Animation, Music Library, and Admin Improvements** |
-| Current release candidate | **v0.17.1 — Production Asset Validation** |
+| Current stable version | **v0.17.1 — Production Asset Validation** |
+| Current release candidate | **v0.17.2 — API and Type Safety Cleanup** |
 | Previous checkpoint | **v0.16.8 — Project-Scoped Harvest Management** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -33,8 +33,9 @@
 | Watering persistence after animation completion | ✅ Working |
 | Pick Fruit animation | ✅ Working |
 | Project-scoped harvest persistence | ✅ Released in v0.17.0 |
-| Production animation asset validation | 🧪 v0.17.1 release candidate; local check passing |
-| GitHub Actions validation | 🧪 v0.17.1 release candidate; first remote run pending |
+| Production animation asset validation | ✅ Released in v0.17.1 |
+| GitHub Actions validation | ✅ Released in v0.17.1 |
+| Repository TypeScript baseline | ✅ Repaired during v0.17.2 development |
 
 ## 🧠 Current Character / World-Action Architecture
 
@@ -361,7 +362,8 @@ API (/api/map/threed)
 | **v0.16.7** | **2026-08-16** | **Visual Action Targeting — persistent target pulse, focus controls, and refresh reconciliation** |
 | **v0.16.8** | **2026-08-18** | **Project-Scoped Harvest Management — idempotent Pick Fruit persistence and expanded Harvest CRUD** |
 | **v0.17.0** | **2026-08-18** | **Production release — project-scoped assets, owner-scoped Music, canonical Track imports, ThreeD/Admin UX, and accumulated v0.16.8 work** |
-| **v0.17.1** | **2026-08-18** | **Release candidate — reproducible production animation assets and GitHub Actions validation** |
+| **v0.17.1** | **2026-08-18** | **Production release — reproducible production animation assets and GitHub Actions validation** |
+| **v0.17.2** | **2026-08-18** | **Release candidate — API consolidation, current-schema poller alignment, and blocking TypeScript validation** |
 
 ---
 
@@ -1137,7 +1139,7 @@ The import JSON contract is versioned with top-level `version: 1` and uses appli
 
 Music Admin Album grids, Album details, and Track details render a neutral placeholder when an Album has a missing or whitespace-only cover URL. The Album grid also switches to the placeholder when a non-empty cover URL fails to load. Valid cover URLs retain their existing rendering, while empty values are never passed to an image `src` attribute. Album cards request owner-scoped Track enrichment so their Track counts reflect the records assigned to each Album.
 
-## 🧪 v0.17.1 — Production Asset Validation (release candidate)
+## ✅ v0.17.1 — Production Asset Validation (released to production)
 
 The external character animation library is now reproducible from a clean Git checkout instead of depending on ignored local files:
 
@@ -1146,7 +1148,15 @@ The external character animation library is now reproducible from a clean Git ch
 - `npm run validate:assets` verifies that all 35 animation files referenced by the manifest exist under `public/`.
 - The tracked animation library currently contains 48 FBX files totaling approximately 25.86 MiB. Windows `Zone.Identifier` artifacts are excluded from the animation set.
 - `.github/workflows/validation.yml` runs on pull requests and pushes to `main`. Asset validation is blocking after `actions/checkout`, which also proves the required files are committed.
-- The workflow installs the locked Bun dependencies and reports the existing TypeScript baseline. TypeScript is intentionally non-blocking until that baseline is repaired.
-- Vercel remains the production-build gate because it owns the configured deployment environment. `next.config.ts` still sets `typescript.ignoreBuildErrors`, so a successful build does not replace the standalone TypeScript diagnostic.
+- The workflow installs the locked Bun dependencies and validates the production animation assets from a clean checkout.
+- Vercel remains the production-build gate because it owns the configured deployment environment.
 
-This release candidate changes validation and delivery safeguards only. It does not change animation URLs, loaders, mixers, semantic action mapping, character routing, crossfades, World Action timing, database schema, or API behavior.
+This release changes validation and delivery safeguards only. It does not change animation URLs, loaders, mixers, semantic action mapping, character routing, crossfades, World Action timing, database schema, or API behavior.
+
+## 🧪 v0.17.2 — API and Type Safety Cleanup (release candidate)
+
+The release candidate consolidates legacy API/service code around the schema and active route architecture established in v0.17.0. Obsolete duplicate routes and unused services are removed only after reference analysis, while retained Traffic and FarmBot pollers are mapped to current schema fields.
+
+The pre-existing TypeScript baseline is repaired: `npm run typecheck`, `npm run validate:assets`, and `npm run build` all complete successfully with the current validation configuration. GitHub Actions now treats TypeScript errors as blocking, and Next.js production builds no longer use `typescript.ignoreBuildErrors`.
+
+This checkpoint does not change the database schema, environment contract, external FBX manifest, character runtime routing, task-to-locomotion crossfades, DetailsCard behavior, or World Action persistence timing.

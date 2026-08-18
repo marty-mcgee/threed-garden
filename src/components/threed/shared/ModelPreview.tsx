@@ -5,12 +5,22 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment } from '@react-three/drei';
 import { Suspense } from 'react';
 
-function ModelViewer({ url, scale = 1 }) {
-  const { scene } = useGLTF(url);
+interface ModelViewerProps {
+  url: string;
+  scale?: number;
+}
+
+interface ModelPreviewProps {
+  modelUrl: string;
+  scale?: number;
+}
+
+function ModelViewer({ url, scale = 1 }: ModelViewerProps) {
+  const { scene } = useGLTF<string>(url);
   return <primitive object={scene} scale={scale} />;
 }
 
-export function ModelPreview({ modelUrl, scale = 1 }) {
+export function ModelPreview({ modelUrl, scale = 1 }: ModelPreviewProps) {
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden bg-gradient-to-b from-gray-900 to-gray-700">
       <Canvas camera={{ position: [3, 3, 3], fov: 50 }}>

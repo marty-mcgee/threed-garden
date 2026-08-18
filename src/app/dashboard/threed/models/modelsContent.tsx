@@ -529,7 +529,7 @@ export default function ModelsContent() {
       }
     } catch (error) {
       console.error('Add files error:', error);
-      showToast('Failed to add files: ' + error.message);
+      showToast(`Failed to add files: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setAddingFiles(false);
       setUploadProgress(0);
@@ -632,7 +632,7 @@ export default function ModelsContent() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner />
       </div>
     );
   }

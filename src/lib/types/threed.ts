@@ -216,52 +216,6 @@ export interface ThreeDModel {
   updatedAt: string;
 }
 
-export interface ThreeDCharacter {
-  id: number;
-  userId: string;
-  characterId: string;
-  name: string;
-  description: string | null;
-  type: CharacterType;
-  status: string;
-  modelId: number | null;
-  animations: string[];
-  defaultAnimation: string | null;
-  animationSpeed: number | null;
-  isMovable: boolean;
-  movementType: string | null;
-  movementPattern: string | null;
-  movementRadius: number | null;
-  movementSpeed: number | null;
-  patrolWaypoints: any[];
-  followTarget: string | null;
-  followDistance: number | null;
-  teleportPositions: any[];
-  teleportInterval: number | null;
-  interactable: boolean;
-  interactionMessage: string | null;
-  soundEffect: string | null;
-  defaultEmote: string | null;
-  emoteOnInteract: string | null;
-  activeStartHour: number | null;
-  activeEndHour: number | null;
-  weatherSensitivity: string | null;
-  bedId: number | null;
-  positionX: number | null;
-  positionY: number | null;
-  positionZ: number | null;
-  rotation: number | null;
-  scale: number | null;
-  scaleMultiplier: number | null;
-  colorTint: string | null;
-  visible: boolean;
-  visibleDistance: number | null;
-  isActive: boolean;
-  metadata: any;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface ThreeDSelectOption {
   value: string;
   label: string;
@@ -726,6 +680,7 @@ export interface ThreeDCharacter {
   description: string | null;
   type: CharacterType;
   status: CharacterStatus;
+  modelId: number | null;
   
   // Model relationships (many-to-many)
   characterModels?: CharacterModelAssociation[];
@@ -1364,7 +1319,6 @@ export const HARVEST_UNIT_OPTIONS: ThreeDSelectOption[] = [
   { value: HarvestUnit.BUNCHES, label: 'Bunches' },
   { value: HarvestUnit.POUNDS, label: 'Pounds' },
 ];
-
 
 
 

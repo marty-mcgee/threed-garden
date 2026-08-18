@@ -7,6 +7,3 @@ export const cityCoordinates: Record<string, { lat: number; lng: number }> = {
   'Crescent City': { lat: 41.756, lng: -124.202 },
   'HM': { lat: 40.745, lng: -124.010 },
 };
-
-// In your poller, use city as fallback
-const coords = cityCoordinates[city] || cityCoordinates[center.name] || null;

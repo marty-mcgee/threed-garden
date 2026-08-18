@@ -9,7 +9,7 @@ import {
   Image, Volume2, type LucideIcon
 } from 'lucide-react';
 import { getClientSettings, isServiceEnabledClient } from './settings.client';
-import type { ModuleName } from './settings-old';
+import type { ModuleName } from './settings';
 
 export interface NavItem {
   path: string;

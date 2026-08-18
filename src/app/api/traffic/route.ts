@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const projectId = searchParams.get('projectId');
     const includeInactive = searchParams.get('includeInactive') === 'true';
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -44,25 +43,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: result });
     }
 
-    // ✅ List all modules (matching Music/ThreeD)
-    let query = db
-      .select()
-      .from(traffic)
-      .where(eq(traffic.userId, session.user.id));
-
-    if (projectId) {
-      query = query.where(eq(traffic.projectId, parseInt(projectId)));
-    }
+    const conditions = [eq(traffic.userId, session.user.id)];
     if (!includeInactive) {
-      query = query.where(eq(traffic.isActive, true));
+      conditions.push(eq(traffic.isActive, true));
     }
+    const predicate = and(...conditions);
 
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(traffic)
-      .where(eq(traffic.userId, session.user.id));
+      .where(predicate);
 
-    const results = await query
+    const results = await db
+      .select()
+      .from(traffic)
+      .where(predicate)
       .orderBy(desc(traffic.createdAt))
       .limit(limit)
       .offset(offset);
@@ -154,7 +149,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { projectId, name, description, isActive, isPublic, config, version, metadata } = body;
+    const { name, description, isActive, isPublic, config, version, metadata } = body;
 
     const [existing] = await db
       .select()
@@ -177,7 +172,6 @@ export async function PUT(request: NextRequest) {
     const [updated] = await db
       .update(traffic)
       .set({
-        projectId: projectId || existing.projectId,
         name: name || existing.name,
         description: description !== undefined ? description : existing.description,
         slug: name ? name.toLowerCase().replace(/\s+/g, '-') : existing.slug,

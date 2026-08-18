@@ -1,4 +1,5 @@
 // lib/data/settings/seed.ts
+import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
 import { settings, settingsDeployment } from '@/lib/schema/settings';
 

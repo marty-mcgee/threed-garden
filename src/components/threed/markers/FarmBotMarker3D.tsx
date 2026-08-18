@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Html } from '@react-three/drei';
 
 interface FarmBotData {
-  id?: number;
+  id?: number | string;
   name: string;
   status?: string;
   batteryLevel?: number;

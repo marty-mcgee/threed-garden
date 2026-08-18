@@ -6,6 +6,14 @@ import { trafficCalfireIncidents } from '@/lib/schema/traffic';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
+const INCIDENT_STATUSES = ['active', 'cleared', 'pending', 'unknown'] as const;
+
+type IncidentStatus = (typeof INCIDENT_STATUSES)[number];
+
+function isIncidentStatus(value: string): value is IncidentStatus {
+  return INCIDENT_STATUSES.some((status) => status === value);
+}
+
 // ============================================
 // GET /api/traffic/calfire - List CalFire Incidents
 // Query Parameters:
@@ -37,22 +45,21 @@ export async function GET(request: NextRequest) {
 
     // Get a single incident by ID
     if (id) {
-      let query = db
+      const [incident] = await db
         .select()
         .from(trafficCalfireIncidents)
-        .where(eq(trafficCalfireIncidents.id, parseInt(id)));
-
-      // Public users only see active public incidents
-      if (!userId) {
-        query = query.where(
+        .where(
           and(
-            eq(trafficCalfireIncidents.isPublic, true),
-            eq(trafficCalfireIncidents.isActive, true)
+            eq(trafficCalfireIncidents.id, parseInt(id)),
+            userId
+              ? undefined
+              : and(
+                  eq(trafficCalfireIncidents.isPublic, true),
+                  eq(trafficCalfireIncidents.isActive, true)
+                )
           )
-        );
-      }
-
-      const [incident] = await query.limit(1);
+        )
+        .limit(1);
 
       if (!incident) {
         return NextResponse.json(
@@ -67,69 +74,66 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
-    let query = db
-      .select()
-      .from(trafficCalfireIncidents)
-      .$dynamic();
-
-    // ✅ Apply user filtering
-    if (userId) {
-      // Authenticated users see their incidents + active public incidents
-      query = query.where(
-        or(
-          eq(trafficCalfireIncidents.userId, userId),
-          and(
+    const conditions = [
+      userId
+        ? or(
+            eq(trafficCalfireIncidents.userId, userId),
+            and(
+              eq(trafficCalfireIncidents.isPublic, true),
+              eq(trafficCalfireIncidents.isActive, true)
+            )
+          )
+        : and(
             eq(trafficCalfireIncidents.isPublic, true),
             eq(trafficCalfireIncidents.isActive, true)
-          )
-        )
-      );
-    } else {
-      // Public users only see active public incidents
-      query = query.where(
-        and(
-          eq(trafficCalfireIncidents.isPublic, true),
-          eq(trafficCalfireIncidents.isActive, true)
-        )
-      );
-    }
+          ),
+    ];
 
-    // ✅ Apply filters
     if (isActive !== null) {
-      query = query.where(eq(trafficCalfireIncidents.isActive, isActive === 'true'));
+      conditions.push(eq(trafficCalfireIncidents.isActive, isActive === 'true'));
     }
 
     if (isPublic !== null) {
-      query = query.where(eq(trafficCalfireIncidents.isPublic, isPublic === 'true'));
+      conditions.push(eq(trafficCalfireIncidents.isPublic, isPublic === 'true'));
     }
 
     if (status) {
-      query = query.where(eq(trafficCalfireIncidents.status, status));
+      if (!isIncidentStatus(status)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid status parameter' },
+          { status: 400 }
+        );
+      }
+      conditions.push(eq(trafficCalfireIncidents.status, status));
     }
 
     if (severity) {
-      query = query.where(eq(trafficCalfireIncidents.severity, parseInt(severity)));
+      conditions.push(eq(trafficCalfireIncidents.severity, parseInt(severity)));
     }
 
     if (county) {
-      query = query.where(eq(trafficCalfireIncidents.county, county));
+      conditions.push(eq(trafficCalfireIncidents.county, county));
     }
 
     if (fireType) {
-      query = query.where(eq(trafficCalfireIncidents.fireType, fireType));
+      conditions.push(eq(trafficCalfireIncidents.fireType, fireType));
     }
+
+    const predicate = and(...conditions);
 
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficCalfireIncidents)
-      .where(query._where);
+      .where(predicate);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const incidents = await query
+    const incidents = await db
+      .select()
+      .from(trafficCalfireIncidents)
+      .where(predicate)
       .orderBy(desc(trafficCalfireIncidents.reportedAt))
       .limit(limit)
       .offset(offset);
@@ -221,6 +225,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (status && !isIncidentStatus(status)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid status' },
+        { status: 400 }
+      );
+    }
+
     const userId = session.user.id;
 
     // ✅ Check if incidentId already exists
@@ -273,9 +284,9 @@ export async function POST(request: NextRequest) {
         cause: cause || null,
         fireType: fireType || null,
         evacuations: evacuations || null,
-        reportedAt: new Date(reportedAt),
-        containedAt: containedAt ? new Date(containedAt) : null,
-        lastUpdated: new Date(lastUpdated || Date.now()),
+        reportedAt: new Date(reportedAt).toISOString(),
+        containedAt: containedAt ? new Date(containedAt).toISOString() : null,
+        lastUpdated: new Date(lastUpdated || Date.now()).toISOString(),
         rawData: rawData || null,
         notes: notes || null,
         isActive: isActive ?? true,
@@ -353,6 +364,13 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    if (body.status !== undefined && !isIncidentStatus(body.status)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid status' },
+        { status: 400 }
+      );
+    }
+
     // ✅ Helper function to handle numeric fields
     const parseNumeric = (value: any) => {
       if (value === '' || value === null || value === undefined || isNaN(parseFloat(value))) {
@@ -381,9 +399,15 @@ export async function PATCH(request: NextRequest) {
     if (body.cause !== undefined) updateData.cause = body.cause;
     if (body.fireType !== undefined) updateData.fireType = body.fireType;
     if (body.evacuations !== undefined) updateData.evacuations = body.evacuations;
-    if (body.reportedAt !== undefined) updateData.reportedAt = new Date(body.reportedAt);
-    if (body.containedAt !== undefined) updateData.containedAt = body.containedAt ? new Date(body.containedAt) : null;
-    if (body.lastUpdated !== undefined) updateData.lastUpdated = new Date(body.lastUpdated);
+    if (body.reportedAt !== undefined) updateData.reportedAt = new Date(body.reportedAt).toISOString();
+    if (body.containedAt !== undefined) {
+      updateData.containedAt = body.containedAt
+        ? new Date(body.containedAt).toISOString()
+        : null;
+    }
+    if (body.lastUpdated !== undefined) {
+      updateData.lastUpdated = new Date(body.lastUpdated).toISOString();
+    }
     if (body.notes !== undefined) updateData.notes = body.notes;
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
     if (body.isPublic !== undefined) updateData.isPublic = body.isPublic;

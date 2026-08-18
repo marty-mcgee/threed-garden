@@ -6,7 +6,7 @@ import {
   threedPlants,
   threedModels,
 } from '@/lib/schema/threed';
-import { eq, and, desc, or, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -74,44 +74,46 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build query
-    let query = db
-      .select()
-      .from(threedPlants)
-      .where(eq(threedPlants.userId, userId))
-      .$dynamic();
+    type PlantType = NonNullable<(typeof threedPlants.$inferSelect)['type']>;
+    type PlantStatus = NonNullable<(typeof threedPlants.$inferSelect)['status']>;
+    const conditions: SQL[] = [eq(threedPlants.userId, userId)];
 
     // ✅ Apply filters
     if (type) {
-      query = query.where(eq(threedPlants.type, type));
+      conditions.push(eq(threedPlants.type, type as PlantType));
     }
 
     if (status) {
-      query = query.where(eq(threedPlants.status, status));
+      conditions.push(eq(threedPlants.status, status as PlantStatus));
     }
 
     if (isActive !== null) {
-      query = query.where(eq(threedPlants.isActive, isActive === 'true'));
+      conditions.push(eq(threedPlants.isActive, isActive === 'true'));
     }
 
     if (search) {
-      query = query.where(
+      conditions.push(
         sql`${threedPlants.commonName} ILIKE ${`%${search}%`} OR 
             ${threedPlants.scientificName} ILIKE ${`%${search}%`} OR
             ${threedPlants.plantId} ILIKE ${`%${search}%`}`
       );
     }
 
+    const where = and(...conditions);
+
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedPlants)
-      .where(query._where);
+      .where(where);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const results = await query
+    const results = await db
+      .select()
+      .from(threedPlants)
+      .where(where)
       .orderBy(desc(threedPlants.createdAt))
       .limit(limit)
       .offset(offset);

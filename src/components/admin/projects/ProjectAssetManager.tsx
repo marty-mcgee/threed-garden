@@ -604,7 +604,7 @@ export function ProjectAssetManager({
               key={config.id}
               variant={isActive ? 'default' : 'ghost'}
               size="sm"
-              className={`text-xs h-7 px-2 ${isActive ? '' : config.color}`}
+              className={`text-xs h-7 px-2 ${isActive ? '' : moduleConfig.color}`}
               onClick={() => setSelectedAssetType(config.id)}
             >
               <Icon className="w-3 h-3 mr-1" />

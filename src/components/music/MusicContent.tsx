@@ -209,7 +209,7 @@ export default function MusicContent() {
           
           // ✅ Update selected album if it's the current one
           if (selectedAlbum?.id === albumId) {
-            setSelectedAlbum(prev => ({ ...prev, tracks: fetchedTracks }));
+            setSelectedAlbum({ ...selectedAlbum, tracks: fetchedTracks });
           }
           
           setTracks(fetchedTracks);

@@ -180,7 +180,7 @@ export default function DashboardPage() {
             timestamp: item.startTime,
             severity: item.severity,
           });
-          counts['bayarea511']++;
+          counts['bay-area-511']++;
         }
       });
       
@@ -248,7 +248,7 @@ export default function DashboardPage() {
       setLayers(prev => prev.map(layer => ({
         ...layer,
         count: layer.id === 'caltrans' ? counts.caltrans :
-               layer.id === 'bay-area-511' ? counts.bayarea511 :
+               layer.id === 'bay-area-511' ? counts['bay-area-511'] :
                layer.id === 'chp-live' ? counts['chp-live'] :
                layer.id === 'chp-historical' ? counts['chp-historical'] : 0
       })));

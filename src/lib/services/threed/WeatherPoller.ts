@@ -150,7 +150,6 @@ export class WeatherPoller {
       return {
         success: saved,
         stats: this.lastPollStats,
-        timestamp: new Date().toISOString()
       };
       
     } catch (error) {

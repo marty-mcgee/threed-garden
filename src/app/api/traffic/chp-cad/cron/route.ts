@@ -10,7 +10,7 @@ export async function GET() {
   
   try {
     const poller = new CHPCADPoller();
-    const result = await poller.pollAll({ startDate: '2026-05-20' });
+    const result = await poller.pollAll();
     
     return NextResponse.json({
       success: result.success,

@@ -42,7 +42,7 @@ async function syncAllSequences() {
     try {
       const [maxResult] = await db
         .select({ maxId: sql<number>`COALESCE(MAX(id), 0)` })
-        .from(sql.identifier(table));
+        .from(sql`${sql.identifier(table)}`);
       
       const maxId = maxResult?.maxId || 0;
       const nextVal = maxId + 1;

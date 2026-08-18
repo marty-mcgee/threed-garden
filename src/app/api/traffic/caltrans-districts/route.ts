@@ -31,17 +31,16 @@ export async function GET(request: NextRequest) {
 
     // Get a single district by ID
     if (id) {
-      let query = db
+      const [district] = await db
         .select()
         .from(trafficCaltransDistricts)
-        .where(eq(trafficCaltransDistricts.id, parseInt(id)));
-
-      // Public users only see active districts
-      if (!userId) {
-        query = query.where(eq(trafficCaltransDistricts.isActive, true));
-      }
-
-      const [district] = await query.limit(1);
+        .where(
+          and(
+            eq(trafficCaltransDistricts.id, parseInt(id)),
+            userId ? undefined : eq(trafficCaltransDistricts.isActive, true)
+          )
+        )
+        .limit(1);
 
       if (!district) {
         return NextResponse.json(
@@ -56,53 +55,48 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
-    let query = db
-      .select()
-      .from(trafficCaltransDistricts)
-      .$dynamic();
+    const conditions = [
+      userId
+        ? or(
+            eq(trafficCaltransDistricts.userId, userId),
+            eq(trafficCaltransDistricts.isActive, true)
+          )
+        : eq(trafficCaltransDistricts.isActive, true),
+    ];
 
-    // ✅ Apply user filtering
-    if (userId) {
-      // Authenticated users see their districts + active public districts
-      query = query.where(
-        or(
-          eq(trafficCaltransDistricts.userId, userId),
-          eq(trafficCaltransDistricts.isActive, true)
-        )
-      );
-    } else {
-      // Public users only see active districts
-      query = query.where(eq(trafficCaltransDistricts.isActive, true));
-    }
-
-    // ✅ Apply filters
     if (isActive !== null) {
-      query = query.where(eq(trafficCaltransDistricts.isActive, isActive === 'true'));
+      conditions.push(eq(trafficCaltransDistricts.isActive, isActive === 'true'));
     }
 
     if (region) {
-      query = query.where(eq(trafficCaltransDistricts.region, region));
+      conditions.push(eq(trafficCaltransDistricts.region, region));
     }
 
     if (search) {
-      query = query.where(
-        sql`${trafficCaltransDistricts.name} ILIKE ${`%${search}%`} OR 
-            ${trafficCaltransDistricts.description} ILIKE ${`%${search}%`} OR
-            ${trafficCaltransDistricts.districtId} ILIKE ${`%${search}%`}`
+      conditions.push(
+        or(
+          sql`${trafficCaltransDistricts.name} ILIKE ${`%${search}%`}`,
+          sql`${trafficCaltransDistricts.description} ILIKE ${`%${search}%`}`,
+          sql`${trafficCaltransDistricts.districtId} ILIKE ${`%${search}%`}`
+        )
       );
     }
+
+    const predicate = and(...conditions);
 
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficCaltransDistricts)
-      .where(query._where);
+      .where(predicate);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const districts = await query
+    const districts = await db
+      .select()
+      .from(trafficCaltransDistricts)
+      .where(predicate)
       .orderBy(desc(trafficCaltransDistricts.createdAt))
       .limit(limit)
       .offset(offset);

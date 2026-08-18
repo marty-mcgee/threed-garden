@@ -4,6 +4,13 @@ import { db } from '@/lib/db/client';
 import { trafficCalfireIncidents } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 
+interface CalFirePollResult {
+  success: boolean;
+  stats?: any;
+  error?: string;
+  timestamp?: string;
+}
+
 // Northern California counties to monitor (including test counties)
 const NORTHERN_CA_COUNTIES = [
   'Mendocino', 'Humboldt', 'Lake', 'Sonoma', 'Napa', 'Marin',
@@ -23,6 +30,11 @@ export class CalFirePoller {
   private pollingActive = false;
   private lastPollTime: Date | null = null;
   private lastPollStats: any = null;
+
+  private normalizeTimestamp(value: unknown, fallback = new Date()): string {
+    const parsed = value ? new Date(String(value)) : fallback;
+    return Number.isNaN(parsed.getTime()) ? fallback.toISOString() : parsed.toISOString();
+  }
 
   // src/lib/services/CalFirePoller.ts - Updated fetchIncidents method
 
@@ -127,7 +139,7 @@ export class CalFirePoller {
   /**
    * Poll ALL incidents without county filtering (for backfill)
    */
-  async pollAllUnfiltered(): Promise<{ success: boolean; stats?: any; error?: string }> {
+  async pollAllUnfiltered(): Promise<CalFirePollResult> {
     if (this.pollingActive) {
       return { success: false, error: 'Polling already in progress' };
     }
@@ -223,41 +235,46 @@ export class CalFirePoller {
     const existing = await db
       .select()
       .from(trafficCalfireIncidents)
-      .where(eq(trafficCalfireIncidents.uniqueId, uniqueId))
+      .where(eq(trafficCalfireIncidents.incidentId, uniqueId))
       .limit(1);
     
-    const isActive = incident.IsActive === true;
+    const sourceIsActive = incident.IsActive === true;
     const percentContained = incident.PercentContained ? parseFloat(incident.PercentContained) : null;
-    const isExtinguished = !isActive || percentContained === 100;
-    
-    const incidentData = {
-      uniqueId: uniqueId,
-      name: incident.Name || 'Unknown',
-      type: incident.Type || 'Wildfire',
-      status: isExtinguished ? 'extinguished' : (isActive ? 'active' : 'inactive'),
-      county: incident.County,
-      location: incident.Location,
-      latitude: incident.Latitude ? parseFloat(incident.Latitude) : null,
-      longitude: incident.Longitude ? parseFloat(incident.Longitude) : null,
-      acresBurned: incident.AcresBurned ? parseFloat(incident.AcresBurned) : null,
-      percentContained: percentContained,
-      startedAt: incident.Started ? new Date(incident.Started) : null,
-      updatedAt: incident.Updated ? new Date(incident.Updated) : null,
-      extinguishedAt: incident.ExtinguishedDate ? new Date(incident.ExtinguishedDate) : null,
-      adminUnit: incident.AdminUnit,
-      url: incident.Url,
-      isActive: isActive,
-      isCalFireIncident: incident.CalFireIncident === true,
+    const isExtinguished = !sourceIsActive || percentContained === 100;
+    const isActive = sourceIsActive && !isExtinguished;
+    const lastUpdated = this.normalizeTimestamp(incident.Updated || incident.Started);
+
+    const incidentData: typeof trafficCalfireIncidents.$inferInsert = {
+      incidentId: uniqueId,
+      sourceId: uniqueId,
+      title: incident.Name || 'Unknown',
+      description: incident.AdminUnit || null,
+      incidentType: incident.Type || 'wildfire',
+      status: isExtinguished ? 'cleared' : 'active',
+      county: incident.County || null,
+      location: incident.Location || null,
+      latitude: incident.Latitude ? String(incident.Latitude) : null,
+      longitude: incident.Longitude ? String(incident.Longitude) : null,
+      acreage: incident.AcresBurned ? Math.round(parseFloat(incident.AcresBurned)) : null,
+      containment: percentContained === null ? null : Math.round(percentContained),
+      fireType: incident.Type || null,
+      reportedAt: this.normalizeTimestamp(incident.Started || incident.Updated),
+      containedAt: incident.ExtinguishedDate
+        ? this.normalizeTimestamp(incident.ExtinguishedDate)
+        : null,
+      lastUpdated,
+      notes: incident.Url || null,
       rawData: incident,
-      lastSeen: new Date(),
+      isActive,
+      isPublic: true,
     };
     
     try {
       if (existing.length > 0) {
-        await db.update(trafficCalfireIncidents).set({
-          ...incidentData,
-          lastSeen: new Date(),
-        }).where(eq(trafficCalfireIncidents.uniqueId, uniqueId));
+        await db
+          .update(trafficCalfireIncidents)
+          .set(incidentData)
+          .where(eq(trafficCalfireIncidents.incidentId, uniqueId));
         
         // Check if status changed from active to inactive
         const wasActive = existing[0].isActive;
@@ -278,7 +295,7 @@ export class CalFirePoller {
   /**
    * Poll ONLY active incidents (for quick updates)
    */
-  async pollActive(): Promise<{ success: boolean; stats?: any; error?: string }> {
+  async pollActive(): Promise<CalFirePollResult> {
     if (this.pollingActive) {
       return { success: false, error: 'Polling already in progress' };
     }
@@ -323,7 +340,7 @@ export class CalFirePoller {
   /**
    * Poll ALL incidents (including inactive) - for backfill or full sync
    */
-  async pollAll(): Promise<{ success: boolean; stats?: any; error?: string }> {
+  async pollAll(): Promise<CalFirePollResult> {
     if (this.pollingActive) {
       return { success: false, error: 'Polling already in progress' };
     }
@@ -391,7 +408,7 @@ export class CalFirePoller {
       .orderBy(sql`count DESC`);
     
     const totalAcres = await db
-      .select({ sum: sql<number>`SUM(acres_burned)` })
+      .select({ sum: sql<number>`SUM(${trafficCalfireIncidents.acreage})` })
       .from(trafficCalfireIncidents)
       .where(eq(trafficCalfireIncidents.isActive, true));
     

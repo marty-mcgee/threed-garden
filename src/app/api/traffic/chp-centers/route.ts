@@ -33,17 +33,16 @@ export async function GET(request: NextRequest) {
 
     // Get a single center by ID
     if (id) {
-      let query = db
+      const [center] = await db
         .select()
         .from(trafficChpCenters)
-        .where(eq(trafficChpCenters.id, parseInt(id)));
-
-      // Public users only see active centers
-      if (!userId) {
-        query = query.where(eq(trafficChpCenters.isActive, true));
-      }
-
-      const [center] = await query.limit(1);
+        .where(
+          and(
+            eq(trafficChpCenters.id, parseInt(id)),
+            userId ? undefined : eq(trafficChpCenters.isActive, true)
+          )
+        )
+        .limit(1);
 
       if (!center) {
         return NextResponse.json(
@@ -58,58 +57,53 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
-    let query = db
-      .select()
-      .from(trafficChpCenters)
-      .$dynamic();
+    const conditions = [
+      userId
+        ? or(
+            eq(trafficChpCenters.userId, userId),
+            eq(trafficChpCenters.isActive, true)
+          )
+        : eq(trafficChpCenters.isActive, true),
+    ];
 
-    // ✅ Apply user filtering
-    if (userId) {
-      // Authenticated users see their centers + active public centers
-      query = query.where(
-        or(
-          eq(trafficChpCenters.userId, userId),
-          eq(trafficChpCenters.isActive, true)
-        )
-      );
-    } else {
-      // Public users only see active centers
-      query = query.where(eq(trafficChpCenters.isActive, true));
-    }
-
-    // ✅ Apply filters
     if (isActive !== null) {
-      query = query.where(eq(trafficChpCenters.isActive, isActive === 'true'));
+      conditions.push(eq(trafficChpCenters.isActive, isActive === 'true'));
     }
 
     if (county) {
-      query = query.where(eq(trafficChpCenters.county, county));
+      conditions.push(eq(trafficChpCenters.county, county));
     }
 
     if (region) {
-      query = query.where(eq(trafficChpCenters.region, region));
+      conditions.push(eq(trafficChpCenters.region, region));
     }
 
     if (search) {
-      query = query.where(
-        sql`${trafficChpCenters.name} ILIKE ${`%${search}%`} OR 
-            ${trafficChpCenters.description} ILIKE ${`%${search}%`} OR
-            ${trafficChpCenters.city} ILIKE ${`%${search}%`} OR
-            ${trafficChpCenters.county} ILIKE ${`%${search}%`}`
+      conditions.push(
+        or(
+          sql`${trafficChpCenters.name} ILIKE ${`%${search}%`}`,
+          sql`${trafficChpCenters.description} ILIKE ${`%${search}%`}`,
+          sql`${trafficChpCenters.city} ILIKE ${`%${search}%`}`,
+          sql`${trafficChpCenters.county} ILIKE ${`%${search}%`}`
+        )
       );
     }
+
+    const predicate = and(...conditions);
 
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficChpCenters)
-      .where(query._where);
+      .where(predicate);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const centers = await query
+    const centers = await db
+      .select()
+      .from(trafficChpCenters)
+      .where(predicate)
       .orderBy(desc(trafficChpCenters.createdAt))
       .limit(limit)
       .offset(offset);

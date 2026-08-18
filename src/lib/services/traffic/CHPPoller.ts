@@ -16,20 +16,18 @@ export class CHPPoller {
    */
   private async getLatestCollisionDate(): Promise<Date | null> {
     const result = await db
-      .select({ latestDate: trafficChpCases.collisionDate })
+      .select({ latestDate: trafficChpCases.occurredAt })
       .from(trafficChpCases)
-      .orderBy(desc(trafficChpCases.collisionDate))
+      .orderBy(desc(trafficChpCases.occurredAt))
       .limit(1);
     
-    return result[0]?.latestDate || null;
+    return result[0]?.latestDate ? new Date(result[0].latestDate) : null;
   }
 
   /**
    * Fetch only NEW records (since latest date in DB)
    */
   private async fetchNewRecords(sinceDate: Date, limit: number = 500): Promise<any[]> {
-    const sinceDateStr = sinceDate.toISOString().split('T')[0];
-    
     const url = new URL(this.baseUrl);
     url.searchParams.append('resource_id', this.resourceId);
     url.searchParams.append('limit', String(limit));
@@ -63,35 +61,51 @@ export class CHPPoller {
     if (existing.length > 0) return 'skipped';
     
     const collisionDate = record['Crash Date Time'] ? new Date(record['Crash Date Time']) : null;
+
+    if (!collisionDate || Number.isNaN(collisionDate.getTime())) {
+      return 'skipped';
+    }
+
+    const normalizeCoordinate = (value: unknown) => {
+      const parsed = typeof value === 'number' ? value : parseFloat(String(value));
+      return Number.isFinite(parsed) ? String(parsed) : null;
+    };
+    const collisionDescription = record['Collision Type Description'] || null;
+    const primaryFactor = record['Primary Collision Factor Violation'] || null;
     
     await db.insert(trafficChpCases).values({
-      caseId: caseId,
-      collisionDate: collisionDate,
-      collisionYear: collisionDate?.getFullYear() || null,
-      severity: this.mapSeverity(record['Collision Type Description']),
+      caseId: String(caseId),
+      sourceId: String(caseId),
+      title: `CHP collision ${String(caseId)}`,
+      description: primaryFactor || collisionDescription,
+      type: 'traffic_collision',
+      severity: this.mapSeverity(collisionDescription),
       county: record['County Code'] ? String(record['County Code']) : null,
-      city: record['City Name'],
+      city: record['City Name'] || null,
       location: this.buildLocation(record),
-      latitude: record['Latitude'] ? parseFloat(record['Latitude']) : null,
-      longitude: record['Longitude'] ? parseFloat(record['Longitude']) : null,
-      primaryFactor: record['Primary Collision Factor Violation'],
-      weather: record['Weather 1'],
-      lighting: record['LightingDescription'],
-      injuries: record['NumberInjured'] || 0,
-      fatalities: record['NumberKilled'] || 0,
+      latitude: normalizeCoordinate(record['Latitude']),
+      longitude: normalizeCoordinate(record['Longitude']),
+      collisionType: collisionDescription,
+      weatherCondition: record['Weather 1'] || null,
+      roadCondition: record['Road Condition 1'] || null,
+      lightCondition: record['LightingDescription'] || null,
+      injuries: Number(record['NumberInjured']) || 0,
+      fatalities: Number(record['NumberKilled']) || 0,
+      occurredAt: collisionDate.toISOString(),
       rawData: record,
-      lastSeen: new Date(),
+      isActive: true,
+      isPublic: true,
     });
     
     return 'new';
   }
 
-  private mapSeverity(collisionType: string): string {
-    if (!collisionType) return 'Unknown';
+  private mapSeverity(collisionType: string): number {
+    if (!collisionType) return 1;
     const type = collisionType.toLowerCase();
-    if (type.includes('fatal')) return 'Fatal';
-    if (type.includes('injury')) return 'Injury';
-    return 'Property Damage';
+    if (type.includes('fatal')) return 5;
+    if (type.includes('injury')) return 3;
+    return 1;
   }
 
   private buildLocation(record: any): string {
@@ -105,7 +119,7 @@ export class CHPPoller {
   /**
    * Simple incremental poller - only fetches new records since last poll
    */
-  async pollAll(options?: { limit?: number; startDate?: string; endDate?: string }): Promise<{ success: boolean; stats?: any; error?: string }> {
+  async pollAll(options?: { limit?: number; startDate?: string; endDate?: string }): Promise<{ success: boolean; stats?: any; error?: string; timestamp?: string }> {
     if (this.pollingActive) {
       return { success: false, error: 'Polling already in progress' };
     }
@@ -178,6 +192,8 @@ export class CHPPoller {
   }
 
   async getStats() {
+    const collisionYear = sql<number>`extract(year from ${trafficChpCases.occurredAt})`;
+
     const total = await db
       .select({ count: sql<number>`COUNT(*)` })
       .from(trafficChpCases);
@@ -192,18 +208,17 @@ export class CHPPoller {
     
     const byYear = await db
       .select({
-        year: trafficChpCases.collisionYear,
+        year: collisionYear,
         count: sql<number>`COUNT(*)`,
       })
       .from(trafficChpCases)
-      .where(sql`${trafficChpCases.collisionYear} IS NOT NULL`)
-      .groupBy(trafficChpCases.collisionYear)
-      .orderBy(sql`year DESC`);
+      .groupBy(collisionYear)
+      .orderBy(desc(collisionYear));
     
     const latest = await db
-      .select({ latestDate: trafficChpCases.collisionDate })
+      .select({ latestDate: trafficChpCases.occurredAt })
       .from(trafficChpCases)
-      .orderBy(desc(trafficChpCases.collisionDate))
+      .orderBy(desc(trafficChpCases.occurredAt))
       .limit(1);
     
     return {

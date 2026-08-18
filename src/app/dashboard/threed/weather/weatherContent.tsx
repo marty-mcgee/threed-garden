@@ -348,9 +348,21 @@ export default function WeatherContent() {
                   <td className="px-4 py-3 text-sm">{safeParseFloat(log.windSpeed).toFixed(1)} mph</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
-                      {log.frostWarning && <Snowflake className="w-4 h-4 text-blue-500" title="Frost Warning" />}
-                      {log.heatWarning && <Thermometer className="w-4 h-4 text-red-500" title="Heat Warning" />}
-                      {log.droughtWarning && <CloudRain className="w-4 h-4 text-yellow-500" title="Drought Warning" />}
+                      {log.frostWarning && (
+                        <Snowflake className="w-4 h-4 text-blue-500">
+                          <title>Frost Warning</title>
+                        </Snowflake>
+                      )}
+                      {log.heatWarning && (
+                        <Thermometer className="w-4 h-4 text-red-500">
+                          <title>Heat Warning</title>
+                        </Thermometer>
+                      )}
+                      {log.droughtWarning && (
+                        <CloudRain className="w-4 h-4 text-yellow-500">
+                          <title>Drought Warning</title>
+                        </CloudRain>
+                      )}
                     </div>
                   </td>
                 </tr>

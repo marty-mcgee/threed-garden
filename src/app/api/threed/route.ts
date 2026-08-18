@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threed } from '@/lib/schema/threed';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { eq, desc, and, sql, type SQL } from 'drizzle-orm';
 
 // ============================================
 // GET /api/threed - List all ThreeD modules
@@ -45,24 +45,26 @@ export async function GET(request: NextRequest) {
     }
 
     // ✅ List all modules
-    let query = db
-      .select()
-      .from(threed)
-      .where(eq(threed.userId, session.user.id));
+    const conditions: SQL[] = [eq(threed.userId, session.user.id)];
 
     if (projectId) {
-      query = query.where(eq(threed.projectId, parseInt(projectId)));
+      conditions.push(eq(threed.projectId, parseInt(projectId)));
     }
     if (!includeInactive) {
-      query = query.where(eq(threed.isActive, true));
+      conditions.push(eq(threed.isActive, true));
     }
+
+    const where = and(...conditions);
 
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(threed)
-      .where(eq(threed.userId, session.user.id));
+      .where(where);
 
-    const results = await query
+    const results = await db
+      .select()
+      .from(threed)
+      .where(where)
       .orderBy(desc(threed.createdAt))
       .limit(limit)
       .offset(offset);

@@ -2,8 +2,8 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { db } from '@/lib/db/client';
-import { trafficChpCadIncidents, trafficChpCenters  } from '@/lib/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { trafficChpCadIncidents, trafficChpCenters } from '@/lib/schema';
+import { eq, sql } from 'drizzle-orm';
 // import { getCityCoordinates } from '@/lib/utils/cityGeocoder';
 
 const CENTERS_LIST = [
@@ -85,9 +85,9 @@ export class CHPCADPoller {
       console.log(`  Fetching ${center.name} (${center.code})...`);
       
       const centerRecord = await db
-        .select({ id: trafficChpCenters .id })
-        .from(trafficChpCenters )
-        .where(eq(trafficChpCenters .centerCode, center.code))
+        .select({ id: trafficChpCenters.id })
+        .from(trafficChpCenters)
+        .where(eq(trafficChpCenters.centerId, center.code))
         .limit(1);
       
       const centerId = centerRecord[0]?.id || null;
@@ -99,9 +99,11 @@ export class CHPCADPoller {
       
       const $init = cheerio.load(initialResponse.data);
       
-      const viewState = $init('#__VIEWSTATE').val() || '';
-      const viewStateGenerator = $init('#__VIEWSTATEGENERATOR').val() || '';
-      const eventValidation = $init('#__EVENTVALIDATION').val() || '';
+      const normalizeFormValue = (value: string | string[] | undefined) =>
+        Array.isArray(value) ? value[0] || '' : value || '';
+      const viewState = normalizeFormValue($init('#__VIEWSTATE').val());
+      const viewStateGenerator = normalizeFormValue($init('#__VIEWSTATEGENERATOR').val());
+      const eventValidation = normalizeFormValue($init('#__EVENTVALIDATION').val());
       
       const formData = new URLSearchParams();
       formData.append('__VIEWSTATE', viewState);
@@ -173,19 +175,35 @@ export class CHPCADPoller {
         } catch (e) {}
       }
       
+      const sourceId = `${center.code}_${incidentNumber || now.getTime()}_${index}`;
+
       incidents.push({
-        sourceId: `${center.code}_${incidentNumber || now.getTime()}_${index}`,
-        centerId: centerId,
-        incidentType: incidentType || 'Unknown',
+        incidentId: sourceId,
+        sourceId,
+        title: incidentType || 'CHP CAD Incident',
+        description: `${incidentType || 'Incident'} at ${location || 'Unknown location'}`,
+        type: 'other' as const,
+        status: 'active' as const,
+        severity: 1,
         location: fullLocation || location || 'Unknown',
-        city: area || '',
+        city: area || null,
         county: center.county,
-        logTime: logTime,
-        details: `${incidentType} at ${location}`,
-        status: 'active',
         latitude: null,
         longitude: null,
-        fetchedAt: now,
+        centerId,
+        reportedAt: logTime.toISOString(),
+        lastUpdated: now.toISOString(),
+        rawData: {
+          incidentNumber,
+          incidentTime,
+          incidentType,
+          location,
+          locationDescription: locationDesc,
+          area,
+          centerCode: center.code,
+        },
+        isActive: true,
+        isPublic: true,
       });
     });
     
@@ -200,13 +218,13 @@ export class CHPCADPoller {
     
     const byCenter = await db
       .select({
-        centerName: trafficChpCenters .centerName,
-        centerCode: trafficChpCenters .centerCode,
+        centerName: trafficChpCenters.name,
+        centerCode: trafficChpCenters.centerId,
         count: sql<number>`COUNT(*)`,
       })
       .from(trafficChpCadIncidents)
-      .leftJoin(trafficChpCenters , eq(trafficChpCadIncidents.centerId, trafficChpCenters .id))
-      .groupBy(trafficChpCenters .centerName, trafficChpCenters .centerCode);
+      .leftJoin(trafficChpCenters, eq(trafficChpCadIncidents.centerId, trafficChpCenters.id))
+      .groupBy(trafficChpCenters.name, trafficChpCenters.centerId);
     
     return {
       total: total[0]?.count || 0,

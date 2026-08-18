@@ -223,6 +223,8 @@ export async function loadSettingsWithDB(userId?: string): Promise<AppSettings> 
       .where(eq(settingsUserOverrides.userId, userId));
 
     for (const override of overrides) {
+      if (override.settingId === null) continue;
+
       // Get the setting to know its type
       const [settingDef] = await db
         .select()
@@ -442,4 +444,3 @@ if (typeof window === 'undefined') {
   
   console.log(`  🎯 ${totalServices} services enabled\n`);
 }
-

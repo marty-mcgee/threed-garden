@@ -56,6 +56,11 @@ interface PlayerState {
   debug: () => void;
 }
 
+type PersistedPlayerState = Pick<
+  PlayerState,
+  'currentTrack' | 'queue' | 'currentIndex' | 'volume' | 'isMuted' | 'history'
+>;
+
 // ✅ Check if we're in the browser
 const isBrowser = typeof window !== 'undefined';
 
@@ -77,7 +82,7 @@ function debounce<T extends (...args: any[]) => void>(
 }
 
 export const useMusicPlayer = create<PlayerState>()(
-  persist(
+  persist<PlayerState, [], [], PersistedPlayerState>(
     (set, get) => {
       console.log('🔵 [Store] Zustand store initialized');
       
@@ -305,7 +310,7 @@ export const useMusicPlayer = create<PlayerState>()(
           }
           try {
             const value = localStorage.getItem(name);
-            return value;
+            return value ? JSON.parse(value) : null;
           } catch (error) {
             console.error('❌ [Storage] GET error:', error);
             return null;
@@ -316,9 +321,7 @@ export const useMusicPlayer = create<PlayerState>()(
             return;
           }
           try {
-            // ✅ ONLY CHANGE: Convert to string before storing
-            const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
-            localStorage.setItem(name, stringValue);
+            localStorage.setItem(name, JSON.stringify(value));
           } catch (error) {
             console.error('❌ [Storage] SET error:', error);
           }

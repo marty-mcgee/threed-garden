@@ -6,6 +6,20 @@ import { trafficBayArea511Events } from '@/lib/schema/traffic';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
+const EVENT_TYPES = [
+  'accident',
+  'congestion',
+  'construction',
+  'special_event',
+  'weather',
+] as const;
+
+type EventType = (typeof EVENT_TYPES)[number];
+
+function isEventType(value: string): value is EventType {
+  return EVENT_TYPES.some((eventType) => eventType === value);
+}
+
 // ============================================
 // GET /api/traffic/bay-area-511 - List Bay Area 511 Events
 // Query Parameters:
@@ -37,22 +51,21 @@ export async function GET(request: NextRequest) {
 
     // Get a single event by ID
     if (id) {
-      let query = db
+      const [event] = await db
         .select()
         .from(trafficBayArea511Events)
-        .where(eq(trafficBayArea511Events.id, parseInt(id)));
-
-      // Public users only see active public events
-      if (!userId) {
-        query = query.where(
+        .where(
           and(
-            eq(trafficBayArea511Events.isPublic, true),
-            eq(trafficBayArea511Events.isActive, true)
+            eq(trafficBayArea511Events.id, parseInt(id)),
+            userId
+              ? undefined
+              : and(
+                  eq(trafficBayArea511Events.isPublic, true),
+                  eq(trafficBayArea511Events.isActive, true)
+                )
           )
-        );
-      }
-
-      const [event] = await query.limit(1);
+        )
+        .limit(1);
 
       if (!event) {
         return NextResponse.json(
@@ -67,69 +80,66 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
-    let query = db
-      .select()
-      .from(trafficBayArea511Events)
-      .$dynamic();
-
-    // ✅ Apply user filtering
-    if (userId) {
-      // Authenticated users see their events + active public events
-      query = query.where(
-        or(
-          eq(trafficBayArea511Events.userId, userId),
-          and(
+    const conditions = [
+      userId
+        ? or(
+            eq(trafficBayArea511Events.userId, userId),
+            and(
+              eq(trafficBayArea511Events.isPublic, true),
+              eq(trafficBayArea511Events.isActive, true)
+            )
+          )
+        : and(
             eq(trafficBayArea511Events.isPublic, true),
             eq(trafficBayArea511Events.isActive, true)
-          )
-        )
-      );
-    } else {
-      // Public users only see active public events
-      query = query.where(
-        and(
-          eq(trafficBayArea511Events.isPublic, true),
-          eq(trafficBayArea511Events.isActive, true)
-        )
-      );
-    }
+          ),
+    ];
 
-    // ✅ Apply filters
     if (isActive !== null) {
-      query = query.where(eq(trafficBayArea511Events.isActive, isActive === 'true'));
+      conditions.push(eq(trafficBayArea511Events.isActive, isActive === 'true'));
     }
 
     if (isPublic !== null) {
-      query = query.where(eq(trafficBayArea511Events.isPublic, isPublic === 'true'));
+      conditions.push(eq(trafficBayArea511Events.isPublic, isPublic === 'true'));
     }
 
     if (eventType) {
-      query = query.where(eq(trafficBayArea511Events.eventType, eventType));
+      if (!isEventType(eventType)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid eventType parameter' },
+          { status: 400 }
+        );
+      }
+      conditions.push(eq(trafficBayArea511Events.eventType, eventType));
     }
 
     if (severity) {
-      query = query.where(eq(trafficBayArea511Events.severity, parseInt(severity)));
+      conditions.push(eq(trafficBayArea511Events.severity, parseInt(severity)));
     }
 
     if (county) {
-      query = query.where(eq(trafficBayArea511Events.county, county));
+      conditions.push(eq(trafficBayArea511Events.county, county));
     }
 
     if (city) {
-      query = query.where(eq(trafficBayArea511Events.city, city));
+      conditions.push(eq(trafficBayArea511Events.city, city));
     }
+
+    const predicate = and(...conditions);
 
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficBayArea511Events)
-      .where(query._where);
+      .where(predicate);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const events = await query
+    const events = await db
+      .select()
+      .from(trafficBayArea511Events)
+      .where(predicate)
       .orderBy(desc(trafficBayArea511Events.reportedAt))
       .limit(limit)
       .offset(offset);
@@ -263,9 +273,9 @@ export async function POST(request: NextRequest) {
         address: address || null,
         city: city || null,
         county: county || null,
-        reportedAt: new Date(reportedAt),
-        clearedAt: clearedAt ? new Date(clearedAt) : null,
-        lastUpdated: new Date(lastUpdated || Date.now()),
+        reportedAt: new Date(reportedAt).toISOString(),
+        clearedAt: clearedAt ? new Date(clearedAt).toISOString() : null,
+        lastUpdated: new Date(lastUpdated || Date.now()).toISOString(),
         impact: impact || null,
         rawData: rawData || null,
         notes: notes || null,
@@ -366,9 +376,15 @@ export async function PATCH(request: NextRequest) {
     if (body.address !== undefined) updateData.address = body.address;
     if (body.city !== undefined) updateData.city = body.city;
     if (body.county !== undefined) updateData.county = body.county;
-    if (body.reportedAt !== undefined) updateData.reportedAt = new Date(body.reportedAt);
-    if (body.clearedAt !== undefined) updateData.clearedAt = body.clearedAt ? new Date(body.clearedAt) : null;
-    if (body.lastUpdated !== undefined) updateData.lastUpdated = new Date(body.lastUpdated);
+    if (body.reportedAt !== undefined) updateData.reportedAt = new Date(body.reportedAt).toISOString();
+    if (body.clearedAt !== undefined) {
+      updateData.clearedAt = body.clearedAt
+        ? new Date(body.clearedAt).toISOString()
+        : null;
+    }
+    if (body.lastUpdated !== undefined) {
+      updateData.lastUpdated = new Date(body.lastUpdated).toISOString();
+    }
     if (body.impact !== undefined) updateData.impact = body.impact;
     if (body.notes !== undefined) updateData.notes = body.notes;
     if (body.isActive !== undefined) updateData.isActive = body.isActive;

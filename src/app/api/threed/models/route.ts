@@ -6,7 +6,7 @@ import {
   threedModels,
   threedModelFiles,
 } from '@/lib/schema/threed';
-import { eq, and, desc, or, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -74,43 +74,45 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build query
-    let query = db
-      .select()
-      .from(threedModels)
-      .where(eq(threedModels.userId, userId))
-      .$dynamic();
+    type ModelType = (typeof threedModels.$inferSelect)['modelType'];
+    type ModelStatus = NonNullable<(typeof threedModels.$inferSelect)['status']>;
+    const conditions: SQL[] = [eq(threedModels.userId, userId)];
 
     // ✅ Apply filters
     if (modelType) {
-      query = query.where(eq(threedModels.modelType, modelType));
+      conditions.push(eq(threedModels.modelType, modelType as ModelType));
     }
 
     if (status) {
-      query = query.where(eq(threedModels.status, status));
+      conditions.push(eq(threedModels.status, status as ModelStatus));
     }
 
     if (isActive !== null) {
-      query = query.where(eq(threedModels.isActive, isActive === 'true'));
+      conditions.push(eq(threedModels.isActive, isActive === 'true'));
     }
 
     if (search) {
-      query = query.where(
+      conditions.push(
         sql`${threedModels.modelName} ILIKE ${`%${search}%`} OR 
             ${threedModels.modelType} ILIKE ${`%${search}%`}`
       );
     }
 
+    const where = and(...conditions);
+
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedModels)
-      .where(query._where);
+      .where(where);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const results = await query
+    const results = await db
+      .select()
+      .from(threedModels)
+      .where(where)
       .orderBy(desc(threedModels.createdAt))
       .limit(limit)
       .offset(offset);

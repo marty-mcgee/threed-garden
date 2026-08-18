@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Box, Html, Billboard, Text } from '@react-three/drei';
 
 interface BedData {
-  id: number;
+  id: number | string;
   name: string;
   width?: number;
   widthFeet?: number;

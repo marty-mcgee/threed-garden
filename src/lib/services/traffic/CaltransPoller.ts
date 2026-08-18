@@ -1,7 +1,7 @@
 // src/lib/services/CaltransPoller.ts
 import { db } from '@/lib/db/client';
-import { trafficCaltransLaneClosures } from '@/lib/schema';
-import { eq, sql } from 'drizzle-orm';
+import { trafficCaltransDistricts, trafficCaltransLaneClosures } from '@/lib/schema';
+import { and, eq, lt, sql } from 'drizzle-orm';
 
 export class CaltransPoller {
   private baseUrl = 'https://cwwp2.dot.ca.gov/data';
@@ -54,24 +54,57 @@ export class CaltransPoller {
     const endTimestamp = closure.endDate && closure.endTime
       ? new Date(`${closure.endDate} ${closure.endTime}`)
       : null;
+
+    if (!startTimestamp || Number.isNaN(startTimestamp.getTime())) {
+      console.warn(`Skipping Caltrans closure ${sourceId}: invalid start date`);
+      return 'skipped';
+    }
+
+    const [districtRecord] = await db
+      .select({ id: trafficCaltransDistricts.id })
+      .from(trafficCaltransDistricts)
+      .where(eq(trafficCaltransDistricts.districtNumber, district))
+      .limit(1);
+
+    const normalizeCoordinate = (value: unknown) => {
+      const parsed = typeof value === 'number' ? value : parseFloat(String(value));
+      return Number.isFinite(parsed) ? String(parsed) : null;
+    };
+    const closureTypeValue = String(closure.closureType || '').toLowerCase();
+    const closureType = closureTypeValue.includes('full')
+      ? 'full' as const
+      : closureTypeValue.includes('partial')
+        ? 'partial' as const
+        : closureTypeValue.includes('shoulder')
+          ? 'shoulder' as const
+          : closureTypeValue.includes('ramp')
+            ? 'ramp' as const
+            : 'lane' as const;
+    const now = new Date().toISOString();
     
     const closureData = {
+      closureId: sourceId,
       sourceId,
-      district,
-      route: closure.route,
-      direction: closure.direction,
-      closureType: closure.closureType,
-      lanesAffected: closure.lanesAffected,
-      startTimestamp,
-      endTimestamp,
-      description: closure.description,
-      latitude: closure.latitude ? parseFloat(closure.latitude) : null,
-      longitude: closure.longitude ? parseFloat(closure.longitude) : null,
-      county: closure.county,
-      city: closure.city,
+      title: closure.description || `Caltrans closure on ${closure.route || 'unknown route'}`,
+      description: closure.description || null,
+      closureType,
+      route: closure.route || null,
+      direction: closure.direction || null,
+      county: closure.county || null,
+      city: closure.city || null,
+      latitude: normalizeCoordinate(closure.latitude),
+      longitude: normalizeCoordinate(closure.longitude),
+      startDate: startTimestamp.toISOString(),
+      endDate:
+        endTimestamp && !Number.isNaN(endTimestamp.getTime())
+          ? endTimestamp.toISOString()
+          : null,
+      lastUpdated: now,
+      districtId: districtRecord?.id || null,
+      caltransId: closure.id ? String(closure.id) : null,
       rawData: closure,
-      lastSeen: new Date(),
-      status: 'active',
+      isActive: true,
+      isPublic: true,
     };
     
     try {
@@ -82,17 +115,13 @@ export class CaltransPoller {
         .limit(1);
       
       if (existing.length > 0) {
-        await db.update(trafficCaltransLaneClosures).set({
-          ...closureData,
-          timesSeen: (existing[0].timesSeen || 0) + 1,
-        }).where(eq(trafficCaltransLaneClosures.sourceId, sourceId));
+        await db
+          .update(trafficCaltransLaneClosures)
+          .set(closureData)
+          .where(eq(trafficCaltransLaneClosures.sourceId, sourceId));
         return 'updated';
       } else {
-        await db.insert(trafficCaltransLaneClosures).values({
-          ...closureData,
-          timesSeen: 1,
-          firstSeen: new Date(),
-        });
+        await db.insert(trafficCaltransLaneClosures).values(closureData);
         return 'new';
       }
     } catch (error) {
@@ -137,8 +166,13 @@ export class CaltransPoller {
       const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
       const staleResult = await db
         .update(trafficCaltransLaneClosures)
-        .set({ status: 'completed' })
-        .where(sql`status = 'active' AND last_seen < ${thirtyMinutesAgo}`);
+        .set({ isActive: false })
+        .where(
+          and(
+            eq(trafficCaltransLaneClosures.isActive, true),
+            lt(trafficCaltransLaneClosures.lastUpdated, thirtyMinutesAgo.toISOString())
+          )
+        );
       
       const duration = Date.now() - startTime;
       this.lastPollTime = new Date();
@@ -177,16 +211,16 @@ export class CaltransPoller {
     const active = await db
       .select({ count: sql<number>`COUNT(*)` })
       .from(trafficCaltransLaneClosures)
-      .where(eq(trafficCaltransLaneClosures.status, 'active'));
+      .where(eq(trafficCaltransLaneClosures.isActive, true));
     
     const byDistrict = await db
       .select({
-        district: trafficCaltransLaneClosures.district,
+        district: trafficCaltransLaneClosures.districtId,
         count: sql<number>`COUNT(*)`,
       })
       .from(trafficCaltransLaneClosures)
-      .where(eq(trafficCaltransLaneClosures.status, 'active'))
-      .groupBy(trafficCaltransLaneClosures.district)
+      .where(eq(trafficCaltransLaneClosures.isActive, true))
+      .groupBy(trafficCaltransLaneClosures.districtId)
       .orderBy(sql`count DESC`);
     
     return {

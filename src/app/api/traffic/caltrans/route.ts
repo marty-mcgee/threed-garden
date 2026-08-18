@@ -6,6 +6,14 @@ import { trafficCaltransLaneClosures, trafficCaltransDistricts } from '@/lib/sch
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
+const CLOSURE_TYPES = ['full', 'partial', 'lane', 'shoulder', 'ramp'] as const;
+
+type ClosureType = (typeof CLOSURE_TYPES)[number];
+
+function isClosureType(value: string): value is ClosureType {
+  return CLOSURE_TYPES.some((closureType) => closureType === value);
+}
+
 // app/api/traffic/caltrans/route.ts - Fix GET function
 
 // ============================================
@@ -41,22 +49,21 @@ export async function GET(request: NextRequest) {
 
     // Get a single closure by ID
     if (id) {
-      let query = db
+      const [closure] = await db
         .select()
         .from(trafficCaltransLaneClosures)
-        .where(eq(trafficCaltransLaneClosures.id, parseInt(id)));
-
-      // Public users only see active public closures
-      if (!userId) {
-        query = query.where(
+        .where(
           and(
-            eq(trafficCaltransLaneClosures.isPublic, true),
-            eq(trafficCaltransLaneClosures.isActive, true)
+            eq(trafficCaltransLaneClosures.id, parseInt(id)),
+            userId
+              ? undefined
+              : and(
+                  eq(trafficCaltransLaneClosures.isPublic, true),
+                  eq(trafficCaltransLaneClosures.isActive, true)
+                )
           )
-        );
-      }
-
-      const [closure] = await query.limit(1);
+        )
+        .limit(1);
 
       if (!closure) {
         return NextResponse.json(
@@ -82,69 +89,66 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
-    let query = db
-      .select()
-      .from(trafficCaltransLaneClosures)
-      .$dynamic();
-
-    // ✅ Apply user filtering
-    if (userId) {
-      // Authenticated users see their closures + active public closures
-      query = query.where(
-        or(
-          eq(trafficCaltransLaneClosures.userId, userId),
-          and(
+    const conditions = [
+      userId
+        ? or(
+            eq(trafficCaltransLaneClosures.userId, userId),
+            and(
+              eq(trafficCaltransLaneClosures.isPublic, true),
+              eq(trafficCaltransLaneClosures.isActive, true)
+            )
+          )
+        : and(
             eq(trafficCaltransLaneClosures.isPublic, true),
             eq(trafficCaltransLaneClosures.isActive, true)
-          )
-        )
-      );
-    } else {
-      // Public users only see active public closures
-      query = query.where(
-        and(
-          eq(trafficCaltransLaneClosures.isPublic, true),
-          eq(trafficCaltransLaneClosures.isActive, true)
-        )
-      );
-    }
+          ),
+    ];
 
-    // ✅ Apply filters (removed 'status' since it doesn't exist)
     if (isActive !== null) {
-      query = query.where(eq(trafficCaltransLaneClosures.isActive, isActive === 'true'));
+      conditions.push(eq(trafficCaltransLaneClosures.isActive, isActive === 'true'));
     }
 
     if (isPublic !== null) {
-      query = query.where(eq(trafficCaltransLaneClosures.isPublic, isPublic === 'true'));
+      conditions.push(eq(trafficCaltransLaneClosures.isPublic, isPublic === 'true'));
     }
 
     if (closureType) {
-      query = query.where(eq(trafficCaltransLaneClosures.closureType, closureType));
+      if (!isClosureType(closureType)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid closureType parameter' },
+          { status: 400 }
+        );
+      }
+      conditions.push(eq(trafficCaltransLaneClosures.closureType, closureType));
     }
 
     if (county) {
-      query = query.where(eq(trafficCaltransLaneClosures.county, county));
+      conditions.push(eq(trafficCaltransLaneClosures.county, county));
     }
 
     if (route) {
-      query = query.where(eq(trafficCaltransLaneClosures.route, route));
+      conditions.push(eq(trafficCaltransLaneClosures.route, route));
     }
 
     if (districtId) {
-      query = query.where(eq(trafficCaltransLaneClosures.districtId, parseInt(districtId)));
+      conditions.push(eq(trafficCaltransLaneClosures.districtId, parseInt(districtId)));
     }
+
+    const predicate = and(...conditions);
 
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficCaltransLaneClosures)
-      .where(query._where);
+      .where(predicate);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const closures = await query
+    const closures = await db
+      .select()
+      .from(trafficCaltransLaneClosures)
+      .where(predicate)
       .orderBy(desc(trafficCaltransLaneClosures.startDate))
       .limit(limit)
       .offset(offset);
@@ -260,6 +264,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (closureType && !isClosureType(closureType)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid closureType' },
+        { status: 400 }
+      );
+    }
+
     const userId = session.user.id;
 
     // ✅ Verify district exists if provided
@@ -323,11 +334,11 @@ export async function POST(request: NextRequest) {
         milepost: parseNumeric(milepost),
         latitude: parseNumeric(latitude),
         longitude: parseNumeric(longitude),
-        startDate: new Date(startDate),
-        endDate: endDate ? new Date(endDate) : null,
-        expectedEndDate: expectedEndDate ? new Date(expectedEndDate) : null,
-        lastUpdated: new Date(lastUpdated || Date.now()),
-        districtId: districtId || null,
+        startDate: new Date(startDate).toISOString(),
+        endDate: endDate ? new Date(endDate).toISOString() : null,
+        expectedEndDate: expectedEndDate ? new Date(expectedEndDate).toISOString() : null,
+        lastUpdated: new Date(lastUpdated || Date.now()).toISOString(),
+        districtId: districtId ? parseInt(districtId) : null,
         caltransId: caltransId || null,
         reason: reason || null,
         detour: detour || null,
@@ -407,6 +418,13 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    if (body.closureType !== undefined && !isClosureType(body.closureType)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid closureType' },
+        { status: 400 }
+      );
+    }
+
     // ✅ Verify district exists if provided
     if (body.districtId) {
       const [district] = await db
@@ -447,11 +465,21 @@ export async function PATCH(request: NextRequest) {
     if (body.milepost !== undefined) updateData.milepost = parseNumeric(body.milepost);
     if (body.latitude !== undefined) updateData.latitude = parseNumeric(body.latitude);
     if (body.longitude !== undefined) updateData.longitude = parseNumeric(body.longitude);
-    if (body.startDate !== undefined) updateData.startDate = new Date(body.startDate);
-    if (body.endDate !== undefined) updateData.endDate = body.endDate ? new Date(body.endDate) : null;
-    if (body.expectedEndDate !== undefined) updateData.expectedEndDate = body.expectedEndDate ? new Date(body.expectedEndDate) : null;
-    if (body.lastUpdated !== undefined) updateData.lastUpdated = new Date(body.lastUpdated);
-    if (body.districtId !== undefined) updateData.districtId = body.districtId || null;
+    if (body.startDate !== undefined) updateData.startDate = new Date(body.startDate).toISOString();
+    if (body.endDate !== undefined) {
+      updateData.endDate = body.endDate ? new Date(body.endDate).toISOString() : null;
+    }
+    if (body.expectedEndDate !== undefined) {
+      updateData.expectedEndDate = body.expectedEndDate
+        ? new Date(body.expectedEndDate).toISOString()
+        : null;
+    }
+    if (body.lastUpdated !== undefined) {
+      updateData.lastUpdated = new Date(body.lastUpdated).toISOString();
+    }
+    if (body.districtId !== undefined) {
+      updateData.districtId = body.districtId ? parseInt(body.districtId) : null;
+    }
     if (body.caltransId !== undefined) updateData.caltransId = body.caltransId || null;
     if (body.reason !== undefined) updateData.reason = body.reason || null;
     if (body.detour !== undefined) updateData.detour = body.detour || null;

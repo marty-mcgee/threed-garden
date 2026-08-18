@@ -20,7 +20,7 @@ export async function GET() {
       .select()
       .from(trafficChpCenters )
       .where(whereClause)
-      .orderBy(trafficChpCenters .centerName);
+      .orderBy(trafficChpCenters .name);
     
     return NextResponse.json({
       success: true,

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Sphere, Cylinder, Html, Billboard, Text } from '@react-three/drei';
 
 interface PlantData {
-  id?: number;
+  id?: number | string;
   name: string;
   species?: string;
   plantType?: string;

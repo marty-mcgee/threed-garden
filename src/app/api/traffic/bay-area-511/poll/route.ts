@@ -29,23 +29,25 @@ export async function GET(request: Request) {
       case 'stats':
         // Use raw SQL to avoid Drizzle ORM issues
         const totalResult = await db.execute(sql`
-          SELECT COUNT(*) as count FROM bay_area_traffic_events
+          SELECT COUNT(*) as count FROM traffic_bay_area_511_events
         `);
         
         const activeResult = await db.execute(sql`
-          SELECT COUNT(*) as count FROM bay_area_traffic_events WHERE status = 'active'
+          SELECT COUNT(*) as count
+          FROM traffic_bay_area_511_events
+          WHERE is_active = true
         `);
         
         const withCoordsResult = await db.execute(sql`
           SELECT COUNT(*) as count 
-          FROM bay_area_traffic_events 
+          FROM traffic_bay_area_511_events
           WHERE latitude IS NOT NULL AND longitude IS NOT NULL
         `);
         
         const byTypeResult = await db.execute(sql`
           SELECT event_type, COUNT(*) as count 
-          FROM bay_area_traffic_events 
-          WHERE status = 'active'
+          FROM traffic_bay_area_511_events
+          WHERE is_active = true
           GROUP BY event_type 
           ORDER BY count DESC 
           LIMIT 10
@@ -54,9 +56,9 @@ export async function GET(request: Request) {
         return NextResponse.json({
           success: true,
           data: {
-            total: parseInt(totalResult.rows[0]?.count || '0'),
-            active: parseInt(activeResult.rows[0]?.count || '0'),
-            withCoordinates: parseInt(withCoordsResult.rows[0]?.count || '0'),
+            total: Number(totalResult.rows[0]?.count ?? 0),
+            active: Number(activeResult.rows[0]?.count ?? 0),
+            withCoordinates: Number(withCoordsResult.rows[0]?.count ?? 0),
             byType: byTypeResult.rows,
           },
           isPolling: poller.isPollingActive(),

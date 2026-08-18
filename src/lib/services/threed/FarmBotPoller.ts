@@ -193,7 +193,7 @@ export class FarmBotPoller {
   }
   
   // Determine status based on last seen time
-  private determineStatus(lastSeen: Date): string {
+  private determineStatus(lastSeen: Date): 'online' | 'offline' | 'maintenance' {
     const now = new Date();
     const minutesSinceLastSeen = (now.getTime() - lastSeen.getTime()) / (1000 * 60);
     
@@ -201,28 +201,44 @@ export class FarmBotPoller {
     if (minutesSinceLastSeen < 15) return 'maintenance';
     return 'offline';
   }
+
+  private async getDatabaseFarmbotId(): Promise<number> {
+    const [farmbot] = await db
+      .select({ id: threedFarmbots.id })
+      .from(threedFarmbots)
+      .where(eq(threedFarmbots.deviceId, this.deviceId))
+      .limit(1);
+
+    if (!farmbot) {
+      throw new Error(`FarmBot device ${this.deviceId} has not been saved to the database`);
+    }
+
+    return farmbot.id;
+  }
   
   // Save sensor readings to logs
   async saveSensorReadings(sensors: FarmBotSensor[]): Promise<void> {
+    const farmbotId = await this.getDatabaseFarmbotId();
+
     for (const sensor of sensors) {
       // Check if we have a recent reading (within last hour)
       const recent = await db
         .select()
         .from(threedFarmbotLogs)
-        .where(sql`${threedFarmbotLogs.farmbotId} = ${this.deviceId} 
-          AND ${threedFarmbotLogs.eventType} = 'sensor' 
+        .where(sql`${threedFarmbotLogs.farmbotId} = ${farmbotId}
+          AND ${threedFarmbotLogs.eventType} = 'sensor'
           AND ${threedFarmbotLogs.message} LIKE ${`%${sensor.label}%`}
           AND ${threedFarmbotLogs.loggedAt} > NOW() - INTERVAL '1 hour'`)
         .limit(1);
       
       if (recent.length === 0) {
         await db.insert(threedFarmbotLogs).values({
-          farmbotId: parseInt(this.deviceId),
+          farmbotId,
           eventType: 'sensor',
           status: 'success',
           message: `${sensor.label}: ${sensor.value} ${sensor.unit}`,
           sensorData: sensor,
-          loggedAt: new Date(),
+          loggedAt: new Date().toISOString(),
           createdAt: new Date(),
         });
       }
@@ -233,6 +249,7 @@ export class FarmBotPoller {
   // Save logs to database
   async saveLogs(logs: FarmBotLog[]): Promise<void> {
     let newCount = 0;
+    const farmbotId = await this.getDatabaseFarmbotId();
     
     for (const log of logs) {
       // Check if we already have this log
@@ -245,12 +262,12 @@ export class FarmBotPoller {
       
       if (existing.length === 0) {
         await db.insert(threedFarmbotLogs).values({
-          farmbotId: parseInt(this.deviceId),
+          farmbotId,
           eventType: log.type || 'info',
           status: log.type === 'error' ? 'error' : 'success',
           message: log.message,
           sensorData: log,
-          loggedAt: new Date(log.created_at),
+          loggedAt: new Date(log.created_at).toISOString(),
           createdAt: new Date(),
         });
         newCount++;
@@ -263,7 +280,7 @@ export class FarmBotPoller {
   }
   
   // Sync all FarmBot data
-  async syncFarmBot(): Promise<{ success: boolean; stats?: any; error?: string }> {
+  async syncFarmBot(): Promise<{ success: boolean; stats?: any; error?: string; timestamp?: string }> {
     if (this.pollingActive) {
       return { success: false, error: 'Polling already in progress' };
     }
@@ -384,18 +401,20 @@ export class FarmBotPoller {
       .from(threedFarmbots)
       .where(eq(threedFarmbots.deviceId, this.deviceId))
       .limit(1);
+
+    const farmbotId = farmbot[0]?.id ?? -1;
     
     const recentLogs = await db
       .select()
       .from(threedFarmbotLogs)
-      .where(sql`${threedFarmbotLogs.farmbotId} = ${this.deviceId}`)
+      .where(eq(threedFarmbotLogs.farmbotId, farmbotId))
       .orderBy(desc(threedFarmbotLogs.loggedAt))
       .limit(10);
     
     const sensorReadings = await db
       .select()
       .from(threedFarmbotLogs)
-      .where(sql`${threedFarmbotLogs.farmbotId} = ${this.deviceId} AND ${threedFarmbotLogs.eventType} = 'sensor'`)
+      .where(sql`${threedFarmbotLogs.farmbotId} = ${farmbotId} AND ${threedFarmbotLogs.eventType} = 'sensor'`)
       .orderBy(desc(threedFarmbotLogs.loggedAt))
       .limit(20);
     

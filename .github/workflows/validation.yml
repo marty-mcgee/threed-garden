@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   validate:
-    name: Assets and TypeScript baseline
+    name: Assets and TypeScript
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -34,9 +34,5 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # The v0.17.0 repository has a documented pre-existing TypeScript
-      # baseline. Keep diagnostics visible without blocking asset-safety work;
-      # remove continue-on-error after that baseline is repaired.
-      - name: Report TypeScript baseline (non-blocking)
-        continue-on-error: true
+      - name: TypeScript type check
         run: bun run typecheck

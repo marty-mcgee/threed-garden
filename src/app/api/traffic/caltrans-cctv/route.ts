@@ -37,21 +37,21 @@ export async function GET(request: NextRequest) {
 
     // Get a single camera by ID
     if (id) {
-      let query = db
+      const [camera] = await db
         .select()
         .from(trafficCaltransCctvCameras)
-        .where(eq(trafficCaltransCctvCameras.id, parseInt(id)));
-
-      if (!userId) {
-        query = query.where(
+        .where(
           and(
-            eq(trafficCaltransCctvCameras.isPublic, true),
-            eq(trafficCaltransCctvCameras.isActive, true)
+            eq(trafficCaltransCctvCameras.id, parseInt(id)),
+            userId
+              ? undefined
+              : and(
+                  eq(trafficCaltransCctvCameras.isPublic, true),
+                  eq(trafficCaltransCctvCameras.isActive, true)
+                )
           )
-        );
-      }
-
-      const [camera] = await query.limit(1);
+        )
+        .limit(1);
 
       if (!camera) {
         return NextResponse.json(
@@ -76,59 +76,52 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
-    let query = db
-      .select()
-      .from(trafficCaltransCctvCameras)
-      .$dynamic();
-
-    // ✅ Apply user filtering
-    if (userId) {
-      query = query.where(
-        or(
-          eq(trafficCaltransCctvCameras.userId, userId),
-          and(
+    const conditions = [
+      userId
+        ? or(
+            eq(trafficCaltransCctvCameras.userId, userId),
+            and(
+              eq(trafficCaltransCctvCameras.isPublic, true),
+              eq(trafficCaltransCctvCameras.isActive, true)
+            )
+          )
+        : and(
             eq(trafficCaltransCctvCameras.isPublic, true),
             eq(trafficCaltransCctvCameras.isActive, true)
-          )
-        )
-      );
-    } else {
-      query = query.where(
-        and(
-          eq(trafficCaltransCctvCameras.isPublic, true),
-          eq(trafficCaltransCctvCameras.isActive, true)
-        )
-      );
-    }
+          ),
+    ];
 
-    // ✅ Apply filters
     if (isActive !== null) {
-      query = query.where(eq(trafficCaltransCctvCameras.isActive, isActive === 'true'));
+      conditions.push(eq(trafficCaltransCctvCameras.isActive, isActive === 'true'));
     }
     if (isPublic !== null) {
-      query = query.where(eq(trafficCaltransCctvCameras.isPublic, isPublic === 'true'));
+      conditions.push(eq(trafficCaltransCctvCameras.isPublic, isPublic === 'true'));
     }
     if (status) {
-      query = query.where(eq(trafficCaltransCctvCameras.status, status));
+      conditions.push(eq(trafficCaltransCctvCameras.status, status));
     }
     if (county) {
-      query = query.where(eq(trafficCaltransCctvCameras.county, county));
+      conditions.push(eq(trafficCaltransCctvCameras.county, county));
     }
     if (districtId) {
-      query = query.where(eq(trafficCaltransCctvCameras.districtId, parseInt(districtId)));
+      conditions.push(eq(trafficCaltransCctvCameras.districtId, parseInt(districtId)));
     }
+
+    const predicate = and(...conditions);
 
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficCaltransCctvCameras)
-      .where(query._where);
+      .where(predicate);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const cameras = await query
+    const cameras = await db
+      .select()
+      .from(trafficCaltransCctvCameras)
+      .where(predicate)
       .orderBy(desc(trafficCaltransCctvCameras.createdAt))
       .limit(limit)
       .offset(offset);

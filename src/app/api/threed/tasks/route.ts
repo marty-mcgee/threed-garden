@@ -10,7 +10,7 @@ import {
   threedWateringSchedules, // ✅ Add this
 } from '@/lib/schema/threed';
 import { projectAssets } from '@/lib/schema/project';
-import { eq, and, or, desc, sql } from 'drizzle-orm';
+import { eq, and, or, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -30,6 +30,12 @@ export async function GET(request: NextRequest) {
     const assignedTo = searchParams.get('assignedTo');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
+    const accessCondition = userId
+      ? or(
+          eq(threedTasks.userId, userId),
+          eq(threedTasks.status, 'pending')
+        )!
+      : eq(threedTasks.status, 'pending');
 
     // ✅ Get a single task by ID
     if (id) {
@@ -41,23 +47,11 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      let query = db
+      const [task] = await db
         .select()
         .from(threedTasks)
-        .where(eq(threedTasks.id, parsedId));
-
-      if (!userId) {
-        query = query.where(eq(threedTasks.status, 'pending'));
-      } else {
-        query = query.where(
-          or(
-            eq(threedTasks.userId, userId),
-            eq(threedTasks.status, 'pending')
-          )
-        );
-      }
-
-      const [task] = await query.limit(1);
+        .where(and(eq(threedTasks.id, parsedId), accessCondition))
+        .limit(1);
 
       if (!task) {
         return NextResponse.json(
@@ -72,35 +66,22 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build query for listing tasks
-    let query = db
-      .select()
-      .from(threedTasks)
-      .$dynamic();
-
-    if (!userId) {
-      query = query.where(eq(threedTasks.status, 'pending'));
-    } else {
-      query = query.where(
-        or(
-          eq(threedTasks.userId, userId),
-          eq(threedTasks.status, 'pending')
-        )
-      );
-    }
+    type TaskStatus = NonNullable<(typeof threedTasks.$inferSelect)['status']>;
+    type TaskPriority = NonNullable<(typeof threedTasks.$inferSelect)['priority']>;
+    const conditions: SQL[] = [accessCondition];
 
     // ✅ Apply filters
     if (status) {
-      query = query.where(eq(threedTasks.status, status));
+      conditions.push(eq(threedTasks.status, status as TaskStatus));
     }
     if (priority) {
-      query = query.where(eq(threedTasks.priority, priority));
+      conditions.push(eq(threedTasks.priority, priority as TaskPriority));
     }
     if (type) {
-      query = query.where(eq(threedTasks.type, type));
+      conditions.push(eq(threedTasks.type, type));
     }
     if (assignedTo) {
-      query = query.where(eq(threedTasks.assignedTo, assignedTo));
+      conditions.push(eq(threedTasks.assignedTo, assignedTo));
     }
 
     // ✅ Filter by moduleId via project_assets
@@ -121,7 +102,7 @@ export async function GET(request: NextRequest) {
 
         const taskIds = assetLinks.map((link) => link.assetId);
         if (taskIds.length > 0) {
-          query = query.where(sql`${threedTasks.id} IN (${sql.join(taskIds)})`);
+          conditions.push(sql`${threedTasks.id} IN (${sql.join(taskIds)})`);
         } else {
           return NextResponse.json({
             success: true,
@@ -132,13 +113,18 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const where = and(...conditions);
+
     // ✅ Get total count
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedTasks)
-      .where(query._where);
+      .where(where);
 
-    const tasks = await query
+    const tasks = await db
+      .select()
+      .from(threedTasks)
+      .where(where)
       .orderBy(
         sql`CASE WHEN ${threedTasks.status} = 'pending' THEN 0 WHEN ${threedTasks.status} = 'in_progress' THEN 1 WHEN ${threedTasks.status} = 'completed' THEN 2 ELSE 3 END`,
         desc(threedTasks.createdAt)

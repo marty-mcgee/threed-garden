@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicAlbums, musicTracks, musicLinks, musicMedia, music } from '@/lib/schema/music';
+import { musicAlbums, musicTracks, musicLinks, musicMedia } from '@/lib/schema/music';
 import { eq, and, desc, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
@@ -302,8 +302,7 @@ export async function POST(request: NextRequest) {
       description, 
       status, 
       isPublic, 
-      sortOrder,
-      musicId
+      sortOrder
     } = body;
 
     if (!title) {
@@ -329,33 +328,12 @@ export async function POST(request: NextRequest) {
 
     const userId = session.user.id;
 
-    if (musicId) {
-      const [module] = await db
-        .select()
-        .from(music)
-        .where(
-          and(
-            eq(music.id, parseInt(musicId)),
-            eq(music.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!module) {
-        return NextResponse.json(
-          { success: false, error: 'Music module not found' },
-          { status: 404 }
-        );
-      }
-    }
-
     await ensureTableSequence('music_albums');
 
     const [newAlbum] = await db
       .insert(musicAlbums)
       .values({
         userId,
-        musicId: musicId || null,
         title,
         artist,
         coverArt,
@@ -417,8 +395,7 @@ export async function PUT(request: NextRequest) {
       description, 
       status, 
       isPublic, 
-      sortOrder,
-      musicId
+      sortOrder
     } = body;
 
     const userId = session.user.id;
@@ -441,26 +418,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (musicId) {
-      const [module] = await db
-        .select()
-        .from(music)
-        .where(
-          and(
-            eq(music.id, parseInt(musicId)),
-            eq(music.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!module) {
-        return NextResponse.json(
-          { success: false, error: 'Music module not found' },
-          { status: 404 }
-        );
-      }
-    }
-
     const [updatedAlbum] = await db
       .update(musicAlbums)
       .set({
@@ -472,7 +429,6 @@ export async function PUT(request: NextRequest) {
         status: status || existing.status,
         isPublic: isPublic !== undefined ? isPublic : existing.isPublic,
         sortOrder: sortOrder !== undefined ? sortOrder : existing.sortOrder,
-        musicId: musicId !== undefined ? musicId : existing.musicId,
         updatedAt: new Date(),
       })
       .where(

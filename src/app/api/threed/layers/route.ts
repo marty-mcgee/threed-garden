@@ -4,7 +4,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedLayers } from '@/lib/schema/threed';
 import { projectAssets } from '@/lib/schema/project';
-import { eq, and, desc, or, sql, inArray } from 'drizzle-orm';
+import { eq, and, desc, sql, inArray } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -12,7 +12,6 @@ import { ensureTableSequence } from '@/lib/db/sequence';
 // Query Parameters:
 //   - id (optional): Get a single layer
 //   - projectId (optional): Filter by project (via project_assets)
-//   - parentLayerId (optional): Filter by parent layer
 //   - isActive (optional): Filter by active status
 //   - isVisible (optional): Filter by visibility
 //   - search (optional): Search by name, layerId, or description
@@ -29,7 +28,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const projectId = searchParams.get('projectId');
-    const parentLayerId = searchParams.get('parentLayerId');
     const isActive = searchParams.get('isActive');
     const isVisible = searchParams.get('isVisible');
     const search = searchParams.get('search');
@@ -58,18 +56,9 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      const [parentLayer] = layer.parentLayerId ? await db
-        .select()
-        .from(threedLayers)
-        .where(eq(threedLayers.id, layer.parentLayerId))
-        .limit(1) : [];
-
       return NextResponse.json({
         success: true,
-        data: {
-          ...layer,
-          parentLayer: parentLayer || null,
-        },
+        data: layer,
       });
     }
 
@@ -112,15 +101,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ✅ Apply parentLayerId filter
-    if (parentLayerId !== null && parentLayerId !== undefined) {
-      if (parentLayerId === 'null' || parentLayerId === '') {
-        conditions.push(sql`${threedLayers.parentLayerId} IS NULL`);
-      } else {
-        conditions.push(eq(threedLayers.parentLayerId, parseInt(parentLayerId)));
-      }
-    }
-
     // ✅ Apply other filters
     if (isActive !== null) {
       conditions.push(eq(threedLayers.isActive, isActive === 'true'));
@@ -155,25 +135,9 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .offset(offset);
 
-    // ✅ Fetch parent layer info for each layer
-    const layersWithParent = await Promise.all(
-      results.map(async (layer) => {
-        const [parentLayer] = layer.parentLayerId ? await db
-          .select()
-          .from(threedLayers)
-          .where(eq(threedLayers.id, layer.parentLayerId))
-          .limit(1) : [];
-
-        return {
-          ...layer,
-          parentLayer: parentLayer || null,
-        };
-      })
-    );
-
     return NextResponse.json({
       success: true,
-      data: layersWithParent,
+      data: results,
       pagination: {
         limit,
         offset,
@@ -209,14 +173,11 @@ export async function POST(request: NextRequest) {
       config,
       category,
       layerType,
-      parentLayerId,
       orderIndex,
       isVisible,
-      isLocked,
       isActive,
       isPublic,
       metadata,
-      projectId, // ✅ Optional: link to project via project_assets
     } = body;
 
     if (!layerId) {
@@ -234,27 +195,6 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id;
-
-    // ✅ Verify parent layer exists if provided
-    if (parentLayerId) {
-      const [parent] = await db
-        .select()
-        .from(threedLayers)
-        .where(
-          and(
-            eq(threedLayers.id, parseInt(parentLayerId)),
-            eq(threedLayers.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!parent) {
-        return NextResponse.json(
-          { success: false, error: 'Parent layer not found' },
-          { status: 404 }
-        );
-      }
-    }
 
     // ✅ Check if layerId already exists
     const [existing] = await db
@@ -292,33 +232,13 @@ export async function POST(request: NextRequest) {
         },
         category: category || null,
         layerType: layerType || null,
-        parentLayerId: parentLayerId || null,
         orderIndex: orderIndex || 0,
         isVisible: isVisible ?? true,
-        isLocked: isLocked ?? false,
         isActive: isActive ?? true,
         isPublic: isPublic ?? false,
         metadata: metadata || {},
       })
       .returning();
-
-    // ✅ If projectId is provided, link the layer to the project via project_assets
-    if (projectId) {
-      const parsedProjectId = parseInt(projectId);
-      if (!isNaN(parsedProjectId)) {
-        await db
-          .insert(projectAssets)
-          .values({
-            userId,
-            projectId: parsedProjectId,
-            assetType: 'threed_layers',
-            assetId: newLayer.id,
-            isActive: true,
-            config: {},
-          })
-          .onConflictDoNothing();
-      }
-    }
 
     console.log('✅ ThreeD layer created:', newLayer);
 
@@ -383,26 +303,6 @@ export async function PUT(request: NextRequest) {
         { success: false, error: 'Layer not found' },
         { status: 404 }
       );
-    }
-
-    if (body.parentLayerId) {
-      const [parent] = await db
-        .select()
-        .from(threedLayers)
-        .where(
-          and(
-            eq(threedLayers.id, parseInt(body.parentLayerId)),
-            eq(threedLayers.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!parent) {
-        return NextResponse.json(
-          { success: false, error: 'Parent layer not found' },
-          { status: 404 }
-        );
-      }
     }
 
     const [updated] = await db
@@ -482,26 +382,6 @@ export async function PATCH(request: NextRequest) {
         { success: false, error: 'Layer not found' },
         { status: 404 }
       );
-    }
-
-    if (body.parentLayerId) {
-      const [parent] = await db
-        .select()
-        .from(threedLayers)
-        .where(
-          and(
-            eq(threedLayers.id, parseInt(body.parentLayerId)),
-            eq(threedLayers.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!parent) {
-        return NextResponse.json(
-          { success: false, error: 'Parent layer not found' },
-          { status: 404 }
-        );
-      }
     }
 
     const [updated] = await db

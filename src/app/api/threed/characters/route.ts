@@ -6,7 +6,7 @@ import {
   threedCharacters,
   threedModels,
 } from '@/lib/schema/threed';
-import { eq, and, desc, or, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // Normalize an incoming character body so empty-string/nullable optional fields
@@ -112,44 +112,46 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build query
-    let query = db
-      .select()
-      .from(threedCharacters)
-      .where(eq(threedCharacters.userId, userId))
-      .$dynamic();
+    type CharacterStatus = NonNullable<(typeof threedCharacters.$inferSelect)['status']>;
+    type CharacterType = NonNullable<(typeof threedCharacters.$inferSelect)['type']>;
+    const conditions: SQL[] = [eq(threedCharacters.userId, userId)];
 
     // ✅ Apply filters
     if (status) {
-      query = query.where(eq(threedCharacters.status, status));
+      conditions.push(eq(threedCharacters.status, status as CharacterStatus));
     }
 
     if (type) {
-      query = query.where(eq(threedCharacters.type, type));
+      conditions.push(eq(threedCharacters.type, type as CharacterType));
     }
 
     if (isActive !== null) {
-      query = query.where(eq(threedCharacters.isActive, isActive === 'true'));
+      conditions.push(eq(threedCharacters.isActive, isActive === 'true'));
     }
 
     if (search) {
-      query = query.where(
+      conditions.push(
         sql`${threedCharacters.name} ILIKE ${`%${search}%`} OR 
             ${threedCharacters.characterId} ILIKE ${`%${search}%`} OR
             ${threedCharacters.description} ILIKE ${`%${search}%`}`
       );
     }
 
+    const where = and(...conditions);
+
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedCharacters)
-      .where(query._where);
+      .where(where);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const results = await query
+    const results = await db
+      .select()
+      .from(threedCharacters)
+      .where(where)
       .orderBy(desc(threedCharacters.createdAt))
       .limit(limit)
       .offset(offset);

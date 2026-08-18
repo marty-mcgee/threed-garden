@@ -168,7 +168,9 @@ export function TrafficCHPCentersCRUD({ onModuleUpdate, onCenterSelect }: Traffi
   };
 
   // ✅ Get unique counties for filter
-  const counties = Array.from(new Set(centers.map(c => c.county).filter(Boolean)));
+  const counties = Array.from(
+    new Set(centers.map(c => c.county).filter((county): county is string => Boolean(county)))
+  );
 
   const filteredCenters = centers.filter((center) =>
     center.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

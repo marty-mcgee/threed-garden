@@ -150,7 +150,9 @@ export function TrafficCaltransDistrictsCRUD({ onModuleUpdate, onDistrictSelect 
   };
 
   // ✅ Get unique regions for filter
-  const regions = Array.from(new Set(districts.map(d => d.region).filter(Boolean)));
+  const regions = Array.from(
+    new Set(districts.map(d => d.region).filter((region): region is string => Boolean(region)))
+  );
 
   const filteredDistricts = districts.filter((district) =>
     district.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

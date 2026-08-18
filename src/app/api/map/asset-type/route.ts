@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { project, projectAssets } from '@/lib/schema/project';
+import { assetTypeEnum, project, projectAssets } from '@/lib/schema/project';
 import { eq, and, sql } from 'drizzle-orm';
 
 // ============================================
@@ -35,6 +35,16 @@ export async function GET(request: NextRequest) {
     if (!assetType) {
       return NextResponse.json(
         { success: false, error: 'Missing required parameter: assetType' },
+        { status: 400 }
+      );
+    }
+
+    const validAssetType = assetTypeEnum.enumValues.find(
+      (supportedAssetType) => supportedAssetType === assetType
+    );
+    if (!validAssetType) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid assetType' },
         { status: 400 }
       );
     }
@@ -80,7 +90,7 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectAssets.projectId, parsedProjectId),
-          eq(projectAssets.assetType, assetType),
+          eq(projectAssets.assetType, validAssetType),
           userId ? eq(projectAssets.userId, userId) : sql`1=1`,
           includeInactive ? sql`1=1` : eq(projectAssets.isActive, true)
         )

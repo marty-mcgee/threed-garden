@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicTracks } from '@/lib/schema';
+import { musicAlbums, musicTracks } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(
@@ -28,20 +28,25 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get track with album info
-    const track = await db.query.musicTracks.findFirst({
-      where: eq(musicTracks.id, trackId),
-      with: {
-        album: true,
-      },
-    });
+    // Get the track and the album fields needed for access control.
+    const [result] = await db
+      .select({
+        track: musicTracks,
+        albumUserId: musicAlbums.userId,
+        albumIsPublic: musicAlbums.isPublic,
+      })
+      .from(musicTracks)
+      .leftJoin(musicAlbums, eq(musicTracks.albumId, musicAlbums.id))
+      .where(eq(musicTracks.id, trackId))
+      .limit(1);
 
-    if (!track) {
+    if (!result) {
       return NextResponse.json({ error: 'Track not found' }, { status: 404 });
     }
 
-    const isOwner = track.userId === session.user.id || track.album?.userId === session.user.id;
-    if (!isOwner && !track.album?.isPublic) {
+    const { track, albumUserId, albumIsPublic } = result;
+    const isOwner = track.userId === session.user.id || albumUserId === session.user.id;
+    if (!isOwner && !albumIsPublic) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

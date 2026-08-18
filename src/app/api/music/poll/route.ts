@@ -5,10 +5,7 @@ import { auth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get session using Better Auth server API
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    const session = await auth();
     
     // Allow public polling status without auth
     const searchParams = request.nextUrl.searchParams;
@@ -34,7 +31,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth.api.getSession();
+    const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -62,7 +62,7 @@ export default function TrafficAdminPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TrafficCHPCADCRUD userId={userId} />
+              <TrafficCHPCADCRUD />
             </CardContent>
           </Card>
         </TabsContent>
@@ -76,7 +76,7 @@ export default function TrafficAdminPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TrafficCHPCasesCRUD userId={userId} />
+              <TrafficCHPCasesCRUD />
             </CardContent>
           </Card>
         </TabsContent>
@@ -90,7 +90,7 @@ export default function TrafficAdminPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TrafficCaltransCRUD userId={userId} />
+              <TrafficCaltransCRUD />
             </CardContent>
           </Card>
         </TabsContent>
@@ -104,7 +104,7 @@ export default function TrafficAdminPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TrafficCalfireCRUD userId={userId} />
+              <TrafficCalfireCRUD />
             </CardContent>
           </Card>
         </TabsContent>
@@ -118,7 +118,7 @@ export default function TrafficAdminPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <TrafficBayArea511CRUD userId={userId} />
+              <TrafficBayArea511CRUD />
             </CardContent>
           </Card>
         </TabsContent>

@@ -8,7 +8,7 @@ import {
   threedBeds,
   threedModels,
 } from '@/lib/schema/threed';
-import { eq, and, desc, or, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -85,47 +85,48 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build query
-    let query = db
-      .select()
-      .from(threedPlantings)
-      .where(eq(threedPlantings.userId, userId))
-      .$dynamic();
+    type PlantingStatus = NonNullable<(typeof threedPlantings.$inferSelect)['status']>;
+    const conditions: SQL[] = [eq(threedPlantings.userId, userId)];
 
     // ✅ Apply filters
     if (plantId) {
-      query = query.where(eq(threedPlantings.plantId, parseInt(plantId)));
+      conditions.push(eq(threedPlantings.plantId, parseInt(plantId)));
     }
 
     if (bedId) {
-      query = query.where(eq(threedPlantings.bedId, parseInt(bedId)));
+      conditions.push(eq(threedPlantings.bedId, parseInt(bedId)));
     }
 
     if (status) {
-      query = query.where(eq(threedPlantings.status, status));
+      conditions.push(eq(threedPlantings.status, status as PlantingStatus));
     }
 
     if (isActive !== null) {
-      query = query.where(eq(threedPlantings.isActive, isActive === 'true'));
+      conditions.push(eq(threedPlantings.isActive, isActive === 'true'));
     }
 
     if (search) {
-      query = query.where(
+      conditions.push(
         sql`${threedPlantings.plantingId} ILIKE ${`%${search}%`} OR 
             ${threedPlantings.notes} ILIKE ${`%${search}%`}`
       );
     }
 
+    const where = and(...conditions);
+
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedPlantings)
-      .where(query._where);
+      .where(where);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const results = await query
+    const results = await db
+      .select()
+      .from(threedPlantings)
+      .where(where)
       .orderBy(desc(threedPlantings.createdAt))
       .limit(limit)
       .offset(offset);
@@ -321,10 +322,10 @@ export async function POST(request: NextRequest) {
         positionX: positionX || null,
         positionY: positionY || null,
         positionZ: positionZ || null,
-        plantedDate: plantedDate ? new Date(plantedDate) : null,
-        expectedGerminationDate: expectedGerminationDate ? new Date(expectedGerminationDate) : null,
-        expectedHarvestDate: expectedHarvestDate ? new Date(expectedHarvestDate) : null,
-        actualHarvestDate: actualHarvestDate ? new Date(actualHarvestDate) : null,
+        plantedDate: plantedDate || null,
+        expectedGerminationDate: expectedGerminationDate || null,
+        expectedHarvestDate: expectedHarvestDate || null,
+        actualHarvestDate: actualHarvestDate || null,
         isActive: isActive ?? true,
         status: status || 'planted',
         growthStage: growthStage || 'seed',

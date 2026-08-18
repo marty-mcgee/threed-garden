@@ -11,6 +11,7 @@ import {
   FolderOpen, Layers, Sprout, Package, User, AlertTriangle, Music2,
   Image, Link2, FileText, Route, Flame, Radio
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -75,7 +76,7 @@ type ModuleType = 'threed' | 'traffic' | 'music';
 
 // ✅ Module configuration with ALL CRUD components listed
 const moduleConfig: Record<ModuleType, { 
-  icon: React.ElementType; 
+  icon: LucideIcon;
   color: string; 
   label: string; 
   borderColor: string;
@@ -83,7 +84,7 @@ const moduleConfig: Record<ModuleType, {
     id: string;
     label: string;
     component: React.ComponentType<{ onModuleUpdate?: () => void }>;
-    icon: React.ElementType;
+    icon: LucideIcon;
   }>;
 }> = {
   threed: { 

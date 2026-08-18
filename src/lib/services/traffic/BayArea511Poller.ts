@@ -1,7 +1,9 @@
 // src/lib/services/BayArea511Poller.ts
 import { db } from '@/lib/db/client';
 import { trafficBayArea511Events } from '@/lib/schema';
-import { eq, sql } from 'drizzle-orm';
+import { and, count, desc, eq, isNotNull, notInArray } from 'drizzle-orm';
+
+type BayArea511EventType = typeof trafficBayArea511Events.$inferInsert.eventType;
 
 export class BayArea511Poller {
   private apiKey: string;
@@ -30,6 +32,27 @@ export class BayArea511Poller {
       }
     }
     return { latitude: null, longitude: null };
+  }
+
+  private normalizeEventType(value: unknown): BayArea511EventType {
+    const eventType = String(value || '').toLowerCase();
+
+    if (eventType.includes('congestion')) return 'congestion';
+    if (eventType.includes('construction')) return 'construction';
+    if (eventType.includes('special')) return 'special_event';
+    if (eventType.includes('weather')) return 'weather';
+
+    return 'accident';
+  }
+
+  private normalizeSeverity(value: unknown): number {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? Math.max(1, Math.round(parsed)) : 1;
+  }
+
+  private normalizeTimestamp(value: unknown, fallback = new Date()): string {
+    const parsed = value ? new Date(String(value)) : fallback;
+    return Number.isNaN(parsed.getTime()) ? fallback.toISOString() : parsed.toISOString();
   }
 
   async fetchEvents(limit: number = 500): Promise<any[]> {
@@ -108,34 +131,34 @@ export class BayArea511Poller {
     }
     
     // Parse schedule intervals
-    let startTime = null;
-    let endTime = null;
+    let startTime: string | null = null;
+    let endTime: string | null = null;
     if (event.schedule && event.schedule.intervals && event.schedule.intervals.length > 0) {
       const interval = event.schedule.intervals[0];
       const [start, end] = interval.split('/');
-      if (start) startTime = new Date(start);
-      if (end) endTime = new Date(end);
+      if (start) startTime = this.normalizeTimestamp(start);
+      if (end) endTime = this.normalizeTimestamp(end);
     }
-    
-    const eventData = {
-      sourceId: sourceId,
-      eventType: event.event_type || 'Unknown',
-      eventSubType: event.event_subtypes?.[0] || null,
-      severity: event.severity || null,
-      status: event.status?.toLowerCase() === 'active' ? 'active' : 'closed',
+
+    const isActive = event.status?.toLowerCase() === 'active';
+    const eventData: typeof trafficBayArea511Events.$inferInsert = {
+      eventId: sourceId,
+      sourceId,
+      eventType: this.normalizeEventType(event.event_type),
+      severity: this.normalizeSeverity(event.severity),
       title: event.headline || '',
       description: event.headline || '',
-      roadwayName: roadwayName,
-      directionOfTravel: directionOfTravel,
-      lanesAffected: lanesAffected,
-      isFullClosure: false, // Not directly provided in API
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-      startTime: startTime,
-      endTime: endTime,
-      lastUpdated: new Date(event.updated || event.created),
+      location: roadwayName || areaName || null,
+      latitude: coords.latitude?.toString() || null,
+      longitude: coords.longitude?.toString() || null,
+      city: areaName || null,
+      reportedAt: startTime || this.normalizeTimestamp(event.created || event.updated),
+      clearedAt: isActive ? null : endTime,
+      lastUpdated: this.normalizeTimestamp(event.updated || event.created),
+      impact: [directionOfTravel, lanesAffected].filter(Boolean).join(' - ') || null,
       rawData: event,
-      fetchedAt: new Date(),
+      isActive,
+      isPublic: true,
     };
     
     try {
@@ -198,15 +221,18 @@ export class BayArea511Poller {
       
       let closedCount = 0;
       if (activeSourceIds.length > 0) {
-        const idList = activeSourceIds.map(id => `'${id.replace(/'/g, "''")}'`).join(',');
-        
-        const result = await db.execute(sql`
-          UPDATE bay_area_traffic_events 
-          SET status = 'closed', last_updated = NOW() 
-          WHERE status = 'active' 
-          AND source_id NOT IN (${sql.raw(idList)})
-        `);
-        closedCount = result.rowCount || 0;
+        const now = new Date().toISOString();
+        const closedEvents = await db
+          .update(trafficBayArea511Events)
+          .set({ isActive: false, clearedAt: now, lastUpdated: now })
+          .where(
+            and(
+              eq(trafficBayArea511Events.isActive, true),
+              notInArray(trafficBayArea511Events.sourceId, activeSourceIds)
+            )
+          )
+          .returning({ id: trafficBayArea511Events.id });
+        closedCount = closedEvents.length;
         console.log(`  Marked ${closedCount} events as closed`);
       }
       
@@ -244,40 +270,48 @@ export class BayArea511Poller {
     const events = await db
       .select()
       .from(trafficBayArea511Events)
-      .where(sql`${trafficBayArea511Events.status} = 'active'`)
+      .where(eq(trafficBayArea511Events.isActive, true))
       .limit(limit);
     
     return events;
   }
 
   async getStats() {
-    const totalResult = await db.execute(sql`
-      SELECT COUNT(*) as count FROM bay_area_traffic_events
-    `);
-    
-    const activeResult = await db.execute(sql`
-      SELECT COUNT(*) as count FROM bay_area_traffic_events WHERE status = 'active'
-    `);
-    
-    const withCoordsResult = await db.execute(sql`
-      SELECT COUNT(*) as count FROM bay_area_traffic_events 
-      WHERE latitude IS NOT NULL AND longitude IS NOT NULL
-    `);
-    
-    const byTypeResult = await db.execute(sql`
-      SELECT event_type, COUNT(*) as count 
-      FROM bay_area_traffic_events 
-      WHERE status = 'active'
-      GROUP BY event_type 
-      ORDER BY count DESC 
-      LIMIT 10
-    `);
+    const [totalResult] = await db
+      .select({ value: count() })
+      .from(trafficBayArea511Events);
+
+    const [activeResult] = await db
+      .select({ value: count() })
+      .from(trafficBayArea511Events)
+      .where(eq(trafficBayArea511Events.isActive, true));
+
+    const [withCoordsResult] = await db
+      .select({ value: count() })
+      .from(trafficBayArea511Events)
+      .where(
+        and(
+          isNotNull(trafficBayArea511Events.latitude),
+          isNotNull(trafficBayArea511Events.longitude)
+        )
+      );
+
+    const byTypeResult = await db
+      .select({
+        eventType: trafficBayArea511Events.eventType,
+        count: count(),
+      })
+      .from(trafficBayArea511Events)
+      .where(eq(trafficBayArea511Events.isActive, true))
+      .groupBy(trafficBayArea511Events.eventType)
+      .orderBy(desc(count()))
+      .limit(10);
     
     return {
-      total: parseInt(totalResult.rows[0]?.count || '0'),
-      active: parseInt(activeResult.rows[0]?.count || '0'),
-      withCoordinates: parseInt(withCoordsResult.rows[0]?.count || '0'),
-      byType: byTypeResult.rows,
+      total: totalResult?.value || 0,
+      active: activeResult?.value || 0,
+      withCoordinates: withCoordsResult?.value || 0,
+      byType: byTypeResult,
       lastPoll: this.lastPollTime,
       lastPollStats: this.lastPollStats
     };

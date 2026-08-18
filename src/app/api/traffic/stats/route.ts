@@ -8,7 +8,7 @@ import {
   trafficCaltransLaneClosures,
   trafficBayArea511Events,
 } from '@/lib/schema/traffic';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,7 +43,10 @@ export async function GET(request: NextRequest) {
       .select({ count: sql<number>`count(*)` })
       .from(trafficCaltransLaneClosures)
       .where(
-        sql`${trafficCaltransLaneClosures.userId} = ${userId} AND ${trafficCaltransLaneClosures.status} = 'active'`
+        and(
+          eq(trafficCaltransLaneClosures.userId, userId),
+          eq(trafficCaltransLaneClosures.isActive, true)
+        )
       );
 
     // Get 511 events count
@@ -51,7 +54,10 @@ export async function GET(request: NextRequest) {
       .select({ count: sql<number>`count(*)` })
       .from(trafficBayArea511Events)
       .where(
-        sql`${trafficBayArea511Events.userId} = ${userId} AND ${trafficBayArea511Events.status} = 'active'`
+        and(
+          eq(trafficBayArea511Events.userId, userId),
+          eq(trafficBayArea511Events.isActive, true)
+        )
       );
 
     return NextResponse.json({

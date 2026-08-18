@@ -6,7 +6,7 @@ import {
   threedFarmbots,
   threedBeds,
 } from '@/lib/schema/threed';
-import { eq, and, desc, or, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -72,40 +72,41 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build query
-    let query = db
-      .select()
-      .from(threedFarmbots)
-      .where(eq(threedFarmbots.userId, userId))
-      .$dynamic();
+    type FarmBotStatus = NonNullable<(typeof threedFarmbots.$inferSelect)['status']>;
+    const conditions: SQL[] = [eq(threedFarmbots.userId, userId)];
 
     // ✅ Apply filters
     if (status) {
-      query = query.where(eq(threedFarmbots.status, status));
+      conditions.push(eq(threedFarmbots.status, status as FarmBotStatus));
     }
 
     if (isActive !== null) {
-      query = query.where(eq(threedFarmbots.isActive, isActive === 'true'));
+      conditions.push(eq(threedFarmbots.isActive, isActive === 'true'));
     }
 
     if (search) {
-      query = query.where(
+      conditions.push(
         sql`${threedFarmbots.name} ILIKE ${`%${search}%`} OR 
             ${threedFarmbots.deviceId} ILIKE ${`%${search}%`} OR
             ${threedFarmbots.notes} ILIKE ${`%${search}%`}`
       );
     }
 
+    const where = and(...conditions);
+
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedFarmbots)
-      .where(query._where);
+      .where(where);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const results = await query
+    const results = await db
+      .select()
+      .from(threedFarmbots)
+      .where(where)
       .orderBy(desc(threedFarmbots.createdAt))
       .limit(limit)
       .offset(offset);

@@ -14,10 +14,10 @@ import {
   serial,
   index,
   uniqueIndex,
+  type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
-import { projects } from '../project';
 
 // ============================================
 // ENUMS
@@ -132,7 +132,7 @@ export const settingsDeployment = pgTable('settings_deployment', {
   // Metadata
   deployedBy: text('deployed_by'),
   deployedAt: timestamp('deployed_at'),
-  rollbackTo: integer('rollback_to').references(() => settingsDeployment.id, { onDelete: 'set null' }),
+  rollbackTo: integer('rollback_to').references((): AnyPgColumn => settingsDeployment.id, { onDelete: 'set null' }),
   
   // Timestamps
   createdAt: timestamp('created_at').defaultNow(),

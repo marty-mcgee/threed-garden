@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicMedia } from '@/lib/schema/music';
+import { musicAlbums, musicMedia } from '@/lib/schema/music';
 import { eq, and, desc } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
@@ -147,17 +147,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!albumId) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required field: albumId' },
+        { status: 400 }
+      );
+    }
+
+    const parsedAlbumId = Number(albumId);
+    if (!Number.isInteger(parsedAlbumId) || parsedAlbumId <= 0) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid album ID' },
+        { status: 400 }
+      );
+    }
+
+    const [album] = await db
+      .select({ id: musicAlbums.id })
+      .from(musicAlbums)
+      .where(
+        and(
+          eq(musicAlbums.id, parsedAlbumId),
+          eq(musicAlbums.userId, userId)
+        )
+      )
+      .limit(1);
+
+    if (!album) {
+      return NextResponse.json(
+        { success: false, error: 'Album not found' },
+        { status: 404 }
+      );
+    }
+
     // ✅ Ensure sequence
     await ensureTableSequence('music_media');
 
     // ✅ If this media is set as primary, unset other primary media for this album
-    if (isPrimary && albumId) {
+    if (isPrimary) {
       await db
         .update(musicMedia)
         .set({ isPrimary: false })
         .where(
           and(
-            eq(musicMedia.albumId, parseInt(albumId)),
+            eq(musicMedia.albumId, parsedAlbumId),
             eq(musicMedia.userId, userId)
           )
         );
@@ -173,7 +206,7 @@ export async function POST(request: NextRequest) {
         fileType,
         fileSize: fileSize || null,
         isPrimary: isPrimary || false,
-        albumId: albumId ? parseInt(albumId) : null,
+        albumId: parsedAlbumId,
         metadata: {},
       })
       .returning();
@@ -248,14 +281,45 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    let parsedAlbumId: number | undefined;
+    if (albumId !== undefined) {
+      const requestedAlbumId = Number(albumId);
+      if (!Number.isInteger(requestedAlbumId) || requestedAlbumId <= 0) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid album ID' },
+          { status: 400 }
+        );
+      }
+      parsedAlbumId = requestedAlbumId;
+
+      const [album] = await db
+        .select({ id: musicAlbums.id })
+        .from(musicAlbums)
+        .where(
+          and(
+            eq(musicAlbums.id, parsedAlbumId),
+            eq(musicAlbums.userId, userId)
+          )
+        )
+        .limit(1);
+
+      if (!album) {
+        return NextResponse.json(
+          { success: false, error: 'Album not found' },
+          { status: 404 }
+        );
+      }
+    }
+
     // ✅ If this media is set as primary, unset other primary media for this album
-    if (isPrimary && albumId) {
+    if (isPrimary) {
+      const primaryAlbumId = parsedAlbumId ?? existing.albumId;
       await db
         .update(musicMedia)
         .set({ isPrimary: false })
         .where(
           and(
-            eq(musicMedia.albumId, parseInt(albumId)),
+            eq(musicMedia.albumId, primaryAlbumId),
             eq(musicMedia.userId, userId),
             eq(musicMedia.isPrimary, true)
           )
@@ -271,7 +335,7 @@ export async function PUT(request: NextRequest) {
         fileType: fileType || existing.fileType,
         fileSize: fileSize !== undefined ? fileSize : existing.fileSize,
         isPrimary: isPrimary !== undefined ? isPrimary : existing.isPrimary,
-        albumId: albumId !== undefined ? (albumId ? parseInt(albumId) : null) : existing.albumId,
+        albumId: parsedAlbumId ?? existing.albumId,
         updatedAt: new Date(),
       })
       .where(

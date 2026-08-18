@@ -175,6 +175,16 @@ export interface MusicMetadataSyncResult {
   timestamp: Date;
 }
 
+export interface MusicPollerConfig {
+  pollInterval: number;
+  autoSyncMetadata: boolean;
+  metadataSyncInterval: number;
+  maxRetries: number;
+  retryDelay: number;
+  s3Bucket: string;
+  s3Region: string;
+}
+
 
 
 
@@ -298,7 +308,6 @@ export interface MusicMetadataSyncResult {
 //   createdAt: Date;
 //   track?: MusicTrack;
 // }
-
 
 
 

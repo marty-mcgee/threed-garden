@@ -18,7 +18,7 @@ export async function ensureSequenceSync(
     // Get the current max id in the table
     const [maxResult] = await db
       .select({ maxId: sql<number>`COALESCE(MAX(${sql.identifier(idColumn)}), 0)` })
-      .from(sql.identifier(tableName));
+      .from(sql`${sql.identifier(tableName)}`);
     
     const maxId = maxResult?.maxId || 0;
     const nextVal = maxId + 1;

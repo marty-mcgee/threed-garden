@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedBeds } from '@/lib/schema/threed';
-import { eq, and, desc, or, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -59,40 +59,41 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build query
-    let query = db
-      .select()
-      .from(threedBeds)
-      .where(eq(threedBeds.userId, userId))
-      .$dynamic();
+    type BedStatus = NonNullable<(typeof threedBeds.$inferSelect)['status']>;
+    const conditions: SQL[] = [eq(threedBeds.userId, userId)];
 
     // ✅ Apply filters
     if (status) {
-      query = query.where(eq(threedBeds.status, status));
+      conditions.push(eq(threedBeds.status, status as BedStatus));
     }
 
     if (isActive !== null) {
-      query = query.where(eq(threedBeds.isActive, isActive === 'true'));
+      conditions.push(eq(threedBeds.isActive, isActive === 'true'));
     }
 
     if (search) {
-      query = query.where(
+      conditions.push(
         sql`${threedBeds.name} ILIKE ${`%${search}%`} OR 
             ${threedBeds.bedId} ILIKE ${`%${search}%`} OR
             ${threedBeds.description} ILIKE ${`%${search}%`}`
       );
     }
 
+    const where = and(...conditions);
+
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedBeds)
-      .where(query._where);
+      .where(where);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const results = await query
+    const results = await db
+      .select()
+      .from(threedBeds)
+      .where(where)
       .orderBy(desc(threedBeds.createdAt))
       .limit(limit)
       .offset(offset);

@@ -20,24 +20,24 @@ export async function GET(
     const { id } = await params;  // id is a string, e.g., "123"
     
     // Step 2: Convert string to number for database query
-    const closureId = parseInt(id, 10);  // Now a number
+    const recordId = parseInt(id, 10);
     
-    if (isNaN(closureId)) {
+    if (isNaN(recordId)) {
       return NextResponse.json(
         { error: `Invalid closure ID: "${id}" is not a number` },
         { status: 400 }
       );
     }
     
-    // Step 3: Query with number (matches database serial type)
+    // Step 3: Query the numeric primary key from the route segment
     const closures = await db
       .select()
       .from(trafficCaltransLaneClosures)
-      .where(eq(trafficCaltransLaneClosures.closureId, closureId));  // ✅ closureId expects number
+      .where(eq(trafficCaltransLaneClosures.id, recordId));
     
     if (closures.length === 0) {
       return NextResponse.json(
-        { error: `Closure with ID ${closureId} not found` },
+        { error: `Closure with ID ${recordId} not found` },
         { status: 404 }
       );
     }

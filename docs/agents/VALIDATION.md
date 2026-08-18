@@ -6,7 +6,7 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 
 1. Inspect `git diff --check` for whitespace and patch errors.
 2. Run `npm run validate:assets` when character animation assets or their manifest change.
-3. Run `npm run typecheck` and filter the output to the files changed by the current task when the repository-wide baseline is not clean.
+3. Run `npm run typecheck`; TypeScript errors are release-blocking.
 4. Run a file-scoped lint command only when an ESLint executable/configuration is available.
 5. Run targeted tests when a matching test exists.
 6. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
@@ -30,19 +30,17 @@ npm run build
 `.github/workflows/validation.yml` runs for pull requests and pushes to `main`.
 
 - Production animation asset validation is a blocking check.
-- TypeScript diagnostics are reported but remain non-blocking while the documented v0.17.0 baseline exists.
+- TypeScript type checking is a blocking validation step.
 - Vercel remains the production-build gate because its build uses the configured deployment environment.
 
-When the TypeScript baseline is clean, remove `continue-on-error` from the workflow so type checking becomes a blocking check.
+## TypeScript baseline
 
-## Known baseline
+The pre-existing v0.17.0 TypeScript baseline was repaired during v0.17.2 development. A successful change now requires:
 
-At the start of v0.17 work, the full TypeScript command reports a large pre-existing repository error baseline across unrelated modules. A successful scoped change therefore requires both:
+- `npm run typecheck` exits successfully with no diagnostics; and
+- the production build remains successful when the validation ladder calls for it.
 
-- no new diagnostic referencing a modified file; and
-- an explicit report that the full command is not globally clean.
-
-Do not repair unrelated baseline errors as part of a scoped feature or structural task.
+Do not suppress new diagnostics or make TypeScript non-blocking to land unrelated work.
 
 ## ThreeD release-blocking manual checks
 

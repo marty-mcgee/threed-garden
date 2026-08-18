@@ -5,7 +5,6 @@ import { db } from '@/lib/db/client';
 import { 
   User,
   UserAccounts,
-  UserSessions,
   UserVerifications,
 } from '@/lib/schema/auth';
 import Credentials from 'next-auth/providers/credentials';
@@ -14,13 +13,9 @@ import bcrypt from 'bcryptjs';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db, {
-    provider: 'pg',
-    schema: {
-      users: User,
-      accounts: UserAccounts,
-      sessions: UserSessions,
-      verificationTokens: UserVerifications,
-    },
+    usersTable: User,
+    accountsTable: UserAccounts,
+    verificationTokensTable: UserVerifications,
   }),
   providers: [
     Credentials({

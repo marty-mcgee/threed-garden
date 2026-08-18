@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current version:** `v0.16.3-beta "Character Model Files (GLB/FBX/OBJ)"`
+> **Current version:** `v0.17.2 "API and Type Safety Cleanup"` (release candidate)
 
 ---
 
@@ -120,7 +120,6 @@ The app uses **Drizzle ORM** for type-safe database operations against **Neon Po
 | `bun db:push` | Push the current schema to the database |
 | `bun db:generate` | Generate migration files from the schema |
 | `bun db:studio` | Open Drizzle Studio (visual DB browser) |
-| `bun db:seed:all` | Seed initial data |
 
 Schemas are co-located under `src/lib/schema/` (`auth`, `music`, `project`, `settings`, `threed`, `traffic`).
 
@@ -220,7 +219,6 @@ src/
 | `bun db:push` | Push schema to the database |
 | `bun db:generate` | Generate migrations |
 | `bun db:studio` | Open Drizzle Studio |
-| `bun db:seed:all` | Run all seed scripts |
 
 ---
 

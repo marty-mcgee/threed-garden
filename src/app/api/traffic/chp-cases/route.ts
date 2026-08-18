@@ -35,22 +35,21 @@ export async function GET(request: NextRequest) {
 
     // Get a single case by ID
     if (id) {
-      let query = db
+      const [chpCase] = await db
         .select()
         .from(trafficChpCases)
-        .where(eq(trafficChpCases.id, parseInt(id)));
-
-      // Public users only see active public cases
-      if (!userId) {
-        query = query.where(
+        .where(
           and(
-            eq(trafficChpCases.isPublic, true),
-            eq(trafficChpCases.isActive, true)
+            eq(trafficChpCases.id, parseInt(id)),
+            userId
+              ? undefined
+              : and(
+                  eq(trafficChpCases.isPublic, true),
+                  eq(trafficChpCases.isActive, true)
+                )
           )
-        );
-      }
-
-      const [chpCase] = await query.limit(1);
+        )
+        .limit(1);
 
       if (!chpCase) {
         return NextResponse.json(
@@ -65,66 +64,57 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
-    let query = db
-      .select()
-      .from(trafficChpCases)
-      .$dynamic();
-
-    // ✅ Apply user filtering
-    if (userId) {
-      // Authenticated users see their cases + active public cases
-      query = query.where(
-        or(
-          eq(trafficChpCases.userId, userId),
-          and(
+    const conditions = [
+      userId
+        ? or(
+            eq(trafficChpCases.userId, userId),
+            and(
+              eq(trafficChpCases.isPublic, true),
+              eq(trafficChpCases.isActive, true)
+            )
+          )
+        : and(
             eq(trafficChpCases.isPublic, true),
             eq(trafficChpCases.isActive, true)
-          )
-        )
-      );
-    } else {
-      // Public users only see active public cases
-      query = query.where(
-        and(
-          eq(trafficChpCases.isPublic, true),
-          eq(trafficChpCases.isActive, true)
-        )
-      );
-    }
+          ),
+    ];
 
-    // ✅ Apply filters
     if (isActive !== null) {
-      query = query.where(eq(trafficChpCases.isActive, isActive === 'true'));
+      conditions.push(eq(trafficChpCases.isActive, isActive === 'true'));
     }
 
     if (isPublic !== null) {
-      query = query.where(eq(trafficChpCases.isPublic, isPublic === 'true'));
+      conditions.push(eq(trafficChpCases.isPublic, isPublic === 'true'));
     }
 
     if (severity) {
-      query = query.where(eq(trafficChpCases.severity, parseInt(severity)));
+      conditions.push(eq(trafficChpCases.severity, parseInt(severity)));
     }
 
     if (county) {
-      query = query.where(eq(trafficChpCases.county, county));
+      conditions.push(eq(trafficChpCases.county, county));
     }
 
     if (caseId) {
-      query = query.where(eq(trafficChpCases.caseId, caseId));
+      conditions.push(eq(trafficChpCases.caseId, caseId));
     }
+
+    const predicate = and(...conditions);
 
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficChpCases)
-      .where(query._where);
+      .where(predicate);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const cases = await query
-      .orderBy(desc(trafficChpCases.occurredAt || trafficChpCases.createdAt))
+    const cases = await db
+      .select()
+      .from(trafficChpCases)
+      .where(predicate)
+      .orderBy(desc(trafficChpCases.occurredAt))
       .limit(limit)
       .offset(offset);
 
@@ -264,7 +254,9 @@ export async function POST(request: NextRequest) {
     const finalSourceId = sourceId || `src_${Date.now()}`;
 
     // ✅ Auto-generate occurredAt if not provided (use current date/time)
-    const finalOccurredAt = occurredAt ? new Date(occurredAt) : new Date();
+    const finalOccurredAt = occurredAt
+      ? new Date(occurredAt).toISOString()
+      : new Date().toISOString();
 
     // ✅ Parse severity
     const finalSeverity = parseSeverity(severity);
@@ -296,7 +288,7 @@ export async function POST(request: NextRequest) {
         injuries: parseNumeric(injuries) || 0,
         fatalities: parseNumeric(fatalities) || 0,
         occurredAt: finalOccurredAt,
-        reportedAt: reportedAt ? new Date(reportedAt) : null,
+        reportedAt: reportedAt ? new Date(reportedAt).toISOString() : null,
         rawData: rawData || null,
         notes: notes || null,
         isActive: isActive ?? true,
@@ -436,8 +428,12 @@ export async function PATCH(request: NextRequest) {
     if (body.vehiclesInvolved !== undefined) updateData.vehiclesInvolved = parseNumeric(body.vehiclesInvolved);
     if (body.injuries !== undefined) updateData.injuries = parseNumeric(body.injuries);
     if (body.fatalities !== undefined) updateData.fatalities = parseNumeric(body.fatalities);
-    if (body.occurredAt !== undefined) updateData.occurredAt = new Date(body.occurredAt);
-    if (body.reportedAt !== undefined) updateData.reportedAt = body.reportedAt ? new Date(body.reportedAt) : null;
+    if (body.occurredAt !== undefined) updateData.occurredAt = new Date(body.occurredAt).toISOString();
+    if (body.reportedAt !== undefined) {
+      updateData.reportedAt = body.reportedAt
+        ? new Date(body.reportedAt).toISOString()
+        : null;
+    }
     if (body.notes !== undefined) updateData.notes = body.notes;
     if (body.isActive !== undefined) updateData.isActive = body.isActive;
     if (body.isPublic !== undefined) updateData.isPublic = body.isPublic;

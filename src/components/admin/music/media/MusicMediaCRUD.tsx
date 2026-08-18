@@ -32,7 +32,7 @@ interface Media {
   fileSize: number | null;
   isPrimary: boolean;
   metadata: any;
-  albumId: number | null;
+  albumId: number;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -98,8 +98,8 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
   };
 
   const handleCreate = async () => {
-    if (!formData.fileName || !formData.fileUrl) {
-      showToast('File name and URL are required', 'error');
+    if (!formData.fileName || !formData.fileUrl || !formData.albumId) {
+      showToast('File name, URL, and album are required', 'error');
       return;
     }
 
@@ -110,15 +110,12 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
         fileUrl: formData.fileUrl,
         fileType: formData.fileType,
         isPrimary: formData.isPrimary,
+        albumId: parseInt(formData.albumId),
       };
 
       if (formData.fileSize && formData.fileSize > 0) {
         payload.fileSize = formData.fileSize;
       }
-      if (formData.albumId && formData.albumId !== '') {
-        payload.albumId = parseInt(formData.albumId);
-      }
-
       const response = await fetch('/api/music/media', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -152,6 +149,11 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
 
   const handleUpdate = async () => {
     if (!editingMedia) return;
+    if (!formData.fileName || !formData.fileUrl || !formData.albumId) {
+      showToast('File name, URL, and album are required', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const payload: any = {
@@ -159,15 +161,12 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
         fileUrl: formData.fileUrl,
         fileType: formData.fileType,
         isPrimary: formData.isPrimary,
+        albumId: parseInt(formData.albumId),
       };
 
       if (formData.fileSize && formData.fileSize > 0) {
         payload.fileSize = formData.fileSize;
       }
-      if (formData.albumId && formData.albumId !== '') {
-        payload.albumId = parseInt(formData.albumId);
-      }
-
       const response = await fetch(`/api/music/media?id=${editingMedia.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -256,7 +255,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
       fileType: media.fileType || 'image/jpeg',
       fileSize: media.fileSize || 0,
       isPrimary: media.isPrimary || false,
-      albumId: media.albumId ? String(media.albumId) : '',
+      albumId: String(media.albumId),
     });
   };
 
@@ -325,16 +324,15 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                 />
               </div>
               <div>
-                <Label htmlFor="albumId">Album</Label>
+                <Label htmlFor="albumId">Album *</Label>
                 <Select
-                  value={formData.albumId || 'none'}
-                  onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
+                  value={formData.albumId}
+                  onValueChange={(value) => setFormData({ ...formData, albumId: value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select album" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
                     {albumList.map((album) => (
                       <SelectItem key={album.id} value={String(album.id)}>
                         {album.title}
@@ -485,16 +483,15 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
               />
             </div>
             <div>
-              <Label htmlFor="edit-albumId">Album</Label>
+              <Label htmlFor="edit-albumId">Album *</Label>
               <Select
-                value={formData.albumId || 'none'}
-                onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
+                value={formData.albumId}
+                onValueChange={(value) => setFormData({ ...formData, albumId: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select album" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
                   {albumList.map((album) => (
                     <SelectItem key={album.id} value={String(album.id)}>
                       {album.title}

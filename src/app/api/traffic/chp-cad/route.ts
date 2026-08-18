@@ -6,6 +6,14 @@ import { trafficChpCadIncidents, trafficChpCenters  } from '@/lib/schema/traffic
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
+const INCIDENT_STATUSES = ['active', 'cleared', 'pending', 'unknown'] as const;
+
+type IncidentStatus = (typeof INCIDENT_STATUSES)[number];
+
+function isIncidentStatus(value: string): value is IncidentStatus {
+  return INCIDENT_STATUSES.some((status) => status === value);
+}
+
 // ============================================
 // GET /api/traffic/chp-cad - List CHP-CAD incidents
 // Query Parameters:
@@ -35,33 +43,27 @@ export async function GET(request: NextRequest) {
 
     // Get a single incident by ID
     if (id) {
-      let query = db
+      const [incident] = await db
         .select()
         .from(trafficChpCadIncidents)
-        .where(eq(trafficChpCadIncidents.id, parseInt(id)));
-
-      // Public users only see active public incidents
-      if (!userId) {
-        query = query.where(
+        .where(
           and(
-            eq(trafficChpCadIncidents.isPublic, true),
-            eq(trafficChpCadIncidents.isActive, true)
+            eq(trafficChpCadIncidents.id, parseInt(id)),
+            userId
+              ? or(
+                  eq(trafficChpCadIncidents.userId, userId),
+                  and(
+                    eq(trafficChpCadIncidents.isPublic, true),
+                    eq(trafficChpCadIncidents.isActive, true)
+                  )
+                )
+              : and(
+                  eq(trafficChpCadIncidents.isPublic, true),
+                  eq(trafficChpCadIncidents.isActive, true)
+                )
           )
-        );
-      } else {
-        // Authenticated users see their own OR public incidents
-        query = query.where(
-          or(
-            eq(trafficChpCadIncidents.userId, userId),
-            and(
-              eq(trafficChpCadIncidents.isPublic, true),
-              eq(trafficChpCadIncidents.isActive, true)
-            )
-          )
-        );
-      }
-
-      const [incident] = await query.limit(1);
+        )
+        .limit(1);
 
       if (!incident) {
         return NextResponse.json(
@@ -87,61 +89,58 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ✅ Build base query
-    let query = db
-      .select()
-      .from(trafficChpCadIncidents)
-      .$dynamic();
-
-    // ✅ Apply user filtering (align with Music/ThreeD pattern)
-    if (userId) {
-      // Authenticated users see their incidents + active public incidents
-      query = query.where(
-        or(
-          eq(trafficChpCadIncidents.userId, userId),
-          and(
+    const conditions = [
+      userId
+        ? or(
+            eq(trafficChpCadIncidents.userId, userId),
+            and(
+              eq(trafficChpCadIncidents.isPublic, true),
+              eq(trafficChpCadIncidents.isActive, true)
+            )
+          )
+        : and(
             eq(trafficChpCadIncidents.isPublic, true),
             eq(trafficChpCadIncidents.isActive, true)
-          )
-        )
-      );
-    } else {
-      // Public users only see active public incidents
-      query = query.where(
-        and(
-          eq(trafficChpCadIncidents.isPublic, true),
-          eq(trafficChpCadIncidents.isActive, true)
-        )
-      );
-    }
+          ),
+    ];
 
-    // ✅ Apply filters
     if (status) {
-      query = query.where(eq(trafficChpCadIncidents.status, status));
+      if (!isIncidentStatus(status)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid status parameter' },
+          { status: 400 }
+        );
+      }
+      conditions.push(eq(trafficChpCadIncidents.status, status));
     }
 
     if (severity) {
-      query = query.where(eq(trafficChpCadIncidents.severity, parseInt(severity)));
+      conditions.push(eq(trafficChpCadIncidents.severity, parseInt(severity)));
     }
 
     if (county) {
-      query = query.where(eq(trafficChpCadIncidents.county, county));
+      conditions.push(eq(trafficChpCadIncidents.county, county));
     }
 
     if (centerId) {
-      query = query.where(eq(trafficChpCadIncidents.centerId, parseInt(centerId)));
+      conditions.push(eq(trafficChpCadIncidents.centerId, parseInt(centerId)));
     }
+
+    const predicate = and(...conditions);
 
     // ✅ Get total count for pagination
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(trafficChpCadIncidents)
-      .where(query._where);
+      .where(predicate);
 
     const total = countResult?.count || 0;
 
     // ✅ Get paginated results
-    const incidents = await query
+    const incidents = await db
+      .select()
+      .from(trafficChpCadIncidents)
+      .where(predicate)
       .orderBy(desc(trafficChpCadIncidents.reportedAt))
       .limit(limit)
       .offset(offset);
@@ -318,8 +317,8 @@ export async function POST(request: NextRequest) {
         chpOffice: chpOffice || null,
         centerId: centerId || null,
         logNumber: logNumber || null,
-        reportedAt: new Date(reportedAt),
-        lastUpdated: new Date(),
+        reportedAt: new Date(reportedAt).toISOString(),
+        lastUpdated: new Date().toISOString(),
         units: units || [],
         rawData: rawData || null,
         notes: notes || null,
