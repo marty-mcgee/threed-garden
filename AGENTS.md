@@ -37,11 +37,11 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.17.1 "Production Asset Validation".
+Current production version: v0.17.2 "API and Type Safety Cleanup".
 
-Current release candidate: v0.17.2 "API and Type Safety Cleanup".
+No later release candidate is currently designated.
 
-v0.17.1 remains the production boundary. Treat uncommitted v0.17.2 release-candidate work as user-owned and do not overwrite or fold it into unrelated changes.
+v0.17.2 remains the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
 Production character animations are Git-tracked under `public/assets/animations`. When the external animation manifest or those files change, run `npm run validate:assets`. The GitHub workflow treats missing production animation assets and TypeScript diagnostics as blocking failures. Vercel remains the production-build gate.
 

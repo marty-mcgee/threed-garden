@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.17.1 — Production Asset Validation** |
-| Current release candidate | **v0.17.2 — API and Type Safety Cleanup** |
-| Previous checkpoint | **v0.16.8 — Project-Scoped Harvest Management** |
+| Current stable version | **v0.17.2 — API and Type Safety Cleanup** |
+| Current release candidate | **None designated** |
+| Previous checkpoint | **v0.17.1 — Production Asset Validation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -363,7 +363,7 @@ API (/api/map/threed)
 | **v0.16.8** | **2026-08-18** | **Project-Scoped Harvest Management — idempotent Pick Fruit persistence and expanded Harvest CRUD** |
 | **v0.17.0** | **2026-08-18** | **Production release — project-scoped assets, owner-scoped Music, canonical Track imports, ThreeD/Admin UX, and accumulated v0.16.8 work** |
 | **v0.17.1** | **2026-08-18** | **Production release — reproducible production animation assets and GitHub Actions validation** |
-| **v0.17.2** | **2026-08-18** | **Release candidate — API consolidation, current-schema poller alignment, and blocking TypeScript validation** |
+| **v0.17.2** | **2026-08-18** | **Production release — API consolidation, current-schema poller alignment, and blocking TypeScript validation** |
 
 ---
 
@@ -1153,10 +1153,12 @@ The external character animation library is now reproducible from a clean Git ch
 
 This release changes validation and delivery safeguards only. It does not change animation URLs, loaders, mixers, semantic action mapping, character routing, crossfades, World Action timing, database schema, or API behavior.
 
-## 🧪 v0.17.2 — API and Type Safety Cleanup (release candidate)
+## ✅ v0.17.2 — API and Type Safety Cleanup (released to production)
 
-The release candidate consolidates legacy API/service code around the schema and active route architecture established in v0.17.0. Obsolete duplicate routes and unused services are removed only after reference analysis, while retained Traffic and FarmBot pollers are mapped to current schema fields.
+The production release consolidates legacy API/service code around the schema and active route architecture established in v0.17.0. Obsolete duplicate routes and unused services are removed only after reference analysis, while retained Traffic and FarmBot pollers are mapped to current schema fields.
 
 The pre-existing TypeScript baseline is repaired: `npm run typecheck`, `npm run validate:assets`, and `npm run build` all complete successfully with the current validation configuration. GitHub Actions now treats TypeScript errors as blocking, and Next.js production builds no longer use `typescript.ignoreBuildErrors`.
 
 This checkpoint does not change the database schema, environment contract, external FBX manifest, character runtime routing, task-to-locomotion crossfades, DetailsCard behavior, or World Action persistence timing.
+
+GitHub `main` and Vercel production successfully passed the blocking TypeScript build gate for this release.

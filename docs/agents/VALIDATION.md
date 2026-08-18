@@ -35,7 +35,7 @@ npm run build
 
 ## TypeScript baseline
 
-The pre-existing v0.17.0 TypeScript baseline was repaired during v0.17.2 development. A successful change now requires:
+The pre-existing v0.17.0 TypeScript baseline was repaired and released in v0.17.2. A successful change now requires:
 
 - `npm run typecheck` exits successfully with no diagnostics; and
 - the production build remains successful when the validation ladder calls for it.

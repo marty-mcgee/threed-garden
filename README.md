@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current version:** `v0.17.2 "API and Type Safety Cleanup"` (release candidate)
+> **Current version:** `v0.17.2 "API and Type Safety Cleanup"`
 
 ---
 
