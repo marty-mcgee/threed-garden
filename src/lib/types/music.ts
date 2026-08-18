@@ -74,7 +74,8 @@ export interface MusicTrack {
   title: string;
   duration: number | null;
   trackNumber: number | null;
-  publicUrl: string;
+  fileUrl: string;
+  fileType: string;
   status: TrackStatus;
   lyrics: string | null;
   metadata: MusicTrackMetadata | null;
@@ -200,7 +201,7 @@ export interface MusicMetadataSyncResult {
 //   title: string;
 //   duration?: number;
 //   trackNumber?: number;
-//   publicUrl: string;
+//   fileUrl: string;
 //   lyrics?: string;
 //   metadata?: MusicTrackMetadata;
 // }
@@ -297,7 +298,6 @@ export interface MusicMetadataSyncResult {
 //   createdAt: Date;
 //   track?: MusicTrack;
 // }
-
 
 
 

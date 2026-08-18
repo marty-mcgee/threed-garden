@@ -43,9 +43,9 @@ export function AdminHeader({ onMenuClick, isCollapsed }: AdminHeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-16 items-center px-4 gap-4">
+      <div className="flex h-14 items-center gap-3 px-3">
         {/* Left: Menu Toggle + Brand */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={onMenuClick}>
             <Menu className="h-5 w-5" />
           </Button>

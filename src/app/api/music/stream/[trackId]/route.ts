@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicTracks, musicAlbums } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
+import { musicTracks } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
@@ -40,15 +40,8 @@ export async function GET(
       return NextResponse.json({ error: 'Track not found' }, { status: 404 });
     }
 
-    // Verify ownership through album
-    const album = await db.query.musicAlbums.findFirst({
-      where: and(
-        eq(musicAlbums.id, track.albumId),
-        eq(musicAlbums.userId, session.user.id)
-      ),
-    });
-
-    if (!album && !track.album?.isPublic) {
+    const isOwner = track.userId === session.user.id || track.album?.userId === session.user.id;
+    if (!isOwner && !track.album?.isPublic) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -67,7 +60,7 @@ export async function GET(
     // If you have S3 configured, use it
     if (process.env.S3_BUCKET_NAME) {
       const { getStreamingUrl } = await import('@/lib/services/music/S3');
-      const streamingUrl = await getStreamingUrl(track.publicUrl);
+      const streamingUrl = await getStreamingUrl(track.fileUrl);
       return NextResponse.redirect(streamingUrl);
     }
 

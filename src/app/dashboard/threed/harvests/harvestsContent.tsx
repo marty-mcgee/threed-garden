@@ -14,19 +14,18 @@ import { Modal } from '@/components/ui/modal';
 import { ModalConfirm } from '@/components/ui/modal-confirm';
 
 interface Harvest {
-  harvest: {
-    id: number;
-    harvestId: string;
-    plantingId: number;
-    plantId: number;
-    quantity: number;
-    unit: string;
-    weightLbs: number;
-    harvestDate: string;
-    notes: string;
-    imageUrl: string;
-    createdAt: string;
-  };
+  id: number;
+  harvestId: string;
+  plantingId: number;
+  plantId: number;
+  quantity: number;
+  unit: string;
+  weightLbs: number;
+  harvestDate: string;
+  notes: string;
+  imageUrl: string;
+  createdAt: string;
+  source?: 'manual' | 'world-action';
   planting: { id: number; plantingId: string };
   plant: { id: number; commonName: string; type: string };
   bed: { id: number; name: string };
@@ -100,39 +99,39 @@ export default function HarvestsContent() {
       const response = await fetch('/api/threed/harvests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
       const data = await response.json();
       if (data.success) { showToast('Harvest recorded successfully', 'success'); setIsAddModalOpen(false); setFormData({ plantId: '', quantity: 1, unit: 'lbs', weightLbs: '', harvestDate: new Date().toISOString().split('T')[0], notes: '' }); fetchHarvests(); }
-      else showToast('Failed to record harvest', 'error');
+      else showToast(data.error || 'Failed to record harvest', 'error');
     } catch (error) { showToast('Failed to record harvest', 'error'); }
   };
 
   const handleUpdateHarvest = async () => {
     if (!selectedHarvest) return;
     try {
-      const response = await fetch(`/api/threed/harvests?id=${selectedHarvest.harvest.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+      const response = await fetch(`/api/threed/harvests?id=${selectedHarvest.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
       const data = await response.json();
       if (data.success) { showToast('Harvest updated successfully', 'success'); setIsEditModalOpen(false); setSelectedHarvest(null); fetchHarvests(); }
-      else showToast('Failed to update harvest', 'error');
+      else showToast(data.error || 'Failed to update harvest', 'error');
     } catch (error) { showToast('Failed to update harvest', 'error'); }
   };
 
   const handleDeleteHarvest = async () => {
     if (!selectedHarvest) return;
     try {
-      const response = await fetch(`/api/threed/harvests?id=${selectedHarvest.harvest.id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/threed/harvests?id=${selectedHarvest.id}`, { method: 'DELETE' });
       const data = await response.json();
       if (data.success) { showToast('Harvest deleted successfully', 'success'); setIsDeleteModalOpen(false); setSelectedHarvest(null); fetchHarvests(); }
-      else showToast('Failed to delete harvest', 'error');
+      else showToast(data.error || 'Failed to delete harvest', 'error');
     } catch (error) { showToast('Failed to delete harvest', 'error'); }
   };
 
-  const openEditModal = (harvest: Harvest) => { setSelectedHarvest(harvest); setFormData({ plantId: String(harvest.harvest.plantId), quantity: harvest.harvest.quantity, unit: harvest.harvest.unit, weightLbs: String(harvest.harvest.weightLbs || ''), harvestDate: harvest.harvest.harvestDate?.split('T')[0] || new Date().toISOString().split('T')[0], notes: harvest.harvest.notes || '' }); setIsEditModalOpen(true); };
+  const openEditModal = (harvest: Harvest) => { setSelectedHarvest(harvest); setFormData({ plantId: String(harvest.plantId), quantity: harvest.quantity, unit: harvest.unit, weightLbs: String(harvest.weightLbs || ''), harvestDate: harvest.harvestDate?.split('T')[0] || new Date().toISOString().split('T')[0], notes: harvest.notes || '' }); setIsEditModalOpen(true); };
   const openDeleteModal = (harvest: Harvest) => { setSelectedHarvest(harvest); setIsDeleteModalOpen(true); };
 
   const formatDate = (dateString: string) => dateString ? new Date(dateString).toLocaleDateString() : 'N/A';
 
   if (loading) return <div className="flex justify-center items-center h-96"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
 
-  const totalWeight = harvests.reduce((sum, h) => sum + safeParseFloat(h.harvest.weightLbs), 0);
-  const totalQuantity = harvests.reduce((sum, h) => sum + (h.harvest.quantity || 0), 0);
+  const totalWeight = harvests.reduce((sum, h) => sum + safeParseFloat(h.weightLbs), 0);
+  const totalQuantity = harvests.reduce((sum, h) => sum + safeParseFloat(h.quantity), 0);
 
   return (
     <div className="space-y-6">
@@ -161,19 +160,19 @@ export default function HarvestsContent() {
             <thead className="bg-muted/50 border-b"><tr><th className="px-4 py-3 w-8"></th><th className="px-4 py-3 text-left text-xs uppercase">Plant</th><th className="px-4 py-3 text-left text-xs uppercase">Bed</th><th className="px-4 py-3 text-left text-xs uppercase">Quantity</th><th className="px-4 py-3 text-left text-xs uppercase">Weight</th><th className="px-4 py-3 text-left text-xs uppercase">Harvest Date</th><th className="px-4 py-3 text-left text-xs uppercase">Unit</th><th className="px-4 py-3 text-left text-xs uppercase">Actions</th></tr></thead>
             <tbody className="divide-y">
               {currentPageData.map((item) => (
-                <React.Fragment key={item.harvest.id}>
+                <React.Fragment key={item.id}>
                   <tr className="hover:bg-muted/50">
-                    <td className="px-4 py-3" onClick={() => toggleRowExpansion(item.harvest.id)}><Info className="w-4 h-4 text-muted-foreground cursor-pointer" /></td>
-                    <td className="px-4 py-3" onClick={() => toggleRowExpansion(item.harvest.id)}><span className="font-medium">{item.plant?.commonName || 'Unknown'}</span>{item.plant?.type && <Badge variant="outline" className="ml-2">{item.plant.type}</Badge>}</td>
-                    <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.harvest.id)}>{item.bed?.name || '—'}</td>
-                    <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.harvest.id)}>{item.harvest.quantity || 1}</td>
-                    <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.harvest.id)}>{safeParseFloat(item.harvest.weightLbs).toFixed(1)} lbs</td>
-                    <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.harvest.id)}>{formatDate(item.harvest.harvestDate)}</td>
-                    <td className="px-4 py-3 text-sm capitalize">{item.harvest.unit || 'each'}</td>
+                    <td className="px-4 py-3" onClick={() => toggleRowExpansion(item.id)}><Info className="w-4 h-4 text-muted-foreground cursor-pointer" /></td>
+                    <td className="px-4 py-3" onClick={() => toggleRowExpansion(item.id)}><span className="font-medium">{item.plant?.commonName || 'Unknown'}</span>{item.plant?.type && <Badge variant="outline" className="ml-2">{item.plant.type}</Badge>}{item.source === 'world-action' && <Badge variant="outline" className="ml-2 text-purple-600">World Action</Badge>}</td>
+                    <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.id)}>{item.bed?.name || '—'}</td>
+                    <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.id)}>{item.quantity || 1}</td>
+                    <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.id)}>{safeParseFloat(item.weightLbs).toFixed(1)} lbs</td>
+                    <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.id)}>{formatDate(item.harvestDate)}</td>
+                    <td className="px-4 py-3 text-sm capitalize">{item.unit || 'each'}</td>
                     <td className="px-4 py-3"><div className="flex gap-1"><Button variant="ghost" size="icon" onClick={() => openEditModal(item)}><Edit2 className="w-4 h-4" /></Button><Button variant="ghost" size="icon" onClick={() => openDeleteModal(item)}><Trash2 className="w-4 h-4" /></Button></div></td>
                   </tr>
-                  {expandedRows.has(item.harvest.id) && (
-                    <tr className="bg-muted/30"><td colSpan={8} className="px-4 py-3"><div className="text-sm space-y-2"><div><p className="font-medium">Notes</p><p>{item.harvest.notes || 'No notes'}</p></div><div className="grid grid-cols-2 gap-4"><div><p className="font-medium">Harvest ID</p><p className="font-mono text-xs">{item.harvest.harvestId}</p></div><div><p className="font-medium">Recorded</p><p>{formatDate(item.harvest.createdAt)}</p></div></div></div></td></tr>
+                  {expandedRows.has(item.id) && (
+                    <tr className="bg-muted/30"><td colSpan={8} className="px-4 py-3"><div className="text-sm space-y-2"><div><p className="font-medium">Notes</p><p>{item.notes || 'No notes'}</p></div><div className="grid grid-cols-2 gap-4"><div><p className="font-medium">Harvest ID</p><p className="font-mono text-xs">{item.harvestId}</p></div><div><p className="font-medium">Recorded</p><p>{formatDate(item.createdAt)}</p></div></div></div></td></tr>
                   )}
                 </React.Fragment>
               ))}

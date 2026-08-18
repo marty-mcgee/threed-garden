@@ -33,7 +33,7 @@ export default function MusicDashboardPage() {
     const fetchAlbums = async () => {
       try {
         console.log('[Music Dashboard] Fetching albums...');
-        const response = await fetch('/api/music/albums?includeTracks=true&limit=50');
+        const response = await fetch('/api/music/albums?scope=public&includeTracks=true&limit=50');
         const data = await response.json();
         
         console.log('[Music Dashboard] Albums response:', data);
@@ -43,7 +43,7 @@ export default function MusicDashboardPage() {
             ...album,
             tracks: album.tracks?.map((track: any) => ({
               ...track,
-              s3Url: track.publicUrl || track.s3Url || track.audioUrl || track.url || '',
+              s3Url: track.fileUrl || track.s3Url || track.audioUrl || track.url || '',
               albumTitle: album.title,
               albumArt: album.coverArt,
               artist: album.artist,

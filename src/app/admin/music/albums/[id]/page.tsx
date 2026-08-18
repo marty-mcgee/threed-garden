@@ -22,7 +22,7 @@ interface Track {
   title: string;
   duration: number | null;
   trackNumber: number | null;
-  publicUrl: string;
+  fileUrl: string;
   status: string;
 }
 
@@ -53,7 +53,7 @@ export default function AlbumDetailPage() {
     title: '',
     duration: '',
     trackNumber: '',
-    publicUrl: '',
+    fileUrl: '',
     status: 'active',
   });
 
@@ -100,7 +100,7 @@ export default function AlbumDetailPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.publicUrl) {
+    if (!formData.title || !formData.fileUrl) {
       showToast('Title and audio URL are required', 'error');
       return;
     }
@@ -115,7 +115,7 @@ export default function AlbumDetailPage() {
         title: formData.title,
         duration: formData.duration ? parseInt(formData.duration) : null,
         trackNumber: formData.trackNumber ? parseInt(formData.trackNumber) : null,
-        publicUrl: formData.publicUrl,
+        fileUrl: formData.fileUrl,
         status: formData.status || 'active',
       };
 
@@ -167,7 +167,7 @@ export default function AlbumDetailPage() {
       title: '',
       duration: '',
       trackNumber: '',
-      publicUrl: '',
+      fileUrl: '',
       status: 'active',
     });
     setEditingTrack(null);
@@ -179,7 +179,7 @@ export default function AlbumDetailPage() {
       title: track.title,
       duration: track.duration?.toString() || '',
       trackNumber: track.trackNumber?.toString() || '',
-      publicUrl: track.publicUrl || '',
+      fileUrl: track.fileUrl || '',
       status: track.status || 'active',
     });
     setIsDialogOpen(true);
@@ -240,14 +240,18 @@ export default function AlbumDetailPage() {
         {/* Album Info Sidebar */}
         <Card className="md:col-span-1">
           <CardContent className="p-4">
-            <img
-              src={album.coverArt}
-              alt={album.title}
-              className="w-full rounded-lg mb-4"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/placeholder-album.jpg';
-              }}
-            />
+            {album.coverArt?.trim() ? (
+              <img
+                src={album.coverArt}
+                alt={album.title}
+                className="mb-4 w-full rounded-lg"
+              />
+            ) : (
+              <div className="mb-4 flex aspect-square w-full flex-col items-center justify-center gap-2 rounded-lg bg-muted text-muted-foreground">
+                <Music className="h-10 w-10 opacity-50" />
+                <span className="text-sm">No cover art</span>
+              </div>
+            )}
             {album.releaseYear && (
               <p className="text-sm">Released: {album.releaseYear}</p>
             )}
@@ -407,11 +411,11 @@ export default function AlbumDetailPage() {
               </div>
             </div>
             <div>
-              <Label htmlFor="publicUrl">Audio URL *</Label>
+              <Label htmlFor="fileUrl">Audio URL *</Label>
               <Input
-                id="publicUrl"
-                value={formData.publicUrl}
-                onChange={(e) => setFormData({ ...formData, publicUrl: e.target.value })}
+                id="fileUrl"
+                value={formData.fileUrl}
+                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
                 disabled={isSubmitting}
                 placeholder="https://example.com/track.mp3"
                 required

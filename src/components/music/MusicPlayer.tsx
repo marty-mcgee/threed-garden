@@ -16,7 +16,7 @@ interface Track {
   title: string;
   duration: number | null;
   trackNumber: number | null;
-  publicUrl: string;
+  fileUrl: string;
 }
 
 interface Link {
@@ -192,7 +192,7 @@ export function MusicPlayer({
           <div className="space-y-4">
             {/* Waveform Visualization */}
             <WaveformVisualizer
-              audioUrl={track.publicUrl}
+              audioUrl={track.fileUrl}
               isPlaying={isPlaying}
               currentTime={currentTime}
               duration={duration}

@@ -3,17 +3,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { musicAlbums, musicTracks, musicLinks, musicMedia, music } from '@/lib/schema/music';
-import { eq, and, desc, sql, or } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/music/albums - List albums (PUBLIC)
+// GET /api/music/albums - List owner or public albums
 // Query Parameters:
 //   - id (optional): Get a single album with tracks
 //   - includeTracks (optional): Include tracks in response
 //   - includeLinks (optional): Include links in response
 //   - includeMedia (optional): Include media in response
-//   - musicId (optional): Filter by music module
+//   - scope (optional): owner (authenticated default) or public (anonymous default)
 //   - status (optional): Filter by status
 //   - limit (optional): Number of records to return (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
@@ -28,12 +28,34 @@ export async function GET(request: NextRequest) {
     const includeTracks = searchParams.get('includeTracks') === 'true';
     const includeLinks = searchParams.get('includeLinks') === 'true';
     const includeMedia = searchParams.get('includeMedia') === 'true';
-    const musicId = searchParams.get('musicId');
+    const requestedScope = searchParams.get('scope');
     const status = searchParams.get('status');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    console.log('[API] 🔍 Request params:', { id, includeTracks, includeLinks, includeMedia, musicId, status, limit, offset });
+    if (requestedScope && requestedScope !== 'owner' && requestedScope !== 'public') {
+      return NextResponse.json(
+        { success: false, error: 'Invalid album scope' },
+        { status: 400 }
+      );
+    }
+
+    const scope = requestedScope || (userId ? 'owner' : 'public');
+    if (scope === 'owner' && !userId) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const albumAccessCondition = scope === 'owner'
+      ? eq(musicAlbums.userId, userId!)
+      : and(
+          eq(musicAlbums.isPublic, true),
+          eq(musicAlbums.status, 'published')
+        );
+
+    console.log('[API] 🔍 Request params:', { id, includeTracks, includeLinks, includeMedia, scope, status, limit, offset });
 
     // ✅ Get a single album by ID
     if (id) {
@@ -48,10 +70,15 @@ export async function GET(request: NextRequest) {
       console.log('[API] 🔍 Fetching album with ID:', parsedId);
 
       // ✅ Get album by ID
-      let albumQuery = db
+      const albumQuery = db
         .select()
         .from(musicAlbums)
-        .where(eq(musicAlbums.id, parsedId));
+        .where(
+          and(
+            eq(musicAlbums.id, parsedId),
+            albumAccessCondition
+          )
+        );
 
       const [album] = await albumQuery;
 
@@ -63,28 +90,6 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // ✅ Check permissions after fetching
-      const isOwner = album.userId === userId;
-      const isPublic = album.isPublic && album.status === 'published';
-      
-      if (!userId) {
-        if (!isPublic) {
-          console.log('[API] ❌ Album is not public:', parsedId);
-          return NextResponse.json(
-            { success: false, error: 'Album not found' },
-            { status: 404 }
-          );
-        }
-      } else {
-        if (!isOwner && !isPublic) {
-          console.log('[API] ❌ Album not accessible:', parsedId);
-          return NextResponse.json(
-            { success: false, error: 'Album not found' },
-            { status: 404 }
-          );
-        }
-      }
-
       console.log('[API] ✅ Found album:', album.id, album.title);
 
       const response: any = { ...album };
@@ -92,14 +97,17 @@ export async function GET(request: NextRequest) {
       // ✅ Fetch tracks for this specific album
       if (includeTracks) {
         console.log('[API] 🎵 Fetching tracks for album:', album.id);
-        let tracksQuery = db
+        const tracksQuery = db
           .select()
           .from(musicTracks)
-          .where(eq(musicTracks.albumId, album.id));
-
-        if (!userId) {
-          tracksQuery = tracksQuery.where(eq(musicTracks.status, 'active'));
-        }
+          .where(
+            and(
+              eq(musicTracks.albumId, album.id),
+              scope === 'owner'
+                ? eq(musicTracks.userId, userId!)
+                : eq(musicTracks.status, 'active')
+            )
+          );
 
         const tracks = await tracksQuery.orderBy(musicTracks.trackNumber);
         console.log('[API] 🎵 Found', tracks.length, 'tracks for album:', album.id);
@@ -109,19 +117,17 @@ export async function GET(request: NextRequest) {
       // ✅ Fetch links for this album (now directly on music_links table)
       if (includeLinks) {
         console.log('[API] 🔗 Fetching links for album:', album.id);
-        let linksQuery = db
+        const linksQuery = db
           .select()
           .from(musicLinks)
           .where(
             and(
               eq(musicLinks.albumId, album.id),
-              eq(musicLinks.userId, userId || '')
+              scope === 'owner'
+                ? eq(musicLinks.userId, userId!)
+                : eq(musicLinks.status, 'active')
             )
           );
-
-        if (!userId) {
-          linksQuery = linksQuery.where(eq(musicLinks.status, 'active'));
-        }
 
         const links = await linksQuery.orderBy(musicLinks.displayOrder);
         console.log('[API] 🔗 Found', links.length, 'links');
@@ -131,16 +137,17 @@ export async function GET(request: NextRequest) {
       // ✅ Fetch media for this album
       if (includeMedia) {
         console.log('[API] 🖼️ Fetching media for album:', album.id);
-        let mediaQuery = db
+        const mediaQuery = db
           .select()
           .from(musicMedia)
-          .where(eq(musicMedia.albumId, album.id));
-
-        if (!userId) {
-          // For public access, only return media that's publicly available
-          // (you might want to add a isPublic field to media table)
-          mediaQuery = mediaQuery.where(eq(musicMedia.isPrimary, true));
-        }
+          .where(
+            and(
+              eq(musicMedia.albumId, album.id),
+              scope === 'owner'
+                ? eq(musicMedia.userId, userId!)
+                : eq(musicMedia.isPrimary, true)
+            )
+          );
 
         const media = await mediaQuery;
         console.log('[API] 🖼️ Found', media.length, 'media items');
@@ -156,42 +163,28 @@ export async function GET(request: NextRequest) {
     // ✅ LIST ALL ALBUMS (only when no ID is provided)
     console.log('[API] 📋 Listing all albums');
 
-    let query = db
+    const supportedStatuses = ['draft', 'published', 'archived'] as const;
+    if (status && !supportedStatuses.includes(status as typeof supportedStatuses[number])) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid album status' },
+        { status: 400 }
+      );
+    }
+
+    const albumListCondition = and(
+      albumAccessCondition,
+      status ? eq(musicAlbums.status, status as typeof supportedStatuses[number]) : undefined
+    );
+
+    const query = db
       .select()
       .from(musicAlbums)
-      .$dynamic();
-
-    if (!userId) {
-      query = query.where(
-        and(
-          eq(musicAlbums.isPublic, true),
-          eq(musicAlbums.status, 'published')
-        )
-      );
-    } else {
-      query = query.where(
-        or(
-          eq(musicAlbums.userId, userId),
-          and(
-            eq(musicAlbums.isPublic, true),
-            eq(musicAlbums.status, 'published')
-          )
-        )
-      );
-    }
-
-    if (musicId) {
-      query = query.where(eq(musicAlbums.musicId, parseInt(musicId)));
-    }
-
-    if (status) {
-      query = query.where(eq(musicAlbums.status, status));
-    }
+      .where(albumListCondition);
 
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(musicAlbums)
-      .where(query._where);
+      .where(albumListCondition);
 
     const albums = await query
       .orderBy(desc(musicAlbums.createdAt))
@@ -208,14 +201,17 @@ export async function GET(request: NextRequest) {
 
           // Fetch tracks if requested
           if (includeTracks) {
-            let tracksQuery = db
+            const tracksQuery = db
               .select()
               .from(musicTracks)
-              .where(eq(musicTracks.albumId, album.id));
-
-            if (!userId) {
-              tracksQuery = tracksQuery.where(eq(musicTracks.status, 'active'));
-            }
+              .where(
+                and(
+                  eq(musicTracks.albumId, album.id),
+                  scope === 'owner'
+                    ? eq(musicTracks.userId, userId!)
+                    : eq(musicTracks.status, 'active')
+                )
+              );
 
             const tracks = await tracksQuery.orderBy(musicTracks.trackNumber);
             result.tracks = tracks || [];
@@ -223,19 +219,17 @@ export async function GET(request: NextRequest) {
 
           // ✅ Fetch links if requested (simplified - direct query)
           if (includeLinks) {
-            let linksQuery = db
+            const linksQuery = db
               .select()
               .from(musicLinks)
               .where(
                 and(
                   eq(musicLinks.albumId, album.id),
-                  eq(musicLinks.userId, userId || '')
+                  scope === 'owner'
+                    ? eq(musicLinks.userId, userId!)
+                    : eq(musicLinks.status, 'active')
                 )
               );
-
-            if (!userId) {
-              linksQuery = linksQuery.where(eq(musicLinks.status, 'active'));
-            }
 
             const links = await linksQuery.orderBy(musicLinks.displayOrder);
             result.links = links || [];
@@ -243,14 +237,17 @@ export async function GET(request: NextRequest) {
 
           // ✅ Fetch media if requested
           if (includeMedia) {
-            let mediaQuery = db
+            const mediaQuery = db
               .select()
               .from(musicMedia)
-              .where(eq(musicMedia.albumId, album.id));
-
-            if (!userId) {
-              mediaQuery = mediaQuery.where(eq(musicMedia.isPrimary, true));
-            }
+              .where(
+                and(
+                  eq(musicMedia.albumId, album.id),
+                  scope === 'owner'
+                    ? eq(musicMedia.userId, userId!)
+                    : eq(musicMedia.isPrimary, true)
+                )
+              );
 
             const media = await mediaQuery;
             result.media = media || [];

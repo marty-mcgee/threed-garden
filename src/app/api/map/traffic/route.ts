@@ -74,11 +74,14 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectTraffic.projectId, parsedProjectId),
-          userId ? eq(projectTraffic.userId, userId) : sql`1=1`
+          userId ? eq(projectTraffic.userId, userId) : sql`1=1`,
+          eq(projectTraffic.isActive, true)
         )
       );
 
-    const trafficModuleIds = projectTrafficModules.map(m => m.trafficId);
+    const trafficModuleIds = projectTrafficModules
+      .map(m => m.trafficId)
+      .filter((id): id is number => id !== null);
 
     if (trafficModuleIds.length === 0) {
       return NextResponse.json({
@@ -109,6 +112,7 @@ export async function GET(request: NextRequest) {
         and(
           eq(projectAssets.projectId, parsedProjectId),
           eq(projectAssets.moduleType, 'traffic'),
+          inArray(projectAssets.moduleId, trafficModuleIds),
           userId ? eq(projectAssets.userId, userId) : sql`1=1`,
           includeInactive ? sql`1=1` : eq(projectAssets.isActive, true)
         )
@@ -147,14 +151,15 @@ export async function GET(request: NextRequest) {
         return [];
       }
 
-      let query = db
+      const assignedAssetCondition = inArray(table.id, ids);
+      const query = db
         .select()
         .from(table)
-        .where(inArray(table.id, ids));
-
-      if (!includeInactive) {
-        query = query.where(eq(table.isActive, true));
-      }
+        .where(
+          !includeInactive
+            ? and(assignedAssetCondition, eq(table.isActive, true))
+            : assignedAssetCondition
+        );
 
       return await query
         .orderBy(desc(orderField))

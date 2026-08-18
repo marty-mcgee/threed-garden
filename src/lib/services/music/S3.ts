@@ -9,10 +9,10 @@ const s3Client = new S3Client({
   },
 });
 
-export async function getStreamingUrl(publicUrl: string): Promise<string> {
+export async function getStreamingUrl(fileUrl: string): Promise<string> {
   const command = new GetObjectCommand({
     Bucket: process.env.S3_BUCKET_NAME!,
-    Key: publicUrl,
+    Key: fileUrl,
   });
   
   // URL expires in 1 hour
@@ -21,6 +21,6 @@ export async function getStreamingUrl(publicUrl: string): Promise<string> {
 }
 
 // For direct access without presigning (if bucket is public)
-export function getPublicUrl(publicUrl: string): string {
-  return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${publicUrl}`;
+export function getPublicUrl(fileUrl: string): string {
+  return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileUrl}`;
 }

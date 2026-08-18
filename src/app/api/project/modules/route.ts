@@ -75,7 +75,9 @@ export async function GET(request: NextRequest) {
         .where(
           and(
             eq(projectThreed.projectId, parsedProjectId),
-            eq(projectThreed.userId, userId)
+            eq(projectThreed.userId, userId),
+            eq(projectThreed.isActive, true),
+            eq(threed.isActive, true)
           )
         ),
       
@@ -86,7 +88,9 @@ export async function GET(request: NextRequest) {
         .where(
           and(
             eq(projectTraffic.projectId, parsedProjectId),
-            eq(projectTraffic.userId, userId)
+            eq(projectTraffic.userId, userId),
+            eq(projectTraffic.isActive, true),
+            eq(traffic.isActive, true)
           )
         ),
       
@@ -97,7 +101,9 @@ export async function GET(request: NextRequest) {
         .where(
           and(
             eq(projectMusic.projectId, parsedProjectId),
-            eq(projectMusic.userId, userId)
+            eq(projectMusic.userId, userId),
+            eq(projectMusic.isActive, true),
+            eq(music.isActive, true)
           )
         ),
     ]);

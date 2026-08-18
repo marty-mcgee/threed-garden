@@ -21,7 +21,7 @@ const albumsData = [
         title: "Trouble",
         duration: 210,
         trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-trouble.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-trouble.mp3"
       }
     ]
   },
@@ -36,7 +36,7 @@ const albumsData = [
         title: "Decide",
         duration: 210,
         trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-decide.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-decide.mp3"
       }
     ]
   },
@@ -51,67 +51,67 @@ const albumsData = [
         title: "nVomitous",
         duration: 282,
         trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-nvomitous.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-nvomitous.mp3"
       },
       {
         title: "New Design",
         duration: 272,
         trackNumber: 2,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-new-design.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-new-design.mp3"
       },
       {
         title: "Conversate",
         duration: 294,
         trackNumber: 3,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-conversate.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-conversate.mp3"
       },
       {
         title: "Womb",
         duration: 427,
         trackNumber: 4,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-womb.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-womb.mp3"
       },
       {
         title: "Vice Conversion",
         duration: 218,
         trackNumber: 5,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-vice-conversion.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-vice-conversion.mp3"
       },
       {
         title: "Innocent",
         duration: 313,
         trackNumber: 6,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-innocent.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-innocent.mp3"
       },
       {
         title: "This Disease",
         duration: 390,
         trackNumber: 7,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-this-disease.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-this-disease.mp3"
       },
       {
         title: "Manhattan",
         duration: 328,
         trackNumber: 8,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-manhattan.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-manhattan.mp3"
       },
       {
         title: "Sailing",
         duration: 187,
         trackNumber: 9,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-sailing.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-sailing.mp3"
       },
       {
         title: "Antidote",
         duration: 320,
         trackNumber: 10,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-antidote.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-antidote.mp3"
       },
       {
         title: "Eleven",
         duration: 259,
         trackNumber: 11,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-eleven.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-eleven.mp3"
       },
     ]
   },
@@ -126,31 +126,31 @@ const albumsData = [
         title: "Sit Back",
         duration: 185,
         trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-sit-back.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-sit-back.mp3"
       },
       {
         title: "nVomitous",
         duration: 234,
         trackNumber: 2,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-nvomitous.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-nvomitous.mp3"
       },
       {
         title: "New Design",
         duration: 245,
         trackNumber: 3,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-new-design.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-new-design.mp3"
       },
       {
         title: "Greats",
         duration: 198,
         trackNumber: 4,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-greats.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-greats.mp3"
       },
       {
         title: "The Fat",
         duration: 240,
         trackNumber: 5,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-the-fat.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-the-fat.mp3"
       }
     ]
   },
@@ -165,13 +165,13 @@ const albumsData = [
         title: "Neat and Fool",
         duration: 220,
         trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-neat-and-fool.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-neat-and-fool.mp3"
       },
       {
         title: "Tea Among Colleagues",
         duration: 300,
         trackNumber: 2,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-tea-among-colleagues.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-tea-among-colleagues.mp3"
       }
     ]
   },
@@ -186,7 +186,7 @@ const albumsData = [
         title: "MesMerized",
         duration: 210,
         trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-mesmerized.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-mesmerized.mp3"
       }
     ]
   },
@@ -201,7 +201,7 @@ const albumsData = [
         title: "Salesman",
         duration: 210,
         trackNumber: 1,
-        publicUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-salesman.mp3"
+        fileUrl: "https://threedpublic.s3.us-west-2.amazonaws.com/marty-mcgee/music/albums/tracks/mm-salesman.mp3"
       }
     ]
   },
@@ -238,7 +238,8 @@ async function seedSimple() {
         title: track.title,
         duration: track.duration,
         trackNumber: track.trackNumber,
-        publicUrl: track.publicUrl,
+        fileUrl: track.fileUrl,
+        fileType: 'audio/mpeg',
         status: TrackStatus.ACTIVE,
         playCount: 0,
         createdAt: new Date(),

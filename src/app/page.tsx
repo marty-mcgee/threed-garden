@@ -40,8 +40,8 @@ export default function HomePage() {
 
   // Handle audio source changes
   useEffect(() => {
-    if (audioElement && currentTrack?.publicUrl) {
-      audioElement.src = currentTrack.publicUrl;
+    if (audioElement && currentTrack?.fileUrl) {
+      audioElement.src = currentTrack.fileUrl;
       audioElement.load();
       if (isPlaying) {
         audioElement.play().catch(console.error);
@@ -92,7 +92,7 @@ export default function HomePage() {
 
   const fetchFirstAlbum = async () => {
     try {
-      const response = await fetch('/api/music/albums');
+      const response = await fetch('/api/music/albums?scope=public');
       if (response.ok) {
         const data = await response.json();
         setAlbums(data);
@@ -110,7 +110,7 @@ export default function HomePage() {
 
   const fetchTracks = async (albumId: number) => {
     try {
-      const response = await fetch(`/api/music/tracks?albumId=${albumId}`);
+      const response = await fetch(`/api/music/tracks?scope=public&albumId=${albumId}`);
       if (response.ok) {
         const data = await response.json();
         setTracks(data);

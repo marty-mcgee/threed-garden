@@ -3,16 +3,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { musicTracks, musicAlbums } from '@/lib/schema/music';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
-// GET /api/music/tracks - List tracks (PUBLIC)
+// GET /api/music/tracks - List owner or public tracks
 // Query Parameters:
 //   - albumId (optional): Filter tracks by album
 //   - id (optional): Get a single track
-//   - musicId (optional): Filter by music module
-//   - status (optional): Filter by status
+//   - scope (optional): owner (authenticated default) or public (anonymous default)
 //   - limit (optional): Number of records to return (default: 100)
 //   - offset (optional): Number of records to skip (default: 0)
 // ============================================
@@ -24,6 +23,35 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const albumId = searchParams.get('albumId');
+    const requestedScope = searchParams.get('scope');
+
+    if (requestedScope && requestedScope !== 'owner' && requestedScope !== 'public') {
+      return NextResponse.json(
+        { success: false, error: 'Invalid track scope' },
+        { status: 400 }
+      );
+    }
+
+    const scope = requestedScope || (userId ? 'owner' : 'public');
+    if (scope === 'owner' && !userId) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const trackAccessCondition = scope === 'owner'
+      ? eq(musicTracks.userId, userId!)
+      : and(
+          eq(musicTracks.status, 'active'),
+          sql`EXISTS (
+            SELECT 1
+            FROM ${musicAlbums}
+            WHERE ${musicAlbums.id} = ${musicTracks.albumId}
+            AND ${musicAlbums.isPublic} = true
+            AND ${musicAlbums.status} = 'published'
+          )`
+        );
 
     // ✅ DEBUG: Log everything
     // console.log('========================================');
@@ -36,10 +64,23 @@ export async function GET(request: NextRequest) {
 
     // Get a single track by ID
     if (id) {
+      const parsedId = Number(id);
+      if (!Number.isInteger(parsedId) || parsedId <= 0) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid track ID' },
+          { status: 400 }
+        );
+      }
+
       const [track] = await db
         .select()
         .from(musicTracks)
-        .where(eq(musicTracks.id, parseInt(id)))
+        .where(
+          and(
+            eq(musicTracks.id, parsedId),
+            trackAccessCondition
+          )
+        )
         .limit(1);
 
       if (!track) {
@@ -61,10 +102,10 @@ export async function GET(request: NextRequest) {
     if (albumId) {
       console.log(`📀 Processing albumId: "${albumId}"`);
       
-      const albumIdNum = parseInt(albumId);
+      const albumIdNum = Number(albumId);
       console.log(`📀 Parsed albumId: ${albumIdNum}`);
 
-      if (isNaN(albumIdNum)) {
+      if (!Number.isInteger(albumIdNum) || albumIdNum <= 0) {
         console.log(`❌ Invalid albumId: "${albumId}"`);
         return NextResponse.json({
           success: false,
@@ -76,7 +117,12 @@ export async function GET(request: NextRequest) {
       const tracks = await db
         .select()
         .from(musicTracks)
-        .where(eq(musicTracks.albumId, albumIdNum))
+        .where(
+          and(
+            eq(musicTracks.albumId, albumIdNum),
+            trackAccessCondition
+          )
+        )
         .orderBy(musicTracks.trackNumber);
 
       console.log(`✅ Found ${tracks.length} tracks for album ${albumIdNum}`);
@@ -96,6 +142,7 @@ export async function GET(request: NextRequest) {
     const allTracks = await db
       .select()
       .from(musicTracks)
+      .where(trackAccessCondition)
       .orderBy(desc(musicTracks.createdAt));
 
     console.log(`📚 Found ${allTracks.length} total tracks`);
@@ -129,20 +176,29 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('📝 POST /api/music/tracks - Request body:', body);
 
-    const { 
-      albumId, 
-      title, 
-      duration, 
-      trackNumber, 
-      publicUrl, 
-      status, 
+    const {
+      albumId,
+      title,
+      duration,
+      trackNumber,
+      status,
       lyrics,
-      musicId
+      fileSize,
+      metadata,
     } = body;
+    const { fileUrl, fileType = 'audio/mpeg' } = body;
 
-    if (!title || !publicUrl || !albumId) {
+    if (!title || !fileUrl || !albumId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: title, publicUrl, albumId' },
+        { success: false, error: 'Missing required fields: title, fileUrl, albumId' },
+        { status: 400 }
+      );
+    }
+
+    const parsedAlbumId = Number(albumId);
+    if (!Number.isInteger(parsedAlbumId) || parsedAlbumId <= 0) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid Album ID' },
         { status: 400 }
       );
     }
@@ -154,7 +210,7 @@ export async function POST(request: NextRequest) {
       .from(musicAlbums)
       .where(
         and(
-          eq(musicAlbums.id, albumId),
+          eq(musicAlbums.id, parsedAlbumId),
           eq(musicAlbums.userId, userId)
         )
       )
@@ -173,14 +229,16 @@ export async function POST(request: NextRequest) {
       .insert(musicTracks)
       .values({
         userId,
-        albumId,
-        musicId: musicId || null,
+        albumId: parsedAlbumId,
         title,
         duration: duration || null,
         trackNumber: trackNumber || null,
-        publicUrl,
+        fileUrl,
+        fileType,
+        fileSize: fileSize || null,
         status: status || 'active',
         lyrics: lyrics || null,
+        metadata: metadata || null,
       })
       .returning();
 
@@ -223,19 +281,28 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const parsedId = Number(id);
+    if (!Number.isInteger(parsedId) || parsedId <= 0) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid Track ID' },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     console.log('📝 PUT /api/music/tracks - Request body:', body);
 
-    const { 
-      title, 
-      duration, 
-      trackNumber, 
-      publicUrl, 
-      status, 
+    const {
+      title,
+      duration,
+      trackNumber,
+      status,
       lyrics,
       albumId,
-      musicId
+      fileSize,
+      metadata,
     } = body;
+    const { fileUrl, fileType } = body;
 
     const userId = session.user.id;
 
@@ -244,7 +311,7 @@ export async function PUT(request: NextRequest) {
       .from(musicTracks)
       .where(
         and(
-          eq(musicTracks.id, parseInt(id)),
+          eq(musicTracks.id, parsedId),
           eq(musicTracks.userId, userId)
         )
       )
@@ -257,13 +324,23 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    if (albumId) {
+    let parsedAlbumId: number | undefined;
+    if (albumId !== undefined) {
+      const requestedAlbumId = Number(albumId);
+      if (!Number.isInteger(requestedAlbumId) || requestedAlbumId <= 0) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid Album ID' },
+          { status: 400 }
+        );
+      }
+      parsedAlbumId = requestedAlbumId;
+
       const [album] = await db
         .select()
         .from(musicAlbums)
         .where(
           and(
-            eq(musicAlbums.id, albumId),
+            eq(musicAlbums.id, parsedAlbumId),
             eq(musicAlbums.userId, userId)
           )
         )
@@ -283,16 +360,18 @@ export async function PUT(request: NextRequest) {
         title: title || existing.title,
         duration: duration !== undefined ? duration : existing.duration,
         trackNumber: trackNumber !== undefined ? trackNumber : existing.trackNumber,
-        publicUrl: publicUrl || existing.publicUrl,
+        fileUrl: fileUrl || existing.fileUrl,
+        fileType: fileType || existing.fileType,
+        fileSize: fileSize !== undefined ? fileSize : existing.fileSize,
         status: status || existing.status,
         lyrics: lyrics !== undefined ? lyrics : existing.lyrics,
-        albumId: albumId !== undefined ? albumId : existing.albumId,
-        musicId: musicId !== undefined ? musicId : existing.musicId,
+        albumId: parsedAlbumId !== undefined ? parsedAlbumId : existing.albumId,
+        metadata: metadata !== undefined ? metadata : existing.metadata,
         updatedAt: new Date(),
       })
       .where(
         and(
-          eq(musicTracks.id, parseInt(id)),
+          eq(musicTracks.id, parsedId),
           eq(musicTracks.userId, userId)
         )
       )

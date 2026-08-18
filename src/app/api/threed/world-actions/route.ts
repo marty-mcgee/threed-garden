@@ -10,7 +10,7 @@ import {
   threedWateringHistory,
 } from '@/lib/schema/threed';
 import { project, projectAssets } from '@/lib/schema/project';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ========================================================
@@ -26,6 +26,7 @@ type WorldActionBody = {
   action?: string;
   characterId?: number;
   projectId?: number;
+  completionId?: string;
   target?: WorldActionTarget | null;
 };
 
@@ -38,7 +39,10 @@ function createWateringHistoryId() {
   return `water-${Date.now()}-${randomPart}`;
 }
 
-function createHarvestId() {
+function createHarvestId(completionId?: string) {
+  if (completionId) {
+    return `harvest-${completionId.replace(/-/g, '').slice(0, 32)}`;
+  }
   const randomPart = crypto.randomUUID().replace(/-/g, '').slice(0, 16);
   return `harvest-${Date.now()}-${randomPart}`;
 }
@@ -76,6 +80,10 @@ export async function POST(request: NextRequest) {
     const action = body.action;
     const characterId = Number(body.characterId);
     const projectId = Number(body.projectId);
+    const completionId = typeof body.completionId === 'string' &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(body.completionId)
+      ? body.completionId
+      : undefined;
     const target = body.target;
 
     if (!action) {
@@ -228,11 +236,41 @@ export async function POST(request: NextRequest) {
       await ensureTableSequence('project_assets');
 
       const result = await db.transaction(async (tx) => {
+        if (completionId) {
+          await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${completionId}))`);
+
+          const [existingHarvest] = await tx
+            .select()
+            .from(threedHarvests)
+            .where(eq(threedHarvests.harvestId, createHarvestId(completionId)))
+            .limit(1);
+
+          if (existingHarvest) {
+            const [existingAsset] = await tx
+              .select()
+              .from(projectAssets)
+              .where(
+                and(
+                  eq(projectAssets.projectId, projectId),
+                  eq(projectAssets.assetType, 'threed_harvests'),
+                  eq(projectAssets.assetId, existingHarvest.id),
+                ),
+              )
+              .limit(1);
+
+            return {
+              harvestRecord: existingHarvest,
+              projectAsset: existingAsset ?? null,
+              idempotent: true,
+            };
+          }
+        }
+
         const [harvestRecord] = await tx
           .insert(threedHarvests)
           .values({
             userId,
-            harvestId: createHarvestId(),
+            harvestId: createHarvestId(completionId),
             plantingId: planting.id,
             plantId: planting.plantId,
             quantity: '1',
@@ -262,7 +300,7 @@ export async function POST(request: NextRequest) {
           })
           .returning();
 
-        return { harvestRecord, projectAsset };
+        return { harvestRecord, projectAsset, idempotent: false };
       });
 
       return NextResponse.json({
@@ -281,6 +319,7 @@ export async function POST(request: NextRequest) {
         projectId,
         data: result.harvestRecord,
         projectAsset: result.projectAsset,
+        idempotent: result.idempotent,
       });
     }
 

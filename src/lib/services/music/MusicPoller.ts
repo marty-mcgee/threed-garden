@@ -242,7 +242,7 @@ export class MusicPoller {
       
       const existingTrack = await db.select()
         .from(musicTracks)
-        .where(eq(musicTracks.publicUrl, trackKey))
+        .where(eq(musicTracks.fileUrl, trackKey))
         .limit(1);
 
       if (existingTrack.length === 0) {
@@ -258,7 +258,8 @@ export class MusicPoller {
           albumId: parseInt(albumId),
           title: `Track ${trackNumber}`,
           trackNumber,
-          publicUrl: trackKey,
+          fileUrl: trackKey,
+          fileType: metadata.ContentType || 'audio/mpeg',
           duration: metadata.ContentLength ? Math.floor(metadata.ContentLength / 1000) : null,
           status: 'active',
         });

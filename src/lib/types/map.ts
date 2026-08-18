@@ -73,6 +73,8 @@ export interface ThreeDActionTarget {
   id: number;
   name: string;
   position: { x: number; y: number; z: number };
+  /** Per-button-press token carried through animation completion for idempotent persistence. */
+  actionRequestId?: string;
 }
 
 // ============================================

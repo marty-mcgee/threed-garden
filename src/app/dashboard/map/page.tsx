@@ -434,7 +434,9 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
                           detail: {
                             characterId: charId,
                             action,
-                            target: actionTarget || null,
+                            target: actionTarget
+                              ? { ...actionTarget, actionRequestId: crypto.randomUUID() }
+                              : null,
                           },
                         }),
                       );
@@ -855,6 +857,7 @@ function UnifiedMapPageInner() {
               action: detail.action,
               characterId: Number(detail.characterId),
               projectId: Number(selectedProjectId),
+              completionId: detail.target.actionRequestId,
               target: {
                 type: detail.target.type,
                 id: Number(detail.target.id),

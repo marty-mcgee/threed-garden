@@ -41,9 +41,9 @@ export default function MusicContent() {
 
   // Handle audio source changes
   useEffect(() => {
-    if (audioElement && currentTrack?.publicUrl) {
+    if (audioElement && currentTrack?.fileUrl) {
       const wasPlaying = isPlaying;
-      audioElement.src = currentTrack.publicUrl;
+      audioElement.src = currentTrack.fileUrl;
       audioElement.load();
       
       if (wasPlaying) {

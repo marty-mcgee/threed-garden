@@ -9,7 +9,6 @@ import {
   Box, 
   Car, 
   Music,
-  LogOut,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
@@ -50,6 +49,7 @@ import {
   Layers,
   MapPin,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { SignOutButton } from '@/components/auth/SignOutButton';
@@ -57,13 +57,13 @@ import { SignOutButton } from '@/components/auth/SignOutButton';
 interface NavItem {
   title: string;
   href: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   exact?: boolean; // ✅ If true, only match exact path (not children)
 }
 
 interface NavSection {
   title: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   items: NavItem[];
 }
 
@@ -88,14 +88,14 @@ const navSections: NavSection[] = [
     title: 'ThreeD',
     icon: Box,
     items: [
+      { title: 'Overview', href: '/admin/threed', icon: Carrot, exact: false },
       { title: 'Plants', href: '/admin/threed/plants', icon: Sprout, exact: false },
       { title: 'Beds', href: '/admin/threed/beds', icon: Box, exact: false },
+      { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
       { title: '3D Models', href: '/admin/threed/models', icon: Package, exact: false },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
       { title: 'Layers', href: '/admin/threed/layers', icon: Layers, exact: false },
-      // { title: 'Markers', href: '/admin/threed/markers', icon: MapPin, exact: false },
       { title: 'Tasks', href: '/admin/threed/tasks', icon: ListTodo, exact: false },
-      { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
       { title: 'Waterings', href: '/admin/threed/watering-schedules', icon: Droplets, exact: false },
       { title: 'Harvests', href: '/admin/threed/harvests', icon: Carrot, exact: false },
       { title: 'Farmbots', href: '/admin/threed/farmbots', icon: Drone, exact: false },
@@ -105,11 +105,12 @@ const navSections: NavSection[] = [
     title: 'Traffic',
     icon: Car,
     items: [
+      { title: 'Overview', href: '/admin/traffic', icon: Car, exact: false },
       { title: 'CHP-CAD Incidents', href: '/admin/traffic/chp-cad', icon: AlertTriangle, exact: false },
       { title: 'CHP Cases', href: '/admin/traffic/chp-cases', icon: FileText, exact: false },
       { title: 'CHP Centers', href: '/admin/traffic/chp-centers', icon: Building2, exact: false },
       { title: 'Caltrans Closures', href: '/admin/traffic/caltrans', icon: TrafficCone, exact: false },
-      { title: 'Caltrans Districts', href: '/admin/traffic/caltrans-districts', icon: Grid3x2, exact: false },,
+      { title: 'Caltrans Districts', href: '/admin/traffic/caltrans-districts', icon: Grid3x2, exact: false },
       { title: 'Caltrans CCTV', href: '/admin/traffic/caltrans-cctv', icon: Camera, exact: false },
       { title: 'CalFire Incidents', href: '/admin/traffic/calfire', icon: Flame, exact: false },
       { title: 'Bay Area 511', href: '/admin/traffic/bay-area-511', icon: Radio, exact: false },
@@ -119,6 +120,7 @@ const navSections: NavSection[] = [
     title: 'Music',
     icon: Music,
     items: [
+      { title: 'Overview', href: '/admin/music', icon: Music, exact: false },
       { title: 'Albums', href: '/admin/music/albums', icon: Music, exact: false },
       { title: 'Tracks', href: '/admin/music/tracks', icon: Music2, exact: false },
       { title: 'Media', href: '/admin/music/media', icon: Image, exact: false },
@@ -218,13 +220,13 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           isCollapsed ? "w-16" : "w-64"
         )}
       >
-        <div className="flex items-center justify-between h-16 px-4 border-b">
+        <div className="flex h-14 items-center justify-between border-b px-3">
           {!isCollapsed && <span className="text-lg font-bold">Admin</span>}
           <Button variant="ghost" size="icon" className="ml-auto">
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
         </div>
-        <div className="flex-1 overflow-y-auto py-4 px-2 space-y-2">
+        <div className="flex-1 space-y-1 overflow-y-auto px-2 py-2">
           {navSections.map((section) => (
             <div key={section.title}>
               <div className="h-8 w-full rounded-md bg-muted/20 animate-pulse mb-1" />
@@ -252,7 +254,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       )}
     >
       {/* Logo / Brand */}
-      <div className="flex items-center justify-between h-16 px-4 border-b shrink-0">
+      <div className="flex h-14 shrink-0 items-center justify-between border-b px-3">
         {!isCollapsed && (
           <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             Admin
@@ -269,7 +271,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
+      <nav className="flex-1 overflow-y-auto py-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
         <ul className="space-y-1 px-2">
           {navSections.map((section) => {
             const isExpanded = expandedSections[section.title] || false;
@@ -283,7 +285,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                   <Button
                     variant={sectionHasActive ? 'default' : 'ghost'}
                     className={cn(
-                      "w-full justify-center px-0 h-10",
+                      "h-9 w-full justify-center px-0",
                       sectionHasActive && "bg-primary text-primary-foreground shadow-md"
                     )}
                     onClick={() => {
@@ -307,7 +309,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "w-full justify-between gap-3 h-10 px-3",
+                    "h-9 w-full justify-between gap-3 px-3",
                     sectionHasActive && "bg-primary/10 text-primary font-medium"
                   )}
                   onClick={() => toggleSection(section.title)}
@@ -336,7 +338,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                           <Button
                             variant={active ? 'default' : 'ghost'}
                             className={cn(
-                              "w-full justify-start gap-3 text-sm h-9 px-3",
+                              "h-8 w-full justify-start gap-3 px-3 text-sm",
                               active 
                                 ? "bg-primary text-primary-foreground shadow-md" 
                                 : "hover:bg-accent/50"
@@ -380,14 +382,12 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           <SignOutButton 
             variant="ghost" 
             size={isCollapsed ? "icon" : "default"} 
+            showLabel={!isCollapsed}
             className={cn(
               "w-full justify-start gap-3 h-9",
               isCollapsed && "justify-center px-0"
             )}
-          >
-            <LogOut className="h-4 w-4 shrink-0" />
-            {!isCollapsed && <span>Sign Out</span>}
-          </SignOutButton>
+          />
         </div>
       </div>
     </aside>

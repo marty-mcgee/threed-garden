@@ -11,7 +11,7 @@ export interface Track {
   albumArt?: string;
   duration?: number;
   s3Url: string;
-  publicUrl?: string;
+  fileUrl?: string;
   trackNumber?: number;
   status?: string;
   userId?: string | null;

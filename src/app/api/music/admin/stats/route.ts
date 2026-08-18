@@ -1,19 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { musicAlbums, musicTracks, musicLinks, musicPlaybackHistory } from '@/lib/schema';
 import { eq, desc, sql } from 'drizzle-orm';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // const session = await auth.api.getSession({ headers: request.headers });
-    // if (!session?.user?.id) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    const session = {
-      user: {
-        id: '9a9ed475-3dcd-492e-b22f-de27a33ed1fc',
-      }
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get album stats

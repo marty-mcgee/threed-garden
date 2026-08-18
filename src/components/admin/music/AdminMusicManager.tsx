@@ -28,7 +28,7 @@ interface Track {
   title: string;
   duration: number | null;
   trackNumber: number | null;
-  publicUrl: string;
+  fileUrl: string;
   lyrics: string | null;
 }
 
@@ -53,7 +53,7 @@ export function AdminMusicManager() {
     title: '',
     duration: '',
     trackNumber: '',
-    publicUrl: '',
+    fileUrl: '',
     lyrics: '',
   });
 
@@ -159,7 +159,7 @@ export function AdminMusicManager() {
         title: trackForm.title,
         duration: trackForm.duration ? parseInt(trackForm.duration) : null,
         trackNumber: trackForm.trackNumber ? parseInt(trackForm.trackNumber) : null,
-        publicUrl: trackForm.publicUrl,
+        fileUrl: trackForm.fileUrl,
         lyrics: trackForm.lyrics || null,
       }),
     });
@@ -206,7 +206,7 @@ export function AdminMusicManager() {
       title: '',
       duration: '',
       trackNumber: '',
-      publicUrl: '',
+      fileUrl: '',
       lyrics: '',
     });
     setEditingTrack(null);
@@ -410,8 +410,8 @@ export function AdminMusicManager() {
                       <div>
                         <Label>S3 Key *</Label>
                         <Input
-                          value={trackForm.publicUrl}
-                          onChange={(e) => setTrackForm({ ...trackForm, publicUrl: e.target.value })}
+                          value={trackForm.fileUrl}
+                          onChange={(e) => setTrackForm({ ...trackForm, fileUrl: e.target.value })}
                           placeholder="albums/1/track1.mp3"
                           required
                         />
@@ -442,7 +442,7 @@ export function AdminMusicManager() {
                           {track.trackNumber && `${track.trackNumber}. `}{track.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {track.duration ? `${Math.floor(track.duration / 60)}:${(track.duration % 60).toString().padStart(2, '0')}` : '--:--'} • {track.publicUrl}
+                          {track.duration ? `${Math.floor(track.duration / 60)}:${(track.duration % 60).toString().padStart(2, '0')}` : '--:--'} • {track.fileUrl}
                         </p>
                       </div>
                     </div>
@@ -458,7 +458,7 @@ export function AdminMusicManager() {
                           title: track.title,
                           duration: track.duration?.toString() || '',
                           trackNumber: track.trackNumber?.toString() || '',
-                          publicUrl: track.publicUrl,
+                          fileUrl: track.fileUrl,
                           lyrics: track.lyrics || '',
                         });
                         setIsTrackDialogOpen(true);

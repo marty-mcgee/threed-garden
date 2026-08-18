@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Edit, Trash2, Eye, Music, Loader2, ArrowLeft } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Music, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 
 interface Album {
@@ -44,6 +44,7 @@ export default function AlbumsManagementPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [failedCoverIds, setFailedCoverIds] = useState<Set<number>>(() => new Set());
   const [formData, setFormData] = useState({
     title: '',
     artist: '',
@@ -62,9 +63,10 @@ export default function AlbumsManagementPage() {
   const fetchAlbums = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/music/albums');
+      const response = await fetch('/api/music/albums?includeTracks=true');
       const data = await response.json();
       if (data.success) {
+        setFailedCoverIds(new Set());
         setAlbums(Array.isArray(data.data) ? data.data : []);
       } else {
         showToast(data.error || 'Failed to fetch albums', 'error');
@@ -193,20 +195,8 @@ export default function AlbumsManagementPage() {
   const sortedAlbums = [...albums].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {ToastComponent}
-
-      {/* ✅ Navigation - Fixed to use admin routes */}
-      <div className="flex items-center gap-4">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => router.push('/admin/music')}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Music
-        </Button>
-      </div>
 
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -246,16 +236,27 @@ export default function AlbumsManagementPage() {
             <Card key={album.id} className="group overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative">
-                  <Image
-                    src={album.coverArt}
-                    alt={album.title}
-                    width={300}
-                    height={300}
-                    className="w-full h-48 object-cover"
-                    // onError={(e) => {
-                    //   (e.target as HTMLImageElement).src = '/placeholder-album.jpg';
-                    // }}
-                  />
+                  {album.coverArt?.trim() && !failedCoverIds.has(album.id) ? (
+                    <Image
+                      src={album.coverArt}
+                      alt={album.title}
+                      width={300}
+                      height={300}
+                      className="w-full h-48 object-cover"
+                      onError={() => {
+                        setFailedCoverIds((current) => {
+                          const next = new Set(current);
+                          next.add(album.id);
+                          return next;
+                        });
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-48 w-full flex-col items-center justify-center gap-2 bg-muted text-muted-foreground">
+                      <Music className="h-10 w-10 opacity-50" />
+                      <span className="text-sm">No cover art</span>
+                    </div>
+                  )}
                   <Badge className={`absolute top-2 right-2 ${getStatusVariant(album.status)}`}>
                     {album.status}
                   </Badge>

@@ -44,8 +44,8 @@ export default function TrackPage() {
 
   // Handle audio source changes
   useEffect(() => {
-    if (audioElement && track?.publicUrl) {
-      audioElement.src = track.publicUrl;
+    if (audioElement && track?.fileUrl) {
+      audioElement.src = track.fileUrl;
       audioElement.load();
       if (isPlaying) {
         audioElement.play().catch(console.error);
@@ -201,7 +201,13 @@ export default function TrackPage() {
         <div className="mb-8">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-lg overflow-hidden shadow-lg">
-              <img src={album.coverArt} alt={album.title} className="w-full h-full object-cover" />
+              {album.coverArt?.trim() ? (
+                <img src={album.coverArt} alt={album.title} className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
+                  <Music className="h-8 w-8 opacity-50" />
+                </div>
+              )}
             </div>
             <div>
               <h1 className="text-2xl font-bold">{track.title}</h1>

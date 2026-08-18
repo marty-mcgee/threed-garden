@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { music } from '@/lib/schema/music';
+import { projectMusic } from '@/lib/schema/project';
 import { eq, desc, and, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -16,16 +17,22 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
     const projectId = searchParams.get('projectId');
     const includeInactive = searchParams.get('includeInactive') === 'true';
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
 
     if (id) {
+      const parsedId = Number(id);
+      if (!Number.isInteger(parsedId) || parsedId <= 0) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid Music module ID' },
+          { status: 400 }
+        );
+      }
+
       const [result] = await db
         .select()
         .from(music)
         .where(
           and(
-            eq(music.id, parseInt(id)),
+            eq(music.id, parsedId),
             eq(music.userId, session.user.id)
           )
         );
@@ -40,24 +47,50 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: result });
     }
 
-    let query = db
-      .select()
-      .from(music)
-      .where(eq(music.userId, session.user.id));
+    const limit = Number(searchParams.get('limit') || '50');
+    const offset = Number(searchParams.get('offset') || '0');
+    if (!Number.isInteger(limit) || limit <= 0 || !Number.isInteger(offset) || offset < 0) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid pagination parameters' },
+        { status: 400 }
+      );
+    }
 
+    let parsedProjectId: number | null = null;
     if (projectId) {
-      query = query.where(eq(music.projectId, parseInt(projectId)));
+      parsedProjectId = Number(projectId);
+      if (!Number.isInteger(parsedProjectId) || parsedProjectId <= 0) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid Project ID' },
+          { status: 400 }
+        );
+      }
     }
-    if (!includeInactive) {
-      query = query.where(eq(music.isActive, true));
-    }
+
+    const moduleScope = and(
+      eq(music.userId, session.user.id),
+      includeInactive ? undefined : eq(music.isActive, true),
+      parsedProjectId
+        ? sql`EXISTS (
+            SELECT 1
+            FROM ${projectMusic}
+            WHERE ${projectMusic.musicId} = ${music.id}
+            AND ${projectMusic.projectId} = ${parsedProjectId}
+            AND ${projectMusic.userId} = ${session.user.id}
+            AND ${projectMusic.isActive} = true
+          )`
+        : undefined
+    );
 
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(music)
-      .where(eq(music.userId, session.user.id));
+      .where(moduleScope);
 
-    const results = await query
+    const results = await db
+      .select()
+      .from(music)
+      .where(moduleScope)
       .orderBy(desc(music.createdAt))
       .limit(limit)
       .offset(offset);
@@ -140,7 +173,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { projectId, name, description, isActive, isPublic, config, version, metadata } = body;
+    const { name, description, isActive, isPublic, config, version, metadata } = body;
 
     const [existing] = await db
       .select()
@@ -163,7 +196,6 @@ export async function PUT(request: NextRequest) {
     const [updated] = await db
       .update(music)
       .set({
-        projectId: projectId || existing.projectId,
         name: name || existing.name,
         description: description !== undefined ? description : existing.description,
         slug: name ? name.toLowerCase().replace(/\s+/g, '-') : existing.slug,

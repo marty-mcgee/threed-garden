@@ -15,6 +15,7 @@ import {
   EyeOff,
   Calendar,
   Sprout,
+  WandSparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -58,9 +59,14 @@ interface Harvest {
   updatedAt: string;
   planting?: Planting;
   plant?: Plant;
+  source?: 'manual' | 'world-action';
+  projectAssociations?: Array<{ projectId: number | null; moduleId: number; config?: unknown }>;
 }
 
+interface Project { id: number; name: string; }
+
 interface FormData {
+  projectId: string;
   harvestId: string;
   plantingId: string;
   plantId: string;
@@ -94,15 +100,18 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
   const [harvests, setHarvests] = useState<Harvest[]>([]);
   const [plants, setPlants] = useState<Plant[]>([]);
   const [plantings, setPlantings] = useState<Planting[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingHarvest, setEditingHarvest] = useState<Harvest | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterActive, setFilterActive] = useState<string>('all');
+  const [filterProject, setFilterProject] = useState<string>('all');
 
   // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
+    projectId: '',
     harvestId: '',
     plantingId: '',
     plantId: '',
@@ -120,6 +129,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
     fetchHarvests();
     fetchPlants();
     fetchPlantings();
+    fetchProjects();
   }, []);
 
   const fetchHarvests = async () => {
@@ -168,11 +178,27 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
     }
   };
 
-  const filteredHarvests = harvests.filter((harvest) =>
-    harvest.harvestId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (harvest.plant?.commonName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-    (harvest.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-  );
+  const fetchProjects = async () => {
+    try {
+      const response = await fetch('/api/project');
+      const data = await response.json();
+      setProjects(data.success && Array.isArray(data.data) ? data.data : []);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setProjects([]);
+    }
+  };
+
+  const filteredHarvests = harvests.filter((harvest) => {
+    const matchesSearch = harvest.harvestId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (harvest.plant?.commonName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+      (harvest.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+    const matchesActive = filterActive === 'all' || String(harvest.isActive) === filterActive;
+    const matchesProject = filterProject === 'all' || harvest.projectAssociations?.some(
+      (association) => String(association.projectId) === filterProject,
+    );
+    return matchesSearch && matchesActive && matchesProject;
+  });
 
   const handleCreate = async () => {
     if (!formData.harvestId) {
@@ -181,6 +207,10 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
     }
     if (!formData.quantity) {
       showToast('Quantity is required', 'error');
+      return;
+    }
+    if (formData.projectId && !formData.plantingId) {
+      showToast('Select a planting for a project-scoped harvest', 'error');
       return;
     }
 
@@ -288,6 +318,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
 
   const resetForm = () => {
     setFormData({
+      projectId: '',
       harvestId: '',
       plantingId: '',
       plantId: '',
@@ -304,6 +335,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
   const openEditDialog = (harvest: Harvest) => {
     setEditingHarvest(harvest);
     setFormData({
+      projectId: harvest.projectAssociations?.[0]?.projectId ? String(harvest.projectAssociations[0].projectId) : '',
       harvestId: harvest.harvestId || '',
       plantingId: harvest.plantingId ? String(harvest.plantingId) : '',
       plantId: harvest.plantId ? String(harvest.plantId) : '',
@@ -396,6 +428,24 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div>
+                <Label htmlFor="projectId">Project</Label>
+                <Select
+                  value={formData.projectId}
+                  onValueChange={(value) => setFormData({ ...formData, projectId: value === 'none' ? '' : value })}
+                >
+                  <SelectTrigger><SelectValue placeholder="Standalone harvest" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Standalone</SelectItem>
+                    {projects.map((item) => (
+                      <SelectItem key={item.id} value={String(item.id)}>{item.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Project-scoped records require a planting assigned to that project.
+                </p>
+              </div>
+              <div>
                 <Label htmlFor="harvestId">Harvest ID *</Label>
                 <Input
                   id="harvestId"
@@ -411,7 +461,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                 <Label htmlFor="plantId">Plant</Label>
                 <Select
                   value={formData.plantId}
-                  onValueChange={(value) => setFormData({ ...formData, plantId: value })}
+                  onValueChange={(value) => setFormData({ ...formData, plantId: value === 'none' ? '' : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a plant" />
@@ -431,7 +481,15 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                 <Label htmlFor="plantingId">Planting</Label>
                 <Select
                   value={formData.plantingId}
-                  onValueChange={(value) => setFormData({ ...formData, plantingId: value })}
+                  onValueChange={(value) => {
+                    const nextPlantingId = value === 'none' ? '' : value;
+                    const nextPlanting = plantings.find((item) => String(item.id) === nextPlantingId);
+                    setFormData({
+                      ...formData,
+                      plantingId: nextPlantingId,
+                      plantId: nextPlanting?.plantId ? String(nextPlanting.plantId) : formData.plantId,
+                    });
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a planting" />
@@ -580,6 +638,17 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
             <SelectItem value="false">Inactive</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={filterProject} onValueChange={setFilterProject}>
+          <SelectTrigger className="w-[150px] h-8 text-xs">
+            <SelectValue placeholder="Project" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Projects</SelectItem>
+            {projects.map((item) => (
+              <SelectItem key={item.id} value={String(item.id)}>{item.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Button
           variant="outline"
           size="sm"
@@ -587,6 +656,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
           onClick={() => {
             setSearchQuery('');
             setFilterActive('all');
+            setFilterProject('all');
             fetchHarvests();
           }}
         >
@@ -633,6 +703,11 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                     <div className="flex items-center gap-2">
                       <Package className="w-3.5 h-3.5 text-orange-500" />
                       {harvest.plant?.commonName || 'Unknown'}
+                      {harvest.source === 'world-action' && (
+                        <Badge variant="outline" className="text-[10px] text-purple-600">
+                          <WandSparkles className="w-3 h-3 mr-1" /> World Action
+                        </Badge>
+                      )}
                       {!harvest.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                       )}
@@ -667,6 +742,13 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
             <DialogTitle>Edit Harvest</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
+            <div className="rounded border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+              Source: <span className="font-medium text-foreground">{editingHarvest?.source === 'world-action' ? 'World Action' : 'Manual'}</span>
+              {' · '}
+              Project: <span className="font-medium text-foreground">
+                {projects.find((item) => String(item.id) === formData.projectId)?.name || 'Standalone'}
+              </span>
+            </div>
             <div>
               <Label htmlFor="edit-harvestId">Harvest ID *</Label>
               <Input
@@ -681,7 +763,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
               <Label htmlFor="edit-plantId">Plant</Label>
               <Select
                 value={formData.plantId}
-                onValueChange={(value) => setFormData({ ...formData, plantId: value })}
+                onValueChange={(value) => setFormData({ ...formData, plantId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a plant" />
@@ -701,7 +783,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
               <Label htmlFor="edit-plantingId">Planting</Label>
               <Select
                 value={formData.plantingId}
-                onValueChange={(value) => setFormData({ ...formData, plantingId: value })}
+                onValueChange={(value) => setFormData({ ...formData, plantingId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a planting" />

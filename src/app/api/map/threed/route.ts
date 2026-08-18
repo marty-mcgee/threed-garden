@@ -82,11 +82,14 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectThreed.projectId, parsedProjectId),
-          userId ? eq(projectThreed.userId, userId) : sql`1=1`
+          userId ? eq(projectThreed.userId, userId) : sql`1=1`,
+          eq(projectThreed.isActive, true)
         )
       );
 
-    const threeDModuleIds = projectThreeDModules.map(m => m.threedId);
+    const threeDModuleIds = projectThreeDModules
+      .map(m => m.threedId)
+      .filter((id): id is number => id !== null);
 
     // ✅ Get Traffic module IDs
     const projectTrafficModules = await db
@@ -95,11 +98,14 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectTraffic.projectId, parsedProjectId),
-          userId ? eq(projectTraffic.userId, userId) : sql`1=1`
+          userId ? eq(projectTraffic.userId, userId) : sql`1=1`,
+          eq(projectTraffic.isActive, true)
         )
       );
 
-    const trafficModuleIds = projectTrafficModules.map(m => m.trafficId);
+    const trafficModuleIds = projectTrafficModules
+      .map(m => m.trafficId)
+      .filter((id): id is number => id !== null);
 
     // ✅ Initialize response data
     const threedData: Record<string, any[]> = {
@@ -135,15 +141,15 @@ export async function GET(request: NextRequest) {
       }
 
       try {
-        let query = db
+        const assignedAssetCondition = inArray(table.id, ids);
+        const query = db
           .select()
           .from(table)
-          .where(inArray(table.id, ids));
-
-        // ✅ Only filter by isActive
-        if (!includeInactive && table.isActive) {
-          query = query.where(eq(table.isActive, true));
-        }
+          .where(
+            !includeInactive && table.isActive
+              ? and(assignedAssetCondition, eq(table.isActive, true))
+              : assignedAssetCondition
+          );
 
         const rawItems = await query
           .orderBy(desc(orderField))
@@ -227,6 +233,8 @@ export async function GET(request: NextRequest) {
         .where(
           and(
             eq(projectAssets.projectId, parsedProjectId),
+            eq(projectAssets.moduleType, 'threed'),
+            inArray(projectAssets.moduleId, threeDModuleIds),
             userId ? eq(projectAssets.userId, userId) : sql`1=1`,
             includeInactive ? sql`1=1` : eq(projectAssets.isActive, true),
             sql`${projectAssets.assetType}::text LIKE 'threed_%'`
@@ -282,6 +290,8 @@ export async function GET(request: NextRequest) {
         .where(
           and(
             eq(projectAssets.projectId, parsedProjectId),
+            eq(projectAssets.moduleType, 'traffic'),
+            inArray(projectAssets.moduleId, trafficModuleIds),
             userId ? eq(projectAssets.userId, userId) : sql`1=1`,
             includeInactive ? sql`1=1` : eq(projectAssets.isActive, true),
             sql`${projectAssets.assetType}::text LIKE 'traffic_%'`

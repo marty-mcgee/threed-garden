@@ -62,45 +62,44 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, data: link });
     }
 
-    // ✅ Build query
-    let query = db
-      .select()
-      .from(musicLinks)
-      .where(eq(musicLinks.userId, userId));
-
-    // ✅ Filter by album
+    let parsedAlbumId: number | null = null;
     if (albumId) {
-      const parsedAlbumId = parseInt(albumId);
-      if (isNaN(parsedAlbumId)) {
+      parsedAlbumId = Number(albumId);
+      if (!Number.isInteger(parsedAlbumId) || parsedAlbumId <= 0) {
         return NextResponse.json(
           { success: false, error: 'Invalid album ID' },
           { status: 400 }
         );
       }
-      query = query.where(eq(musicLinks.albumId, parsedAlbumId));
     }
 
-    // ✅ Filter by track
+    let parsedTrackId: number | null = null;
     if (trackId) {
-      const parsedTrackId = parseInt(trackId);
-      if (isNaN(parsedTrackId)) {
+      parsedTrackId = Number(trackId);
+      if (!Number.isInteger(parsedTrackId) || parsedTrackId <= 0) {
         return NextResponse.json(
           { success: false, error: 'Invalid track ID' },
           { status: 400 }
         );
       }
-      query = query.where(eq(musicLinks.trackId, parsedTrackId));
     }
 
-    // ✅ Filter by independent (not linked to any album or track)
-    if (independent) {
-      query = query.where(
-        and(
-          sql`${musicLinks.albumId} IS NULL`,
-          sql`${musicLinks.trackId} IS NULL`
-        )
-      );
-    }
+    const linkScope = and(
+      eq(musicLinks.userId, userId),
+      parsedAlbumId ? eq(musicLinks.albumId, parsedAlbumId) : undefined,
+      parsedTrackId ? eq(musicLinks.trackId, parsedTrackId) : undefined,
+      independent
+        ? and(
+            sql`${musicLinks.albumId} IS NULL`,
+            sql`${musicLinks.trackId} IS NULL`
+          )
+        : undefined
+    );
+
+    const query = db
+      .select()
+      .from(musicLinks)
+      .where(linkScope);
 
     // ✅ Order by display order
     const links = await query.orderBy(

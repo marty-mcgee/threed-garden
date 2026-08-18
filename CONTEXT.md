@@ -31,7 +31,7 @@
 | Targeted Water world action | ✅ Working |
 | Watering persistence after animation completion | ✅ Working |
 | Pick Fruit animation | ✅ Working |
-| Project-scoped harvest persistence | 🧪 v0.16.8 implementation; manual validation pending |
+| Project-scoped harvest persistence | 🧪 v0.16.8 release candidate; expanded CRUD validation pending |
 
 ## 🧠 Current Character / World-Action Architecture
 
@@ -1019,11 +1019,23 @@ This release remains a client-side ThreeD UX milestone:
 - Selection remains a temporary blue ring while the action target uses a persistent emerald pulse.
 - Targets survive selection and filtering changes, clear on project changes, and reconcile against refreshed planting data.
 
-## 🧪 v0.16.8 — Project-Scoped Harvest World Action (in progress)
+## 🧪 v0.16.8 — Project-Scoped Harvest Management (release candidate)
 
 Targeted `pickFruit`, `pickFruit2`, and `pickFruit3` actions now enter the World Action persistence path after their one-shot animation completes. The authenticated server validates project, character, and planting ownership plus the planting's active project assignment, creates a `threed_harvests` record with a default quantity of `1 each`, and links that record to the planting's ThreeD module through `project_assets` in the same database transaction.
 
 This addition does not change the database schema, external FBX loading, semantic task dispatch, task-to-locomotion crossfades, or the existing targeted Water behavior.
+
+The Harvest CRUD/API surfaces now share the same ownership and project-association rules:
+
+- `GET /api/threed/harvests` supports explicit `projectId` and `moduleId` scoping and returns plant, planting, bed, project-association, and source information.
+- Manual project-scoped creation derives the plant and ThreeD module from an owned planting and creates the harvest/project association transactionally.
+- Admin create/edit forms validate quantity, clear optional Select sentinels correctly, filter by project/status, and distinguish manual records from World Action records.
+- Dashboard Harvests consumes the enriched flat API contract and labels World Action records.
+- Pick Fruit requests carry a per-button-press UUID through animation completion. The server uses that token with a transaction-scoped advisory lock and the existing unique `harvest_id` to make retries idempotent without a schema migration.
+- Harvest `PATCH` now follows the same update implementation as `PUT`, matching the existing Admin client.
+
+`package.json` identifies this revision as `0.16.8`. Production promotion remains dependent on the v0.16.8 manual regression checklist.
+
 - The v0.16.6b targeted Water completion and persistence flow is unchanged.
 - No database schema or API behavior changed.
 
@@ -1038,3 +1050,81 @@ v0.16.7 is the complete stable release point for all ThreeD character, animation
 | `src/components/map/UnifiedMapView.tsx` | Target state bridge into the 3D scene |
 | `src/components/map/ThreeDScene.tsx` | Persistent target pulse and target camera focus |
 | `package.json` | Version bumped to `0.16.7` |
+
+## 🚧 v0.17.0 — Agent-Oriented App Structure (incremental)
+
+The first v0.17 structural step establishes a repository-level workflow for ChatGPT Codex Agents in VS Code without changing application behavior:
+
+- `AGENTS.md` requires prove → act → document sequencing and protects dirty-worktree release-candidate changes.
+- `docs/agents/VALIDATION.md` defines the narrow-first validation ladder, known TypeScript baseline, and ThreeD regression gates.
+- `npm run typecheck` is the canonical discoverable TypeScript command.
+
+Future v0.17 structure changes should remain independently reviewable and must not combine file moves or architectural cleanup with feature behavior changes.
+
+### Project asset-scoping correction
+
+Dashboard Map API reads now preserve the `project_assets` ID restriction when applying an asset's `isActive` filter. Active records that are not assigned to the selected Project therefore no longer replace the assigned result set. ThreeD and Traffic assets are also intersected with active module assignments from `project_threed` and `project_traffic`.
+
+The general `GET /api/project/assets` query now composes its Project, owner, active-state, module, and asset-type predicates in one Drizzle `where` expression so optional filters cannot replace Project scoping. Response shapes, ProjectAssetManager write behavior, database schema, and ThreeD runtime behavior are unchanged.
+
+### Project discovery and module eligibility
+
+`GET /api/map/projects` now applies ownership/public access, Project active state, and the existence of an active Project asset as one reusable query predicate. Asset totals exclude inactive assignments, and active ThreeD, Traffic, and Music module counts are returned in `moduleCounts` while the existing presence booleans remain available.
+
+`GET /api/project/modules` now returns only active junction assignments whose underlying module is also active. Module POST/DELETE behavior, database schema, and existing response fields are unchanged.
+
+### Project asset assignment lifecycle integrity
+
+`POST /api/project/assets` now validates positive integer IDs, supported module and asset types, Project ownership, and an active Project/module junction whose underlying module is active. Cross-module combinations such as a ThreeD module with a Music asset type are rejected before persistence.
+
+Because Project asset removal is a soft delete and the unique index does not include `isActive`, assigning a previously removed asset now reactivates its existing `project_assets` row instead of attempting a conflicting insert. The ProjectAssetManager response contract and database schema are unchanged.
+
+### Assignable Project asset registry
+
+Project asset creation now resolves child records through a server-only registry covering the 22 asset types exposed by ProjectAssetManager. Music and ThreeD assets require ownership; Traffic types that support public visibility allow either ownership or an active public record. Traffic centers and districts remain owner-only.
+
+The API verifies that the child record exists and satisfies its assignment policy before creating or reactivating a `project_assets` row. Legacy `threed_markers` is intentionally unsupported because markers are generated at runtime, and `threed_weather_logs` remains deferred. Their enum values remain unchanged for compatibility.
+
+### Music album read scopes
+
+`GET /api/music/albums` now has explicit `owner` and `public` read scopes. Authenticated requests default to owner-only results, while anonymous requests default to published public albums. Public Dashboard and homepage callers request `scope=public` explicitly so logged-in state does not change the public catalog.
+
+Single-album reads and optional track, link, and media enrichment use the same scope. Their access predicates are composed once so later filters cannot replace ownership or publication rules. The stale GET-side `musicId` filter was removed because Music albums are free-standing assets associated through `project_assets`, not a `music_id` column.
+
+### Music track and link read scopes
+
+`GET /api/music/tracks` now mirrors the Album API's explicit `owner` and `public` scopes. Authenticated requests default to owner-only tracks; anonymous requests default to active tracks whose parent Album is both published and public. Public homepage and Music content callers request `scope=public` explicitly so authentication state cannot expose an owner's private catalog or hide the intended public catalog.
+
+Track ID and Album filters are composed with the selected access predicate. `GET /api/music/links` likewise composes owner, Album, Track, and independent-link filters in one predicate so optional filters cannot replace ownership. Music Media reads were inspected and already preserve ownership. Write behavior, response shapes, and database schema are unchanged.
+
+### Music admin analytics ownership
+
+`GET /api/music/admin/stats` now resolves the authenticated Auth.js session instead of using a hard-coded user identity. Unauthenticated requests receive `401`, and Album, Track, Link, playback-history, listening-time, and top-track statistics retain their existing response shape while remaining scoped to the signed-in user. Public Music statistics and database schema are unchanged.
+
+### Music module list scope
+
+`GET /api/music` now composes module ownership, active-state, and optional Project assignment into one predicate shared by its result and pagination-count queries. Project filtering resolves through an active, owner-matching `project_music` junction instead of the nonexistent legacy `music.projectId` field. Invalid IDs and pagination values return `400`; the response shape and Music module write paths are unchanged.
+
+`PUT /api/music` no longer accepts or writes the same obsolete direct `projectId` field. It continues to update owned Music module properties with its existing response contract; Project membership remains exclusively managed through `/api/project/modules` and the `project_music` junction.
+
+### ThreeD Admin landing surface
+
+`/admin/threed` now provides a server-rendered navigation hub for the existing Plants, Plantings, Beds, Characters, Tasks, Watering Schedules, Harvests, FarmBots, Models, Model Files, Model Animations, and Layers admin pages. It uses the existing authenticated Admin layout and introduces no data query or runtime dependency. Legacy stored Markers are intentionally excluded because Project map markers are generated at runtime.
+
+### Music Track file contract
+
+Music Track APIs, Admin editors, public players, streaming, polling, shared types, and seed helpers use the schema-native `fileUrl` and `fileType` contract exclusively. Track writes validate Track and Album IDs and continue verifying Album ownership. No compatibility aliases are retained because Track data will be imported into the canonical shape before production use.
+
+### Music JSON importer
+
+`npm run music:import -- --user-id <id>` validates the Music JSON without connecting to the database or writing records. The importer requires an explicit target owner, validates Album/Track relationships and canonical file URLs, infers supported audio MIME types, and ignores source database IDs when creating records.
+
+Adding `--commit` verifies that the target User exists and imports through one transaction. Albums map by normalized artist/title and Tracks map by resulting Album ID plus file URL, making reruns skip previously imported records without preventing the same audio file from belonging to multiple Albums. A different JSON path may be provided with `--file <path>`. No schema or environment change is required.
+
+Dry runs report duplicate Track mappings found inside the JSON. Commit summaries list each skipped Track with its source ID, title, Album, URL, and whether it was duplicated in the import file or already existed in the database.
+
+The import JSON contract is versioned with top-level `version: 1` and uses application-level camelCase consistently. Albums use `sourceId`, `coverArt`, `releaseYear`, `sortOrder`, and `isPublic`; Tracks use `sourceId`, `albumSourceId`, `trackNumber`, `fileUrl`, `fileType`, and `playCount`. Source IDs exist only to map nested records and are never inserted as database primary keys. Ownership is supplied only through `--user-id`, while database timestamps use schema defaults.
+
+### Music Admin cover fallback
+
+Music Admin Album grids, Album details, and Track details render a neutral placeholder when an Album has a missing or whitespace-only cover URL. The Album grid also switches to the placeholder when a non-empty cover URL fails to load. Valid cover URLs retain their existing rendering, while empty values are never passed to an image `src` attribute. Album cards request owner-scoped Track enrichment so their Track counts reflect the records assigned to each Album.

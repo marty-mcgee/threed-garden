@@ -31,7 +31,8 @@ interface Track {
   title: string;
   duration: number | null;
   trackNumber: number | null;
-  publicUrl: string;
+  fileUrl: string;
+  fileType: string;
   status: string;
   lyrics: string | null;
   metadata: any;
@@ -58,7 +59,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
     title: '',
     duration: 180,
     trackNumber: 1,
-    publicUrl: '',
+    fileUrl: '',
     status: 'active',
     lyrics: '',
     albumId: '',
@@ -100,8 +101,8 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
   };
 
   const handleCreate = async () => {
-    if (!formData.title || !formData.publicUrl) {
-      showToast('Title and audio URL are required', 'error');
+    if (!formData.title || !formData.fileUrl || !formData.albumId) {
+      showToast('Title, album, and audio URL are required', 'error');
       return;
     }
 
@@ -109,7 +110,8 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
     try {
       const payload: any = {
         title: formData.title,
-        publicUrl: formData.publicUrl,
+        fileUrl: formData.fileUrl,
+        fileType: 'audio/mpeg',
         status: formData.status,
       };
 
@@ -140,7 +142,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
           title: '',
           duration: 180,
           trackNumber: 1,
-          publicUrl: '',
+          fileUrl: '',
           status: 'active',
           lyrics: '',
           albumId: '',
@@ -164,7 +166,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
     try {
       const payload: any = {
         title: formData.title,
-        publicUrl: formData.publicUrl,
+        fileUrl: formData.fileUrl,
         status: formData.status,
       };
 
@@ -249,7 +251,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => window.open(track.publicUrl, '_blank')}>
+          <DropdownMenuItem onClick={() => window.open(track.fileUrl, '_blank')}>
             <ExternalLink className="w-4 h-4 mr-2" />
             Play Audio
           </DropdownMenuItem>
@@ -266,8 +268,8 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
   );
 
   const previewTrack = (track: Track) => {
-    if (track.publicUrl) {
-      window.open(track.publicUrl, '_blank');
+    if (track.fileUrl) {
+      window.open(track.fileUrl, '_blank');
     } else {
       showToast('No audio URL available', 'error');
     }
@@ -279,7 +281,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
       title: track.title,
       duration: track.duration || 180,
       trackNumber: track.trackNumber || 1,
-      publicUrl: track.publicUrl || '',
+      fileUrl: track.fileUrl || '',
       status: track.status || 'active',
       lyrics: track.lyrics || '',
       albumId: track.albumId ? String(track.albumId) : '',
@@ -336,7 +338,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                 />
               </div>
               <div>
-                <Label htmlFor="albumId">Album</Label>
+                <Label htmlFor="albumId">Album *</Label>
                 <Select
                   value={formData.albumId || 'none'}
                   onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
@@ -379,12 +381,12 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                 </div>
               </div>
               <div>
-                <Label htmlFor="publicUrl">Audio URL *</Label>
+                <Label htmlFor="fileUrl">Audio URL *</Label>
                 <Input
-                  id="publicUrl"
+                  id="fileUrl"
                   placeholder="https://example.com/track.mp3"
-                  value={formData.publicUrl}
-                  onChange={(e) => setFormData({ ...formData, publicUrl: e.target.value })}
+                  value={formData.fileUrl}
+                  onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
                   disabled={isSubmitting}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
@@ -555,11 +557,11 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
               </div>
             </div>
             <div>
-              <Label htmlFor="edit-publicUrl">Audio URL *</Label>
+              <Label htmlFor="edit-fileUrl">Audio URL *</Label>
               <Input
-                id="edit-publicUrl"
-                value={formData.publicUrl}
-                onChange={(e) => setFormData({ ...formData, publicUrl: e.target.value })}
+                id="edit-fileUrl"
+                value={formData.fileUrl}
+                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>

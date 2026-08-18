@@ -8,15 +8,19 @@ import { Button } from '@/components/ui/button';
 import { LogOut, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 
+interface SignOutButtonProps {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  className?: string;
+  showLabel?: boolean;
+}
+
 export function SignOutButton({
   variant = 'outline',
   size = 'default',
   className = '',
-}: {
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
-  className?: string;
-}) {
+  showLabel = true,
+}: SignOutButtonProps) {
   const router = useRouter();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -46,13 +50,14 @@ export function SignOutButton({
       className={className}
       onClick={handleSignOut}
       disabled={loading}
+      aria-label={loading ? 'Signing out' : 'Sign out'}
     >
       {loading ? (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
-        <LogOut className="w-4 h-4 mr-2" />
+        <LogOut className="w-4 h-4" />
       )}
-      {loading ? 'Signing out...' : 'Sign Out'}
+      {showLabel && (loading ? 'Signing out...' : 'Sign Out')}
     </Button>
   );
 }

@@ -68,7 +68,7 @@ export default function AlbumDetailPage() {
         
         // ✅ Include links and media in the request
         const response = await fetch(
-          `/api/music/albums?id=${albumId}&includeTracks=true&includeLinks=true&includeMedia=true`
+          `/api/music/albums?scope=public&id=${albumId}&includeTracks=true&includeLinks=true&includeMedia=true`
         );
         const data = await response.json();
         
@@ -94,7 +94,7 @@ export default function AlbumDetailPage() {
               .filter((track: any) => track.albumId === albumData.id)
               .map((track: any) => ({
                 ...track,
-                s3Url: track.publicUrl || track.s3Url || track.audioUrl || track.url || '',
+                s3Url: track.fileUrl || track.s3Url || track.audioUrl || track.url || '',
                 albumTitle: albumData.title,
                 albumArt: albumData.coverArt,
                 artist: track.artist || albumData.artist,

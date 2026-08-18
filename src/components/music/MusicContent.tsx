@@ -41,9 +41,9 @@ export default function MusicContent() {
 
   // Handle audio source changes
   useEffect(() => {
-    if (audioElement && currentTrack?.publicUrl) {
+    if (audioElement && currentTrack?.fileUrl) {
       const wasPlaying = isPlaying;
-      audioElement.src = currentTrack.publicUrl;
+      audioElement.src = currentTrack.fileUrl;
       audioElement.load();
       
       if (wasPlaying) {
@@ -119,7 +119,7 @@ export default function MusicContent() {
   const fetchAlbums = async () => {
     try {
       console.log('📀 Fetching albums...');
-      const response = await fetch('/api/music/albums?includeTracks=false');
+      const response = await fetch('/api/music/albums?scope=public&includeTracks=false');
       if (response.ok) {
         const data = await response.json();
         if (data.success && Array.isArray(data.data)) {
@@ -163,7 +163,7 @@ export default function MusicContent() {
     // Fetch tracks for each album in parallel
     const albumPromises = albumList.map(async (album) => {
       try {
-        const response = await fetch(`/api/music/tracks?albumId=${album.id}`);
+        const response = await fetch(`/api/music/tracks?scope=public&albumId=${album.id}`);
         if (response.ok) {
           const data = await response.json();
           if (data.success && Array.isArray(data.data)) {
@@ -191,7 +191,7 @@ export default function MusicContent() {
     setLoadingAlbum(true);
     try {
       console.log(`🎵 Fetching tracks for album ${albumId}`);
-      const response = await fetch(`/api/music/tracks?albumId=${albumId}`);
+      const response = await fetch(`/api/music/tracks?scope=public&albumId=${albumId}`);
       if (response.ok) {
         const data = await response.json();
         if (data.success && Array.isArray(data.data)) {

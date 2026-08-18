@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
           title: `Track ${i}`,
           duration: 180 + (i * 10),
           trackNumber: i,
-          publicUrl: `albums/${album.id}/track${i}.mp3`,
+          fileUrl: `albums/${album.id}/track${i}.mp3`,
+          fileType: 'audio/mpeg',
           status: TrackStatus.ACTIVE,
         });
       }

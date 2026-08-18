@@ -10,9 +10,5 @@ export default async function SettingsPage() {
     updateSettings(newSettings);
   }
 
-  return (
-    <div className="w-full py-8">
-      <SettingsManager initialSettings={settings} onSave={handleSave} />
-    </div>
-  );
+  return <SettingsManager initialSettings={settings} onSave={handleSave} />;
 }

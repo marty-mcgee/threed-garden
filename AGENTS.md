@@ -2,6 +2,16 @@
 
 Read CONTEXT.md before architectural work.
 
+## Required workflow
+
+For each development step, work in this order:
+
+1. **Prove** — inspect the current implementation and record the concrete problem, affected files, and acceptance criteria before editing.
+2. **Act** — make the smallest scoped change that satisfies those criteria. Preserve unrelated user changes in a dirty worktree.
+3. **Document** — run relevant validation, review the diff, and update durable documentation only after the implementation is known.
+
+Do not combine repository restructuring with feature behavior changes in the same step.
+
 ## General rules
 
 - Inspect relevant files before editing.
@@ -12,6 +22,7 @@ Read CONTEXT.md before architectural work.
 - Do not change database schema unless explicitly approved.
 - Keep changes scoped to the requested task.
 - Run relevant TypeScript/build checks after changes.
+- Use `docs/agents/VALIDATION.md` for the repository validation ladder and known baseline limitations.
 
 ## ThreeD character rules
 
@@ -26,9 +37,11 @@ Read CONTEXT.md before architectural work.
 
 ## Stable checkpoint
 
-Current stable version: v0.16.7 "Visual Action Targeting".
+Current production version: v0.16.7 "Visual Action Targeting".
 
-v0.16.7 includes the stable v0.16.6b World Actions v2 targeted Water workflow and is the release boundary for subsequent v0.16.8+ work.
+Current release candidate: v0.16.8 "Project-Scoped Harvest Management".
+
+v0.16.7 remains the production boundary. Treat the uncommitted v0.16.8 worktree as user-owned release-candidate work and do not overwrite or fold it into unrelated v0.17 structural changes.
 
 Treat regressions in:
 - FBX loading
