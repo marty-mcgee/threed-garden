@@ -20,7 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.17.2 — API and Type Safety Cleanup** |
-| Current release candidate | **None designated** |
+| Current release candidate | **v0.17.3 — Documentation Foundation** |
+| Current development milestone | **Release validation and deployment** |
 | Previous checkpoint | **v0.17.1 — Production Asset Validation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1162,3 +1163,16 @@ The pre-existing TypeScript baseline is repaired: `npm run typecheck`, `npm run 
 This checkpoint does not change the database schema, environment contract, external FBX manifest, character runtime routing, task-to-locomotion crossfades, DetailsCard behavior, or World Action persistence timing.
 
 GitHub `main` and Vercel production successfully passed the blocking TypeScript build gate for this release.
+
+## 🚀 v0.17.3 — Documentation Foundation (release candidate)
+
+The v0.17.3 release candidate introduces a repository documentation hub for human users, developers, and coding agents without changing application behavior:
+
+- `docs/README.md` is the canonical audience router.
+- `docs/users` explains Admin, Dashboard, project assignment, ThreeD controls, and World Action behavior.
+- `docs/developers` documents the dual-surface architecture, project-scoped data model, API policies, local setup, and deployment checks.
+- `docs/agents` connects the root working contract to safe-change boundaries, task checklists, and the existing validation ladder.
+- `docs/releases` records confirmed production checkpoints separately from in-progress work.
+- `public/llms.txt` provides a compact discovery index for automated readers; it does not replace the source code, schema, `AGENTS.md`, or `CONTEXT.md`.
+
+The root README now links to the documentation hub and accurately describes authenticated ThreeD World Actions as the intentional exception to the Dashboard's primarily read-oriented role. Package and Admin footer metadata identify v0.17.3, while v0.17.2 remains the production boundary until GitHub and Vercel deployment are confirmed.

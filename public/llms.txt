@@ -1,0 +1,31 @@
+# Marty McGee Neon documentation
+
+Canonical documentation for humans and automated readers:
+
+- /docs/README.md
+- /README.md
+- /AGENTS.md
+- /CONTEXT.md
+- /docs/users/GETTING_STARTED.md
+- /docs/users/ADMIN_GUIDE.md
+- /docs/users/DASHBOARD_GUIDE.md
+- /docs/users/THREED_CONTROLS.md
+- /docs/developers/ARCHITECTURE.md
+- /docs/developers/DATA_MODEL.md
+- /docs/developers/API_GUIDE.md
+- /docs/developers/LOCAL_DEVELOPMENT.md
+- /docs/developers/DEPLOYMENT.md
+- /docs/agents/README.md
+- /docs/agents/SAFE_CHANGE_AREAS.md
+- /docs/agents/TASK_CHECKLISTS.md
+- /docs/agents/VALIDATION.md
+- /docs/releases/README.md
+
+Implementation source of truth:
+
+- /src/app/admin
+- /src/app/dashboard
+- /src/app/api
+- /src/lib/schema
+
+Read AGENTS.md before making repository changes. Current code and schemas take precedence when documentation is stale.

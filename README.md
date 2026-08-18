@@ -7,7 +7,17 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current version:** `v0.17.2 "API and Type Safety Cleanup"`
+> **Release candidate:** `v0.17.3 "Documentation Foundation"`
+> **Current production version:** `v0.17.2 "API and Type Safety Cleanup"`
+
+## Documentation
+
+Start with the [Documentation Hub](docs/README.md) for audience-specific guides:
+
+- [Human user guides](docs/users/GETTING_STARTED.md)
+- [Developer architecture and operations](docs/developers/ARCHITECTURE.md)
+- [Coding-agent workflow and safety](docs/agents/README.md)
+- [Confirmed production releases](docs/releases/README.md)
 
 ---
 
@@ -133,7 +143,7 @@ Data flows in one direction:
 Admin → Database → API → Dashboard
 ```
 
-The Dashboard never writes — it visualizes published data at runtime.
+The Dashboard primarily visualizes published data at runtime. Authenticated ThreeD world actions are an intentional write path: supported results persist only after their one-shot animation completes.
 
 ```
 API (/api/map/threed)
