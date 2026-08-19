@@ -17,6 +17,7 @@ Current production is v0.18.0 **ThreeD FarmBot Integration — Phase 1**. No lat
 - [Data model](developers/DATA_MODEL.md) — modules, project junctions, assets, and runtime records.
 - [API guide](developers/API_GUIDE.md) — route families and access conventions.
 - [ThreeD FarmBot Integration Plan](developers/FARMBOT_INTEGRATION.md) — hardware security and connection boundaries.
+- [FarmBot MQTT worker design](developers/FARMBOT_MQTT_WORKER.md) — v0.18.1 Phase 2A runtime, security, and read-only status design.
 - [Local development](developers/LOCAL_DEVELOPMENT.md) — setup and validation.
 - [Deployment](developers/DEPLOYMENT.md) — release checks and production verification.
 

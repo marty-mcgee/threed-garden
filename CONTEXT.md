@@ -21,7 +21,7 @@
 |---|---|
 | Current stable version | **v0.18.0 — ThreeD FarmBot Integration, Phase 1** |
 | Current release candidate | **None designated** |
-| Current development milestone | **v0.18.0+ — Later phases remain separately gated** |
+| Current development milestone | **v0.18.1 — Phase 2A MQTT worker design review** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1266,3 +1266,11 @@ Add one semantic FarmBot operation at a time. Each operation needs separate prer
 ### Approval boundary
 
 The overall phase sequence is approved, but each phase remains a separate implementation gate. The plan does not authorize database changes, external worker hosting, MQTT connections, MQTT publishing, or physical commands until the applicable phase is reviewed and explicitly approved.
+
+### v0.18.1 Phase 2A design record
+
+The proposed worker architecture is documented in `docs/developers/FARMBOT_MQTT_WORKER.md`. It uses a standalone, separately deployed TypeScript/Node.js service; HMAC-authenticated App-to-worker grants over TLS; in-memory credential and status handling; exact read-only `status` and `from_device` subscriptions; and no publish interface. The App remains responsible for credential decryption, owner checks, readiness, and later Project-asset authorization.
+
+The initial runtime status is intentionally volatile and queried from the worker through a signed internal boundary, avoiding a database change in Phase 2. A local compatibility test must select the MQTT transport before a dependency is installed because FarmBot documents MQTT as the preferred non-browser protocol but does not production-test FarmBotJS in Node.js.
+
+This is a design-review checkpoint only. `package.json` remains at the production version, no release candidate is designated, and no worker, external host, internal API, environment setting, MQTT socket, schema change, or physical operation has been created. Phase 2B requires separate approval after review of the design.

@@ -36,7 +36,7 @@ Status: released to production and verified through GitHub-to-Vercel deployment 
 
 ### Phase 2 — MQTT worker foundation
 
-Status: planned; no worker or MQTT connection exists yet.
+Status: Phase 2A design prepared for review; no worker or MQTT connection exists yet. See [FarmBot MQTT Worker Design](FARMBOT_MQTT_WORKER.md).
 
 - Choose and document the separately deployed, long-running worker runtime.
 - Define App-to-worker authentication, authorization, request signing, and replay protection.
@@ -210,7 +210,7 @@ The Admin **Readiness** control displays those results. “Ready” means only t
 
 The retained in-progress `FarmBotPoller` also fails closed at its internal `sendCommand()` boundary. Its legacy convenience methods cannot issue requests to an assumed REST command endpoint; physical commands must wait for the separately designed MQTT worker.
 
-The next approved step is the Phase 2 worker design review. No worker runtime, internal worker API, MQTT connection, or physical command should be added until those deployment and security choices are agreed upon. Physical polling and commands remain disabled.
+The Phase 2A worker design is recorded in [FarmBot MQTT Worker Design](FARMBOT_MQTT_WORKER.md). No worker runtime, internal worker API, MQTT dependency, MQTT connection, or physical command should be added until that design is reviewed and the Phase 2B implementation step is explicitly approved. Physical polling and commands remain disabled.
 
 ## ThreeD World Action targeting
 
