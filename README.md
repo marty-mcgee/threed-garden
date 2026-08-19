@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.17.3 "Documentation Foundation"`
->
-> **Current release candidate:** `v0.18.0 "ThreeD FarmBot Integration — Phase 1"`
+> **Current production version:** `v0.18.0 "ThreeD FarmBot Integration — Phase 1"`
 
 ## Documentation
 

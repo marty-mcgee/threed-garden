@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.17.3. The current release candidate is v0.18.0 **ThreeD FarmBot Integration — Phase 1**; its release note will be added only after production deployment is confirmed.
+Current production is v0.18.0 **ThreeD FarmBot Integration — Phase 1**. No later release candidate is designated.
 
 ## Human users
 
@@ -30,6 +30,7 @@ Current production is v0.17.3. The current release candidate is v0.18.0 **ThreeD
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.18.0 production checkpoint](releases/v0.18.0.md)
 - [v0.17.3 production checkpoint](releases/v0.17.3.md)
 - [v0.17.2 production checkpoint](releases/v0.17.2.md)
 

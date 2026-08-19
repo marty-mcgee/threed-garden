@@ -38,11 +38,11 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.17.3 "Documentation Foundation".
+Current production version: v0.18.0 "ThreeD FarmBot Integration — Phase 1".
 
-Current release candidate: v0.18.0 "ThreeD FarmBot Integration — Phase 1".
+No later release candidate is currently designated.
 
-v0.17.3 remains the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
+v0.18.0 remains the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
 Production character animations are Git-tracked under `public/assets/animations`. When the external animation manifest or those files change, run `npm run validate:assets`. The GitHub workflow treats missing production animation assets and TypeScript diagnostics as blocking failures. Vercel remains the production-build gate.
 
@@ -60,7 +60,7 @@ as release-blocking.
 
 ## ThreeD FarmBot Integration Plan rules
 
-- Current release candidate: v0.18.0 "ThreeD FarmBot Integration — Phase 1".
+- Current production checkpoint: v0.18.0 "ThreeD FarmBot Integration — Phase 1".
 - Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
 - FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.
 - Resolve every FarmBot operation through the authenticated owner and, for project interactions, its active Project asset assignment.

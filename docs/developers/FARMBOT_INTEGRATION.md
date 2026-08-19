@@ -1,6 +1,6 @@
 # ThreeD FarmBot Integration Plan
 
-Status: v0.18.0 Phase 1 release candidate. Physical device commands are disabled. Later phases remain separately gated.
+Status: v0.18.0 Phase 1 released to production. Physical device commands are disabled. Later phases remain separately gated.
 
 ## Integration boundary
 
@@ -25,7 +25,7 @@ Official references:
 
 ### Phase 1 — Secure App foundation
 
-Status: implemented in the v0.18.0 release-candidate worktree and undergoing release validation.
+Status: released to production and verified through GitHub-to-Vercel deployment and production smoke testing.
 
 - Protect credentials with owner-bound server-side encryption.
 - Verify REST and MQTT device identity without exposing the token.
@@ -95,7 +95,7 @@ The `threed_farmbots` Drizzle schema now declares nullable fields for ciphertext
 
 General FarmBot CRUD rejects both the legacy token and encrypted-envelope fields. A shared server-only sanitizer removes all credential material and internal credential metadata from FarmBot CRUD and map responses. Only the dedicated credential endpoint may write the envelope.
 
-The schema has been applied successfully to the approved Neon development branch. It has not been promoted to production. This repository currently ignores generated `/drizzle` artifacts and uses `db:push`; do not run it against an unknown or production database. Full-record Drizzle selections require the declared columns to exist.
+The schema is active in the confirmed production environment. This repository currently ignores generated `/drizzle` artifacts and uses an explicitly controlled `db:push` workflow; do not run it against an unknown database. Full-record Drizzle selections require the declared columns to exist.
 
 ## Key provider and rotation
 
@@ -178,7 +178,7 @@ The Admin discovery list exposes **Assign to Water** and clearly states that phy
 
 The Admin dialog keeps the saved Water assignment visible even when discovery no longer returns that peripheral and exposes **Validate** separately from assignment. A successful validation means only that the App credential and configuration snapshots are current; it still does not authorize or execute a physical command.
 
-The additive binding schema was applied successfully to the approved development database with `bun db:push`. Drizzle also reconciled existing schema drift during that push by recreating three foreign-key constraints under canonical names and reasserting existing character-animation and layer-default definitions. No production schema has been updated by this development step.
+The additive binding schema is active in production. During development, the approved `bun db:push` also reconciled existing schema drift by recreating three foreign-key constraints under canonical names and reasserting existing character-animation and layer-default definitions.
 
 ## Broker metadata snapshot
 
@@ -194,9 +194,9 @@ Credential save/replace atomically replaces the snapshot and clears `restVerifie
 
 The Admin **Refresh** control invokes this REST-only operation. It does not open MQTT, contact the physical device, toggle a peripheral, or authorize a World Action.
 
-The snapshot table was applied successfully to the approved development database with `bun db:push`. Drizzle again reconciled known schema drift by recreating canonical foreign-key names and reasserting existing character-animation and layer-default definitions. Production was not changed.
+The snapshot table is active in production. During development, Drizzle also reconciled known schema drift by recreating canonical foreign-key names and reasserting existing character-animation and layer-default definitions.
 
-The parent-identity schema revision was applied to the approved development database. The push renamed `threed_farmbots.device_id` to `asset_code`, preserving all three existing values, and added nullable parent identity fields without dropping the existing metadata identity or truncating rows. It also repeated the repository's known foreign-key-name and existing character-animation/layer-default reconciliation. Run **Test** once per configured FarmBot to populate and verify both parent identities from its stored credential. Removing the redundant snapshot identity is a separate future cleanup only after backfill is proven.
+The parent-identity schema revision is active in production. The approved development push renamed `threed_farmbots.device_id` to `asset_code`, preserved existing values, and added nullable parent identity fields without dropping the existing metadata identity or truncating rows. Run **Test** once per configured FarmBot to populate and verify both parent identities from its stored credential. Removing the redundant snapshot identity remains a separate future cleanup only after backfill is proven.
 
 ## MQTT runtime boundary
 

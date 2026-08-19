@@ -47,7 +47,7 @@ After applying the broker-metadata schema to an approved development database, r
 
 After applying the FarmBot peripheral-binding schema to an approved development database, manually verify assignment, reassignment, removal, and automatic invalidation after credential replacement. Assignment must not invoke a hardware route or change a FarmBot pin.
 
-## v0.18.0 release-candidate checks
+## v0.18.0 production regression checks
 
 - Verify credential login/store/replace/clear never returns the JWT or encrypted envelope to the browser.
 - Run **Test**, **Discover**, Water assignment, **Validate**, broker **Refresh**, and **Readiness** against an owned FarmBot.
