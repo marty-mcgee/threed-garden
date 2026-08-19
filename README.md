@@ -248,3 +248,22 @@ src/
 ## License
 
 Private project — see `package.json` and the repository settings for licensing details.
+
+---
+
+## Current Phase Plan for v0.18.0+
+
+The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.0 production checkpoint:
+
+| Version | Phase | Planned scope |
+|---------|-------|---------------|
+| v0.18.0 | Phase 1 — Secure App foundation | Released: encrypted owner-scoped credentials, verified FarmBot identities, peripheral discovery and Water binding validation, broker metadata/readiness, and animation-only ThreeD targeting. Physical commands remain disabled. |
+| v0.18.1 | Phase 2 — MQTT worker and read-only status | Design and build a separately deployed, long-running worker; add safe connection lifecycle handling; subscribe only to approved status/response topics; expose a small owner- and project-scoped status summary. No MQTT publishing or hardware commands. |
+| v0.18.2 | Phase 3 — Command safety and audit | Add a semantic command allowlist, device bounds, idempotency, per-device concurrency protection, acknowledgement tracking, audit records, and an independent emergency-stop path. This phase requires separate schema approval. |
+| v0.18.3 | Phase 4 — Single-device Water pilot | Test one bounded Water operation with one verified, project-assigned FarmBot, a current peripheral binding, a healthy worker, a server-set maximum duration, and recorded acknowledgement. This requires explicit physical-test approval. |
+| v0.18.4 | Phase 5 — ThreeD orchestration | Connect character approach, orientation, and animation to the audited semantic action request while keeping animation state and physical-device completion separate. The character runtime never owns the MQTT connection. |
+| v0.18.5+ | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
+
+Phase 2 starts with design review only: select the worker host/runtime, verify the MQTT client or FarmBotJS compatibility, define App-to-worker authentication and credential handoff, and choose the runtime-status storage boundary.
+
+Approval of this plan does not by itself authorize a new external resource, database schema change, MQTT connection, MQTT publish, or physical FarmBot command. Each phase remains a separate approval and validation gate.

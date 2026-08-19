@@ -1219,3 +1219,50 @@ The repository ignores generated `/drizzle` artifacts and continues to use an ex
 The approved phase sequence is now documented in `docs/developers/FARMBOT_INTEGRATION.md`: Phase 1 secure App foundation; Phase 2 separately deployed MQTT worker and read-only status; Phase 3 command safety and auditing; Phase 4 one-device Water pilot; and Phase 5 later ThreeD interaction expansion. Each phase requires its own approval. Phase 2 begins with design review only, and no worker, MQTT socket, new external resource, or physical operation is authorized by this sequence.
 
 GitHub-to-Vercel production deployment and production smoke testing were confirmed on August 19, 2026. v0.18.0 is the production boundary; later phases remain unapproved and physical FarmBot commands remain disabled.
+
+## Current Phase Plan for v0.18.0+
+
+The following **ThreeD FarmBot Integration Plan** is approved as the development sequence after the v0.18.0 production release. Approval of the sequence is not authorization to start every phase at once.
+
+### v0.18.0 — Phase 1: Secure App foundation (production)
+
+- Keep encrypted FarmBot credentials and canonical REST/MQTT identity server-only and owner-scoped.
+- Keep peripheral discovery, explicit Water binding, broker metadata, readiness checks, and ThreeD FarmBot targeting in their current safe form.
+- FarmBot-targeted character actions remain animation-only. MQTT connections, MQTT publishing, and physical commands remain disabled.
+
+### v0.18.1 — Phase 2: MQTT worker and read-only status
+
+1. **Phase 2A — Worker design:** choose a separately deployed long-running runtime; define App-to-worker authentication, signed/replay-protected requests, credential handoff, device identity checks, reconnect policy, and the runtime-status boundary.
+2. **Phase 2B — Worker skeleton:** implement one managed connection per FarmBot with `disconnected`, `connecting`, `connected`, `reconnecting`, `expired`, and `error` states; use redacted logs, bounded reconnects, graceful shutdown, and a health endpoint. Commands remain disabled.
+3. **Phase 2C — Read-only subscriptions:** subscribe only to approved device-status and response topics, parse allowlisted fields, and avoid storing or exposing the complete FarmBot state tree.
+4. **Phase 2D — App status display:** show connection state, last message time, last known position, token expiry, and stale-state warnings through authenticated owner- and project-scoped paths.
+
+Phase 2 begins with Phase 2A design review. Creating the worker host, opening an MQTT connection, or adding runtime-status persistence requires its own approval when the design identifies the exact resources and files.
+
+### v0.18.2 — Phase 3: Command safety and audit
+
+- Introduce only server-built semantic commands; never accept arbitrary CeleryScript, MQTT topics, command names, coordinates, or pin operations from the browser.
+- Require operation allowlists, coordinate and duration bounds, idempotency, per-device concurrency protection, request-state tracking, RPC-label acknowledgement correlation, and audit records.
+- Provide an emergency-stop path that does not depend on character animation or the normal World Action completion path.
+- Any new tables or schema fields require explicit approval before implementation.
+
+### v0.18.3 — Phase 4: Single-device Water pilot
+
+- Limit the first physical test to one verified, actively project-assigned FarmBot with a current Water peripheral binding and a healthy worker.
+- Use a server-defined maximum duration and require acknowledgement and audit completion.
+- Treat character animation completion, command acceptance, device acknowledgement, and physical completion as separate states.
+- Starting this pilot requires explicit approval to operate the physical FarmBot.
+
+### v0.18.4 — Phase 5: ThreeD orchestration
+
+- Add character approach and orientation, then use the established semantic animation path before submitting an audited FarmBot action request.
+- Preserve FBX loading, semantic Animation Action Mapping, GardenCharacter and EcctrlCharacter separation, task-to-locomotion crossfades, DetailsCard controls, and existing Planting-targeted Water and Pick Fruit behavior.
+- Keep MQTT ownership in the worker; ThreeD components display status and request approved semantic operations only.
+
+### v0.18.5+ — Phase 6+: Controlled operation expansion
+
+Add one semantic FarmBot operation at a time. Each operation needs separate prerequisites, bounds, server-side command construction, audit and acknowledgement behavior, timeout handling, and manual validation before another operation is introduced.
+
+### Approval boundary
+
+The overall phase sequence is approved, but each phase remains a separate implementation gate. The plan does not authorize database changes, external worker hosting, MQTT connections, MQTT publishing, or physical commands until the applicable phase is reviewed and explicitly approved.
