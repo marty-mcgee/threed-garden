@@ -23,4 +23,6 @@ npm run typecheck
 
 Run `npm run validate:assets` when the external animation manifest or production animation files change. Run `npm run build` for routing, bundling, server/client boundary, or release-readiness changes.
 
+Run `npm run validate:farmbot-crypto` for v0.18.0 FarmBot work. Local FarmBot credentials require server-only `FARMBOT_CREDENTIAL_KEY_VERSION` and matching `FARMBOT_CREDENTIAL_KEY_V<n>` configuration. Never commit key values or JWTs. The Admin connection workflow stores per-device credentials; the old global FarmBot environment-token workflow is not the v0.18.0 integration path.
+
 The complete policy and manual ThreeD checklist are in [Agent Validation](../agents/VALIDATION.md).

@@ -1,11 +1,12 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.17.3",
+  "version": "0.18.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
     "typecheck": "tsc --noEmit --pretty false",
     "validate:assets": "node src/lib/scripts/validate-static-assets.mjs",
+    "validate:farmbot-crypto": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --conditions=react-server --experimental-strip-types src/lib/scripts/validate-farmbot-credential-crypto.mts",
     "build": "next build",
     "start": "next start -p 4444",
     "db:generate": "drizzle-kit generate",

@@ -1,20 +1,24 @@
 // src/app/api/threed/farmbots/poll/route.ts
 import { NextResponse } from 'next/server';
-import { FarmBotPoller } from '@/lib/services/threed/FarmBotPoller';
+import { auth } from '@/lib/auth';
 
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  console.log(`\n🔌 Starting FarmBot API sync...`);
-  
-  const poller = new FarmBotPoller();
-  const result = await poller.syncFarmBot();
-  
-  return NextResponse.json({
-    success: result.success,
-    message: result.success ? 'FarmBot sync completed' : 'Sync failed',
-    stats: result.stats,
-    timestamp: new Date().toISOString()
-  });
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'FarmBot synchronization is disabled until the secure device integration is configured',
+    },
+    { status: 503 }
+  );
 }

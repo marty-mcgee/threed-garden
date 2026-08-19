@@ -40,7 +40,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 Current production version: v0.17.3 "Documentation Foundation".
 
-No later release candidate is currently designated.
+Current release candidate: v0.18.0 "ThreeD FarmBot Integration — Phase 1".
 
 v0.17.3 remains the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
@@ -57,3 +57,13 @@ Treat regressions in:
 - targeted Water
 - targeted Pick Fruit and project-scoped harvest persistence
 as release-blocking.
+
+## ThreeD FarmBot Integration Plan rules
+
+- Current release candidate: v0.18.0 "ThreeD FarmBot Integration — Phase 1".
+- Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
+- FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.
+- Resolve every FarmBot operation through the authenticated owner and, for project interactions, its active Project asset assignment.
+- Keep physical commands disabled until the server-side adapter has an allowlist, coordinate bounds, concurrency protection, audit records, and acknowledgement handling.
+- Do not send arbitrary CeleryScript, raw command names, coordinates, or pin operations supplied by a browser.
+- Emergency stop must not depend on character animation or the normal action-completion path.

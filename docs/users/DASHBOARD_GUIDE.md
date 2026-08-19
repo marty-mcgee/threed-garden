@@ -12,3 +12,5 @@ Expected behavior:
 The Dashboard is primarily a visualization surface. Authenticated ThreeD world actions are a deliberate exception: supported actions persist their result only after the associated one-shot animation completes.
 
 For character movement and world-action testing, see [ThreeD controls](THREED_CONTROLS.md).
+
+In v0.18.0, an active FarmBot assigned to the selected Project appears as a runtime ThreeD marker. It can be selected and used as an animation-only action target. This does not connect to MQTT or operate the physical FarmBot.

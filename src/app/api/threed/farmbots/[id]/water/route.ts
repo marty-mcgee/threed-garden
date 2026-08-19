@@ -1,32 +1,23 @@
 // src/app/api/threed/farmbots/[id]/water/route.ts
 import { NextResponse } from 'next/server';
-import { FarmBotPoller } from '@/lib/services/threed/FarmBotPoller';
+import { auth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  try {
-    const { durationMs = 60000 } = await request.json();
-    
-    const poller = new FarmBotPoller();
-    const result = await poller.water(durationMs);
-    
-    return NextResponse.json({
-      success: true,
-      data: result,
-      message: `Watering for ${durationMs / 1000} seconds`,
-      timestamp: new Date().toISOString()
-    });
-    
-  } catch (error) {
-    console.error('Water command error:', error);
+export async function POST() {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json(
-      { success: false, error: String(error) },
-      { status: 500 }
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
     );
   }
+
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'FarmBot watering is disabled until the secure device integration is configured',
+    },
+    { status: 503 }
+  );
 }

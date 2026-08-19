@@ -19,3 +19,15 @@ An asset being active does not assign it to a project. Project/module relationsh
 - Traffic manages its data sources and map content through the Traffic section.
 
 Use the sidebar as the canonical navigation for available admin pages. Avoid editing database rows by hand when an Admin workflow exists.
+
+## FarmBot connection setup
+
+Open **ThreeD Garden → FarmBots**, then use **FarmBot Connection** for an owned FarmBot record:
+
+1. Generate and store a credential with the FarmBot account login workflow, or store a current FarmBot JWT directly.
+2. Select **Test** and confirm REST authentication, the FarmBot REST device ID, and the MQTT broker identity.
+3. Select **Discover** under Configured peripherals and explicitly assign the correct peripheral to Water.
+4. Select **Validate** to confirm the stored Water assignment still matches FarmBot.
+5. Review the broker metadata and select **Readiness** to check configuration for a future MQTT worker.
+
+Stored credentials are encrypted and are never displayed again. REST authentication, peripheral validation, and MQTT readiness do not prove that the physical FarmBot is online. v0.18.0 does not send movement, Water, pin, or other physical commands.

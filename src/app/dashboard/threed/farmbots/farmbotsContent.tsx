@@ -16,7 +16,9 @@ import { ModalConfirm } from '@/components/ui/modal-confirm';
 interface FarmBot {
   farmbot: {
     id: number;
-    deviceId: string;
+    assetCode: string;
+    farmbotDeviceId: number | null;
+    brokerDeviceId: string | null;
     name: string;
     status: string;
     bedId: number;
@@ -74,7 +76,7 @@ export default function FarmBotsContent() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedFarmbot, setSelectedFarmbot] = useState<FarmBot | null>(null);
-  const [formData, setFormData] = useState({ name: '', deviceId: '', status: 'offline', bedId: '', firmwareVersion: '', notes: '' });
+  const [formData, setFormData] = useState({ name: '', assetCode: '', status: 'offline', bedId: '', firmwareVersion: '', notes: '' });
 
   const fetchBeds = useCallback(async () => {
     const response = await fetch('/api/threed/beds?limit=500&showAll=true');
@@ -91,7 +93,7 @@ export default function FarmBotsContent() {
 
   useEffect(() => {
     let filtered = [...farmbots];
-    if (searchTerm) filtered = filtered.filter(f => f.farmbot.name.toLowerCase().includes(searchTerm.toLowerCase()) || f.farmbot.deviceId.toLowerCase().includes(searchTerm.toLowerCase()));
+    if (searchTerm) filtered = filtered.filter(f => f.farmbot.name.toLowerCase().includes(searchTerm.toLowerCase()) || f.farmbot.assetCode.toLowerCase().includes(searchTerm.toLowerCase()) || f.farmbot.brokerDeviceId?.toLowerCase().includes(searchTerm.toLowerCase()));
     if (statusFilter !== 'all') filtered = filtered.filter(f => f.farmbot.status === statusFilter);
     setTotalRecords(filtered.length); setFilteredFarmbots(filtered); setCurrentPage(0);
   }, [farmbots, searchTerm, statusFilter]);
@@ -106,7 +108,7 @@ export default function FarmBotsContent() {
     try {
       const response = await fetch('/api/threed/farmbots', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
       const data = await response.json();
-      if (data.success) { showToast('FarmBot added successfully', 'success'); setIsAddModalOpen(false); setFormData({ name: '', deviceId: '', status: 'offline', bedId: '', firmwareVersion: '', notes: '' }); fetchFarmbots(); }
+      if (data.success) { showToast('FarmBot added successfully', 'success'); setIsAddModalOpen(false); setFormData({ name: '', assetCode: '', status: 'offline', bedId: '', firmwareVersion: '', notes: '' }); fetchFarmbots(); }
       else showToast('Failed to add farmbot', 'error');
     } catch (error) { showToast('Failed to add farmbot', 'error'); }
   };
@@ -131,7 +133,7 @@ export default function FarmBotsContent() {
     } catch (error) { showToast('Failed to delete farmbot', 'error'); }
   };
 
-  const openEditModal = (farmbot: FarmBot) => { setSelectedFarmbot(farmbot); setFormData({ name: farmbot.farmbot.name, deviceId: farmbot.farmbot.deviceId, status: farmbot.farmbot.status, bedId: String(farmbot.farmbot.bedId || ''), firmwareVersion: farmbot.farmbot.firmwareVersion || '', notes: farmbot.farmbot.notes || '' }); setIsEditModalOpen(true); };
+  const openEditModal = (farmbot: FarmBot) => { setSelectedFarmbot(farmbot); setFormData({ name: farmbot.farmbot.name, assetCode: farmbot.farmbot.assetCode, status: farmbot.farmbot.status, bedId: String(farmbot.farmbot.bedId || ''), firmwareVersion: farmbot.farmbot.firmwareVersion || '', notes: farmbot.farmbot.notes || '' }); setIsEditModalOpen(true); };
   const openDeleteModal = (farmbot: FarmBot) => { setSelectedFarmbot(farmbot); setIsDeleteModalOpen(true); };
 
   const formatDate = (dateString: string) => dateString ? new Date(dateString).toLocaleString() : 'Never';
@@ -167,14 +169,14 @@ export default function FarmBotsContent() {
         {totalPages > 1 && <PaginationControls currentPage={currentPage} totalPages={totalPages} totalRecords={totalRecords} pageSize={pageSize} onPageChange={handlePageChange} />}
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-muted/50 border-b"><tr><th className="px-4 py-3 w-8"></th><th className="px-4 py-3 text-left text-xs uppercase">Name</th><th className="px-4 py-3 text-left text-xs uppercase">Device ID</th><th className="px-4 py-3 text-left text-xs uppercase">Status</th><th className="px-4 py-3 text-left text-xs uppercase">Bed</th><th className="px-4 py-3 text-left text-xs uppercase">Last Seen</th><th className="px-4 py-3 text-left text-xs uppercase">Battery</th><th className="px-4 py-3 text-left text-xs uppercase">Actions</th></tr></thead>
+            <thead className="bg-muted/50 border-b"><tr><th className="px-4 py-3 w-8"></th><th className="px-4 py-3 text-left text-xs uppercase">Name</th><th className="px-4 py-3 text-left text-xs uppercase">Asset code</th><th className="px-4 py-3 text-left text-xs uppercase">Status</th><th className="px-4 py-3 text-left text-xs uppercase">Bed</th><th className="px-4 py-3 text-left text-xs uppercase">Last Seen</th><th className="px-4 py-3 text-left text-xs uppercase">Battery</th><th className="px-4 py-3 text-left text-xs uppercase">Actions</th></tr></thead>
             <tbody className="divide-y">
               {currentPageData.map((item) => (
                 <React.Fragment key={item.farmbot.id}>
                   <tr className="hover:bg-muted/50">
                     <td className="px-4 py-3" onClick={() => toggleRowExpansion(item.farmbot.id)}><Info className="w-4 h-4 text-muted-foreground cursor-pointer" /></td>
                     <td className="px-4 py-3" onClick={() => toggleRowExpansion(item.farmbot.id)}><div className="flex items-center gap-2">{getStatusIcon(item.farmbot.status)}<span className="font-medium">{item.farmbot.name}</span></div></td>
-                    <td className="px-4 py-3 text-sm font-mono" onClick={() => toggleRowExpansion(item.farmbot.id)}>{item.farmbot.deviceId}</td>
+                    <td className="px-4 py-3 text-sm font-mono" onClick={() => toggleRowExpansion(item.farmbot.id)}>{item.farmbot.assetCode}</td>
                     <td className="px-4 py-3" onClick={() => toggleRowExpansion(item.farmbot.id)}><span className={`px-2 py-1 text-xs rounded-full ${getStatusBadge(item.farmbot.status)}`}>{item.farmbot.status}</span></td>
                     <td className="px-4 py-3 text-sm" onClick={() => toggleRowExpansion(item.farmbot.id)}>{item.bed?.name || '—'}</td>
                     <td className="px-4 py-3 text-sm text-muted-foreground" onClick={() => toggleRowExpansion(item.farmbot.id)}>{formatDate(item.farmbot.lastSeen)}</td>
@@ -197,7 +199,7 @@ export default function FarmBotsContent() {
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add FarmBot">
         <div className="space-y-4">
           <div><Label>Name *</Label><Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="e.g., Garden Bot Alpha" required /></div>
-          <div><Label>Device ID *</Label><Input value={formData.deviceId} onChange={(e) => setFormData({ ...formData, deviceId: e.target.value })} placeholder="farmbot-001" required /></div>
+          <div><Label>Asset code *</Label><Input value={formData.assetCode} onChange={(e) => setFormData({ ...formData, assetCode: e.target.value })} placeholder="FARMBOT-003" required /></div>
           <div><Label>Status</Label><select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="w-full px-3 py-2 border rounded-lg bg-background"><option value="online">Online</option><option value="offline">Offline</option><option value="maintenance">Maintenance</option></select></div>
           <div><Label>Bed (Optional)</Label><select value={formData.bedId} onChange={(e) => setFormData({ ...formData, bedId: e.target.value })} className="w-full px-3 py-2 border rounded-lg bg-background"><option value="">None</option>{beds.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select></div>
           <div><Label>Firmware Version</Label><Input value={formData.firmwareVersion} onChange={(e) => setFormData({ ...formData, firmwareVersion: e.target.value })} placeholder="v1.0.0" /></div>
@@ -207,7 +209,7 @@ export default function FarmBotsContent() {
       </Modal>
 
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Edit FarmBot">
-        <div className="space-y-4"><div><Label>Name *</Label><Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required /></div><div><Label>Device ID *</Label><Input value={formData.deviceId} onChange={(e) => setFormData({ ...formData, deviceId: e.target.value })} required /></div><div><Label>Status</Label><select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="w-full px-3 py-2 border rounded-lg bg-background"><option value="online">Online</option><option value="offline">Offline</option><option value="maintenance">Maintenance</option></select></div><div><Label>Bed</Label><select value={formData.bedId} onChange={(e) => setFormData({ ...formData, bedId: e.target.value })} className="w-full px-3 py-2 border rounded-lg bg-background"><option value="">None</option>{beds.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select></div><div><Label>Firmware Version</Label><Input value={formData.firmwareVersion} onChange={(e) => setFormData({ ...formData, firmwareVersion: e.target.value })} /></div><div><Label>Notes</Label><Textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} /></div><div className="flex justify-end gap-3 pt-4 border-t"><Button variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancel</Button><Button onClick={handleUpdateFarmbot}>Save Changes</Button></div></div>
+        <div className="space-y-4"><div><Label>Name *</Label><Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required /></div><div><Label>Asset code *</Label><Input value={formData.assetCode} onChange={(e) => setFormData({ ...formData, assetCode: e.target.value })} required /></div><div><Label>Status</Label><select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="w-full px-3 py-2 border rounded-lg bg-background"><option value="online">Online</option><option value="offline">Offline</option><option value="maintenance">Maintenance</option></select></div><div><Label>Bed</Label><select value={formData.bedId} onChange={(e) => setFormData({ ...formData, bedId: e.target.value })} className="w-full px-3 py-2 border rounded-lg bg-background"><option value="">None</option>{beds.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}</select></div><div><Label>Firmware Version</Label><Input value={formData.firmwareVersion} onChange={(e) => setFormData({ ...formData, firmwareVersion: e.target.value })} /></div><div><Label>Notes</Label><Textarea value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} rows={3} /></div><div className="flex justify-end gap-3 pt-4 border-t"><Button variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancel</Button><Button onClick={handleUpdateFarmbot}>Save Changes</Button></div></div>
       </Modal>
 
       <ModalConfirm isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={handleDeleteFarmbot} title="Delete FarmBot" message={`Are you sure you want to delete "${selectedFarmbot?.farmbot.name}"? This action cannot be undone.`} />

@@ -63,7 +63,7 @@ export interface RuntimeMarker {
 }
 
 /** Client-side identity and position for a supported ThreeD world-action target. */
-export type ThreeDActionTargetType = 'planting';
+export type ThreeDActionTargetType = 'planting' | 'farmbot';
 
 export interface ThreeDActionTarget {
   /** Runtime marker identity, for example `plantings-12`. */

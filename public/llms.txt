@@ -13,6 +13,7 @@ Canonical documentation for humans and automated readers:
 - /docs/developers/ARCHITECTURE.md
 - /docs/developers/DATA_MODEL.md
 - /docs/developers/API_GUIDE.md
+- /docs/developers/FARMBOT_INTEGRATION.md
 - /docs/developers/LOCAL_DEVELOPMENT.md
 - /docs/developers/DEPLOYMENT.md
 - /docs/agents/README.md

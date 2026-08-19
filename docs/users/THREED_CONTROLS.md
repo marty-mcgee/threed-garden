@@ -16,3 +16,9 @@ Select a valid planting target and choose a supported action from the character'
 Selection and action targeting are separate state. Releasing character control must not silently execute an action.
 
 If an animation runs but persistence fails, record the toast/console error, character, project, and target before retrying.
+
+## FarmBot action targeting
+
+Select an assigned FarmBot marker and choose **Use as Action Target**. The marker receives the persistent green target pulse, and the character Details Card offers **Point**, **Point Gesture**, and **Talk** under FarmBot Interaction.
+
+These actions animate the character only. They do not call the ThreeD World Action persistence route, connect to MQTT, change a peripheral, or operate the physical FarmBot. Use **Focus Target** to return the camera to it or **Clear Target** to restore the character's full action palette.

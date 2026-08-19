@@ -3,6 +3,7 @@ import {
   pgTable, text, timestamp, boolean, index, serial, varchar, 
   integer, decimal, numeric, jsonb, uniqueIndex, foreignKey,
   pgSchema, pgEnum, time, AnyPgColumn, real,
+  check,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
@@ -670,7 +671,12 @@ export const threedFarmbots = pgTable('threed_farmbots', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
-  deviceId: varchar('device_id', { length: 100 }).unique().notNull(),
+  // App-facing code used for search and display (for example, FARMBOT-003).
+  assetCode: varchar('asset_code', { length: 100 }).unique().notNull(),
+
+  // Authoritative identities populated only after FarmBot REST/token verification.
+  farmbotDeviceId: integer('farmbot_device_id').unique(),
+  brokerDeviceId: varchar('broker_device_id', { length: 100 }).unique(),
   name: varchar('name', { length: 100 }).notNull(),
 
   // Status
@@ -684,8 +690,17 @@ export const threedFarmbots = pgTable('threed_farmbots', {
   positionZ: decimal('position_z', { precision: 8, scale: 2 }),
   
   // Configuration
+  // apiToken is a quarantined legacy plaintext field. Do not read or write it.
   apiToken: varchar('api_token', { length: 255 }),
   apiUrl: varchar('api_url', { length: 255 }),
+
+  // Encrypted credential envelope (AES-256-GCM)
+  credentialCiphertext: text('credential_ciphertext'),
+  credentialIv: varchar('credential_iv', { length: 32 }),
+  credentialAuthTag: varchar('credential_auth_tag', { length: 32 }),
+  credentialEnvelopeVersion: integer('credential_envelope_version'),
+  credentialKeyVersion: integer('credential_key_version'),
+  credentialUpdatedAt: timestamp('credential_updated_at'),
   
   // Last known data
   lastSeen: timestamp('last_seen'),
@@ -697,13 +712,107 @@ export const threedFarmbots = pgTable('threed_farmbots', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
-  deviceIdIdx: uniqueIndex('idx_threed_farmbots_device_id').on(table.deviceId),
+  assetCodeIdx: uniqueIndex('idx_threed_farmbots_asset_code').on(table.assetCode),
+  farmbotDeviceIdIdx: uniqueIndex('idx_threed_farmbots_farmbot_device_id')
+    .on(table.farmbotDeviceId),
+  brokerDeviceIdIdx: uniqueIndex('idx_threed_farmbots_broker_device_id')
+    .on(table.brokerDeviceId),
   activeIdx: index('idx_threed_farmbots_active').on(table.isActive),
   statusIdx: index('idx_threed_farmbots_status').on(table.status),
+  credentialEnvelopeComplete: check(
+    'threed_farmbots_credential_envelope_complete',
+    sql`(
+      (${table.credentialCiphertext} IS NULL
+        AND ${table.credentialIv} IS NULL
+        AND ${table.credentialAuthTag} IS NULL
+        AND ${table.credentialEnvelopeVersion} IS NULL
+        AND ${table.credentialKeyVersion} IS NULL
+        AND ${table.credentialUpdatedAt} IS NULL)
+      OR
+      (${table.credentialCiphertext} IS NOT NULL
+        AND ${table.credentialIv} IS NOT NULL
+        AND ${table.credentialAuthTag} IS NOT NULL
+        AND ${table.credentialEnvelopeVersion} = 1
+        AND ${table.credentialKeyVersion} > 0
+        AND ${table.credentialUpdatedAt} IS NOT NULL)
+    )`
+  ),
 }));
 
 // ============================================
-// 10. threed_farmbot_logs - FarmBot activity log
+// 10. threed_farmbot_peripheral_bindings - Semantic action bindings
+// ============================================
+export const threedFarmbotPeripheralBindings = pgTable('threed_farmbot_peripheral_bindings', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  farmbotId: integer('farmbot_id').notNull().references(() => threedFarmbots.id, {
+    onDelete: 'cascade',
+  }),
+
+  // App-level action name. API allowlists determine which actions may be assigned.
+  semanticAction: varchar('semantic_action', { length: 50 }).notNull(),
+
+  // Authoritative FarmBot REST resource identity plus review snapshots.
+  peripheralId: integer('peripheral_id').notNull(),
+  peripheralLabel: varchar('peripheral_label', { length: 200 }).notNull(),
+  peripheralPin: integer('peripheral_pin').notNull(),
+  peripheralMode: integer('peripheral_mode').notNull(),
+
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
+}, (table) => ({
+  uniqueFarmbotAction: uniqueIndex('idx_threed_farmbot_peripheral_binding_action')
+    .on(table.farmbotId, table.semanticAction),
+  ownerIdx: index('idx_threed_farmbot_peripheral_bindings_owner').on(table.userId),
+  farmbotIdx: index('idx_threed_farmbot_peripheral_bindings_farmbot').on(table.farmbotId),
+  peripheralIdPositive: check(
+    'threed_farmbot_peripheral_bindings_peripheral_id_positive',
+    sql`${table.peripheralId} > 0`
+  ),
+  peripheralPinNonnegative: check(
+    'threed_farmbot_peripheral_bindings_pin_nonnegative',
+    sql`${table.peripheralPin} >= 0`
+  ),
+  peripheralModeValid: check(
+    'threed_farmbot_peripheral_bindings_mode_valid',
+    sql`${table.peripheralMode} IN (0, 1)`
+  ),
+}));
+
+// ============================================
+// 11. threed_farmbot_broker_metadata - Current broker connection snapshot
+// ============================================
+export const threedFarmbotBrokerMetadata = pgTable('threed_farmbot_broker_metadata', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  farmbotId: integer('farmbot_id').notNull().references(() => threedFarmbots.id, {
+    onDelete: 'cascade',
+  }),
+  mqttHost: varchar('mqtt_host', { length: 253 }).notNull(),
+  mqttWsUrl: varchar('mqtt_ws_url', { length: 500 }).notNull(),
+  // Token-observed identity retained during parent-identity backfill and diagnostics.
+  brokerDeviceId: varchar('broker_device_id', { length: 100 }).notNull(),
+  vhost: varchar('vhost', { length: 255 }).notNull(),
+  tokenIssuedAt: timestamp('token_issued_at').notNull(),
+  tokenExpiresAt: timestamp('token_expires_at').notNull(),
+  observedAt: timestamp('observed_at').defaultNow().notNull(),
+  restVerifiedAt: timestamp('rest_verified_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
+}, (table) => ({
+  uniqueFarmbot: uniqueIndex('idx_threed_farmbot_broker_metadata_farmbot')
+    .on(table.farmbotId),
+  ownerIdx: index('idx_threed_farmbot_broker_metadata_owner').on(table.userId),
+  brokerDeviceIdx: index('idx_threed_farmbot_broker_metadata_device').on(table.brokerDeviceId),
+  tokenDatesValid: check(
+    'threed_farmbot_broker_metadata_token_dates_valid',
+    sql`${table.tokenExpiresAt} > ${table.tokenIssuedAt}`
+  ),
+}));
+
+// ============================================
+// 12. threed_farmbot_logs - FarmBot activity log
 // ============================================
 export const threedFarmbotLogs = pgTable('threed_farmbot_logs', {
   id: serial('id').primaryKey(),
@@ -1023,7 +1132,40 @@ export const threedFarmbotsRelations = relations(threedFarmbots, ({ one, many })
   logs: many(threedFarmbotLogs),
   wateringSchedules: many(threedWateringSchedules),
   wateringHistory: many(threedWateringHistory),
+  peripheralBindings: many(threedFarmbotPeripheralBindings),
+  brokerMetadata: one(threedFarmbotBrokerMetadata, {
+    fields: [threedFarmbots.id],
+    references: [threedFarmbotBrokerMetadata.farmbotId],
+  }),
 }));
+
+export const threedFarmbotPeripheralBindingsRelations = relations(
+  threedFarmbotPeripheralBindings,
+  ({ one }) => ({
+    farmbot: one(threedFarmbots, {
+      fields: [threedFarmbotPeripheralBindings.farmbotId],
+      references: [threedFarmbots.id],
+    }),
+    owner: one(user, {
+      fields: [threedFarmbotPeripheralBindings.userId],
+      references: [user.id],
+    }),
+  })
+);
+
+export const threedFarmbotBrokerMetadataRelations = relations(
+  threedFarmbotBrokerMetadata,
+  ({ one }) => ({
+    farmbot: one(threedFarmbots, {
+      fields: [threedFarmbotBrokerMetadata.farmbotId],
+      references: [threedFarmbots.id],
+    }),
+    owner: one(user, {
+      fields: [threedFarmbotBrokerMetadata.userId],
+      references: [user.id],
+    }),
+  })
+);
 
 export const threedTasksRelations = relations(threedTasks, ({ one, many }) => ({
   planting: one(threedPlantings, {
@@ -1103,6 +1245,12 @@ export type NewThreedWeatherLog = typeof threedWeatherLogs.$inferInsert;
 
 export type ThreedFarmbot = typeof threedFarmbots.$inferSelect;
 export type NewThreedFarmbot = typeof threedFarmbots.$inferInsert;
+
+export type ThreedFarmbotPeripheralBinding = typeof threedFarmbotPeripheralBindings.$inferSelect;
+export type NewThreedFarmbotPeripheralBinding = typeof threedFarmbotPeripheralBindings.$inferInsert;
+
+export type ThreedFarmbotBrokerMetadata = typeof threedFarmbotBrokerMetadata.$inferSelect;
+export type NewThreedFarmbotBrokerMetadata = typeof threedFarmbotBrokerMetadata.$inferInsert;
 
 export type ThreedFarmbotLog = typeof threedFarmbotLogs.$inferSelect;
 export type NewThreedFarmbotLog = typeof threedFarmbotLogs.$inferInsert;

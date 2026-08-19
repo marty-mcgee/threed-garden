@@ -1,45 +1,23 @@
 // src/app/api/threed/farmbots/[id]/move/route.ts
 import { NextResponse } from 'next/server';
-import { FarmBotPoller } from '@/lib/services/threed/FarmBotPoller';
+import { auth } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  try {
-    const { x, y, z, relative = false } = await request.json();
-    
-    if (x === undefined || y === undefined) {
-      return NextResponse.json(
-        { success: false, error: 'x and y coordinates are required' },
-        { status: 400 }
-      );
-    }
-    
-    const poller = new FarmBotPoller();
-    let result;
-    
-    if (relative) {
-      result = await poller.moveRelative(x, y, z || 0);
-    } else {
-      result = await poller.moveAbsolute(x, y, z || 0);
-    }
-    
-    return NextResponse.json({
-      success: true,
-      data: result,
-      message: `Moved to ${relative ? 'relative' : 'absolute'} position (${x}, ${y}, ${z || 0})`,
-      timestamp: new Date().toISOString()
-    });
-    
-  } catch (error) {
-    console.error('Move command error:', error);
+export async function POST() {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json(
-      { success: false, error: String(error) },
-      { status: 500 }
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
     );
   }
+
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'FarmBot movement is disabled until the secure device integration is configured',
+    },
+    { status: 503 }
+  );
 }

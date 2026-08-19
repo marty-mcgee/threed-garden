@@ -516,6 +516,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, co
             </Html>
           )}
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.5} outerRadius={0.75} />}
+          {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.72} />}
         </group>
       </RigidBody>
     );
@@ -907,7 +908,9 @@ export function ThreeDScene({
     }
     
     if (currentMarker.type === 'farmbots' && currentMarker.data) {
-      metadata.deviceId = currentMarker.data.deviceId || '';
+      metadata.assetCode = currentMarker.data.assetCode || '';
+      metadata.farmbotDeviceId = currentMarker.data.farmbotDeviceId || '';
+      metadata.brokerDeviceId = currentMarker.data.brokerDeviceId || '';
       metadata.batteryLevel = currentMarker.data.batteryLevel || 0;
       metadata.firmwareVersion = currentMarker.data.firmwareVersion || '';
       metadata.lastSeen = currentMarker.data.lastSeen || '';
@@ -1373,11 +1376,16 @@ export function ThreeDScene({
               onClick={() => handleMarkerClick(marker)}
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
               isActionTarget={
-                actionTarget?.type === 'planting' &&
+                actionTarget != null &&
                 (
                   marker.id === actionTarget.markerId ||
                   (
-                    (marker.type === 'planting' || marker.type === 'plantings') &&
+                    (
+                      (actionTarget.type === 'planting'
+                        && (marker.type === 'planting' || marker.type === 'plantings'))
+                      || (actionTarget.type === 'farmbot'
+                        && (marker.type === 'farmbot' || marker.type === 'farmbots'))
+                    ) &&
                     Number(marker.data?.id) === actionTarget.id
                   )
                 )

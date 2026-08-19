@@ -8,6 +8,29 @@ import {
 } from '@/lib/schema/threed';
 import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
+import {
+  containsFarmBotCredentialMaterial,
+  sanitizeFarmBotRecord,
+} from '@/lib/services/threed/farmbot/sanitize';
+
+type FarmBotRecord = typeof threedFarmbots.$inferSelect;
+
+function toFarmBotResponse(farmbot: FarmBotRecord) {
+  return {
+    ...sanitizeFarmBotRecord(farmbot),
+    credentialConfigured: farmbot.credentialCiphertext !== null,
+  };
+}
+
+function credentialMaterialResponse() {
+  return NextResponse.json(
+    {
+      success: false,
+      error: 'FarmBot credentials must be configured through the secure connection workflow',
+    },
+    { status: 400 }
+  );
+}
 
 // ============================================
 // GET /api/threed/farmbots - List ThreeD FarmBots
@@ -15,7 +38,7 @@ import { ensureTableSequence } from '@/lib/db/sequence';
 //   - id (optional): Get a single farmbot
 //   - status (optional): Filter by farmbot status
 //   - isActive (optional): Filter by active status
-//   - search (optional): Search by name, deviceId, or notes
+//   - search (optional): Search by name, asset code, broker identity, or notes
 //   - limit (optional): Number of records (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
 // ============================================
@@ -66,7 +89,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: {
-          ...farmbot,
+          ...toFarmBotResponse(farmbot),
           bed: bed || null,
         },
       });
@@ -87,7 +110,8 @@ export async function GET(request: NextRequest) {
     if (search) {
       conditions.push(
         sql`${threedFarmbots.name} ILIKE ${`%${search}%`} OR 
-            ${threedFarmbots.deviceId} ILIKE ${`%${search}%`} OR
+            ${threedFarmbots.assetCode} ILIKE ${`%${search}%`} OR
+            ${threedFarmbots.brokerDeviceId} ILIKE ${`%${search}%`} OR
             ${threedFarmbots.notes} ILIKE ${`%${search}%`}`
       );
     }
@@ -121,7 +145,7 @@ export async function GET(request: NextRequest) {
           .limit(1) : [];
 
         return {
-          ...farmbot,
+          ...toFarmBotResponse(farmbot),
           bed: bed || null,
         };
       })
@@ -156,10 +180,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('📝 POST /api/threed/farmbots - Request body:', body);
+    if (containsFarmBotCredentialMaterial(body)) {
+      return credentialMaterialResponse();
+    }
 
     const {
-      deviceId,
+      assetCode,
       name,
       isActive,
       status,
@@ -167,7 +193,6 @@ export async function POST(request: NextRequest) {
       positionX,
       positionY,
       positionZ,
-      apiToken,
       apiUrl,
       lastSeen,
       batteryLevel,
@@ -176,9 +201,9 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // ✅ Validate required fields
-    if (!deviceId) {
+    if (!assetCode) {
       return NextResponse.json(
-        { success: false, error: 'Missing required field: deviceId' },
+        { success: false, error: 'Missing required field: assetCode' },
         { status: 400 }
       );
     }
@@ -213,13 +238,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ✅ Check if deviceId already exists
+    // ✅ Check if assetCode already exists
     const [existing] = await db
       .select()
       .from(threedFarmbots)
       .where(
         and(
-          eq(threedFarmbots.deviceId, deviceId),
+          eq(threedFarmbots.assetCode, assetCode),
           eq(threedFarmbots.userId, userId)
         )
       )
@@ -227,7 +252,7 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { success: false, error: 'Device ID already exists' },
+        { success: false, error: 'Asset code already exists' },
         { status: 409 }
       );
     }
@@ -238,7 +263,7 @@ export async function POST(request: NextRequest) {
       .insert(threedFarmbots)
       .values({
         userId,
-        deviceId,
+        assetCode,
         name,
         isActive: isActive ?? true,
         status: status || 'offline',
@@ -246,7 +271,6 @@ export async function POST(request: NextRequest) {
         positionX: positionX || null,
         positionY: positionY || null,
         positionZ: positionZ || null,
-        apiToken: apiToken || null,
         apiUrl: apiUrl || null,
         lastSeen: lastSeen ? new Date(lastSeen) : null,
         batteryLevel: batteryLevel || null,
@@ -255,11 +279,11 @@ export async function POST(request: NextRequest) {
       })
       .returning();
 
-    console.log('✅ ThreeD FarmBot created:', newFarmbot);
+    console.log('✅ ThreeD FarmBot created:', newFarmbot.id);
 
     return NextResponse.json({
       success: true,
-      data: newFarmbot,
+      data: toFarmBotResponse(newFarmbot),
       message: 'FarmBot created successfully',
     });
   } catch (error) {
@@ -292,6 +316,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
+    if (containsFarmBotCredentialMaterial(body)) {
+      return credentialMaterialResponse();
+    }
     const userId = session.user.id;
     const parsedId = parseInt(id);
 
@@ -342,9 +369,23 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // ✅ Handle date fields
-    const updateData: any = { ...body, updatedAt: new Date() };
-    if (body.lastSeen) updateData.lastSeen = new Date(body.lastSeen);
+    // Canonical FarmBot identities are server-managed by the verified connection workflow.
+    const updateData = {
+      assetCode: body.assetCode,
+      name: body.name,
+      isActive: body.isActive,
+      status: body.status,
+      bedId: body.bedId || null,
+      positionX: body.positionX || null,
+      positionY: body.positionY || null,
+      positionZ: body.positionZ || null,
+      apiUrl: body.apiUrl || null,
+      lastSeen: body.lastSeen ? new Date(body.lastSeen) : null,
+      batteryLevel: body.batteryLevel || null,
+      firmwareVersion: body.firmwareVersion || null,
+      notes: body.notes || null,
+      updatedAt: new Date(),
+    };
 
     const [updated] = await db
       .update(threedFarmbots)
@@ -357,11 +398,11 @@ export async function PUT(request: NextRequest) {
       )
       .returning();
 
-    console.log('✅ ThreeD FarmBot updated:', updated);
+    console.log('✅ ThreeD FarmBot updated:', updated.id);
 
     return NextResponse.json({
       success: true,
-      data: updated,
+      data: toFarmBotResponse(updated),
       message: 'FarmBot updated successfully',
     });
   } catch (error) {
@@ -394,6 +435,9 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
+    if (containsFarmBotCredentialMaterial(body)) {
+      return credentialMaterialResponse();
+    }
     const userId = session.user.id;
     const parsedId = parseInt(id);
 
@@ -444,9 +488,19 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
-    // ✅ Handle date fields
-    const updateData: any = { ...body, updatedAt: new Date() };
-    if (body.lastSeen) updateData.lastSeen = new Date(body.lastSeen);
+    // Canonical FarmBot identities are server-managed by the verified connection workflow.
+    const allowedFields = [
+      'assetCode', 'name', 'isActive', 'status', 'bedId', 'positionX', 'positionY',
+      'positionZ', 'apiUrl', 'lastSeen', 'batteryLevel', 'firmwareVersion', 'notes',
+    ] as const;
+    const updateData: Record<string, unknown> = { updatedAt: new Date() };
+    for (const field of allowedFields) {
+      if (Object.prototype.hasOwnProperty.call(body, field)) {
+        updateData[field] = field === 'lastSeen' && body[field]
+          ? new Date(body[field])
+          : body[field];
+      }
+    }
 
     const [updated] = await db
       .update(threedFarmbots)
@@ -459,11 +513,11 @@ export async function PATCH(request: NextRequest) {
       )
       .returning();
 
-    console.log('✅ ThreeD FarmBot patched:', updated);
+    console.log('✅ ThreeD FarmBot patched:', updated.id);
 
     return NextResponse.json({
       success: true,
-      data: updated,
+      data: toFarmBotResponse(updated),
       message: 'FarmBot updated successfully',
     });
   } catch (error) {
@@ -527,7 +581,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: deleted,
+      data: toFarmBotResponse(deleted),
       message: 'FarmBot deleted successfully',
     });
   } catch (error) {

@@ -8,6 +8,8 @@ This is a **Dual-Surface Platform**:
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
 > **Current production version:** `v0.17.3 "Documentation Foundation"`
+>
+> **Current release candidate:** `v0.18.0 "ThreeD FarmBot Integration — Phase 1"`
 
 ## Documentation
 
@@ -60,6 +62,7 @@ The heart of the app is the **ThreeD Garden**, built as a declarative React Thre
 - **Physics-based characters** — powered by `@react-three/rapier` + `ecctrl`. Movable characters can be "taken control of" with `WASD`, run, jump, and collide with the world.
 - **Camera modes** — Follow, Top-Down, First-Person, Orbit, and Stationary.
 - **Real model files** — characters load GLB/GLTF/FBX/OBJ files (hosted on S3 or Vercel Blob) as their 3D bodies.
+- **FarmBot connection foundation** — encrypted per-device credentials, verified REST/MQTT identity, peripheral discovery and Water assignment, MQTT readiness diagnostics, and animation-only FarmBot action targeting. Physical commands remain disabled.
 
 ---
 
@@ -187,9 +190,8 @@ Characters are driven by their database record:
 | `AWS_REGION` | AWS S3 region |
 | `S3_BUCKET_NAME` | S3 bucket for audio |
 | `S3_PUBLIC_URL` | Public base URL for S3 objects |
-| `FARMBOT_API_TOKEN` | FarmBot device API token |
-| `FARMBOT_API_URL` | FarmBot API URL |
-| `FARMBOT_DEVICE_ID` | FarmBot device ID |
+| `FARMBOT_CREDENTIAL_KEY_VERSION` | Current positive FarmBot credential-encryption key version |
+| `FARMBOT_CREDENTIAL_KEY_V<n>` | Retained 32-byte base64 encryption key for version `<n>`; server-only |
 | `OPENWEATHER_API_KEY` | OpenWeatherMap weather data |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage (images/models) |
 

@@ -156,10 +156,14 @@ export class FarmBotPoller {
   
   // Save FarmBot device to database
   async saveDeviceToDatabase(deviceInfo: FarmBotDevice): Promise<void> {
+    const farmbotDeviceId = Number(this.deviceId);
+    if (!Number.isSafeInteger(farmbotDeviceId) || farmbotDeviceId <= 0) {
+      throw new Error('FARMBOT_DEVICE_ID must be a positive numeric FarmBot device ID');
+    }
     const existing = await db
       .select()
       .from(threedFarmbots)
-      .where(eq(threedFarmbots.deviceId, this.deviceId))
+      .where(eq(threedFarmbots.farmbotDeviceId, farmbotDeviceId))
       .limit(1);
     
     const now = new Date();
@@ -175,12 +179,13 @@ export class FarmBotPoller {
           lastSeen: lastSeen,
           updatedAt: now,
         })
-        .where(eq(threedFarmbots.deviceId, this.deviceId));
+        .where(eq(threedFarmbots.farmbotDeviceId, farmbotDeviceId));
       console.log(`  ✅ Updated FarmBot device: ${deviceInfo.name}`);
     } else {
       // Insert new
       await db.insert(threedFarmbots).values({
-        deviceId: this.deviceId,
+        assetCode: `FARMBOT-${farmbotDeviceId}`,
+        farmbotDeviceId,
         name: deviceInfo.name,
         status: this.determineStatus(lastSeen),
         lastSeen: lastSeen,
@@ -203,10 +208,11 @@ export class FarmBotPoller {
   }
 
   private async getDatabaseFarmbotId(): Promise<number> {
+    const farmbotDeviceId = Number(this.deviceId);
     const [farmbot] = await db
       .select({ id: threedFarmbots.id })
       .from(threedFarmbots)
-      .where(eq(threedFarmbots.deviceId, this.deviceId))
+      .where(eq(threedFarmbots.farmbotDeviceId, farmbotDeviceId))
       .limit(1);
 
     if (!farmbot) {
@@ -340,24 +346,13 @@ export class FarmBotPoller {
     }
   }
   
-  // Send a command to FarmBot
-  async sendCommand(command: string, args: any = {}): Promise<any> {
-    if (!this.apiToken) {
-      throw new Error('FarmBot API token not configured');
-    }
-    
-    try {
-      console.log(`  📡 Sending command: ${command}`);
-      const result = await this.farmbotFetch(`/devices/${this.deviceId}/commands`, {
-        method: 'POST',
-        body: JSON.stringify({ command, args }),
-      });
-      console.log(`  ✅ Command sent successfully`);
-      return result;
-    } catch (error) {
-      console.error(`  ❌ Command failed:`, error);
-      throw error;
-    }
+  // Retained as a fail-closed compatibility boundary while the poller is in progress.
+  // Physical commands require the future MQTT worker and must never use an assumed
+  // REST command endpoint from this server-side helper.
+  async sendCommand(_command: string, _args: unknown = {}): Promise<never> {
+    throw new Error(
+      'FarmBot commands are disabled until the MQTT command worker is implemented',
+    );
   }
   
   // Water command
@@ -396,10 +391,11 @@ export class FarmBotPoller {
   }
   
   async getStats() {
+    const farmbotDeviceId = Number(this.deviceId);
     const farmbot = await db
       .select()
       .from(threedFarmbots)
-      .where(eq(threedFarmbots.deviceId, this.deviceId))
+      .where(eq(threedFarmbots.farmbotDeviceId, farmbotDeviceId))
       .limit(1);
 
     const farmbotId = farmbot[0]?.id ?? -1;

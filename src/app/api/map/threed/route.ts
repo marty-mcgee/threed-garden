@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
+import { sanitizeFarmBotRecord } from '@/lib/services/threed/farmbot/sanitize';
 import { 
   threedPlants,
   threedBeds,
@@ -157,7 +158,9 @@ export async function GET(request: NextRequest) {
 
         // ✅ Pre-process: normalize position columns and add metadata fields
         return rawItems.map((item: any) => {
-          const processed = { ...item };
+          const processed = tableName === 'threedFarmbots'
+            ? sanitizeFarmBotRecord(item)
+            : { ...item };
 
           // Normalize positionX/Y/Z from string to number (DB returns decimal as string)
           if ('positionX' in processed && processed.positionX !== null) {

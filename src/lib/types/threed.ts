@@ -1060,7 +1060,9 @@ export enum FarmbotStatus {
 export interface ThreeDFarmbot {
   id: number;
   userId: string;
-  deviceId: string;
+  assetCode: string;
+  farmbotDeviceId: number | null;
+  brokerDeviceId: string | null;
   name: string;
   status: FarmbotStatus;
   
@@ -1071,7 +1073,6 @@ export interface ThreeDFarmbot {
   positionZ: number | null;
   
   // Configuration
-  apiToken: string | null;
   apiUrl: string | null;
   
   // Last known data
@@ -1093,13 +1094,12 @@ export interface ThreeDFarmbot {
 
 export interface ThreeDFarmbotFormData {
   name: string;
-  deviceId: string;
+  assetCode: string;
   status: FarmbotStatus;
   bedId: string;
   positionX: string;
   positionY: string;
   positionZ: string;
-  apiToken: string;
   apiUrl: string;
   firmwareVersion: string;
   notes: string;
@@ -1319,8 +1319,6 @@ export const HARVEST_UNIT_OPTIONS: ThreeDSelectOption[] = [
   { value: HarvestUnit.BUNCHES, label: 'Bunches' },
   { value: HarvestUnit.POUNDS, label: 'Pounds' },
 ];
-
-
 
 
 

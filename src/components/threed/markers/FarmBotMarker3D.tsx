@@ -11,7 +11,7 @@ interface FarmBotData {
   batteryLevel?: number;
   battery?: number;
   firmwareVersion?: string;
-  deviceId?: string;
+  assetCode?: string;
   lastSeen?: string;
   description?: string;
   notes?: string;

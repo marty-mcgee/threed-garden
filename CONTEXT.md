@@ -20,7 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.17.3 — Documentation Foundation** |
-| Current release candidate | **None designated** |
+| Current release candidate | **v0.18.0 — ThreeD FarmBot Integration, Phase 1** |
+| Current development milestone | **v0.18.0+ — Later phases remain separately gated** |
 | Previous checkpoint | **v0.17.2 — API and Type Safety Cleanup** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1175,4 +1176,43 @@ The v0.17.3 production release introduces a repository documentation hub for hum
 - `docs/releases` records confirmed production checkpoints separately from in-progress work.
 - `public/llms.txt` provides a compact discovery index for automated readers; it does not replace the source code, schema, `AGENTS.md`, or `CONTEXT.md`.
 
-The root README links to the documentation hub and accurately describes authenticated ThreeD World Actions as the intentional exception to the Dashboard's primarily read-oriented role. Package and Admin footer metadata identify v0.17.3. GitHub and Vercel production deployment have been confirmed.
+The root README links to the documentation hub and accurately describes authenticated ThreeD World Actions as the intentional exception to the Dashboard's primarily read-oriented role. Package and Admin footer metadata identified v0.17.3 for that release. GitHub and Vercel production deployment were confirmed.
+
+## 🔒 v0.18.0 — ThreeD FarmBot Integration (Phase 1 release candidate)
+
+The first Phase 1 increment establishes a fail-closed security boundary around the preliminary FarmBot implementation before any real hardware is connected:
+
+- General FarmBot CRUD no longer accepts or returns the legacy `apiToken` field and no longer logs request bodies or complete FarmBot records.
+- The Admin FarmBot form no longer stores or edits credentials in browser state.
+- The project-scoped map loader removes FarmBot credentials before returning runtime marker data.
+- FarmBot statistics require authentication and are scoped to the signed-in owner.
+- Preliminary generic command, polling, watering, and movement routes authenticate and return `503` without invoking the legacy global-environment client.
+- The legacy nullable `api_token` column remains quarantined for compatibility, while active credentials use the implemented encrypted per-device envelope and server-only key management.
+- A server-only, versioned AES-256-GCM credential primitive now binds ciphertext to its owner and FarmBot record through authenticated context. Its validation covers round-trip behavior, random IVs, tampering, wrong keys, cross-record use, and invalid inputs.
+- The Drizzle schema now declares a nullable encrypted credential envelope with an all-or-none constraint. Shared server-only sanitization strips legacy and encrypted credential fields from CRUD and map responses, and general CRUD rejects attempts to write them.
+- The encrypted-envelope schema was applied successfully to the approved Neon development branch; it has not been promoted to production.
+- A server-only versioned key provider resolves retained keys for decryption and a separately selected current key for new encryption. Rotation is decrypt-with-recorded-version, then encrypt-with-current-version; old keys remain configured until no stored envelope references them.
+- A server-only credential repository provides owner-scoped status, atomic save/replace, load, clear, and compare-and-swap rotation. Only its redacted status, save/replace, and clear operations are exposed through the dedicated credential API.
+- A dedicated authenticated `/api/threed/farmbots/:id/credential` endpoint now exposes redacted status, encrypted save/replace, and clear operations. It never echoes a token and does not test connectivity or invoke hardware.
+- FarmBot Admin rows expose only a safe credential-configured flag. A dedicated connection dialog can store, replace, or disconnect encrypted credentials; it never retrieves an existing credential, and clearly distinguishes stored configuration from a verified live connection.
+- The connection dialog can generate a FarmBot JWT from transient account email/password input through an authenticated, owner-scoped server route. The route uses the fixed hosted FarmBot token endpoint, a bounded request and timeout, redacted errors, and best-effort process-local throttling; it stores the resulting token directly through the encrypted repository and never returns it to the browser.
+- An authenticated, owner-scoped connection test decrypts the JWT server-side and performs only the documented `GET /api/device` request against the fixed FarmBot host. Its response exposes a small allowlisted device summary and explicitly distinguishes REST authentication from physical-device connectivity; it makes no database or FarmBot mutation.
+- After successful REST authentication, the connection summary also exposes only the JWT broker-device identity and expiration claim. The local `assetCode` remains a user-defined App label and is not silently reinterpreted or enforced as an upstream FarmBot identifier.
+- Owner-scoped read-only peripheral discovery retrieves only the official FarmBot peripheral ID, label, pin, and mode fields, caps the displayed inventory, and persists nothing. No peripheral is inferred or selected for Water, and no pin state is read or changed.
+- The approved `threed_farmbot_peripheral_bindings` schema stores one explicit owner-scoped binding per FarmBot/semantic action. The initial API allows only `water`, refetches authoritative peripheral metadata before assignment, and deletes bindings transactionally whenever credentials are replaced or cleared. Admin assignment changes configuration only; physical commands remain disabled.
+- A reusable owner-scoped binding preflight refetches FarmBot peripherals and fails closed when the Water binding is inactive, missing upstream, or differs in label, pin, or mode. Admin validation displays this status without authorizing or executing hardware behavior.
+- The binding table was applied to the approved development database. The same `db:push` also reconciled pre-existing database drift in three foreign-key constraint names plus existing character-animation and layer-default definitions; production was not changed.
+- The approved one-to-one FarmBot broker-metadata schema tracks the current MQTT host, secure WebSocket URL, broker identity, vhost, token dates, observation time, and REST-verification time. Values are derived strictly from the encrypted JWT, atomically replaced or cleared with credentials, excluded from general APIs/map payloads, and displayed only through an owner-scoped Admin diagnostic.
+- An explicit owner-scoped broker refresh uses the stored JWT with FarmBot's authenticated token endpoint, requires the refreshed token to retain the same broker-device identity, and atomically replaces the encrypted token and metadata snapshot with compare-and-swap protection. It preserves peripheral bindings, records REST verification, and does not extend expiration, open MQTT, or issue a hardware command.
+- FarmBot identity is normalized on the parent record: the former user-entered `device_id` becomes `asset_code`, while nullable `farmbot_device_id` and `broker_device_id` hold the verified REST and MQTT identities. The connection test requires `device_<REST ID>` equality before transactionally binding them; generic CRUD cannot write these canonical fields, and later credentials for another bound device are rejected.
+- The metadata table retains its token-observed broker identity during a safe two-phase migration, while the verified canonical identity also lives on the parent. The approved development `db:push` preserved all three existing local identifiers through the `device_id` → `asset_code` rename, added both nullable parent identities, and did not truncate rows or drop snapshot identity data. It repeated known constraint-name/default reconciliation. Removing the redundant snapshot field is deferred until parent backfill is proven.
+- The broker snapshot table was applied to the approved development database. Drizzle again reconciled its known foreign-key-name and existing default/type drift; production was not changed.
+- Persistent MQTT/FarmBotJS sessions are explicitly outside Vercel request handlers. A future long-running worker must own subscriptions, reconnects, state updates, acknowledgements, and allowlisted commands; no MQTT connection or hardware command is enabled yet.
+- An owner-scoped MQTT readiness preflight now decrypts the credential server-side and compares current token claims with the canonical parent identity and broker snapshot. It reports explicit fail-closed configuration issues without returning the token, contacting FarmBot, opening MQTT, or authorizing hardware. Admin displays this as configuration readiness for a future worker only.
+- The retained in-progress `FarmBotPoller` now fails closed at `sendCommand()` and cannot use its former assumed REST command endpoint. Its read-oriented work remains available, while all physical commands wait for the future MQTT worker.
+- Project-assigned FarmBot runtime markers now support the same DetailsCard **Use as Action Target**, focus, clear, stale-data cleanup, and green scene pulse behavior as Plantings. FarmBot-targeted character actions remain animation-only: existing Water/Harvest persistence still requires a Planting target, and no FarmBot REST/MQTT/peripheral command is enabled.
+- While a FarmBot is targeted, the character DetailsCard exposes only the existing Point, Point Gesture, and Talk semantic animations and labels them as animation-only. Clearing that target restores the full palette, while Planting-targeted action and persistence paths remain unchanged.
+
+The repository ignores generated `/drizzle` artifacts and continues to use an explicitly user-run `db:push` workflow. No environment file, ThreeD rendering path, character animation behavior, or World Action timing changed. Physical FarmBot commands remain disabled.
+
+The approved phase sequence is now documented in `docs/developers/FARMBOT_INTEGRATION.md`: Phase 1 secure App foundation; Phase 2 separately deployed MQTT worker and read-only status; Phase 3 command safety and auditing; Phase 4 one-device Water pilot; and Phase 5 later ThreeD interaction expansion. Each phase requires its own approval. Phase 2 begins with design review only, and no worker, MQTT socket, new external resource, or physical operation is authorized by this sequence.

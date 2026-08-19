@@ -1,26 +1,38 @@
 // src/app/api/threed/farmbots/stats/route.ts
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedFarmbots } from '@/lib/schema';
-import { sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const ownerCondition = eq(threedFarmbots.userId, session.user.id);
+
     const total = await db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(threedFarmbots);
+      .from(threedFarmbots)
+      .where(ownerCondition);
     
     const online = await db
       .select({ count: sql<number>`COUNT(*)` })
       .from(threedFarmbots)
-      .where(sql`${threedFarmbots.status} = 'online'`);
+      .where(and(ownerCondition, eq(threedFarmbots.status, 'online')));
     
     const offline = await db
       .select({ count: sql<number>`COUNT(*)` })
       .from(threedFarmbots)
-      .where(sql`${threedFarmbots.status} = 'offline'`);
+      .where(and(ownerCondition, eq(threedFarmbots.status, 'offline')));
     
     const byStatus = await db
       .select({
@@ -28,13 +40,14 @@ export async function GET() {
         count: sql<number>`COUNT(*)`,
       })
       .from(threedFarmbots)
+      .where(ownerCondition)
       .groupBy(threedFarmbots.status)
       .orderBy(sql`count DESC`);
     
     const active = await db
       .select({ count: sql<number>`COUNT(*)` })
       .from(threedFarmbots)
-      .where(sql`${threedFarmbots.isActive} = true`);
+      .where(and(ownerCondition, eq(threedFarmbots.isActive, true)));
     
     return NextResponse.json({
       success: true,

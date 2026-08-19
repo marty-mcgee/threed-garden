@@ -185,7 +185,7 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
   onFocusActionTarget?: () => void;
 }) {
   if (!selected) return null;
-  const d = selected.data || selected.metadata?.data || {};
+  const d = selected.data || selected.metadata?.data || selected.metadata || {};
   const isIncident = selected.latitude != null || selected.severity || (selected.title && selected.location);
   const typeLabel = selected.type || (isIncident ? 'Traffic Incident' : 'Marker');
   const typeColor = selected.severity === 'critical' ? '#ef4444' :
@@ -217,7 +217,14 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
 
   // Marker type-specific
   const type = selected.type || '';
-  if (type === 'plantings' || type === 'planting') {
+  const normalizedType = String(type).trim().toLowerCase();
+  const isPlantingMarker = normalizedType === 'planting'
+    || normalizedType === 'plantings'
+    || normalizedType === 'threed_plantings';
+  const isFarmBotMarker = normalizedType === 'farmbot'
+    || normalizedType === 'farmbots'
+    || normalizedType === 'threed_farmbots';
+  if (isPlantingMarker) {
     if (d.plantName || d.commonName) metaRows.push({ label: 'Plant', value: d.plantName || d.commonName });
     if (d.growthStage) metaRows.push({ label: 'Stage', value: d.growthStage });
     if (d.health != null) metaRows.push({ label: 'Health', value: `${d.health}` });
@@ -230,10 +237,14 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
     if (d.soilType) metaRows.push({ label: 'Soil', value: d.soilType });
     if (d.sunExposure) metaRows.push({ label: 'Sun', value: d.sunExposure });
   }
-  if (type === 'farmbots' || type === 'farmbot') {
+  if (isFarmBotMarker) {
     if (d.status) metaRows.push({ label: 'Status', value: d.status });
     if (d.batteryLevel != null) metaRows.push({ label: 'Battery', value: `${d.batteryLevel}%` });
-    if (d.deviceId) metaRows.push({ label: 'Device', value: d.deviceId });
+    if (d.assetCode) metaRows.push({ label: 'Asset code', value: d.assetCode });
+    if (d.farmbotDeviceId) {
+      metaRows.push({ label: 'FarmBot device', value: String(d.farmbotDeviceId) });
+    }
+    if (d.brokerDeviceId) metaRows.push({ label: 'Broker identity', value: d.brokerDeviceId });
     if (d.lastSeen) metaRows.push({ label: 'Last Seen', value: new Date(d.lastSeen).toLocaleString() });
   }
   if (type === 'characters' || type === 'character') {
@@ -293,10 +304,17 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
       )}
 
       {/* World Action Target — v0.16.6b World Actions v2 */}
-      {!isIncident && (type === 'plantings' || type === 'planting') && onSetActionTarget && (() => {
-        const targetId = Number(d.id);
-        const targetName = selected.name || selected.label || d.plantName || d.commonName || `Planting #${targetId}`;
-        const isCurrentTarget = actionTarget?.type === 'planting' && actionTarget.id === targetId;
+      {!isIncident && (isPlantingMarker || isFarmBotMarker) && onSetActionTarget && (() => {
+        const markerId = String(selected.id || '');
+        const markerIdSuffix = markerId.match(/(\d+)$/)?.[1];
+        const targetId = Number(d.id ?? markerIdSuffix);
+        const targetType = isFarmBotMarker ? 'farmbot' : 'planting';
+        const fallbackName = targetType === 'farmbot'
+          ? `FarmBot #${targetId}`
+          : `Planting #${targetId}`;
+        const targetName = selected.name || selected.label || d.plantName || d.commonName
+          || fallbackName;
+        const isCurrentTarget = actionTarget?.type === targetType && actionTarget.id === targetId;
 
         return (
           <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-1.5">
@@ -312,8 +330,8 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
                 };
                 if (!Object.values(targetPosition).every(Number.isFinite)) return;
                 onSetActionTarget({
-                  markerId: String(selected.id || `plantings-${targetId}`),
-                  type: 'planting',
+                  markerId: markerId || `${targetType}s-${targetId}`,
+                  type: targetType,
                   id: targetId,
                   name: targetName,
                   position: targetPosition,
@@ -355,6 +373,11 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
             {actionTarget ? (
               <>
                 <div>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></div>
+                {actionTarget.type === 'farmbot' && (
+                  <div className="mt-1 text-amber-200/70">
+                    FarmBot interactions are animation-only. Physical commands remain disabled.
+                  </div>
+                )}
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5">
                   {onFocusActionTarget && (
                     <button
@@ -379,7 +402,16 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
             )}
           </div>
 
-          {[
+          {(actionTarget?.type === 'farmbot' ? [
+            {
+              title: 'FarmBot Interaction',
+              actions: [
+                { action: 'point', label: '👉 Point' },
+                { action: 'pointGesture', label: '🫵 Point Gesture' },
+                { action: 'talk', label: '💬 Talk' },
+              ],
+            },
+          ] : [
             {
               title: 'Planting',
               actions: [
@@ -413,7 +445,7 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
                 { action: 'talk', label: '💬 Talk' },
               ],
             },
-          ].map((group) => (
+          ]).map((group) => (
             <div key={group.title} className="space-y-1">
               <div className="text-[9px] uppercase tracking-wide text-white/35">
                 {group.title}
@@ -744,14 +776,16 @@ function UnifiedMapPageInner() {
   showToastRef.current = showToast;
 
   // Keep the client-side action target aligned with refreshed project data.
-  // Filters do not affect raw plantings, so hiding a target never clears it.
+  // Filters do not affect raw project assets, so hiding a target never clears it.
   useEffect(() => {
     if (!actionTarget || loading) return;
-    const plantings = data.threed.raw?.plantings;
-    if (!plantings) return;
+    const targetCollection = actionTarget.type === 'farmbot'
+      ? data.threed.raw?.farmbots
+      : data.threed.raw?.plantings;
+    if (!targetCollection) return;
 
-    const targetStillExists = plantings.some(
-      (planting: any) => Number(planting.id) === actionTarget.id,
+    const targetStillExists = targetCollection.some(
+      (asset: any) => Number(asset.id) === actionTarget.id,
     );
 
     if (!targetStillExists) {
@@ -761,7 +795,12 @@ function UnifiedMapPageInner() {
         'info',
       );
     }
-  }, [actionTarget, data.threed.raw?.plantings, loading]);
+  }, [
+    actionTarget,
+    data.threed.raw?.farmbots,
+    data.threed.raw?.plantings,
+    loading,
+  ]);
 
   // Persist supported targeted world actions only after the one-shot animation
   // reports completion. Animation-only actions still use the fallback below.
