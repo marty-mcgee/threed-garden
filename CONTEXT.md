@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.0 — ThreeD FarmBot Integration, Phase 1** |
+| Current stable version | **v0.18.1a — ThreeD FarmBot Integration Phases 2A–2D: ThreeD MQTT Connected (Read-Only)** |
 | Current release candidate | **None designated** |
-| Current development milestone | **v0.18.1-alpha — Phase 2D authenticated App status display** |
+| Current development milestone | **None — v0.18.1a is released; Phase 3 requires separate approval** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -367,6 +367,7 @@ API (/api/map/threed)
 | **v0.17.2** | **2026-08-18** | **Production release — API consolidation, current-schema poller alignment, and blocking TypeScript validation** |
 | **v0.17.3** | **2026-08-18** | **Production release — documentation foundation for human users, developers, and coding agents** |
 | **v0.18.0** | **2026-08-19** | **Production release — ThreeD FarmBot Integration Phase 1 security, identity, configuration, readiness, and animation-only targeting** |
+| **v0.18.1a** | **2026-08-20** | **Production release — ThreeD FarmBot Integration Phases 2A–2D, connected read-only MQTT worker, normalized activity, Admin controls, and project-scoped Dashboard status** |
 
 ---
 
@@ -1210,15 +1211,15 @@ The first Phase 1 increment establishes a fail-closed security boundary around t
 - The broker snapshot and parent-identity revisions are active in production. Development schema application also reconciled known foreign-key-name and existing default/type drift.
 - Persistent MQTT/FarmBotJS sessions are explicitly outside Vercel request handlers. A future long-running worker must own subscriptions, reconnects, state updates, acknowledgements, and allowlisted commands; no MQTT connection or hardware command is enabled yet.
 - An owner-scoped MQTT readiness preflight now decrypts the credential server-side and compares current token claims with the canonical parent identity and broker snapshot. It reports explicit fail-closed configuration issues without returning the token, contacting FarmBot, opening MQTT, or authorizing hardware. Admin displays this as configuration readiness for a future worker only.
-- The retained in-progress `FarmBotPoller` now fails closed at `sendCommand()` and cannot use its former assumed REST command endpoint. Its read-oriented work remains available, while all physical commands wait for the future MQTT worker.
+- The retained in-progress `FarmBotPoller` now fails closed at `sendCommand()` and cannot use its former assumed REST command endpoint. Its read-oriented work remains available, while all physical commands wait for a separately approved command-safety adapter.
 - Project-assigned FarmBot runtime markers now support the same DetailsCard **Use as Action Target**, focus, clear, stale-data cleanup, and green scene pulse behavior as Plantings. FarmBot-targeted character actions remain animation-only: existing Water/Harvest persistence still requires a Planting target, and no FarmBot REST/MQTT/peripheral command is enabled.
 - While a FarmBot is targeted, the character DetailsCard exposes only the existing Point, Point Gesture, and Talk semantic animations and labels them as animation-only. Clearing that target restores the full palette, while Planting-targeted action and persistence paths remain unchanged.
 
 The repository ignores generated `/drizzle` artifacts and continues to use an explicitly user-run `db:push` workflow. No environment file, ThreeD rendering path, character animation behavior, or World Action timing changed. Physical FarmBot commands remain disabled.
 
-The approved phase sequence is now documented in `docs/developers/FARMBOT_INTEGRATION.md`: Phase 1 secure App foundation; Phase 2 separately deployed MQTT worker and read-only status; Phase 3 command safety and auditing; Phase 4 one-device Water pilot; and Phase 5 later ThreeD interaction expansion. Each phase requires its own approval. Phase 2 begins with design review only, and no worker, MQTT socket, new external resource, or physical operation is authorized by this sequence.
+The approved phase sequence is now documented in `docs/developers/FARMBOT_INTEGRATION.md`: Phase 1 secure App foundation; Phase 2 separately run MQTT worker and read-only status; Phase 3 command safety and auditing; Phase 4 one-device Water pilot; and Phase 5 later ThreeD interaction expansion. Each phase requires its own approval. Phases 2A–2D were later approved and released as v0.18.1a; Phase 3 and every physical operation remain separately gated.
 
-GitHub-to-Vercel production deployment and production smoke testing were confirmed on August 19, 2026. v0.18.0 is the production boundary; later phases remain unapproved and physical FarmBot commands remain disabled.
+GitHub-to-Vercel production deployment and production smoke testing were confirmed on August 19, 2026. v0.18.0 remains the Phase 1 historical checkpoint; v0.18.1a supersedes it as the current production boundary.
 
 ## Current Phase Plan for v0.18.0+
 
@@ -1237,7 +1238,7 @@ The following **ThreeD FarmBot Integration Plan** is approved as the development
 3. **Phase 2C — Read-only subscriptions:** subscribe only to approved device-status and response topics, parse allowlisted fields, and avoid storing or exposing the complete FarmBot state tree.
 4. **Phase 2D — App status display:** show connection state, last message time, last known position, token expiry, and stale-state warnings through authenticated owner- and project-scoped paths.
 
-Phase 2 begins with Phase 2A design review. Creating the worker host, opening an MQTT connection, or adding runtime-status persistence requires its own approval when the design identifies the exact resources and files.
+Status: Phases 2A–2D were individually approved, implemented, manually verified, and released to production as v0.18.1a. The released boundary is read-only; it does not authorize Phase 3, MQTT publishing, or physical commands.
 
 ### v0.18.2 — Phase 3: Command safety and audit
 
@@ -1275,13 +1276,13 @@ The initial runtime status is intentionally volatile and queried from the worker
 
 Phase 2A was a design-review checkpoint only and did not create a worker, external host, internal API, environment setting, MQTT socket, schema change, or physical operation. Phase 2B subsequently received separate approval and is recorded below.
 
-### v0.18.1-alpha Phase 2B implementation record
+### v0.18.1a Phase 2B implementation record
 
 Phase 2A and Phase 2B were explicitly approved. ThreeD MQTT is now a provider-neutral service boundary: `src/lib/services/threed/mqtt` owns reusable transport and signed worker communication, while `src/lib/services/threed/farmbot/mqtt` owns all FarmBot grants, identities, topic rules, parsing, session policy, persistence mapping, and its executable entry point. FarmBot depends on MQTT; MQTT does not import or name FarmBot. Offline validation covers signed request tampering and replay, short-lived identity-bound grants, one owner-bound session per App FarmBot, lifecycle and retry limits, exact read-only topics, bounded position extraction, redacted runtime status, shutdown, and a loopback-only internal HTTP boundary.
 
 At the Phase 2B checkpoint, the executable used an intentionally unavailable transport and added no App route or durable runtime table. It still has no publish interface, MQTT library, deployed host, or live connection. The separately approved persistence step is recorded below; a subscribe-only adapter and any live read-only connection test remain gated.
 
-### v0.18.1-alpha normalized MQTT persistence and Admin activity
+### v0.18.1a normalized MQTT persistence and Admin activity
 
 The user explicitly approved the empty MQTT tables being generalized as `threed_mqtt_runtime` and `threed_mqtt_events`. They identify their provider record through `integration_type` and `integration_id`; the FarmBot adapter uses `farmbot` and performs owner/FarmBot validation before access. The runtime table holds one current allowlisted snapshot per integration. The event table stores deduplicated lifecycle and normalized adapter events with payload byte counts and SHA-256 fingerprints. Credentials, complete status trees, raw MQTT payloads, arbitrary topics, and CeleryScript are excluded.
 
@@ -1289,14 +1290,18 @@ The worker batches normalized records to an HMAC-signed internal App endpoint us
 
 The FarmBot Admin row now opens **MQTT Activity**, showing current state, last message/status, position, expiry, stale state, counters, filterable cursor-paginated history, refresh, and owner-controlled cleanup. Browser clients cannot create or edit MQTT records. The user successfully generated and applied the approved schema through the reviewed Drizzle workflow.
 
-### v0.18.1-alpha Phase 2C offline read-only adapter
+### v0.18.1a Phase 2C read-only adapter
 
 Phase 2C now includes a provider-neutral MQTT.js adapter behind the shared `MqttReadonlyTransport` interface. The non-browser FarmBot worker derives secure MQTT port 8883 from the validated token `mqtt` host, while retaining the separately validated `mqtt_ws` claim for diagnostics. It requests only the exact `status` and `from_device` topics at QoS 0, requires normal TLS certificate verification, disables MQTT.js reconnect/resubscribe behavior so the FarmBot registry remains the lifecycle authority, and exposes no publish method. Offline validation uses injected fake clients to verify the broker URL, credential handling, exact topic list, message forwarding, safe failure categories, and clean shutdown without contacting FarmBot.
 
 The separately approved live-test boundary adds explicit `disabled`/`mqttjs` worker selection, registry-owned bounded reconnect attempts, a server-only signed App client, an authenticated owner/readiness-checked `mqtt-session` route, and Admin Start/Stop read-only controls. The default remains `disabled`; selecting MQTT.js requires explicit worker environment configuration and a user action. On August 20, 2026, the user confirmed the complete local Phase 2C read-only path after the non-browser adapter was corrected to use token-derived secure MQTT port 8883: broker connection, status timestamps, normalized X/Y/Z position, stale-state recovery, runtime/event persistence, and clean Stop all passed. No MQTT publishing, physical command, ThreeD character change, or World Action change is included.
 
-### v0.18.1-alpha Phase 2D authenticated App status display
+### v0.18.1a Phase 2D authenticated App status display
 
 The Dashboard FarmBot DetailsCard now reads a limited MQTT runtime summary through the existing authenticated FarmBot runtime route using the selected `projectId`. This mode requires the signed-in owner, owned active Project, active `project_threed` relationship, active `project_assets` FarmBot assignment, and active owned FarmBot to match. It displays connection state, state-change time, last message/status times, normalized device position, token expiry, and stale state. It does not add MQTT data to the public `/api/map/threed` response and does not return broker identity, worker session identity, event history, credentials, session controls, publishing, or physical commands to the Dashboard.
 
 The MQTT/FarmBot separation schema was generated and applied successfully by the user. Shared transport and worker-authentication behavior now has its own provider-neutral `npm run validate:threed-mqtt` check using neutral topics and fabricated credentials. FarmBot grants, topics, parsing, lifecycle, and persistence remain covered separately by the FarmBot adapter validations.
+
+### v0.18.1a production confirmation
+
+The user confirmed the GitHub-to-Vercel production release on August 20, 2026 under the title **ThreeD FarmBot Integration Phase 2A–2D: ThreeD MQTT Connected (Read-Only)**. v0.18.1a is the stable production boundary. Phase 3 command safety/auditing, MQTT publishing, and every physical FarmBot operation remain unapproved and disabled.

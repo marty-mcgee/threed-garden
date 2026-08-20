@@ -23,6 +23,8 @@ npm run typecheck
 
 Run `npm run validate:assets` when the external animation manifest or production animation files change. Run `npm run build` for routing, bundling, server/client boundary, or release-readiness changes.
 
-Run `npm run validate:farmbot-crypto` for v0.18.0 FarmBot work. Local FarmBot credentials require server-only `FARMBOT_CREDENTIAL_KEY_VERSION` and matching `FARMBOT_CREDENTIAL_KEY_V<n>` configuration. Never commit key values or JWTs. The Admin connection workflow stores per-device credentials; the old global FarmBot environment-token workflow is not the v0.18.0 integration path.
+Run `npm run validate:farmbot-crypto` for FarmBot credential/configuration work. For read-only MQTT work, also run `npm run validate:threed-mqtt`, `npm run validate:farmbot-worker`, and `npm run validate:farmbot-mqtt-persistence` as applicable. Local FarmBot credentials require server-only `FARMBOT_CREDENTIAL_KEY_VERSION` and matching `FARMBOT_CREDENTIAL_KEY_V<n>` configuration. Never commit key values or JWTs.
+
+The read-only worker runs separately with `npm run farmbot:mqtt-worker`. Its private `THREED_MQTT_*` configuration is documented in [FarmBot Adapter for ThreeD MQTT Services](FARMBOT_MQTT_WORKER.md). Use distinct App-to-worker and worker-to-App signing keys. The old global FarmBot environment-token workflow is not the v0.18.1a integration path.
 
 The complete policy and manual ThreeD checklist are in [Agent Validation](../agents/VALIDATION.md).

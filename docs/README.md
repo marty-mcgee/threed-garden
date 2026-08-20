@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.0 **ThreeD FarmBot Integration — Phase 1**. No later release candidate is designated.
+Current production is v0.18.1a **ThreeD FarmBot Integration Phases 2A–2D — ThreeD MQTT Connected (Read-Only)**. No later release candidate is designated.
 
 ## Human users
 
@@ -17,7 +17,7 @@ Current production is v0.18.0 **ThreeD FarmBot Integration — Phase 1**. No lat
 - [Data model](developers/DATA_MODEL.md) — modules, project junctions, assets, and runtime records.
 - [API guide](developers/API_GUIDE.md) — route families and access conventions.
 - [ThreeD FarmBot Integration Plan](developers/FARMBOT_INTEGRATION.md) — hardware security and connection boundaries.
-- [FarmBot MQTT worker design](developers/FARMBOT_MQTT_WORKER.md) — v0.18.1 Phase 2A runtime, security, and read-only status design.
+- [FarmBot adapter for ThreeD MQTT services](developers/FARMBOT_MQTT_WORKER.md) — released Phase 2A–2D runtime, security, persistence, and read-only status behavior.
 - [Local development](developers/LOCAL_DEVELOPMENT.md) — setup and validation.
 - [Deployment](developers/DEPLOYMENT.md) — release checks and production verification.
 
@@ -31,6 +31,7 @@ Current production is v0.18.0 **ThreeD FarmBot Integration — Phase 1**. No lat
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.18.1a production checkpoint](releases/v0.18.1a.md)
 - [v0.18.0 production checkpoint](releases/v0.18.0.md)
 - [v0.17.3 production checkpoint](releases/v0.17.3.md)
 - [v0.17.2 production checkpoint](releases/v0.17.2.md)

@@ -1,6 +1,6 @@
 # ThreeD FarmBot Integration Plan
 
-Status: v0.18.0 Phase 1 released to production. Physical device commands are disabled. Later phases remain separately gated.
+Status: v0.18.1a Phases 2A–2D released to production with read-only MQTT connectivity. MQTT publishing and physical device commands are disabled. Later phases remain separately gated.
 
 ## Integration boundary
 
@@ -36,7 +36,7 @@ Status: released to production and verified through GitHub-to-Vercel deployment 
 
 ### Phase 2 — MQTT worker foundation
 
-Status: Phase 2A accepted, Phase 2B offline skeleton implemented, normalized persistence/Admin schema applied, and the Phase 2C subscribe-only MQTT.js adapter validated offline. The executable transport remains disabled and no MQTT connection exists. See [FarmBot MQTT Worker Design](FARMBOT_MQTT_WORKER.md).
+Status: Phases 2A–2D released and production-verified in v0.18.1a. See [FarmBot Adapter for ThreeD MQTT Services](FARMBOT_MQTT_WORKER.md).
 
 - Choose and document the separately deployed, long-running worker runtime.
 - Define App-to-worker authentication, authorization, request signing, and replay protection.
@@ -44,7 +44,7 @@ Status: Phase 2A accepted, Phase 2B offline skeleton implemented, normalized per
 - Add connection lifecycle handling, reconnect limits, health reporting, and read-only status subscriptions.
 - Prove device identity and acknowledgement parsing before enabling commands.
 
-Phase 2A and the offline Phase 2B skeleton are complete. Phase 2C must add and test a subscribe-only transport behind the existing interface before a separately approved live connection test. The worker must not run inside a Vercel request handler, and read-only connectivity must be verified before command work starts.
+The worker runs outside Vercel request handlers, uses signed/replay-protected App boundaries, maintains bounded read-only sessions, subscribes only to exact approved topics, persists normalized runtime/event data, and exposes limited owner/project-scoped App status. It has no publish interface. Phase 3 requires separate approval before command work starts.
 
 ### Phase 3 — Command safety and audit boundary
 
@@ -200,17 +200,17 @@ The parent-identity schema revision is active in production. The approved develo
 
 ## MQTT runtime boundary
 
-FarmBot's message broker uses the JWT `bot` claim as the username and the encoded JWT as the password. Broker hosts can change, so a future connection must derive the current values from the encrypted token and use the persisted snapshot only for validation and diagnostics.
+FarmBot's message broker uses the JWT `bot` claim as the username and the encoded JWT as the password. Broker hosts can change, so each connection derives current values from the encrypted token and uses the persisted snapshot only for validation and diagnostics.
 
-FarmBotJS documents browser support while describing Node.js usage as community-reported rather than officially tested. The App is deployed to Vercel, whose request lifecycle is not the owner of a durable MQTT session. Persistent subscriptions, reconnect behavior, status-tree consumption, RPC acknowledgements, and future commands therefore belong in a separately deployed long-running worker with an authenticated internal boundary. No worker or MQTT connection exists yet.
+The App is deployed to Vercel, whose request lifecycle is not the owner of a durable MQTT session. The v0.18.1a read-only MQTT.js worker therefore runs as a separate long-running process with authenticated internal boundaries, bounded reconnect behavior, and exact `status` and `from_device` subscriptions.
 
-`GET /api/threed/farmbots/:id/mqtt-readiness` is an authenticated, owner-scoped local configuration preflight for that future worker. It decrypts the credential server-side and compares its current claims with the verified parent identities and persisted snapshot. It fails closed for a missing credential, unverified or mismatched identity, expiration, missing or outdated snapshot, or missing REST verification. Its response contains only readiness, redacted identity/endpoint dates, and stable issue codes; it never returns the JWT.
+`GET /api/threed/farmbots/:id/mqtt-readiness` is an authenticated, owner-scoped configuration preflight for the worker. It decrypts the credential server-side and compares its current claims with the verified parent identities and persisted snapshot. It fails closed for a missing credential, unverified or mismatched identity, expiration, missing or outdated snapshot, or missing REST verification. Its response contains only readiness, redacted identity/endpoint dates, and stable issue codes; it never returns the JWT.
 
-The Admin **Readiness** control displays those results. “Ready” means only that stored configuration is internally consistent for a future worker. The check performs no upstream request, opens no MQTT socket, proves no physical-device connectivity, and authorizes no command.
+The Admin **Readiness** control displays those results. “Ready” means only that stored configuration is eligible for a read-only worker session. The readiness check itself performs no upstream request, opens no MQTT socket, proves no physical-device connectivity, and authorizes no command.
 
-The retained in-progress `FarmBotPoller` also fails closed at its internal `sendCommand()` boundary. Its legacy convenience methods cannot issue requests to an assumed REST command endpoint; physical commands must wait for the separately designed MQTT worker.
+The retained in-progress `FarmBotPoller` also fails closed at its internal `sendCommand()` boundary. Its legacy convenience methods cannot issue requests to an assumed REST command endpoint; physical commands must wait for a separately approved command-safety adapter.
 
-The Phase 2A design, Phase 2B offline skeleton, and approved normalized persistence/Admin boundary are recorded in [FarmBot MQTT Worker Design](FARMBOT_MQTT_WORKER.md). The executable worker reports its MQTT transport as disabled and contains no publish interface. No App-to-worker connection route, MQTT dependency, deployed worker, live MQTT connection, or physical command exists. A reviewed schema push is required before the persistence UI can read data. Live read-only connectivity remains separately gated. Physical polling and commands remain disabled.
+The released Phase 2A–2D design and implementation are recorded in [FarmBot Adapter for ThreeD MQTT Services](FARMBOT_MQTT_WORKER.md). The worker supports an explicit `mqttjs` read-only transport, signed session grants, normalized persistence, Admin Start/Stop and activity views, and a limited authenticated project-scoped Dashboard summary. It contains no publish interface. Physical polling and commands remain disabled.
 
 ## ThreeD World Action targeting
 

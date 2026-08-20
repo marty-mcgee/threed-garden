@@ -28,6 +28,7 @@ Open **ThreeD Garden → FarmBots**, then use **FarmBot Connection** for an owne
 2. Select **Test** and confirm REST authentication, the FarmBot REST device ID, and the MQTT broker identity.
 3. Select **Discover** under Configured peripherals and explicitly assign the correct peripheral to Water.
 4. Select **Validate** to confirm the stored Water assignment still matches FarmBot.
-5. Review the broker metadata and select **Readiness** to check configuration for a future MQTT worker.
+5. Review the broker metadata and select **Readiness** to confirm the stored configuration is eligible for the read-only MQTT worker.
+6. Open **MQTT Activity**, select **Start read-only**, and verify connected state, recent status/message times, and X/Y/Z position. Select **Stop** when the session is no longer needed.
 
-Stored credentials are encrypted and are never displayed again. REST authentication, peripheral validation, and MQTT readiness do not prove that the physical FarmBot is online. v0.18.0 does not send movement, Water, pin, or other physical commands.
+Stored credentials are encrypted and are never displayed again. A connected read-only MQTT session proves broker connectivity and permits allowlisted status observation; it does not authorize control. v0.18.1a does not publish MQTT messages or send movement, Water, pin, or other physical commands.

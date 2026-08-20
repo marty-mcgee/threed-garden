@@ -1,6 +1,6 @@
 # FarmBot Adapter for ThreeD MQTT Services
 
-Status: v0.18.1 Phase 2A accepted, Phase 2B offline worker skeleton implemented, approved persistence/Admin schema applied, Phase 2C live read-only MQTT verified, and Phase 2D authenticated Dashboard status display implemented. MQTT remains disabled by default; no publish or physical command exists.
+Status: v0.18.1a Phases 2A–2D released and production-verified. MQTT remains disabled by default and can be explicitly enabled in read-only MQTT.js mode; no publish or physical command exists.
 
 ## Goal
 

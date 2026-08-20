@@ -25,7 +25,7 @@ The v0.18.0+ FarmBot routes are authenticated and owner-scoped:
 - `/api/threed/farmbots` provides sanitized FarmBot CRUD and never returns credential material.
 - `/api/threed/farmbots/:id/credential` manages only the encrypted credential boundary; its `login`, `test`, and `refresh` children perform the documented bounded REST workflows.
 - `/api/threed/farmbots/:id/peripherals` and `/peripheral-bindings` provide read-only discovery and explicit Water configuration. Assignment does not operate hardware.
-- `/api/threed/farmbots/:id/broker-metadata` and `/mqtt-readiness` expose redacted diagnostics for a future MQTT worker.
+- `/api/threed/farmbots/:id/broker-metadata` and `/mqtt-readiness` expose redacted diagnostics and fail-closed eligibility checks for the read-only MQTT worker.
 - `/api/threed/farmbots/:id/mqtt-runtime` and `/mqtt-events` expose owner-scoped current worker status and paginated normalized history. Browser clients may read or clear history but cannot create or edit broker events.
 - `/api/threed/farmbots/:id/mqtt-session` starts, reads, or stops an owner-scoped read-only worker session after the existing MQTT readiness checks. The browser never receives the connection grant or credential, and the route exposes no publish or command operation.
 - `/api/internal/threed-mqtt/farmbot/events` accepts bounded, HMAC-signed, identity-checked worker batches. It is not a browser API and never accepts raw broker payloads.
