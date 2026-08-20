@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { randomBytes } from 'node:crypto';
-import { signMqttWorkerRequest } from './worker-auth-core';
+import { signMqttWorkerRequest } from './auth';
 
 const REQUEST_TIMEOUT_MS = 15_000;
 const MAX_RESPONSE_BYTES = 128 * 1024;

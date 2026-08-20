@@ -12,11 +12,11 @@ import {
   connectFarmBotWorkerSession,
   disconnectFarmBotWorkerSession,
   getFarmBotWorkerSession,
-} from '@/lib/services/threed/farmbot/mqtt/worker-client';
+} from '@/lib/services/threed/mqtt/integrations/farmbot/worker-client';
 import {
   MqttWorkerConfigurationError,
   MqttWorkerUnavailableError,
-} from '@/lib/services/threed/mqtt/worker-client';
+} from '@/lib/services/threed/mqtt/worker/client';
 
 export const dynamic = 'force-dynamic';
 type RouteContext = { params: Promise<{ id: string }> };

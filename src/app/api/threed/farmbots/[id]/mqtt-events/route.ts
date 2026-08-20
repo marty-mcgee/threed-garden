@@ -3,12 +3,12 @@ import { auth } from '@/lib/auth';
 import {
   FARMBOT_MQTT_EVENT_SOURCES,
   FARMBOT_MQTT_EVENT_TYPES,
-} from '@/lib/services/threed/farmbot/mqtt-persistence-core';
+} from '@/lib/services/threed/mqtt/integrations/farmbot/persistence-core';
 import {
   deleteOwnedFarmBotMqttEvents,
   FarmBotMqttPersistenceScopeError,
   listOwnedFarmBotMqttEvents,
-} from '@/lib/services/threed/farmbot/mqtt-persistence-repository';
+} from '@/lib/services/threed/mqtt/integrations/farmbot/persistence-repository';
 
 export const dynamic = 'force-dynamic';
 type RouteContext = { params: Promise<{ id: string }> };

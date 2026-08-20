@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { mqttWorkerRequest } from '../../mqtt/worker-client';
+import { mqttWorkerRequest } from '../../worker/client';
 
 export function connectFarmBotWorkerSession(farmbotId: number, grant: unknown) {
   return mqttWorkerRequest('PUT', `/internal/v1/farmbots/${farmbotId}/session`, grant);

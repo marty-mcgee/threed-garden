@@ -9,8 +9,8 @@ import type {
   MqttReadonlyTransport,
   MqttReadonlyTransportCallbacks,
   MqttReadonlyTransportConnection,
-} from './transport';
-import { MqttReadonlyTransportError } from './transport';
+} from '../core/transport';
+import { MqttReadonlyTransportError } from '../core/transport';
 
 interface ReadonlyMqttClient {
   on(event: 'message', listener: (topic: string, payload: Buffer) => void): this;

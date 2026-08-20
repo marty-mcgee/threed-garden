@@ -6,11 +6,11 @@ import {
   MqttWorkerNonceStore,
   signMqttWorkerRequest,
   verifyMqttWorkerRequest,
-} from '../../mqtt/worker-auth-core';
+} from '../../worker/auth';
 import {
   FarmBotWorkerGrantError,
   parseFarmBotWorkerConnectionGrant,
-} from './grant-core';
+} from './grant';
 import {
   FarmBotWorkerSessionRegistry,
   FarmBotWorkerSessionScopeError,
@@ -18,17 +18,19 @@ import {
 import {
   farmBotWorkerTopics,
   parseFarmBotWorkerStatusPayload,
-} from './status-core';
+} from './status';
+import { farmBotMqttReadonlyAdapter } from './adapter';
+import { validateMqttReadonlyIntegrationAdapter } from '../../core/integration-adapter';
 import type {
   MqttReadonlyConnectionRequest,
   MqttReadonlyTransport,
   MqttReadonlyTransportCallbacks,
   MqttReadonlyTransportConnection,
-} from '../../mqtt/transport';
+} from '../../core/transport';
 import {
   MqttJsReadonlyTransport,
   type MqttConnector,
-} from '../../mqtt/mqttjs-transport';
+} from '../../transports/mqttjs';
 import { createFarmBotWorkerServer } from './server';
 import {
   DisabledFarmBotWorkerPersistenceSink,
@@ -218,6 +220,38 @@ assert.deepEqual(parseFarmBotWorkerStatusPayload(Buffer.from(JSON.stringify({
 }))), { x: 10, y: 20, z: -3 });
 assert.throws(() => parseFarmBotWorkerStatusPayload(Buffer.from('{invalid')));
 assert.throws(() => farmBotWorkerTopics('device_123/#'));
+assert.doesNotThrow(() => validateMqttReadonlyIntegrationAdapter(farmBotMqttReadonlyAdapter));
+assert.deepEqual(farmBotMqttReadonlyAdapter.identify(grant), {
+  integrationType: 'farmbot',
+  integrationId: 42,
+  ownerId: 'owner-1',
+  clientId: 'device_123',
+});
+assert.deepEqual(farmBotMqttReadonlyAdapter.buildConnection(grant), {
+  brokerUrl: 'mqtts://broker.example.com:8883',
+  username: 'device_123',
+  password: credential,
+  clientId: 'marty_mcgee_farmbot_42',
+  topics: ['bot/device_123/status', 'bot/device_123/from_device'],
+});
+assert.equal(
+  farmBotMqttReadonlyAdapter.acceptsTopic(grant, 'bot/device_123/status'),
+  true
+);
+assert.equal(
+  farmBotMqttReadonlyAdapter.acceptsTopic(grant, 'bot/device_123/unapproved'),
+  false
+);
+assert.deepEqual(farmBotMqttReadonlyAdapter.normalizeMessage(
+  grant,
+  'bot/device_123/status',
+  Buffer.from(JSON.stringify({ location_data: { position: { x: 4, y: 5, z: 6 } } }))
+), { kind: 'status', position: { x: 4, y: 5, z: 6 } });
+assert.equal(farmBotMqttReadonlyAdapter.normalizeMessage(
+  grant,
+  'bot/device_123/unapproved',
+  Buffer.from('{}')
+), null);
 
 class FakeTransport implements MqttReadonlyTransport {
   connectCount = 0;
@@ -312,6 +346,10 @@ assert.equal(
 assert.equal(JSON.stringify(persistence.records).includes(credential), false);
 transport.callbacks?.onMessage('bot/device_123/unapproved', Buffer.from('{}'));
 assert.equal(registry.get(42)?.invalidMessageCount, 1);
+assert.equal(registry.get(42)?.lastMessageAt, now.toISOString());
+transport.callbacks?.onMessage('bot/device_123/status', Buffer.from('{invalid'));
+assert.equal(registry.get(42)?.invalidMessageCount, 2);
+assert.equal(registry.get(42)?.lastMessageAt, testNow.toISOString());
 
 testNow = new Date(now.getTime() + 31_000);
 assert.equal(registry.get(42)?.stale, true);
@@ -329,6 +367,20 @@ await Promise.resolve();
 assert.equal(await registry.disconnect(42), true);
 assert.equal(transport.closeCount, 0);
 assert.equal(registry.get(42), null);
+assert.deepEqual(
+  persistence.records
+    .filter((record) => record.event?.eventType === 'connection_state')
+    .map((record) => record.event?.connectionState),
+  [
+    'connecting',
+    'connected',
+    'reconnecting',
+    'connected',
+    'reconnecting',
+    'error',
+    'disconnected',
+  ]
+);
 await registry.shutdown();
 assert.equal(persistence.flushCount, 1);
 

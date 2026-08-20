@@ -11,7 +11,7 @@ import { project, projectAssets, projectThreed } from '@/lib/schema/project';
 import {
   FARMBOT_MQTT_EVENT_RETENTION_DAYS,
   type FarmBotMqttIngestionBatch,
-} from './mqtt-persistence-core';
+} from './persistence-core';
 
 export class FarmBotMqttPersistenceScopeError extends Error {
   constructor() {

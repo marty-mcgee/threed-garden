@@ -4,7 +4,7 @@ import {
   FarmBotMqttPersistenceScopeError,
   getOwnedFarmBotMqttRuntime,
   getProjectAssignedFarmBotMqttRuntime,
-} from '@/lib/services/threed/farmbot/mqtt-persistence-repository';
+} from '@/lib/services/threed/mqtt/integrations/farmbot/persistence-repository';
 
 export const dynamic = 'force-dynamic';
 type RouteContext = { params: Promise<{ id: string }> };

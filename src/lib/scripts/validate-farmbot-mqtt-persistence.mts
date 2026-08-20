@@ -5,7 +5,7 @@ import {
   MAX_FARMBOT_MQTT_EVENTS_PER_BATCH,
   parseFarmBotMqttIngestionBatch,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-} from '../services/threed/farmbot/mqtt-persistence-core.ts';
+} from '../services/threed/mqtt/integrations/farmbot/persistence-core.ts';
 
 const now = new Date('2027-01-15T12:00:00.000Z');
 const statusPayload = Buffer.from(JSON.stringify({

@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.18.1-alpha",
+  "version": "0.18.1-beta",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -8,10 +8,10 @@
     "validate:assets": "node src/lib/scripts/validate-static-assets.mjs",
     "validate:farmbot-crypto": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --conditions=react-server --experimental-strip-types src/lib/scripts/validate-farmbot-credential-crypto.mts",
     "validate:threed-mqtt": "bun run src/lib/services/threed/mqtt/validate.mts",
-    "validate:farmbot-worker": "bun run src/lib/services/threed/farmbot/mqtt/validate.mts",
+    "validate:farmbot-worker": "bun run src/lib/services/threed/mqtt/integrations/farmbot/validate.mts",
     "validate:farmbot-mqtt-persistence": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-farmbot-mqtt-persistence.mts",
     "validate:farmbot-command-policy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-farmbot-command-policy.mts",
-    "farmbot:mqtt-worker": "bun run src/lib/services/threed/farmbot/mqtt/index.ts",
+    "farmbot:mqtt-worker": "bun run src/lib/services/threed/mqtt/integrations/farmbot/index.ts",
     "build": "next build",
     "start": "next start -p 4444",
     "db:generate": "drizzle-kit generate",

@@ -1,11 +1,11 @@
 import { randomBytes } from 'node:crypto';
 import {
   signMqttWorkerRequest,
-} from '../../mqtt/worker-auth-core';
+} from '../../worker/auth';
 import type {
   FarmBotMqttEventInput,
   FarmBotMqttIngestionBatch,
-} from '../mqtt-persistence-core';
+} from './persistence-core';
 import type { FarmBotWorkerRuntimeStatus } from './session-registry';
 
 const INGESTION_PATH = '/api/internal/threed-mqtt/farmbot/events';

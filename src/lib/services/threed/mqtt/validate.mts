@@ -9,32 +9,263 @@ import {
   MqttWorkerNonceStore,
   signMqttWorkerRequest,
   verifyMqttWorkerRequest,
-} from './worker-auth-core';
+} from './worker/auth';
 import {
   MqttJsReadonlyTransport,
   type MqttConnector,
-} from './mqttjs-transport';
-import { MqttReadonlyTransportError } from './transport';
+} from './transports/mqttjs';
+import { MqttReadonlyTransportError } from './core/transport';
+import {
+  isMqttReadonlySessionExpired,
+  mqttReadonlySessionTransition,
+  planMqttReadonlyReconnect,
+} from './core/session-lifecycle';
+import { MqttReadonlySessionController } from './core/session-controller';
+import type { MqttReadonlyIntegrationAdapter } from './core/integration-adapter';
+import type {
+  MqttReadonlyConnectionRequest,
+  MqttReadonlyTransport,
+  MqttReadonlyTransportCallbacks,
+  MqttReadonlyTransportConnection,
+} from './core/transport';
 
 type FakeListener = (...args: never[]) => void;
 
 // ThreeD owns this service boundary. Provider adapters may import it, but this
 // directory must never depend on FarmBot, OpenFarm, or another integration.
 const mqttServiceDirectory = dirname(fileURLToPath(import.meta.url));
+const sharedMqttDirectories = [
+  join(mqttServiceDirectory, 'core'),
+  join(mqttServiceDirectory, 'transports'),
+  join(mqttServiceDirectory, 'worker'),
+];
 const providerSegments = ['farmbot', 'openfarm'];
 const importSpecifierPattern = /(?:from\s+|import\s*\(|require\s*\()\s*['"]([^'"]+)['"]/g;
-for (const entry of readdirSync(mqttServiceDirectory, { withFileTypes: true })) {
-  if (!entry.isFile() || !['.ts', '.mts'].includes(extname(entry.name))) continue;
-  const source = readFileSync(join(mqttServiceDirectory, entry.name), 'utf8');
-  for (const match of source.matchAll(importSpecifierPattern)) {
-    const specifier = match[1] ?? '';
-    assert.equal(
-      providerSegments.some((provider) => specifier.split('/').includes(provider)),
-      false,
-      `ThreeD MQTT service cannot import provider adapter: ${entry.name} -> ${specifier}`
-    );
+for (const directory of sharedMqttDirectories) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (!entry.isFile() || !['.ts', '.mts'].includes(extname(entry.name))) continue;
+    const source = readFileSync(join(directory, entry.name), 'utf8');
+    for (const match of source.matchAll(importSpecifierPattern)) {
+      const specifier = match[1] ?? '';
+      assert.equal(
+        providerSegments.some((provider) => specifier.split('/').includes(provider)),
+        false,
+        `ThreeD MQTT shared service cannot import provider adapter: ${entry.name} -> ${specifier}`
+      );
+    }
   }
 }
+
+const lifecycleNow = new Date('2026-08-20T12:00:00.000Z');
+assert.deepEqual(mqttReadonlySessionTransition('connected', null, lifecycleNow), {
+  connectionState: 'connected',
+  stateChangedAt: lifecycleNow.toISOString(),
+  errorCode: null,
+});
+assert.equal(
+  isMqttReadonlySessionExpired(new Date(lifecycleNow.getTime()), lifecycleNow),
+  true
+);
+assert.deepEqual(planMqttReadonlyReconnect({
+  now: lifecycleNow,
+  expiresAt: new Date(lifecycleNow.getTime() + 60_000),
+  reconnectAttempts: 0,
+  maxReconnectAttempts: 3,
+  reconnectBaseDelayMs: 1_000,
+  reconnectMaxDelayMs: 1_500,
+  disconnectCode: 'network_closed',
+}), {
+  connectionState: 'reconnecting',
+  stateChangedAt: lifecycleNow.toISOString(),
+  errorCode: 'network_closed',
+  reconnectAttempts: 1,
+  reconnectDelayMs: 1_000,
+});
+assert.equal(planMqttReadonlyReconnect({
+  now: lifecycleNow,
+  expiresAt: new Date(lifecycleNow.getTime() + 60_000),
+  reconnectAttempts: 1,
+  maxReconnectAttempts: 4,
+  reconnectBaseDelayMs: 1_000,
+  reconnectMaxDelayMs: 1_500,
+  disconnectCode: '',
+}).reconnectDelayMs, 1_500);
+assert.deepEqual(planMqttReadonlyReconnect({
+  now: lifecycleNow,
+  expiresAt: new Date(lifecycleNow.getTime() + 60_000),
+  reconnectAttempts: 1,
+  maxReconnectAttempts: 2,
+  reconnectBaseDelayMs: 1_000,
+  reconnectMaxDelayMs: 30_000,
+  disconnectCode: 'network_closed',
+}), {
+  connectionState: 'error',
+  stateChangedAt: lifecycleNow.toISOString(),
+  errorCode: 'reconnect_limit_reached',
+  reconnectAttempts: 2,
+  reconnectDelayMs: null,
+});
+assert.equal(planMqttReadonlyReconnect({
+  now: lifecycleNow,
+  expiresAt: lifecycleNow,
+  reconnectAttempts: 0,
+  maxReconnectAttempts: 3,
+  reconnectBaseDelayMs: 1_000,
+  reconnectMaxDelayMs: 30_000,
+  disconnectCode: 'network_closed',
+}).connectionState, 'expired');
+
+interface TestIntegrationGrant {
+  id: number;
+  ownerId: string;
+  expiresAt: Date;
+}
+
+const testIntegrationAdapter: MqttReadonlyIntegrationAdapter<
+  TestIntegrationGrant,
+  { online: boolean }
+> = {
+  integrationType: 'test_provider',
+  capabilities: ['read_status'],
+  identify: (grant) => ({
+    integrationType: 'test_provider',
+    integrationId: grant.id,
+    ownerId: grant.ownerId,
+    clientId: `test_${grant.id}`,
+  }),
+  buildConnection: (grant) => ({
+    brokerUrl: 'mqtts://broker.example.com:8883',
+    username: `test_${grant.id}`,
+    password: 'fabricated-secret',
+    clientId: `threed_test_${grant.id}`,
+    topics: [`test/${grant.id}/status`],
+  }),
+  acceptsTopic: (grant, topic) => topic === `test/${grant.id}/status`,
+  normalizeMessage: (_grant, _topic, payload) => {
+    const parsed = JSON.parse(Buffer.from(payload).toString('utf8')) as unknown;
+    if (typeof parsed !== 'object' || parsed === null
+      || typeof (parsed as { online?: unknown }).online !== 'boolean') return null;
+    return { online: (parsed as { online: boolean }).online };
+  },
+};
+
+class FakeSessionTransport implements MqttReadonlyTransport {
+  connectCount = 0;
+  closeCount = 0;
+  callbacks: MqttReadonlyTransportCallbacks | null = null;
+  requests: MqttReadonlyConnectionRequest[] = [];
+
+  async connect(
+    request: MqttReadonlyConnectionRequest,
+    callbacks: MqttReadonlyTransportCallbacks
+  ): Promise<MqttReadonlyTransportConnection> {
+    this.connectCount += 1;
+    this.requests.push(structuredClone(request));
+    this.callbacks = callbacks;
+    callbacks.onConnected();
+    return { close: async () => { this.closeCount += 1; } };
+  }
+}
+
+const sessionTransport = new FakeSessionTransport();
+const normalizedMessages: Array<{ online: boolean }> = [];
+const invalidTopics: string[] = [];
+const sessionTransitions: string[] = [];
+const sessionGrant: TestIntegrationGrant = {
+  id: 7,
+  ownerId: 'owner-1',
+  expiresAt: new Date(lifecycleNow.getTime() + 60_000),
+};
+const sessionController = new MqttReadonlySessionController({
+  grant: sessionGrant,
+  expiresAt: (grant) => grant.expiresAt,
+  adapter: testIntegrationAdapter,
+  transport: sessionTransport,
+  now: () => new Date(lifecycleNow),
+  maxReconnectAttempts: 2,
+  reconnectBaseDelayMs: 0,
+  reconnectMaxDelayMs: 0,
+  observer: {
+    onTransition: ({ snapshot }) => sessionTransitions.push(snapshot.connectionState),
+    onMessage: ({ message }) => normalizedMessages.push(message),
+    onInvalidMessage: ({ topic }) => invalidTopics.push(topic),
+  },
+});
+assert.equal((await sessionController.start()).connectionState, 'connected');
+assert.equal(sessionTransport.connectCount, 1);
+assert.deepEqual(sessionTransport.requests[0]?.topics, ['test/7/status']);
+sessionTransport.callbacks?.onMessage(
+  'test/7/status',
+  Buffer.from(JSON.stringify({ online: true }))
+);
+assert.deepEqual(normalizedMessages, [{ online: true }]);
+sessionTransport.callbacks?.onMessage('test/7/unknown', Buffer.from('{}'));
+sessionTransport.callbacks?.onMessage('test/7/status', Buffer.from('{invalid'));
+assert.deepEqual(invalidTopics, ['test/7/unknown', 'test/7/status']);
+assert.equal(sessionController.snapshot().invalidMessageCount, 2);
+assert.equal(sessionController.snapshot().lastMessageAt, lifecycleNow.toISOString());
+sessionTransport.callbacks?.onDisconnected('network_closed');
+assert.equal(sessionController.snapshot().connectionState, 'reconnecting');
+await new Promise((resolve) => setTimeout(resolve, 0));
+assert.equal(sessionTransport.connectCount, 2);
+assert.equal(sessionController.snapshot().connectionState, 'connected');
+await sessionController.stop();
+assert.equal(sessionController.snapshot().connectionState, 'disconnected');
+assert.equal(sessionTransport.closeCount, 1);
+sessionTransport.callbacks?.onConnected();
+sessionTransport.callbacks?.onMessage(
+  'test/7/status',
+  Buffer.from(JSON.stringify({ online: false }))
+);
+assert.equal(sessionController.snapshot().connectionState, 'disconnected');
+assert.deepEqual(normalizedMessages, [{ online: true }]);
+assert.deepEqual(sessionTransitions, [
+  'connecting',
+  'connected',
+  'reconnecting',
+  'connected',
+  'disconnected',
+]);
+
+const expiredSessionTransport = new FakeSessionTransport();
+const expiredSessionController = new MqttReadonlySessionController({
+  grant: { ...sessionGrant, expiresAt: lifecycleNow },
+  expiresAt: (grant) => grant.expiresAt,
+  adapter: testIntegrationAdapter,
+  transport: expiredSessionTransport,
+  now: () => new Date(lifecycleNow),
+});
+assert.equal((await expiredSessionController.start()).connectionState, 'expired');
+assert.equal(expiredSessionTransport.connectCount, 0);
+
+class DelayedSessionTransport implements MqttReadonlyTransport {
+  closeCount = 0;
+  resolveConnection: (() => void) | null = null;
+
+  connect(): Promise<MqttReadonlyTransportConnection> {
+    return new Promise((resolve) => {
+      this.resolveConnection = () => resolve({
+        close: async () => { this.closeCount += 1; },
+      });
+    });
+  }
+}
+
+const delayedSessionTransport = new DelayedSessionTransport();
+const delayedSessionController = new MqttReadonlySessionController({
+  grant: sessionGrant,
+  expiresAt: (grant) => grant.expiresAt,
+  adapter: testIntegrationAdapter,
+  transport: delayedSessionTransport,
+  now: () => new Date(lifecycleNow),
+});
+const delayedStart = delayedSessionController.start();
+assert.equal(delayedSessionController.snapshot().connectionState, 'connecting');
+await delayedSessionController.stop();
+delayedSessionTransport.resolveConnection?.();
+await delayedStart;
+assert.equal(delayedSessionTransport.closeCount, 1);
+assert.equal(delayedSessionController.snapshot().connectionState, 'disconnected');
 
 class FakeReadonlyMqttClient {
   readonly listeners = new Map<string, Set<FakeListener>>();

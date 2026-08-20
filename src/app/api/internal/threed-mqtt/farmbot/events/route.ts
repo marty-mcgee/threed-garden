@@ -3,16 +3,16 @@ import {
   THREED_MQTT_WORKER_AUTH_VERSION,
   MqttWorkerNonceStore,
   verifyMqttWorkerRequest,
-} from '@/lib/services/threed/mqtt/worker-auth-core';
+} from '@/lib/services/threed/mqtt/worker/auth';
 import {
   MAX_FARMBOT_MQTT_INGESTION_BYTES,
   FarmBotMqttPersistenceInputError,
   parseFarmBotMqttIngestionBatch,
-} from '@/lib/services/threed/farmbot/mqtt-persistence-core';
+} from '@/lib/services/threed/mqtt/integrations/farmbot/persistence-core';
 import {
   FarmBotMqttPersistenceScopeError,
   persistFarmBotMqttBatch,
-} from '@/lib/services/threed/farmbot/mqtt-persistence-repository';
+} from '@/lib/services/threed/mqtt/integrations/farmbot/persistence-repository';
 
 export const dynamic = 'force-dynamic';
 const INTERNAL_PATH = '/api/internal/threed-mqtt/farmbot/events';

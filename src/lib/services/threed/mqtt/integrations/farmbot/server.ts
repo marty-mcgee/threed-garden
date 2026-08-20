@@ -4,15 +4,15 @@ import {
   THREED_MQTT_WORKER_AUTH_VERSION,
   MqttWorkerNonceStore,
   verifyMqttWorkerRequest,
-} from '../../mqtt/worker-auth-core';
+} from '../../worker/auth';
 import {
   MAX_FARMBOT_WORKER_GRANT_BYTES,
   parseFarmBotWorkerConnectionGrant,
-} from './grant-core';
+} from './grant';
 import { FarmBotWorkerSessionRegistry } from './session-registry';
-import { MqttReadonlyTransportUnavailable } from '../../mqtt/transport';
-import type { MqttReadonlyTransport } from '../../mqtt/transport';
-import { MqttJsReadonlyTransport } from '../../mqtt/mqttjs-transport';
+import { MqttReadonlyTransportUnavailable } from '../../core/transport';
+import type { MqttReadonlyTransport } from '../../core/transport';
+import { MqttJsReadonlyTransport } from '../../transports/mqttjs';
 import { createFarmBotWorkerPersistenceSink } from './persistence-client';
 
 const DEFAULT_PORT = 4456;

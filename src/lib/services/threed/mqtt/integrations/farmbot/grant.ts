@@ -1,6 +1,6 @@
 import {
   readFarmBotBrokerMetadata,
-} from '../broker-metadata-core';
+} from '../../../farmbot/broker-metadata-core';
 
 export const MAX_FARMBOT_WORKER_GRANT_BYTES = 24 * 1024;
 export const MAX_FARMBOT_WORKER_GRANT_LIFETIME_MS = 5 * 60 * 1000;
