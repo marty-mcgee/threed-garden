@@ -917,7 +917,104 @@ export const threedMqttEvents = pgTable('threed_mqtt_events', {
 }));
 
 // ============================================
-// 14. threed_farmbot_logs - Legacy FarmBot activity log
+// 14. threed_farmbot_commands - Semantic command audit/request state
+// ============================================
+export const threedFarmbotCommands = pgTable('threed_farmbot_commands', {
+  id: serial('id').primaryKey(),
+  commandId: varchar('command_id', { length: 36 }).notNull(),
+  idempotencyKey: varchar('idempotency_key', { length: 36 }).notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').notNull().references(() => project.id, {
+    onDelete: 'cascade',
+  }),
+  farmbotId: integer('farmbot_id').notNull().references(() => threedFarmbots.id, {
+    onDelete: 'cascade',
+  }),
+  policyVersion: integer('policy_version').notNull(),
+  semanticCommand: varchar('semantic_command', { length: 50 }).notNull(),
+  state: varchar('state', { length: 20 }).notNull().default('requested'),
+
+  // Populated only after server-side binding validation and policy resolution.
+  peripheralBindingId: integer('peripheral_binding_id').references(
+    () => threedFarmbotPeripheralBindings.id,
+    { onDelete: 'set null' }
+  ),
+  peripheralId: integer('peripheral_id'),
+  peripheralPin: integer('peripheral_pin'),
+  durationMs: integer('duration_ms'),
+
+  // Broker correlation and redacted audit outcome. No raw command payload is stored.
+  rpcLabel: varchar('rpc_label', { length: 100 }),
+  rejectionCode: varchar('rejection_code', { length: 100 }),
+  commandFingerprint: varchar('command_fingerprint', { length: 64 }),
+
+  requestedAt: timestamp('requested_at').defaultNow().notNull(),
+  validatedAt: timestamp('validated_at'),
+  acceptedAt: timestamp('accepted_at'),
+  dispatchedAt: timestamp('dispatched_at'),
+  acknowledgedAt: timestamp('acknowledged_at'),
+  completedAt: timestamp('completed_at'),
+  terminalAt: timestamp('terminal_at'),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
+}, (table) => ({
+  commandIdIdx: uniqueIndex('idx_threed_farmbot_commands_command_id').on(table.commandId),
+  idempotencyIdx: uniqueIndex('idx_threed_farmbot_commands_idempotency')
+    .on(table.userId, table.farmbotId, table.idempotencyKey),
+  rpcLabelIdx: uniqueIndex('idx_threed_farmbot_commands_rpc_label').on(table.rpcLabel),
+  ownerIdx: index('idx_threed_farmbot_commands_owner').on(table.userId),
+  projectIdx: index('idx_threed_farmbot_commands_project').on(table.projectId),
+  farmbotStateIdx: index('idx_threed_farmbot_commands_farmbot_state')
+    .on(table.farmbotId, table.state),
+  commandIdValid: check(
+    'threed_farmbot_commands_command_id_valid',
+    sql`${table.commandId} ~* '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'`
+  ),
+  idempotencyKeyValid: check(
+    'threed_farmbot_commands_idempotency_key_valid',
+    sql`${table.idempotencyKey} ~* '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'`
+  ),
+  policyVersionValid: check(
+    'threed_farmbot_commands_policy_version_valid',
+    sql`${table.policyVersion} = 1`
+  ),
+  semanticCommandValid: check(
+    'threed_farmbot_commands_semantic_command_valid',
+    sql`${table.semanticCommand} IN ('water')`
+  ),
+  stateValid: check(
+    'threed_farmbot_commands_state_valid',
+    sql`${table.state} IN ('requested', 'validated', 'accepted', 'dispatched', 'acknowledged', 'completed', 'rejected', 'timed_out', 'cancelled')`
+  ),
+  waterResolutionComplete: check(
+    'threed_farmbot_commands_water_resolution_complete',
+    sql`(
+      (${table.peripheralId} IS NULL AND ${table.peripheralPin} IS NULL AND ${table.durationMs} IS NULL)
+      OR
+      (${table.peripheralId} > 0 AND ${table.peripheralPin} >= 0 AND ${table.durationMs} > 0)
+    )`
+  ),
+  rpcLabelValid: check(
+    'threed_farmbot_commands_rpc_label_valid',
+    sql`${table.rpcLabel} IS NULL OR ${table.rpcLabel} ~ '^[A-Za-z0-9_-]+$'`
+  ),
+  rejectionCodeValid: check(
+    'threed_farmbot_commands_rejection_code_valid',
+    sql`${table.rejectionCode} IS NULL OR ${table.rejectionCode} ~ '^[a-z][a-z0-9_]*$'`
+  ),
+  commandFingerprintValid: check(
+    'threed_farmbot_commands_fingerprint_valid',
+    sql`${table.commandFingerprint} IS NULL OR ${table.commandFingerprint} ~ '^[0-9a-f]{64}$'`
+  ),
+  expiryValid: check(
+    'threed_farmbot_commands_expiry_valid',
+    sql`${table.expiresAt} > ${table.requestedAt}`
+  ),
+}));
+
+// ============================================
+// 15. threed_farmbot_logs - Legacy FarmBot activity log
 // ============================================
 export const threedFarmbotLogs = pgTable('threed_farmbot_logs', {
   id: serial('id').primaryKey(),
@@ -1238,6 +1335,7 @@ export const threedFarmbotsRelations = relations(threedFarmbots, ({ one, many })
   wateringSchedules: many(threedWateringSchedules),
   wateringHistory: many(threedWateringHistory),
   peripheralBindings: many(threedFarmbotPeripheralBindings),
+  commands: many(threedFarmbotCommands),
   brokerMetadata: one(threedFarmbotBrokerMetadata, {
     fields: [threedFarmbots.id],
     references: [threedFarmbotBrokerMetadata.farmbotId],
@@ -1246,7 +1344,7 @@ export const threedFarmbotsRelations = relations(threedFarmbots, ({ one, many })
 
 export const threedFarmbotPeripheralBindingsRelations = relations(
   threedFarmbotPeripheralBindings,
-  ({ one }) => ({
+  ({ one, many }) => ({
     farmbot: one(threedFarmbots, {
       fields: [threedFarmbotPeripheralBindings.farmbotId],
       references: [threedFarmbots.id],
@@ -1255,6 +1353,7 @@ export const threedFarmbotPeripheralBindingsRelations = relations(
       fields: [threedFarmbotPeripheralBindings.userId],
       references: [user.id],
     }),
+    commands: many(threedFarmbotCommands),
   })
 );
 
@@ -1288,6 +1387,28 @@ export const threedMqttEventsRelations = relations(
     owner: one(user, {
       fields: [threedMqttEvents.userId],
       references: [user.id],
+    }),
+  })
+);
+
+export const threedFarmbotCommandsRelations = relations(
+  threedFarmbotCommands,
+  ({ one }) => ({
+    owner: one(user, {
+      fields: [threedFarmbotCommands.userId],
+      references: [user.id],
+    }),
+    project: one(project, {
+      fields: [threedFarmbotCommands.projectId],
+      references: [project.id],
+    }),
+    farmbot: one(threedFarmbots, {
+      fields: [threedFarmbotCommands.farmbotId],
+      references: [threedFarmbots.id],
+    }),
+    peripheralBinding: one(threedFarmbotPeripheralBindings, {
+      fields: [threedFarmbotCommands.peripheralBindingId],
+      references: [threedFarmbotPeripheralBindings.id],
     }),
   })
 );
@@ -1382,6 +1503,9 @@ export type NewThreedMqttRuntime = typeof threedMqttRuntime.$inferInsert;
 
 export type ThreedMqttEvent = typeof threedMqttEvents.$inferSelect;
 export type NewThreedMqttEvent = typeof threedMqttEvents.$inferInsert;
+
+export type ThreedFarmbotCommand = typeof threedFarmbotCommands.$inferSelect;
+export type NewThreedFarmbotCommand = typeof threedFarmbotCommands.$inferInsert;
 
 export type ThreedFarmbotLog = typeof threedFarmbotLogs.$inferSelect;
 export type NewThreedFarmbotLog = typeof threedFarmbotLogs.$inferInsert;

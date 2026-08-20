@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
+import { readdirSync, readFileSync } from 'node:fs';
+import { dirname, extname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { IClientOptions } from 'mqtt';
 import {
   MqttWorkerAuthError,
@@ -14,6 +17,24 @@ import {
 import { MqttReadonlyTransportError } from './transport';
 
 type FakeListener = (...args: never[]) => void;
+
+// ThreeD owns this service boundary. Provider adapters may import it, but this
+// directory must never depend on FarmBot, OpenFarm, or another integration.
+const mqttServiceDirectory = dirname(fileURLToPath(import.meta.url));
+const providerSegments = ['farmbot', 'openfarm'];
+const importSpecifierPattern = /(?:from\s+|import\s*\(|require\s*\()\s*['"]([^'"]+)['"]/g;
+for (const entry of readdirSync(mqttServiceDirectory, { withFileTypes: true })) {
+  if (!entry.isFile() || !['.ts', '.mts'].includes(extname(entry.name))) continue;
+  const source = readFileSync(join(mqttServiceDirectory, entry.name), 'utf8');
+  for (const match of source.matchAll(importSpecifierPattern)) {
+    const specifier = match[1] ?? '';
+    assert.equal(
+      providerSegments.some((provider) => specifier.split('/').includes(provider)),
+      false,
+      `ThreeD MQTT service cannot import provider adapter: ${entry.name} -> ${specifier}`
+    );
+  }
+}
 
 class FakeReadonlyMqttClient {
   readonly listeners = new Map<string, Set<FakeListener>>();

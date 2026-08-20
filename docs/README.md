@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.1a **ThreeD FarmBot Integration Phases 2A–2D — ThreeD MQTT Connected (Read-Only)**. No later release candidate is designated.
+Current production is v0.18.1a **ThreeD MQTT Module — FarmBot Read-Only Adapter**. No later release candidate is designated.
 
 ## Human users
 

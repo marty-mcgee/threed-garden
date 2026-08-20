@@ -10,6 +10,7 @@
     "validate:threed-mqtt": "bun run src/lib/services/threed/mqtt/validate.mts",
     "validate:farmbot-worker": "bun run src/lib/services/threed/farmbot/mqtt/validate.mts",
     "validate:farmbot-mqtt-persistence": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-farmbot-mqtt-persistence.mts",
+    "validate:farmbot-command-policy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-farmbot-command-policy.mts",
     "farmbot:mqtt-worker": "bun run src/lib/services/threed/farmbot/mqtt/index.ts",
     "build": "next build",
     "start": "next start -p 4444",

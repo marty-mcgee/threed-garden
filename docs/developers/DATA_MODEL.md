@@ -29,6 +29,10 @@ Beds, plantings, characters, FarmBots, and models become runtime markers from pr
 
 `threed_mqtt_runtime` stores one current allowlisted worker snapshot per MQTT integration, identified by `integration_type` and `integration_id`. `threed_mqtt_events` stores normalized MQTT lifecycle and adapter-produced event history with event IDs, payload size, and SHA-256 fingerprints. The current FarmBot adapter uses `integration_type = 'farmbot'` and verifies the referenced FarmBot and owner before every write or read. Neither table stores credentials, complete status trees, raw MQTT payloads, or arbitrary CeleryScript. Event history uses a 30-day ingestion-time retention window and owner-controlled cleanup.
 
+These MQTT tables belong to ThreeD, not FarmBot. Their polymorphic integration identity permits later ThreeD MQTT adapters without inheriting FarmBot credentials, peripherals, commands, or schemas. Provider-specific records remain in provider-specific tables.
+
+`threed_farmbot_commands` is the approved but not-yet-applied Phase 3B semantic command audit/request-state table. It relates each command to its owner, Project, and App FarmBot; enforces an owner/FarmBot idempotency UUID; and records policy version, semantic action, lifecycle state/timestamps, optional server-resolved Water peripheral snapshots, RPC label, redacted rejection code, and command fingerprint. It has no arbitrary JSON, raw MQTT topic, CeleryScript, credential, or emergency-stop record. Declaring this table does not enable a command route or MQTT publishing.
+
 The legacy `threed_farmbot_logs` table remains separate because `FarmBotPoller` still references its older sensor/log shape. New MQTT activity must not write to its unrestricted `rawData` field.
 
 The Drizzle declarations are authoritative for exact column names and relationships. Never derive a schema change from this overview alone.

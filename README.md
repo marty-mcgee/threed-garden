@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.18.1a "ThreeD FarmBot Integration Phases 2A–2D — ThreeD MQTT Connected (Read-Only)"`
+> **Current production version:** `v0.18.1a "ThreeD MQTT Module — FarmBot Read-Only Adapter"`
 
 ## Documentation
 
@@ -60,7 +60,7 @@ The heart of the app is the **ThreeD Garden**, built as a declarative React Thre
 - **Physics-based characters** — powered by `@react-three/rapier` + `ecctrl`. Movable characters can be "taken control of" with `WASD`, run, jump, and collide with the world.
 - **Camera modes** — Follow, Top-Down, First-Person, Orbit, and Stationary.
 - **Real model files** — characters load GLB/GLTF/FBX/OBJ files (hosted on S3 or Vercel Blob) as their 3D bodies.
-- **Read-only FarmBot MQTT integration** — encrypted per-device credentials, verified REST/MQTT identity, peripheral discovery and Water assignment, a separately run MQTT worker, normalized status/event history, Admin activity controls, and project-scoped Dashboard status. MQTT publishing and physical commands remain disabled.
+- **ThreeD MQTT Module** — provider-neutral transport, worker authentication, normalized runtime/events, and integration identity. FarmBot is the first read-only adapter and adds encrypted credentials, peripheral configuration, Admin activity controls, and project-scoped Dashboard status. MQTT publishing and physical commands remain disabled.
 
 ---
 

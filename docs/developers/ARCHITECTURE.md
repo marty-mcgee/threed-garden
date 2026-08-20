@@ -25,4 +25,17 @@ The Dashboard is mostly read-oriented. Explicit world-action routes are the exce
 - The worker sends bounded normalized runtime/events through a signed internal App route. It has exact read-only subscriptions and no publish interface.
 - v0.18.1a enables read-only MQTT status only. Physical FarmBot commands remain disabled, and FarmBot-targeted character actions remain animation-only.
 
+## ThreeD service authority
+
+ThreeD owns shared protocol and data-service boundaries. Provider integrations consume those services without redefining them:
+
+```text
+ThreeD
+├── mqtt/                  provider-neutral transport and worker boundary
+├── farmbot/               FarmBot REST, MQTT adapter, and device policy
+└── openfarm/              future crop API adapter and ThreeD Plant mapping
+```
+
+The dependency direction is `FarmBot/OpenFarm -> ThreeD services`. Code under `src/lib/services/threed/mqtt` cannot import provider adapters. FarmBot command policy and `threed_farmbot_commands` remain FarmBot-specific because device commands are not generic MQTT behavior. OpenFarm must remain independent of both MQTT and FarmBot and may only create or update owned local ThreeD records through an explicitly approved import workflow.
+
 See [Data model](DATA_MODEL.md), [API guide](API_GUIDE.md), and the [ThreeD FarmBot Integration Plan](FARMBOT_INTEGRATION.md) for the corresponding persistence, request, and hardware boundaries.

@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.1a — ThreeD FarmBot Integration Phases 2A–2D: ThreeD MQTT Connected (Read-Only)** |
+| Current stable version | **v0.18.1a — ThreeD MQTT Module: FarmBot Read-Only Adapter** |
 | Current release candidate | **None designated** |
-| Current development milestone | **None — v0.18.1a is released; Phase 3 requires separate approval** |
+| Current development milestone | **v0.18.2-alpha — Phase 3B dormant command audit schema** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -367,7 +367,7 @@ API (/api/map/threed)
 | **v0.17.2** | **2026-08-18** | **Production release — API consolidation, current-schema poller alignment, and blocking TypeScript validation** |
 | **v0.17.3** | **2026-08-18** | **Production release — documentation foundation for human users, developers, and coding agents** |
 | **v0.18.0** | **2026-08-19** | **Production release — ThreeD FarmBot Integration Phase 1 security, identity, configuration, readiness, and animation-only targeting** |
-| **v0.18.1a** | **2026-08-20** | **Production release — ThreeD FarmBot Integration Phases 2A–2D, connected read-only MQTT worker, normalized activity, Admin controls, and project-scoped Dashboard status** |
+| **v0.18.1a** | **2026-08-20** | **Production release — ThreeD MQTT Module with FarmBot read-only adapter, normalized activity, Admin controls, and project-scoped Dashboard status** |
 
 ---
 
@@ -1304,4 +1304,20 @@ The MQTT/FarmBot separation schema was generated and applied successfully by the
 
 ### v0.18.1a production confirmation
 
-The user confirmed the GitHub-to-Vercel production release on August 20, 2026 under the title **ThreeD FarmBot Integration Phase 2A–2D: ThreeD MQTT Connected (Read-Only)**. v0.18.1a is the stable production boundary. Phase 3 command safety/auditing, MQTT publishing, and every physical FarmBot operation remain unapproved and disabled.
+The user confirmed the GitHub-to-Vercel production release on August 20, 2026. Its authoritative architecture name is **ThreeD MQTT Module: FarmBot Read-Only Adapter**. ThreeD owns the provider-neutral transport, worker authentication, runtime, and normalized event boundary; FarmBot is its first provider adapter. v0.18.1a is the stable production boundary. Phase 3 command dispatch, MQTT publishing, and every physical FarmBot operation remain disabled.
+
+### v0.18.2-alpha Phase 3A semantic command policy
+
+Phase 3 received approval to begin incrementally. Its first isolated step adds a pure server-owned command-intent parser and lifecycle model. The initial semantic allowlist contains only `water`; client intent may provide only policy version, positive Project ID, semantic command, and a UUID v4 idempotency key. Unexpected fields—including pins, durations, coordinates, MQTT topics, CeleryScript, and arbitrary command names—are rejected. Emergency stop deliberately has no normal command-intent representation and remains reserved for an independent future path.
+
+This policy is not connected to a browser route, database table, worker route, MQTT transport, ThreeD action, or FarmBot hardware. The existing command and Water routes continue to return `503`, and the MQTT transport remains read-only with no publish interface. `npm run validate:farmbot-command-policy` proves strict parsing and allowed lifecycle transitions offline. Audit persistence, command authorization, MQTT publishing, acknowledgement correlation, and physical testing remain separate approval gates.
+
+### v0.18.2-alpha Phase 3B dormant command audit schema
+
+The user explicitly approved the additive `threed_farmbot_commands` schema. Its declaration records server-generated command and idempotency UUIDs, owner/Project/FarmBot relationships, policy/action/state, optional server-resolved Water peripheral snapshots, RPC correlation, redacted rejection/fingerprint data, expiry, and lifecycle timestamps. Checks constrain the table to policy version 1, the `water` semantic action, known lifecycle states, bounded structural formats, complete positive Water snapshots, and expiry after request time. Emergency stop and raw MQTT/CeleryScript payloads are intentionally absent.
+
+The table declaration and relations pass TypeScript, but no migration has been generated or applied yet. No API, repository, worker, or browser path writes it. Before application, review the generated SQL to confirm it only creates `threed_farmbot_commands`, its indexes/checks, and foreign keys without altering existing FarmBot/MQTT data. Command authorization, dispatch, publishing, acknowledgement-driven state updates, and physical operation remain disabled.
+
+### ThreeD MQTT module authority
+
+ThreeD is the parent application module. `src/lib/services/threed/mqtt` and the generic `threed_mqtt_runtime`/`threed_mqtt_events` tables are provider-neutral. FarmBot depends on that service through its adapter; the MQTT service does not import FarmBot. A future OpenFarm service belongs beside FarmBot under ThreeD and must map external crop data into owned local ThreeD records without becoming an MQTT or FarmBot dependency. `npm run validate:threed-mqtt` now enforces the provider-import direction for the generic MQTT directory.

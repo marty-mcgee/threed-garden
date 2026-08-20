@@ -48,13 +48,17 @@ The worker runs outside Vercel request handlers, uses signed/replay-protected Ap
 
 ### Phase 3 — Command safety and audit boundary
 
-Status: planned and requires separate schema approval.
+Status: Phase 3A policy foundation implemented and the explicitly approved Phase 3B dormant audit schema declared in development. Schema application, command transport, MQTT publishing, and physical operations remain separately gated.
 
 - Define a small semantic command allowlist; never accept raw CeleryScript or arbitrary command names from a client.
 - Add server-owned coordinate, duration, pin, and device-state limits.
 - Add command idempotency, per-device concurrency control, timeouts, acknowledgements, and an audit record.
 - Design emergency stop as an independent high-priority operation.
 - Keep ThreeD animation completion separate from physical command success.
+
+Phase 3A currently provides only a pure semantic-intent parser and lifecycle transition model. It accepts no pin, duration, coordinate, MQTT topic, CeleryScript, or arbitrary command name from a caller. It has no API or worker caller and does not enable the existing fail-closed command routes. Emergency stop remains outside the normal command lifecycle.
+
+Phase 3B declares `threed_farmbot_commands` as an additive audit/request-state table after explicit schema approval. It stores scoped identities, idempotency, lifecycle timestamps, optional server-resolved Water binding snapshots, RPC correlation, and redacted outcomes without raw payloads. The declaration is not yet generated or applied and has no writer. Review and apply the schema separately before repository work; application does not authorize dispatch or hardware.
 
 ### Phase 4 — Single Water pilot
 

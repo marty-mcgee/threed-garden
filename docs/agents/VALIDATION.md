@@ -11,10 +11,11 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 5. Run `npm run validate:threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
 6. Run `npm run validate:farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
 7. Run `npm run validate:farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
-8. Run a file-scoped lint command only when an ESLint executable/configuration is available.
-9. Run targeted tests when a matching test exists.
-10. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
-11. Perform the relevant manual regression checklist for interactive ThreeD behavior.
+8. Run `npm run validate:farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
+9. Run a file-scoped lint command only when an ESLint executable/configuration is available.
+10. Run targeted tests when a matching test exists.
+11. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
+12. Perform the relevant manual regression checklist for interactive ThreeD behavior.
 
 ## Commands
 
@@ -25,13 +26,14 @@ npm run validate:farmbot-crypto
 npm run validate:threed-mqtt
 npm run validate:farmbot-worker
 npm run validate:farmbot-mqtt-persistence
+npm run validate:farmbot-command-policy
 npm run typecheck
 npm run build
 ```
 
 The FarmBot validation also covers strict broker-claim parsing and rejects a refreshed token whose `device_…` broker identity differs from the stored credential. Broker host, secure WebSocket URL, and vhost changes are allowed because FarmBot may move broker sessions while retaining device identity.
 
-The ThreeD MQTT validation is provider-neutral and offline. It checks shared HMAC tamper/replay rejection plus MQTT.js connection options, exact QoS 0 subscriptions, message forwarding, topic-list rejection, safe broker error classification, and cleanup using neutral fabricated integration data. It contains no FarmBot imports or topic names.
+The ThreeD MQTT validation is provider-neutral and offline. It checks shared HMAC tamper/replay rejection plus MQTT.js connection options, exact QoS 0 subscriptions, message forwarding, topic-list rejection, safe broker error classification, and cleanup using neutral fabricated integration data. It also scans the generic MQTT service imports and fails if that directory depends on FarmBot or OpenFarm.
 
 The FarmBot worker validation is also offline. It checks FarmBot connection-grant identity and expiry rules, owner-bound single-session behavior, lifecycle limits, exact FarmBot read-only topics, bounded position parsing, credential-redacted status, persistence behavior, and the loopback internal HTTP boundary. It does not load a stored credential, connect to Neon or FarmBot, open MQTT, or operate hardware.
 
@@ -40,6 +42,10 @@ For the separately approved local live read-only test, start the App and worker 
 For the Phase 2D Dashboard display, sign in as the Project owner, open a Project with an actively assigned FarmBot, select its marker, and confirm the DetailsCard shows MQTT connection state, freshness, last message/status times, device position, and token expiry. Confirm a stopped/stale session is labeled stale. In the Network panel, verify the runtime request includes the selected `projectId` and its response omits broker identity, worker session ID, credentials, and event history. An unassigned FarmBot ID, another owner's Project ID, or an inactive Project Asset/module relationship must return not found. Confirm the public `/api/map/threed` response still contains no MQTT runtime data.
 
 The MQTT persistence validation is also offline. It checks batch limits, UUIDs, owner/broker scope fields, normalized lifecycle and position events, payload fingerprints, and rejection of raw or invalid shapes. After the approved schema is applied, open **MQTT Activity** for an owned FarmBot and verify empty state, current runtime, filters, pagination, refresh, and history cleanup. Confirm another user receives no runtime or history, and confirm general FarmBot/map responses do not include these records.
+
+The Phase 3 command-policy validation is offline and has no database, MQTT connection, or hardware access. It requires a versioned `water` semantic intent with a positive Project ID and UUID v4 idempotency key; rejects emergency stop on the normal path plus raw command names, pins, durations, topics, and CeleryScript; and verifies that lifecycle states cannot skip dispatch acknowledgement or leave a terminal state.
+
+For the Phase 3B command-audit schema, inspect the `db:generate` output before applying it. The proposal should only create `threed_farmbot_commands` with its indexes, checks, and foreign keys. It must not drop, rename, truncate, or rewrite existing FarmBot/MQTT tables. Confirm the table has no credential, raw MQTT topic/payload, CeleryScript, arbitrary JSON, or emergency-stop field. Run `db:push` only against the intended development database after that review.
 
 It also covers the pure MQTT readiness evaluator. A ready result requires a configured non-expired credential, verified `REST ID ↔ device_<ID>` parent identity, an exact token/snapshot match, and a REST-verification timestamp.
 
