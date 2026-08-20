@@ -1,6 +1,6 @@
 # ThreeD FarmBot Integration Plan
 
-Status: v0.18.1a Phases 2A–2D released to production with read-only MQTT connectivity. MQTT publishing and physical device commands are disabled. Later phases remain separately gated.
+Status: v0.18.1b released to production with the ThreeD MQTT control layer and FarmBot read-only connectivity. MQTT publishing and physical device commands are disabled. Later phases remain separately gated.
 
 ## Integration boundary
 
@@ -36,7 +36,7 @@ Status: released to production and verified through GitHub-to-Vercel deployment 
 
 ### Phase 2 — MQTT worker foundation
 
-Status: Phases 2A–2D released and production-verified in v0.18.1a. See [FarmBot Adapter for ThreeD MQTT Services](FARMBOT_MQTT_WORKER.md).
+Status: Phases 2A–2D were released in v0.18.1a; the provider-neutral control layer and FarmBot controller integration were released and production-verified in v0.18.1b. See [FarmBot Adapter for ThreeD MQTT Services](FARMBOT_MQTT_WORKER.md).
 
 - Choose and document the separately deployed, long-running worker runtime.
 - Define App-to-worker authentication, authorization, request signing, and replay protection.
@@ -58,7 +58,7 @@ Status: Phase 3A policy foundation implemented and the explicitly approved Phase
 
 Phase 3A currently provides only a pure semantic-intent parser and lifecycle transition model. It accepts no pin, duration, coordinate, MQTT topic, CeleryScript, or arbitrary command name from a caller. It has no API or worker caller and does not enable the existing fail-closed command routes. Emergency stop remains outside the normal command lifecycle.
 
-Phase 3B declares `threed_farmbot_commands` as an additive audit/request-state table after explicit schema approval. It stores scoped identities, idempotency, lifecycle timestamps, optional server-resolved Water binding snapshots, RPC correlation, and redacted outcomes without raw payloads. The declaration is not yet generated or applied and has no writer. Review and apply the schema separately before repository work; application does not authorize dispatch or hardware.
+Phase 3B declares `threed_farmbot_commands` as an additive audit/request-state table after explicit schema approval. The user generated, reviewed, and applied it to the intended database. It stores scoped identities, idempotency, lifecycle timestamps, optional server-resolved Water binding snapshots, RPC correlation, and redacted outcomes without raw payloads. It remains dormant with no writer; application does not authorize dispatch or hardware.
 
 ### Phase 4 — Single Water pilot
 
@@ -206,7 +206,7 @@ The parent-identity schema revision is active in production. The approved develo
 
 FarmBot's message broker uses the JWT `bot` claim as the username and the encoded JWT as the password. Broker hosts can change, so each connection derives current values from the encrypted token and uses the persisted snapshot only for validation and diagnostics.
 
-The App is deployed to Vercel, whose request lifecycle is not the owner of a durable MQTT session. The v0.18.1a read-only MQTT.js worker therefore runs as a separate long-running process with authenticated internal boundaries, bounded reconnect behavior, and exact `status` and `from_device` subscriptions.
+The App is deployed to Vercel, whose request lifecycle is not the owner of a durable MQTT session. The v0.18.1b read-only MQTT.js worker therefore runs as a separate long-running process with authenticated internal boundaries, bounded reconnect behavior, and exact `status` and `from_device` subscriptions.
 
 `GET /api/threed/farmbots/:id/mqtt-readiness` is an authenticated, owner-scoped configuration preflight for the worker. It decrypts the credential server-side and compares its current claims with the verified parent identities and persisted snapshot. It fails closed for a missing credential, unverified or mismatched identity, expiration, missing or outdated snapshot, or missing REST verification. Its response contains only readiness, redacted identity/endpoint dates, and stable issue codes; it never returns the JWT.
 

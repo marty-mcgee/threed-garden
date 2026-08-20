@@ -13,4 +13,4 @@ The Dashboard is primarily a visualization surface. Authenticated ThreeD world a
 
 For character movement and world-action testing, see [ThreeD controls](THREED_CONTROLS.md).
 
-In v0.18.1a, an active FarmBot assigned to the selected Project appears as a runtime ThreeD marker. Its DetailsCard can show the authenticated read-only MQTT connection state, freshness, recent status/message times, device position, and token expiry. The same marker can be used as an animation-only action target. Dashboard status does not expose credentials, broker/session identities, event history, worker controls, MQTT publishing, or physical FarmBot operation.
+In v0.18.1b, an active FarmBot assigned to the selected Project appears as a runtime ThreeD marker. Its DetailsCard can show the authenticated read-only MQTT connection state, freshness, recent status/message times, device position, and token expiry. The same marker can be used as an animation-only action target. Dashboard status does not expose credentials, broker/session identities, event history, worker controls, MQTT publishing, or physical FarmBot operation.

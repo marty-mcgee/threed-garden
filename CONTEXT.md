@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.1a — ThreeD MQTT Module: FarmBot Read-Only Adapter** |
+| Current stable version | **v0.18.1b — ThreeD MQTT Control Layer** |
 | Current release candidate | **None designated** |
-| Current development milestone | **v0.18.2-alpha — ThreeD MQTT control layer and dormant Phase 3 command foundation** |
+| Current development milestone | **v0.18.2-alpha — Dormant Phase 3 command foundation** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -368,6 +368,7 @@ API (/api/map/threed)
 | **v0.17.3** | **2026-08-18** | **Production release — documentation foundation for human users, developers, and coding agents** |
 | **v0.18.0** | **2026-08-19** | **Production release — ThreeD FarmBot Integration Phase 1 security, identity, configuration, readiness, and animation-only targeting** |
 | **v0.18.1a** | **2026-08-20** | **Production release — ThreeD MQTT Module with FarmBot read-only adapter, normalized activity, Admin controls, and project-scoped Dashboard status** |
+| **v0.18.1b** | **2026-08-20** | **Production release — provider-neutral ThreeD MQTT control layer, protocol-first service hierarchy, and FarmBot controller integration with read-only behavior preserved** |
 
 ---
 
@@ -1219,7 +1220,7 @@ The repository ignores generated `/drizzle` artifacts and continues to use an ex
 
 The approved phase sequence is now documented in `docs/developers/FARMBOT_INTEGRATION.md`: Phase 1 secure App foundation; Phase 2 separately run MQTT worker and read-only status; Phase 3 command safety and auditing; Phase 4 one-device Water pilot; and Phase 5 later ThreeD interaction expansion. Each phase requires its own approval. Phases 2A–2D were later approved and released as v0.18.1a; Phase 3 and every physical operation remain separately gated.
 
-GitHub-to-Vercel production deployment and production smoke testing were confirmed on August 19, 2026. v0.18.0 remains the Phase 1 historical checkpoint; v0.18.1a supersedes it as the current production boundary.
+GitHub-to-Vercel production deployment and production smoke testing were confirmed on August 19, 2026. v0.18.0 remains the Phase 1 historical checkpoint; v0.18.1a later added read-only MQTT, and v0.18.1b is the current production boundary.
 
 ## Current Phase Plan for v0.18.0+
 
@@ -1329,3 +1330,7 @@ The next isolated control-layer increment adds a pure provider-neutral read-only
 A subsequent increment adds `MqttReadonlySessionController`. It composes one injected provider grant, adapter, read-only transport, expiry accessor, clock, retry policy, and observer hooks. Its neutral tests cover start/stop, accepted and rejected messages, malformed approved-topic payloads, reconnect, already-expired grants, stale callback rejection, and closing a transport that finishes connecting after the session was stopped. After the structure milestone, the FarmBot registry was moved onto this controller through provider-owned observer hooks. FarmBot still owns grant replacement, owner scope, worker session IDs, position freshness, normalized event mapping, persistence, and credential clearing. Parity validation asserts the established lifecycle record sequence, reconnect behavior, message timestamps, invalid counts, position/RPC records, and cleanup. This adds no route, worker endpoint, MQTT publish method, command, schema, or environment behavior.
 
 Feature development then paused for an approved structure-only milestone. The mixed flat/provider-first MQTT files were reorganized under one protocol-first parent: `mqtt/core`, `mqtt/transports`, `mqtt/worker`, and `mqtt/integrations/farmbot`. FarmBot REST credentials, token, connection, peripheral, readiness, and command-policy services remain under `threed/farmbot` because they are not MQTT infrastructure. Package scripts and App/API imports now target the new paths. The structure step changes no route URL, schema, persistence shape, MQTT topic, runtime behavior, publish capability, command behavior, or environment setting. The older flat `DataService` and poller files remain unchanged for a later milestone.
+
+### v0.18.1b production confirmation
+
+The user confirmed the GitHub-to-Vercel production release and successful validation of **v0.18.1b — ThreeD MQTT Control Layer** on August 20, 2026. The release places shared MQTT contracts, lifecycle, controller, transport, and worker boundaries under `src/lib/services/threed/mqtt`, with FarmBot as the first integration under `mqtt/integrations/farmbot`. The FarmBot registry uses the shared controller while preserving read-only topics, runtime/event persistence, Admin controls, Dashboard status, retries, cleanup, and credential safety. MQTT publishing and physical FarmBot commands remain disabled.

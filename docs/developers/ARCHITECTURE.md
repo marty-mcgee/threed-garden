@@ -23,7 +23,7 @@ The Dashboard is mostly read-oriented. Explicit world-action routes are the exce
 - Character animation and world-state mutation remain separate responsibilities.
 - FarmBot REST authentication and configuration run through owner-scoped Vercel request handlers under `src/lib/services/threed/farmbot`. Read-only MQTT sessions run in a separate long-running worker under `src/lib/services/threed/mqtt/integrations/farmbot`; provider-neutral transport and worker authentication live under the same MQTT parent.
 - The worker sends bounded normalized runtime/events through a signed internal App route. It has exact read-only subscriptions and no publish interface.
-- v0.18.1a enables read-only MQTT status only. Physical FarmBot commands remain disabled, and FarmBot-targeted character actions remain animation-only.
+- v0.18.1b enables read-only MQTT status through the shared ThreeD MQTT control layer. Physical FarmBot commands remain disabled, and FarmBot-targeted character actions remain animation-only.
 
 ## ThreeD service authority
 

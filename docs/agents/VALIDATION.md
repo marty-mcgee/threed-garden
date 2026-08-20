@@ -69,7 +69,7 @@ After applying the broker-metadata schema to an approved development database, r
 
 After applying the FarmBot peripheral-binding schema to an approved development database, manually verify assignment, reassignment, removal, and automatic invalidation after credential replacement. Assignment must not invoke a hardware route or change a FarmBot pin.
 
-## v0.18.1a production regression checks
+## v0.18.1b production regression checks
 
 - Verify credential login/store/replace/clear never returns the JWT or encrypted envelope to the browser.
 - Run **Test**, **Discover**, Water assignment, **Validate**, broker **Refresh**, and **Readiness** against an owned FarmBot.
@@ -79,7 +79,7 @@ After applying the FarmBot peripheral-binding schema to an approved development 
 - Confirm FarmBot targeting remains animation-only and Planting-targeted Water and Pick Fruit behavior remain unchanged.
 - Confirm the read-only worker connects only after an explicit Start request, subscribes only to `status` and `from_device`, and stops cleanly.
 - Confirm Admin and Dashboard show current normalized status while raw payloads, credentials, broker/session identities, and private worker configuration remain hidden from general browser responses.
-- Confirm no MQTT publish interface or physical command is present in the v0.18.1a release.
+- Confirm no MQTT publish interface or physical command is present in the v0.18.1b release.
 
 ## GitHub Actions
 

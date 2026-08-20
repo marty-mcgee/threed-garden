@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.1a **ThreeD MQTT Module — FarmBot Read-Only Adapter**. No later release candidate is designated.
+Current production is v0.18.1b **ThreeD MQTT Control Layer**. No later release candidate is designated.
 
 ## Human users
 
@@ -31,6 +31,7 @@ Current production is v0.18.1a **ThreeD MQTT Module — FarmBot Read-Only Adapte
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.18.1b production checkpoint](releases/v0.18.1b.md)
 - [v0.18.1a production checkpoint](releases/v0.18.1a.md)
 - [v0.18.0 production checkpoint](releases/v0.18.0.md)
 - [v0.17.3 production checkpoint](releases/v0.17.3.md)

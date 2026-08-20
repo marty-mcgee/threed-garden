@@ -27,6 +27,6 @@ Run `npm run validate:farmbot-crypto` for FarmBot credential/configuration work.
 
 Run `npm run validate:farmbot-command-policy` for Phase 3 semantic intent or lifecycle-policy work. This check is offline and must remain free of database, broker, and hardware access.
 
-The read-only worker runs separately with `npm run farmbot:mqtt-worker`. Its private `THREED_MQTT_*` configuration is documented in [FarmBot Adapter for ThreeD MQTT Services](FARMBOT_MQTT_WORKER.md). Use distinct App-to-worker and worker-to-App signing keys. The old global FarmBot environment-token workflow is not the v0.18.1a integration path.
+The read-only worker runs separately with `npm run farmbot:mqtt-worker`. Its private `THREED_MQTT_*` configuration is documented in [FarmBot Adapter for ThreeD MQTT Services](FARMBOT_MQTT_WORKER.md). Use distinct App-to-worker and worker-to-App signing keys. The old global FarmBot environment-token workflow is not the v0.18.1b integration path.
 
 The complete policy and manual ThreeD checklist are in [Agent Validation](../agents/VALIDATION.md).

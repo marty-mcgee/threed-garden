@@ -1,6 +1,6 @@
 # FarmBot Adapter for ThreeD MQTT Services
 
-Status: v0.18.1a Phases 2A–2D released and production-verified. MQTT remains disabled by default and can be explicitly enabled in read-only MQTT.js mode; no publish or physical command exists.
+Status: v0.18.1b released and production-verified with the provider-neutral ThreeD MQTT control layer and FarmBot read-only integration. MQTT remains disabled by default and can be explicitly enabled in read-only MQTT.js mode; no publish or physical command exists.
 
 ## Goal
 
