@@ -274,6 +274,6 @@ The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.1b pro
 | v0.18.4 | Phase 5 — ThreeD orchestration | Connect character approach, orientation, and animation to the audited semantic action request while keeping animation state and physical-device completion separate. The character runtime never owns the MQTT connection. |
 | v0.18.5+ | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
 
-Phases 2A–2D and the ThreeD MQTT control layer are released and production-verified. Phase 3A policy and the approved/applied Phase 3B audit table remain dormant: no writer, dispatch, MQTT publishing, or physical operation is enabled. Later command steps require separate approval.
+Phases 2A–2D and the ThreeD MQTT control layer are released and production-verified. Phase 3A policy, the approved/applied Phase 3B audit table, and the server-only Phase 3C initial-request repository remain dormant: no route caller, transition writer, dispatch, MQTT publishing, or physical operation is enabled. Later command steps require separate approval.
 
 Approval of this plan does not by itself authorize a new external resource, database schema change, MQTT connection, MQTT publish, or physical FarmBot command. Each phase remains a separate approval and validation gate.

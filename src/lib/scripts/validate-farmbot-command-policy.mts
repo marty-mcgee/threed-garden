@@ -7,6 +7,12 @@ import {
   parseFarmBotCommandIntent,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/farmbot/command-policy-core.ts';
+import {
+  FarmBotCommandRepositoryInputError,
+  matchesFarmBotIdempotentRequest,
+  prepareFarmBotRequestedCommand,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/farmbot/command-repository-core.ts';
 
 const valid = parseFarmBotCommandIntent({
   policyVersion: FARMBOT_COMMAND_POLICY_VERSION,
@@ -101,5 +107,36 @@ assert.equal(isTerminalFarmBotCommandState('rejected'), true);
 assert.equal(isTerminalFarmBotCommandState('timed_out'), true);
 assert.equal(isTerminalFarmBotCommandState('cancelled'), true);
 assert.equal(isTerminalFarmBotCommandState('accepted'), false);
+
+const requestedAt = new Date('2026-08-20T18:00:00.000Z');
+const requestedCommand = prepareFarmBotRequestedCommand({
+  commandId: '550e8400-e29b-41d4-a716-446655440000',
+  userId: ' owner-1 ',
+  farmbotId: 3,
+  intent: valid,
+  requestedAt,
+  expiresAt: new Date(requestedAt.getTime() + 60_000),
+});
+assert.equal(requestedCommand.state, 'requested');
+assert.equal(requestedCommand.projectId, 42);
+assert.equal(requestedCommand.userId, 'owner-1');
+assert.equal(Object.isFrozen(requestedCommand), true);
+assert.equal(matchesFarmBotIdempotentRequest(requestedCommand, requestedCommand), true);
+assert.equal(matchesFarmBotIdempotentRequest(
+  { ...requestedCommand, projectId: 43 },
+  requestedCommand
+), false);
+assert.throws(
+  () => prepareFarmBotRequestedCommand({
+    commandId: '550e8400-e29b-41d4-a716-446655440000',
+    userId: 'owner-1',
+    farmbotId: 3,
+    intent: valid,
+    requestedAt,
+    expiresAt: requestedAt,
+  }),
+  (error) => error instanceof FarmBotCommandRepositoryInputError
+    && error.code === 'invalid_expiry'
+);
 
 console.log('FarmBot command policy validation passed');

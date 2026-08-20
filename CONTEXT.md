@@ -21,7 +21,7 @@
 |---|---|
 | Current stable version | **v0.18.1b — ThreeD MQTT Control Layer** |
 | Current release candidate | **None designated** |
-| Current development milestone | **v0.18.2-alpha — Dormant Phase 3 command foundation** |
+| Current development milestone | **v0.18.2-alpha — Phase 3C dormant command request repository** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1317,7 +1317,13 @@ This policy is not connected to a browser route, database table, worker route, M
 
 The user explicitly approved the additive `threed_farmbot_commands` schema. Its declaration records server-generated command and idempotency UUIDs, owner/Project/FarmBot relationships, policy/action/state, optional server-resolved Water peripheral snapshots, RPC correlation, redacted rejection/fingerprint data, expiry, and lifecycle timestamps. Checks constrain the table to policy version 1, the `water` semantic action, known lifecycle states, bounded structural formats, complete positive Water snapshots, and expiry after request time. Emergency stop and raw MQTT/CeleryScript payloads are intentionally absent.
 
-The table declaration and relations pass TypeScript. The user generated, reviewed, and pushed its additive migration to the intended database. No API, repository, worker, or browser path writes it. Command authorization, dispatch, publishing, acknowledgement-driven state updates, and physical operation remain disabled.
+The table declaration and relations pass TypeScript. The user generated, reviewed, and pushed its additive migration to the intended database. At the Phase 3B checkpoint, no API, repository, worker, or browser path wrote it. Command authorization, dispatch, publishing, acknowledgement-driven state updates, and physical operation remain disabled.
+
+### v0.18.2-alpha Phase 3C dormant request repository
+
+The server-only FarmBot command repository can prepare and insert only the initial `requested` audit state. It re-parses the versioned semantic intent, generates the command UUID server-side, validates request/expiry times, and requires the same owner plus active Project, active ThreeD module relationship, active Project Asset assignment, and active owned FarmBot. Its unique owner/FarmBot/idempotency boundary returns the existing row only when the semantic request details match and otherwise fails closed. Owner-scoped command lookup is available for future internal use.
+
+No App route, browser component, MQTT service, worker, World Action, or physical-device path imports this repository. It has no transition, dispatch, publish, peripheral, duration, coordinate, RPC-label, acknowledgement, or emergency-stop writer. The existing command and Water routes still return `503`. The applied table remains operationally dormant until a later separately approved server authorization step calls the repository.
 
 ### ThreeD MQTT module authority
 

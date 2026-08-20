@@ -58,7 +58,9 @@ Status: Phase 3A policy foundation implemented and the explicitly approved Phase
 
 Phase 3A currently provides only a pure semantic-intent parser and lifecycle transition model. It accepts no pin, duration, coordinate, MQTT topic, CeleryScript, or arbitrary command name from a caller. It has no API or worker caller and does not enable the existing fail-closed command routes. Emergency stop remains outside the normal command lifecycle.
 
-Phase 3B declares `threed_farmbot_commands` as an additive audit/request-state table after explicit schema approval. The user generated, reviewed, and applied it to the intended database. It stores scoped identities, idempotency, lifecycle timestamps, optional server-resolved Water binding snapshots, RPC correlation, and redacted outcomes without raw payloads. It remains dormant with no writer; application does not authorize dispatch or hardware.
+Phase 3B declares `threed_farmbot_commands` as an additive audit/request-state table after explicit schema approval. The user generated, reviewed, and applied it to the intended database. It stores scoped identities, idempotency, lifecycle timestamps, optional server-resolved Water binding snapshots, RPC correlation, and redacted outcomes without raw payloads. At that checkpoint it had no writer; application does not authorize dispatch or hardware.
+
+Phase 3C adds a server-only initial-request repository. It re-validates semantic intent and requires the authenticated owner, active Project, active ThreeD relationship, active Project Asset assignment, and active owned FarmBot before an initial `requested` record can be inserted. Idempotent retries return the matching existing record; conflicting reuse fails closed. No route calls the repository, and no lifecycle transition, MQTT publish, worker command, or physical operation is added.
 
 ### Phase 4 — Single Water pilot
 
