@@ -170,8 +170,102 @@ function KvRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, onSetActionTarget, onClearActionTarget, onFocusActionTarget }: {
+interface FarmBotProjectMqttRuntime {
+  connectionState: string;
+  stateChangedAt: string;
+  lastMessageAt: string | null;
+  lastStatusAt: string | null;
+  positionX: string | null;
+  positionY: string | null;
+  positionZ: string | null;
+  tokenExpiresAt: string;
+  isStale: boolean;
+}
+
+function formatMqttDate(value: string | null): string {
+  return value ? new Date(value).toLocaleString() : 'Never';
+}
+
+function FarmBotMqttStatusSummary({
+  farmbotId,
+  projectId,
+}: {
+  farmbotId: number;
+  projectId: string | null;
+}) {
+  const [runtime, setRuntime] = useState<FarmBotProjectMqttRuntime | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!projectId || !Number.isSafeInteger(farmbotId) || farmbotId < 1) {
+      setRuntime(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    setLoading(true);
+    void fetch(
+      `/api/threed/farmbots/${farmbotId}/mqtt-runtime?projectId=${encodeURIComponent(projectId)}`,
+      { cache: 'no-store', signal: controller.signal }
+    )
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.error);
+        setRuntime(result.data as FarmBotProjectMqttRuntime | null);
+      })
+      .catch((error) => {
+        if (error instanceof Error && error.name === 'AbortError') return;
+        setRuntime(null);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [farmbotId, projectId]);
+
+  const hasPosition = runtime
+    && runtime.positionX !== null
+    && runtime.positionY !== null
+    && runtime.positionZ !== null;
+
+  return (
+    <div className="mt-2.5 border-t border-white/10 pt-2">
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <span className="text-[10px] font-medium text-white/60">MQTT Status</span>
+        {loading ? (
+          <Loader2 className="h-3 w-3 animate-spin text-white/40" />
+        ) : runtime ? (
+          <div className="flex items-center gap-1">
+            <span className={`h-1.5 w-1.5 rounded-full ${runtime.connectionState === 'connected' && !runtime.isStale ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+            <span className="text-[10px] capitalize text-white/70">{runtime.connectionState}</span>
+            {runtime.isStale && <span className="text-[10px] text-amber-300">· Stale</span>}
+          </div>
+        ) : (
+          <span className="text-[10px] text-white/35">No recorded status</span>
+        )}
+      </div>
+      {runtime && (
+        <div className="space-y-0.5">
+          <KvRow label="Changed" value={formatMqttDate(runtime.stateChangedAt)} />
+          <KvRow label="Message" value={formatMqttDate(runtime.lastMessageAt)} />
+          <KvRow label="Status" value={formatMqttDate(runtime.lastStatusAt)} />
+          <KvRow
+            label="Device"
+            value={hasPosition
+              ? `X:${Number(runtime.positionX).toFixed(1)} Y:${Number(runtime.positionY).toFixed(1)} Z:${Number(runtime.positionZ).toFixed(1)}`
+              : 'Position not recorded'}
+          />
+          <KvRow label="Token" value={`Expires ${formatMqttDate(runtime.tokenExpiresAt)}`} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, onSetActionTarget, onClearActionTarget, onFocusActionTarget }: {
   selected: any;
+  projectId: string | null;
   onClose: () => void;
   controlledCharacterId: number | null;
   onTakeControl: (id: number) => void;
@@ -289,6 +383,13 @@ function DetailsCard({ selected, onClose, controlledCharacterId, onTakeControl, 
         <div className="mt-2.5 border-t border-white/10 pt-2 space-y-0.5">
           {metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}
         </div>
+      )}
+
+      {isFarmBotMarker && (
+        <FarmBotMqttStatusSummary
+          farmbotId={Number(d.id)}
+          projectId={projectId}
+        />
       )}
 
       {/* v0.16.2-beta: Manual zoom + center action */}
@@ -1560,6 +1661,7 @@ function UnifiedMapPageInner() {
       {/* ✅ v0.15.2: Details Card — rendered outside map to avoid Leaflet interference */}
       <DetailsCard
         selected={selectedMarker || selectedIncident}
+        projectId={selectedProjectId}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
         controlledCharacterId={controlledCharacterId}
         onTakeControl={(id) => setControlledCharacterId(id)}

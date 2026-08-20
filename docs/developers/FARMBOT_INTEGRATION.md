@@ -36,7 +36,7 @@ Status: released to production and verified through GitHub-to-Vercel deployment 
 
 ### Phase 2 — MQTT worker foundation
 
-Status: Phase 2A design prepared for review; no worker or MQTT connection exists yet. See [FarmBot MQTT Worker Design](FARMBOT_MQTT_WORKER.md).
+Status: Phase 2A accepted, Phase 2B offline skeleton implemented, normalized persistence/Admin schema applied, and the Phase 2C subscribe-only MQTT.js adapter validated offline. The executable transport remains disabled and no MQTT connection exists. See [FarmBot MQTT Worker Design](FARMBOT_MQTT_WORKER.md).
 
 - Choose and document the separately deployed, long-running worker runtime.
 - Define App-to-worker authentication, authorization, request signing, and replay protection.
@@ -44,7 +44,7 @@ Status: Phase 2A design prepared for review; no worker or MQTT connection exists
 - Add connection lifecycle handling, reconnect limits, health reporting, and read-only status subscriptions.
 - Prove device identity and acknowledgement parsing before enabling commands.
 
-Phase 2 begins with a design review. It must not be implemented inside a Vercel request handler, and read-only worker connectivity must be verified before command work starts.
+Phase 2A and the offline Phase 2B skeleton are complete. Phase 2C must add and test a subscribe-only transport behind the existing interface before a separately approved live connection test. The worker must not run inside a Vercel request handler, and read-only connectivity must be verified before command work starts.
 
 ### Phase 3 — Command safety and audit boundary
 
@@ -210,7 +210,7 @@ The Admin **Readiness** control displays those results. “Ready” means only t
 
 The retained in-progress `FarmBotPoller` also fails closed at its internal `sendCommand()` boundary. Its legacy convenience methods cannot issue requests to an assumed REST command endpoint; physical commands must wait for the separately designed MQTT worker.
 
-The Phase 2A worker design is recorded in [FarmBot MQTT Worker Design](FARMBOT_MQTT_WORKER.md). No worker runtime, internal worker API, MQTT dependency, MQTT connection, or physical command should be added until that design is reviewed and the Phase 2B implementation step is explicitly approved. Physical polling and commands remain disabled.
+The Phase 2A design, Phase 2B offline skeleton, and approved normalized persistence/Admin boundary are recorded in [FarmBot MQTT Worker Design](FARMBOT_MQTT_WORKER.md). The executable worker reports its MQTT transport as disabled and contains no publish interface. No App-to-worker connection route, MQTT dependency, deployed worker, live MQTT connection, or physical command exists. A reviewed schema push is required before the persistence UI can read data. Live read-only connectivity remains separately gated. Physical polling and commands remain disabled.
 
 ## ThreeD World Action targeting
 

@@ -812,7 +812,112 @@ export const threedFarmbotBrokerMetadata = pgTable('threed_farmbot_broker_metada
 }));
 
 // ============================================
-// 12. threed_farmbot_logs - FarmBot activity log
+// 12. threed_mqtt_runtime - Current allowlisted MQTT integration status
+// ============================================
+export const threedMqttRuntime = pgTable('threed_mqtt_runtime', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  integrationType: varchar('integration_type', { length: 50 }).notNull(),
+  integrationId: integer('integration_id').notNull(),
+  clientId: varchar('client_id', { length: 100 }).notNull(),
+  sessionId: varchar('session_id', { length: 36 }).notNull(),
+  connectionState: varchar('connection_state', { length: 20 }).notNull(),
+  stateChangedAt: timestamp('state_changed_at').notNull(),
+  lastMessageAt: timestamp('last_message_at'),
+  lastStatusAt: timestamp('last_status_at'),
+  positionX: decimal('position_x', { precision: 12, scale: 3 }),
+  positionY: decimal('position_y', { precision: 12, scale: 3 }),
+  positionZ: decimal('position_z', { precision: 12, scale: 3 }),
+  credentialExpiresAt: timestamp('credential_expires_at').notNull(),
+  isStale: boolean('is_stale').default(true).notNull(),
+  reconnectAttempts: integer('reconnect_attempts').default(0).notNull(),
+  invalidMessageCount: integer('invalid_message_count').default(0).notNull(),
+  errorCode: varchar('error_code', { length: 100 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
+}, (table) => ({
+  uniqueIntegration: uniqueIndex('idx_threed_mqtt_runtime_integration')
+    .on(table.integrationType, table.integrationId),
+  ownerIdx: index('idx_threed_mqtt_runtime_owner').on(table.userId),
+  clientIdx: index('idx_threed_mqtt_runtime_client').on(table.clientId),
+  integrationTypeValid: check(
+    'threed_mqtt_runtime_integration_type_valid',
+    sql`${table.integrationType} ~ '^[a-z][a-z0-9_]{1,49}$'`
+  ),
+  connectionStateValid: check(
+    'threed_mqtt_runtime_connection_state_valid',
+    sql`${table.connectionState} IN ('disconnected', 'connecting', 'connected', 'reconnecting', 'expired', 'error')`
+  ),
+  reconnectAttemptsNonnegative: check(
+    'threed_mqtt_runtime_reconnect_attempts_nonnegative',
+    sql`${table.reconnectAttempts} >= 0`
+  ),
+  invalidMessageCountNonnegative: check(
+    'threed_mqtt_runtime_invalid_message_count_nonnegative',
+    sql`${table.invalidMessageCount} >= 0`
+  ),
+}));
+
+// ============================================
+// 13. threed_mqtt_events - Normalized MQTT/lifecycle history
+// ============================================
+export const threedMqttEvents = pgTable('threed_mqtt_events', {
+  id: serial('id').primaryKey(),
+  eventId: varchar('event_id', { length: 36 }).notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  integrationType: varchar('integration_type', { length: 50 }).notNull(),
+  integrationId: integer('integration_id').notNull(),
+  clientId: varchar('client_id', { length: 100 }).notNull(),
+  sessionId: varchar('session_id', { length: 36 }).notNull(),
+  source: varchar('source', { length: 20 }).notNull(),
+  eventType: varchar('event_type', { length: 50 }).notNull(),
+  connectionState: varchar('connection_state', { length: 20 }),
+  outcome: varchar('outcome', { length: 20 }),
+  rpcLabel: varchar('rpc_label', { length: 100 }),
+  errorCode: varchar('error_code', { length: 100 }),
+  positionX: decimal('position_x', { precision: 12, scale: 3 }),
+  positionY: decimal('position_y', { precision: 12, scale: 3 }),
+  positionZ: decimal('position_z', { precision: 12, scale: 3 }),
+  summary: varchar('summary', { length: 500 }).notNull(),
+  payloadBytes: integer('payload_bytes').notNull(),
+  payloadSha256: varchar('payload_sha256', { length: 64 }).notNull(),
+  occurredAt: timestamp('occurred_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => ({
+  eventIdIdx: uniqueIndex('idx_threed_mqtt_events_event_id').on(table.eventId),
+  ownerIdx: index('idx_threed_mqtt_events_owner').on(table.userId),
+  integrationOccurredIdx: index('idx_threed_mqtt_events_integration_occurred')
+    .on(table.integrationType, table.integrationId, table.occurredAt),
+  sessionIdx: index('idx_threed_mqtt_events_session').on(table.sessionId),
+  typeIdx: index('idx_threed_mqtt_events_type').on(table.eventType),
+  integrationTypeValid: check(
+    'threed_mqtt_events_integration_type_valid',
+    sql`${table.integrationType} ~ '^[a-z][a-z0-9_]{1,49}$'`
+  ),
+  sourceValid: check(
+    'threed_mqtt_events_source_valid',
+    sql`${table.source} IN ('lifecycle', 'status', 'from_device')`
+  ),
+  eventTypeValid: check(
+    'threed_mqtt_events_event_type_valid',
+    sql`${table.eventType} IN ('connection_state', 'position', 'rpc_ok', 'rpc_error', 'invalid_message_summary')`
+  ),
+  connectionStateValid: check(
+    'threed_mqtt_events_connection_state_valid',
+    sql`${table.connectionState} IS NULL OR ${table.connectionState} IN ('disconnected', 'connecting', 'connected', 'reconnecting', 'expired', 'error')`
+  ),
+  payloadBytesValid: check(
+    'threed_mqtt_events_payload_bytes_valid',
+    sql`${table.payloadBytes} >= 0 AND ${table.payloadBytes} <= 262144`
+  ),
+  payloadSha256Valid: check(
+    'threed_mqtt_events_payload_sha256_valid',
+    sql`${table.payloadSha256} ~ '^[0-9a-f]{64}$'`
+  ),
+}));
+
+// ============================================
+// 14. threed_farmbot_logs - Legacy FarmBot activity log
 // ============================================
 export const threedFarmbotLogs = pgTable('threed_farmbot_logs', {
   id: serial('id').primaryKey(),
@@ -1167,6 +1272,26 @@ export const threedFarmbotBrokerMetadataRelations = relations(
   })
 );
 
+export const threedMqttRuntimeRelations = relations(
+  threedMqttRuntime,
+  ({ one }) => ({
+    owner: one(user, {
+      fields: [threedMqttRuntime.userId],
+      references: [user.id],
+    }),
+  })
+);
+
+export const threedMqttEventsRelations = relations(
+  threedMqttEvents,
+  ({ one }) => ({
+    owner: one(user, {
+      fields: [threedMqttEvents.userId],
+      references: [user.id],
+    }),
+  })
+);
+
 export const threedTasksRelations = relations(threedTasks, ({ one, many }) => ({
   planting: one(threedPlantings, {
     fields: [threedTasks.plantingId],
@@ -1251,6 +1376,12 @@ export type NewThreedFarmbotPeripheralBinding = typeof threedFarmbotPeripheralBi
 
 export type ThreedFarmbotBrokerMetadata = typeof threedFarmbotBrokerMetadata.$inferSelect;
 export type NewThreedFarmbotBrokerMetadata = typeof threedFarmbotBrokerMetadata.$inferInsert;
+
+export type ThreedMqttRuntime = typeof threedMqttRuntime.$inferSelect;
+export type NewThreedMqttRuntime = typeof threedMqttRuntime.$inferInsert;
+
+export type ThreedMqttEvent = typeof threedMqttEvents.$inferSelect;
+export type NewThreedMqttEvent = typeof threedMqttEvents.$inferInsert;
 
 export type ThreedFarmbotLog = typeof threedFarmbotLogs.$inferSelect;
 export type NewThreedFarmbotLog = typeof threedFarmbotLogs.$inferInsert;

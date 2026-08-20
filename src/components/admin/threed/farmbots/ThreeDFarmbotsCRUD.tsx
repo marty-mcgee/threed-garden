@@ -22,6 +22,7 @@ import {
   KeyRound,
   RefreshCw,
   Unplug,
+  Activity,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
+import { FarmBotMqttActivityDialog } from './FarmBotMqttActivityDialog';
 
 // ✅ Types
 interface Bed {
@@ -225,6 +227,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
   const [brokerMetadataRefreshing, setBrokerMetadataRefreshing] = useState(false);
   const [mqttReadinessChecking, setMqttReadinessChecking] = useState(false);
   const [mqttReadiness, setMqttReadiness] = useState<FarmBotMqttReadiness | null>(null);
+  const [activityFarmbot, setActivityFarmbot] = useState<Farmbot | null>(null);
 
   // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
@@ -831,6 +834,10 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
           <DropdownMenuItem onClick={() => openCredentialDialog(farmbot)}>
             <KeyRound className="w-4 h-4 mr-2" />
             FarmBot Connection
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setActivityFarmbot(farmbot)}>
+            <Activity className="w-4 h-4 mr-2" />
+            MQTT Activity
           </DropdownMenuItem>
           {farmbot.positionX && farmbot.positionZ && (
             <DropdownMenuItem>
@@ -1864,6 +1871,11 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
           </div>
         </DialogContent>
       </Dialog>
+
+      <FarmBotMqttActivityDialog
+        farmbot={activityFarmbot}
+        onClose={() => setActivityFarmbot(null)}
+      />
     </div>
   );
 }

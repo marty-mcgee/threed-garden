@@ -21,7 +21,7 @@
 |---|---|
 | Current stable version | **v0.18.0 — ThreeD FarmBot Integration, Phase 1** |
 | Current release candidate | **None designated** |
-| Current development milestone | **v0.18.1 — Phase 2A MQTT worker design review** |
+| Current development milestone | **v0.18.1-alpha — Phase 2D authenticated App status display** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1273,4 +1273,30 @@ The proposed worker architecture is documented in `docs/developers/FARMBOT_MQTT_
 
 The initial runtime status is intentionally volatile and queried from the worker through a signed internal boundary, avoiding a database change in Phase 2. A local compatibility test must select the MQTT transport before a dependency is installed because FarmBot documents MQTT as the preferred non-browser protocol but does not production-test FarmBotJS in Node.js.
 
-This is a design-review checkpoint only. `package.json` remains at the production version, no release candidate is designated, and no worker, external host, internal API, environment setting, MQTT socket, schema change, or physical operation has been created. Phase 2B requires separate approval after review of the design.
+Phase 2A was a design-review checkpoint only and did not create a worker, external host, internal API, environment setting, MQTT socket, schema change, or physical operation. Phase 2B subsequently received separate approval and is recorded below.
+
+### v0.18.1-alpha Phase 2B implementation record
+
+Phase 2A and Phase 2B were explicitly approved. ThreeD MQTT is now a provider-neutral service boundary: `src/lib/services/threed/mqtt` owns reusable transport and signed worker communication, while `src/lib/services/threed/farmbot/mqtt` owns all FarmBot grants, identities, topic rules, parsing, session policy, persistence mapping, and its executable entry point. FarmBot depends on MQTT; MQTT does not import or name FarmBot. Offline validation covers signed request tampering and replay, short-lived identity-bound grants, one owner-bound session per App FarmBot, lifecycle and retry limits, exact read-only topics, bounded position extraction, redacted runtime status, shutdown, and a loopback-only internal HTTP boundary.
+
+At the Phase 2B checkpoint, the executable used an intentionally unavailable transport and added no App route or durable runtime table. It still has no publish interface, MQTT library, deployed host, or live connection. The separately approved persistence step is recorded below; a subscribe-only adapter and any live read-only connection test remain gated.
+
+### v0.18.1-alpha normalized MQTT persistence and Admin activity
+
+The user explicitly approved the empty MQTT tables being generalized as `threed_mqtt_runtime` and `threed_mqtt_events`. They identify their provider record through `integration_type` and `integration_id`; the FarmBot adapter uses `farmbot` and performs owner/FarmBot validation before access. The runtime table holds one current allowlisted snapshot per integration. The event table stores deduplicated lifecycle and normalized adapter events with payload byte counts and SHA-256 fingerprints. Credentials, complete status trees, raw MQTT payloads, arbitrary topics, and CeleryScript are excluded.
+
+The worker batches normalized records to an HMAC-signed internal App endpoint using a separate optional worker-to-App key. The worker never receives Neon credentials. The App verifies FarmBot ID, owner, and canonical broker identity before transactional upsert/insert, limits each batch to 100 events, and removes history older than 30 days during ingestion. Unchanged position history is limited to a 30-second heartbeat and malformed traffic is aggregated. Credential replacement or removal clears current runtime while retaining history.
+
+The FarmBot Admin row now opens **MQTT Activity**, showing current state, last message/status, position, expiry, stale state, counters, filterable cursor-paginated history, refresh, and owner-controlled cleanup. Browser clients cannot create or edit MQTT records. The user successfully generated and applied the approved schema through the reviewed Drizzle workflow.
+
+### v0.18.1-alpha Phase 2C offline read-only adapter
+
+Phase 2C now includes a provider-neutral MQTT.js adapter behind the shared `MqttReadonlyTransport` interface. The non-browser FarmBot worker derives secure MQTT port 8883 from the validated token `mqtt` host, while retaining the separately validated `mqtt_ws` claim for diagnostics. It requests only the exact `status` and `from_device` topics at QoS 0, requires normal TLS certificate verification, disables MQTT.js reconnect/resubscribe behavior so the FarmBot registry remains the lifecycle authority, and exposes no publish method. Offline validation uses injected fake clients to verify the broker URL, credential handling, exact topic list, message forwarding, safe failure categories, and clean shutdown without contacting FarmBot.
+
+The separately approved live-test boundary adds explicit `disabled`/`mqttjs` worker selection, registry-owned bounded reconnect attempts, a server-only signed App client, an authenticated owner/readiness-checked `mqtt-session` route, and Admin Start/Stop read-only controls. The default remains `disabled`; selecting MQTT.js requires explicit worker environment configuration and a user action. On August 20, 2026, the user confirmed the complete local Phase 2C read-only path after the non-browser adapter was corrected to use token-derived secure MQTT port 8883: broker connection, status timestamps, normalized X/Y/Z position, stale-state recovery, runtime/event persistence, and clean Stop all passed. No MQTT publishing, physical command, ThreeD character change, or World Action change is included.
+
+### v0.18.1-alpha Phase 2D authenticated App status display
+
+The Dashboard FarmBot DetailsCard now reads a limited MQTT runtime summary through the existing authenticated FarmBot runtime route using the selected `projectId`. This mode requires the signed-in owner, owned active Project, active `project_threed` relationship, active `project_assets` FarmBot assignment, and active owned FarmBot to match. It displays connection state, state-change time, last message/status times, normalized device position, token expiry, and stale state. It does not add MQTT data to the public `/api/map/threed` response and does not return broker identity, worker session identity, event history, credentials, session controls, publishing, or physical commands to the Dashboard.
+
+The MQTT/FarmBot separation schema was generated and applied successfully by the user. Shared transport and worker-authentication behavior now has its own provider-neutral `npm run validate:threed-mqtt` check using neutral topics and fabricated credentials. FarmBot grants, topics, parsing, lifecycle, and persistence remain covered separately by the FarmBot adapter validations.

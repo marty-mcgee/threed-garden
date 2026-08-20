@@ -5,6 +5,8 @@ import { db } from '@/lib/db/client';
 import { 
   threedFarmbots,
   threedBeds,
+  threedMqttEvents,
+  threedMqttRuntime,
 } from '@/lib/schema/threed';
 import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
@@ -562,15 +564,32 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const [deleted] = await db
-      .delete(threedFarmbots)
-      .where(
-        and(
-          eq(threedFarmbots.id, parsedId),
-          eq(threedFarmbots.userId, userId)
-        )
-      )
-      .returning();
+    const deleted = await db.transaction(async (tx) => {
+      const [ownedFarmBot] = await tx
+        .select({ id: threedFarmbots.id })
+        .from(threedFarmbots)
+        .where(and(eq(threedFarmbots.id, parsedId), eq(threedFarmbots.userId, userId)))
+        .limit(1);
+      if (!ownedFarmBot) return null;
+
+      const integrationScope = and(
+        eq(threedMqttRuntime.userId, userId),
+        eq(threedMqttRuntime.integrationType, 'farmbot'),
+        eq(threedMqttRuntime.integrationId, parsedId)
+      );
+      await tx.delete(threedMqttRuntime).where(integrationScope);
+      await tx.delete(threedMqttEvents).where(and(
+        eq(threedMqttEvents.userId, userId),
+        eq(threedMqttEvents.integrationType, 'farmbot'),
+        eq(threedMqttEvents.integrationId, parsedId)
+      ));
+
+      const [removed] = await tx
+        .delete(threedFarmbots)
+        .where(and(eq(threedFarmbots.id, parsedId), eq(threedFarmbots.userId, userId)))
+        .returning();
+      return removed ?? null;
+    });
 
     if (!deleted) {
       return NextResponse.json(

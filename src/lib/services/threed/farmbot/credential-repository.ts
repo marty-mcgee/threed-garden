@@ -4,6 +4,7 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
 import {
   threedFarmbotBrokerMetadata,
+  threedMqttRuntime,
   threedFarmbotPeripheralBindings,
   threedFarmbots,
 } from '@/lib/schema/threed';
@@ -171,6 +172,14 @@ export async function saveFarmBotCredential(
       ));
 
     await tx
+      .delete(threedMqttRuntime)
+      .where(and(
+        eq(threedMqttRuntime.integrationType, 'farmbot'),
+        eq(threedMqttRuntime.integrationId, farmbotId),
+        eq(threedMqttRuntime.userId, userId)
+      ));
+
+    await tx
       .insert(threedFarmbotBrokerMetadata)
       .values({
         userId,
@@ -254,6 +263,14 @@ export async function clearFarmBotCredential(
       .where(and(
         eq(threedFarmbotBrokerMetadata.farmbotId, farmbotId),
         eq(threedFarmbotBrokerMetadata.userId, userId)
+      ));
+
+    await tx
+      .delete(threedMqttRuntime)
+      .where(and(
+        eq(threedMqttRuntime.integrationType, 'farmbot'),
+        eq(threedMqttRuntime.integrationId, farmbotId),
+        eq(threedMqttRuntime.userId, userId)
       ));
   });
 

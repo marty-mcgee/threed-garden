@@ -27,4 +27,8 @@ Beds, plantings, characters, FarmBots, and models become runtime markers from pr
 
 `threed_farmbot_peripheral_bindings` stores owner-approved semantic peripheral assignments. `threed_farmbot_broker_metadata` stores one redacted token-derived broker snapshot for diagnostics and readiness checks. Encrypted credential envelope columns remain on `threed_farmbots`; they are server-only and must not appear in general CRUD or map payloads. See the [ThreeD FarmBot Integration Plan](FARMBOT_INTEGRATION.md) before changing these fields or relationships.
 
+`threed_mqtt_runtime` stores one current allowlisted worker snapshot per MQTT integration, identified by `integration_type` and `integration_id`. `threed_mqtt_events` stores normalized MQTT lifecycle and adapter-produced event history with event IDs, payload size, and SHA-256 fingerprints. The current FarmBot adapter uses `integration_type = 'farmbot'` and verifies the referenced FarmBot and owner before every write or read. Neither table stores credentials, complete status trees, raw MQTT payloads, or arbitrary CeleryScript. Event history uses a 30-day ingestion-time retention window and owner-controlled cleanup.
+
+The legacy `threed_farmbot_logs` table remains separate because `FarmBotPoller` still references its older sensor/log shape. New MQTT activity must not write to its unrestricted `rawData` field.
+
 The Drizzle declarations are authoritative for exact column names and relationships. Never derive a schema change from this overview alone.
