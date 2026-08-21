@@ -191,7 +191,7 @@ export default function TrackPage() {
       <div className="w-full px-4 py-4">
         {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6">
-          <Link href={`/dashboard/music/album/${album.id}`}>
+          <Link href="/dashboard/music">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Album
           </Link>

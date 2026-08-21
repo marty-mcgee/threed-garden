@@ -417,7 +417,7 @@ export default function ClosureDetailPage() {
                   {related.map((rel) => (
                     <Link
                       key={rel.closure_id}
-                      href={`/closure/${rel.closure_id}`}
+                      href={`/dashboard/traffic/caltrans/closure/${rel.closure_id}`}
                       className="block p-4 hover:bg-gray-50 transition"
                     >
                       <div className="flex justify-between items-start">
@@ -454,7 +454,7 @@ export default function ClosureDetailPage() {
                   {historical.map((hist) => (
                     <Link
                       key={hist.closure_id}
-                      href={`/closure/${hist.closure_id}`}
+                      href={`/dashboard/traffic/caltrans/closure/${hist.closure_id}`}
                       className="block p-4 hover:bg-gray-50 transition"
                     >
                       <div className="flex justify-between items-start">

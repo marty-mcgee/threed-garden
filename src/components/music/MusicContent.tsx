@@ -132,10 +132,10 @@ export default function MusicContent() {
           setAlbums(publishedAlbums);
           
           // ✅ Fetch tracks for ALL albums
-          await fetchTracksForAllAlbums(publishedAlbums);
+          const albumsWithTracks = await fetchTracksForAllAlbums(publishedAlbums);
           
-          if (publishedAlbums.length > 0 && !selectedAlbum) {
-            const firstAlbum = publishedAlbums[0];
+          if (albumsWithTracks.length > 0 && !selectedAlbum) {
+            const firstAlbum = albumsWithTracks[0];
             console.log(`📀 Selecting first album: ${firstAlbum.title} (ID: ${firstAlbum.id})`);
             setSelectedAlbum(firstAlbum);
             // ✅ Set tracks for the first album
@@ -184,6 +184,7 @@ export default function MusicContent() {
     setAlbums(albumsWithTracks);
     
     console.log(`✅ Finished fetching tracks for all albums`);
+    return albumsWithTracks;
   };
 
   // ✅ Fetch tracks for a specific album (used when selecting an album)

@@ -3,10 +3,8 @@
 
 import {
   MapPin, AlertTriangle, Radio, Car, Flame, BarChart3,
-  ScanEye, Leaf, Box, BedDouble, Sprout, Calendar, Apple,
-  Droplets, Cpu, TrendingUp, Activity, Carrot,
-  LayoutDashboard, Music, Album, ListMusic, Link as LinkIcon,
-  Image, Volume2, type LucideIcon
+  ScanEye, Droplets, TrendingUp, Activity, Carrot,
+  LayoutDashboard, Music, type LucideIcon
 } from 'lucide-react';
 import { getClientSettings, isServiceEnabledClient } from './settings.client';
 import type { ModuleName } from './settings';
@@ -31,10 +29,6 @@ export interface NavSection {
 export const ALL_NAV_ITEMS: NavItem[] = [
   // Music
   { path: '/dashboard/music', name: 'Overview', icon: LayoutDashboard, color: 'orange', module: 'music' },
-  { path: '/dashboard/music/albums', name: 'Albums', icon: Album, color: 'orange', module: 'music', service: 'albums' },
-  { path: '/dashboard/music/tracks', name: 'Tracks', icon: ListMusic, color: 'orange', module: 'music', service: 'tracks' },
-  { path: '/dashboard/music/links', name: 'Links', icon: LinkIcon, color: 'orange', module: 'music', service: 'links' },
-  { path: '/dashboard/music/media', name: 'Media', icon: Image, color: 'orange', module: 'music', service: 'media' },
   
   // Traffic
   { path: '/dashboard/traffic', name: 'Overview', icon: LayoutDashboard, color: 'blue', module: 'traffic' },
@@ -45,16 +39,8 @@ export const ALL_NAV_ITEMS: NavItem[] = [
   { path: '/dashboard/traffic/chp-historical', name: 'CHP Historical', icon: BarChart3, color: 'purple', module: 'traffic', service: 'chpHistorical' },
   
   // ThreeD
-  { path: '/dashboard/threed', name: 'Overview', icon: LayoutDashboard, color: 'green', module: 'threed' },
-  { path: '/dashboard/threed/plants', name: 'Plants', icon: Leaf, color: 'green', module: 'threed', service: 'plants' },
-  { path: '/dashboard/threed/models', name: 'Models', icon: Box, color: 'yellow', module: 'threed', service: 'models' },
-  { path: '/dashboard/threed/characters', name: 'Characters', icon: Box, color: 'cyan', module: 'threed', service: 'characters' },
-  { path: '/dashboard/threed/beds', name: 'Beds', icon: BedDouble, color: 'blue', module: 'threed', service: 'beds' },
-  { path: '/dashboard/threed/plantings', name: 'Plantings', icon: Sprout, color: 'emerald', module: 'threed', service: 'plantings' },
-  { path: '/dashboard/threed/tasks', name: 'Tasks', icon: Calendar, color: 'orange', module: 'threed', service: 'tasks' },
-  { path: '/dashboard/threed/harvests', name: 'Harvests', icon: Apple, color: 'red', module: 'threed', service: 'harvests' },
+  { path: '/dashboard/map', name: 'Overview', icon: LayoutDashboard, color: 'green', module: 'threed' },
   { path: '/dashboard/threed/weather', name: 'Weather', icon: Droplets, color: 'cyan', module: 'threed', service: 'weather' },
-  { path: '/dashboard/threed/farmbots', name: 'FarmBots', icon: Cpu, color: 'purple', module: 'threed', service: 'farmbot' },
   { path: '/dashboard/threed/garden/analytics', name: 'Analytics', icon: TrendingUp, color: 'amber', module: 'threed', service: 'analytics' },
 ];
 

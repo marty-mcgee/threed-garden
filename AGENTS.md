@@ -40,7 +40,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 Current production version: v0.18.4a "Admin and Dashboard UI Improvements".
 
-No later release candidate is currently designated.
+Current release candidate: v0.18.4b "Dashboard Surface Cleanup".
 
 v0.18.4a is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 

@@ -117,7 +117,7 @@ export default function AdminMusicDashboard() {
       subtitle: `${stats?.albums.published || 0} published, ${stats?.albums.draft || 0} draft`,
       icon: Album,
       color: 'bg-blue-500',
-      link: '/dashboard/music/admin/albums',
+      link: '/admin/music/albums',
     },
     {
       title: 'Total Tracks',
@@ -125,7 +125,7 @@ export default function AdminMusicDashboard() {
       subtitle: `${stats?.tracks.totalPlays?.toLocaleString() || 0} total plays`,
       icon: Music,
       color: 'bg-green-500',
-      link: '/dashboard/music/admin/tracks',
+      link: '/admin/music/tracks',
     },
     {
       title: 'Total Links',
@@ -133,7 +133,7 @@ export default function AdminMusicDashboard() {
       subtitle: `${stats?.links.active || 0} active links`,
       icon: LinkIcon,
       color: 'bg-purple-500',
-      link: '/dashboard/music/admin/links',
+      link: '/admin/music/links',
     },
     {
       title: 'Listening Time',
@@ -201,7 +201,7 @@ export default function AdminMusicDashboard() {
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary">{track.playCount} plays</Badge>
                     <Button size="sm" variant="ghost" asChild>
-                      <Link href={`/dashboard/music/admin/tracks?trackId=${track.id}`}>
+                      <Link href={`/admin/music/tracks/${track.id}`}>
                         <PlayCircle className="h-4 w-4" />
                       </Link>
                     </Button>
@@ -267,19 +267,19 @@ export default function AdminMusicDashboard() {
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <Button asChild className="justify-start">
-              <Link href="/dashboard/music/admin/albums/new">
+              <Link href="/admin/music/albums">
                 <Album className="h-4 w-4 mr-2" />
                 Create New Album
               </Link>
             </Button>
             <Button asChild variant="outline" className="justify-start">
-              <Link href="/dashboard/music/admin/tracks/new">
+              <Link href="/admin/music/tracks">
                 <Music className="h-4 w-4 mr-2" />
                 Add New Track
               </Link>
             </Button>
             <Button asChild variant="outline" className="justify-start">
-              <Link href="/dashboard/music/admin/links/new">
+              <Link href="/admin/music/links">
                 <LinkIcon className="h-4 w-4 mr-2" />
                 Add New Link
               </Link>

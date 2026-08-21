@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.4a — Admin and Dashboard UI Improvements** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; the single-device Water pilot and ThreeD orchestration remain separate approval gates** |
+| Current release candidate | **v0.18.4b — Dashboard Surface Cleanup** |
+| Current development milestone | **Release preparation; the single-device Water pilot and ThreeD orchestration remain separate approval gates** |
 | Previous checkpoint | **v0.18.3b — ThreeD MQTT Control Layer: Phase 4L-D–4L-K** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -373,6 +373,7 @@ API (/api/map/threed)
 | **v0.18.3a** | **2026-08-21** | **Production release — Phase 4 command delivery safety foundation through Phase 4L-C** |
 | **v0.18.3b** | **2026-08-21** | **Production release — Phase 4L-D–4L-K emergency audit persistence, disabled worker boundary, correlation, and acknowledgement reporting** |
 | **v0.18.4a** | **2026-08-21** | **Production release — Admin and Dashboard UI improvements for navigation, project controls, asset tabs, and inline FarmBot management** |
+| **v0.18.4b** | **2026-08-21** | **Release candidate — Dashboard surface cleanup for ThreeD routing, one Music player page, and unified Traffic source layers with linked map/list selection** |
 
 ---
 
@@ -1259,7 +1260,7 @@ Status: Phases 2A–2D were individually approved, implemented, manually verifie
 - Treat character animation completion, command acceptance, device acknowledgement, and physical completion as separate states.
 - Starting this pilot requires explicit approval to operate the physical FarmBot.
 
-### v0.18.4b+ — Phase 5: ThreeD orchestration
+### v0.18.5+ — Phase 5: ThreeD orchestration
 
 - Add character approach and orientation, then use the established semantic animation path before submitting an audited FarmBot action request.
 - Preserve FBX loading, semantic Animation Action Mapping, GardenCharacter and EcctrlCharacter separation, task-to-locomotion crossfades, DetailsCard controls, and existing Planting-targeted Water and Pick Fruit behavior.

@@ -40,6 +40,8 @@ export interface TrafficIncident {
 
 interface EnhancedLeafletMapProps {
   incidents: TrafficIncident[];
+  selectedIncidentId?: string | null;
+  onIncidentSelect?: (incidentId: string) => void;
   onRefresh?: () => void;
   // autoRefreshInterval?: number;
   height?: string;
@@ -145,12 +147,6 @@ function createPopupContent(incident: TrafficIncident): string {
         
         <div class="mt-3 flex gap-2">
           <button 
-            onclick="window.location.href='/dashboard/traffic/incident/${incident.id}'"
-            class="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition"
-          >
-            View Details
-          </button>
-          <button 
             onclick="window.open('https://www.google.com/maps?q=${incident.lat},${incident.lng}', '_blank')"
             class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition"
           >
@@ -166,9 +162,18 @@ function createPopupContent(incident: TrafficIncident): string {
 // MAP CONTROLLER
 // ============================================
 
-function MapController({ incidents }: { incidents: TrafficIncident[] }) {
+function MapController({
+  incidents,
+  selectedIncidentId,
+  onIncidentSelect,
+}: {
+  incidents: TrafficIncident[];
+  selectedIncidentId?: string | null;
+  onIncidentSelect?: (incidentId: string) => void;
+}) {
   const map = useMap();
   const markerClusterRef = useRef<any>(null);
+  const markersByIncidentId = useRef<Map<string, L.Marker>>(new Map());
 
   useEffect(() => {
     if (!map) return;
@@ -191,8 +196,10 @@ function MapController({ incidents }: { incidents: TrafficIncident[] }) {
         maxWidth: 300,
         className: 'incident-popup',
       });
+      marker.on('click', () => onIncidentSelect?.(incident.id));
 
       markerCluster.addLayer(marker);
+      markersByIncidentId.current.set(incident.id, marker);
     });
 
     map.addLayer(markerCluster);
@@ -206,8 +213,22 @@ function MapController({ incidents }: { incidents: TrafficIncident[] }) {
 
     return () => {
       map.removeLayer(markerCluster);
+      markersByIncidentId.current.clear();
     };
-  }, [map, incidents]);
+  }, [map, incidents, onIncidentSelect]);
+
+  useEffect(() => {
+    if (!selectedIncidentId) return;
+
+    const marker = markersByIncidentId.current.get(selectedIncidentId);
+    const markerCluster = markerClusterRef.current;
+    if (!marker || !markerCluster) return;
+
+    markerCluster.zoomToShowLayer(marker, () => {
+      map.setView(marker.getLatLng(), Math.max(map.getZoom(), 13));
+      marker.openPopup();
+    });
+  }, [map, selectedIncidentId]);
 
   return null;
 }
@@ -248,6 +269,8 @@ function MapLegend() {
 
 export function EnhancedLeafletMap({
   incidents,
+  selectedIncidentId,
+  onIncidentSelect,
   onRefresh,
   // autoRefreshInterval = 60000,
   height = '600px',
@@ -318,7 +341,11 @@ export function EnhancedLeafletMap({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           
-          <MapController incidents={incidents} />
+          <MapController
+            incidents={incidents}
+            selectedIncidentId={selectedIncidentId}
+            onIncidentSelect={onIncidentSelect}
+          />
           <MapLegend />
         </MapContainer>
       </div>

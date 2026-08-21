@@ -2,6 +2,12 @@
 
 The Dashboard at `/dashboard` presents project-scoped Music, ThreeD Garden, and Traffic data. Choose a project before evaluating its assets.
 
+ThreeD visualization is centered on `/dashboard/map`; the former `/dashboard/threed` entry redirects there. ThreeD record creation and editing belong in `/admin/threed`, rather than duplicate Dashboard CRUD pages.
+
+Music uses one Dashboard page at `/dashboard/music`, combining the album library, track lists, and player. Album and Track creation or editing belongs in `/admin/music`.
+
+Traffic uses `/dashboard/traffic` as its combined map and list overview. Its compact source buttons show or hide CHP Incidents, CHP Historical, Caltrans, CalFire, and Bay Area 511.org records without leaving the page. The incident list appears below the map; selecting a list record focuses its map marker, while selecting a marker highlights and reveals its list record. Each provider is loaded independently, so an unavailable source is reported without hiding data returned by the other sources. The provider-specific Dashboard pages remain available for focused review.
+
 On the Dashboard Map, the compact Project name control at the upper left expands to show item
 counts, update freshness, the Project selector, and the Admin Details link.
 

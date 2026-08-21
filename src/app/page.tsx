@@ -159,7 +159,7 @@ export default function HomePage() {
     icon: "🎵", 
     title: "Music Streaming", 
     description: "Full-featured music player with waveform visualization", 
-    href: "/dashboard/music/player", 
+    href: "/dashboard/music",
     color: "from-purple-500 to-pink-500", 
     external: false 
   },

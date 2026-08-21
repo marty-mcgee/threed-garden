@@ -90,11 +90,11 @@ export default function CHPHistoricalContent() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/traffic/chp-historical/collisions?limit=2000`);
+      const response = await fetch('/api/traffic/chp-cases?limit=2000');
       const data = await response.json();
       if (data.success) {
         setAllData(data.data);
-        setTotalRecords(data.total || data.data.length);
+        setTotalRecords(data.pagination?.total || data.data.length);
         setLastUpdated(new Date());
       }
     } catch (err) {
@@ -108,7 +108,7 @@ export default function CHPHistoricalContent() {
   const pollData = async () => {
     setIsPolling(true);
     try {
-      const response = await fetch('/api/traffic/chp-historical/poll?action=poll&limit=500');
+      const response = await fetch('/api/traffic/chp-cases/poll?action=poll&limit=500');
       const data = await response.json();
       if (data.success) {
         await fetchData();
