@@ -1,7 +1,8 @@
 // components/admin/threed/farmbots/ThreeDFarmbotsCRUD.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Plus,
   Edit,
@@ -23,6 +24,7 @@ import {
   RefreshCw,
   Unplug,
   Activity,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +37,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
-import { FarmBotMqttActivityDialog } from './FarmBotMqttActivityDialog';
+import { FarmBotMqttActivityPanel } from './FarmBotMqttActivityDialog';
 
 // ✅ Types
 interface Bed {
@@ -228,6 +230,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
   const [mqttReadinessChecking, setMqttReadinessChecking] = useState(false);
   const [mqttReadiness, setMqttReadiness] = useState<FarmBotMqttReadiness | null>(null);
   const [activityFarmbot, setActivityFarmbot] = useState<Farmbot | null>(null);
+  const [connectionPanelHost, setConnectionPanelHost] = useState<HTMLDivElement | null>(null);
 
   // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
@@ -459,6 +462,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
   };
 
   const openCredentialDialog = async (farmbot: Farmbot) => {
+    setActivityFarmbot(null);
     setCredentialFarmbot(farmbot);
     setCredentialInput('');
     setCredentialConfigured(farmbot.credentialConfigured);
@@ -506,6 +510,15 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
     } finally {
       setCredentialLoading(false);
     }
+  };
+
+  const toggleMqttActivity = (farmbot: Farmbot) => {
+    if (activityFarmbot?.id === farmbot.id) {
+      setActivityFarmbot(null);
+      return;
+    }
+    closeCredentialDialog();
+    setActivityFarmbot(farmbot);
   };
 
   const saveCredential = async () => {
@@ -821,24 +834,63 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
 
   const renderActions = (farmbot: Farmbot) => (
     <div className="flex items-center justify-end gap-1">
-      <Button variant="ghost" size="sm" onClick={() => openEditDialog(farmbot)}>
+      <Button
+        type="button"
+        variant={credentialFarmbot?.id === farmbot.id ? 'secondary' : 'ghost'}
+        size="icon"
+        className={credentialFarmbot?.id === farmbot.id
+          ? 'h-8 w-8 bg-muted/50 text-white hover:bg-muted/50 hover:text-white'
+          : 'h-8 w-8 text-white hover:bg-muted/50 hover:text-white'}
+        title="FarmBot Connection"
+        aria-label={`FarmBot Connection for ${farmbot.name}`}
+        aria-pressed={credentialFarmbot?.id === farmbot.id}
+        onClick={() => {
+          if (credentialFarmbot?.id === farmbot.id) {
+            closeCredentialDialog();
+          } else {
+            void openCredentialDialog(farmbot);
+          }
+        }}
+      >
+        <KeyRound className="h-4 w-4" />
+      </Button>
+      <Button
+        type="button"
+        variant={activityFarmbot?.id === farmbot.id ? 'secondary' : 'ghost'}
+        size="icon"
+        className={activityFarmbot?.id === farmbot.id
+          ? 'h-8 w-8 bg-muted/50 text-white hover:bg-muted/50 hover:text-white'
+          : 'h-8 w-8 text-white hover:bg-muted/50 hover:text-white'}
+        title="MQTT Activity"
+        aria-label={`MQTT Activity for ${farmbot.name}`}
+        aria-pressed={activityFarmbot?.id === farmbot.id}
+        onClick={() => toggleMqttActivity(farmbot)}
+      >
+        <Activity className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-white hover:bg-muted/50 hover:text-white"
+        title="Edit FarmBot"
+        aria-label={`Edit ${farmbot.name}`}
+        onClick={() => openEditDialog(farmbot)}
+      >
         <Edit className="w-4 h-4" />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-white hover:bg-muted/50 hover:text-white"
+            title="More FarmBot actions"
+            aria-label={`More actions for ${farmbot.name}`}
+          >
             <MoreHorizontal className="w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => openCredentialDialog(farmbot)}>
-            <KeyRound className="w-4 h-4 mr-2" />
-            FarmBot Connection
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setActivityFarmbot(farmbot)}>
-            <Activity className="w-4 h-4 mr-2" />
-            MQTT Activity
-          </DropdownMenuItem>
           {farmbot.positionX && farmbot.positionZ && (
             <DropdownMenuItem>
               <span className="text-xs text-muted-foreground flex items-center gap-1">
@@ -1198,8 +1250,13 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredFarmbots.map((farmbot) => (
-                <TableRow key={farmbot.id} className="hover:bg-muted/50">
+              {filteredFarmbots.map((farmbot) => {
+                const connectionExpanded = credentialFarmbot?.id === farmbot.id;
+                const activityExpanded = activityFarmbot?.id === farmbot.id;
+
+                return (
+                  <Fragment key={farmbot.id}>
+                    <TableRow className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
                       <Bot className="w-3.5 h-3.5 text-slate-500" />
@@ -1245,8 +1302,27 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                     </Badge>
                   </TableCell>
                   <TableCell className="py-1 text-right">{renderActions(farmbot)}</TableCell>
-                </TableRow>
-              ))}
+                    </TableRow>
+                    {connectionExpanded && (
+                      <TableRow className="hover:bg-transparent">
+                        <TableCell colSpan={7} className="bg-muted/20 p-2">
+                          <div ref={setConnectionPanelHost} />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {activityExpanded && (
+                      <TableRow className="hover:bg-transparent">
+                        <TableCell colSpan={7} className="bg-muted/20 p-2">
+                          <FarmBotMqttActivityPanel
+                            farmbot={farmbot}
+                            onClose={() => setActivityFarmbot(null)}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </Fragment>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
@@ -1450,17 +1526,27 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
         </DialogContent>
       </Dialog>
 
-      <Dialog
-        open={!!credentialFarmbot}
-        onOpenChange={(open) => !open && !credentialSaving && !connectionTesting
-          && !peripheralsLoading && !bindingSaving
-          && !bindingValidating && !brokerMetadataRefreshing && !mqttReadinessChecking
-          && closeCredentialDialog()}
-      >
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>FarmBot Connection</DialogTitle>
-          </DialogHeader>
+      {credentialFarmbot && connectionPanelHost && createPortal(
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+            <h3 className="flex items-center gap-2 font-semibold">
+              <KeyRound className="h-5 w-5" />
+              FarmBot Connection — {credentialFarmbot.name}
+            </h3>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200"
+              onClick={closeCredentialDialog}
+              disabled={credentialSaving || connectionTesting || peripheralsLoading
+                || bindingSaving || bindingValidating || brokerMetadataRefreshing
+                || mqttReadinessChecking}
+            >
+              <X className="mr-1 h-4 w-4" />
+              Close
+            </Button>
+          </div>
           <div className="space-y-4 pt-2">
             <div className="rounded-md border p-3 text-sm">
               <div className="flex items-center justify-between gap-3">
@@ -1488,7 +1574,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                   type="button"
                   size="sm"
                   variant="outline"
-                  className="mt-2"
+                  className="mt-2 border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
                   onClick={checkMqttReadiness}
                   disabled={credentialLoading || credentialSaving || connectionTesting
                     || mqttReadinessChecking}
@@ -1545,6 +1631,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                       type="button"
                       size="sm"
                       variant="outline"
+                      className="border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
                       onClick={refreshBrokerMetadata}
                       disabled={credentialLoading || credentialSaving || connectionTesting
                         || peripheralsLoading || bindingSaving || bindingValidating
@@ -1559,6 +1646,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                       type="button"
                       size="sm"
                       variant="outline"
+                      className="border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
                       onClick={checkMqttReadiness}
                       disabled={credentialLoading || credentialSaving || connectionTesting
                         || peripheralsLoading || bindingSaving || bindingValidating
@@ -1637,6 +1725,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                     type="button"
                     size="sm"
                     variant="outline"
+                    className="border-cyan-300 bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
                     onClick={discoverPeripherals}
                     disabled={credentialLoading || credentialSaving || connectionTesting
                       || peripheralsLoading || brokerMetadataRefreshing}
@@ -1670,6 +1759,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                         type="button"
                         size="sm"
                         variant="outline"
+                        className="border-green-300 bg-green-50 text-green-700 hover:bg-green-100"
                         onClick={validateWaterPeripheral}
                         disabled={bindingSaving || bindingValidating || brokerMetadataRefreshing}
                       >
@@ -1679,7 +1769,8 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                       <Button
                         type="button"
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
+                        className="border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
                         onClick={clearWaterPeripheral}
                         disabled={bindingSaving || bindingValidating || brokerMetadataRefreshing}
                       >
@@ -1709,6 +1800,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                               type="button"
                               size="sm"
                               variant="outline"
+                              className="border-cyan-300 bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
                               onClick={() => assignWaterPeripheral(peripheral.id)}
                               disabled={bindingSaving || bindingValidating
                                 || brokerMetadataRefreshing}
@@ -1738,7 +1830,9 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                 type="button"
                 size="sm"
                 variant={credentialMode === 'login' ? 'secondary' : 'ghost'}
-                className="flex-1"
+                className={credentialMode === 'login'
+                  ? 'flex-1 bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
+                  : 'flex-1 text-indigo-700 hover:bg-indigo-50'}
                 onClick={() => setCredentialMode('login')}
                 disabled={credentialSaving || connectionTesting || peripheralsLoading
                   || bindingSaving || brokerMetadataRefreshing}
@@ -1749,7 +1843,9 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                 type="button"
                 size="sm"
                 variant={credentialMode === 'token' ? 'secondary' : 'ghost'}
-                className="flex-1"
+                className={credentialMode === 'token'
+                  ? 'flex-1 bg-indigo-100 text-indigo-800 hover:bg-indigo-200'
+                  : 'flex-1 text-indigo-700 hover:bg-indigo-50'}
                 onClick={() => setCredentialMode('token')}
                 disabled={credentialSaving || connectionTesting || peripheralsLoading
                   || bindingSaving || brokerMetadataRefreshing}
@@ -1817,6 +1913,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                     <Button
                       type="button"
                       variant="outline"
+                      className="border-green-300 bg-green-50 text-green-700 hover:bg-green-100"
                       onClick={testStoredCredential}
                       disabled={credentialLoading || credentialSaving || connectionTesting
                         || peripheralsLoading || bindingSaving || brokerMetadataRefreshing}
@@ -1829,6 +1926,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                     <Button
                       type="button"
                       variant="outline"
+                      className="border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
                       onClick={disconnectCredential}
                       disabled={credentialLoading || credentialSaving || connectionTesting
                         || peripheralsLoading || bindingSaving || brokerMetadataRefreshing}
@@ -1843,6 +1941,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                 <Button
                   type="button"
                   variant="outline"
+                  className="border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200"
                   onClick={closeCredentialDialog}
                   disabled={credentialSaving || connectionTesting || peripheralsLoading
                     || bindingSaving || bindingValidating || brokerMetadataRefreshing
@@ -1852,6 +1951,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                 </Button>
                 <Button
                   type="button"
+                  className="bg-blue-600 text-white hover:bg-blue-700"
                   onClick={credentialMode === 'login' ? generateCredentialFromLogin : saveCredential}
                   disabled={credentialLoading || credentialSaving || connectionTesting
                     || peripheralsLoading || bindingSaving || bindingValidating
@@ -1869,13 +1969,9 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
               </div>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      <FarmBotMqttActivityDialog
-        farmbot={activityFarmbot}
-        onClose={() => setActivityFarmbot(null)}
-      />
+        </div>,
+        connectionPanelHost
+      )}
     </div>
   );
 }

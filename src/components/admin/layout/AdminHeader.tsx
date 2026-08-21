@@ -3,7 +3,8 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Menu, Search, User, Bell, Radio, Settings } from 'lucide-react';
+import Link from 'next/link';
+import { Search, Bell, Radio, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -15,14 +16,8 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { SignOutButton } from '@/components/auth/SignOutButton';
-import { cn } from '@/lib/utils';
 
-interface AdminHeaderProps {
-  onMenuClick: () => void;
-  isCollapsed: boolean;
-}
-
-export function AdminHeader({ onMenuClick, isCollapsed }: AdminHeaderProps) {
+export function AdminHeader() {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
   const [mounted, setMounted] = useState(false);
@@ -43,54 +38,49 @@ export function AdminHeader({ onMenuClick, isCollapsed }: AdminHeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center gap-3 px-3">
-        {/* Left: Menu Toggle + Brand */}
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={onMenuClick}>
-            <Menu className="h-5 w-5" />
-          </Button>
-          {isCollapsed && (
-            <span className="text-lg font-bold">Admin</span>
-          )}
-        </div>
-
-        {/* Surface Switcher */}
-        <div className="hidden md:flex items-center gap-1 border rounded-lg p-0.5">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7 px-3 text-xs"
-            onClick={() => window.location.href = '/dashboard'}
-          >
-            <Radio className="w-3.5 h-3.5 mr-1" />
-            Dashboard
-          </Button>
-          <Button
-            variant="default"
-            size="sm"
-            className="h-7 px-3 text-xs"
-          >
-            <Settings className="w-3.5 h-3.5 mr-1" />
-            Admin
-          </Button>
-        </div>
-
-        {/* Center: Search (optional) */}
-        <div className="flex-1 max-w-md hidden md:block">
+      <div className="grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-3">
+        {/* Left: Search (optional) */}
+        <div className="hidden w-full max-w-xs md:block">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search..."
-              className="pl-8 w-full"
+              className="w-full pl-8"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
 
+        {/* Center: Surface Switcher */}
+        <div className="hidden items-center gap-1 rounded-lg border p-0.5 sm:flex">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-3 text-xs text-muted-foreground"
+            asChild
+          >
+            <Link href="/dashboard">
+              <Radio className="mr-1 h-3.5 w-3.5" />
+              Dashboard
+            </Link>
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-7 px-3 text-xs"
+            asChild
+          >
+            <Link href="/admin">
+              <Settings className="mr-1 h-3.5 w-3.5" />
+              Admin
+            </Link>
+          </Button>
+        </div>
+
         {/* Right: Notifications + User Menu */}
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center justify-self-end gap-2">
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />

@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { 
   Layers, 
   RefreshCw, 
@@ -21,8 +21,6 @@ import {
   Plus,
   Filter,
   Clock,
-  Wifi,
-  WifiOff,
   X,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
@@ -713,13 +711,13 @@ export default function UnifiedMapPage() {
 
 function UnifiedMapPageInner() {
   const { showToast, ToastComponent } = useToast();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const projectIdParam = searchParams.get('projectId');
   
   // ✅ State
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
   const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(!projectIdParam);
+  const [isProjectSummaryOpen, setIsProjectSummaryOpen] = useState(false);
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
   const [isDefaultView, setIsDefaultView] = useState(!projectIdParam);
   const [loading, setLoading] = useState(true);
@@ -819,6 +817,7 @@ function UnifiedMapPageInner() {
   // ✅ Handle project selection
   const handleProjectSelect = (projectId: string) => {
     setSelectedProjectId(projectId);
+    setIsProjectSummaryOpen(false);
     setIsDefaultView(false);
     setFilterAssetType(null); // Reset filter on project change
     setActionTarget(null); // Action targets are scoped to the current project.
@@ -1285,68 +1284,96 @@ function UnifiedMapPageInner() {
       />
 
       {/* ✅ Header with Live Data Status Indicator */}
-      <div className="flex flex-wrap justify-between items-center gap-4 m-0">
+      <div className="m-0 flex flex-wrap items-center justify-between gap-4 px-0.5 py-1">
         
-        <div className="flex items-center gap-2">
-          {/* <h1 className="text-2xl font-bold flex items-center gap-2">
-            <MapPin className="w-6 h-6 text-primary" />
-            -||-
-          </h1> */}
-          <Badge 
-            variant="outline" 
-            className="text-xs cursor-pointer hover:bg-muted"
-            onClick={() => setIsProjectSelectorOpen(true)}
+        <div className="relative flex flex-col items-start">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1 px-2 text-xs font-medium"
+            aria-expanded={selectedProjectId ? isProjectSummaryOpen : undefined}
+            onClick={() => {
+              if (selectedProjectId) {
+                setIsProjectSummaryOpen((open) => !open);
+              } else {
+                setIsProjectSelectorOpen(true);
+              }
+            }}
           >
-            <FolderOpen className="w-3.5 h-3.5 mr-1" />
-            {selectedProjectId ? projectInfo?.name || `Project #${selectedProjectId}` : '🔍 Select Project'}
-            <ChevronRight className="w-3 h-3 ml-1" />
-          </Badge>
+            <FolderOpen className="h-3.5 w-3.5" />
+            {selectedProjectId
+              ? projectInfo?.name || `Project #${selectedProjectId}`
+              : 'Select Project'}
+            {isProjectSummaryOpen && selectedProjectId
+              ? <ChevronDown className="h-3.5 w-3.5" />
+              : <ChevronRight className="h-3.5 w-3.5" />}
+          </Button>
 
-          {!hasRealData && selectedProjectId && (
-            <Badge variant="secondary" className="text-xs text-muted-foreground">
-              No Data
-            </Badge>
-          )}
-        {/* </div>
-        <div className="flex items-center gap-3 ml-9"> */}
-          <p className="text-xs text-muted-foreground">
-            {hasRealData ? (
-              `${data.traffic.total || 0} traffic items • ${data.threed.total || 0} 3D items`
-            ) : selectedProjectId ? (
-              'No data available for this project'
-            ) : (
-              'Select a project to load data'
-            )}
-          </p>
-          {/* ✅ Live Data Status Indicator */}
-          {selectedProjectId && (
-            <div className="flex items-center gap-1.5">
+          {selectedProjectId && isProjectSummaryOpen && (
+            <div className="absolute left-0 top-full z-30 mt-1 min-w-64 space-y-2 rounded-md border bg-background p-3 shadow-lg">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="outline" className="text-[10px]">
+                  {data.traffic.total || 0} traffic items
+                </Badge>
+                <Badge variant="outline" className="text-[10px]">
+                  {data.threed.total || 0} 3D items
+                </Badge>
+                {!hasRealData && (
+                  <Badge variant="secondary" className="text-[10px] text-muted-foreground">
+                    No Data
+                  </Badge>
+                )}
+              </div>
 
-              {/* {isStale ? (
-                <WifiOff className="w-3.5 h-3.5 text-amber-500" />
-              ) : dataAge !== '--' ? (
-                <Wifi className="w-3.5 h-3.5 text-green-500" />
-              ) : null} */}
-              
-              <Clock className={`w-3 h-3 ${isStale ? 'text-amber-600' : dataAge !== '--' ? 'text-green-600' : 'text-muted-foreground'}`} />
+              <div className="flex items-center gap-1.5">
+                <Clock className={`h-3 w-3 ${
+                  isStale
+                    ? 'text-amber-600'
+                    : dataAge !== '--'
+                      ? 'text-green-600'
+                      : 'text-muted-foreground'
+                }`} />
+                <span
+                  className={`text-xs ${
+                    isStale
+                      ? 'text-amber-600'
+                      : dataAge !== '--'
+                        ? 'text-green-600'
+                        : 'text-muted-foreground'
+                  }`}
+                  title={lastUpdated?.toLocaleString() || 'Unknown'}
+                >
+                  {dataAge !== '--' ? `Updated ${dataAge}` : 'Update time unavailable'}
+                </span>
+              </div>
 
-              <span 
-                className={`text-xs ${isStale ? 'text-amber-600' : dataAge !== '--' ? 'text-green-600' : 'text-muted-foreground'}`} 
-                title={lastUpdated?.toLocaleString() || 'Unknown'}
-              >
-                {dataAge !== '--' ? `Updated ${dataAge}` : ''}
-              </span>
-          
-              <Button
-                variant="ghost"
-                // size="sm"
-                className="text-xs text-muted-foreground"
-                onClick={() => router.push(`/admin/projects/${selectedProjectId}`)}
-              >
-                <Settings className="w-3 h-3" />
-                Details
-              </Button>
-            
+              <div className="flex flex-wrap gap-1 border-t pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setIsProjectSelectorOpen(true)}
+                >
+                  <FolderOpen className="mr-1 h-3 w-3" />
+                  Change Project
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => window.open(
+                    `/admin/projects/${selectedProjectId}`,
+                    '_blank',
+                    'noopener,noreferrer'
+                  )}
+                >
+                  <Settings className="mr-1 h-3 w-3" />
+                  Admin Details
+                </Button>
+              </div>
             </div>
           )}
         </div>

@@ -1,15 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Activity, Loader2, Play, RefreshCw, Square, Trash2 } from 'lucide-react';
+import { Activity, Loader2, Play, RefreshCw, Square, Trash2, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -95,11 +89,11 @@ function runtimeBadgeVariant(state: string): 'default' | 'secondary' | 'destruct
   return 'outline';
 }
 
-export function FarmBotMqttActivityDialog({
+export function FarmBotMqttActivityPanel({
   farmbot,
   onClose,
 }: {
-  farmbot: FarmBotSummary | null;
+  farmbot: FarmBotSummary;
   onClose: () => void;
 }) {
   const { showToast, ToastComponent } = useToast();
@@ -114,7 +108,6 @@ export function FarmBotMqttActivityDialog({
   const [sessionChanging, setSessionChanging] = useState<'start' | 'stop' | null>(null);
 
   const loadActivity = useCallback(async (append = false) => {
-    if (!farmbot) return;
     append ? setLoadingMore(true) : setLoading(true);
     try {
       const params = new URLSearchParams({ limit: '50' });
@@ -157,7 +150,6 @@ export function FarmBotMqttActivityDialog({
   }, [eventType, farmbot, nextCursor, showToast, source]);
 
   useEffect(() => {
-    if (!farmbot) return;
     setRuntime(null);
     setEvents([]);
     setNextCursor(null);
@@ -167,7 +159,7 @@ export function FarmBotMqttActivityDialog({
   }, [farmbot, source, eventType]);
 
   const deleteHistory = async () => {
-    if (!farmbot || !confirm(`Delete all MQTT event history for "${farmbot.name}"?`)) return;
+    if (!confirm(`Delete all MQTT event history for "${farmbot.name}"?`)) return;
     setDeleting(true);
     try {
       const response = await fetch(`/api/threed/farmbots/${farmbot.id}/mqtt-events?all=true`, {
@@ -189,7 +181,6 @@ export function FarmBotMqttActivityDialog({
   };
 
   const changeSession = async (action: 'start' | 'stop') => {
-    if (!farmbot) return;
     setSessionChanging(action);
     try {
       const response = await fetch(`/api/threed/farmbots/${farmbot.id}/mqtt-session`, {
@@ -219,17 +210,26 @@ export function FarmBotMqttActivityDialog({
   };
 
   return (
-    <Dialog open={Boolean(farmbot)} onOpenChange={(open) => !open && onClose()}>
+    <div className="space-y-3">
       {ToastComponent}
-      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+        <h3 className="flex items-center gap-2 font-semibold">
             <Activity className="h-5 w-5" />
-            MQTT Activity — {farmbot?.name}
-          </DialogTitle>
-        </DialogHeader>
+            MQTT Activity — {farmbot.name}
+        </h3>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200"
+          onClick={onClose}
+        >
+          <X className="mr-1 h-4 w-4" />
+          Close
+        </Button>
+      </div>
 
-        <div className="space-y-4">
+      <div className="space-y-4">
           <p className="text-xs text-muted-foreground">
             Normalized worker lifecycle and broker events. Credentials, complete status trees,
             and raw MQTT payloads are never stored here.
@@ -258,6 +258,7 @@ export function FarmBotMqttActivityDialog({
                     <Button
                       size="sm"
                       variant="outline"
+                      className="border-green-300 bg-green-50 text-green-700 hover:bg-green-100"
                       onClick={() => changeSession('start')}
                       disabled={sessionChanging !== null}
                     >
@@ -269,6 +270,7 @@ export function FarmBotMqttActivityDialog({
                     <Button
                       size="sm"
                       variant="outline"
+                      className="border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
                       onClick={() => changeSession('stop')}
                       disabled={sessionChanging !== null}
                     >
@@ -277,7 +279,12 @@ export function FarmBotMqttActivityDialog({
                         : <Square className="mr-2 h-4 w-4" />}
                       Stop
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => loadActivity(false)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                      onClick={() => loadActivity(false)}
+                    >
                       <RefreshCw className="mr-2 h-4 w-4" /> Refresh
                     </Button>
                   </div>
@@ -334,7 +341,7 @@ export function FarmBotMqttActivityDialog({
                   </SelectContent>
                 </Select>
                 <Button
-                  className="ml-auto"
+                  className="ml-auto border-red-300 bg-red-50 text-red-700 hover:bg-red-100"
                   size="sm"
                   variant="outline"
                   onClick={deleteHistory}
@@ -347,7 +354,7 @@ export function FarmBotMqttActivityDialog({
                 </Button>
               </div>
 
-              <div className="overflow-hidden rounded-md border">
+              <div className="overflow-x-auto rounded-md border">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -395,6 +402,7 @@ export function FarmBotMqttActivityDialog({
                   <Button
                     size="sm"
                     variant="outline"
+                    className="border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
                     onClick={() => loadActivity(true)}
                     disabled={loadingMore}
                   >
@@ -405,8 +413,7 @@ export function FarmBotMqttActivityDialog({
               )}
             </>
           )}
-        </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

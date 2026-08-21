@@ -97,7 +97,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           !isMobile && (isCollapsed ? "ml-16" : "ml-64")
         )}
       >
-        <AdminHeader onMenuClick={toggleSidebar} isCollapsed={isCollapsed} />
+        <AdminHeader />
         
         <main className="flex-1 p-2 overflow-y-auto">
           {children}

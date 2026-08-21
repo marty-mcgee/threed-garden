@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { 
-  ArrowLeft, Plus, Box, Car, Music, Edit, Trash2, Save, X, Loader2,
+  Plus, Box, Car, Music, Edit, Trash2, Save, X, Loader2,
   CheckCircle, XCircle, MoreHorizontal, ChevronDown, ChevronRight,
   FolderOpen, Layers, Sprout, Package, User, AlertTriangle, Music2,
   Image, Link2, FileText, Route, Flame, Radio
@@ -39,6 +39,7 @@ import { ThreeDTasksCRUD } from '@/components/admin/threed/tasks/ThreeDTasksCRUD
 import { ThreeDWateringSchedulesCRUD } from '@/components/admin/threed/watering-schedules/ThreeDWateringSchedulesCRUD';
 import { ThreeDHarvestsCRUD } from '@/components/admin/threed/harvests/ThreeDHarvestsCRUD';
 import { ThreeDFarmbotsCRUD } from '@/components/admin/threed/farmbots/ThreeDFarmbotsCRUD';
+import { ThreeDLayersCRUD } from '@/components/admin/threed/layers/ThreeDLayersCRUD';
 
 import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHPCADCRUD';
 import { TrafficCHPCentersCRUD } from '@/components/admin/traffic/chp-centers/TrafficCHPCentersCRUD';
@@ -98,10 +99,11 @@ const moduleConfig: Record<ModuleType, {
       { id: 'beds', label: 'Beds', component: ThreeDBedsCRUD, icon: Box },
       { id: 'models', label: '3D Models', component: ThreeDModelsCRUD, icon: Package },
       { id: 'characters', label: 'Characters', component: ThreeDCharactersCRUD, icon: User },
+      { id: 'layers', label: 'Layers', component: ThreeDLayersCRUD, icon: Layers },
       { id: 'tasks', label: 'Tasks', component: ThreeDTasksCRUD, icon: Sprout },
-      { id: 'watering-schedules', label: 'Watering Schedules', component: ThreeDWateringSchedulesCRUD, icon: Package },
       { id: 'harvests', label: 'Harvests', component: ThreeDHarvestsCRUD, icon: User },
-      { id: 'farmbots', label: 'Farmbots', component: ThreeDFarmbotsCRUD, icon: User },
+      { id: 'watering-schedules', label: 'Watering Schedules', component: ThreeDWateringSchedulesCRUD, icon: Package },
+      { id: 'farmbots', label: 'FarmBots', component: ThreeDFarmbotsCRUD, icon: User },
     ],
   },
   traffic: { 
@@ -114,10 +116,10 @@ const moduleConfig: Record<ModuleType, {
       { id: 'chp-centers', label: 'CHP Centers', component: TrafficCHPCentersCRUD, icon: AlertTriangle },
       { id: 'chp-cases', label: 'CHP Cases', component: TrafficCHPCasesCRUD, icon: FileText },
       { id: 'caltrans', label: 'Caltrans Closures', component: TrafficCaltransCRUD, icon: Route },
-      { id: 'caltrans-cctv', label: 'Caltrans CCTV', component: TrafficCaltransCctvCRUD, icon: Route },
       { id: 'caltrans-districts', label: 'Caltrans Districts', component: TrafficCaltransDistrictsCRUD, icon: Route },
-      { id: 'calfire', label: 'CalFire Incidents', component: TrafficCalfireCRUD, icon: Flame },
+      { id: 'caltrans-cctv', label: 'CCTV Cameras', component: TrafficCaltransCctvCRUD, icon: Route },
       { id: 'bay-area-511', label: 'Bay Area 511', component: TrafficBayArea511CRUD, icon: Radio },
+      { id: 'calfire', label: 'CalFire Incidents', component: TrafficCalfireCRUD, icon: Flame },
     ],
   },
   music: { 
@@ -600,11 +602,6 @@ export default function ProjectDetailPage() {
     <div className="space-y-4">
       {ToastComponent}
 
-      <Button variant="ghost" size="sm" onClick={() => router.push('/admin')}>
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Projects
-      </Button>
-
       {/* Project Header */}
       <div className="flex flex-wrap justify-between items-start gap-4">
         <div>
@@ -890,12 +887,11 @@ export default function ProjectDetailPage() {
                           <TabsList className="flex flex-wrap gap-1 mb-2">
                             {config.crudComponents.map((crud) => {
                               const CrudIcon = crud.icon;
-                              const isActive = getCreateTab(type, module.id) === crud.id;
                               return (
                                 <TabsTrigger 
                                   key={crud.id} 
                                   value={crud.id} 
-                                  className={`text-xs py-1 px-2 ${isActive ? '' : crud.icon}`}
+                                  className="px-2 py-1 text-xs"
                                 >
                                   <CrudIcon className="w-3 h-3 mr-1" />
                                   {crud.label}
@@ -908,7 +904,15 @@ export default function ProjectDetailPage() {
                             const CrudComponent = crud.component;
                             return (
                               <TabsContent key={crud.id} value={crud.id} className="mt-0">
-                                <CrudComponent onModuleUpdate={fetchProject} />
+                                {crud.id === 'layers' ? (
+                                  <ThreeDLayersCRUD
+                                    onModuleUpdate={fetchProject}
+                                    userId={session?.user?.id}
+                                    projectId={projectId}
+                                  />
+                                ) : (
+                                  <CrudComponent onModuleUpdate={fetchProject} />
+                                )}
                               </TabsContent>
                             );
                           })}

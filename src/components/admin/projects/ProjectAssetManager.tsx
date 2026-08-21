@@ -31,6 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/toast';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Asset {
   id: number;
@@ -595,24 +596,23 @@ export function ProjectAssetManager({
       {ToastComponent}
 
       {/* ✅ Asset Type Selector - Sub-tabs for different asset types */}
-      <div className="flex flex-wrap gap-1 border-b pb-1">
-        {moduleConfig.assetConfigs.map((config) => {
-          const Icon = config.icon;
-          const isActive = selectedAssetType === config.id;
-          return (
-            <Button
-              key={config.id}
-              variant={isActive ? 'default' : 'ghost'}
-              size="sm"
-              className={`text-xs h-7 px-2 ${isActive ? '' : moduleConfig.color}`}
-              onClick={() => setSelectedAssetType(config.id)}
-            >
-              <Icon className="w-3 h-3 mr-1" />
-              {config.label}
-            </Button>
-          );
-        })}
-      </div>
+      <Tabs value={selectedAssetType} onValueChange={setSelectedAssetType} className="w-full">
+        <TabsList className="mb-2 flex flex-wrap gap-1">
+          {moduleConfig.assetConfigs.map((config) => {
+            const Icon = config.icon;
+            return (
+              <TabsTrigger
+                key={config.id}
+                value={config.id}
+                className="px-2 py-1 text-xs"
+              >
+                <Icon className="mr-1 h-3 w-3" />
+                {config.label}
+              </TabsTrigger>
+            );
+          })}
+        </TabsList>
+      </Tabs>
 
       {currentAssetConfig && (
         <>

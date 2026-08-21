@@ -22,7 +22,11 @@ Use the sidebar as the canonical navigation for available admin pages. Avoid edi
 
 ## FarmBot connection setup
 
-Open **ThreeD Garden → FarmBots**, then use **FarmBot Connection** for an owned FarmBot record:
+Open **ThreeD Garden → FarmBots**, then choose **FarmBot Connection** or **MQTT Activity**
+from a FarmBot record. The selected section expands directly beneath that record and uses the
+available page width; opening one section closes the other.
+
+Use **FarmBot Connection** for an owned FarmBot record:
 
 1. Generate and store a credential with the FarmBot account login workflow, or store a current FarmBot JWT directly.
 2. Select **Test** and confirm REST authentication, the FarmBot REST device ID, and the MQTT broker identity.

@@ -88,7 +88,7 @@ const navSections: NavSection[] = [
     title: 'ThreeD',
     icon: Box,
     items: [
-      { title: 'Overview', href: '/admin/threed', icon: Carrot, exact: false },
+      { title: 'Overview', href: '/admin/threed', icon: Carrot, exact: true },
       { title: 'Plants', href: '/admin/threed/plants', icon: Sprout, exact: false },
       { title: 'Beds', href: '/admin/threed/beds', icon: Box, exact: false },
       { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
@@ -105,7 +105,7 @@ const navSections: NavSection[] = [
     title: 'Traffic',
     icon: Car,
     items: [
-      { title: 'Overview', href: '/admin/traffic', icon: Car, exact: false },
+      { title: 'Overview', href: '/admin/traffic', icon: Car, exact: true },
       { title: 'CHP-CAD Incidents', href: '/admin/traffic/chp-cad', icon: AlertTriangle, exact: false },
       { title: 'CHP Cases', href: '/admin/traffic/chp-cases', icon: FileText, exact: false },
       { title: 'CHP Centers', href: '/admin/traffic/chp-centers', icon: Building2, exact: false },
@@ -120,7 +120,7 @@ const navSections: NavSection[] = [
     title: 'Music',
     icon: Music,
     items: [
-      { title: 'Overview', href: '/admin/music', icon: Music, exact: false },
+      { title: 'Overview', href: '/admin/music', icon: Music, exact: true },
       { title: 'Albums', href: '/admin/music/albums', icon: Music, exact: false },
       { title: 'Tracks', href: '/admin/music/tracks', icon: Music2, exact: false },
       { title: 'Media', href: '/admin/music/media', icon: Image, exact: false },
@@ -136,6 +136,21 @@ const navSections: NavSection[] = [
   },
 ];
 
+function getActiveNavItemHref(pathname: string): string | null {
+  const matchingItems = navSections
+    .flatMap((section) => section.items)
+    .filter((item) => {
+      if (item.exact) {
+        return pathname === item.href;
+      }
+
+      return pathname === item.href || pathname.startsWith(`${item.href}/`);
+    })
+    .sort((a, b) => b.href.length - a.href.length);
+
+  return matchingItems[0]?.href ?? null;
+}
+
 interface AdminSidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
@@ -145,19 +160,14 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const activeItemHref = getActiveNavItemHref(pathname);
 
   // ✅ Determine which section should be expanded based on current path
   const getExpandedSections = () => {
     const expanded: Record<string, boolean> = {};
     
     navSections.forEach((section) => {
-      // ✅ Check if any item in this section matches the current path
-      const hasActiveChild = section.items.some((item) => {
-        if (item.exact) {
-          return pathname === item.href;
-        }
-        return pathname?.startsWith(item.href);
-      });
+      const hasActiveChild = section.items.some((item) => item.href === activeItemHref);
       
       if (hasActiveChild) {
         expanded[section.title] = true;
@@ -195,15 +205,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
 
   // ✅ Check if a nav item is active
   const isItemActive = (item: NavItem) => {
-    if (item.exact) {
-      return pathname === item.href;
-    }
-    // ✅ For non-exact items, check if pathname starts with the href
-    // ✅ Special case: don't match '/admin' for sub-paths
-    if (item.href === '/admin' && pathname !== '/admin') {
-      return false;
-    }
-    return pathname?.startsWith(item.href);
+    return item.href === activeItemHref;
   };
 
   // ✅ Check if a section has any active child

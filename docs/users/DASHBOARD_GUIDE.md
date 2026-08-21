@@ -2,6 +2,9 @@
 
 The Dashboard at `/dashboard` presents project-scoped Music, ThreeD Garden, and Traffic data. Choose a project before evaluating its assets.
 
+On the Dashboard Map, the compact Project name control at the upper left expands to show item
+counts, update freshness, the Project selector, and the Admin Details link.
+
 Expected behavior:
 
 - Only modules enabled for the project are available.
