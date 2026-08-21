@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.2b — ThreeD MQTT Control Layer: Phase 3D–3F** |
-| Current release candidate | **v0.18.3a — ThreeD MQTT Control Layer: Phase 4A–4L-C** |
-| Current development milestone | **Release preparation and production verification** |
+| Current stable version | **v0.18.3a — ThreeD MQTT Control Layer: Phase 4A–4L-C** |
+| Current release candidate | **None designated** |
+| Current development milestone | **Post-release checkpoint; Phase 4L-D not started** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
