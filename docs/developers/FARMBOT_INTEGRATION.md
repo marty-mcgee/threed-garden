@@ -1,6 +1,6 @@
 # ThreeD FarmBot Integration Plan
 
-Status: v0.18.1b is the confirmed production release. v0.18.2b is the designated Phase 3 release candidate. MQTT publishing and physical device commands remain disabled. Phase 4 is approved but not yet implemented.
+Status: v0.18.2b is released and production-verified with the Phase 3 command safety and audit boundary. MQTT publishing and physical device commands remain disabled. Phase 4 is approved and begins after this production checkpoint.
 
 ## Integration boundary
 
@@ -78,12 +78,92 @@ The user generated and applied that schema. Phase 3F-E adds pure recovery lifecy
 
 ### Phase 4 — Single Water pilot
 
-Status: planned and requires explicit physical-device test approval.
+Status: approved. Phase 4A begins with a dormant signed worker-request contract; no publish or physical operation is enabled by that increment.
 
 - Permit only the Water semantic action for one verified, project-assigned FarmBot.
 - Require the current owner, Project assignment, verified device identity, current Water binding, worker health, and command-safety checks.
 - Report accepted, acknowledged, completed, timed-out, and rejected states separately.
 - Do not infer success from the character animation or from sending a message.
+
+Phase 4A defines the strict internal Water request accepted by a future signed worker route. The request contains only server-resolved command identity, owner/device scope, the fixed pin/duration snapshot, fingerprint, RPC label, and expiry. It accepts no caller-provided MQTT topic or CeleryScript. The parser is not connected to the worker server, registry, transport, or App client, so worker health remains command-disabled.
+
+Phase 4B connects that parser to a signed internal worker endpoint, but only through a disabled executor. Before reaching the executor, the endpoint requires a matching FarmBot URL, owner, broker identity, connected session, and fresh status. The production worker has no enabled executor or transport publisher, valid requests return `503`, and health remains `commandsEnabled: false`. The App has no client caller for this endpoint.
+
+Phase 4C adds a dormant server-only App client for the signed command endpoint. It validates the complete semantic request again, requires the path FarmBot ID to match, and signs only the normalized snapshot. No App route or command workflow calls it. It cannot bypass the disabled worker executor and does not add MQTT publishing.
+
+Phase 4D adds process-local worker idempotency and per-FarmBot concurrency protection. A command UUID is claimed before execution, while a FarmBot can have only one active command. Active, changed, and uncertain retries fail; the known commands-disabled failure releases its claim because no delivery occurred. Phase 4G-E later permits only an exact completed retry to recover the original receipt. This is defense in depth beside the durable database audit and does not survive a worker restart. Automatic retry remains prohibited.
+
+Phase 4E adds offline acknowledgement correlation. A successful future executor result registers the exact command and RPC label with the worker gate, and the existing normalized `from_device` path offers matching `rpc_ok`/`rpc_error` responses to it. FarmBot and RPC identity must both match, and settlement is one-time. Correlated results are not yet reported to the App or database; the production executor is still disabled.
+
+Phase 4F-A adds the App receiving half of acknowledgement reporting. A signed worker-only endpoint accepts a strict 1 KiB normalized acknowledgement, verifies owner/command/FarmBot scope, and invokes the existing locked database transition. Matching retries are idempotent. The worker does not call this endpoint yet, and no raw broker data is accepted.
+
+Phase 4F-B adds the worker sending half. The correlation gate records its one-time normalized result in a queued HMAC-signed sink that retries failed App delivery with bounded backoff and flushes on shutdown. It reuses the existing worker-to-App URL and key. The disabled executor means this path has no normal runtime input yet, and publishing remains unavailable.
+
+Phase 4G-A makes the dormant App command client validate the worker's acceptance response before later orchestration can trust it. The response must contain only the matching command UUID, matching server-derived RPC label, and a valid acceptance timestamp. This client remains uncalled; no audit transition or MQTT publish follows from this increment.
+
+Phase 4G-B adds a pure adapter mapper from an accepted audit record and verified broker identity to the strict worker request. It prevents a future coordinator from manually assembling or widening the worker payload. The mapper has no database access or caller and causes no transition, network request, or publish.
+
+Phase 4G-C adds a dormant owner-scoped repository read that retrieves the accepted audit record and canonical broker identity under the per-FarmBot lock after repeating active Project assignment checks. It requires an unexpired accepted Water record and does not mutate state or contact the worker.
+
+Phase 4G-D composes the delivery-context read, strict accepted-record mapper, signed client, and strict worker response in a dormant server-only handoff. It rechecks identity at each boundary and reports worker acceptance only. It has no route caller and does not mark the command dispatched; the disabled executor still prevents MQTT or hardware delivery.
+
+Phase 4G-E makes a completed worker handoff receipt recoverable after a lost HTTP response. The process-local gate returns the original normalized receipt only when every field of the signed command snapshot matches. Active, changed, and uncertain retries still fail, and the executor is never called twice for an exact completed retry.
+
+Phase 4G-F adds a dormant audit-continuity writer that records a verified worker receipt as dispatch using the exact stored RPC label and worker timestamp. Acceptance and delivery-context loading authorize the operation before handoff; this post-handoff write remains recordable after Project deactivation so an external attempt cannot lose its audit outcome. It has no caller yet.
+
+Phase 4G-G composes the worker handoff and dispatch audit writer in a dormant server-only coordinator. It validates the receipt before writing and validates the persisted post-dispatch record afterward. The result represents recorded dispatch only, not FarmBot acknowledgement or Water completion. No route calls it, and the worker executor remains disabled.
+
+Phase 4G-H adds the dormant top-level pilot sequence from an existing validated audit record through acceptance and dispatch coordination. It verifies each returned lifecycle boundary and exposes no browser payload or route. Failure before a verified worker receipt leaves the command accepted rather than falsely dispatched. The disabled executor still prevents MQTT and hardware delivery.
+
+Phase 4I-A connects normalized worker acknowledgement ingestion to the existing completion transition. A matching `rpc_ok` records acknowledgement and completion at the response time; `rpc_error` remains rejected and does not complete. Exact retries are idempotent, and the route keeps its private authentication and scope checks. This does not enable command execution or publishing.
+
+Phase 4I-B adds a dormant timeout coordinator that records the 15-second acknowledgement timeout before making Water-off recovery required. Both repository steps can continue safely after a partial failure. This creates only an audit obligation: there is no scheduler, recovery handoff, MQTT publish, or physical Water-off action yet.
+
+Phase 4I-C defines the pure strict worker request for that Water-off obligation. It is derived only from the required recovery audit and verified broker identity and carries no caller-provided topic, CeleryScript, duration, pin value, or mode. Recovery has no expiry so the safety obligation remains actionable, but no endpoint or publisher consumes it yet.
+
+Phase 4I-D connects that strict request to a separate signed worker `/recoveries` endpoint. The endpoint repeats path identity and fresh owner/broker session checks, then invokes only a disabled recovery executor in production. It does not reuse the normal command gate, has no App caller, returns `503` for a valid request, leaves worker health command-disabled, and cannot publish MQTT or operate hardware.
+
+Phase 4I-E adds the dormant server-only App client for that recovery endpoint. It revalidates path/body identity and the strict request before signing, then requires an exact matching recovery receipt and bounded worker timestamp. No route, scheduler, timeout coordinator, repository workflow, World Action, or browser component calls it. The worker executor remains disabled and no MQTT publish or physical operation is possible.
+
+Phase 4I-F adds the dormant owner-scoped repository read for recovery delivery context. Under the per-FarmBot lock it requires the durable required-recovery lifecycle and canonical broker identity. Unlike normal command authorization, it deliberately does not repeat active Project assignment or FarmBot activation checks: Water-off is a post-dispatch safety obligation that must survive later deactivation. The read has no caller and performs no transition, network request, publish, or physical action.
+
+Phase 4I-G composes the recovery context, strict mapper, signed client, and strict receipt into a dormant server-only handoff. Identity is checked before and after the worker boundary. Its result proves only worker acceptance and does not mark recovery dispatched or claim broker/device acknowledgement. No route, scheduler, timeout workflow, World Action, or browser component calls it; the worker executor remains disabled and publishing is unavailable.
+
+Phase 4I-H replaces the unused permissive recovery-dispatch writer with a verified-receipt audit writer. It requires the exact stored recovery label and worker timestamp, writes `required → dispatched` under the per-FarmBot lock, and permits only exact retry after dispatch or resolution. It remains recordable after deactivation for audit continuity, has no caller, and does not contact MQTT or hardware.
+
+Phase 4I-I composes the dormant recovery handoff and verified dispatch writer. The coordinator validates the receipt before writing and validates the persisted recovery identity, state, and timestamp afterward. Its result records worker acceptance only, not MQTT or device acknowledgement. The server wrapper has no route or scheduler caller, the worker recovery executor remains disabled, and publishing remains unavailable.
+
+Phase 4I-J makes the worker fail closed on an invalid recovery executor receipt. Before returning `202`, it requires exactly the submitted command UUID, recovery label, and a bounded ISO worker timestamp; invalid results receive a limited `502`. Production still uses only the disabled executor, and this step adds no execution gate, publish method, physical operation, or caller.
+
+Phase 4I-K adds process-local recovery idempotency and per-FarmBot recovery concurrency. Active and changed duplicates fail, exact completed retries recover the original receipt, uncertain failures remain claimed, and only disabled execution releases its claim. This gate covers recovery requests only; shared arbitration with normal Water remains mandatory before enabling either executor. Both remain disabled and publishing is unavailable.
+
+Phase 4I-L gives the normal Water and Water-off recovery gates one shared process-local per-FarmBot arbiter. Either active flow blocks the other before executor entry, while each gate continues to own its separate identity and retry rules. The arbiter does not replace durable database locking or survive restart. Both executors remain disabled and publishing is unavailable.
+
+Phase 4I-M adds one-time recovery RPC correlation. The provider response path offers normalized RPC responses to both gates; only the exact FarmBot and recovery label settle the pending recovery. `rpc_ok` becomes confirmed and `rpc_error` becomes failed with a bounded code. The result is not yet reported to the App or database, both executors remain disabled, and publishing remains unavailable.
+
+Phase 4I-N adds the App receiving half for recovery acknowledgement. A separate 1 KiB HMAC-protected endpoint accepts only normalized confirmed/failed recovery identity and time, verifies owner/FarmBot scope, and uses the locked recovery lifecycle writer. Exact resolved retries are idempotent. The worker has no recovery reporter yet, both executors remain disabled, and no raw MQTT data or publish behavior is added.
+
+Phase 4I-O adds the worker sending half through a separate queued recovery reporter. The recovery gate queues only its one-time correlated normalized result. The reporter signs the strict payload for the recovery acknowledgement endpoint, retains failed deliveries for bounded retry, and flushes during worker shutdown. It reuses the App base URL and worker-to-App HMAC key; partial configuration fails closed. Both production executors remain disabled, and no MQTT publisher or physical action is added.
+
+Phase 4I-P makes recovery reporting require a strict App persistence receipt before removing a queued result. The response must contain only success plus the exact command UUID and confirmed/failed recovery state expected by the worker. Malformed, extra, or mismatched successful HTTP responses remain queued for retry. The receipt proves App ingestion only; execution and MQTT publishing remain disabled.
+
+Phase 4J applies the same receipt rule to normal command acknowledgements. An acknowledged Water RPC must persist through completion, while a rejected RPC must persist as rejected; the returned command UUID and final state must match exactly. A malformed or mismatched successful HTTP response stays queued for retry. This adds no timeout runner, executor, publisher, or physical operation.
+
+Phase 4K-A defines a strict normalized timeout report for future worker deadline monitoring. It carries only owner/FarmBot/command identity, the derived RPC label, acceptance time, timeout-observation time, and fixed `ack_timeout` reason. The timeout must occur at least 15 seconds after worker acceptance. The contract has no producer, timer, App endpoint, repository caller, or recovery trigger yet, and publishing remains disabled.
+
+Phase 4K-B adds the private App receiving boundary for that report. HMAC and replay checks precede a coordinator that matches owner, FarmBot, primary RPC label, and worker acceptance time against the stored dispatch audit. Only a dispatched or exact already-timed-out command may proceed to the existing timeout-and-recovery-required writer. There is no worker reporter or deadline monitor yet, so normal runtime cannot invoke this path; recovery dispatch and publishing remain disabled.
+
+Phase 4K-C adds the dormant worker sending half. Its separate signed queue retains timeout reports across failed requests and malformed or mismatched successful responses. Removal requires the matching command in `timed_out` state plus the deterministic recovery label and an allowed recovery lifecycle state. The queue has no execution-gate caller or deadline monitor yet, and no automatic recovery or publish behavior is enabled.
+
+Phase 4K-D connects a process-local 15-second deadline monitor only after a validated worker execution receipt. A matching RPC response cancels its deadline; a timeout removes correlation and queues one timeout report so a late response cannot also complete the command. Worker shutdown flushes both queues. Pending timers do not survive restart, so durable reconciliation remains a required later step. The disabled production executor means no timer starts in normal runtime, and publishing remains unavailable.
+
+Phase 4K-E adds a dormant App-side restart reconciliation path. A bounded oldest-first repository query finds dispatched audits beyond the 15-second deadline, and a strict coordinator applies the existing timeout-and-recovery-required transition. Commands resolved during the query/transition race are skipped without stopping the batch. Nothing calls the reconciler yet; it adds no route, worker database access, schema, automatic recovery, or publishing.
+
+Phase 4K-F exposes that reconciliation only through a private HMAC endpoint and a non-overlapping worker runner. The runner requests at most 50 oldest overdue audits at startup and every 30 seconds, waits for active work during shutdown, and receives aggregate counts only. The App retains all database ownership. Reconciliation can record timeout and recovery-required audit state, but cannot dispatch recovery, publish MQTT, or operate hardware.
+
+Phase 4L-A defines the first offline emergency Water-off worker contract. It is independent from normal commands, timeout recovery, character animation, and World Action completion. The server-generated emergency UUID produces a separate RPC label, the pin must already be server-resolved, and the exact request lifetime is 60 seconds. The contract has no route, audit writer, executor, client, publisher, or UI caller. A durable emergency audit requires separate schema review and approval.
+
+Phase 4L-B adds the separately approved and applied `threed_farmbot_emergency_actions` audit table. Phase 4L-C adds only its pure lifecycle policy: server-owned request identity, current active Water binding validation, fixed mode-0 peripheral snapshots, ordered requested-to-acknowledged/failed transitions, and pre-acceptance rejected/expired terminal paths. Exact RPC correlation is required. No repository writer, App route, worker handoff, MQTT publish operation, UI control, or hardware behavior is enabled.
 
 ### Phase 5 — ThreeD interaction expansion
 

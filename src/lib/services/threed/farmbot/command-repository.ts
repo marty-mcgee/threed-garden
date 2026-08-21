@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { randomUUID } from 'node:crypto';
-import { and, asc, eq, inArray, isNull, lt, ne, or, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNull, lt, lte, ne, or, sql } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
 import { project, projectAssets, projectThreed } from '@/lib/schema/project';
 import {
@@ -26,7 +26,9 @@ import {
 } from './peripheral-binding-validator';
 import type { FarmBotPeripheralBindingValidation } from './peripheral-binding-core';
 import {
+  FARMBOT_WATER_ACK_TIMEOUT_MS,
   farmBotCommandRpcLabel,
+  farmBotCommandRecoveryRpcLabel,
   prepareAcceptedFarmBotCommand,
   prepareAcknowledgedFarmBotCommand,
   prepareCompletedFarmBotCommand,
@@ -56,6 +58,45 @@ export class FarmBotCommandTransitionConflictError extends Error {
     super('farmbot_command_transition_conflict');
     this.name = 'FarmBotCommandTransitionConflictError';
   }
+}
+
+export class FarmBotCommandDeliveryContextError extends Error {
+  constructor(readonly code:
+    | 'invalid_delivery_time'
+    | 'command_not_accepted'
+    | 'recovery_not_required'
+    | 'broker_identity_missing') {
+    super(code);
+    this.name = 'FarmBotCommandDeliveryContextError';
+  }
+}
+
+export async function listOverdueDispatchedFarmBotCommands(input: {
+  now: Date;
+  limit?: number;
+}) {
+  const limit = input.limit ?? 50;
+  if (!(input.now instanceof Date) || Number.isNaN(input.now.valueOf())
+    || !Number.isSafeInteger(limit) || limit < 1 || limit > 100) {
+    throw new FarmBotCommandRepositoryScopeError();
+  }
+  const deadlineCutoff = new Date(input.now.getTime() - FARMBOT_WATER_ACK_TIMEOUT_MS);
+  return db
+    .select({
+      userId: threedFarmbotCommands.userId,
+      farmbotId: threedFarmbotCommands.farmbotId,
+      commandId: threedFarmbotCommands.commandId,
+      rpcLabel: threedFarmbotCommands.rpcLabel,
+      state: threedFarmbotCommands.state,
+      dispatchedAt: threedFarmbotCommands.dispatchedAt,
+    })
+    .from(threedFarmbotCommands)
+    .where(and(
+      eq(threedFarmbotCommands.state, 'dispatched'),
+      lte(threedFarmbotCommands.dispatchedAt, deadlineCutoff)
+    ))
+    .orderBy(asc(threedFarmbotCommands.dispatchedAt), asc(threedFarmbotCommands.id))
+    .limit(limit);
 }
 
 type FarmBotCommandQueryClient = Pick<typeof db, 'select'>;
@@ -369,6 +410,120 @@ export async function acceptValidatedFarmBotCommand(input: {
   });
 }
 
+export async function getAcceptedFarmBotCommandDeliveryContext(input: {
+  userId: string;
+  commandId: string;
+  now?: Date;
+}) {
+  const now = input.now ?? new Date();
+  if (!(now instanceof Date) || Number.isNaN(now.valueOf())) {
+    throw new FarmBotCommandDeliveryContextError('invalid_delivery_time');
+  }
+  const command = await getOwnedFarmBotCommand(input.userId, input.commandId);
+  if (!command) throw new FarmBotCommandRepositoryScopeError();
+
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`farmbot-command:${command.farmbotId}`}))`);
+    const [current] = await tx
+      .select()
+      .from(threedFarmbotCommands)
+      .where(and(
+        eq(threedFarmbotCommands.id, command.id),
+        eq(threedFarmbotCommands.userId, input.userId)
+      ))
+      .limit(1);
+    if (!current) throw new FarmBotCommandRepositoryScopeError();
+
+    await assertActiveProjectFarmBotAssignment({
+      userId: current.userId,
+      projectId: current.projectId,
+      farmbotId: current.farmbotId,
+    }, tx);
+    if (current.policyVersion !== 1 || current.semanticCommand !== 'water'
+      || current.state !== 'accepted' || !(current.acceptedAt instanceof Date)
+      || Number.isNaN(current.acceptedAt.valueOf())
+      || current.acceptedAt > now || current.acceptedAt >= current.expiresAt
+      || current.expiresAt <= now) {
+      throw new FarmBotCommandDeliveryContextError('command_not_accepted');
+    }
+
+    const [farmbot] = await tx
+      .select({ brokerDeviceId: threedFarmbots.brokerDeviceId })
+      .from(threedFarmbots)
+      .where(and(
+        eq(threedFarmbots.id, current.farmbotId),
+        eq(threedFarmbots.userId, current.userId),
+        eq(threedFarmbots.isActive, true)
+      ))
+      .limit(1);
+    if (!farmbot?.brokerDeviceId
+      || !/^device_[1-9]\d*$/.test(farmbot.brokerDeviceId)) {
+      throw new FarmBotCommandDeliveryContextError('broker_identity_missing');
+    }
+
+    return Object.freeze({
+      command: current,
+      brokerDeviceId: farmbot.brokerDeviceId,
+    });
+  });
+}
+
+export async function getRequiredFarmBotCommandRecoveryContext(input: {
+  userId: string;
+  commandId: string;
+  now?: Date;
+}) {
+  const now = input.now ?? new Date();
+  if (!(now instanceof Date) || Number.isNaN(now.valueOf())) {
+    throw new FarmBotCommandDeliveryContextError('invalid_delivery_time');
+  }
+  const command = await getOwnedFarmBotCommand(input.userId, input.commandId);
+  if (!command) throw new FarmBotCommandRepositoryScopeError();
+
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`farmbot-command:${command.farmbotId}`}))`);
+    const [current] = await tx
+      .select()
+      .from(threedFarmbotCommands)
+      .where(and(
+        eq(threedFarmbotCommands.id, command.id),
+        eq(threedFarmbotCommands.userId, input.userId)
+      ))
+      .limit(1);
+    if (!current) throw new FarmBotCommandRepositoryScopeError();
+
+    if (current.policyVersion !== 1 || current.semanticCommand !== 'water'
+      || !['timed_out', 'rejected'].includes(current.state)
+      || !(current.dispatchedAt instanceof Date) || Number.isNaN(current.dispatchedAt.valueOf())
+      || current.recoveryState !== 'required'
+      || current.recoveryRpcLabel !== farmBotCommandRecoveryRpcLabel(current.commandId)
+      || !(current.recoveryRequiredAt instanceof Date)
+      || Number.isNaN(current.recoveryRequiredAt.valueOf())
+      || current.recoveryRequiredAt < current.dispatchedAt
+      || current.recoveryRequiredAt > now) {
+      throw new FarmBotCommandDeliveryContextError('recovery_not_required');
+    }
+
+    const [farmbot] = await tx
+      .select({ brokerDeviceId: threedFarmbots.brokerDeviceId })
+      .from(threedFarmbots)
+      .where(and(
+        eq(threedFarmbots.id, current.farmbotId),
+        eq(threedFarmbots.userId, current.userId)
+      ))
+      .limit(1);
+    if (!farmbot?.brokerDeviceId
+      || !/^device_[1-9]\d*$/.test(farmbot.brokerDeviceId)) {
+      throw new FarmBotCommandDeliveryContextError('broker_identity_missing');
+    }
+
+    return Object.freeze({
+      command: current,
+      brokerDeviceId: farmbot.brokerDeviceId,
+    });
+  });
+}
+
 export async function markAcceptedFarmBotCommandDispatched(input: {
   userId: string;
   commandId: string;
@@ -410,6 +565,54 @@ export async function markAcceptedFarmBotCommandDispatched(input: {
   });
 }
 
+export async function recordFarmBotWorkerCommandDispatch(input: {
+  userId: string;
+  commandId: string;
+  rpcLabel: string;
+  workerAcceptedAt: Date;
+}) {
+  const command = await getOwnedFarmBotCommand(input.userId, input.commandId);
+  if (!command) throw new FarmBotCommandRepositoryScopeError();
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`farmbot-command:${command.farmbotId}`}))`);
+    const [current] = await tx
+      .select()
+      .from(threedFarmbotCommands)
+      .where(and(
+        eq(threedFarmbotCommands.id, command.id),
+        eq(threedFarmbotCommands.userId, input.userId)
+      ))
+      .limit(1);
+    if (!current || current.rpcLabel !== input.rpcLabel) {
+      throw new FarmBotCommandTransitionConflictError();
+    }
+
+    const alreadyRecorded = ['dispatched', 'acknowledged', 'completed', 'rejected', 'timed_out']
+      .includes(current.state)
+      && current.dispatchedAt instanceof Date
+      && input.workerAcceptedAt instanceof Date
+      && current.dispatchedAt.getTime() === input.workerAcceptedAt.getTime();
+    if (alreadyRecorded) return current;
+
+    const dispatched = prepareDispatchedFarmBotCommand({
+      command: current,
+      now: input.workerAcceptedAt,
+    });
+    const [updated] = await tx
+      .update(threedFarmbotCommands)
+      .set({ ...dispatched, updatedAt: dispatched.dispatchedAt })
+      .where(and(
+        eq(threedFarmbotCommands.id, current.id),
+        eq(threedFarmbotCommands.userId, input.userId),
+        eq(threedFarmbotCommands.state, 'accepted'),
+        eq(threedFarmbotCommands.rpcLabel, input.rpcLabel)
+      ))
+      .returning();
+    if (!updated) throw new FarmBotCommandTransitionConflictError();
+    return updated;
+  });
+}
+
 export async function recordFarmBotCommandAcknowledgement(input: {
   userId: string;
   commandId: string;
@@ -430,6 +633,11 @@ export async function recordFarmBotCommandAcknowledgement(input: {
       ))
       .limit(1);
     if (!current) throw new FarmBotCommandTransitionConflictError();
+    const alreadyRecorded = current.rpcLabel === input.rpcLabel
+      && ((input.outcome === 'ok' && ['acknowledged', 'completed'].includes(current.state))
+        || (input.outcome === 'error' && current.state === 'rejected'
+          && current.rejectionCode === 'farmbot_rpc_error'));
+    if (alreadyRecorded) return current;
     const result = prepareAcknowledgedFarmBotCommand({
       command: current,
       rpcLabel: input.rpcLabel,
@@ -470,6 +678,9 @@ export async function completeAcknowledgedFarmBotCommand(input: {
       ))
       .limit(1);
     if (!current) throw new FarmBotCommandTransitionConflictError();
+    if (current.state === 'completed' && current.completedAt instanceof Date) {
+      return current;
+    }
     const completed = prepareCompletedFarmBotCommand({
       command: current,
       now: input.now ?? new Date(),
@@ -506,6 +717,10 @@ export async function timeOutDispatchedFarmBotCommand(input: {
       ))
       .limit(1);
     if (!current) throw new FarmBotCommandTransitionConflictError();
+    if (current.state === 'timed_out' && current.rejectionCode === 'ack_timeout'
+      && current.terminalAt instanceof Date) {
+      return current;
+    }
     const timedOut = prepareTimedOutFarmBotCommand({
       command: current,
       now: input.now ?? new Date(),
@@ -542,6 +757,11 @@ export async function requireFarmBotCommandRecovery(input: {
       ))
       .limit(1);
     if (!current) throw new FarmBotCommandTransitionConflictError();
+    const recoveryAlreadyRequired = ['timed_out', 'rejected'].includes(current.state)
+      && ['required', 'dispatched', 'confirmed', 'failed'].includes(current.recoveryState ?? '')
+      && current.recoveryRpcLabel === farmBotCommandRecoveryRpcLabel(current.commandId)
+      && current.recoveryRequiredAt instanceof Date;
+    if (recoveryAlreadyRequired) return current;
     const required = prepareRequiredFarmBotCommandRecovery({
       command: current,
       now: input.now ?? new Date(),
@@ -561,10 +781,11 @@ export async function requireFarmBotCommandRecovery(input: {
   });
 }
 
-export async function markFarmBotCommandRecoveryDispatched(input: {
+export async function recordFarmBotWorkerRecoveryDispatch(input: {
   userId: string;
   commandId: string;
-  now?: Date;
+  recoveryRpcLabel: string;
+  workerAcceptedAt: Date;
 }) {
   const command = await getOwnedFarmBotCommand(input.userId, input.commandId);
   if (!command) throw new FarmBotCommandRepositoryScopeError();
@@ -578,10 +799,18 @@ export async function markFarmBotCommandRecoveryDispatched(input: {
         eq(threedFarmbotCommands.userId, input.userId)
       ))
       .limit(1);
-    if (!current) throw new FarmBotCommandTransitionConflictError();
+    if (!current || current.recoveryRpcLabel !== input.recoveryRpcLabel) {
+      throw new FarmBotCommandTransitionConflictError();
+    }
+    const alreadyRecorded = ['dispatched', 'confirmed', 'failed']
+      .includes(current.recoveryState ?? '')
+      && current.recoveryDispatchedAt instanceof Date
+      && input.workerAcceptedAt instanceof Date
+      && current.recoveryDispatchedAt.getTime() === input.workerAcceptedAt.getTime();
+    if (alreadyRecorded) return current;
     const dispatched = prepareDispatchedFarmBotCommandRecovery({
       command: current,
-      now: input.now ?? new Date(),
+      now: input.workerAcceptedAt,
     });
     const [updated] = await tx
       .update(threedFarmbotCommands)
@@ -589,7 +818,8 @@ export async function markFarmBotCommandRecoveryDispatched(input: {
       .where(and(
         eq(threedFarmbotCommands.id, current.id),
         eq(threedFarmbotCommands.userId, input.userId),
-        eq(threedFarmbotCommands.recoveryState, 'required')
+        eq(threedFarmbotCommands.recoveryState, 'required'),
+        eq(threedFarmbotCommands.recoveryRpcLabel, input.recoveryRpcLabel)
       ))
       .returning();
     if (!updated) throw new FarmBotCommandTransitionConflictError();
@@ -617,6 +847,12 @@ export async function recordFarmBotCommandRecoveryAcknowledgement(input: {
       ))
       .limit(1);
     if (!current) throw new FarmBotCommandTransitionConflictError();
+    const alreadyResolved = current.recoveryRpcLabel === input.rpcLabel
+      && ((input.outcome === 'ok' && current.recoveryState === 'confirmed')
+        || (input.outcome === 'error' && current.recoveryState === 'failed'
+          && current.recoveryErrorCode === 'farmbot_recovery_rpc_error'))
+      && current.recoveryResolvedAt instanceof Date;
+    if (alreadyResolved) return current;
     const resolved = prepareResolvedFarmBotCommandRecovery({
       command: current,
       rpcLabel: input.rpcLabel,

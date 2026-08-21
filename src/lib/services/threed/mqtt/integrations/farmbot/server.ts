@@ -14,6 +14,53 @@ import { MqttReadonlyTransportUnavailable } from '../../core/transport';
 import type { MqttReadonlyTransport } from '../../core/transport';
 import { MqttJsReadonlyTransport } from '../../transports/mqttjs';
 import { createFarmBotWorkerPersistenceSink } from './persistence-client';
+import {
+  MAX_FARMBOT_WORKER_COMMAND_REQUEST_BYTES,
+  parseFarmBotWorkerWaterCommandRequest,
+} from './command-request-core';
+import {
+  DisabledFarmBotWorkerCommandExecutor,
+  FarmBotWorkerCommandsDisabledError,
+  type FarmBotWorkerCommandExecutor,
+} from './command-executor';
+import { FarmBotWorkerCommandSessionError } from './session-registry';
+import {
+  FarmBotWorkerCommandExecutionGate,
+  FarmBotWorkerCommandGateError,
+} from './command-execution-gate';
+import {
+  DisabledFarmBotWorkerCommandAcknowledgementSink,
+  createFarmBotWorkerCommandAcknowledgementSink,
+  type FarmBotWorkerCommandAcknowledgementSink,
+} from './command-acknowledgement-client';
+import {
+  MAX_FARMBOT_WORKER_RECOVERY_REQUEST_BYTES,
+  parseFarmBotWorkerWaterOffRecoveryRequest,
+} from './command-recovery-request-core';
+import {
+  DisabledFarmBotWorkerRecoveryExecutor,
+  FarmBotWorkerRecoveryDisabledError,
+  FarmBotWorkerRecoveryExecutionResultError,
+  type FarmBotWorkerRecoveryExecutor,
+  validateFarmBotWorkerRecoveryExecutionResult,
+} from './command-recovery-executor';
+import {
+  FarmBotWorkerRecoveryExecutionGate,
+  FarmBotWorkerRecoveryGateError,
+} from './command-recovery-execution-gate';
+import { ProcessLocalFarmBotWorkerDeviceExecutionArbiter } from './device-execution-arbiter';
+import {
+  DisabledFarmBotWorkerRecoveryAcknowledgementSink,
+  createFarmBotWorkerRecoveryAcknowledgementSink,
+  type FarmBotWorkerRecoveryAcknowledgementSink,
+} from './command-recovery-acknowledgement-client';
+import {
+  DisabledFarmBotWorkerCommandTimeoutSink,
+  createFarmBotWorkerCommandTimeoutSink,
+  type FarmBotWorkerCommandTimeoutSink,
+} from './command-timeout-client';
+import { ProcessLocalFarmBotWorkerCommandDeadlineMonitor } from './command-deadline-monitor';
+import { createFarmBotWorkerTimeoutReconciliationRunner } from './command-timeout-reconciliation-client';
 
 const DEFAULT_PORT = 4456;
 const MAX_INTERNAL_BODY_BYTES = MAX_FARMBOT_WORKER_GRANT_BYTES;
@@ -45,25 +92,60 @@ function requiredHeader(request: IncomingMessage, name: string): string {
   return value;
 }
 
-function parseFarmbotPath(pathname: string): { farmbotId: number; action: 'status' | 'session' } | null {
-  const match = pathname.match(/^\/internal\/v1\/farmbots\/([1-9]\d*)\/(status|session)$/);
+function parseFarmbotPath(pathname: string): {
+  farmbotId: number;
+  action: 'status' | 'session' | 'commands' | 'recoveries';
+} | null {
+  const match = pathname.match(
+    /^\/internal\/v1\/farmbots\/([1-9]\d*)\/(status|session|commands|recoveries)$/
+  );
   if (!match) return null;
   const farmbotId = Number(match[1]);
   if (!Number.isSafeInteger(farmbotId)) return null;
-  return { farmbotId, action: match[2] as 'status' | 'session' };
+  return {
+    farmbotId,
+    action: match[2] as 'status' | 'session' | 'commands' | 'recoveries',
+  };
 }
 
 export function createFarmBotWorkerServer(
   encodedHmacKey: string,
   persistence = createFarmBotWorkerPersistenceSink(),
   transport: MqttReadonlyTransport = new MqttReadonlyTransportUnavailable(),
-  transportName: 'disabled' | 'mqttjs' = 'disabled'
+  transportName: 'disabled' | 'mqttjs' = 'disabled',
+  commandExecutor: FarmBotWorkerCommandExecutor = new DisabledFarmBotWorkerCommandExecutor(),
+  acknowledgementSink: FarmBotWorkerCommandAcknowledgementSink
+    = new DisabledFarmBotWorkerCommandAcknowledgementSink(),
+  recoveryExecutor: FarmBotWorkerRecoveryExecutor = new DisabledFarmBotWorkerRecoveryExecutor(),
+  recoveryAcknowledgementSink: FarmBotWorkerRecoveryAcknowledgementSink
+    = new DisabledFarmBotWorkerRecoveryAcknowledgementSink(),
+  timeoutSink: FarmBotWorkerCommandTimeoutSink
+    = new DisabledFarmBotWorkerCommandTimeoutSink()
 ) {
   const nonceStore = new MqttWorkerNonceStore();
+  const deviceExecutionArbiter = new ProcessLocalFarmBotWorkerDeviceExecutionArbiter();
+  const guardedCommandExecutor = new FarmBotWorkerCommandExecutionGate(
+    commandExecutor,
+    acknowledgementSink,
+    deviceExecutionArbiter,
+    new ProcessLocalFarmBotWorkerCommandDeadlineMonitor(timeoutSink)
+  );
+  const guardedRecoveryExecutor = new FarmBotWorkerRecoveryExecutionGate(
+    recoveryExecutor,
+    deviceExecutionArbiter,
+    recoveryAcknowledgementSink
+  );
   const registry = new FarmBotWorkerSessionRegistry(
     transport,
     {},
-    persistence
+    persistence,
+    {
+      observeResponse(input) {
+        const commandAcknowledgement = guardedCommandExecutor.observeResponse(input);
+        guardedRecoveryExecutor.observeResponse(input);
+        return commandAcknowledgement;
+      },
+    }
   );
   const processId = randomBytes(8).toString('base64url');
 
@@ -145,10 +227,88 @@ export function createFarmBotWorkerServer(
       return;
     }
 
+    if (route.action === 'commands' && method === 'POST') {
+      try {
+        if (request.headers['content-type'] !== 'application/json'
+          || body.byteLength > MAX_FARMBOT_WORKER_COMMAND_REQUEST_BYTES) {
+          throw new Error('invalid_command_request');
+        }
+        const command = parseFarmBotWorkerWaterCommandRequest(
+          JSON.parse(body.toString('utf8')) as unknown
+        );
+        if (command.farmbotId !== route.farmbotId) {
+          throw new Error('farmbot_id_mismatch');
+        }
+        registry.assertCommandSession(command);
+        const result = await guardedCommandExecutor.execute(command);
+        sendJson(response, 202, { success: true, data: result });
+      } catch (error) {
+        if (error instanceof FarmBotWorkerCommandsDisabledError) {
+          sendJson(response, 503, { success: false, error: 'FarmBot commands are disabled' });
+          return;
+        }
+        if (error instanceof FarmBotWorkerCommandSessionError) {
+          sendJson(response, 409, { success: false, error: 'FarmBot session is not ready' });
+          return;
+        }
+        if (error instanceof FarmBotWorkerCommandGateError) {
+          sendJson(response, 409, { success: false, error: 'FarmBot command conflict' });
+          return;
+        }
+        sendJson(response, 400, { success: false, error: 'Invalid FarmBot command request' });
+      }
+      return;
+    }
+
+    if (route.action === 'recoveries' && method === 'POST') {
+      try {
+        if (request.headers['content-type'] !== 'application/json'
+          || body.byteLength > MAX_FARMBOT_WORKER_RECOVERY_REQUEST_BYTES) {
+          throw new Error('invalid_recovery_request');
+        }
+        const recovery = parseFarmBotWorkerWaterOffRecoveryRequest(
+          JSON.parse(body.toString('utf8')) as unknown
+        );
+        if (recovery.farmbotId !== route.farmbotId) {
+          throw new Error('farmbot_id_mismatch');
+        }
+        registry.assertCommandSession(recovery);
+        const result = validateFarmBotWorkerRecoveryExecutionResult({
+          request: recovery,
+          result: await guardedRecoveryExecutor.execute(recovery),
+        });
+        sendJson(response, 202, { success: true, data: result });
+      } catch (error) {
+        if (error instanceof FarmBotWorkerRecoveryDisabledError) {
+          sendJson(response, 503, { success: false, error: 'FarmBot recovery is disabled' });
+          return;
+        }
+        if (error instanceof FarmBotWorkerCommandSessionError) {
+          sendJson(response, 409, { success: false, error: 'FarmBot session is not ready' });
+          return;
+        }
+        if (error instanceof FarmBotWorkerRecoveryExecutionResultError) {
+          sendJson(response, 502, { success: false, error: 'Invalid recovery executor response' });
+          return;
+        }
+        if (error instanceof FarmBotWorkerRecoveryGateError) {
+          sendJson(response, 409, { success: false, error: 'FarmBot recovery conflict' });
+          return;
+        }
+        sendJson(response, 400, { success: false, error: 'Invalid FarmBot recovery request' });
+      }
+      return;
+    }
+
     sendJson(response, 405, { success: false, error: 'Method not allowed' });
   });
 
-  return { server, registry };
+  return {
+    server,
+    registry,
+    commandGate: guardedCommandExecutor,
+    recoveryGate: guardedRecoveryExecutor,
+  };
 }
 
 export async function startFarmBotWorker(): Promise<void> {
@@ -166,18 +326,28 @@ export async function startFarmBotWorker(): Promise<void> {
   const transport = transportSetting === 'mqttjs'
     ? new MqttJsReadonlyTransport()
     : new MqttReadonlyTransportUnavailable();
-  const { server, registry } = createFarmBotWorkerServer(
+  const timeoutReconciliation = createFarmBotWorkerTimeoutReconciliationRunner();
+  const { server, registry, commandGate, recoveryGate } = createFarmBotWorkerServer(
     encodedHmacKey,
     createFarmBotWorkerPersistenceSink(),
     transport,
-    transportSetting
+    transportSetting,
+    new DisabledFarmBotWorkerCommandExecutor(),
+    createFarmBotWorkerCommandAcknowledgementSink(),
+    new DisabledFarmBotWorkerRecoveryExecutor(),
+    createFarmBotWorkerRecoveryAcknowledgementSink(),
+    createFarmBotWorkerCommandTimeoutSink()
   );
   const shutdown = async () => {
     server.close();
+    await timeoutReconciliation.shutdown();
     await registry.shutdown();
+    await commandGate.shutdown();
+    await recoveryGate.flushAcknowledgements();
   };
   process.once('SIGINT', () => void shutdown());
   process.once('SIGTERM', () => void shutdown());
+  timeoutReconciliation.start();
   server.listen(configuredPort, '127.0.0.1', () => {
     console.info('ThreeD MQTT FarmBot adapter listening', {
       host: '127.0.0.1',

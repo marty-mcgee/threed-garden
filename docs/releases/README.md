@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.18.2b — ThreeD MQTT Control Layer: Phase 3D–3F](v0.18.2b.md)
 - [v0.18.1b — ThreeD MQTT Control Layer](v0.18.1b.md)
 - [v0.18.1a — ThreeD MQTT Module: FarmBot Read-Only Adapter](v0.18.1a.md)
 - [v0.18.0 — ThreeD FarmBot Integration, Phase 1](v0.18.0.md)

@@ -24,6 +24,10 @@ import {
   DisabledFarmBotWorkerPersistenceSink,
   type FarmBotWorkerPersistenceSink,
 } from './persistence-client';
+import {
+  DisabledFarmBotWorkerCommandResponseObserver,
+  type FarmBotWorkerCommandResponseObserver,
+} from './command-execution-gate';
 
 export type FarmBotWorkerConnectionState = MqttReadonlySessionConnectionState;
 
@@ -69,6 +73,13 @@ export class FarmBotWorkerSessionScopeError extends Error {
   }
 }
 
+export class FarmBotWorkerCommandSessionError extends Error {
+  constructor(readonly code: 'session_not_found' | 'scope_mismatch' | 'session_not_ready') {
+    super(code);
+    this.name = 'FarmBotWorkerCommandSessionError';
+  }
+}
+
 export class FarmBotWorkerSessionRegistry {
   private readonly sessions = new Map<number, Session>();
   private readonly now: () => Date;
@@ -82,6 +93,8 @@ export class FarmBotWorkerSessionRegistry {
     options: FarmBotWorkerRegistryOptions = {},
     private readonly persistence: FarmBotWorkerPersistenceSink
       = new DisabledFarmBotWorkerPersistenceSink(),
+    private readonly commandResponseObserver: FarmBotWorkerCommandResponseObserver
+      = new DisabledFarmBotWorkerCommandResponseObserver(),
     private readonly adapter: MqttReadonlyIntegrationAdapter<
       FarmBotWorkerConnectionGrant,
       FarmBotMqttNormalizedMessage
@@ -163,6 +176,25 @@ export class FarmBotWorkerSessionRegistry {
     return this.publicStatus(session);
   }
 
+  assertCommandSession(input: {
+    farmbotId: number;
+    ownerId: string;
+    brokerDeviceId: string;
+  }): FarmBotWorkerRuntimeStatus {
+    const session = this.sessions.get(input.farmbotId);
+    if (!session) throw new FarmBotWorkerCommandSessionError('session_not_found');
+    if (session.grant.ownerId !== input.ownerId
+      || session.grant.brokerDeviceId !== input.brokerDeviceId) {
+      throw new FarmBotWorkerCommandSessionError('scope_mismatch');
+    }
+    this.syncControllerStatus(session, session.controller.snapshot());
+    const status = this.publicStatus(session);
+    if (status.connectionState !== 'connected' || status.stale) {
+      throw new FarmBotWorkerCommandSessionError('session_not_ready');
+    }
+    return status;
+  }
+
   async disconnect(farmbotId: number): Promise<boolean> {
     const session = this.sessions.get(farmbotId);
     if (!session) return false;
@@ -213,6 +245,11 @@ export class FarmBotWorkerSessionRegistry {
       }
     } else {
       const rpc = event.message.response;
+      this.commandResponseObserver.observeResponse({
+        farmbotId: session.grant.farmbotId,
+        response: rpc,
+        receivedAt: event.receivedAt,
+      });
       this.record(session, {
         source: 'from_device',
         eventType: rpc.eventType,

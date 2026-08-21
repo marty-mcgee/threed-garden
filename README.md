@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.18.1b "ThreeD MQTT Control Layer"`
->
-> **Current release candidate:** `v0.18.2b "ThreeD MQTT Control Layer: Phase 3D–3F"`
+> **Current production version:** `v0.18.2b "ThreeD MQTT Control Layer: Phase 3D–3F"`
 
 ## Documentation
 
@@ -271,11 +269,12 @@ The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.1b pro
 | v0.18.0 | Phase 1 — Secure App foundation | Released: encrypted owner-scoped credentials, verified FarmBot identities, peripheral discovery and Water binding validation, broker metadata/readiness, and animation-only ThreeD targeting. Physical commands remain disabled. |
 | v0.18.1a | Phase 2 — MQTT worker and read-only status | Released: signed App/worker boundaries, safe connection lifecycle, exact read-only subscriptions, normalized runtime/event persistence, Admin activity controls, and owner/project-scoped Dashboard status. No MQTT publishing or hardware commands. |
 | v0.18.1b | ThreeD MQTT control layer | Released: provider-neutral adapter, lifecycle, session-controller, transport, and worker boundaries under a protocol-first hierarchy, with FarmBot as the first read-only integration. |
-| v0.18.2b | Phase 3 — Command safety and audit | Release candidate: semantic Water allowlist, scoped authorization, server-owned limits, idempotency, per-device concurrency protection, command and recovery audit lifecycles, acknowledgement/timeout preparation, and dormant delivery contracts. MQTT publishing and physical operation remain disabled. |
-| v0.18.3 | Phase 4 — Single-device Water pilot | Test one bounded Water operation with one verified, project-assigned FarmBot, a current peripheral binding, a healthy worker, a server-set maximum duration, and recorded acknowledgement. This requires explicit physical-test approval. |
+| v0.18.2b | Phase 3 — Command safety and audit | Released: semantic Water allowlist, scoped authorization, server-owned limits, idempotency, per-device concurrency protection, command and recovery audit lifecycles, acknowledgement/timeout preparation, and dormant delivery contracts. MQTT publishing and physical operation remain disabled. |
+| v0.18.3a | Phase 4 — Command delivery safety foundation | Release candidate: signed App/worker contracts, dormant command and recovery handoffs, lifecycle receipts, acknowledgement/timeout reporting, restart reconciliation, shared worker arbitration, and the independent emergency Water-off audit foundation through Phase 4L-C. Executors and MQTT publishing remain disabled. |
+| v0.18.3b+ | Phase 4 — Single-device Water pilot | Test one bounded Water operation with one verified, project-assigned FarmBot, a current peripheral binding, a healthy worker, a server-set maximum duration, and recorded acknowledgement. This requires separate explicit physical-test approval. |
 | v0.18.4 | Phase 5 — ThreeD orchestration | Connect character approach, orientation, and animation to the audited semantic action request while keeping animation state and physical-device completion separate. The character runtime never owns the MQTT connection. |
 | v0.18.5+ | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
 
-Phases 2A–2D and the ThreeD MQTT control layer are released and production-verified. Phase 3 is complete in the v0.18.2b release candidate: authenticated requests can stop at validated authorization, while delivery, acknowledgement, timeout, and recovery contracts and repository transitions remain dormant. No MQTT publishing or physical operation is enabled. Phase 4 is separately approved and begins only after this release boundary.
+Phases 2A–2D, the ThreeD MQTT control layer, and Phase 3 are released and production-verified. Authenticated requests stop at validated authorization, while delivery, acknowledgement, timeout, and recovery contracts and repository transitions remain dormant. No MQTT publishing or physical operation is enabled. Phase 4 is separately approved after this production boundary.
 
 Approval of this plan does not by itself authorize a new external resource, database schema change, MQTT connection, MQTT publish, or physical FarmBot command. Each phase remains a separate approval and validation gate.

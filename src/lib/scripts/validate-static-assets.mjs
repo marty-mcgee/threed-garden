@@ -2,6 +2,14 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const repositoryRoot = process.cwd();
+let completedValidationSteps = 0;
+const validationStep = (label) => {
+  completedValidationSteps += 1;
+  console.log(`  ✓ ${label}`);
+};
+
+console.log('\nThreeD static animation asset validation');
+console.log('─'.repeat(40));
 const manifestPath = resolve(
   repositoryRoot,
   'src/lib/utils/externalCharacterAnimations.ts',
@@ -15,6 +23,7 @@ if (configuredPaths.length === 0) {
   console.error('No static animation assets were found in the animation manifest.');
   process.exit(1);
 }
+validationStep(`Animation manifest contains ${configuredPaths.length} configured assets`);
 
 const failures = [];
 
@@ -34,7 +43,8 @@ if (failures.length > 0) {
   }
   process.exit(1);
 }
+validationStep('Every configured asset exists under public/');
 
-console.log(
-  `Validated ${configuredPaths.length} configured static animation assets.`,
-);
+console.log('─'.repeat(40));
+console.log(`PASS  ${completedValidationSteps} validation groups completed`);
+console.log(`Validated ${configuredPaths.length} configured static animation assets.\n`);

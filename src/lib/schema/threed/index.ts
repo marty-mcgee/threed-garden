@@ -1084,7 +1084,139 @@ export const threedFarmbotCommands = pgTable('threed_farmbot_commands', {
 }));
 
 // ============================================
-// 15. threed_farmbot_logs - Legacy FarmBot activity log
+// 15. threed_farmbot_emergency_actions - Independent Water-off safety audit
+// ============================================
+export const threedFarmbotEmergencyActions = pgTable('threed_farmbot_emergency_actions', {
+  id: serial('id').primaryKey(),
+  emergencyId: varchar('emergency_id', { length: 36 }).notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  farmbotId: integer('farmbot_id').notNull().references(() => threedFarmbots.id, {
+    onDelete: 'cascade',
+  }),
+  policyVersion: integer('policy_version').notNull(),
+  semanticAction: varchar('semantic_action', { length: 50 }).notNull(),
+  state: varchar('state', { length: 20 }).notNull().default('requested'),
+  peripheralBindingId: integer('peripheral_binding_id').references(
+    () => threedFarmbotPeripheralBindings.id,
+    { onDelete: 'set null' }
+  ),
+  peripheralId: integer('peripheral_id'),
+  peripheralPin: integer('peripheral_pin'),
+  peripheralMode: integer('peripheral_mode'),
+  rpcLabel: varchar('rpc_label', { length: 100 }).notNull(),
+  outcomeErrorCode: varchar('outcome_error_code', { length: 100 }),
+  requestedAt: timestamp('requested_at').defaultNow().notNull(),
+  validatedAt: timestamp('validated_at'),
+  acceptedAt: timestamp('accepted_at'),
+  dispatchedAt: timestamp('dispatched_at'),
+  acknowledgedAt: timestamp('acknowledged_at'),
+  terminalAt: timestamp('terminal_at'),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),
+}, (table) => ({
+  emergencyIdIdx: uniqueIndex('idx_threed_farmbot_emergency_actions_emergency_id')
+    .on(table.emergencyId),
+  rpcLabelIdx: uniqueIndex('idx_threed_farmbot_emergency_actions_rpc_label').on(table.rpcLabel),
+  ownerIdx: index('idx_threed_farmbot_emergency_actions_owner').on(table.userId),
+  farmbotStateIdx: index('idx_threed_farmbot_emergency_actions_farmbot_state')
+    .on(table.farmbotId, table.state),
+  requestedAtIdx: index('idx_threed_farmbot_emergency_actions_requested_at')
+    .on(table.requestedAt),
+  emergencyIdValid: check(
+    'threed_farmbot_emergency_actions_emergency_id_valid',
+    sql`${table.emergencyId} ~* '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'`
+  ),
+  policyVersionValid: check(
+    'threed_farmbot_emergency_actions_policy_version_valid',
+    sql`${table.policyVersion} = 1`
+  ),
+  semanticActionValid: check(
+    'threed_farmbot_emergency_actions_semantic_action_valid',
+    sql`${table.semanticAction} = 'emergency_water_off'`
+  ),
+  stateValid: check(
+    'threed_farmbot_emergency_actions_state_valid',
+    sql`${table.state} IN ('requested', 'validated', 'accepted', 'dispatched', 'acknowledged', 'failed', 'rejected', 'expired')`
+  ),
+  resolutionComplete: check(
+    'threed_farmbot_emergency_actions_resolution_complete',
+    sql`(
+      (${table.peripheralBindingId} IS NULL AND ${table.peripheralId} IS NULL
+        AND ${table.peripheralPin} IS NULL AND ${table.peripheralMode} IS NULL)
+      OR (${table.peripheralId} > 0
+        AND ${table.peripheralPin} >= 0 AND ${table.peripheralMode} = 0)
+    )`
+  ),
+  rpcLabelValid: check(
+    'threed_farmbot_emergency_actions_rpc_label_valid',
+    sql`${table.rpcLabel} ~ '^threed_emergency_off_[0-9a-f]{32}$'`
+  ),
+  outcomeErrorCodeValid: check(
+    'threed_farmbot_emergency_actions_error_code_valid',
+    sql`${table.outcomeErrorCode} IS NULL OR ${table.outcomeErrorCode} ~ '^[a-z][a-z0-9_]*$'`
+  ),
+  expiryValid: check(
+    'threed_farmbot_emergency_actions_expiry_valid',
+    sql`${table.expiresAt} = ${table.requestedAt} + interval '60 seconds'`
+  ),
+  timestampOrderValid: check(
+    'threed_farmbot_emergency_actions_timestamp_order_valid',
+    sql`(
+      (${table.validatedAt} IS NULL OR ${table.validatedAt} >= ${table.requestedAt})
+      AND (${table.acceptedAt} IS NULL OR ${table.acceptedAt} >= ${table.validatedAt})
+      AND (${table.dispatchedAt} IS NULL OR ${table.dispatchedAt} >= ${table.acceptedAt})
+      AND (${table.acknowledgedAt} IS NULL OR ${table.acknowledgedAt} >= ${table.dispatchedAt})
+      AND (${table.terminalAt} IS NULL OR ${table.terminalAt} >= ${table.requestedAt})
+      AND (${table.terminalAt} IS NULL OR ${table.validatedAt} IS NULL
+        OR ${table.terminalAt} >= ${table.validatedAt})
+      AND (${table.terminalAt} IS NULL OR ${table.acceptedAt} IS NULL
+        OR ${table.terminalAt} >= ${table.acceptedAt})
+      AND (${table.terminalAt} IS NULL OR ${table.dispatchedAt} IS NULL
+        OR ${table.terminalAt} >= ${table.dispatchedAt})
+      AND (${table.terminalAt} IS NULL OR ${table.acknowledgedAt} IS NULL
+        OR ${table.terminalAt} >= ${table.acknowledgedAt})
+    )`
+  ),
+  lifecycleValid: check(
+    'threed_farmbot_emergency_actions_lifecycle_valid',
+    sql`(
+      (${table.state} = 'requested' AND ${table.validatedAt} IS NULL
+        AND ${table.acceptedAt} IS NULL AND ${table.dispatchedAt} IS NULL
+        AND ${table.acknowledgedAt} IS NULL AND ${table.terminalAt} IS NULL
+        AND ${table.outcomeErrorCode} IS NULL)
+      OR (${table.state} = 'validated' AND ${table.peripheralId} IS NOT NULL
+        AND ${table.validatedAt} IS NOT NULL AND ${table.acceptedAt} IS NULL
+        AND ${table.dispatchedAt} IS NULL AND ${table.acknowledgedAt} IS NULL
+        AND ${table.terminalAt} IS NULL AND ${table.outcomeErrorCode} IS NULL)
+      OR (${table.state} = 'accepted' AND ${table.peripheralId} IS NOT NULL
+        AND ${table.validatedAt} IS NOT NULL AND ${table.acceptedAt} IS NOT NULL
+        AND ${table.dispatchedAt} IS NULL AND ${table.acknowledgedAt} IS NULL
+        AND ${table.terminalAt} IS NULL AND ${table.outcomeErrorCode} IS NULL)
+      OR (${table.state} = 'dispatched' AND ${table.peripheralId} IS NOT NULL
+        AND ${table.validatedAt} IS NOT NULL AND ${table.acceptedAt} IS NOT NULL
+        AND ${table.dispatchedAt} IS NOT NULL AND ${table.acknowledgedAt} IS NULL
+        AND ${table.terminalAt} IS NULL AND ${table.outcomeErrorCode} IS NULL)
+      OR (${table.state} = 'acknowledged' AND ${table.peripheralId} IS NOT NULL
+        AND ${table.validatedAt} IS NOT NULL AND ${table.acceptedAt} IS NOT NULL
+        AND ${table.dispatchedAt} IS NOT NULL AND ${table.acknowledgedAt} IS NOT NULL
+        AND ${table.terminalAt} IS NOT NULL AND ${table.outcomeErrorCode} IS NULL)
+      OR (${table.state} = 'failed' AND ${table.peripheralId} IS NOT NULL
+        AND ${table.validatedAt} IS NOT NULL AND ${table.acceptedAt} IS NOT NULL
+        AND ${table.dispatchedAt} IS NOT NULL AND ${table.acknowledgedAt} IS NULL
+        AND ${table.terminalAt} IS NOT NULL AND ${table.outcomeErrorCode} IS NOT NULL)
+      OR (${table.state} = 'rejected' AND ${table.acceptedAt} IS NULL
+        AND ${table.dispatchedAt} IS NULL AND ${table.acknowledgedAt} IS NULL
+        AND ${table.terminalAt} IS NOT NULL AND ${table.outcomeErrorCode} IS NOT NULL)
+      OR (${table.state} = 'expired' AND ${table.acceptedAt} IS NULL
+        AND ${table.dispatchedAt} IS NULL AND ${table.acknowledgedAt} IS NULL
+        AND ${table.terminalAt} IS NOT NULL AND ${table.outcomeErrorCode} IS NULL)
+    )`
+  ),
+}));
+
+// ============================================
+// 16. threed_farmbot_logs - Legacy FarmBot activity log
 // ============================================
 export const threedFarmbotLogs = pgTable('threed_farmbot_logs', {
   id: serial('id').primaryKey(),
@@ -1406,6 +1538,7 @@ export const threedFarmbotsRelations = relations(threedFarmbots, ({ one, many })
   wateringHistory: many(threedWateringHistory),
   peripheralBindings: many(threedFarmbotPeripheralBindings),
   commands: many(threedFarmbotCommands),
+  emergencyActions: many(threedFarmbotEmergencyActions),
   brokerMetadata: one(threedFarmbotBrokerMetadata, {
     fields: [threedFarmbots.id],
     references: [threedFarmbotBrokerMetadata.farmbotId],
@@ -1424,6 +1557,7 @@ export const threedFarmbotPeripheralBindingsRelations = relations(
       references: [user.id],
     }),
     commands: many(threedFarmbotCommands),
+    emergencyActions: many(threedFarmbotEmergencyActions),
   })
 );
 
@@ -1478,6 +1612,24 @@ export const threedFarmbotCommandsRelations = relations(
     }),
     peripheralBinding: one(threedFarmbotPeripheralBindings, {
       fields: [threedFarmbotCommands.peripheralBindingId],
+      references: [threedFarmbotPeripheralBindings.id],
+    }),
+  })
+);
+
+export const threedFarmbotEmergencyActionsRelations = relations(
+  threedFarmbotEmergencyActions,
+  ({ one }) => ({
+    owner: one(user, {
+      fields: [threedFarmbotEmergencyActions.userId],
+      references: [user.id],
+    }),
+    farmbot: one(threedFarmbots, {
+      fields: [threedFarmbotEmergencyActions.farmbotId],
+      references: [threedFarmbots.id],
+    }),
+    peripheralBinding: one(threedFarmbotPeripheralBindings, {
+      fields: [threedFarmbotEmergencyActions.peripheralBindingId],
       references: [threedFarmbotPeripheralBindings.id],
     }),
   })

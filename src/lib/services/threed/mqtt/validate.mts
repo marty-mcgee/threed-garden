@@ -31,6 +31,15 @@ import type {
 
 type FakeListener = (...args: never[]) => void;
 
+let completedValidationSteps = 0;
+function validationStep(label: string): void {
+  completedValidationSteps += 1;
+  console.log(`  ✓ ${label}`);
+}
+
+console.log('\nThreeD MQTT service validation');
+console.log('─'.repeat(40));
+
 // ThreeD owns this service boundary. Provider adapters may import it, but this
 // directory must never depend on FarmBot, OpenFarm, or another integration.
 const mqttServiceDirectory = dirname(fileURLToPath(import.meta.url));
@@ -55,6 +64,7 @@ for (const directory of sharedMqttDirectories) {
     }
   }
 }
+validationStep('Provider-neutral shared-service import boundary');
 
 const lifecycleNow = new Date('2026-08-20T12:00:00.000Z');
 assert.deepEqual(mqttReadonlySessionTransition('connected', null, lifecycleNow), {
@@ -114,6 +124,7 @@ assert.equal(planMqttReadonlyReconnect({
   reconnectMaxDelayMs: 30_000,
   disconnectCode: 'network_closed',
 }).connectionState, 'expired');
+validationStep('Read-only session lifecycle, expiry, and reconnect policy');
 
 interface TestIntegrationGrant {
   id: number;
@@ -266,6 +277,7 @@ delayedSessionTransport.resolveConnection?.();
 await delayedStart;
 assert.equal(delayedSessionTransport.closeCount, 1);
 assert.equal(delayedSessionController.snapshot().connectionState, 'disconnected');
+validationStep('Session controller messages, invalid input, reconnect, and cleanup');
 
 class FakeReadonlyMqttClient {
   readonly listeners = new Map<string, Set<FakeListener>>();
@@ -332,6 +344,7 @@ assert.throws(() => verifyMqttWorkerRequest(
   authKey,
   new MqttWorkerNonceStore()
 ));
+validationStep('Worker HMAC authentication and replay protection');
 
 const fakeClient = new FakeReadonlyMqttClient();
 const connections: Array<{ brokerUrl: string; options: IClientOptions }> = [];
@@ -422,4 +435,7 @@ await assert.rejects(
     && error.code === 'broker_unreachable'
 );
 
-console.log('ThreeD MQTT service offline validation passed');
+validationStep('MQTT.js read-only transport options and safe error mapping');
+console.log('─'.repeat(40));
+console.log(`PASS  ${completedValidationSteps} validation groups completed`);
+console.log('ThreeD MQTT service offline validation passed\n');

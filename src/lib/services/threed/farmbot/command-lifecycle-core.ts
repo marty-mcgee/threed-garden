@@ -3,6 +3,7 @@ const COMMAND_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]
 
 export const FARMBOT_WATER_ACK_GRACE_MS = 10_000;
 export const FARMBOT_WATER_ACK_TIMEOUT_MS = 15_000;
+export const FARMBOT_EMERGENCY_REQUEST_LIFETIME_MS = 60_000;
 
 export class FarmBotCommandLifecycleError extends Error {
   readonly code:
@@ -49,6 +50,13 @@ export function farmBotCommandRecoveryRpcLabel(commandId: string): string {
     throw new FarmBotCommandLifecycleError('invalid_rpc_label');
   }
   return `threed_water_off_${commandId.replaceAll('-', '').toLowerCase()}`;
+}
+
+export function farmBotEmergencyWaterOffRpcLabel(emergencyId: string): string {
+  if (!COMMAND_ID_PATTERN.test(emergencyId)) {
+    throw new FarmBotCommandLifecycleError('invalid_rpc_label');
+  }
+  return `threed_emergency_off_${emergencyId.replaceAll('-', '').toLowerCase()}`;
 }
 
 export function prepareAcceptedFarmBotCommand(input: {

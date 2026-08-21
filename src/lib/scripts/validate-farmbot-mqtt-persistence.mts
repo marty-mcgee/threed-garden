@@ -7,6 +7,15 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/mqtt/integrations/farmbot/persistence-core.ts';
 
+let completedValidationSteps = 0;
+function validationStep(label: string): void {
+  completedValidationSteps += 1;
+  console.log(`  ✓ ${label}`);
+}
+
+console.log('\nThreeD FarmBot MQTT persistence validation');
+console.log('─'.repeat(40));
+
 const now = new Date('2027-01-15T12:00:00.000Z');
 const statusPayload = Buffer.from(JSON.stringify({
   location_data: { position: { x: 12.5, y: 4, z: -1 } },
@@ -72,6 +81,7 @@ assert.equal(parsed.events[1]?.summary, 'Position: X 12.5, Y 4, Z -1');
 assert.ok(!JSON.stringify(parsed).includes('must'));
 assert.ok(!JSON.stringify(parsed).includes(statusPayload.toString('base64')));
 assert.equal(parsed.events[1]?.payloadSha256, payloadSha256);
+validationStep('Runtime and normalized event ingestion');
 
 assert.throws(() => parseFarmBotMqttIngestionBatch({
   ...validBatch,
@@ -95,4 +105,7 @@ assert.throws(() => parseFarmBotMqttIngestionBatch({
   events: [{ ...validBatch.events[1], source: 'lifecycle' }],
 }, now), FarmBotMqttPersistenceInputError);
 
-console.log('FarmBot MQTT persistence validation passed');
+validationStep('Strict identity, event shape, hash, and batch limits');
+console.log('─'.repeat(40));
+console.log(`PASS  ${completedValidationSteps} validation groups completed`);
+console.log('FarmBot MQTT persistence validation passed\n');

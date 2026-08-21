@@ -38,11 +38,11 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.1b "ThreeD MQTT Control Layer".
+Current production version: v0.18.2b "ThreeD MQTT Control Layer: Phase 3D-3F".
 
-Current release candidate: v0.18.2b "ThreeD MQTT Control Layer: Phase 3D–3F".
+Current release candidate: v0.18.3a "ThreeD MQTT Control Layer: Phase 4A-4L-C".
 
-v0.18.1b remains the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
+v0.18.2b remains the production boundary until v0.18.3a is deployed and verified. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
 Production character animations are Git-tracked under `public/assets/animations`. When the external animation manifest or those files change, run `npm run validate:assets`. The GitHub workflow treats missing production animation assets and TypeScript diagnostics as blocking failures. Vercel remains the production-build gate.
 
@@ -60,7 +60,7 @@ as release-blocking.
 
 ## ThreeD FarmBot Integration Plan rules
 
-- Current production checkpoint: v0.18.1b "ThreeD MQTT Control Layer".
+- Current production checkpoint: v0.18.2b "ThreeD MQTT Control Layer: Phase 3D-3F".
 - ThreeD owns the provider-neutral MQTT service. FarmBot and future integrations such as OpenFarm may depend on ThreeD services; `src/lib/services/threed/mqtt` must never import provider adapters.
 - Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
 - FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.

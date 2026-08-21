@@ -53,6 +53,15 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/farmbot/mqtt-readiness-core.ts';
 
+let completedValidationSteps = 0;
+function validationStep(label: string): void {
+  completedValidationSteps += 1;
+  console.log(`  ✓ ${label}`);
+}
+
+console.log('\nThreeD FarmBot credential security validation');
+console.log('─'.repeat(40));
+
 const key = randomBytes(32).toString('base64');
 const otherKey = randomBytes(32).toString('base64');
 const credential = 'test-only-farmbot-token';
@@ -80,6 +89,7 @@ assert.throws(() => decryptFarmBotCredential(first, key, { ...context, userId: '
 assert.throws(() => encryptFarmBotCredential('', key, 1, context));
 assert.throws(() => encryptFarmBotCredential(credential, 'not-a-32-byte-key', 1, context));
 assert.throws(() => encryptFarmBotCredential(credential, key, 0, context));
+validationStep('Credential encryption, tamper resistance, and owner/device binding');
 
 const keyEnvironment = {
   FARMBOT_CREDENTIAL_KEY_VERSION: '2',
@@ -109,6 +119,7 @@ assert.throws(() => resolveCurrentFarmBotCredentialKey({
   FARMBOT_CREDENTIAL_KEY_V1: 'malformed',
 }));
 assert.throws(() => resolveFarmBotCredentialKey(0, keyEnvironment));
+validationStep('Encryption key selection and rotation policy');
 
 const updatedAt = new Date('2026-08-18T12:00:00.000Z');
 const envelopeColumns = toFarmBotCredentialEnvelopeColumns(first, updatedAt);
@@ -134,6 +145,7 @@ assert.throws(() => toFarmBotCredentialEnvelopeColumns(
   new Date(Number.NaN)
 ));
 assert.ok(Object.values(CLEARED_FARMBOT_CREDENTIAL_COLUMNS).every((value) => value === null));
+validationStep('Database envelope conversion and cleared credential fields');
 
 const testJwt = 'test-header.test-payload.test-signature';
 assert.equal(readFarmBotEncodedToken({ token: { encoded: ` ${testJwt} ` } }), testJwt);
@@ -163,6 +175,7 @@ assert.deepEqual(readFarmBotJwtMetadata('malformed'), {
   brokerDeviceId: null,
   expiresAt: null,
 });
+validationStep('FarmBot token extraction and limited JWT metadata');
 
 function testFarmBotJwt(payload: Record<string, unknown>): string {
   return `header.${Buffer.from(JSON.stringify(payload)).toString('base64url')}.signature`;
@@ -235,6 +248,7 @@ assert.throws(
   })),
   FarmBotBrokerMetadataError
 );
+validationStep('Broker identity, secure metadata, and MQTT readiness');
 assert.throws(
   () => readFarmBotBrokerMetadata(testFarmBotJwt({
     ...validBrokerClaims,
@@ -303,6 +317,7 @@ const cappedPeripheralInventory = readFarmBotPeripheralInventory(oversizedPeriph
 assert.equal(cappedPeripheralInventory.peripherals.length, MAX_FARMBOT_PERIPHERALS);
 assert.equal(cappedPeripheralInventory.totalCount, MAX_FARMBOT_PERIPHERALS + 1);
 assert.equal(cappedPeripheralInventory.truncated, true);
+validationStep('Safe connection summary and bounded peripheral discovery');
 
 const waterPeripheral = { id: 8, pin: 8, label: 'Water', mode: 0 as const };
 const waterBinding = {
@@ -335,4 +350,7 @@ assert.equal(
   'metadata_changed'
 );
 
-console.log('FarmBot credential security validation passed.');
+validationStep('Semantic Water binding validation');
+console.log('─'.repeat(40));
+console.log(`PASS  ${completedValidationSteps} validation groups completed`);
+console.log('FarmBot credential security validation passed.\n');

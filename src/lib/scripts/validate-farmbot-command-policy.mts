@@ -44,6 +44,26 @@ import {
   prepareTimedOutFarmBotCommand,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/farmbot/command-lifecycle-core.ts';
+import {
+  FarmBotEmergencyActionError,
+  prepareAcceptedFarmBotEmergencyAction,
+  prepareDispatchedFarmBotEmergencyAction,
+  prepareExpiredFarmBotEmergencyAction,
+  prepareRejectedFarmBotEmergencyAction,
+  prepareRequestedFarmBotEmergencyAction,
+  prepareResolvedFarmBotEmergencyAction,
+  prepareValidatedFarmBotEmergencyAction,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/farmbot/emergency-action-core.ts';
+
+let completedValidationSteps = 0;
+function validationStep(label: string): void {
+  completedValidationSteps += 1;
+  console.log(`  ✓ ${label}`);
+}
+
+console.log('\nThreeD FarmBot command policy validation');
+console.log('─'.repeat(40));
 
 const valid = parseFarmBotCommandIntent({
   policyVersion: FARMBOT_COMMAND_POLICY_VERSION,
@@ -138,6 +158,7 @@ assert.equal(isTerminalFarmBotCommandState('rejected'), true);
 assert.equal(isTerminalFarmBotCommandState('timed_out'), true);
 assert.equal(isTerminalFarmBotCommandState('cancelled'), true);
 assert.equal(isTerminalFarmBotCommandState('accepted'), false);
+validationStep('Semantic Water allowlist and command-state policy');
 
 const requestedAt = new Date('2026-08-20T18:00:00.000Z');
 const requestedCommand = prepareFarmBotRequestedCommand({
@@ -169,6 +190,7 @@ assert.throws(
   (error) => error instanceof FarmBotCommandRepositoryInputError
     && error.code === 'invalid_expiry'
 );
+validationStep('Requested-command audit and idempotency rules');
 
 const binding = {
   id: 9,
@@ -258,6 +280,7 @@ assert.deepEqual(rejected, {
   terminalAt: validatedAt,
 });
 assert.equal(Object.isFrozen(rejected), true);
+validationStep('Water binding validation, fixed limits, and rejection mapping');
 
 const requestEnvelope = parseFarmBotCommandRequestEnvelope({ farmbotId: 3, intent: valid });
 assert.deepEqual(requestEnvelope, { farmbotId: 3, intent: valid });
@@ -289,6 +312,7 @@ assert.equal(authorizationStatus.deliveryEnabled, false);
 assert.equal('peripheralPin' in authorizationStatus, false);
 assert.equal('commandFingerprint' in authorizationStatus, false);
 assert.equal(Object.isFrozen(authorizationStatus), true);
+validationStep('Strict API request and limited authorization response');
 
 const lifecycleRpcLabel = 'threed_water_550e8400e29b41d4a716446655440000';
 assert.equal(farmBotCommandRpcLabel(requestedCommand.commandId), lifecycleRpcLabel);
@@ -415,4 +439,102 @@ assert.throws(
   FarmBotCommandLifecycleError
 );
 
-console.log('FarmBot command policy validation passed');
+validationStep('Acknowledgement, timeout, completion, and recovery lifecycle');
+
+const emergencyRequestedAt = new Date('2026-08-21T12:00:00.000Z');
+const emergencyRequested = prepareRequestedFarmBotEmergencyAction({
+  emergencyId: 'e6a7b810-9dad-4d80-80b4-00c04fd430c8',
+  userId: ' owner-42 ',
+  farmbotId: 42,
+  requestedAt: emergencyRequestedAt,
+});
+assert.equal(emergencyRequested.userId, 'owner-42');
+assert.equal(emergencyRequested.rpcLabel, 'threed_emergency_off_e6a7b8109dad4d8080b400c04fd430c8');
+assert.equal(emergencyRequested.expiresAt.getTime() - emergencyRequested.requestedAt.getTime(), 60_000);
+
+const emergencyBinding = {
+  id: 8,
+  userId: 'owner-42',
+  farmbotId: 42,
+  semanticAction: 'water',
+  peripheralId: 5,
+  peripheralPin: 8,
+  peripheralMode: 0,
+  isActive: true,
+};
+const emergencyValidated = prepareValidatedFarmBotEmergencyAction({
+  action: emergencyRequested,
+  binding: emergencyBinding,
+  now: new Date(emergencyRequestedAt.getTime() + 1_000),
+});
+assert.deepEqual(emergencyValidated, {
+  state: 'validated',
+  peripheralBindingId: 8,
+  peripheralId: 5,
+  peripheralPin: 8,
+  peripheralMode: 0,
+  validatedAt: new Date(emergencyRequestedAt.getTime() + 1_000),
+});
+const emergencyAccepted = prepareAcceptedFarmBotEmergencyAction({
+  action: { ...emergencyValidated, expiresAt: emergencyRequested.expiresAt },
+  now: new Date(emergencyRequestedAt.getTime() + 2_000),
+});
+const emergencyDispatched = prepareDispatchedFarmBotEmergencyAction({
+  action: emergencyAccepted,
+  now: new Date(emergencyRequestedAt.getTime() + 3_000),
+});
+const emergencyAcknowledged = prepareResolvedFarmBotEmergencyAction({
+  action: { ...emergencyDispatched, rpcLabel: emergencyRequested.rpcLabel },
+  rpcLabel: emergencyRequested.rpcLabel,
+  outcome: 'ok',
+  now: new Date(emergencyRequestedAt.getTime() + 4_000),
+});
+assert.equal(emergencyAcknowledged.state, 'acknowledged');
+assert.equal(emergencyAcknowledged.outcomeErrorCode, null);
+assert.equal(prepareResolvedFarmBotEmergencyAction({
+  action: { ...emergencyDispatched, rpcLabel: emergencyRequested.rpcLabel },
+  rpcLabel: emergencyRequested.rpcLabel,
+  outcome: 'error',
+  now: new Date(emergencyRequestedAt.getTime() + 4_000),
+}).state, 'failed');
+assert.equal(prepareRejectedFarmBotEmergencyAction({
+  action: emergencyRequested,
+  errorCode: 'binding_missing',
+  now: new Date(emergencyRequestedAt.getTime() + 1_000),
+}).state, 'rejected');
+assert.equal(prepareExpiredFarmBotEmergencyAction({
+  action: emergencyRequested,
+  now: emergencyRequested.expiresAt,
+}).state, 'expired');
+assert.throws(
+  () => prepareValidatedFarmBotEmergencyAction({
+    action: emergencyRequested,
+    binding: { ...emergencyBinding, peripheralMode: 1 },
+    now: new Date(emergencyRequestedAt.getTime() + 1_000),
+  }),
+  (error) => error instanceof FarmBotEmergencyActionError
+    && error.code === 'unsupported_peripheral_mode'
+);
+assert.throws(
+  () => prepareResolvedFarmBotEmergencyAction({
+    action: { ...emergencyDispatched, rpcLabel: emergencyRequested.rpcLabel },
+    rpcLabel: 'wrong_rpc_label',
+    outcome: 'ok',
+    now: new Date(emergencyRequestedAt.getTime() + 4_000),
+  }),
+  (error) => error instanceof FarmBotEmergencyActionError
+    && error.code === 'rpc_label_mismatch'
+);
+assert.throws(
+  () => prepareAcceptedFarmBotEmergencyAction({
+    action: { ...emergencyValidated, expiresAt: emergencyRequested.expiresAt },
+    now: emergencyRequested.expiresAt,
+  }),
+  (error) => error instanceof FarmBotEmergencyActionError
+    && error.code === 'emergency_expired'
+);
+validationStep('Independent emergency Water-off audit lifecycle');
+
+console.log('─'.repeat(40));
+console.log(`PASS  ${completedValidationSteps} validation groups completed`);
+console.log('FarmBot command policy validation passed\n');

@@ -64,7 +64,7 @@ async function readBoundedResponse(response: Response): Promise<unknown> {
 }
 
 export async function mqttWorkerRequest(
-  method: 'GET' | 'PUT' | 'DELETE',
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   path: string,
   payload?: unknown
 ) {

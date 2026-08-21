@@ -1,6 +1,6 @@
 # FarmBot Adapter for ThreeD MQTT Services
 
-Status: v0.18.1b released and production-verified with the provider-neutral ThreeD MQTT control layer and FarmBot read-only integration. MQTT remains disabled by default and can be explicitly enabled in read-only MQTT.js mode; no publish or physical command exists.
+Status: v0.18.2b released and production-verified with the provider-neutral ThreeD MQTT control layer and Phase 3 safety boundary. Phase 4 adds a signed, strictly validated command request and response, dormant server-only worker handoff, process-local idempotency/concurrency gate, RPC correlation, queued signed acknowledgement reporting, and acknowledgement-to-completion coordination only through a disabled executor. MQTT remains read-only, worker health reports commands disabled, and no publish or physical command exists.
 
 ## Goal
 
