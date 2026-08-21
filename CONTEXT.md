@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.3a — ThreeD MQTT Control Layer: Phase 4A–4L-C** |
-| Current release candidate | **v0.18.3b — ThreeD MQTT Control Layer: Phase 4L-D–4L-K** |
-| Current development milestone | **v0.18.3b release preparation — Phase 4 emergency audit, disabled worker boundary, correlation, and acknowledgement reporting** |
+| Current stable version | **v0.18.3b — ThreeD MQTT Control Layer: Phase 4L-D–4L-K** |
+| Current release candidate | **None designated** |
+| Current development milestone | **Post-release checkpoint; the single-device Water pilot remains a separate approval gate** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -369,6 +369,9 @@ API (/api/map/threed)
 | **v0.18.0** | **2026-08-19** | **Production release — ThreeD FarmBot Integration Phase 1 security, identity, configuration, readiness, and animation-only targeting** |
 | **v0.18.1a** | **2026-08-20** | **Production release — ThreeD MQTT Module with FarmBot read-only adapter, normalized activity, Admin controls, and project-scoped Dashboard status** |
 | **v0.18.1b** | **2026-08-20** | **Production release — provider-neutral ThreeD MQTT control layer, protocol-first service hierarchy, and FarmBot controller integration with read-only behavior preserved** |
+| **v0.18.2b** | **2026-08-21** | **Production release — ThreeD MQTT Control Layer Phase 3D–3F command authorization, audit lifecycle, and dormant delivery contracts** |
+| **v0.18.3a** | **2026-08-21** | **Production release — Phase 4 command delivery safety foundation through Phase 4L-C** |
+| **v0.18.3b** | **2026-08-21** | **Production release — Phase 4L-D–4L-K emergency audit persistence, disabled worker boundary, correlation, and acknowledgement reporting** |
 
 ---
 
@@ -1220,7 +1223,7 @@ The repository ignores generated `/drizzle` artifacts and continues to use an ex
 
 The approved phase sequence is now documented in `docs/developers/FARMBOT_INTEGRATION.md`: Phase 1 secure App foundation; Phase 2 separately run MQTT worker and read-only status; Phase 3 command safety and auditing; Phase 4 one-device Water pilot; and Phase 5 later ThreeD interaction expansion. Each phase requires its own approval. Phases 2A–2D were later approved and released as v0.18.1a; Phase 3 and every physical operation remain separately gated.
 
-GitHub-to-Vercel production deployment and production smoke testing were confirmed on August 19, 2026. v0.18.0 remains the Phase 1 historical checkpoint; v0.18.1a later added read-only MQTT, and v0.18.1b is the current production boundary.
+GitHub-to-Vercel production deployment and production smoke testing were confirmed on August 19, 2026. v0.18.0 remains the Phase 1 historical checkpoint; v0.18.1a later added read-only MQTT, and v0.18.1b established the provider-neutral MQTT control-layer boundary.
 
 ## Current Phase Plan for v0.18.0+
 
@@ -1305,7 +1308,7 @@ The MQTT/FarmBot separation schema was generated and applied successfully by the
 
 ### v0.18.1a production confirmation
 
-The user confirmed the GitHub-to-Vercel production release on August 20, 2026. Its authoritative architecture name is **ThreeD MQTT Module: FarmBot Read-Only Adapter**. ThreeD owns the provider-neutral transport, worker authentication, runtime, and normalized event boundary; FarmBot is its first provider adapter. v0.18.1a is the stable production boundary. Phase 3 command dispatch, MQTT publishing, and every physical FarmBot operation remain disabled.
+The user confirmed the GitHub-to-Vercel production release on August 20, 2026. Its authoritative architecture name is **ThreeD MQTT Module: FarmBot Read-Only Adapter**. ThreeD owns the provider-neutral transport, worker authentication, runtime, and normalized event boundary; FarmBot is its first provider adapter. v0.18.1a is the historical read-only release boundary. At that checkpoint, Phase 3 command dispatch, MQTT publishing, and every physical FarmBot operation remained disabled.
 
 ### v0.18.2-alpha Phase 3A semantic command policy
 

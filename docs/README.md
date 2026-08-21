@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.3a **ThreeD MQTT Control Layer: Phase 4A–4L-C**. The current release candidate is v0.18.3b **ThreeD MQTT Control Layer: Phase 4L-D–4L-K**.
+Current production is v0.18.3b **ThreeD MQTT Control Layer: Phase 4L-D–4L-K**. No later release candidate is designated.
 
 ## Human users
 
@@ -31,6 +31,7 @@ Current production is v0.18.3a **ThreeD MQTT Control Layer: Phase 4A–4L-C**. T
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.18.3b production checkpoint](releases/v0.18.3b.md)
 - [v0.18.3a production checkpoint](releases/v0.18.3a.md)
 - [v0.18.2b production checkpoint](releases/v0.18.2b.md)
 - [v0.18.1b production checkpoint](releases/v0.18.1b.md)
