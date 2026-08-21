@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.3b — ThreeD MQTT Control Layer: Phase 4L-D–4L-K** |
+| Current stable version | **v0.18.4a — Admin and Dashboard UI Improvements** |
 | Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; the single-device Water pilot remains a separate approval gate** |
-| Previous checkpoint | **v0.17.3 — Documentation Foundation** |
+| Current development milestone | **Post-release checkpoint; the single-device Water pilot and ThreeD orchestration remain separate approval gates** |
+| Previous checkpoint | **v0.18.3b — ThreeD MQTT Control Layer: Phase 4L-D–4L-K** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -372,6 +372,7 @@ API (/api/map/threed)
 | **v0.18.2b** | **2026-08-21** | **Production release — ThreeD MQTT Control Layer Phase 3D–3F command authorization, audit lifecycle, and dormant delivery contracts** |
 | **v0.18.3a** | **2026-08-21** | **Production release — Phase 4 command delivery safety foundation through Phase 4L-C** |
 | **v0.18.3b** | **2026-08-21** | **Production release — Phase 4L-D–4L-K emergency audit persistence, disabled worker boundary, correlation, and acknowledgement reporting** |
+| **v0.18.4a** | **2026-08-21** | **Production release — Admin and Dashboard UI improvements for navigation, project controls, asset tabs, and inline FarmBot management** |
 
 ---
 
@@ -1258,7 +1259,7 @@ Status: Phases 2A–2D were individually approved, implemented, manually verifie
 - Treat character animation completion, command acceptance, device acknowledgement, and physical completion as separate states.
 - Starting this pilot requires explicit approval to operate the physical FarmBot.
 
-### v0.18.4 — Phase 5: ThreeD orchestration
+### v0.18.4b+ — Phase 5: ThreeD orchestration
 
 - Add character approach and orientation, then use the established semantic animation path before submitting an audited FarmBot action request.
 - Preserve FBX loading, semantic Animation Action Mapping, GardenCharacter and EcctrlCharacter separation, task-to-locomotion crossfades, DetailsCard controls, and existing Planting-targeted Water and Pick Fruit behavior.
@@ -1689,3 +1690,15 @@ Feature development then paused for an approved structure-only milestone. The mi
 ### v0.18.1b production confirmation
 
 The user confirmed the GitHub-to-Vercel production release and successful validation of **v0.18.1b — ThreeD MQTT Control Layer** on August 20, 2026. The release places shared MQTT contracts, lifecycle, controller, transport, and worker boundaries under `src/lib/services/threed/mqtt`, with FarmBot as the first integration under `mqtt/integrations/farmbot`. The FarmBot registry uses the shared controller while preserving read-only topics, runtime/event persistence, Admin controls, Dashboard status, retries, cleanup, and credential safety. MQTT publishing and physical FarmBot commands remain disabled.
+
+## ✅ v0.18.4a — Admin and Dashboard UI Improvements (released to production)
+
+The August 21, 2026 production release improves the two application surfaces without changing database schema, API contracts, ThreeD animation behavior, MQTT safety boundaries, or physical-command availability:
+
+- FarmBot Connection and MQTT Activity use full-width inline expansion sections beneath their Admin record, with consistent controls and clearer action buttons.
+- The Dashboard Map uses a compact Project control whose metadata and actions open in an overlay without resizing the ThreeD scene; Admin Details opens separately.
+- Project detail and creation pages use cleaner headers, and assigned/create asset tabs share one neutral style and sub-module order, including Layers.
+- The Admin sidebar selects only the single best route match, so module Overview and child items are never highlighted together.
+- The Admin header removes duplicate navigation controls, centers the same Dashboard/Admin surface selector used by the Dashboard header, and retains a smaller left-aligned search field.
+
+The user manually verified the requested Admin and Dashboard behavior, `npm run build` passed, and the GitHub-to-Vercel production deployment was confirmed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K; all production executors and MQTT publishing remain disabled.

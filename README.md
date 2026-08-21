@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.18.3b "ThreeD MQTT Control Layer: Phase 4L-D–4L-K"`
+> **Current production version:** `v0.18.4a "Admin and Dashboard UI Improvements"`
 
 ## Documentation
 
@@ -262,7 +262,7 @@ Private project — see `package.json` and the repository settings for licensing
 
 ## Current ThreeD FarmBot Integration Plan
 
-The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.3b production checkpoint:
+The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.4a production checkpoint. The latest FarmBot/MQTT safety boundary remains v0.18.3b:
 
 | Version | Phase | Planned scope |
 |---------|-------|---------------|
@@ -273,9 +273,10 @@ The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.3b pro
 | v0.18.3a | Phase 4 — Command delivery safety foundation | Released: signed App/worker contracts, dormant command and recovery handoffs, lifecycle receipts, acknowledgement/timeout reporting, restart reconciliation, shared worker arbitration, and the independent emergency Water-off audit foundation through Phase 4L-C. Executors and MQTT publishing remain disabled. |
 | v0.18.3b | Phase 4 — Emergency delivery safety boundary | Released: owner-scoped emergency audit persistence, strict disabled worker endpoint, shared arbitration, exact RPC correlation, authenticated acknowledgement ingestion, and queued acknowledgement reporting through Phase 4L-K. Executors and MQTT publishing remain disabled. |
 | v0.18.3c+ | Phase 4 — Single-device Water pilot | Test one bounded Water operation with one verified, project-assigned FarmBot, a current peripheral binding, a healthy worker, a server-set maximum duration, and recorded acknowledgement. This requires separate explicit physical-test approval. |
-| v0.18.4 | Phase 5 — ThreeD orchestration | Connect character approach, orientation, and animation to the audited semantic action request while keeping animation state and physical-device completion separate. The character runtime never owns the MQTT connection. |
+| v0.18.4a | Admin and Dashboard UI improvements | Released: cleaner Admin navigation and headers, uniform Project asset tabs, inline FarmBot management sections, and a compact Dashboard Project selector. No MQTT or physical-command behavior changed. |
+| v0.18.4b+ | Phase 5 — ThreeD orchestration | Connect character approach, orientation, and animation to the audited semantic action request while keeping animation state and physical-device completion separate. The character runtime never owns the MQTT connection. |
 | v0.18.5+ | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
 
-Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, and Phase 4 through v0.18.3b are released and production-verified. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.
+Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, and Phase 4 through v0.18.3b are released and production-verified. v0.18.4a adds UI improvements only. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.
 
 Approval of this plan does not by itself authorize a new external resource, database schema change, MQTT connection, MQTT publish, or physical FarmBot command. Each phase remains a separate approval and validation gate.
