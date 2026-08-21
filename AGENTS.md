@@ -40,7 +40,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 Current production version: v0.18.1b "ThreeD MQTT Control Layer".
 
-No later release candidate is currently designated.
+Current release candidate: v0.18.2b "ThreeD MQTT Control Layer: Phase 3D–3F".
 
 v0.18.1b remains the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 

@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.1b **ThreeD MQTT Control Layer**. No later release candidate is designated.
+Current production is v0.18.1b **ThreeD MQTT Control Layer**. The designated release candidate is v0.18.2b **ThreeD MQTT Control Layer: Phase 3D–3F**.
 
 ## Human users
 

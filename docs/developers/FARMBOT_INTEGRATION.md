@@ -1,6 +1,6 @@
 # ThreeD FarmBot Integration Plan
 
-Status: v0.18.1b released to production with the ThreeD MQTT control layer and FarmBot read-only connectivity. MQTT publishing and physical device commands are disabled. Later phases remain separately gated.
+Status: v0.18.1b is the confirmed production release. v0.18.2b is the designated Phase 3 release candidate. MQTT publishing and physical device commands remain disabled. Phase 4 is approved but not yet implemented.
 
 ## Integration boundary
 
@@ -48,7 +48,7 @@ The worker runs outside Vercel request handlers, uses signed/replay-protected Ap
 
 ### Phase 3 — Command safety and audit boundary
 
-Status: Phase 3A policy foundation implemented and the explicitly approved Phase 3B dormant audit schema declared in development. Schema application, command transport, MQTT publishing, and physical operations remain separately gated.
+Status: complete in the v0.18.2b release candidate. The command and recovery schemas were approved and applied. Authorization stops at `validated`; delivery and recovery lifecycle methods remain dormant. MQTT publishing and physical operations are not enabled.
 
 - Define a small semantic command allowlist; never accept raw CeleryScript or arbitrary command names from a client.
 - Add server-owned coordinate, duration, pin, and device-state limits.
