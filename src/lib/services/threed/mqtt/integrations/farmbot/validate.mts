@@ -38,6 +38,15 @@ import {
   type FarmBotWorkerPersistenceRecord,
   type FarmBotWorkerPersistenceSink,
 } from './persistence-client';
+import {
+  FarmBotCommandDeliveryError,
+  evaluateFarmBotWaterAcknowledgementTimeout,
+  mapFarmBotCommandAcknowledgement,
+  mapFarmBotWaterRecoveryAcknowledgement,
+  prepareFarmBotWaterOffRecovery,
+  prepareFarmBotWaterDelivery,
+} from './command-delivery-core';
+import { FARMBOT_WATER_ACK_TIMEOUT_MS } from '../../../farmbot/command-lifecycle-core';
 
 function testJwt(payload: Record<string, unknown>): string {
   return `header.${Buffer.from(JSON.stringify(payload)).toString('base64url')}.signature`;
@@ -74,6 +83,195 @@ assert.equal(grant.brokerDeviceId, 'device_123');
 assert.throws(
   () => parseFarmBotWorkerConnectionGrant({ ...grantPayload, brokerDeviceId: 'device_999' }, now),
   FarmBotWorkerGrantError
+);
+
+const delivery = prepareFarmBotWaterDelivery({
+  command: {
+    commandId: '550e8400-e29b-41d4-a716-446655440000',
+    semanticCommand: 'water',
+    state: 'validated',
+    peripheralPin: 8,
+    durationMs: 5_000,
+    commandFingerprint: 'a'.repeat(64),
+    expiresAt: new Date(now.getTime() + 60_000),
+  },
+  brokerDeviceId: 'device_123',
+  now,
+});
+assert.equal(delivery.topic, 'bot/device_123/from_clients');
+assert.equal(delivery.rpcLabel, 'threed_water_550e8400e29b41d4a716446655440000');
+assert.deepEqual(JSON.parse(delivery.payload), {
+  kind: 'rpc_request',
+  args: { label: delivery.rpcLabel },
+  body: [
+    { kind: 'write_pin', args: { pin_number: 8, pin_value: 1, pin_mode: 0 } },
+    { kind: 'wait', args: { milliseconds: 5_000 } },
+    { kind: 'write_pin', args: { pin_number: 8, pin_value: 0, pin_mode: 0 } },
+  ],
+});
+assert.deepEqual(mapFarmBotCommandAcknowledgement({
+  expectedRpcLabel: delivery.rpcLabel,
+  response: {
+    eventType: 'rpc_ok',
+    outcome: 'accepted',
+    rpcLabel: delivery.rpcLabel,
+    errorCode: null,
+  },
+}), { state: 'acknowledged', rejectionCode: null });
+assert.deepEqual(mapFarmBotCommandAcknowledgement({
+  expectedRpcLabel: delivery.rpcLabel,
+  response: {
+    eventType: 'rpc_error',
+    outcome: 'rejected',
+    rpcLabel: delivery.rpcLabel,
+    errorCode: 'rpc_error',
+  },
+}), { state: 'rejected', rejectionCode: 'farmbot_rpc_error' });
+assert.throws(
+  () => mapFarmBotCommandAcknowledgement({
+    expectedRpcLabel: delivery.rpcLabel,
+    response: {
+      eventType: 'rpc_ok',
+      outcome: 'accepted',
+      rpcLabel: 'different_label',
+      errorCode: null,
+    },
+  }),
+  FarmBotCommandDeliveryError
+);
+assert.throws(
+  () => prepareFarmBotWaterDelivery({
+    command: {
+      commandId: '550e8400-e29b-41d4-a716-446655440000',
+      semanticCommand: 'water',
+      state: 'validated',
+      peripheralPin: 8,
+      durationMs: 60_000,
+      commandFingerprint: 'a'.repeat(64),
+      expiresAt: new Date(now.getTime() + 60_000),
+    },
+    brokerDeviceId: 'device_123',
+    now,
+  }),
+  FarmBotCommandDeliveryError
+);
+
+const dispatchedAt = new Date(now.getTime() + 1_000);
+assert.deepEqual(evaluateFarmBotWaterAcknowledgementTimeout({
+  state: 'dispatched',
+  dispatchedAt,
+  now: new Date(dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS - 1),
+}), {
+  timedOut: false,
+  recoveryRequired: false,
+  deadline: new Date(dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS),
+});
+assert.deepEqual(evaluateFarmBotWaterAcknowledgementTimeout({
+  state: 'dispatched',
+  dispatchedAt,
+  now: new Date(dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS),
+}), {
+  timedOut: true,
+  recoveryRequired: true,
+  deadline: new Date(dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS),
+});
+assert.deepEqual(evaluateFarmBotWaterAcknowledgementTimeout({
+  state: 'acknowledged',
+  dispatchedAt,
+  now: new Date(dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS),
+}), { timedOut: false, recoveryRequired: false, deadline: null });
+
+const recovery = prepareFarmBotWaterOffRecovery({
+  command: {
+    commandId: '550e8400-e29b-41d4-a716-446655440000',
+    semanticCommand: 'water',
+    state: 'timed_out',
+    peripheralPin: 8,
+    durationMs: 5_000,
+    commandFingerprint: 'a'.repeat(64),
+    dispatchedAt,
+  },
+  brokerDeviceId: 'device_123',
+});
+assert.equal(recovery.rpcLabel, 'threed_water_off_550e8400e29b41d4a716446655440000');
+assert.deepEqual(JSON.parse(recovery.payload), {
+  kind: 'rpc_request',
+  args: { label: recovery.rpcLabel },
+  body: [
+    { kind: 'write_pin', args: { pin_number: 8, pin_value: 0, pin_mode: 0 } },
+  ],
+});
+assert.deepEqual(mapFarmBotWaterRecoveryAcknowledgement({
+  expectedRpcLabel: recovery.rpcLabel,
+  response: {
+    eventType: 'rpc_ok',
+    outcome: 'accepted',
+    rpcLabel: recovery.rpcLabel,
+    errorCode: null,
+  },
+}), { outcome: 'recovery_confirmed', errorCode: null });
+assert.deepEqual(mapFarmBotWaterRecoveryAcknowledgement({
+  expectedRpcLabel: recovery.rpcLabel,
+  response: {
+    eventType: 'rpc_error',
+    outcome: 'rejected',
+    rpcLabel: recovery.rpcLabel,
+    errorCode: 'rpc_error',
+  },
+}), { outcome: 'recovery_failed', errorCode: 'farmbot_recovery_rpc_error' });
+assert.throws(
+  () => prepareFarmBotWaterOffRecovery({
+    command: {
+      commandId: '550e8400-e29b-41d4-a716-446655440000',
+      semanticCommand: 'water',
+      state: 'validated',
+      peripheralPin: 8,
+      durationMs: 5_000,
+      commandFingerprint: 'a'.repeat(64),
+      dispatchedAt: null,
+    },
+    brokerDeviceId: 'device_123',
+  }),
+  FarmBotCommandDeliveryError
+);
+for (const invalid of [
+  { state: 'requested' },
+  { commandFingerprint: 'invalid' },
+  { expiresAt: now },
+] as const) {
+  assert.throws(
+    () => prepareFarmBotWaterDelivery({
+      command: {
+        commandId: '550e8400-e29b-41d4-a716-446655440000',
+        semanticCommand: 'water',
+        state: 'validated',
+        peripheralPin: 8,
+        durationMs: 5_000,
+        commandFingerprint: 'a'.repeat(64),
+        expiresAt: new Date(now.getTime() + 60_000),
+        ...invalid,
+      },
+      brokerDeviceId: 'device_123',
+      now,
+    }),
+    FarmBotCommandDeliveryError
+  );
+}
+assert.throws(
+  () => prepareFarmBotWaterDelivery({
+    command: {
+      commandId: '550e8400-e29b-41d4-a716-446655440000',
+      semanticCommand: 'water',
+      state: 'validated',
+      peripheralPin: 8,
+      durationMs: 5_000,
+      commandFingerprint: 'a'.repeat(64),
+      expiresAt: new Date(now.getTime() + 60_000),
+    },
+    brokerDeviceId: 'invalid-device',
+    now,
+  }),
+  FarmBotCommandDeliveryError
 );
 
 type FakeMqttListener = (...args: never[]) => void;

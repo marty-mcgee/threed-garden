@@ -13,6 +13,37 @@ import {
   prepareFarmBotRequestedCommand,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/farmbot/command-repository-core.ts';
+import {
+  FARMBOT_COMMAND_REQUEST_TTL_MS,
+  FARMBOT_BLOCKING_COMMAND_STATES,
+  FARMBOT_WATER_DURATION_MS,
+  FarmBotCommandValidationError,
+  isFarmBotBlockingCommandState,
+  prepareRejectedFarmBotCommand,
+  prepareValidatedFarmBotWaterCommand,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/farmbot/command-validation-core.ts';
+import {
+  FarmBotCommandRequestError,
+  parseFarmBotCommandRequestEnvelope,
+  toFarmBotCommandAuthorizationStatus,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/farmbot/command-route-core.ts';
+import {
+  FARMBOT_WATER_ACK_TIMEOUT_MS,
+  FarmBotCommandLifecycleError,
+  farmBotCommandRpcLabel,
+  farmBotCommandRecoveryRpcLabel,
+  prepareAcceptedFarmBotCommand,
+  prepareAcknowledgedFarmBotCommand,
+  prepareCompletedFarmBotCommand,
+  prepareDispatchedFarmBotCommand,
+  prepareDispatchedFarmBotCommandRecovery,
+  prepareRequiredFarmBotCommandRecovery,
+  prepareResolvedFarmBotCommandRecovery,
+  prepareTimedOutFarmBotCommand,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/farmbot/command-lifecycle-core.ts';
 
 const valid = parseFarmBotCommandIntent({
   policyVersion: FARMBOT_COMMAND_POLICY_VERSION,
@@ -137,6 +168,251 @@ assert.throws(
   }),
   (error) => error instanceof FarmBotCommandRepositoryInputError
     && error.code === 'invalid_expiry'
+);
+
+const binding = {
+  id: 9,
+  userId: 'owner-1',
+  farmbotId: 3,
+  semanticAction: 'water',
+  peripheralId: 12,
+  peripheralPin: 8,
+  peripheralMode: 0,
+  isActive: true,
+};
+const bindingValidation = {
+  valid: true as const,
+  reason: 'valid' as const,
+  peripheral: { id: 12, label: 'Water', pin: 8, mode: 0 as const },
+};
+const validatedAt = new Date(requestedAt.getTime() + 1_000);
+const validated = prepareValidatedFarmBotWaterCommand({
+  command: requestedCommand,
+  binding,
+  bindingValidation,
+  anotherCommandActive: false,
+  now: validatedAt,
+});
+assert.equal(validated.state, 'validated');
+assert.equal(validated.durationMs, FARMBOT_WATER_DURATION_MS);
+assert.equal(validated.peripheralBindingId, 9);
+assert.equal(validated.peripheralPin, 8);
+assert.match(validated.commandFingerprint, /^[0-9a-f]{64}$/);
+assert.equal(Object.isFrozen(validated), true);
+assert.deepEqual(FARMBOT_BLOCKING_COMMAND_STATES, [
+  'validated',
+  'accepted',
+  'dispatched',
+  'acknowledged',
+]);
+assert.equal(isFarmBotBlockingCommandState('validated'), true);
+assert.equal(isFarmBotBlockingCommandState('requested'), false);
+assert.equal(isFarmBotBlockingCommandState('rejected'), false);
+
+function rejectsValidation(
+  overrides: Partial<Parameters<typeof prepareValidatedFarmBotWaterCommand>[0]>,
+  code: FarmBotCommandValidationError['code']
+) {
+  assert.throws(
+    () => prepareValidatedFarmBotWaterCommand({
+      command: requestedCommand,
+      binding,
+      bindingValidation,
+      anotherCommandActive: false,
+      now: validatedAt,
+      ...overrides,
+    }),
+    (error) => error instanceof FarmBotCommandValidationError && error.code === code
+  );
+}
+
+rejectsValidation({ now: requestedCommand.expiresAt }, 'request_expired');
+rejectsValidation({ now: new Date(Number.NaN) }, 'invalid_validation_time');
+rejectsValidation({ anotherCommandActive: true }, 'command_in_progress');
+rejectsValidation({ binding: { ...binding, isActive: false } }, 'binding_inactive');
+rejectsValidation({
+  bindingValidation: { valid: false, reason: 'peripheral_missing', peripheral: null },
+}, 'peripheral_missing');
+rejectsValidation({ binding: { ...binding, peripheralPin: 9 } }, 'binding_metadata_changed');
+rejectsValidation({
+  binding: { ...binding, peripheralMode: 1 },
+  bindingValidation: {
+    ...bindingValidation,
+    peripheral: { ...bindingValidation.peripheral, mode: 1 },
+  },
+}, 'unsupported_peripheral_mode');
+rejectsValidation({
+  command: {
+    ...requestedCommand,
+    expiresAt: new Date(requestedAt.getTime() + FARMBOT_COMMAND_REQUEST_TTL_MS + 1),
+  },
+}, 'request_lifetime_exceeded');
+
+const rejected = prepareRejectedFarmBotCommand(
+  new FarmBotCommandValidationError('command_in_progress'),
+  validatedAt
+);
+assert.deepEqual(rejected, {
+  state: 'rejected',
+  rejectionCode: 'command_in_progress',
+  terminalAt: validatedAt,
+});
+assert.equal(Object.isFrozen(rejected), true);
+
+const requestEnvelope = parseFarmBotCommandRequestEnvelope({ farmbotId: 3, intent: valid });
+assert.deepEqual(requestEnvelope, { farmbotId: 3, intent: valid });
+assert.equal(Object.isFrozen(requestEnvelope), true);
+assert.throws(
+  () => parseFarmBotCommandRequestEnvelope({ farmbotId: 3, intent: valid, pin: 8 }),
+  (error) => error instanceof FarmBotCommandRequestError
+    && error.code === 'unexpected_request_field'
+);
+assert.throws(
+  () => parseFarmBotCommandRequestEnvelope({ farmbotId: 0, intent: valid }),
+  (error) => error instanceof FarmBotCommandRequestError
+    && error.code === 'invalid_farmbot_id'
+);
+
+const authorizationStatus = toFarmBotCommandAuthorizationStatus({
+  commandId: requestedCommand.commandId,
+  semanticCommand: requestedCommand.semanticCommand,
+  state: validated.state,
+  requestedAt: requestedCommand.requestedAt,
+  validatedAt: validated.validatedAt,
+  terminalAt: null,
+  expiresAt: requestedCommand.expiresAt,
+  rejectionCode: null,
+  durationMs: validated.durationMs,
+});
+assert.equal(authorizationStatus.state, 'validated');
+assert.equal(authorizationStatus.deliveryEnabled, false);
+assert.equal('peripheralPin' in authorizationStatus, false);
+assert.equal('commandFingerprint' in authorizationStatus, false);
+assert.equal(Object.isFrozen(authorizationStatus), true);
+
+const lifecycleRpcLabel = 'threed_water_550e8400e29b41d4a716446655440000';
+assert.equal(farmBotCommandRpcLabel(requestedCommand.commandId), lifecycleRpcLabel);
+assert.equal(
+  FARMBOT_WATER_ACK_TIMEOUT_MS,
+  FARMBOT_WATER_DURATION_MS + 10_000,
+  'Acknowledgement timeout must include Water duration plus response grace'
+);
+const accepted = prepareAcceptedFarmBotCommand({
+  command: { state: 'validated', expiresAt: requestedCommand.expiresAt, rpcLabel: null },
+  rpcLabel: lifecycleRpcLabel,
+  now: validatedAt,
+});
+assert.equal(accepted.state, 'accepted');
+const dispatched = prepareDispatchedFarmBotCommand({
+  command: { ...accepted, rpcLabel: lifecycleRpcLabel },
+  now: new Date(validatedAt.getTime() + 1_000),
+});
+assert.equal(dispatched.state, 'dispatched');
+const acknowledged = prepareAcknowledgedFarmBotCommand({
+  command: { ...dispatched, rpcLabel: lifecycleRpcLabel },
+  rpcLabel: lifecycleRpcLabel,
+  outcome: 'ok',
+  now: new Date(dispatched.dispatchedAt.getTime() + 1_000),
+});
+assert.equal(acknowledged.state, 'acknowledged');
+const completed = prepareCompletedFarmBotCommand({
+  command: acknowledged,
+  now: new Date(acknowledged.acknowledgedAt.getTime() + 1),
+});
+assert.equal(completed.state, 'completed');
+assert.equal(completed.terminalAt.getTime(), completed.completedAt.getTime());
+assert.deepEqual(prepareAcknowledgedFarmBotCommand({
+  command: { ...dispatched, rpcLabel: lifecycleRpcLabel },
+  rpcLabel: lifecycleRpcLabel,
+  outcome: 'error',
+  now: new Date(dispatched.dispatchedAt.getTime() + 1_000),
+}), {
+  state: 'rejected',
+  rejectionCode: 'farmbot_rpc_error',
+  terminalAt: new Date(dispatched.dispatchedAt.getTime() + 1_000),
+});
+assert.throws(
+  () => prepareAcknowledgedFarmBotCommand({
+    command: { ...dispatched, rpcLabel: lifecycleRpcLabel },
+    rpcLabel: 'different_label',
+    outcome: 'ok',
+    now: new Date(dispatched.dispatchedAt.getTime() + 1_000),
+  }),
+  FarmBotCommandLifecycleError
+);
+assert.throws(
+  () => prepareTimedOutFarmBotCommand({
+    command: dispatched,
+    now: new Date(dispatched.dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS - 1),
+  }),
+  (error) => error instanceof FarmBotCommandLifecycleError
+    && error.code === 'acknowledgement_pending'
+);
+assert.deepEqual(prepareTimedOutFarmBotCommand({
+  command: dispatched,
+  now: new Date(dispatched.dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS),
+}), {
+  state: 'timed_out',
+  rejectionCode: 'ack_timeout',
+  terminalAt: new Date(dispatched.dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS),
+});
+
+const timedOutAt = new Date(dispatched.dispatchedAt.getTime() + FARMBOT_WATER_ACK_TIMEOUT_MS);
+const recoveryRpcLabel = 'threed_water_off_550e8400e29b41d4a716446655440000';
+assert.equal(farmBotCommandRecoveryRpcLabel(requestedCommand.commandId), recoveryRpcLabel);
+const recoveryRequired = prepareRequiredFarmBotCommandRecovery({
+  command: {
+    commandId: requestedCommand.commandId,
+    state: 'timed_out',
+    dispatchedAt: dispatched.dispatchedAt,
+    recoveryState: null,
+  },
+  now: timedOutAt,
+});
+assert.deepEqual(recoveryRequired, {
+  recoveryState: 'required',
+  recoveryRpcLabel,
+  recoveryRequiredAt: timedOutAt,
+});
+const recoveryDispatched = prepareDispatchedFarmBotCommandRecovery({
+  command: { ...recoveryRequired },
+  now: new Date(timedOutAt.getTime() + 1),
+});
+assert.equal(recoveryDispatched.recoveryState, 'dispatched');
+const recoveryConfirmed = prepareResolvedFarmBotCommandRecovery({
+  command: { ...recoveryRequired, ...recoveryDispatched },
+  rpcLabel: recoveryRpcLabel,
+  outcome: 'ok',
+  now: new Date(recoveryDispatched.recoveryDispatchedAt.getTime() + 1),
+});
+assert.equal(recoveryConfirmed.recoveryState, 'confirmed');
+assert.equal(recoveryConfirmed.recoveryErrorCode, null);
+assert.equal(prepareResolvedFarmBotCommandRecovery({
+  command: { ...recoveryRequired, ...recoveryDispatched },
+  rpcLabel: recoveryRpcLabel,
+  outcome: 'error',
+  now: new Date(recoveryDispatched.recoveryDispatchedAt.getTime() + 1),
+}).recoveryState, 'failed');
+assert.throws(
+  () => prepareRequiredFarmBotCommandRecovery({
+    command: {
+      commandId: requestedCommand.commandId,
+      state: 'validated',
+      dispatchedAt: null,
+      recoveryState: null,
+    },
+    now: timedOutAt,
+  }),
+  FarmBotCommandLifecycleError
+);
+assert.throws(
+  () => prepareResolvedFarmBotCommandRecovery({
+    command: { ...recoveryRequired, ...recoveryDispatched },
+    rpcLabel: 'different_label',
+    outcome: 'ok',
+    now: new Date(recoveryDispatched.recoveryDispatchedAt.getTime() + 1),
+  }),
+  FarmBotCommandLifecycleError
 );
 
 console.log('FarmBot command policy validation passed');

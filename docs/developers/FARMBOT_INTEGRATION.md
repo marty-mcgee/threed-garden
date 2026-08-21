@@ -62,6 +62,20 @@ Phase 3B declares `threed_farmbot_commands` as an additive audit/request-state t
 
 Phase 3C adds a server-only initial-request repository. It re-validates semantic intent and requires the authenticated owner, active Project, active ThreeD relationship, active Project Asset assignment, and active owned FarmBot before an initial `requested` record can be inserted. Idempotent retries return the matching existing record; conflicting reuse fails closed. No route calls the repository, and no lifecycle transition, MQTT publish, worker command, or physical operation is added.
 
+Phase 3D adds pure Water validation preparation: a 60-second request lifetime, active-command exclusion, current binding validation, exact output-mode peripheral snapshots, a server-owned 5-second duration capped at 10 seconds, and a SHA-256 fingerprint. Its server repository can use the existing FarmBot REST inventory check and atomically persist either `validated` or a bounded `rejected` result after repeating scope, binding, request-state, expiry, and concurrency checks under a FarmBot-scoped transaction lock. It does not publish MQTT, deliver a worker command, acknowledge a result, or enable hardware; dispatch, acknowledgement, emergency stop, and physical testing remain separate steps.
+
+Phase 3E enables the authenticated generic command route for request-and-validation only. It accepts a strict size-limited envelope, creates or reuses an owner/Project/FarmBot-scoped Water audit record, validates the current REST peripheral binding, and returns a limited status with `deliveryEnabled: false`. It does not call ThreeD MQTT, the worker, or FarmBot command APIs. The direct Water and Move routes remain disabled.
+
+Phase 3F-A prepares the FarmBot adapter's offline delivery contract using the official `from_clients` RPC format. Only a validated server record can produce the fixed Water-on, 5-second wait, Water-off sequence and server-derived RPC label. Matching `rpc_ok` and `rpc_error` results can be interpreted in memory. The read-only transport, worker server, health capability, App route, and database lifecycle are unchanged; nothing publishes this envelope.
+
+Phase 3F-B adds an offline 15-second acknowledgement deadline and a separate Water-off recovery envelope. Recovery requires proof of prior dispatch and uses its own RPC label and a single digital-off instruction. It remains disconnected from scheduling, persistence, transport, and the worker. Live publishing remains disabled.
+
+Phase 3F-C adds exact lifecycle preparation and dormant durable writers for acceptance, dispatch, acknowledgement/rejection, completion, and timeout. The repository derives the primary RPC label from the stored server command UUID, locks per FarmBot, and repeats active Project assignment checks before acceptance and dispatch. No route or worker calls these methods; MQTT publishing and physical operation remain disabled.
+
+Phase 3F-D declares durable Water-off recovery audit fields on `threed_farmbot_commands`. Recovery has a separate state, RPC label, bounded error code, and ordered required/dispatched/resolved timestamps. Database checks reject partial lifecycle records. No raw recovery payload is stored, and this schema preparation does not connect recovery to the repository, worker, transport, or hardware. The declaration requires a reviewed Drizzle migration and an intentional database push before it exists in a database.
+
+The user generated and applied that schema. Phase 3F-E adds pure recovery lifecycle transitions and dormant repository writers. The lifecycle core owns the server-derived recovery RPC label shared with the FarmBot adapter. Recovery requires proof of prior dispatch and proceeds through `required`, `dispatched`, then `confirmed` or `failed`; resolution requires the exact stored label. No route, scheduler, response observer, worker, or transport calls these methods, so live publishing remains disabled.
+
 ### Phase 4 — Single Water pilot
 
 Status: planned and requires explicit physical-device test approval.

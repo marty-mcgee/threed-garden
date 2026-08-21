@@ -21,7 +21,7 @@
 |---|---|
 | Current stable version | **v0.18.1b — ThreeD MQTT Control Layer** |
 | Current release candidate | **None designated** |
-| Current development milestone | **v0.18.2-alpha — Phase 3C dormant command request repository** |
+| Current development milestone | **v0.18.2-alpha — Phase 3F-E dormant recovery lifecycle** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1323,7 +1323,59 @@ The table declaration and relations pass TypeScript. The user generated, reviewe
 
 The server-only FarmBot command repository can prepare and insert only the initial `requested` audit state. It re-parses the versioned semantic intent, generates the command UUID server-side, validates request/expiry times, and requires the same owner plus active Project, active ThreeD module relationship, active Project Asset assignment, and active owned FarmBot. Its unique owner/FarmBot/idempotency boundary returns the existing row only when the semantic request details match and otherwise fails closed. Owner-scoped command lookup is available for future internal use.
 
-No App route, browser component, MQTT service, worker, World Action, or physical-device path imports this repository. It has no transition, dispatch, publish, peripheral, duration, coordinate, RPC-label, acknowledgement, or emergency-stop writer. The existing command and Water routes still return `503`. The applied table remains operationally dormant until a later separately approved server authorization step calls the repository.
+At the Phase 3C checkpoint, no App route, browser component, MQTT service, worker, World Action, or physical-device path imported this repository. It had no transition, dispatch, publish, peripheral, duration, coordinate, RPC-label, acknowledgement, or emergency-stop writer. The later approved Phase 3D transition is recorded below.
+
+### v0.18.2-alpha Phase 3D dormant command validation policy
+
+Phase 3D adds a pure offline Water validation policy. It accepts only an existing scoped `requested` record plus a server-loaded binding and its separately verified FarmBot REST inventory result. It enforces a 60-second request lifetime, one active command per FarmBot, an active matching Water binding, exact peripheral identity/pin/mode snapshots, output mode 0, a server-owned 5-second Water duration below a 10-second hard maximum, and a SHA-256 command fingerprint.
+
+The approved repository increment can move a scoped request atomically from `requested` to `validated` or `rejected`. Before writing, it verifies the current FarmBot REST peripheral inventory, then rechecks owner/Project/ThreeD/Project Asset scope, binding identity, request state, expiry, and per-FarmBot concurrency inside a transaction protected by a FarmBot-scoped advisory lock. Validation failures store only a bounded rejection code; service or credential failures leave the request unchanged for a later retry.
+
+At the Phase 3D checkpoint, no App route or browser component called this transition. The transition itself does not import ThreeD MQTT, publish a message, construct CeleryScript, allocate an RPC label, deliver work to the worker, acknowledge a command, or operate hardware. The later Phase 3E authorization route is recorded below.
+
+### v0.18.2-alpha Phase 3E command authorization API
+
+The authenticated `POST /api/threed/farmbots/commands` route now accepts a strict, size-limited `{ farmbotId, intent }` request. The nested intent retains the Phase 3A allowlist: policy version 1, positive Project ID, semantic command `water`, and a UUID v4 idempotency key. The route creates or reuses the scoped audit request and invokes Phase 3D validation. Its limited response omits binding IDs, peripheral IDs/pins, command fingerprints, credentials, broker data, and raw provider responses.
+
+A successful response means only that the command reached `validated`; it explicitly returns `deliveryEnabled: false`. The route has no MQTT, worker, publish, RPC-label, CeleryScript, or hardware dependency. Direct FarmBot Water and Move routes remain `503`. Worker delivery, command acknowledgement, emergency stop, and physical testing remain separate approval gates.
+
+### v0.18.2-alpha Phase 3F-A offline command delivery contract
+
+The FarmBot MQTT adapter now has a pure, offline Water delivery builder based on FarmBot's documented MQTT/CeleryScript protocol. It accepts only a fully resolved, unexpired `validated` Water record. It derives the exact `from_clients` topic from the verified broker device ID, derives the RPC label from the server command UUID, and builds a fixed digital output sequence: Water on, wait exactly 5 seconds, Water off. The adapter also maps only a matching `rpc_ok` or `rpc_error` response to an acknowledgement result.
+
+This contract is test-only preparation. The shared MQTT transport remains read-only, the worker has no command endpoint, worker health still reports `commandsEnabled: false`, and the App authorization response still reports `deliveryEnabled: false`. No repository transition calls the builder, no payload is published, and no real FarmBot operation is authorized by this increment. Timeout/off recovery and durable acknowledgement transitions must be designed before live delivery can be considered.
+
+### v0.18.2-alpha Phase 3F-B offline timeout and Water-off recovery policy
+
+The FarmBot adapter now has a pure acknowledgement-timeout evaluator. A dispatched Water command receives a 15-second acknowledgement window: the fixed 5-second operation plus a 10-second response grace period. Commands that are not in `dispatched` state do not time out through this policy. When a dispatched command reaches its deadline, the policy marks recovery as required.
+
+The adapter can prepare a separate fixed Water-off RPC only for an already dispatched command, proven by a valid `dispatchedAt` timestamp and a state of `dispatched`, `timed_out`, or post-dispatch `rejected`. Its independent RPC label cannot be confused with the original Water request. A matching recovery `rpc_ok` or `rpc_error` is interpreted separately. Recovery deliberately does not depend on the expired request deadline.
+
+At the Phase 3F-B checkpoint, this remained offline preparation with no timeout scheduler, repository transition, transport publish method, worker command route, or physical operation. Recovery-specific schema was not part of that increment. The later dormant lifecycle writers and additive recovery declaration are recorded below.
+
+### v0.18.2-alpha Phase 3F-C dormant durable command lifecycle
+
+The FarmBot command policy now prepares the remaining narrow audit transitions: `validated → accepted`, `accepted → dispatched`, matching `rpc_ok → acknowledged`, matching `rpc_error → rejected`, `acknowledged → completed`, and overdue `dispatched → timed_out`. Each transition validates its prior state and timestamp order. The primary RPC label is derived only from the stored server-generated command UUID.
+
+The server repository exposes matching owner-scoped, transactionally locked methods. Acceptance and dispatch repeat active owner/Project/ThreeD/Project Asset/FarmBot checks before a future device boundary. Acknowledgement, completion, rejection, and timeout remain recordable after later Project deactivation so an already dispatched operation cannot lose its audit outcome. Conditional updates reject stale or repeated transitions.
+
+These methods are dormant. No App route, browser component, worker endpoint, MQTT session, scheduler, or response observer calls them. The command API still stops at `validated`, MQTT remains read-only, and no physical operation is enabled. No schema or environment change is included.
+
+### v0.18.2-alpha Phase 3F-D recovery audit schema declaration
+
+The `threed_farmbot_commands` Drizzle declaration now includes a separate Water-off recovery lifecycle: `required`, `dispatched`, `confirmed`, or `failed`. Each non-null recovery record has a unique recovery RPC label and a required timestamp. Later states require ordered dispatch and resolution timestamps; failed recovery also requires a bounded error code. A database check prevents partial or mismatched recovery fields.
+
+This is schema preparation only. It stores no MQTT topic, CeleryScript, raw payload, credential, or provider response. No repository method writes the new fields, and no scheduler, route, transport, worker, or hardware path consumes them. A generated migration must be reviewed before the user intentionally applies it to the intended database.
+
+The user generated and pushed this additive schema successfully before Phase 3F-E began.
+
+### v0.18.2-alpha Phase 3F-E dormant recovery lifecycle
+
+The FarmBot lifecycle core now owns the deterministic recovery RPC label so the repository and MQTT adapter use the same server-derived identity without making the repository depend on MQTT. Pure transitions enforce `null → required → dispatched → confirmed/failed`, require proof of prior command dispatch, enforce timestamp order, and require an exact recovery RPC-label match for resolution.
+
+The server repository exposes matching owner-scoped, transactionally locked, conditional writers. A recovery can become required only for a timed-out or post-dispatch rejected command. These recovery writes intentionally do not repeat active Project assignment checks: once a physical command has been dispatched, its Water-off safety audit must remain recordable even if the Project is later deactivated.
+
+The recovery methods are dormant. No route, scheduler, worker, MQTT observer, transport, or browser component imports them. The shared transport remains read-only, worker health still reports commands disabled, and no physical command is enabled.
 
 ### ThreeD MQTT module authority
 

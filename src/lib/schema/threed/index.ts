@@ -948,6 +948,15 @@ export const threedFarmbotCommands = pgTable('threed_farmbot_commands', {
   rejectionCode: varchar('rejection_code', { length: 100 }),
   commandFingerprint: varchar('command_fingerprint', { length: 64 }),
 
+  // Water-off recovery has its own broker correlation and audit lifecycle.
+  // No raw recovery payload is stored.
+  recoveryState: varchar('recovery_state', { length: 20 }),
+  recoveryRpcLabel: varchar('recovery_rpc_label', { length: 100 }),
+  recoveryErrorCode: varchar('recovery_error_code', { length: 100 }),
+  recoveryRequiredAt: timestamp('recovery_required_at'),
+  recoveryDispatchedAt: timestamp('recovery_dispatched_at'),
+  recoveryResolvedAt: timestamp('recovery_resolved_at'),
+
   requestedAt: timestamp('requested_at').defaultNow().notNull(),
   validatedAt: timestamp('validated_at'),
   acceptedAt: timestamp('accepted_at'),
@@ -963,6 +972,8 @@ export const threedFarmbotCommands = pgTable('threed_farmbot_commands', {
   idempotencyIdx: uniqueIndex('idx_threed_farmbot_commands_idempotency')
     .on(table.userId, table.farmbotId, table.idempotencyKey),
   rpcLabelIdx: uniqueIndex('idx_threed_farmbot_commands_rpc_label').on(table.rpcLabel),
+  recoveryRpcLabelIdx: uniqueIndex('idx_threed_farmbot_commands_recovery_rpc_label')
+    .on(table.recoveryRpcLabel),
   ownerIdx: index('idx_threed_farmbot_commands_owner').on(table.userId),
   projectIdx: index('idx_threed_farmbot_commands_project').on(table.projectId),
   farmbotStateIdx: index('idx_threed_farmbot_commands_farmbot_state')
@@ -1006,6 +1017,65 @@ export const threedFarmbotCommands = pgTable('threed_farmbot_commands', {
   commandFingerprintValid: check(
     'threed_farmbot_commands_fingerprint_valid',
     sql`${table.commandFingerprint} IS NULL OR ${table.commandFingerprint} ~ '^[0-9a-f]{64}$'`
+  ),
+  recoveryStateValid: check(
+    'threed_farmbot_commands_recovery_state_valid',
+    sql`${table.recoveryState} IS NULL OR ${table.recoveryState} IN ('required', 'dispatched', 'confirmed', 'failed')`
+  ),
+  recoveryRpcLabelValid: check(
+    'threed_farmbot_commands_recovery_rpc_label_valid',
+    sql`${table.recoveryRpcLabel} IS NULL OR ${table.recoveryRpcLabel} ~ '^[A-Za-z0-9_-]+$'`
+  ),
+  recoveryErrorCodeValid: check(
+    'threed_farmbot_commands_recovery_error_code_valid',
+    sql`${table.recoveryErrorCode} IS NULL OR ${table.recoveryErrorCode} ~ '^[a-z][a-z0-9_]*$'`
+  ),
+  recoveryLifecycleValid: check(
+    'threed_farmbot_commands_recovery_lifecycle_valid',
+    sql`(
+      (${table.recoveryState} IS NULL
+        AND ${table.recoveryRpcLabel} IS NULL
+        AND ${table.recoveryErrorCode} IS NULL
+        AND ${table.recoveryRequiredAt} IS NULL
+        AND ${table.recoveryDispatchedAt} IS NULL
+        AND ${table.recoveryResolvedAt} IS NULL)
+      OR
+      (${table.recoveryState} = 'required'
+        AND ${table.recoveryRpcLabel} IS NOT NULL
+        AND ${table.recoveryErrorCode} IS NULL
+        AND ${table.recoveryRequiredAt} IS NOT NULL
+        AND ${table.recoveryDispatchedAt} IS NULL
+        AND ${table.recoveryResolvedAt} IS NULL)
+      OR
+      (${table.recoveryState} = 'dispatched'
+        AND ${table.recoveryRpcLabel} IS NOT NULL
+        AND ${table.recoveryErrorCode} IS NULL
+        AND ${table.recoveryRequiredAt} IS NOT NULL
+        AND ${table.recoveryDispatchedAt} IS NOT NULL
+        AND ${table.recoveryResolvedAt} IS NULL)
+      OR
+      (${table.recoveryState} = 'confirmed'
+        AND ${table.recoveryRpcLabel} IS NOT NULL
+        AND ${table.recoveryErrorCode} IS NULL
+        AND ${table.recoveryRequiredAt} IS NOT NULL
+        AND ${table.recoveryDispatchedAt} IS NOT NULL
+        AND ${table.recoveryResolvedAt} IS NOT NULL)
+      OR
+      (${table.recoveryState} = 'failed'
+        AND ${table.recoveryRpcLabel} IS NOT NULL
+        AND ${table.recoveryErrorCode} IS NOT NULL
+        AND ${table.recoveryRequiredAt} IS NOT NULL
+        AND ${table.recoveryDispatchedAt} IS NOT NULL
+        AND ${table.recoveryResolvedAt} IS NOT NULL)
+    )`
+  ),
+  recoveryTimestampOrderValid: check(
+    'threed_farmbot_commands_recovery_timestamp_order_valid',
+    sql`(
+      (${table.recoveryDispatchedAt} IS NULL OR ${table.recoveryDispatchedAt} >= ${table.recoveryRequiredAt})
+      AND
+      (${table.recoveryResolvedAt} IS NULL OR ${table.recoveryResolvedAt} >= ${table.recoveryDispatchedAt})
+    )`
   ),
   expiryValid: check(
     'threed_farmbot_commands_expiry_valid',
