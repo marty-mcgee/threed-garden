@@ -1,6 +1,6 @@
 # ThreeD FarmBot Integration Plan
 
-Status: v0.18.4a is the current production release. Its UI changes preserve the v0.18.3b FarmBot safety boundary through Phase 4L-K. MQTT publishing and physical device commands remain disabled. The single-device Water pilot requires separate approval.
+Status: v0.18.4b is the current production release. Its Dashboard cleanup preserves the v0.18.3b FarmBot safety boundary through Phase 4L-K. MQTT publishing and physical device commands remain disabled. The single-device Water pilot requires separate approval.
 
 ## Integration boundary
 

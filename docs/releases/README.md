@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.18.4b — Dashboard Surface Cleanup](v0.18.4b.md)
 - [v0.18.4a — Admin and Dashboard UI Improvements](v0.18.4a.md)
 - [v0.18.3b — ThreeD MQTT Control Layer: Phase 4L-D–4L-K](v0.18.3b.md)
 - [v0.18.3a — ThreeD MQTT Control Layer: Phase 4A–4L-C](v0.18.3a.md)

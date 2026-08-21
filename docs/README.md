@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.4a **Admin and Dashboard UI Improvements**. v0.18.4b **Dashboard Surface Cleanup** is the current release candidate. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.18.4b **Dashboard Surface Cleanup**. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K. No later release candidate is designated.
 
 ## Human users
 
@@ -31,6 +31,7 @@ Current production is v0.18.4a **Admin and Dashboard UI Improvements**. v0.18.4b
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.18.4b production checkpoint](releases/v0.18.4b.md)
 - [v0.18.4a production checkpoint](releases/v0.18.4a.md)
 - [v0.18.3b production checkpoint](releases/v0.18.3b.md)
 - [v0.18.3a production checkpoint](releases/v0.18.3a.md)
