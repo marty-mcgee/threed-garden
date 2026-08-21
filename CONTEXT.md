@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.3a — ThreeD MQTT Control Layer: Phase 4A–4L-C** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; Phase 4L-D not started** |
+| Current release candidate | **v0.18.3b — ThreeD MQTT Control Layer: Phase 4L-D–4L-K** |
+| Current development milestone | **v0.18.3b release preparation — Phase 4 emergency audit, disabled worker boundary, correlation, and acknowledgement reporting** |
 | Previous checkpoint | **v0.17.3 — Documentation Foundation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1622,6 +1622,54 @@ Database checks require complete Water-output snapshots for validated and later 
 A standalone pure policy module now prepares the ordered emergency audit transitions: requested, validated, accepted, dispatched, and acknowledged or failed. Rejected and expired remain separate terminal paths available only before acceptance. Request identity is server-owned, RPC identity is derived from the emergency UUID, expiry is fixed at 60 seconds, and validation requires an active owner/FarmBot-matched Water binding with immutable positive peripheral snapshots and output mode 0.
 
 Acknowledgement requires the exact derived RPC label; an error outcome becomes failed with a bounded error code rather than a successful result. This step has no repository writer, route, worker handoff, MQTT publisher, UI control, or hardware behavior. Those remain later approval boundaries.
+
+### Phase 4L-D dormant emergency audit repository
+
+A server-only repository now persists the independent emergency lifecycle without adding a runtime caller. It generates the emergency UUID on the server, creates a requested record only for an owned FarmBot, loads records only through owner and emergency identity, resolves the current owner/FarmBot Water binding into immutable mode-0 snapshots, and records rejected or expired validation outcomes.
+
+Accepted, dispatched, acknowledged, and failed transitions reuse the pure Phase 4L-C policy. Every mutation runs under the same per-FarmBot advisory transaction lock used by normal command audits, includes owner and exact prior-state conditions, and permits only exact idempotent retries. Project assignment is deliberately absent so a safety audit cannot be interrupted by animation, World Action, or later Project deactivation. The repository has no route, worker handoff, MQTT publisher, UI caller, or physical behavior.
+
+### Phase 4L-E dormant emergency delivery context and mapper
+
+The repository can now read an accepted emergency audit under its owner and shared per-FarmBot transaction lock, require complete mode-0 Water snapshots and an unexpired acceptance, and return the canonical verified broker identity from the owned FarmBot. It deliberately does not require active Project assignment or FarmBot activation after the emergency audit has been accepted.
+
+A pure FarmBot adapter mapper converts only that accepted audit and broker identity into the existing strict emergency worker request. It rechecks policy/action/state, timestamps, mode 0, server-derived RPC identity, exact 60-second expiry, pin shape, and `device_<number>` broker identity through the strict parser. No handoff, signed client call, worker endpoint caller, dispatch write, MQTT publisher, UI control, or physical behavior is added.
+
+### Phase 4L-F dormant signed emergency worker client
+
+The strict emergency request now has a path/body submission builder for `POST /internal/v1/farmbots/:id/emergencies`, and the server-only FarmBot worker client can sign that normalized request through the existing ThreeD MQTT worker HMAC boundary. A separate strict response parser accepts only success plus the exact emergency UUID, deterministic emergency RPC label, and an ISO worker acceptance timestamp within 60 seconds of the App clock.
+
+The worker server does not expose the emergency path, and no handoff, repository coordinator, route, scheduler, World Action, or component calls the submit function. The client therefore cannot run in production. Dispatch is not recorded, both existing executors remain disabled, worker health remains command-disabled, and no MQTT publisher or physical action is introduced.
+
+### Phase 4L-G disabled signed emergency worker endpoint
+
+The FarmBot worker now recognizes authenticated `POST /internal/v1/farmbots/:id/emergencies` requests. It requires exact JSON content type, the 1 KiB Phase 4L-A payload limit, strict request parsing, matching path/body FarmBot identity, and the existing connected, fresh owner/broker-scoped command session before invoking a dedicated emergency executor.
+
+Production injects only `DisabledFarmBotWorkerEmergencyWaterOffExecutor`, so a valid request returns `503` and cannot reach MQTT or hardware. Even an injected test executor must return only the matching emergency UUID, deterministic RPC label, and bounded ISO acceptance time or the endpoint fails with `502`. No execution gate, publisher, dispatch coordinator, App handoff caller, UI control, schema change, or physical action is added, and worker health remains `commandsEnabled: false`.
+
+### Phase 4L-H emergency idempotency and shared arbitration
+
+A process-local emergency execution gate now claims each emergency UUID before executor entry and joins the same per-FarmBot arbiter used by normal Water and recovery. An active emergency blocks normal and recovery execution for that FarmBot, while an active normal command blocks emergency execution. An exact completed emergency retry reuses its original validated worker receipt; a changed duplicate or second active operation is rejected.
+
+Only the known disabled-executor error releases an unused emergency claim because it proves no delivery attempt occurred. Invalid or uncertain executor outcomes remain claimed. This memory-only defense does not survive worker restart and does not replace the durable emergency audit or database locks. Production still injects the disabled executor, worker health remains command-disabled, and there is no acknowledgement observer, MQTT publisher, App handoff caller, UI control, or physical behavior.
+
+### Phase 4L-I emergency RPC acknowledgement correlation
+
+After a future emergency executor returns a valid receipt, the emergency gate now tracks the exact owner, FarmBot, emergency UUID, and deterministic RPC label in worker memory. The existing normalized FarmBot response stream offers each RPC response to the emergency gate after continuing its established event persistence. Only the matching FarmBot and RPC label can settle the pending emergency, and malformed response times are ignored without clearing it.
+
+One matching `rpc_ok` becomes an in-memory acknowledged result with no error; one matching `rpc_error` becomes failed with the bounded `farmbot_emergency_rpc_error`. The tracked label is removed after the first result, so repeated responses cannot settle twice. No acknowledgement sink, App endpoint, repository outcome caller, MQTT publisher, UI control, or physical behavior is added. Production execution remains disabled, so normal runtime cannot create a pending emergency correlation.
+
+### Phase 4L-J authenticated emergency acknowledgement ingestion
+
+The App now has a private worker-to-App endpoint for a future normalized emergency result. It requires the existing ThreeD MQTT worker HMAC signature and replay protection, exact JSON, a 1 KiB body limit, a server-derived emergency RPC label, consistent acknowledged/failed error fields, an ISO receive time no more than 60 seconds in the future, and owner/FarmBot/emergency scope before invoking the established emergency audit outcome writer.
+
+Successful ingestion returns only the emergency UUID and stored terminal state. The worker has no emergency acknowledgement reporter or sink and does not call this endpoint; its current in-memory result is still discarded after observation. Production emergency execution remains disabled, worker health remains command-disabled, and this step adds no MQTT publisher, UI control, schema change, or physical operation.
+
+### Phase 4L-K queued emergency acknowledgement reporting
+
+The worker now gives an exactly correlated emergency RPC result to a dedicated process-local acknowledgement sink. The HTTP implementation signs the strict Phase 4L-J payload, queues by emergency UUID, retries failed delivery with bounded backoff, and removes an item only after the App returns the exact emergency UUID and matching acknowledged/failed terminal state. Malformed, extra, false-success, changed-identity, or changed-state receipts remain queued.
+
+Production creates this sink from the existing App URL and worker-to-App HMAC settings and flushes it during shutdown. The production emergency executor remains disabled, so normal runtime cannot create a report. The queue is process-local and does not survive worker restart. This step adds no schema, MQTT publisher, UI control, enabled executor, or physical operation, and worker health remains command-disabled.
 
 ### ThreeD MQTT module authority
 

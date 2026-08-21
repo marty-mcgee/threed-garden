@@ -33,6 +33,21 @@ export interface FarmBotWorkerEmergencyWaterOffRequest {
   expiresAt: Date;
 }
 
+export interface FarmBotAcceptedEmergencyWaterOffRecord {
+  emergencyId: string;
+  userId: string;
+  farmbotId: number;
+  policyVersion: number;
+  semanticAction: string;
+  state: string;
+  peripheralPin: number | null;
+  peripheralMode: number | null;
+  rpcLabel: string;
+  requestedAt: Date;
+  acceptedAt: Date | null;
+  expiresAt: Date;
+}
+
 export class FarmBotWorkerEmergencyWaterOffRequestError extends Error {
   constructor(readonly code: 'invalid_request' | 'expired_request' | 'identity_mismatch') {
     super(code);
@@ -87,5 +102,50 @@ export function parseFarmBotWorkerEmergencyWaterOffRequest(
     rpcLabel: input.rpcLabel,
     requestedAt,
     expiresAt,
+  });
+}
+
+export function prepareFarmBotWorkerEmergencyWaterOffFromAcceptedRecord(input: {
+  action: FarmBotAcceptedEmergencyWaterOffRecord;
+  brokerDeviceId: string;
+  now?: Date;
+}): Readonly<FarmBotWorkerEmergencyWaterOffRequest> {
+  const now = input.now ?? new Date();
+  const action = input.action;
+  if (action.policyVersion !== 1 || action.semanticAction !== 'emergency_water_off'
+    || action.state !== 'accepted' || action.peripheralMode !== 0
+    || !(action.requestedAt instanceof Date) || Number.isNaN(action.requestedAt.valueOf())
+    || !(action.acceptedAt instanceof Date) || Number.isNaN(action.acceptedAt.valueOf())
+    || !(action.expiresAt instanceof Date) || Number.isNaN(action.expiresAt.valueOf())
+    || action.acceptedAt < action.requestedAt || action.acceptedAt > now
+    || action.acceptedAt >= action.expiresAt) {
+    return fail();
+  }
+
+  return parseFarmBotWorkerEmergencyWaterOffRequest({
+    version: 1,
+    farmbotId: action.farmbotId,
+    ownerId: action.userId,
+    brokerDeviceId: input.brokerDeviceId,
+    emergencyId: action.emergencyId,
+    semanticCommand: action.semanticAction,
+    peripheralPin: action.peripheralPin,
+    rpcLabel: action.rpcLabel,
+    requestedAt: action.requestedAt.toISOString(),
+    expiresAt: action.expiresAt.toISOString(),
+  }, now);
+}
+
+export function prepareFarmBotWorkerEmergencyWaterOffSubmission(
+  farmbotId: number,
+  payload: unknown,
+  now = new Date()
+) {
+  if (!Number.isSafeInteger(farmbotId) || farmbotId <= 0) return fail();
+  const emergency = parseFarmBotWorkerEmergencyWaterOffRequest(payload, now);
+  if (emergency.farmbotId !== farmbotId) return fail('identity_mismatch');
+  return Object.freeze({
+    path: `/internal/v1/farmbots/${farmbotId}/emergencies` as const,
+    emergency,
   });
 }

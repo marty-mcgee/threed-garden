@@ -61,6 +61,26 @@ import {
 } from './command-timeout-client';
 import { ProcessLocalFarmBotWorkerCommandDeadlineMonitor } from './command-deadline-monitor';
 import { createFarmBotWorkerTimeoutReconciliationRunner } from './command-timeout-reconciliation-client';
+import {
+  MAX_FARMBOT_EMERGENCY_WATER_OFF_REQUEST_BYTES,
+  parseFarmBotWorkerEmergencyWaterOffRequest,
+} from './emergency-water-off-request-core';
+import {
+  DisabledFarmBotWorkerEmergencyWaterOffExecutor,
+  FarmBotWorkerEmergencyWaterOffDisabledError,
+  FarmBotWorkerEmergencyWaterOffExecutionResultError,
+  type FarmBotWorkerEmergencyWaterOffExecutor,
+  validateFarmBotWorkerEmergencyWaterOffExecutionResult,
+} from './emergency-water-off-executor';
+import {
+  FarmBotWorkerEmergencyWaterOffExecutionGate,
+  FarmBotWorkerEmergencyWaterOffGateError,
+} from './emergency-water-off-execution-gate';
+import {
+  DisabledFarmBotWorkerEmergencyWaterOffAcknowledgementSink,
+  createFarmBotWorkerEmergencyWaterOffAcknowledgementSink,
+  type FarmBotWorkerEmergencyWaterOffAcknowledgementSink,
+} from './emergency-water-off-acknowledgement-client';
 
 const DEFAULT_PORT = 4456;
 const MAX_INTERNAL_BODY_BYTES = MAX_FARMBOT_WORKER_GRANT_BYTES;
@@ -94,17 +114,17 @@ function requiredHeader(request: IncomingMessage, name: string): string {
 
 function parseFarmbotPath(pathname: string): {
   farmbotId: number;
-  action: 'status' | 'session' | 'commands' | 'recoveries';
+  action: 'status' | 'session' | 'commands' | 'recoveries' | 'emergencies';
 } | null {
   const match = pathname.match(
-    /^\/internal\/v1\/farmbots\/([1-9]\d*)\/(status|session|commands|recoveries)$/
+    /^\/internal\/v1\/farmbots\/([1-9]\d*)\/(status|session|commands|recoveries|emergencies)$/
   );
   if (!match) return null;
   const farmbotId = Number(match[1]);
   if (!Number.isSafeInteger(farmbotId)) return null;
   return {
     farmbotId,
-    action: match[2] as 'status' | 'session' | 'commands' | 'recoveries',
+    action: match[2] as 'status' | 'session' | 'commands' | 'recoveries' | 'emergencies',
   };
 }
 
@@ -120,7 +140,11 @@ export function createFarmBotWorkerServer(
   recoveryAcknowledgementSink: FarmBotWorkerRecoveryAcknowledgementSink
     = new DisabledFarmBotWorkerRecoveryAcknowledgementSink(),
   timeoutSink: FarmBotWorkerCommandTimeoutSink
-    = new DisabledFarmBotWorkerCommandTimeoutSink()
+    = new DisabledFarmBotWorkerCommandTimeoutSink(),
+  emergencyExecutor: FarmBotWorkerEmergencyWaterOffExecutor
+    = new DisabledFarmBotWorkerEmergencyWaterOffExecutor(),
+  emergencyAcknowledgementSink: FarmBotWorkerEmergencyWaterOffAcknowledgementSink
+    = new DisabledFarmBotWorkerEmergencyWaterOffAcknowledgementSink()
 ) {
   const nonceStore = new MqttWorkerNonceStore();
   const deviceExecutionArbiter = new ProcessLocalFarmBotWorkerDeviceExecutionArbiter();
@@ -135,6 +159,11 @@ export function createFarmBotWorkerServer(
     deviceExecutionArbiter,
     recoveryAcknowledgementSink
   );
+  const guardedEmergencyExecutor = new FarmBotWorkerEmergencyWaterOffExecutionGate(
+    emergencyExecutor,
+    deviceExecutionArbiter,
+    emergencyAcknowledgementSink
+  );
   const registry = new FarmBotWorkerSessionRegistry(
     transport,
     {},
@@ -143,6 +172,7 @@ export function createFarmBotWorkerServer(
       observeResponse(input) {
         const commandAcknowledgement = guardedCommandExecutor.observeResponse(input);
         guardedRecoveryExecutor.observeResponse(input);
+        guardedEmergencyExecutor.observeResponse(input);
         return commandAcknowledgement;
       },
     }
@@ -300,6 +330,55 @@ export function createFarmBotWorkerServer(
       return;
     }
 
+    if (route.action === 'emergencies' && method === 'POST') {
+      try {
+        if (request.headers['content-type'] !== 'application/json'
+          || body.byteLength > MAX_FARMBOT_EMERGENCY_WATER_OFF_REQUEST_BYTES) {
+          throw new Error('invalid_emergency_request');
+        }
+        const emergency = parseFarmBotWorkerEmergencyWaterOffRequest(
+          JSON.parse(body.toString('utf8')) as unknown
+        );
+        if (emergency.farmbotId !== route.farmbotId) {
+          throw new Error('farmbot_id_mismatch');
+        }
+        registry.assertCommandSession(emergency);
+        const result = validateFarmBotWorkerEmergencyWaterOffExecutionResult({
+          request: emergency,
+          result: await guardedEmergencyExecutor.execute(emergency),
+        });
+        sendJson(response, 202, { success: true, data: result });
+      } catch (error) {
+        if (error instanceof FarmBotWorkerEmergencyWaterOffDisabledError) {
+          sendJson(response, 503, {
+            success: false,
+            error: 'FarmBot emergency Water-off is disabled',
+          });
+          return;
+        }
+        if (error instanceof FarmBotWorkerCommandSessionError) {
+          sendJson(response, 409, { success: false, error: 'FarmBot session is not ready' });
+          return;
+        }
+        if (error instanceof FarmBotWorkerEmergencyWaterOffExecutionResultError) {
+          sendJson(response, 502, {
+            success: false,
+            error: 'Invalid emergency Water-off executor response',
+          });
+          return;
+        }
+        if (error instanceof FarmBotWorkerEmergencyWaterOffGateError) {
+          sendJson(response, 409, { success: false, error: 'FarmBot emergency conflict' });
+          return;
+        }
+        sendJson(response, 400, {
+          success: false,
+          error: 'Invalid FarmBot emergency Water-off request',
+        });
+      }
+      return;
+    }
+
     sendJson(response, 405, { success: false, error: 'Method not allowed' });
   });
 
@@ -308,6 +387,7 @@ export function createFarmBotWorkerServer(
     registry,
     commandGate: guardedCommandExecutor,
     recoveryGate: guardedRecoveryExecutor,
+    emergencyGate: guardedEmergencyExecutor,
   };
 }
 
@@ -327,7 +407,7 @@ export async function startFarmBotWorker(): Promise<void> {
     ? new MqttJsReadonlyTransport()
     : new MqttReadonlyTransportUnavailable();
   const timeoutReconciliation = createFarmBotWorkerTimeoutReconciliationRunner();
-  const { server, registry, commandGate, recoveryGate } = createFarmBotWorkerServer(
+  const { server, registry, commandGate, recoveryGate, emergencyGate } = createFarmBotWorkerServer(
     encodedHmacKey,
     createFarmBotWorkerPersistenceSink(),
     transport,
@@ -336,7 +416,9 @@ export async function startFarmBotWorker(): Promise<void> {
     createFarmBotWorkerCommandAcknowledgementSink(),
     new DisabledFarmBotWorkerRecoveryExecutor(),
     createFarmBotWorkerRecoveryAcknowledgementSink(),
-    createFarmBotWorkerCommandTimeoutSink()
+    createFarmBotWorkerCommandTimeoutSink(),
+    new DisabledFarmBotWorkerEmergencyWaterOffExecutor(),
+    createFarmBotWorkerEmergencyWaterOffAcknowledgementSink()
   );
   const shutdown = async () => {
     server.close();
@@ -344,6 +426,7 @@ export async function startFarmBotWorker(): Promise<void> {
     await registry.shutdown();
     await commandGate.shutdown();
     await recoveryGate.flushAcknowledgements();
+    await emergencyGate.flushAcknowledgements();
   };
   process.once('SIGINT', () => void shutdown());
   process.once('SIGTERM', () => void shutdown());

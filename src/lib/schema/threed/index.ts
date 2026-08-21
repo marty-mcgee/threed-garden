@@ -1729,6 +1729,9 @@ export type NewThreedMqttEvent = typeof threedMqttEvents.$inferInsert;
 export type ThreedFarmbotCommand = typeof threedFarmbotCommands.$inferSelect;
 export type NewThreedFarmbotCommand = typeof threedFarmbotCommands.$inferInsert;
 
+export type ThreedFarmbotEmergencyAction = typeof threedFarmbotEmergencyActions.$inferSelect;
+export type NewThreedFarmbotEmergencyAction = typeof threedFarmbotEmergencyActions.$inferInsert;
+
 export type ThreedFarmbotLog = typeof threedFarmbotLogs.$inferSelect;
 export type NewThreedFarmbotLog = typeof threedFarmbotLogs.$inferInsert;
 

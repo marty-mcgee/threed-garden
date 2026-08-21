@@ -43,6 +43,22 @@ Phase 3F-D declares an additive Water-off recovery audit lifecycle on the same c
 
 Phase 4L-B adds the approved and applied `threed_farmbot_emergency_actions` audit for independent Water-off safety requests. It does not use `project_id` or a normal command foreign key because emergency control cannot depend on Project or animation state. It stores owner/FarmBot identity, policy/action/state, an optional binding reference, immutable resolved peripheral snapshots, deterministic emergency RPC identity, bounded outcome code, exact 60-second lifetime, and ordered lifecycle timestamps. Binding deletion may clear the foreign key without erasing snapshots. Credentials, MQTT topics/payloads, CeleryScript, arbitrary JSON, and browser-provided operations are excluded. Phase 4L-C adds a pure policy for valid lifecycle transition records but no database writer.
 
+Phase 4L-D adds dormant owner-scoped repository access for this table. Creation verifies FarmBot ownership; validation snapshots the current active Water binding; and all mutations use a shared per-FarmBot transaction lock plus exact prior-state conditions. The repository deliberately has no Project relationship and no runtime caller.
+
+Phase 4L-E adds a read-only delivery-context query for an accepted, unexpired row and its owned FarmBot's canonical broker identity. The context is not a new table or persisted shape and does not alter the schema.
+
+Phase 4L-F adds no data-model change. Its strict worker acceptance receipt remains in memory and cannot be produced in normal runtime because the worker has no emergency endpoint and the App client has no caller.
+
+Phase 4L-G adds no data-model change. The disabled worker endpoint returns no acceptance receipt in production and does not invoke the emergency repository.
+
+Phase 4L-H adds no data-model change. Its emergency UUID claims and completed receipt cache are process-local worker memory and do not replace `threed_farmbot_emergency_actions`.
+
+Phase 4L-I adds no data-model change. Its pending RPC correlation and normalized acknowledged/failed result remain worker memory and are not yet written to the emergency audit table.
+
+Phase 4L-J adds no data-model change. Its authenticated App endpoint may update an existing dispatched `threed_farmbot_emergency_actions` row to acknowledged or failed through the established owner-scoped repository writer, but no worker reporter calls the endpoint yet.
+
+Phase 4L-K adds no data-model change. Pending emergency acknowledgement deliveries live only in the worker process until the App returns an exact persistence receipt; the disabled production emergency executor prevents this queue from receiving normal runtime entries.
+
 The user generated and applied the Phase 3F-D schema. Phase 3F-E adds dormant owner-scoped repository writers for the recovery lifecycle. They lock per FarmBot, require exact prior recovery state and RPC correlation, and preserve ordered timestamps. They do not require an active Project assignment after the original dispatch because the Water-off safety outcome must remain auditable. No runtime caller invokes these writers.
 
 The legacy `threed_farmbot_logs` table remains separate because `FarmBotPoller` still references its older sensor/log shape. New MQTT activity must not write to its unrestricted `rawData` field.

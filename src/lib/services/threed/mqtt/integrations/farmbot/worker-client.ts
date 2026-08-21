@@ -9,6 +9,8 @@ import {
   prepareFarmBotWorkerWaterOffRecoverySubmission,
 } from './command-recovery-request-core';
 import { parseFarmBotWorkerRecoveryAcceptedResponse } from './command-recovery-response-core';
+import { prepareFarmBotWorkerEmergencyWaterOffSubmission } from './emergency-water-off-request-core';
+import { parseFarmBotWorkerEmergencyWaterOffAcceptedResponse } from './emergency-water-off-response-core';
 
 export function connectFarmBotWorkerSession(farmbotId: number, grant: unknown) {
   return mqttWorkerRequest('PUT', `/internal/v1/farmbots/${farmbotId}/session`, grant);
@@ -37,5 +39,14 @@ export async function submitFarmBotWorkerWaterOffRecovery(farmbotId: number, pay
   return parseFarmBotWorkerRecoveryAcceptedResponse({
     response,
     recovery: submission.recovery,
+  });
+}
+
+export async function submitFarmBotWorkerEmergencyWaterOff(farmbotId: number, payload: unknown) {
+  const submission = prepareFarmBotWorkerEmergencyWaterOffSubmission(farmbotId, payload);
+  const response = await mqttWorkerRequest('POST', submission.path, submission.emergency);
+  return parseFarmBotWorkerEmergencyWaterOffAcceptedResponse({
+    response,
+    emergency: submission.emergency,
   });
 }

@@ -194,7 +194,39 @@ import {
   MAX_FARMBOT_EMERGENCY_WATER_OFF_REQUEST_BYTES,
   FarmBotWorkerEmergencyWaterOffRequestError,
   parseFarmBotWorkerEmergencyWaterOffRequest,
+  prepareFarmBotWorkerEmergencyWaterOffFromAcceptedRecord,
+  prepareFarmBotWorkerEmergencyWaterOffSubmission,
 } from './emergency-water-off-request-core';
+import {
+  FarmBotWorkerEmergencyWaterOffResponseError,
+  parseFarmBotWorkerEmergencyWaterOffAcceptedResponse,
+} from './emergency-water-off-response-core';
+import {
+  DisabledFarmBotWorkerEmergencyWaterOffExecutor,
+  FarmBotWorkerEmergencyWaterOffDisabledError,
+  FarmBotWorkerEmergencyWaterOffExecutionResultError,
+  validateFarmBotWorkerEmergencyWaterOffExecutionResult,
+} from './emergency-water-off-executor';
+import {
+  FarmBotWorkerEmergencyWaterOffExecutionGate,
+  FarmBotWorkerEmergencyWaterOffGateError,
+  type FarmBotWorkerEmergencyWaterOffAcknowledgement,
+} from './emergency-water-off-execution-gate';
+import {
+  MAX_FARMBOT_EMERGENCY_ACKNOWLEDGEMENT_BYTES,
+  FarmBotEmergencyWaterOffAcknowledgementInputError,
+  parseFarmBotEmergencyWaterOffAcknowledgement,
+} from './emergency-water-off-acknowledgement-core';
+import {
+  DisabledFarmBotWorkerEmergencyWaterOffAcknowledgementSink,
+  HttpFarmBotWorkerEmergencyWaterOffAcknowledgementSink,
+  createFarmBotWorkerEmergencyWaterOffAcknowledgementSink,
+  type FarmBotWorkerEmergencyWaterOffAcknowledgementSink,
+} from './emergency-water-off-acknowledgement-client';
+import {
+  FarmBotEmergencyWaterOffAcknowledgementResponseError,
+  parseFarmBotEmergencyWaterOffAcknowledgementReceipt,
+} from './emergency-water-off-acknowledgement-response-core';
 
 function testJwt(payload: Record<string, unknown>): string {
   return `header.${Buffer.from(JSON.stringify(payload)).toString('base64url')}.signature`;
@@ -282,6 +314,116 @@ assert.deepEqual(parseFarmBotWorkerEmergencyWaterOffRequest(
   requestedAt: emergencyRequestedAt,
   expiresAt: emergencyExpiresAt,
 });
+const acceptedEmergencyRecord = {
+  emergencyId,
+  userId: workerCommand.ownerId,
+  farmbotId: workerCommand.farmbotId,
+  policyVersion: 1,
+  semanticAction: 'emergency_water_off',
+  state: 'accepted',
+  peripheralPin: workerCommand.peripheralPin,
+  peripheralMode: 0,
+  rpcLabel: farmBotEmergencyWaterOffRpcLabel(emergencyId),
+  requestedAt: emergencyRequestedAt,
+  acceptedAt: new Date(emergencyRequestedAt.getTime() + 1_000),
+  expiresAt: emergencyExpiresAt,
+};
+assert.deepEqual(prepareFarmBotWorkerEmergencyWaterOffFromAcceptedRecord({
+  action: acceptedEmergencyRecord,
+  brokerDeviceId: workerCommand.brokerDeviceId,
+  now: acceptedEmergencyRecord.acceptedAt,
+}), {
+  ...emergencyRequestPayload,
+  requestedAt: emergencyRequestedAt,
+  expiresAt: emergencyExpiresAt,
+});
+const emergencySubmission = prepareFarmBotWorkerEmergencyWaterOffSubmission(
+  workerCommand.farmbotId,
+  emergencyRequestPayload,
+  emergencyRequestedAt
+);
+assert.equal(
+  emergencySubmission.path,
+  '/internal/v1/farmbots/42/emergencies'
+);
+assert.throws(
+  () => prepareFarmBotWorkerEmergencyWaterOffSubmission(
+    workerCommand.farmbotId + 1,
+    emergencyRequestPayload,
+    emergencyRequestedAt
+  ),
+  (error) => error instanceof FarmBotWorkerEmergencyWaterOffRequestError
+    && error.code === 'identity_mismatch'
+);
+const emergencyAcceptedResponse = {
+  success: true,
+  data: {
+    emergencyId,
+    rpcLabel: farmBotEmergencyWaterOffRpcLabel(emergencyId),
+    acceptedAt: new Date(emergencyRequestedAt.getTime() + 2_000).toISOString(),
+  },
+};
+assert.deepEqual(parseFarmBotWorkerEmergencyWaterOffAcceptedResponse({
+  response: emergencyAcceptedResponse,
+  emergency: emergencySubmission.emergency,
+  now: new Date(emergencyRequestedAt.getTime() + 2_000),
+}), {
+  emergencyId,
+  rpcLabel: farmBotEmergencyWaterOffRpcLabel(emergencyId),
+  acceptedAt: new Date(emergencyRequestedAt.getTime() + 2_000),
+});
+for (const response of [
+  { ...emergencyAcceptedResponse, extra: true },
+  { ...emergencyAcceptedResponse, success: false },
+  { ...emergencyAcceptedResponse, data: { ...emergencyAcceptedResponse.data, extra: true } },
+  { ...emergencyAcceptedResponse, data: {
+    ...emergencyAcceptedResponse.data,
+    emergencyId: '550e8400-e29b-41d4-a716-446655440098',
+  } },
+  { ...emergencyAcceptedResponse, data: {
+    ...emergencyAcceptedResponse.data,
+    rpcLabel: 'wrong',
+  } },
+  { ...emergencyAcceptedResponse, data: {
+    ...emergencyAcceptedResponse.data,
+    acceptedAt: 'invalid',
+  } },
+] as const) {
+  assert.throws(
+    () => parseFarmBotWorkerEmergencyWaterOffAcceptedResponse({
+      response,
+      emergency: emergencySubmission.emergency,
+      now: new Date(emergencyRequestedAt.getTime() + 2_000),
+    }),
+    FarmBotWorkerEmergencyWaterOffResponseError
+  );
+}
+for (const action of [
+  { ...acceptedEmergencyRecord, state: 'validated' },
+  { ...acceptedEmergencyRecord, policyVersion: 2 },
+  { ...acceptedEmergencyRecord, semanticAction: 'water' },
+  { ...acceptedEmergencyRecord, peripheralMode: 1 },
+  { ...acceptedEmergencyRecord, peripheralPin: null },
+  { ...acceptedEmergencyRecord, rpcLabel: 'wrong' },
+] as const) {
+  assert.throws(
+    () => prepareFarmBotWorkerEmergencyWaterOffFromAcceptedRecord({
+      action,
+      brokerDeviceId: workerCommand.brokerDeviceId,
+      now: acceptedEmergencyRecord.acceptedAt,
+    }),
+    FarmBotWorkerEmergencyWaterOffRequestError
+  );
+}
+assert.throws(
+  () => prepareFarmBotWorkerEmergencyWaterOffFromAcceptedRecord({
+    action: acceptedEmergencyRecord,
+    brokerDeviceId: workerCommand.brokerDeviceId,
+    now: emergencyExpiresAt,
+  }),
+  (error) => error instanceof FarmBotWorkerEmergencyWaterOffRequestError
+    && error.code === 'expired_request'
+);
 assert.equal(MAX_FARMBOT_EMERGENCY_WATER_OFF_REQUEST_BYTES, 1_024);
 for (const invalid of [
   { ...emergencyRequestPayload, extra: true },
@@ -311,6 +453,60 @@ assert.throws(
   (error) => error instanceof FarmBotWorkerEmergencyWaterOffRequestError
     && error.code === 'expired_request'
 );
+const emergencyAcknowledgementPayload = {
+  version: 1,
+  ownerId: emergencyRequestPayload.ownerId,
+  farmbotId: emergencyRequestPayload.farmbotId,
+  emergencyId: emergencyRequestPayload.emergencyId,
+  rpcLabel: emergencyRequestPayload.rpcLabel,
+  state: 'acknowledged',
+  errorCode: null,
+  receivedAt: emergencyRequestedAt.toISOString(),
+} as const;
+assert.deepEqual(
+  parseFarmBotEmergencyWaterOffAcknowledgement(
+    emergencyAcknowledgementPayload,
+    emergencyRequestedAt
+  ),
+  {
+    ...emergencyAcknowledgementPayload,
+    receivedAt: emergencyRequestedAt,
+  }
+);
+assert.deepEqual(
+  parseFarmBotEmergencyWaterOffAcknowledgement({
+    ...emergencyAcknowledgementPayload,
+    state: 'failed',
+    errorCode: 'farmbot_emergency_rpc_error',
+  }, emergencyRequestedAt),
+  {
+    ...emergencyAcknowledgementPayload,
+    state: 'failed',
+    errorCode: 'farmbot_emergency_rpc_error',
+    receivedAt: emergencyRequestedAt,
+  }
+);
+assert.equal(MAX_FARMBOT_EMERGENCY_ACKNOWLEDGEMENT_BYTES, 1_024);
+for (const invalid of [
+  { ...emergencyAcknowledgementPayload, extra: true },
+  { ...emergencyAcknowledgementPayload, ownerId: '' },
+  { ...emergencyAcknowledgementPayload, farmbotId: 0 },
+  { ...emergencyAcknowledgementPayload, emergencyId: 'invalid' },
+  { ...emergencyAcknowledgementPayload, rpcLabel: 'wrong' },
+  { ...emergencyAcknowledgementPayload, state: 'failed' },
+  { ...emergencyAcknowledgementPayload, errorCode: 'farmbot_emergency_rpc_error' },
+  { ...emergencyAcknowledgementPayload, receivedAt: 'invalid' },
+  {
+    ...emergencyAcknowledgementPayload,
+    receivedAt: new Date(emergencyRequestedAt.getTime() + 60_001).toISOString(),
+  },
+] as const) {
+  assert.throws(
+    () => parseFarmBotEmergencyWaterOffAcknowledgement(invalid, emergencyRequestedAt),
+    FarmBotEmergencyWaterOffAcknowledgementInputError
+  );
+}
+validationStep('Strict emergency acknowledgement ingestion contract');
 assert.equal(workerCommand.semanticCommand, 'water');
 assert.equal(workerCommand.state, 'accepted');
 assert.equal(workerCommand.durationMs, 5_000);
@@ -2402,6 +2598,7 @@ let failNextPersistenceRequest = true;
 let mismatchNextCommandReceipt = false;
 let mismatchNextRecoveryReceipt = false;
 let mismatchNextTimeoutReceipt = false;
+let mismatchNextEmergencyReceipt = false;
 assert.ok(
   createFarmBotWorkerRecoveryAcknowledgementSink({ NODE_ENV: 'test' })
     instanceof DisabledFarmBotWorkerRecoveryAcknowledgementSink
@@ -2495,6 +2692,18 @@ globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) =>
       },
     }, { status: 202 });
   }
+  if (new URL(requestUrl).pathname
+    === '/api/internal/threed-mqtt/farmbot/emergencies/acknowledgements') {
+    const acknowledgement = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    const emergencyId = mismatchNextEmergencyReceipt
+      ? '550e8400-e29b-41d4-a716-446655440098'
+      : acknowledgement.emergencyId;
+    mismatchNextEmergencyReceipt = false;
+    return Response.json({
+      success: true,
+      data: { emergencyId, state: acknowledgement.state },
+    }, { status: 202 });
+  }
   return new Response(null, { status: 204 });
 }) as typeof fetch;
 try {
@@ -2579,6 +2788,38 @@ try {
   assert.equal(persistenceRequests.length, requestsBeforeMismatchedReceipt + 1);
   await httpRecoveryAcknowledgements.flush();
   assert.equal(persistenceRequests.length, requestsBeforeMismatchedReceipt + 2);
+  const httpEmergencyAcknowledgement = Object.freeze({
+    ownerId: emergencyAcknowledgementPayload.ownerId,
+    farmbotId: emergencyAcknowledgementPayload.farmbotId,
+    emergencyId: emergencyAcknowledgementPayload.emergencyId,
+    rpcLabel: emergencyAcknowledgementPayload.rpcLabel,
+    state: emergencyAcknowledgementPayload.state,
+    errorCode: emergencyAcknowledgementPayload.errorCode,
+    receivedAt: emergencyAcknowledgementPayload.receivedAt,
+  });
+  const requestsBeforeEmergencyAcknowledgement = persistenceRequests.length;
+  const httpEmergencyAcknowledgements
+    = new HttpFarmBotWorkerEmergencyWaterOffAcknowledgementSink(
+      'http://127.0.0.1:3000',
+      authKey
+    );
+  failNextPersistenceRequest = true;
+  httpEmergencyAcknowledgements.record(httpEmergencyAcknowledgement);
+  await httpEmergencyAcknowledgements.flush();
+  assert.equal(persistenceRequests.length, requestsBeforeEmergencyAcknowledgement + 1);
+  await httpEmergencyAcknowledgements.flush();
+  assert.equal(persistenceRequests.length, requestsBeforeEmergencyAcknowledgement + 2);
+  assert.deepEqual(persistenceRequests.at(-1), {
+    version: 1,
+    ...httpEmergencyAcknowledgement,
+  });
+  const requestsBeforeMismatchedEmergencyReceipt = persistenceRequests.length;
+  mismatchNextEmergencyReceipt = true;
+  httpEmergencyAcknowledgements.record(httpEmergencyAcknowledgement);
+  await httpEmergencyAcknowledgements.flush();
+  assert.equal(persistenceRequests.length, requestsBeforeMismatchedEmergencyReceipt + 1);
+  await httpEmergencyAcknowledgements.flush();
+  assert.equal(persistenceRequests.length, requestsBeforeMismatchedEmergencyReceipt + 2);
   const requestsBeforeTimeout = persistenceRequests.length;
   const httpTimeouts = new HttpFarmBotWorkerCommandTimeoutSink(
     'http://127.0.0.1:3000',
@@ -2611,7 +2852,7 @@ try {
 } finally {
   globalThis.fetch = originalFetch;
 }
-validationStep('Runtime/event persistence batching and command/recovery acknowledgement retry');
+validationStep('Runtime/event persistence batching and acknowledgement retry');
 
 const httpWorkerTransport = new FakeTransport();
 const workerServer = createFarmBotWorkerServer(
@@ -2754,7 +2995,384 @@ assert.deepEqual(await recoveryResponse.json(), {
   success: false,
   error: 'FarmBot recovery is disabled',
 });
-validationStep('Signed worker HTTP routes and disabled command/recovery boundaries');
+const disabledEmergencyExecutor = new DisabledFarmBotWorkerEmergencyWaterOffExecutor();
+const liveEmergencyRequestedAt = new Date();
+const liveEmergencyRequest = parseFarmBotWorkerEmergencyWaterOffRequest({
+  ...emergencyRequestPayload,
+  requestedAt: liveEmergencyRequestedAt.toISOString(),
+  expiresAt: new Date(
+    liveEmergencyRequestedAt.getTime() + FARMBOT_EMERGENCY_REQUEST_LIFETIME_MS
+  ).toISOString(),
+});
+await assert.rejects(
+  disabledEmergencyExecutor.execute(liveEmergencyRequest),
+  FarmBotWorkerEmergencyWaterOffDisabledError
+);
+const liveEmergencyAcceptedAt = new Date();
+assert.deepEqual(validateFarmBotWorkerEmergencyWaterOffExecutionResult({
+  request: liveEmergencyRequest,
+  result: {
+    emergencyId: liveEmergencyRequest.emergencyId,
+    rpcLabel: liveEmergencyRequest.rpcLabel,
+    acceptedAt: liveEmergencyAcceptedAt.toISOString(),
+  },
+  now: liveEmergencyAcceptedAt,
+}), {
+  emergencyId: liveEmergencyRequest.emergencyId,
+  rpcLabel: liveEmergencyRequest.rpcLabel,
+  acceptedAt: liveEmergencyAcceptedAt.toISOString(),
+});
+for (const result of [
+  {
+    emergencyId: liveEmergencyRequest.emergencyId,
+    rpcLabel: liveEmergencyRequest.rpcLabel,
+    acceptedAt: liveEmergencyAcceptedAt.toISOString(),
+    extra: true,
+  },
+  {
+    emergencyId: '550e8400-e29b-41d4-a716-446655440098',
+    rpcLabel: liveEmergencyRequest.rpcLabel,
+    acceptedAt: liveEmergencyAcceptedAt.toISOString(),
+  },
+  {
+    emergencyId: liveEmergencyRequest.emergencyId,
+    rpcLabel: 'wrong',
+    acceptedAt: liveEmergencyAcceptedAt.toISOString(),
+  },
+  {
+    emergencyId: liveEmergencyRequest.emergencyId,
+    rpcLabel: liveEmergencyRequest.rpcLabel,
+    acceptedAt: 'invalid',
+  },
+] as const) {
+  assert.throws(
+    () => validateFarmBotWorkerEmergencyWaterOffExecutionResult({
+      request: liveEmergencyRequest,
+      result,
+      now: liveEmergencyAcceptedAt,
+    }),
+    FarmBotWorkerEmergencyWaterOffExecutionResultError
+  );
+}
+let emergencyExecutionCount = 0;
+const reportedEmergencyAcknowledgements: FarmBotWorkerEmergencyWaterOffAcknowledgement[] = [];
+let emergencyAcknowledgementFlushCount = 0;
+const fakeEmergencyAcknowledgementSink: FarmBotWorkerEmergencyWaterOffAcknowledgementSink = {
+  record(acknowledgement) {
+    reportedEmergencyAcknowledgements.push(structuredClone(acknowledgement));
+  },
+  async flush() {
+    emergencyAcknowledgementFlushCount += 1;
+  },
+};
+const emergencyGate = new FarmBotWorkerEmergencyWaterOffExecutionGate({
+  async execute(request) {
+    emergencyExecutionCount += 1;
+    return {
+      emergencyId: request.emergencyId,
+      rpcLabel: request.rpcLabel,
+      acceptedAt: new Date().toISOString(),
+    };
+  },
+}, new ProcessLocalFarmBotWorkerDeviceExecutionArbiter(), fakeEmergencyAcknowledgementSink);
+const firstEmergencyResult = await emergencyGate.execute(liveEmergencyRequest);
+assert.deepEqual(await emergencyGate.execute(liveEmergencyRequest), firstEmergencyResult);
+assert.equal(emergencyExecutionCount, 1, 'An exact emergency retry must reuse its receipt');
+const emergencyReceivedAt = new Date().toISOString();
+assert.equal(emergencyGate.observeResponse({
+  farmbotId: liveEmergencyRequest.farmbotId + 1,
+  response: {
+    eventType: 'rpc_ok',
+    outcome: 'accepted',
+    rpcLabel: liveEmergencyRequest.rpcLabel,
+    errorCode: null,
+  },
+  receivedAt: emergencyReceivedAt,
+}), null);
+assert.equal(emergencyGate.observeResponse({
+  farmbotId: liveEmergencyRequest.farmbotId,
+  response: {
+    eventType: 'rpc_ok',
+    outcome: 'accepted',
+    rpcLabel: 'unknown_rpc_label',
+    errorCode: null,
+  },
+  receivedAt: emergencyReceivedAt,
+}), null);
+assert.equal(emergencyGate.observeResponse({
+  farmbotId: liveEmergencyRequest.farmbotId,
+  response: {
+    eventType: 'rpc_ok',
+    outcome: 'accepted',
+    rpcLabel: liveEmergencyRequest.rpcLabel,
+    errorCode: null,
+  },
+  receivedAt: 'invalid',
+}), null);
+assert.deepEqual(emergencyGate.observeResponse({
+  farmbotId: liveEmergencyRequest.farmbotId,
+  response: {
+    eventType: 'rpc_ok',
+    outcome: 'accepted',
+    rpcLabel: liveEmergencyRequest.rpcLabel,
+    errorCode: null,
+  },
+  receivedAt: emergencyReceivedAt,
+}), {
+  ownerId: liveEmergencyRequest.ownerId,
+  farmbotId: liveEmergencyRequest.farmbotId,
+  emergencyId: liveEmergencyRequest.emergencyId,
+  rpcLabel: liveEmergencyRequest.rpcLabel,
+  state: 'acknowledged',
+  errorCode: null,
+  receivedAt: emergencyReceivedAt,
+});
+assert.deepEqual(reportedEmergencyAcknowledgements, [{
+  ownerId: liveEmergencyRequest.ownerId,
+  farmbotId: liveEmergencyRequest.farmbotId,
+  emergencyId: liveEmergencyRequest.emergencyId,
+  rpcLabel: liveEmergencyRequest.rpcLabel,
+  state: 'acknowledged',
+  errorCode: null,
+  receivedAt: emergencyReceivedAt,
+}]);
+await emergencyGate.flushAcknowledgements();
+assert.equal(emergencyAcknowledgementFlushCount, 1);
+const emergencyAcknowledgementReceipt = {
+  success: true,
+  data: {
+    emergencyId: liveEmergencyRequest.emergencyId,
+    state: 'acknowledged' as const,
+  },
+};
+assert.deepEqual(parseFarmBotEmergencyWaterOffAcknowledgementReceipt({
+  response: emergencyAcknowledgementReceipt,
+  acknowledgement: reportedEmergencyAcknowledgements[0],
+}), emergencyAcknowledgementReceipt.data);
+for (const response of [
+  { ...emergencyAcknowledgementReceipt, extra: true },
+  { ...emergencyAcknowledgementReceipt, success: false },
+  {
+    ...emergencyAcknowledgementReceipt,
+    data: { ...emergencyAcknowledgementReceipt.data, extra: true },
+  },
+  {
+    ...emergencyAcknowledgementReceipt,
+    data: {
+      ...emergencyAcknowledgementReceipt.data,
+      emergencyId: '550e8400-e29b-41d4-a716-446655440098',
+    },
+  },
+  {
+    ...emergencyAcknowledgementReceipt,
+    data: { ...emergencyAcknowledgementReceipt.data, state: 'failed' },
+  },
+] as const) {
+  assert.throws(
+    () => parseFarmBotEmergencyWaterOffAcknowledgementReceipt({
+      response,
+      acknowledgement: reportedEmergencyAcknowledgements[0],
+    }),
+    FarmBotEmergencyWaterOffAcknowledgementResponseError
+  );
+}
+assert.ok(
+  createFarmBotWorkerEmergencyWaterOffAcknowledgementSink({ NODE_ENV: 'test' })
+  instanceof DisabledFarmBotWorkerEmergencyWaterOffAcknowledgementSink
+);
+assert.throws(() => createFarmBotWorkerEmergencyWaterOffAcknowledgementSink({
+  NODE_ENV: 'test',
+  THREED_MQTT_APP_BASE_URL: 'https://app.example.test',
+}), /requires App URL and HMAC key/);
+assert.equal(emergencyGate.observeResponse({
+  farmbotId: liveEmergencyRequest.farmbotId,
+  response: {
+    eventType: 'rpc_ok',
+    outcome: 'accepted',
+    rpcLabel: liveEmergencyRequest.rpcLabel,
+    errorCode: null,
+  },
+  receivedAt: emergencyReceivedAt,
+}), null, 'An emergency acknowledgement must settle only once');
+
+const failedEmergencyId = '550e8400-e29b-41d4-a716-446655440097';
+const failedEmergencyRequest = Object.freeze({
+  ...liveEmergencyRequest,
+  emergencyId: failedEmergencyId,
+  rpcLabel: farmBotEmergencyWaterOffRpcLabel(failedEmergencyId),
+});
+const failedEmergencyGate = new FarmBotWorkerEmergencyWaterOffExecutionGate({
+  async execute(request) {
+    return {
+      emergencyId: request.emergencyId,
+      rpcLabel: request.rpcLabel,
+      acceptedAt: new Date().toISOString(),
+    };
+  },
+});
+await failedEmergencyGate.execute(failedEmergencyRequest);
+assert.deepEqual(failedEmergencyGate.observeResponse({
+  farmbotId: failedEmergencyRequest.farmbotId,
+  response: {
+    eventType: 'rpc_error',
+    outcome: 'rejected',
+    rpcLabel: failedEmergencyRequest.rpcLabel,
+    errorCode: 'rpc_error',
+  },
+  receivedAt: emergencyReceivedAt,
+}), {
+  ownerId: failedEmergencyRequest.ownerId,
+  farmbotId: failedEmergencyRequest.farmbotId,
+  emergencyId: failedEmergencyRequest.emergencyId,
+  rpcLabel: failedEmergencyRequest.rpcLabel,
+  state: 'failed',
+  errorCode: 'farmbot_emergency_rpc_error',
+  receivedAt: emergencyReceivedAt,
+});
+await assert.rejects(
+  emergencyGate.execute(Object.freeze({
+    ...liveEmergencyRequest,
+    peripheralPin: liveEmergencyRequest.peripheralPin + 1,
+  })),
+  (error) => error instanceof FarmBotWorkerEmergencyWaterOffGateError
+    && error.code === 'duplicate_emergency'
+);
+const disabledEmergencyGate = new FarmBotWorkerEmergencyWaterOffExecutionGate(
+  new DisabledFarmBotWorkerEmergencyWaterOffExecutor()
+);
+await assert.rejects(
+  disabledEmergencyGate.execute(liveEmergencyRequest),
+  FarmBotWorkerEmergencyWaterOffDisabledError
+);
+await assert.rejects(
+  disabledEmergencyGate.execute(liveEmergencyRequest),
+  FarmBotWorkerEmergencyWaterOffDisabledError,
+  'Known disabled emergency execution must release its unused claim'
+);
+const invalidEmergencyResultGate = new FarmBotWorkerEmergencyWaterOffExecutionGate({
+  async execute(request) {
+    return {
+      emergencyId: request.emergencyId,
+      rpcLabel: 'wrong',
+      acceptedAt: new Date().toISOString(),
+    };
+  },
+});
+await assert.rejects(
+  invalidEmergencyResultGate.execute(liveEmergencyRequest),
+  FarmBotWorkerEmergencyWaterOffExecutionResultError
+);
+await assert.rejects(
+  invalidEmergencyResultGate.execute(liveEmergencyRequest),
+  (error) => error instanceof FarmBotWorkerEmergencyWaterOffGateError
+    && error.code === 'duplicate_emergency',
+  'An invalid emergency receipt has an uncertain outcome and must remain claimed'
+);
+const emergencyFirstArbiter = new ProcessLocalFarmBotWorkerDeviceExecutionArbiter();
+let releaseEmergencyExecution!: () => void;
+const emergencyExecutionPending = new Promise<void>((resolve) => {
+  releaseEmergencyExecution = resolve;
+});
+const sharedEmergencyGate = new FarmBotWorkerEmergencyWaterOffExecutionGate({
+  async execute(request) {
+    await emergencyExecutionPending;
+    return {
+      emergencyId: request.emergencyId,
+      rpcLabel: request.rpcLabel,
+      acceptedAt: new Date().toISOString(),
+    };
+  },
+}, emergencyFirstArbiter);
+const emergencyInProgress = sharedEmergencyGate.execute(liveEmergencyRequest);
+const commandBlockedByEmergency = new FarmBotWorkerCommandExecutionGate({
+  async execute(request) {
+    return {
+      commandId: request.commandId,
+      rpcLabel: request.rpcLabel,
+      acceptedAt: new Date().toISOString(),
+    };
+  },
+}, new DisabledFarmBotWorkerCommandAcknowledgementSink(), emergencyFirstArbiter);
+const recoveryBlockedByEmergency = new FarmBotWorkerRecoveryExecutionGate({
+  async execute(request) {
+    return {
+      commandId: request.commandId,
+      recoveryRpcLabel: request.recoveryRpcLabel,
+      acceptedAt: new Date().toISOString(),
+    };
+  },
+}, emergencyFirstArbiter);
+await assert.rejects(
+  commandBlockedByEmergency.execute(workerCommand),
+  (error) => error instanceof FarmBotWorkerCommandGateError
+    && error.code === 'command_in_progress'
+);
+await assert.rejects(
+  recoveryBlockedByEmergency.execute(recoveryWorkerRequest),
+  (error) => error instanceof FarmBotWorkerRecoveryGateError
+    && error.code === 'recovery_in_progress'
+);
+releaseEmergencyExecution();
+await emergencyInProgress;
+
+const commandFirstEmergencyArbiter = new ProcessLocalFarmBotWorkerDeviceExecutionArbiter();
+let releaseCommandBeforeEmergency!: () => void;
+const commandBeforeEmergencyPending = new Promise<void>((resolve) => {
+  releaseCommandBeforeEmergency = resolve;
+});
+const commandBeforeEmergency = new FarmBotWorkerCommandExecutionGate({
+  async execute(request) {
+    await commandBeforeEmergencyPending;
+    return {
+      commandId: request.commandId,
+      rpcLabel: request.rpcLabel,
+      acceptedAt: new Date().toISOString(),
+    };
+  },
+}, new DisabledFarmBotWorkerCommandAcknowledgementSink(), commandFirstEmergencyArbiter);
+const emergencyBlockedByCommand = new FarmBotWorkerEmergencyWaterOffExecutionGate({
+  async execute(request) {
+    return {
+      emergencyId: request.emergencyId,
+      rpcLabel: request.rpcLabel,
+      acceptedAt: new Date().toISOString(),
+    };
+  },
+}, commandFirstEmergencyArbiter);
+const commandBeforeEmergencyInProgress = commandBeforeEmergency.execute(workerCommand);
+await assert.rejects(
+  emergencyBlockedByCommand.execute(liveEmergencyRequest),
+  (error) => error instanceof FarmBotWorkerEmergencyWaterOffGateError
+    && error.code === 'emergency_in_progress'
+);
+releaseCommandBeforeEmergency();
+await commandBeforeEmergencyInProgress;
+const emergencyPath = '/internal/v1/farmbots/42/emergencies';
+const emergencyBody = Buffer.from(JSON.stringify(liveEmergencyRequest));
+const emergencyHeaders = signMqttWorkerRequest({
+  method: 'POST',
+  path: emergencyPath,
+  timestamp: String(Date.now()),
+  nonce: randomBytes(18).toString('base64url'),
+  body: emergencyBody,
+}, authKey);
+const emergencyResponse = await fetch(`${origin}${emergencyPath}`, {
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-threed-mqtt-worker-version': emergencyHeaders.version,
+    'x-threed-mqtt-worker-timestamp': emergencyHeaders.timestamp,
+    'x-threed-mqtt-worker-nonce': emergencyHeaders.nonce,
+    'x-threed-mqtt-worker-signature': emergencyHeaders.signature,
+  },
+  body: emergencyBody,
+});
+assert.equal(emergencyResponse.status, 503, 'The emergency executor must remain disabled');
+assert.deepEqual(await emergencyResponse.json(), {
+  success: false,
+  error: 'FarmBot emergency Water-off is disabled',
+});
+validationStep('Signed worker HTTP routes and disabled command/recovery/emergency boundaries');
 
 await workerServer.registry.shutdown();
 await new Promise<void>((resolve, reject) => {
