@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.5a — ThreeD Character Orchestration Simulation** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; Phase 5B remains a separate approval gate** |
+| Current release candidate | **v0.18.5b — ThreeD Target-Relative Character Navigation** |
+| Current development milestone | **Phase 5B release preparation and production verification** |
 | Previous checkpoint | **v0.18.4b — Dashboard Surface Cleanup** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1268,6 +1268,8 @@ Status: Phases 2A–2D were individually approved, implemented, manually verifie
 - Keep MQTT ownership in the worker; ThreeD components display status and request approved semantic operations only.
 
 Phase 5A was released to production as v0.18.5a. It adds an offline provider-independent approach/facing planner, requires Take Control and a live Ecctrl physics position before FarmBot interactions can enter range, keeps approach manual through WASD, and runs Point, Point Gesture, or Talk through the established semantic animation path. A facing tolerance avoids unnecessary turns; larger heading changes select one shortest-direction turn clip and reverse that same clip after the task to restore the prior direction. Browser-only request-ID correlation reports interacting, completed, or cancelled simulation state. No database schema, API route, MQTT publish, worker command, peripheral change, or physical FarmBot behavior is included.
+
+Phase 5B is prepared as v0.18.5b. It moves browser interaction status changes into a tested provider-independent lifecycle policy with request-ID matching, terminal-state protection, idempotent duplicate completion, and timeout cancellation. While a controlled EcctrlCharacter has a FarmBot action target, WASD uses a live world-space character-to-target forward direction instead of the scene camera direction; `W` approaches, `S` retreats, and `A`/`D` strafe consistently across camera modes, orbit angles, perspective, and zoom. Focus Target aligns the stationary camera behind the character. Clearing the target restores ordinary camera-relative WASD. This candidate adds no schema, API, MQTT publish, worker command, peripheral change, or physical FarmBot behavior.
 
 ### v0.18.5+ — Phase 6+: Controlled operation expansion
 

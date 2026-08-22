@@ -43,13 +43,15 @@ import {
   MapViewMode,
   ThreeDActionTarget,
   ThreeDCharacterOrchestrationRequest,
-  ThreeDCharacterOrchestrationPhase,
   UnifiedMapData,
 } from '@/lib/types/map';
 import {
+  createThreeDOrchestrationLifecycleState,
   createThreeDCharacterOrchestrationRequest,
   planThreeDInteractionApproach,
   THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
+  transitionThreeDOrchestrationLifecycleState,
+  type ThreeDOrchestrationLifecycleState,
 } from '@/lib/services/threed/orchestration/interaction-core';
 import {
   getTrafficIcon,
@@ -192,15 +194,6 @@ interface FarmBotProjectMqttRuntime {
   isStale: boolean;
 }
 
-interface ThreeDOrchestrationStatus {
-  requestId: string;
-  characterId: number;
-  targetId: number;
-  action: string;
-  phase: ThreeDCharacterOrchestrationPhase;
-  changedAt: number;
-}
-
 function formatMqttDate(value: string | null): string {
   return value ? new Date(value).toLocaleString() : 'Never';
 }
@@ -297,7 +290,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   onCameraModeChange?: (mode: string) => void;
   onZoomCenter?: () => void;
   actionTarget?: ThreeDActionTarget | null;
-  orchestrationStatus?: ThreeDOrchestrationStatus | null;
+  orchestrationStatus?: ThreeDOrchestrationLifecycleState | null;
   onSetActionTarget?: (target: ThreeDActionTarget) => void;
   onClearActionTarget?: () => void;
   onFocusActionTarget?: () => void;
@@ -845,7 +838,7 @@ function UnifiedMapPageInner() {
   const [actionTarget, setActionTarget] = useState<ThreeDActionTarget | null>(null);
   const [actionTargetFocusRequest, setActionTargetFocusRequest] = useState(0);
   const [orchestrationStatus, setOrchestrationStatus] =
-    useState<ThreeDOrchestrationStatus | null>(null);
+    useState<ThreeDOrchestrationLifecycleState | null>(null);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
 
   // Phase 5A compatibility bridge: establish the orchestration request
@@ -854,14 +847,7 @@ function UnifiedMapPageInner() {
     const handleOrchestrationRequest = (event: Event) => {
       const request = (event as CustomEvent<ThreeDCharacterOrchestrationRequest>).detail;
       if (!request || request.version !== 1 || request.target.type !== 'farmbot') return;
-      setOrchestrationStatus({
-        requestId: request.requestId,
-        characterId: request.characterId,
-        targetId: request.target.id,
-        action: request.action,
-        phase: 'interacting',
-        changedAt: Date.now(),
-      });
+      setOrchestrationStatus(createThreeDOrchestrationLifecycleState(request, Date.now()));
       window.dispatchEvent(new CustomEvent('garden-character-action', {
         detail: {
           characterId: request.characterId,
@@ -884,9 +870,18 @@ function UnifiedMapPageInner() {
   useEffect(() => {
     if (!orchestrationStatus || orchestrationStatus.phase !== 'interacting') return;
     const timeout = window.setTimeout(() => {
-      setOrchestrationStatus((current) => current?.requestId === orchestrationStatus.requestId
-        ? { ...current, phase: 'cancelled', changedAt: Date.now() }
-        : current);
+      setOrchestrationStatus((current) => {
+        if (
+          !current
+          || current.requestId !== orchestrationStatus.requestId
+          || current.phase !== 'interacting'
+        ) return current;
+        return transitionThreeDOrchestrationLifecycleState(current, {
+          requestId: orchestrationStatus.requestId,
+          phase: 'cancelled',
+          changedAt: Date.now(),
+        });
+      });
     }, 30000);
     return () => window.clearTimeout(timeout);
   }, [orchestrationStatus]);
@@ -1086,11 +1081,18 @@ function UnifiedMapPageInner() {
         detail.target.actionRequestId
       ) {
         const completionId = detail.target.actionRequestId;
-        setOrchestrationStatus((current) =>
-          current?.requestId === completionId
-            ? { ...current, phase: 'completed', changedAt: Date.now() }
-            : current
-        );
+        setOrchestrationStatus((current) => {
+          if (
+            !current
+            || current.requestId !== completionId
+            || current.phase !== 'interacting'
+          ) return current;
+          return transitionThreeDOrchestrationLifecycleState(current, {
+            requestId: completionId,
+            phase: 'completed',
+            changedAt: Date.now(),
+          });
+        });
       }
 
       const actor = detail.characterName || `Character #${detail.characterId ?? '?'}`;

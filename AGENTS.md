@@ -40,11 +40,13 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 Current production version: v0.18.5a "ThreeD Character Orchestration Simulation".
 
-No later release candidate is currently designated.
+Current release candidate: v0.18.5b "ThreeD Target-Relative Character Navigation".
 
 v0.18.5a is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
 The v0.18.5a release is simulation-only. It adds no database schema, FarmBot command delivery, MQTT publishing, peripheral operation, or physical-device behavior.
+
+The v0.18.5b candidate centralizes the client-only orchestration lifecycle and makes controlled Ecctrl FarmBot approach movement target-relative, independent of camera mode, perspective, orbit, and zoom. It preserves ordinary camera-relative WASD when no FarmBot action target is active and does not expand the v0.18.5a physical-operation boundary.
 
 Production character animations are Git-tracked under `public/assets/animations`. When the external animation manifest or those files change, run `npm run validate:assets`. The GitHub workflow treats missing production animation assets and TypeScript diagnostics as blocking failures. Vercel remains the production-build gate.
 

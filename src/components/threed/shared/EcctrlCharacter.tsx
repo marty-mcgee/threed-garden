@@ -154,6 +154,16 @@ interface EcctrlCharacterProps {
   >;
 
   markerId?: string;
+
+  /**
+   * Optional world-space target used to make controlled WASD independent of
+   * camera perspective while approaching an interaction target.
+   */
+  movementTargetPosition?: {
+    x: number;
+    y: number;
+    z: number;
+  };
 }
 
 // ========================================================
@@ -1035,11 +1045,16 @@ export function EcctrlCharacter({
   livePositionsRef,
 
   markerId,
+
+  movementTargetPosition,
 }: EcctrlCharacterProps) {
   const ecctrlRef =
     useRef<EcctrlHandle>(
       null
     );
+
+  const targetForwardDirectionRef =
+    useRef(new THREE.Vector3(0, 0, 1));
 
   /**
    * Spawn above the resting body position and let gravity
@@ -1883,6 +1898,18 @@ export function EcctrlCharacter({
     const ec =
       ecctrlRef.current;
 
+    if (isControlled && movementTargetPosition) {
+      const position = ec.currPos;
+      const targetForward = targetForwardDirectionRef.current.set(
+        movementTargetPosition.x - position.x,
+        0,
+        movementTargetPosition.z - position.z,
+      );
+      if (targetForward.lengthSq() > 0.000001) {
+        ec.setForwardDir(targetForward.normalize());
+      }
+    }
+
     /**
      * Keep the physics body stationary while a semantic task
      * animation is playing. The camera/live-position bookkeeping
@@ -2347,6 +2374,9 @@ export function EcctrlCharacter({
         maxWalkVel={
           2
         }
+        useCustomForward={
+          isControlled && movementTargetPosition != null
+        }
         enable
       >
         <mesh
@@ -2412,6 +2442,9 @@ export function EcctrlCharacter({
       }
       maxRunVel={
         3.5
+      }
+      useCustomForward={
+        isControlled && movementTargetPosition != null
       }
       enable
       capsuleHalfHeight={

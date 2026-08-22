@@ -39,6 +39,35 @@ export interface ThreeDInteractionApproachPlan {
   facingYaw: number;
 }
 
+export type ThreeDOrchestrationLifecyclePhase =
+  | 'interacting'
+  | 'completed'
+  | 'cancelled';
+
+export interface ThreeDOrchestrationLifecycleState {
+  requestId: string;
+  characterId: number;
+  targetId: number;
+  action: string;
+  phase: ThreeDOrchestrationLifecyclePhase;
+  changedAt: number;
+}
+
+export type ThreeDOrchestrationLifecycleErrorCode =
+  | 'invalid_changed_at'
+  | 'request_mismatch'
+  | 'invalid_transition';
+
+export class ThreeDOrchestrationLifecycleError extends Error {
+  readonly code: ThreeDOrchestrationLifecycleErrorCode;
+
+  constructor(code: ThreeDOrchestrationLifecycleErrorCode) {
+    super(code);
+    this.name = 'ThreeDOrchestrationLifecycleError';
+    this.code = code;
+  }
+}
+
 export type ThreeDInteractionPlanningErrorCode =
   | 'invalid_character_position'
   | 'invalid_target_position'
@@ -124,6 +153,56 @@ export function createThreeDCharacterOrchestrationRequest(input: {
       actionRequestId: input.requestId.toLowerCase(),
     }),
     interactionDistance: approach.interactionDistance,
+  });
+}
+
+export function createThreeDOrchestrationLifecycleState(
+  request: ThreeDCharacterOrchestrationRequest,
+  changedAt: number,
+): ThreeDOrchestrationLifecycleState {
+  if (!Number.isFinite(changedAt) || changedAt < 0) {
+    throw new ThreeDOrchestrationLifecycleError('invalid_changed_at');
+  }
+
+  return Object.freeze({
+    requestId: request.requestId,
+    characterId: request.characterId,
+    targetId: request.target.id,
+    action: request.action,
+    phase: 'interacting',
+    changedAt,
+  });
+}
+
+/**
+ * Applies browser-side simulation lifecycle changes only. Terminal states are
+ * immutable, while repeating the same terminal result is intentionally safe.
+ */
+export function transitionThreeDOrchestrationLifecycleState(
+  current: ThreeDOrchestrationLifecycleState,
+  input: {
+    requestId: string;
+    phase: 'completed' | 'cancelled';
+    changedAt: number;
+  },
+): ThreeDOrchestrationLifecycleState {
+  if (!Number.isFinite(input.changedAt) || input.changedAt < current.changedAt) {
+    throw new ThreeDOrchestrationLifecycleError('invalid_changed_at');
+  }
+  if (input.requestId !== current.requestId) {
+    throw new ThreeDOrchestrationLifecycleError('request_mismatch');
+  }
+  if (current.phase === input.phase) {
+    return current;
+  }
+  if (current.phase !== 'interacting') {
+    throw new ThreeDOrchestrationLifecycleError('invalid_transition');
+  }
+
+  return Object.freeze({
+    ...current,
+    phase: input.phase,
+    changedAt: input.changedAt,
   });
 }
 

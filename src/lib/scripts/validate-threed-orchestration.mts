@@ -4,10 +4,13 @@ import {
   THREED_INTERACTION_FACING_TOLERANCE,
   THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
   THREED_INTERACTION_POLICY_VERSION,
+  ThreeDOrchestrationLifecycleError,
   ThreeDOrchestrationRequestError,
   ThreeDInteractionPlanningError,
+  createThreeDOrchestrationLifecycleState,
   createThreeDCharacterOrchestrationRequest,
   planThreeDInteractionApproach,
+  transitionThreeDOrchestrationLifecycleState,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/orchestration/interaction-core.ts';
 
@@ -111,6 +114,54 @@ assert.throws(
     && error.code === 'unsupported_action',
 );
 validationStep('Malformed and unsupported orchestration requests fail closed');
+
+const activeLifecycle = createThreeDOrchestrationLifecycleState(
+  orchestrationRequest,
+  1_000,
+);
+assert.equal(activeLifecycle.phase, 'interacting');
+assert.equal(activeLifecycle.requestId, orchestrationRequest.requestId);
+assert.equal(Object.isFrozen(activeLifecycle), true);
+validationStep('Interaction lifecycle starts with the validated request identity');
+
+const completedLifecycle = transitionThreeDOrchestrationLifecycleState(
+  activeLifecycle,
+  {
+    requestId: activeLifecycle.requestId,
+    phase: 'completed',
+    changedAt: 2_000,
+  },
+);
+assert.equal(completedLifecycle.phase, 'completed');
+assert.equal(
+  transitionThreeDOrchestrationLifecycleState(completedLifecycle, {
+    requestId: completedLifecycle.requestId,
+    phase: 'completed',
+    changedAt: 3_000,
+  }),
+  completedLifecycle,
+);
+validationStep('Matching completion is terminal and repeated completion is idempotent');
+
+assert.throws(
+  () => transitionThreeDOrchestrationLifecycleState(activeLifecycle, {
+    requestId: '1ba7b810-9dad-4d80-80b4-00c04fd430c8',
+    phase: 'cancelled',
+    changedAt: 2_000,
+  }),
+  (error) => error instanceof ThreeDOrchestrationLifecycleError
+    && error.code === 'request_mismatch',
+);
+assert.throws(
+  () => transitionThreeDOrchestrationLifecycleState(completedLifecycle, {
+    requestId: completedLifecycle.requestId,
+    phase: 'cancelled',
+    changedAt: 3_000,
+  }),
+  (error) => error instanceof ThreeDOrchestrationLifecycleError
+    && error.code === 'invalid_transition',
+);
+validationStep('Mismatched requests and terminal-state replacement fail closed');
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);

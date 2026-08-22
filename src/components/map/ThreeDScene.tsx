@@ -308,11 +308,24 @@ function CameraFocusAnimation({ target, controlsRef, onComplete }: any) {
     startPos.current.copy(camera.position);
     startTarget.current.copy(controlsRef.current.target);
     
-    endPos.current.set(
-      target.x + 4,
-      target.y + 3,
-      target.z + 4
-    );
+    const requestedCameraPosition = target.cameraPosition;
+    if (
+      requestedCameraPosition
+      && [requestedCameraPosition.x, requestedCameraPosition.y, requestedCameraPosition.z]
+        .every((value) => Number.isFinite(Number(value)))
+    ) {
+      endPos.current.set(
+        Number(requestedCameraPosition.x),
+        Number(requestedCameraPosition.y),
+        Number(requestedCameraPosition.z),
+      );
+    } else {
+      endPos.current.set(
+        target.x + 4,
+        target.y + 3,
+        target.z + 4
+      );
+    }
     
     progress.current = 0;
   }, [target, camera, controlsRef]);
@@ -377,7 +390,7 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 }
 
 // ✅ ThreeD Marker Component
-function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef }: any) {
+function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -409,6 +422,11 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, co
           cameraFollowRef={cameraFollowRef}
           livePositionsRef={livePositionsRef}
           markerId={marker.id}
+          movementTargetPosition={
+            isCtrl && actionTarget?.type === 'farmbot'
+              ? actionTarget.position
+              : undefined
+          }
         />
       );
     }
@@ -864,12 +882,16 @@ export function ThreeDScene({
   };
 
   // ✅ Focus on marker
-  const focusOnMarker = (marker: any) => {
+  const focusOnMarker = (
+    marker: any,
+    cameraPosition?: { x: number; y: number; z: number },
+  ) => {
     if (!marker || !controlsRef.current) return;
     setFocusTarget({
       x: Number(marker.position.x) || 0,
       y: Number(marker.position.y) || 0,
-      z: Number(marker.position.z) || 0
+      z: Number(marker.position.z) || 0,
+      cameraPosition,
     });
     setIsAnimating(true);
   };
@@ -970,6 +992,24 @@ export function ThreeDScene({
       position &&
       [position.x, position.y, position.z].every((value) => Number.isFinite(Number(value)))
     ) {
+      const characterPosition = cameraFollowRef.current;
+      if (characterPosition) {
+        const deltaX = Number(position.x) - characterPosition.x;
+        const deltaZ = Number(position.z) - characterPosition.z;
+        const distance = Math.hypot(deltaX, deltaZ);
+        if (distance > 0.001) {
+          const viewDistance = 6;
+          focusOnMarker(
+            { position },
+            {
+              x: characterPosition.x - (deltaX / distance) * viewDistance,
+              y: characterPosition.y + 3,
+              z: characterPosition.z - (deltaZ / distance) * viewDistance,
+            },
+          );
+          return;
+        }
+      }
       focusOnMarker({ position });
     }
     // The request counter is the imperative trigger; replacing a target alone must not focus it.
@@ -1397,6 +1437,7 @@ export function ThreeDScene({
                   )
                 )
               }
+              actionTarget={actionTarget}
               controlledCharacterId={controlledCharacterId}
               onControlChange={storeLivePosition}
               cameraFollowRef={cameraFollowRef}

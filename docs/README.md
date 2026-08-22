@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.5a **ThreeD Character Orchestration Simulation**. No later release candidate is designated. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.18.5a **ThreeD Character Orchestration Simulation**. The current release candidate is v0.18.5b **ThreeD Target-Relative Character Navigation**. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 ## Human users
 
