@@ -8,6 +8,8 @@ This is a **Dual-Surface Platform**:
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
 > **Current production version:** `v0.18.4b "Dashboard Surface Cleanup"`
+>
+> **Current release candidate:** `v0.18.5a "ThreeD Character Orchestration Simulation"`
 
 ## Documentation
 
@@ -275,7 +277,7 @@ The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.4b pro
 | v0.18.3c+ | Phase 4 — Single-device Water pilot | Test one bounded Water operation with one verified, project-assigned FarmBot, a current peripheral binding, a healthy worker, a server-set maximum duration, and recorded acknowledgement. This requires separate explicit physical-test approval. |
 | v0.18.4a | Admin and Dashboard UI improvements | Released: cleaner Admin navigation and headers, uniform Project asset tabs, inline FarmBot management sections, and a compact Dashboard Project selector. No MQTT or physical-command behavior changed. |
 | v0.18.4b | Dashboard Surface Cleanup | Released: ThreeD Dashboard CRUD routes move to the Admin surface, Music uses one Dashboard player page, and Traffic uses source-layer controls with a linked map and incident list. No schema, MQTT, or physical-command behavior changes. |
-| v0.18.5+ | Phase 5 — ThreeD orchestration | Connect character approach, orientation, and animation to the audited semantic action request while keeping animation state and physical-device completion separate. The character runtime never owns the MQTT connection. |
+| v0.18.5a | Phase 5A — ThreeD orchestration simulation | Release candidate: live Ecctrl range gating, provider-independent planning, target-facing animation sequencing, and client-only lifecycle correlation. It adds no command delivery or physical behavior. |
 | Later | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
 
 Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, and Phase 4 through v0.18.3b are released and production-verified. v0.18.4a adds UI improvements, and v0.18.4b adds Dashboard surface cleanup. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.

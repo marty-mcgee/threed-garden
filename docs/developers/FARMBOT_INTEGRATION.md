@@ -183,7 +183,7 @@ Phase 4L-K adds the worker reporting side behind a dedicated queue. An exactly c
 
 ### Phase 5 — ThreeD interaction expansion
 
-Status: future work.
+Status: Phase 5A simulation is implemented as the v0.18.5a release candidate. Command delivery and physical behavior remain future approval gates.
 
 - Add character approach/orientation behavior only after the single Water pilot is stable.
 - Add further semantic actions one at a time with separate allowlist and safety review.

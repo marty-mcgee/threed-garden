@@ -382,6 +382,15 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, co
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
 
+  const handleCharacterControlChange = useCallback(
+    (position: { x: number; y: number; z: number }) => {
+      if (onControlChange) {
+        onControlChange(marker.id, position);
+      }
+    },
+    [marker.id, onControlChange]
+  );
+
   // ✅ v0.15.0/15.2: Render rich markers for types that have dedicated components
   const pos: [number, number, number] = [Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0];
 
@@ -396,9 +405,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, co
           isControlled={isCtrl}
           isSelected={isSelected}
           onClick={() => { if (onClick) onClick(); }}
-          onControlChange={(pos) => {
-            if (onControlChange) onControlChange(marker.id, pos);
-          }}
+          onControlChange={handleCharacterControlChange}
           cameraFollowRef={cameraFollowRef}
           livePositionsRef={livePositionsRef}
           markerId={marker.id}

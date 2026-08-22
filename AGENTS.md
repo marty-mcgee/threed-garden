@@ -40,9 +40,11 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 Current production version: v0.18.4b "Dashboard Surface Cleanup".
 
-No later release candidate is currently designated.
+Current release candidate: v0.18.5a "ThreeD Character Orchestration Simulation".
 
 v0.18.4b is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
+
+The v0.18.5a candidate is simulation-only. It adds no database schema, FarmBot command delivery, MQTT publishing, peripheral operation, or physical-device behavior.
 
 Production character animations are Git-tracked under `public/assets/animations`. When the external animation manifest or those files change, run `npm run validate:assets`. The GitHub workflow treats missing production animation assets and TypeScript diagnostics as blocking failures. Vercel remains the production-build gate.
 

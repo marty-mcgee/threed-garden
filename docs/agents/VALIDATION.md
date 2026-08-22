@@ -8,20 +8,22 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 2. Run `npm run validate:assets` when character animation assets or their manifest change.
 3. Run `npm run validate:farmbot-crypto` when FarmBot credential cryptography changes.
 4. Run `npm run typecheck`; TypeScript errors are release-blocking.
-5. Run `npm run validate:threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
-6. Run `npm run validate:farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
-7. Run `npm run validate:farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
-8. Run `npm run validate:farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
-9. Run a file-scoped lint command only when an ESLint executable/configuration is available.
-10. Run targeted tests when a matching test exists.
-11. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
-12. Perform the relevant manual regression checklist for interactive ThreeD behavior.
+5. Run `npm run validate:threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
+6. Run `npm run validate:threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
+7. Run `npm run validate:farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
+8. Run `npm run validate:farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
+9. Run `npm run validate:farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
+10. Run a file-scoped lint command only when an ESLint executable/configuration is available.
+11. Run targeted tests when a matching test exists.
+12. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
+13. Perform the relevant manual regression checklist for interactive ThreeD behavior.
 
 ## Commands
 
 ```bash
 git diff --check
 npm run validate:assets
+npm run validate:threed-orchestration
 npm run validate:farmbot-crypto
 npm run validate:threed-mqtt
 npm run validate:farmbot-worker
@@ -30,6 +32,14 @@ npm run validate:farmbot-command-policy
 npm run typecheck
 npm run build
 ```
+
+The ThreeD orchestration validation is offline and provider-independent. It checks the versioned simulation policy, safe planar stopping position, facing rotation, arrival tolerance, and rejection of invalid positions or unsafe interaction distances. It must not access React, animation mixers, APIs, persistence, MQTT, workers, FarmBot credentials, or physical devices.
+
+For Phase 5A character simulation, confirm GardenCharacter remains on its configured autonomous path and does not automatically approach a FarmBot. Select a movable EcctrlCharacter without taking control and confirm FarmBot actions remain disabled with `Take Control to calculate interaction range`; stored coordinates must not produce an initial `0.0` range. Take Control, allow the first live physics position to arrive, and confirm the range is then calculated. Approach with WASD, verify the displayed distance decreases, and confirm the buttons enable only within interaction range. Stand to each side of the FarmBot and run Point, Point Gesture, and Talk. Confirm Ecctrl selects only the corresponding Left Turn or Right Turn animation, plays it forward while rotating toward the FarmBot, performs the task, plays that same clip backward while restoring the original facing direction, and then returns cleanly to ordinary WASD locomotion. The opposite turn clip must not appear in the same sequence. Retest untargeted and Planting-targeted actions, Garden wandering, Take/Release Control, and both task-to-locomotion crossfades. Confirm the Network panel contains no FarmBot command, MQTT, peripheral, or new world-action request.
+
+During each FarmBot simulation, confirm the DetailsCard reports `Simulation: interacting`, disables the other FarmBot interaction buttons, then reports `Simulation: completed` after the return-turn animation. Changing or clearing the target clears that client-only status. A request that never reports animation completion must become `cancelled` after 30 seconds and must not create a network request.
+
+For facing tolerance, test once while the character is already aimed approximately toward the FarmBot and once while it is clearly facing away. Within roughly 22.5 degrees, the task should begin without a turn animation or forced heading correction. Outside that tolerance, the normal turn, task, and return-turn sequence should run.
 
 Repository validation scripts print a checkmark after each completed test group and a final group count. If an assertion fails, later groups are not printed, which helps identify the affected section. Validation output must remain limited to group descriptions and counts; it must not log credentials, raw broker payloads, encryption material, or other secrets.
 

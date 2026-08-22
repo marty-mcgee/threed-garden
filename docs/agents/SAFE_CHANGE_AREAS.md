@@ -12,3 +12,5 @@
 | Environment or secrets | Do not edit or expose unless explicitly requested. |
 
 Do not combine repository restructuring with feature behavior changes. Preserve unrelated user changes in a dirty worktree. Treat production ThreeD behavior listed in `AGENTS.md` as release-blocking.
+
+GardenCharacter and EcctrlCharacter have different movement authorities and must not be merged into one movement loop. See [ThreeD character runtimes](../developers/THREED_CHARACTERS.md) before changing character routing, movement, physics, or orchestration.

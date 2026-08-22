@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.4b **Dashboard Surface Cleanup**. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K. No later release candidate is designated.
+Current production is v0.18.4b **Dashboard Surface Cleanup**. v0.18.5a **ThreeD Character Orchestration Simulation** is the current release candidate. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 ## Human users
 
@@ -14,6 +14,7 @@ Current production is v0.18.4b **Dashboard Surface Cleanup**. The latest ThreeD 
 ## Developers
 
 - [Architecture](developers/ARCHITECTURE.md) — surfaces, request flow, ownership, and runtime boundaries.
+- [ThreeD character runtimes](developers/THREED_CHARACTERS.md) — GardenCharacter and EcctrlCharacter roles, shared systems, and movement boundaries.
 - [Data model](developers/DATA_MODEL.md) — modules, project junctions, assets, and runtime records.
 - [API guide](developers/API_GUIDE.md) — route families and access conventions.
 - [ThreeD FarmBot Integration Plan](developers/FARMBOT_INTEGRATION.md) — hardware security and connection boundaries.

@@ -38,7 +38,19 @@ import {
 } from '@/components/ui/dialog';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import { UnifiedMapView } from '@/components/map/UnifiedMapView';
-import { MapLayerConfig, MapViewMode, ThreeDActionTarget, UnifiedMapData } from '@/lib/types/map';
+import {
+  MapLayerConfig,
+  MapViewMode,
+  ThreeDActionTarget,
+  ThreeDCharacterOrchestrationRequest,
+  ThreeDCharacterOrchestrationPhase,
+  UnifiedMapData,
+} from '@/lib/types/map';
+import {
+  createThreeDCharacterOrchestrationRequest,
+  planThreeDInteractionApproach,
+  THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
+} from '@/lib/services/threed/orchestration/interaction-core';
 import {
   getTrafficIcon,
   getTrafficLabel,
@@ -180,6 +192,15 @@ interface FarmBotProjectMqttRuntime {
   isStale: boolean;
 }
 
+interface ThreeDOrchestrationStatus {
+  requestId: string;
+  characterId: number;
+  targetId: number;
+  action: string;
+  phase: ThreeDCharacterOrchestrationPhase;
+  changedAt: number;
+}
+
 function formatMqttDate(value: string | null): string {
   return value ? new Date(value).toLocaleString() : 'Never';
 }
@@ -261,17 +282,22 @@ function FarmBotMqttStatusSummary({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, onSetActionTarget, onClearActionTarget, onFocusActionTarget }: {
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
   controlledCharacterId: number | null;
+  liveControlledCharacterPosition: {
+    characterId: number;
+    position: { x: number; y: number; z: number };
+  } | null;
   onTakeControl: (id: number) => void;
   onReleaseControl: () => void;
   cameraMode?: string;
   onCameraModeChange?: (mode: string) => void;
   onZoomCenter?: () => void;
   actionTarget?: ThreeDActionTarget | null;
+  orchestrationStatus?: ThreeDOrchestrationStatus | null;
   onSetActionTarget?: (target: ThreeDActionTarget) => void;
   onClearActionTarget?: () => void;
   onFocusActionTarget?: () => void;
@@ -316,6 +342,40 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, onTa
   const isFarmBotMarker = normalizedType === 'farmbot'
     || normalizedType === 'farmbots'
     || normalizedType === 'threed_farmbots';
+  const isCharacterMarker = type === 'characters' || type === 'character';
+  const isEcctrlCharacter = isCharacterMarker && d.isMovable === true;
+  const characterId = Number(d.id);
+  const isSelectedCharacterControlled = isEcctrlCharacter
+    && controlledCharacterId === characterId;
+  const hasLiveControlledPosition = isSelectedCharacterControlled
+    && liveControlledCharacterPosition?.characterId === characterId;
+  let farmBotApproachPlan: ReturnType<typeof planThreeDInteractionApproach> | null = null;
+  if (
+    isEcctrlCharacter
+    && hasLiveControlledPosition
+    && actionTarget?.type === 'farmbot'
+    && liveControlledCharacterPosition
+  ) {
+    try {
+      farmBotApproachPlan = planThreeDInteractionApproach({
+        characterPosition: liveControlledCharacterPosition.position,
+        targetPosition: actionTarget.position,
+      });
+    } catch {
+      farmBotApproachPlan = null;
+    }
+  }
+  const farmBotInteractionReady = !isEcctrlCharacter
+    || actionTarget?.type !== 'farmbot'
+    || (
+      hasLiveControlledPosition
+      && farmBotApproachPlan?.arrived === true
+    );
+  const isCurrentOrchestration = orchestrationStatus
+    && orchestrationStatus.characterId === characterId
+    && orchestrationStatus.targetId === actionTarget?.id;
+  const isOrchestrationRunning = isCurrentOrchestration
+    && orchestrationStatus.phase === 'interacting';
   if (isPlantingMarker) {
     if (d.plantName || d.commonName) metaRows.push({ label: 'Plant', value: d.plantName || d.commonName });
     if (d.growthStage) metaRows.push({ label: 'Stage', value: d.growthStage });
@@ -390,18 +450,6 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, onTa
         />
       )}
 
-      {/* v0.16.2-beta: Manual zoom + center action */}
-      {!isIncident && onZoomCenter && (
-        <div className="mt-2.5 border-t border-white/10 pt-2.5">
-          <button
-            onClick={(e) => { e.stopPropagation(); onZoomCenter(); }}
-            className="block w-full text-center text-[11px] font-medium bg-white/5 hover:bg-white/10 text-white/70 hover:text-white py-1.5 px-2 rounded transition-colors"
-          >
-            🎯 Zoom + Center
-          </button>
-        </div>
-      )}
-
       {/* World Action Target — v0.16.6b World Actions v2 */}
       {!isIncident && (isPlantingMarker || isFarmBotMarker) && onSetActionTarget && (() => {
         const markerId = String(selected.id || '');
@@ -463,19 +511,93 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, onTa
         </div>
       )}
 
+      {/* Character Controls — ecctrl runtime take-over (movable characters only) */}
+      {!isIncident && (type === 'characters' || type === 'character') && (() => {
+        if (d.isMovable !== true) return null;
+        const charId = d.id;
+        const isControlling = controlledCharacterId === charId;
+        return (
+          <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-2">
+            {isControlling ? (
+              <>
+                {/* <div className="text-[10px] text-blue-300 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shrink-0" />
+                  <span>WASD / Space / Shift active</span>
+                </div> */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); onReleaseControl(); }}
+                  className="block w-full text-center text-[11px] font-medium bg-amber-600 hover:bg-amber-500 text-white py-1.5 px-2 rounded transition-colors"
+                >
+                  ⏸️ Release Control
+                </button>
+                {onCameraModeChange && (
+                  <div className="space-y-1">
+                    {/* <div className="text-[10px] text-white/50">Camera:</div> */}
+                    <select
+                      value={cameraMode || 'stationary'}
+                      onChange={(e) => { e.stopPropagation(); onCameraModeChange(e.target.value); }}
+                      className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white/80 focus:outline-none focus:border-white/30 appearance-none"
+                    >
+                      <option value="follow" className="bg-gray-800 text-white">🎥 Follow</option>
+                      <option value="topdown" className="bg-gray-800 text-white">🔽 Top-Down</option>
+                      <option value="firstperson" className="bg-gray-800 text-white">👁️ First-Person</option>
+                      <option value="orbit" className="bg-gray-800 text-white">🛰️ Orbit</option>
+                      <option value="stationary" className="bg-gray-800 text-white">📷 Stationary</option>
+                    </select>
+                  </div>
+                )}
+              </>
+            ) : (
+              <button
+                onClick={(e) => { e.stopPropagation(); onTakeControl(charId); }}
+                className="block w-full text-center text-[11px] font-medium bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-2 rounded transition-colors"
+              >
+                🎮 Take Control
+              </button>
+            )}
+          </div>
+        );
+      })()}
+
       {/* Character Actions — shared semantic animation controls */}
       {!isIncident && (type === 'characters' || type === 'character') && (
         <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-2.5">
-          <div className="text-[10px] font-medium text-white/60">Character Actions</div>
+          {/* <div className="text-[10px] font-medium text-white/60">Character Actions</div> */}
 
           <div className="rounded bg-white/5 px-2 py-1.5 text-[10px] text-white/55">
             {actionTarget ? (
               <>
                 <div>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></div>
                 {actionTarget.type === 'farmbot' && (
-                  <div className="mt-1 text-amber-200/70">
-                    FarmBot interactions are animation-only. Physical commands remain disabled.
-                  </div>
+                  <>
+                    <div className="mt-1 text-amber-200/70">
+                      FarmBot interactions are animation-only. Physical commands remain disabled.
+                    </div>
+                    {isEcctrlCharacter && (
+                      <div className={`mt-1 ${farmBotInteractionReady ? 'text-emerald-300/80' : 'text-amber-200/80'}`}>
+                        {!isSelectedCharacterControlled
+                          ? 'Take Control to calculate interaction range'
+                          : !hasLiveControlledPosition
+                            ? 'Waiting for live character position'
+                            : farmBotApproachPlan
+                          ? farmBotInteractionReady
+                            ? `In interaction range (${farmBotApproachPlan.distanceToTarget.toFixed(1)} units)`
+                            : `Move closer with WASD (${farmBotApproachPlan.distanceToTarget.toFixed(1)} units away)`
+                          : 'Unable to calculate interaction range'}
+                      </div>
+                    )}
+                    {isCurrentOrchestration && (
+                      <div className={`mt-1 ${
+                        orchestrationStatus.phase === 'completed'
+                          ? 'text-emerald-300/80'
+                          : orchestrationStatus.phase === 'cancelled'
+                            ? 'text-amber-200/80'
+                            : 'text-sky-200/80'
+                      }`}>
+                        Simulation: {orchestrationStatus.phase}
+                      </div>
+                    )}
+                  </>
                 )}
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5">
                   {onFocusActionTarget && (
@@ -554,25 +676,38 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, onTa
                 {group.actions.map(({ action, label }) => (
                   <button
                     key={action}
+                    disabled={!farmBotInteractionReady || Boolean(isOrchestrationRunning)}
                     onClick={(e) => {
                       e.stopPropagation();
 
                       const charId = Number(d.id);
                       if (!Number.isFinite(charId)) return;
 
-                      window.dispatchEvent(
-                        new CustomEvent('garden-character-action', {
-                          detail: {
-                            characterId: charId,
-                            action,
-                            target: actionTarget
-                              ? { ...actionTarget, actionRequestId: crypto.randomUUID() }
-                              : null,
-                          },
-                        }),
-                      );
+                      if (actionTarget?.type === 'farmbot') {
+                        const request = createThreeDCharacterOrchestrationRequest({
+                          requestId: crypto.randomUUID(),
+                          characterId: charId,
+                          action,
+                          target: actionTarget,
+                        });
+                        window.dispatchEvent(new CustomEvent(
+                          THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
+                          { detail: request },
+                        ));
+                        return;
+                      }
+
+                      window.dispatchEvent(new CustomEvent('garden-character-action', {
+                        detail: {
+                          characterId: charId,
+                          action,
+                          target: actionTarget
+                            ? { ...actionTarget, actionRequestId: crypto.randomUUID() }
+                            : null,
+                        },
+                      }));
                     }}
-                    className="min-h-8 w-full rounded bg-emerald-600/25 px-2 py-1.5 text-center text-[10px] font-medium leading-tight text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white"
+                    className="min-h-8 w-full rounded bg-emerald-600/25 px-2 py-1.5 text-center text-[10px] font-medium leading-tight text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
                   >
                     {label}
                   </button>
@@ -583,53 +718,17 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, onTa
         </div>
       )}
 
-      {/* Character Controls — ecctrl runtime take-over (movable characters only) */}
-      {!isIncident && (type === 'characters' || type === 'character') && (() => {
-        if (d.isMovable !== true) return null;
-        const charId = d.id;
-        const isControlling = controlledCharacterId === charId;
-        return (
-          <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-2">
-            {isControlling ? (
-              <>
-                <div className="text-[10px] text-blue-300 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shrink-0" />
-                  <span>WASD / Space / Shift active</span>
-                </div>
-                {onCameraModeChange && (
-                  <div className="space-y-1">
-                    <div className="text-[10px] text-white/50">Camera:</div>
-                    <select
-                      value={cameraMode || 'follow'}
-                      onChange={(e) => { e.stopPropagation(); onCameraModeChange(e.target.value); }}
-                      className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white/80 focus:outline-none focus:border-white/30 appearance-none"
-                    >
-                      <option value="follow" className="bg-gray-800 text-white">🎥 Follow</option>
-                      <option value="topdown" className="bg-gray-800 text-white">🔽 Top-Down</option>
-                      <option value="firstperson" className="bg-gray-800 text-white">👁️ First-Person</option>
-                      <option value="orbit" className="bg-gray-800 text-white">🛰️ Orbit</option>
-                      <option value="stationary" className="bg-gray-800 text-white">📷 Stationary</option>
-                    </select>
-                  </div>
-                )}
-                <button
-                  onClick={(e) => { e.stopPropagation(); onReleaseControl(); }}
-                  className="block w-full text-center text-[11px] font-medium bg-amber-600 hover:bg-amber-500 text-white py-1.5 px-2 rounded transition-colors"
-                >
-                  ⏸️ Release Control
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={(e) => { e.stopPropagation(); onTakeControl(charId); }}
-                className="block w-full text-center text-[11px] font-medium bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-2 rounded transition-colors"
-              >
-                🎮 Take Control
-              </button>
-            )}
-          </div>
-        );
-      })()}
+      {/* v0.16.2-beta: Manual zoom + center action */}
+      {!isIncident && onZoomCenter && (
+        <div className="mt-2.5 border-t border-white/10 pt-2.5">
+          <button
+            onClick={(e) => { e.stopPropagation(); onZoomCenter(); }}
+            className="block w-full text-center text-[11px] font-medium bg-white/5 hover:bg-white/10 text-white/70 hover:text-white py-1.5 px-2 rounded transition-colors"
+          >
+            🎯 Zoom + Center
+          </button>
+        </div>
+      )}
 
       {/* Admin Edit link */}
       {(() => {
@@ -736,11 +835,61 @@ function UnifiedMapPageInner() {
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
+  const [liveControlledCharacterPosition, setLiveControlledCharacterPosition] =
+    useState<{
+      characterId: number;
+      position: { x: number; y: number; z: number };
+    } | null>(null);
   const [cameraMode, setCameraMode] = useState<string>('follow');
   const [focusRequest, setFocusRequest] = useState(0);
   const [actionTarget, setActionTarget] = useState<ThreeDActionTarget | null>(null);
   const [actionTargetFocusRequest, setActionTargetFocusRequest] = useState(0);
+  const [orchestrationStatus, setOrchestrationStatus] =
+    useState<ThreeDOrchestrationStatus | null>(null);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
+
+  // Phase 5A compatibility bridge: establish the orchestration request
+  // lifecycle while preserving immediate animation until proximity is gated.
+  useEffect(() => {
+    const handleOrchestrationRequest = (event: Event) => {
+      const request = (event as CustomEvent<ThreeDCharacterOrchestrationRequest>).detail;
+      if (!request || request.version !== 1 || request.target.type !== 'farmbot') return;
+      setOrchestrationStatus({
+        requestId: request.requestId,
+        characterId: request.characterId,
+        targetId: request.target.id,
+        action: request.action,
+        phase: 'interacting',
+        changedAt: Date.now(),
+      });
+      window.dispatchEvent(new CustomEvent('garden-character-action', {
+        detail: {
+          characterId: request.characterId,
+          action: request.action,
+          target: request.target,
+        },
+      }));
+    };
+
+    window.addEventListener(
+      THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
+      handleOrchestrationRequest,
+    );
+    return () => window.removeEventListener(
+      THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
+      handleOrchestrationRequest,
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!orchestrationStatus || orchestrationStatus.phase !== 'interacting') return;
+    const timeout = window.setTimeout(() => {
+      setOrchestrationStatus((current) => current?.requestId === orchestrationStatus.requestId
+        ? { ...current, phase: 'cancelled', changedAt: Date.now() }
+        : current);
+    }, 30000);
+    return () => window.clearTimeout(timeout);
+  }, [orchestrationStatus]);
 
   // v0.16.2-beta: Manual "zoom + center" request (button in DetailsCard).
   // Set the camera to stationary so any active character camera-follow stops
@@ -762,7 +911,17 @@ function UnifiedMapPageInner() {
       if (!prev) return prev;
       return { ...prev, position: { ...prev.position, x: pos.x, y: pos.y, z: pos.z } };
     });
-  }, []);
+    const markerCharacterId = Number(_markerId.match(/(\d+)$/)?.[1]);
+    if (
+      controlledCharacterId != null
+      && markerCharacterId === controlledCharacterId
+    ) {
+      setLiveControlledCharacterPosition({
+        characterId: controlledCharacterId,
+        position: { x: pos.x, y: pos.y, z: pos.z },
+      });
+    }
+  }, [controlledCharacterId]);
 
   // v0.16.3-alpha: Selecting a different marker/incident disengages the currently
   // controlled character so only the newly engaged entity is the active focus.
@@ -774,6 +933,7 @@ function UnifiedMapPageInner() {
     const isChar = sel.type === 'characters' || sel.type === 'character';
     if (!isChar || selCharId !== controlledCharacterId) {
       setControlledCharacterId(null);
+      setLiveControlledCharacterPosition(null);
     }
   }, [selectedMarker, selectedIncident, controlledCharacterId]);
 
@@ -821,6 +981,8 @@ function UnifiedMapPageInner() {
     setIsDefaultView(false);
     setFilterAssetType(null); // Reset filter on project change
     setActionTarget(null); // Action targets are scoped to the current project.
+    setOrchestrationStatus(null);
+    setLiveControlledCharacterPosition(null);
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
     window.history.pushState({}, '', url.toString());
@@ -890,6 +1052,7 @@ function UnifiedMapPageInner() {
 
     if (!targetStillExists) {
       setActionTarget(null);
+      setOrchestrationStatus(null);
       showToastRef.current(
         `Action target cleared: ${actionTarget.name} is no longer available`,
         'info',
@@ -917,6 +1080,18 @@ function UnifiedMapPageInner() {
 
       const detail = customEvent.detail;
       if (!detail?.action) return;
+
+      if (
+        detail.target?.type === 'farmbot' &&
+        detail.target.actionRequestId
+      ) {
+        const completionId = detail.target.actionRequestId;
+        setOrchestrationStatus((current) =>
+          current?.requestId === completionId
+            ? { ...current, phase: 'completed', changedAt: Date.now() }
+            : current
+        );
+      }
 
       const actor = detail.characterName || `Character #${detail.characterId ?? '?'}`;
       const actionLabel = detail.action.replace(/([a-z])([A-Z])/g, '$1 $2');
@@ -1691,18 +1866,28 @@ function UnifiedMapPageInner() {
         projectId={selectedProjectId}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
         controlledCharacterId={controlledCharacterId}
-        onTakeControl={(id) => setControlledCharacterId(id)}
-        onReleaseControl={() => setControlledCharacterId(null)}
+        liveControlledCharacterPosition={liveControlledCharacterPosition}
+        onTakeControl={(id) => {
+          setLiveControlledCharacterPosition(null);
+          setControlledCharacterId(id);
+        }}
+        onReleaseControl={() => {
+          setControlledCharacterId(null);
+          setLiveControlledCharacterPosition(null);
+        }}
         cameraMode={cameraMode}
         onCameraModeChange={(mode) => setCameraMode(mode)}
         onZoomCenter={handleZoomCenter}
         actionTarget={actionTarget}
+        orchestrationStatus={orchestrationStatus}
         onSetActionTarget={(target) => {
           setActionTarget(target);
+          setOrchestrationStatus(null);
           showToast(`Action target set: ${target.name}`, 'success');
         }}
         onClearActionTarget={() => {
           setActionTarget(null);
+          setOrchestrationStatus(null);
           showToast('Action target cleared', 'info');
         }}
         onFocusActionTarget={handleFocusActionTarget}

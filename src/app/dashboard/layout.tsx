@@ -81,6 +81,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 <span className="text-xs text-green-600 dark:text-green-400 font-medium">All Systems Live</span>
               </div>
+
+              {/* Navigation Dropdown */}
+              <NavDropdown />
               
               {/* Theme Toggle */}
               <Button 
@@ -95,28 +98,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <Moon className="w-3 h-3" />
                 )}
               </Button>
-
-              {/* Navigation Dropdown */}
-              <NavDropdown />
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="w-full px-0 sm:px-1 lg:px-2 py-0">
+      <div className="w-full px-0 md:px-0.5 lg:px-1 py-0">
         {/* Page Content */}
         <div className="bg-background/50 backdrop-blur-sm">
           {children}
         </div>
         
         {/* Footer */}
-        <footer className="py-1.5 text-center text-xs text-muted-foreground">
+        {/* <footer className="py-1.5 text-center text-xs text-muted-foreground">
           <p className="">
             Built by Marty McGee with Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3F Fiber + Drei
             @ <a href="https://github.com/marty-mcgee/marty-mcgee-neon" target="_blank">github</a>
           </p>
-        </footer>
+        </footer> */}
       </div>
     </div>
   );

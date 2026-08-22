@@ -43,6 +43,11 @@ import {
   loadExternalCharacterAnimations,
 } from '@/lib/utils/externalCharacterAnimations';
 
+import {
+  planThreeDInteractionApproach,
+  THREED_INTERACTION_FACING_TOLERANCE,
+} from '@/lib/services/threed/orchestration/interaction-core';
+
 // ========================================================
 // TYPES
 // ========================================================
@@ -1117,6 +1122,52 @@ export function EcctrlCharacter({
   const taskCleanupTimerRef =
     useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const taskFacingYawRef =
+    useRef<number | null>(null);
+
+  const taskFacingQuaternionRef =
+    useRef(new THREE.Quaternion());
+
+  const taskOrientationTransitionRef =
+    useRef<{
+      from: THREE.Quaternion;
+      to: THREE.Quaternion;
+      elapsed: number;
+      duration: number;
+    } | null>(null);
+
+  /**
+   * Limit React position updates while keeping interaction-range UI
+   * responsive during controlled movement.
+   */
+  const lastControlPositionReportAtRef =
+    useRef(0);
+
+  const reportControlledPosition =
+    useCallback(
+      (position: { x: number; y: number; z: number }) => {
+        if (!onControlChange) {
+          return;
+        }
+
+        const now = Date.now();
+
+        if (
+          now - lastControlPositionReportAtRef.current < 100
+        ) {
+          return;
+        }
+
+        lastControlPositionReportAtRef.current = now;
+        onControlChange({
+          x: position.x,
+          y: position.y,
+          z: position.z,
+        });
+      },
+      [onControlChange]
+    );
+
   const keys =
     useWASD(
       isControlled
@@ -1343,6 +1394,76 @@ export function EcctrlCharacter({
           return false;
         }
 
+        taskFacingYawRef.current = null;
+        taskOrientationTransitionRef.current = null;
+
+        let farmBotOriginalQuaternion: THREE.Quaternion | null = null;
+        let farmBotTurnDelta = 0;
+
+        if (
+          target &&
+          typeof target === 'object' &&
+          'type' in target &&
+          target.type === 'farmbot'
+        ) {
+          if (
+            !('position' in target) ||
+            !target.position ||
+            typeof target.position !== 'object' ||
+            !('x' in target.position) ||
+            !('y' in target.position) ||
+            !('z' in target.position) ||
+            !ecctrlRef.current
+          ) {
+            return false;
+          }
+
+          try {
+            const approach = planThreeDInteractionApproach({
+              characterPosition: {
+                x: ecctrlRef.current.currPos.x,
+                y: ecctrlRef.current.currPos.y,
+                z: ecctrlRef.current.currPos.z,
+              },
+              targetPosition: {
+                x: Number(target.position.x),
+                y: Number(target.position.y),
+                z: Number(target.position.z),
+              },
+            });
+
+            if (!approach.arrived) {
+              return false;
+            }
+
+            const currentQuaternion = ecctrlRef.current.currQuat.clone();
+            const originalForward = new THREE.Vector3(0, 0, 1)
+              .applyQuaternion(currentQuaternion);
+            const originalYaw = Math.atan2(
+              originalForward.x,
+              originalForward.z
+            );
+            farmBotTurnDelta = Math.atan2(
+              Math.sin(approach.facingYaw - originalYaw),
+              Math.cos(approach.facingYaw - originalYaw)
+            );
+
+            if (
+              Math.abs(farmBotTurnDelta) >
+              THREED_INTERACTION_FACING_TOLERANCE
+            ) {
+              farmBotOriginalQuaternion = currentQuaternion;
+              taskFacingYawRef.current = approach.facingYaw;
+              taskFacingQuaternionRef.current.setFromAxisAngle(
+                new THREE.Vector3(0, 1, 0),
+                approach.facingYaw
+              );
+            }
+          } catch {
+            return false;
+          }
+        }
+
         if (taskCleanupTimerRef.current) {
           clearTimeout(
             taskCleanupTimerRef.current
@@ -1360,6 +1481,135 @@ export function EcctrlCharacter({
 
           finishedListenerRef.current =
             null;
+        }
+
+        const originalQuaternion = farmBotOriginalQuaternion;
+        const turnAmount = Math.abs(farmBotTurnDelta);
+        const outboundTurnAction = actions.get(
+          farmBotTurnDelta >= 0 ? 'turnright' : 'turnleft'
+        );
+
+        if (
+          originalQuaternion &&
+          outboundTurnAction
+        ) {
+          const targetQuaternion = taskFacingQuaternionRef.current.clone();
+          const turnDuration = THREE.MathUtils.clamp(
+            0.3 + turnAmount * 0.3,
+            0.35,
+            1.1
+          );
+
+          const crossFadeTo = (
+            action: THREE.AnimationAction,
+            effectiveTimeScale: number,
+            playInReverse = false
+          ) => {
+            action.enabled = true;
+            action.setLoop(THREE.LoopOnce, 1);
+            action.clampWhenFinished = true;
+            action.reset();
+            action.setEffectiveTimeScale(effectiveTimeScale);
+            if (playInReverse) {
+              action.time = action.getClip().duration;
+            }
+            action.play();
+            if (currentActionRef.current && currentActionRef.current !== action) {
+              currentActionRef.current.crossFadeTo(
+                action,
+                Math.min(CROSSFADE_DURATION, turnDuration / 2),
+                false
+              );
+            }
+            currentActionRef.current = action;
+            lastClipNameRef.current = action.getClip().name;
+          };
+
+          const listenFor = (
+            action: THREE.AnimationAction,
+            onFinished: () => void
+          ) => {
+            const listener = (event: any) => {
+              if (event.action !== action) return;
+              mixer.removeEventListener('finished', listener as any);
+              if (finishedListenerRef.current === listener) {
+                finishedListenerRef.current = null;
+              }
+              onFinished();
+            };
+            finishedListenerRef.current = listener;
+            mixer.addEventListener('finished', listener as any);
+          };
+
+          const finishSequence = () => {
+            activeTaskRef.current = null;
+            taskFacingYawRef.current = null;
+            taskOrientationTransitionRef.current = null;
+            taskLockedRef.current = false;
+            lastClipNameRef.current = null;
+            playAnimation(lastLocomotionStateRef.current, true);
+            window.dispatchEvent(
+              new CustomEvent('garden-character-action-complete', {
+                detail: {
+                  characterId: character.id,
+                  characterName: character.name,
+                  action: taskName,
+                  target: target ?? null,
+                },
+              })
+            );
+            taskCleanupTimerRef.current = setTimeout(() => {
+              outboundTurnAction.stop();
+              outboundTurnAction.enabled = false;
+              taskAction.stop();
+              taskAction.enabled = false;
+              taskCleanupTimerRef.current = null;
+            }, CROSSFADE_DURATION * 1000 + 40);
+          };
+
+          const startReturnTurn = () => {
+            taskFacingQuaternionRef.current.copy(originalQuaternion);
+            taskOrientationTransitionRef.current = {
+              from: targetQuaternion.clone(),
+              to: originalQuaternion.clone(),
+              elapsed: 0,
+              duration: turnDuration,
+            };
+            crossFadeTo(
+              outboundTurnAction,
+              -(outboundTurnAction.getClip().duration / turnDuration),
+              true
+            );
+            listenFor(outboundTurnAction, finishSequence);
+          };
+
+          const startTask = () => {
+            taskOrientationTransitionRef.current = null;
+            taskFacingQuaternionRef.current.copy(targetQuaternion);
+            crossFadeTo(taskAction, character.animationSpeed || 1);
+            listenFor(taskAction, startReturnTurn);
+          };
+
+          taskLockedRef.current = true;
+          activeTaskRef.current = taskName;
+          taskFacingQuaternionRef.current.copy(originalQuaternion);
+          taskOrientationTransitionRef.current = {
+            from: originalQuaternion.clone(),
+            to: targetQuaternion.clone(),
+            elapsed: 0,
+            duration: turnDuration,
+          };
+          crossFadeTo(
+            outboundTurnAction,
+            outboundTurnAction.getClip().duration / turnDuration
+          );
+          listenFor(outboundTurnAction, startTask);
+
+          console.info(
+            `[EcctrlCharacter] Turning toward FarmBot before task action "${taskName}" for ${character.name}.`
+          );
+
+          return true;
         }
 
         taskLockedRef.current =
@@ -1429,6 +1679,9 @@ export function EcctrlCharacter({
             }
 
             activeTaskRef.current =
+              null;
+
+            taskFacingYawRef.current =
               null;
 
             /**
@@ -1582,6 +1835,12 @@ export function EcctrlCharacter({
 
       activeTaskRef.current =
         null;
+
+      taskFacingYawRef.current =
+        null;
+
+      taskOrientationTransitionRef.current =
+        null;
     };
   }, [
     character.id,
@@ -1614,19 +1873,15 @@ export function EcctrlCharacter({
   // CONTROLLED MOVEMENT
   // ======================================================
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (
-      !ecctrlRef.current ||
-      !isControlled
+      !ecctrlRef.current
     ) {
       return;
     }
 
     const ec =
       ecctrlRef.current;
-
-    const k =
-      keys.current;
 
     /**
      * Keep the physics body stationary while a semantic task
@@ -1642,6 +1897,44 @@ export function EcctrlCharacter({
         run: false,
         jump: false,
       });
+
+      if (taskFacingYawRef.current !== null) {
+        const transition = taskOrientationTransitionRef.current;
+        const facing = taskFacingQuaternionRef.current;
+
+        if (transition) {
+          transition.elapsed = Math.min(
+            transition.elapsed + delta,
+            transition.duration
+          );
+          const progress = transition.duration > 0
+            ? transition.elapsed / transition.duration
+            : 1;
+          const easedProgress = progress * progress * (3 - 2 * progress);
+          facing.slerpQuaternions(
+            transition.from,
+            transition.to,
+            easedProgress
+          );
+          if (progress >= 1) {
+            taskOrientationTransitionRef.current = null;
+          }
+        }
+
+        ec.body.setRotation(
+          {
+            x: facing.x,
+            y: facing.y,
+            z: facing.z,
+            w: facing.w,
+          },
+          true
+        );
+        ec.body.setAngvel(
+          { x: 0, y: 0, z: 0 },
+          true
+        );
+      }
 
       const position =
         ec.currPos;
@@ -1669,8 +1962,17 @@ export function EcctrlCharacter({
         );
       }
 
+      reportControlledPosition(position);
+
       return;
     }
+
+    if (!isControlled) {
+      return;
+    }
+
+    const k =
+      keys.current;
 
     const joystickX =
       (
@@ -1752,6 +2054,7 @@ export function EcctrlCharacter({
           }
         );
     }
+    reportControlledPosition(position);
   });
 
   // ======================================================

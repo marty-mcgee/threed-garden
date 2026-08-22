@@ -77,6 +77,23 @@ export interface ThreeDActionTarget {
   actionRequestId?: string;
 }
 
+/** Runtime-only request for positioning a character before a semantic animation. */
+export interface ThreeDCharacterOrchestrationRequest {
+  version: 1;
+  requestId: string;
+  characterId: number;
+  action: string;
+  target: ThreeDActionTarget;
+  interactionDistance: number;
+}
+
+export type ThreeDCharacterOrchestrationPhase =
+  | 'approaching'
+  | 'orienting'
+  | 'interacting'
+  | 'completed'
+  | 'cancelled';
+
 // ============================================
 // Unified Map Data
 // ============================================

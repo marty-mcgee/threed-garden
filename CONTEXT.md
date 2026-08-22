@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.4b — Dashboard Surface Cleanup** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; the single-device Water pilot and ThreeD orchestration remain separate approval gates** |
+| Current release candidate | **v0.18.5a — ThreeD Character Orchestration Simulation** |
+| Current development milestone | **v0.18.5a Phase 5A — ThreeD FarmBot orchestration simulation foundation; no command delivery or physical behavior** |
 | Previous checkpoint | **v0.18.4a — Admin and Dashboard UI Improvements** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1265,6 +1265,8 @@ Status: Phases 2A–2D were individually approved, implemented, manually verifie
 - Add character approach and orientation, then use the established semantic animation path before submitting an audited FarmBot action request.
 - Preserve FBX loading, semantic Animation Action Mapping, GardenCharacter and EcctrlCharacter separation, task-to-locomotion crossfades, DetailsCard controls, and existing Planting-targeted Water and Pick Fruit behavior.
 - Keep MQTT ownership in the worker; ThreeD components display status and request approved semantic operations only.
+
+Phase 5A is implemented as the v0.18.5a release candidate. It adds an offline provider-independent approach/facing planner, requires Take Control and a live Ecctrl physics position before FarmBot interactions can enter range, keeps approach manual through WASD, and runs Point, Point Gesture, or Talk through the established semantic animation path. A facing tolerance avoids unnecessary turns; larger heading changes select one shortest-direction turn clip and reverse that same clip after the task to restore the prior direction. Browser-only request-ID correlation reports interacting, completed, or cancelled simulation state. No database schema, API route, MQTT publish, worker command, peripheral change, or physical FarmBot behavior is included.
 
 ### v0.18.5+ — Phase 6+: Controlled operation expansion
 

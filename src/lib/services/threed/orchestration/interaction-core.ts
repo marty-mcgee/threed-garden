@@ -1,0 +1,180 @@
+import type {
+  ThreeDActionTarget,
+  ThreeDCharacterOrchestrationRequest,
+} from '../../../types/map';
+
+export const THREED_INTERACTION_POLICY_VERSION = 1 as const;
+export const THREED_DEFAULT_INTERACTION_DISTANCE = 1.5;
+export const THREED_INTERACTION_ARRIVAL_TOLERANCE = 0.1;
+export const THREED_INTERACTION_FACING_TOLERANCE = Math.PI / 8;
+export const THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT =
+  'threed-character-orchestration-request' as const;
+export const THREED_ORCHESTRATED_INTERACTION_ACTIONS = [
+  'point',
+  'pointGesture',
+  'talk',
+] as const;
+
+export type ThreeDOrchestratedInteractionAction =
+  typeof THREED_ORCHESTRATED_INTERACTION_ACTIONS[number];
+
+export interface ThreeDPlanarPosition {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface ThreeDInteractionApproachInput {
+  characterPosition: ThreeDPlanarPosition;
+  targetPosition: ThreeDPlanarPosition;
+  interactionDistance?: number;
+  arrivalTolerance?: number;
+}
+
+export interface ThreeDInteractionApproachPlan {
+  distanceToTarget: number;
+  interactionDistance: number;
+  arrived: boolean;
+  destination: ThreeDPlanarPosition;
+  facingYaw: number;
+}
+
+export type ThreeDInteractionPlanningErrorCode =
+  | 'invalid_character_position'
+  | 'invalid_target_position'
+  | 'invalid_interaction_distance'
+  | 'invalid_arrival_tolerance';
+
+export class ThreeDInteractionPlanningError extends Error {
+  readonly code: ThreeDInteractionPlanningErrorCode;
+
+  constructor(code: ThreeDInteractionPlanningErrorCode) {
+    super(code);
+    this.name = 'ThreeDInteractionPlanningError';
+    this.code = code;
+  }
+}
+
+export type ThreeDOrchestrationRequestErrorCode =
+  | 'invalid_request_id'
+  | 'invalid_character_id'
+  | 'unsupported_action'
+  | 'invalid_target';
+
+export class ThreeDOrchestrationRequestError extends Error {
+  readonly code: ThreeDOrchestrationRequestErrorCode;
+
+  constructor(code: ThreeDOrchestrationRequestErrorCode) {
+    super(code);
+    this.name = 'ThreeDOrchestrationRequestError';
+    this.code = code;
+  }
+}
+
+const UUID_V4_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isFinitePosition(value: ThreeDPlanarPosition): boolean {
+  return Number.isFinite(value.x)
+    && Number.isFinite(value.y)
+    && Number.isFinite(value.z);
+}
+
+export function createThreeDCharacterOrchestrationRequest(input: {
+  requestId: string;
+  characterId: number;
+  action: string;
+  target: ThreeDActionTarget;
+  interactionDistance?: number;
+}): ThreeDCharacterOrchestrationRequest {
+  if (!UUID_V4_PATTERN.test(input.requestId)) {
+    throw new ThreeDOrchestrationRequestError('invalid_request_id');
+  }
+  if (!Number.isSafeInteger(input.characterId) || input.characterId < 1) {
+    throw new ThreeDOrchestrationRequestError('invalid_character_id');
+  }
+  if (!THREED_ORCHESTRATED_INTERACTION_ACTIONS.includes(
+    input.action as ThreeDOrchestratedInteractionAction,
+  )) {
+    throw new ThreeDOrchestrationRequestError('unsupported_action');
+  }
+  if (
+    input.target.type !== 'farmbot'
+    || !Number.isSafeInteger(input.target.id)
+    || input.target.id < 1
+    || !isFinitePosition(input.target.position)
+  ) {
+    throw new ThreeDOrchestrationRequestError('invalid_target');
+  }
+
+  const approach = planThreeDInteractionApproach({
+    characterPosition: input.target.position,
+    targetPosition: input.target.position,
+    interactionDistance: input.interactionDistance,
+  });
+
+  return Object.freeze({
+    version: THREED_INTERACTION_POLICY_VERSION,
+    requestId: input.requestId.toLowerCase(),
+    characterId: input.characterId,
+    action: input.action,
+    target: Object.freeze({
+      ...input.target,
+      position: Object.freeze({ ...input.target.position }),
+      actionRequestId: input.requestId.toLowerCase(),
+    }),
+    interactionDistance: approach.interactionDistance,
+  });
+}
+
+/**
+ * Plans only the ThreeD character's visual approach and orientation.
+ * It has no animation, API, persistence, MQTT, worker, or device behavior.
+ */
+export function planThreeDInteractionApproach(
+  input: ThreeDInteractionApproachInput,
+): ThreeDInteractionApproachPlan {
+  if (!isFinitePosition(input.characterPosition)) {
+    throw new ThreeDInteractionPlanningError('invalid_character_position');
+  }
+  if (!isFinitePosition(input.targetPosition)) {
+    throw new ThreeDInteractionPlanningError('invalid_target_position');
+  }
+
+  const interactionDistance = input.interactionDistance
+    ?? THREED_DEFAULT_INTERACTION_DISTANCE;
+  if (!Number.isFinite(interactionDistance) || interactionDistance <= 0) {
+    throw new ThreeDInteractionPlanningError('invalid_interaction_distance');
+  }
+
+  const arrivalTolerance = input.arrivalTolerance
+    ?? THREED_INTERACTION_ARRIVAL_TOLERANCE;
+  if (!Number.isFinite(arrivalTolerance) || arrivalTolerance < 0) {
+    throw new ThreeDInteractionPlanningError('invalid_arrival_tolerance');
+  }
+
+  const deltaX = input.targetPosition.x - input.characterPosition.x;
+  const deltaZ = input.targetPosition.z - input.characterPosition.z;
+  const distanceToTarget = Math.hypot(deltaX, deltaZ);
+  const arrived = distanceToTarget <= interactionDistance + arrivalTolerance;
+  const facingYaw = distanceToTarget > 0 ? Math.atan2(deltaX, deltaZ) : 0;
+
+  let destination = { ...input.characterPosition };
+  if (!arrived && distanceToTarget > 0) {
+    const targetToCharacterX = -deltaX / distanceToTarget;
+    const targetToCharacterZ = -deltaZ / distanceToTarget;
+    destination = {
+      x: input.targetPosition.x + targetToCharacterX * interactionDistance,
+      y: input.characterPosition.y,
+      z: input.targetPosition.z + targetToCharacterZ * interactionDistance,
+    };
+  }
+
+  return Object.freeze({
+    distanceToTarget,
+    interactionDistance,
+    arrived,
+    destination: Object.freeze(destination),
+    facingYaw,
+  });
+}
