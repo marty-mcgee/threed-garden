@@ -54,6 +54,10 @@ import {
   type ThreeDOrchestrationLifecycleState,
 } from '@/lib/services/threed/orchestration/interaction-core';
 import {
+  THREED_GENERIC_TARGET_ACTIONS,
+  getThreeDActionTargetCapabilities,
+} from '@/lib/services/threed/orchestration/action-target-core';
+import {
   getTrafficIcon,
   getTrafficLabel,
   getThreeDIcon,
@@ -336,33 +340,37 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     || normalizedType === 'farmbots'
     || normalizedType === 'threed_farmbots';
   const isCharacterMarker = type === 'characters' || type === 'character';
+  const selectedTargetCapabilities = getThreeDActionTargetCapabilities(normalizedType);
+  const actionTargetCapabilities = actionTarget
+    ? getThreeDActionTargetCapabilities(actionTarget.type)
+    : null;
   const isEcctrlCharacter = isCharacterMarker && d.isMovable === true;
   const characterId = Number(d.id);
   const isSelectedCharacterControlled = isEcctrlCharacter
     && controlledCharacterId === characterId;
   const hasLiveControlledPosition = isSelectedCharacterControlled
     && liveControlledCharacterPosition?.characterId === characterId;
-  let farmBotApproachPlan: ReturnType<typeof planThreeDInteractionApproach> | null = null;
+  let targetApproachPlan: ReturnType<typeof planThreeDInteractionApproach> | null = null;
   if (
     isEcctrlCharacter
     && hasLiveControlledPosition
-    && actionTarget?.type === 'farmbot'
+    && actionTarget != null
     && liveControlledCharacterPosition
   ) {
     try {
-      farmBotApproachPlan = planThreeDInteractionApproach({
+      targetApproachPlan = planThreeDInteractionApproach({
         characterPosition: liveControlledCharacterPosition.position,
         targetPosition: actionTarget.position,
       });
     } catch {
-      farmBotApproachPlan = null;
+      targetApproachPlan = null;
     }
   }
-  const farmBotInteractionReady = !isEcctrlCharacter
-    || actionTarget?.type !== 'farmbot'
+  const targetInteractionReady = !isEcctrlCharacter
+    || actionTarget == null
     || (
       hasLiveControlledPosition
-      && farmBotApproachPlan?.arrived === true
+      && targetApproachPlan?.arrived === true
     );
   const isCurrentOrchestration = orchestrationStatus
     && orchestrationStatus.characterId === characterId
@@ -444,14 +452,12 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
       )}
 
       {/* World Action Target — v0.16.6b World Actions v2 */}
-      {!isIncident && (isPlantingMarker || isFarmBotMarker) && onSetActionTarget && (() => {
+      {!isIncident && selectedTargetCapabilities && onSetActionTarget && (() => {
         const markerId = String(selected.id || '');
         const markerIdSuffix = markerId.match(/(\d+)$/)?.[1];
         const targetId = Number(d.id ?? markerIdSuffix);
-        const targetType = isFarmBotMarker ? 'farmbot' : 'planting';
-        const fallbackName = targetType === 'farmbot'
-          ? `FarmBot #${targetId}`
-          : `Planting #${targetId}`;
+        const targetType = selectedTargetCapabilities.markerType;
+        const fallbackName = `${selectedTargetCapabilities.markerType.replace(/s$/, '')} #${targetId}`;
         const targetName = selected.name || selected.label || d.plantName || d.commonName
           || fallbackName;
         const isCurrentTarget = actionTarget?.type === targetType && actionTarget.id === targetId;
@@ -470,7 +476,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
                 };
                 if (!Object.values(targetPosition).every(Number.isFinite)) return;
                 onSetActionTarget({
-                  markerId: markerId || `${targetType}s-${targetId}`,
+                  markerId: markerId || `${targetType}-${targetId}`,
                   type: targetType,
                   id: targetId,
                   name: targetName,
@@ -561,36 +567,34 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
             {actionTarget ? (
               <>
                 <div>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></div>
-                {actionTarget.type === 'farmbot' && (
-                  <>
-                    <div className="mt-1 text-amber-200/70">
-                      FarmBot interactions are animation-only. Physical commands remain disabled.
-                    </div>
-                    {isEcctrlCharacter && (
-                      <div className={`mt-1 ${farmBotInteractionReady ? 'text-emerald-300/80' : 'text-amber-200/80'}`}>
-                        {!isSelectedCharacterControlled
-                          ? 'Take Control to calculate interaction range'
-                          : !hasLiveControlledPosition
-                            ? 'Waiting for live character position'
-                            : farmBotApproachPlan
-                          ? farmBotInteractionReady
-                            ? `In interaction range (${farmBotApproachPlan.distanceToTarget.toFixed(1)} units)`
-                            : `Move closer with WASD (${farmBotApproachPlan.distanceToTarget.toFixed(1)} units away)`
-                          : 'Unable to calculate interaction range'}
-                      </div>
-                    )}
-                    {isCurrentOrchestration && (
-                      <div className={`mt-1 ${
-                        orchestrationStatus.phase === 'completed'
-                          ? 'text-emerald-300/80'
-                          : orchestrationStatus.phase === 'cancelled'
-                            ? 'text-amber-200/80'
-                            : 'text-sky-200/80'
-                      }`}>
-                        Simulation: {orchestrationStatus.phase}
-                      </div>
-                    )}
-                  </>
+                {actionTarget.type === 'farmbots' && (
+                  <div className="mt-1 text-amber-200/70">
+                    FarmBot interactions are animation-only. Physical commands remain disabled.
+                  </div>
+                )}
+                {isEcctrlCharacter && (
+                  <div className={`mt-1 ${targetInteractionReady ? 'text-emerald-300/80' : 'text-amber-200/80'}`}>
+                    {!isSelectedCharacterControlled
+                      ? 'Take Control to calculate interaction range'
+                      : !hasLiveControlledPosition
+                        ? 'Waiting for live character position'
+                        : targetApproachPlan
+                      ? targetInteractionReady
+                        ? `In interaction range (${targetApproachPlan.distanceToTarget.toFixed(1)} units)`
+                        : `Move closer with WASD (${targetApproachPlan.distanceToTarget.toFixed(1)} units away)`
+                      : 'Unable to calculate interaction range'}
+                  </div>
+                )}
+                {isCurrentOrchestration && (
+                  <div className={`mt-1 ${
+                    orchestrationStatus.phase === 'completed'
+                      ? 'text-emerald-300/80'
+                      : orchestrationStatus.phase === 'cancelled'
+                        ? 'text-amber-200/80'
+                        : 'text-sky-200/80'
+                  }`}>
+                    Simulation: {orchestrationStatus.phase}
+                  </div>
                 )}
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5">
                   {onFocusActionTarget && (
@@ -616,9 +620,9 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
             )}
           </div>
 
-          {(actionTarget?.type === 'farmbot' ? [
+          {(actionTarget && actionTarget.type !== 'plantings' ? [
             {
-              title: 'FarmBot Interaction',
+              title: 'Interaction',
               actions: [
                 { action: 'point', label: '👉 Point' },
                 { action: 'pointGesture', label: '🫵 Point Gesture' },
@@ -659,7 +663,18 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
                 { action: 'talk', label: '💬 Talk' },
               ],
             },
-          ]).map((group) => (
+          ])
+            .map((group) => ({
+              ...group,
+              actions: actionTargetCapabilities
+                ? group.actions.filter(({ action }) => (
+                  actionTargetCapabilities.genericActions.includes(action as any)
+                  || actionTargetCapabilities.moduleActions.includes(action as any)
+                ))
+                : group.actions,
+            }))
+            .filter((group) => group.actions.length > 0)
+            .map((group) => (
             <div key={group.title} className="space-y-1">
               <div className="text-[9px] uppercase tracking-wide text-white/35">
                 {group.title}
@@ -669,14 +684,25 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
                 {group.actions.map(({ action, label }) => (
                   <button
                     key={action}
-                    disabled={!farmBotInteractionReady || Boolean(isOrchestrationRunning)}
+                    disabled={
+                      Boolean(isOrchestrationRunning)
+                      || (
+                        actionTarget != null
+                        && THREED_GENERIC_TARGET_ACTIONS.includes(action as any)
+                        && !targetInteractionReady
+                      )
+                    }
                     onClick={(e) => {
                       e.stopPropagation();
 
                       const charId = Number(d.id);
                       if (!Number.isFinite(charId)) return;
 
-                      if (actionTarget?.type === 'farmbot') {
+                      if (
+                        actionTarget
+                        && actionTargetCapabilities
+                        && THREED_GENERIC_TARGET_ACTIONS.includes(action as any)
+                      ) {
                         const request = createThreeDCharacterOrchestrationRequest({
                           requestId: crypto.randomUUID(),
                           characterId: charId,
@@ -846,7 +872,7 @@ function UnifiedMapPageInner() {
   useEffect(() => {
     const handleOrchestrationRequest = (event: Event) => {
       const request = (event as CustomEvent<ThreeDCharacterOrchestrationRequest>).detail;
-      if (!request || request.version !== 1 || request.target.type !== 'farmbot') return;
+      if (!request || request.version !== 1) return;
       setOrchestrationStatus(createThreeDOrchestrationLifecycleState(request, Date.now()));
       window.dispatchEvent(new CustomEvent('garden-character-action', {
         detail: {
@@ -1036,10 +1062,7 @@ function UnifiedMapPageInner() {
   // Filters do not affect raw project assets, so hiding a target never clears it.
   useEffect(() => {
     if (!actionTarget || loading) return;
-    const targetCollection = actionTarget.type === 'farmbot'
-      ? data.threed.raw?.farmbots
-      : data.threed.raw?.plantings;
-    if (!targetCollection) return;
+    const targetCollection = data.threed.raw?.[actionTarget.type] ?? [];
 
     const targetStillExists = targetCollection.some(
       (asset: any) => Number(asset.id) === actionTarget.id,
@@ -1055,8 +1078,7 @@ function UnifiedMapPageInner() {
     }
   }, [
     actionTarget,
-    data.threed.raw?.farmbots,
-    data.threed.raw?.plantings,
+    data.threed.raw,
     loading,
   ]);
 
@@ -1077,7 +1099,7 @@ function UnifiedMapPageInner() {
       if (!detail?.action) return;
 
       if (
-        detail.target?.type === 'farmbot' &&
+        detail.target != null &&
         detail.target.actionRequestId
       ) {
         const completionId = detail.target.actionRequestId;
@@ -1104,7 +1126,7 @@ function UnifiedMapPageInner() {
       // ----------------------------------------------------
       if (
         detail.action === 'watering' &&
-        detail.target?.type === 'planting' &&
+        detail.target?.type === 'plantings' &&
         Number.isFinite(Number(detail.characterId)) &&
         Number.isFinite(Number(detail.target.id))
       ) {
@@ -1118,7 +1140,7 @@ function UnifiedMapPageInner() {
               action: detail.action,
               characterId: Number(detail.characterId),
               target: {
-                type: detail.target.type,
+                type: 'planting',
                 id: Number(detail.target.id),
               },
             }),
@@ -1159,7 +1181,7 @@ function UnifiedMapPageInner() {
       if (
         isHarvestAction &&
         selectedProjectId &&
-        detail.target?.type === 'planting' &&
+        detail.target?.type === 'plantings' &&
         Number.isFinite(Number(detail.characterId)) &&
         Number.isFinite(Number(detail.target.id))
       ) {
@@ -1175,7 +1197,7 @@ function UnifiedMapPageInner() {
               projectId: Number(selectedProjectId),
               completionId: detail.target.actionRequestId,
               target: {
-                type: detail.target.type,
+                type: 'planting',
                 id: Number(detail.target.id),
               },
             }),

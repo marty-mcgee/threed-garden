@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.5b — ThreeD Target-Relative Character Navigation** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; next Phase 5 step requires review** |
+| Current release candidate | **v0.18.6a — ThreeD Markers Action Target Module** |
+| Current development milestone | **Phase 5C–5D release preparation and production verification** |
 | Previous checkpoint | **v0.18.5a — ThreeD Character Orchestration Simulation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1271,6 +1271,10 @@ Status: Phases 2A–2D were individually approved, implemented, manually verifie
 Phase 5A was released to production as v0.18.5a. It adds an offline provider-independent approach/facing planner, requires Take Control and a live Ecctrl physics position before FarmBot interactions can enter range, keeps approach manual through WASD, and runs Point, Point Gesture, or Talk through the established semantic animation path. A facing tolerance avoids unnecessary turns; larger heading changes select one shortest-direction turn clip and reverse that same clip after the task to restore the prior direction. Browser-only request-ID correlation reports interacting, completed, or cancelled simulation state. No database schema, API route, MQTT publish, worker command, peripheral change, or physical FarmBot behavior is included.
 
 Phase 5B was released to production as v0.18.5b. It moves browser interaction status changes into a tested provider-independent lifecycle policy with request-ID matching, terminal-state protection, idempotent duplicate completion, and timeout cancellation. While a controlled EcctrlCharacter has a FarmBot action target, WASD uses a live world-space character-to-target forward direction instead of the scene camera direction; `W` approaches, `S` retreats, and `A`/`D` strafe consistently across camera modes, orbit angles, perspective, and zoom. Focus Target aligns the stationary camera behind the character. Clearing the target restores ordinary camera-relative WASD. This release adds no schema, API, MQTT publish, worker command, peripheral change, or physical FarmBot behavior.
+
+Phase 5C completed architecture hardening. The provider-independent orchestration core now owns the planar character-to-target distance and normalized world-space forward direction used by the approach planner, Ecctrl target-relative controls, and Focus Target camera placement. Offline validation covers all four cardinal approach directions and coincident planar positions. This step intentionally preserves v0.18.5b behavior and adds no new external or physical operation.
+
+Phase 5D implements the ThreeD Marker Action Target correction. ThreeD—not FarmBot or Planting—owns target identity, navigation eligibility, generic interaction capabilities, highlighting, refresh reconciliation, and lifecycle. The scene produces Runtime Markers for Plantings, Beds, Characters, FarmBots, and Models; the provider-independent target registry recognizes all five and the default scene layers keep all five marker types renderable. Generic Point, Point Gesture, and Talk capabilities are separate from Planting-only farming actions. Capability declarations do not authorize persistence, MQTT publishing, worker commands, or physical operation.
 
 ### v0.18.5+ — Phase 6+: Controlled operation expansion
 

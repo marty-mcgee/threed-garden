@@ -1,6 +1,6 @@
 # ThreeD FarmBot Integration Plan
 
-Status: v0.18.5a is the current production release. Its ThreeD character orchestration remains simulation-only and preserves the v0.18.3b FarmBot safety boundary through Phase 4L-K. MQTT publishing and physical device commands remain disabled. Any later command-linked orchestration requires separate approval.
+Status: v0.18.5b is the current production release. Its ThreeD character orchestration remains simulation-only and preserves the v0.18.3b FarmBot safety boundary through Phase 4L-K. MQTT publishing and physical device commands remain disabled. Any later command-linked orchestration requires separate approval.
 
 ## Integration boundary
 
@@ -183,7 +183,7 @@ Phase 4L-K adds the worker reporting side behind a dedicated queue. An exactly c
 
 ### Phase 5 — ThreeD interaction expansion
 
-Status: Phase 5A simulation is released in production as v0.18.5a. Command delivery and physical behavior remain future approval gates.
+Status: Phase 5A–5B simulation is released in production through v0.18.5b. Phase 5C–5D is prepared as the v0.18.6a ThreeD Markers Action Target Module release candidate. Command delivery and physical behavior remain future approval gates.
 
 - Add character approach/orientation behavior only after the single Water pilot is stable.
 - Add further semantic actions one at a time with separate allowlist and safety review.

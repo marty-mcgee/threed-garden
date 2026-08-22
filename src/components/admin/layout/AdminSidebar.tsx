@@ -223,7 +223,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
         )}
       >
         <div className="flex h-14 items-center justify-between border-b px-3">
-          {!isCollapsed && <span className="text-lg font-bold">Admin</span>}
+          {!isCollapsed && <span className="text-lg font-bold">ThreeD Garden</span>}
           <Button variant="ghost" size="icon" className="ml-auto">
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
@@ -259,7 +259,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       <div className="flex h-14 shrink-0 items-center justify-between border-b px-3">
         {!isCollapsed && (
           <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Admin
+            ThreeD Garden
           </span>
         )}
         <Button 

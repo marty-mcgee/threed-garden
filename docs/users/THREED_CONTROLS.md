@@ -13,6 +13,8 @@ Open `/dashboard/map`, choose a project, and select a ThreeD marker to open its 
 
 Select a valid planting target and choose a supported action from the character's Details Card. Water and Pick Fruit run as one-shot animations. Persistence occurs only after animation completion; a success toast confirms the saved result.
 
+Every rendered ThreeD Marker can be selected with **Use as Action Target**. This includes Plantings, Beds, Characters, FarmBots, and Models. The current target keeps a green pulse after another marker is selected. Beds, Characters, FarmBots, and Models expose Point, Point Gesture, and Talk; Plantings also expose their supported farming and harvesting actions.
+
 Selection and action targeting are separate state. Releasing character control must not silently execute an action.
 
 If an animation runs but persistence fails, record the toast/console error, character, project, and target before retrying.

@@ -40,13 +40,15 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 Current production version: v0.18.5b "ThreeD Target-Relative Character Navigation".
 
-No later release candidate is currently designated.
+Current release candidate: v0.18.6a "ThreeD Markers Action Target Module".
 
 v0.18.5b is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
 The v0.18.5a release is simulation-only. It adds no database schema, FarmBot command delivery, MQTT publishing, peripheral operation, or physical-device behavior.
 
 The v0.18.5b release centralizes the client-only orchestration lifecycle and makes controlled Ecctrl FarmBot approach movement target-relative, independent of camera mode, perspective, orbit, and zoom. It preserves ordinary camera-relative WASD when no FarmBot action target is active and does not expand the v0.18.5a physical-operation boundary.
+
+The v0.18.6a candidate establishes ThreeD ownership of marker targeting. Plantings, Beds, Characters, FarmBots, and Models share target identity, focus, highlighting, navigation, lifecycle, and generic semantic interactions. Module-specific effects remain separately gated; the candidate adds no schema, MQTT publishing, worker command, or physical-device behavior.
 
 Production character animations are Git-tracked under `public/assets/animations`. When the external animation manifest or those files change, run `npm run validate:assets`. The GitHub workflow treats missing production animation assets and TypeScript diagnostics as blocking failures. Vercel remains the production-build gate.
 

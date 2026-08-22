@@ -58,6 +58,7 @@ export function getDefaultLayers(): MapLayerConfig {
       markers: { enabled: true, visible: true },
       layers: { enabled: true, visible: true },
       farmbots: { enabled: true, visible: true },
+      models: { enabled: true, visible: true },
     },
   };
 }

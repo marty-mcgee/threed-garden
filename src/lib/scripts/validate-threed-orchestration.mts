@@ -10,9 +10,17 @@ import {
   createThreeDOrchestrationLifecycleState,
   createThreeDCharacterOrchestrationRequest,
   planThreeDInteractionApproach,
+  planThreeDTargetRelativeNavigation,
   transitionThreeDOrchestrationLifecycleState,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/orchestration/interaction-core.ts';
+import {
+  THREED_ACTION_TARGET_MARKER_TYPES,
+  THREED_GENERIC_TARGET_ACTIONS,
+  THREED_PLANTING_TARGET_ACTIONS,
+  getThreeDActionTargetCapabilities,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/orchestration/action-target-core.ts';
 
 let completedValidationSteps = 0;
 function validationStep(label: string): void {
@@ -79,7 +87,7 @@ const orchestrationRequest = createThreeDCharacterOrchestrationRequest({
   action: 'point',
   target: {
     markerId: 'farmbots-3',
-    type: 'farmbot',
+    type: 'farmbots',
     id: 3,
     name: 'FarmBot Gamma',
     position: { x: 4, y: 0, z: 8 },
@@ -162,6 +170,85 @@ assert.throws(
     && error.code === 'invalid_transition',
 );
 validationStep('Mismatched requests and terminal-state replacement fail closed');
+
+const targetRelativeDirections = [
+  {
+    targetPosition: { x: 0, y: 9, z: 10 },
+    expected: { x: 0, y: 0, z: 1 },
+  },
+  {
+    targetPosition: { x: 10, y: -9, z: 0 },
+    expected: { x: 1, y: 0, z: 0 },
+  },
+  {
+    targetPosition: { x: 0, y: 0, z: -10 },
+    expected: { x: 0, y: 0, z: -1 },
+  },
+  {
+    targetPosition: { x: -10, y: 0, z: 0 },
+    expected: { x: -1, y: 0, z: 0 },
+  },
+];
+for (const direction of targetRelativeDirections) {
+  const navigation = planThreeDTargetRelativeNavigation({
+    characterPosition: { x: 0, y: 0, z: 0 },
+    targetPosition: direction.targetPosition,
+  });
+  assert.equal(navigation.hasDirection, true);
+  assert.deepEqual(navigation.forwardDirection, direction.expected);
+  assert.equal(navigation.distanceToTarget, 10);
+}
+validationStep('Target-relative forward direction is correct on every cardinal axis');
+
+const zeroDistanceNavigation = planThreeDTargetRelativeNavigation({
+  characterPosition: { x: 3, y: 1, z: -2 },
+  targetPosition: { x: 3, y: 99, z: -2 },
+});
+assert.equal(zeroDistanceNavigation.hasDirection, false);
+assert.equal(zeroDistanceNavigation.distanceToTarget, 0);
+assert.deepEqual(zeroDistanceNavigation.forwardDirection, { x: 0, y: 0, z: 0 });
+validationStep('Coincident planar positions do not invent a movement direction');
+
+assert.deepEqual(THREED_ACTION_TARGET_MARKER_TYPES, [
+  'plantings',
+  'beds',
+  'characters',
+  'farmbots',
+  'models',
+]);
+for (const markerType of THREED_ACTION_TARGET_MARKER_TYPES) {
+  const capabilities = getThreeDActionTargetCapabilities(markerType);
+  assert.equal(capabilities?.targetable, true);
+  assert.equal(capabilities?.navigationEnabled, true);
+  assert.deepEqual(capabilities?.genericActions, THREED_GENERIC_TARGET_ACTIONS);
+  assert.deepEqual(
+    capabilities?.moduleActions,
+    markerType === 'plantings' ? THREED_PLANTING_TARGET_ACTIONS : [],
+  );
+}
+validationStep('Every rendered ThreeD Sub-Module marker is an Action Target');
+
+for (const markerType of THREED_ACTION_TARGET_MARKER_TYPES) {
+  const request = createThreeDCharacterOrchestrationRequest({
+    requestId: '6ba7b810-9dad-4d80-80b4-00c04fd430c8',
+    characterId: 7,
+    action: 'point',
+    target: {
+      markerId: `${markerType}-3`,
+      type: markerType,
+      id: 3,
+      name: `${markerType} target`,
+      position: { x: 4, y: 0, z: 8 },
+    },
+  });
+  assert.equal(request.target.type, markerType);
+}
+validationStep('Generic orchestration accepts every rendered marker target type');
+
+assert.equal(getThreeDActionTargetCapabilities('layers'), null);
+assert.equal(getThreeDActionTargetCapabilities('plants'), null);
+assert.equal(getThreeDActionTargetCapabilities('traffic'), null);
+validationStep('Non-rendered and non-ThreeD data do not become marker targets');
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);

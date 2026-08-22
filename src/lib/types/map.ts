@@ -63,7 +63,12 @@ export interface RuntimeMarker {
 }
 
 /** Client-side identity and position for a supported ThreeD world-action target. */
-export type ThreeDActionTargetType = 'planting' | 'farmbot';
+export type ThreeDActionTargetType =
+  | 'plantings'
+  | 'beds'
+  | 'characters'
+  | 'farmbots'
+  | 'models';
 
 export interface ThreeDActionTarget {
   /** Runtime marker identity, for example `plantings-12`. */
@@ -127,6 +132,7 @@ export interface UnifiedMapData {
       characters: any[];
       layers: any[];
       farmbots: any[];
+      models: any[];
       plantings: any[];
       tasks: any[];
       harvests: any[];

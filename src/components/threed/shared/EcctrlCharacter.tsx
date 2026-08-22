@@ -32,6 +32,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 import { FadingRing } from './FadingRing';
+import { PulseRing } from './PulseRing';
 
 import {
   buildAnimationMap,
@@ -45,6 +46,7 @@ import {
 
 import {
   planThreeDInteractionApproach,
+  planThreeDTargetRelativeNavigation,
   THREED_INTERACTION_FACING_TOLERANCE,
 } from '@/lib/services/threed/orchestration/interaction-core';
 
@@ -164,6 +166,8 @@ interface EcctrlCharacterProps {
     y: number;
     z: number;
   };
+
+  isActionTarget?: boolean;
 }
 
 // ========================================================
@@ -1047,6 +1051,8 @@ export function EcctrlCharacter({
   markerId,
 
   movementTargetPosition,
+
+  isActionTarget = false,
 }: EcctrlCharacterProps) {
   const ecctrlRef =
     useRef<EcctrlHandle>(
@@ -1418,8 +1424,8 @@ export function EcctrlCharacter({
         if (
           target &&
           typeof target === 'object' &&
-          'type' in target &&
-          target.type === 'farmbot'
+          'position' in target &&
+          target.position != null
         ) {
           if (
             !('position' in target) ||
@@ -1900,13 +1906,16 @@ export function EcctrlCharacter({
 
     if (isControlled && movementTargetPosition) {
       const position = ec.currPos;
-      const targetForward = targetForwardDirectionRef.current.set(
-        movementTargetPosition.x - position.x,
-        0,
-        movementTargetPosition.z - position.z,
-      );
-      if (targetForward.lengthSq() > 0.000001) {
-        ec.setForwardDir(targetForward.normalize());
+      const navigation = planThreeDTargetRelativeNavigation({
+        characterPosition: position,
+        targetPosition: movementTargetPosition,
+      });
+      if (navigation.hasDirection) {
+        ec.setForwardDir(targetForwardDirectionRef.current.set(
+          navigation.forwardDirection.x,
+          navigation.forwardDirection.y,
+          navigation.forwardDirection.z,
+        ));
       }
     }
 
@@ -2418,6 +2427,13 @@ export function EcctrlCharacter({
         </mesh>
 
         {overlays}
+        {isActionTarget && (
+          <PulseRing
+            position={[0, -GROUND_OFFSET + 0.025, 0]}
+            color="#10b981"
+            size={0.85}
+          />
+        )}
       </Ecctrl>
     );
   }
@@ -2527,6 +2543,14 @@ export function EcctrlCharacter({
             }
           />
         </group>
+      )}
+
+      {isActionTarget && (
+        <PulseRing
+          position={[0, -GROUND_OFFSET + 0.025, 0]}
+          color="#10b981"
+          size={0.85}
+        />
       )}
 
       {overlays}

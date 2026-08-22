@@ -2,6 +2,8 @@ import type {
   ThreeDActionTarget,
   ThreeDCharacterOrchestrationRequest,
 } from '../../../types/map';
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+import { getThreeDActionTargetCapabilities } from './action-target-core.ts';
 
 export const THREED_INTERACTION_POLICY_VERSION = 1 as const;
 export const THREED_DEFAULT_INTERACTION_DISTANCE = 1.5;
@@ -37,6 +39,12 @@ export interface ThreeDInteractionApproachPlan {
   arrived: boolean;
   destination: ThreeDPlanarPosition;
   facingYaw: number;
+}
+
+export interface ThreeDTargetRelativeNavigationPlan {
+  distanceToTarget: number;
+  hasDirection: boolean;
+  forwardDirection: ThreeDPlanarPosition;
 }
 
 export type ThreeDOrchestrationLifecyclePhase =
@@ -128,7 +136,7 @@ export function createThreeDCharacterOrchestrationRequest(input: {
     throw new ThreeDOrchestrationRequestError('unsupported_action');
   }
   if (
-    input.target.type !== 'farmbot'
+    !getThreeDActionTargetCapabilities(input.target.type)
     || !Number.isSafeInteger(input.target.id)
     || input.target.id < 1
     || !isFinitePosition(input.target.position)
@@ -232,20 +240,27 @@ export function planThreeDInteractionApproach(
     throw new ThreeDInteractionPlanningError('invalid_arrival_tolerance');
   }
 
-  const deltaX = input.targetPosition.x - input.characterPosition.x;
-  const deltaZ = input.targetPosition.z - input.characterPosition.z;
-  const distanceToTarget = Math.hypot(deltaX, deltaZ);
+  const navigation = planThreeDTargetRelativeNavigation({
+    characterPosition: input.characterPosition,
+    targetPosition: input.targetPosition,
+  });
+  const distanceToTarget = navigation.distanceToTarget;
   const arrived = distanceToTarget <= interactionDistance + arrivalTolerance;
-  const facingYaw = distanceToTarget > 0 ? Math.atan2(deltaX, deltaZ) : 0;
+  const facingYaw = navigation.hasDirection
+    ? Math.atan2(
+      navigation.forwardDirection.x,
+      navigation.forwardDirection.z,
+    )
+    : 0;
 
   let destination = { ...input.characterPosition };
-  if (!arrived && distanceToTarget > 0) {
-    const targetToCharacterX = -deltaX / distanceToTarget;
-    const targetToCharacterZ = -deltaZ / distanceToTarget;
+  if (!arrived && navigation.hasDirection) {
     destination = {
-      x: input.targetPosition.x + targetToCharacterX * interactionDistance,
+      x: input.targetPosition.x
+        - navigation.forwardDirection.x * interactionDistance,
       y: input.characterPosition.y,
-      z: input.targetPosition.z + targetToCharacterZ * interactionDistance,
+      z: input.targetPosition.z
+        - navigation.forwardDirection.z * interactionDistance,
     };
   }
 
@@ -255,5 +270,38 @@ export function planThreeDInteractionApproach(
     arrived,
     destination: Object.freeze(destination),
     facingYaw,
+  });
+}
+
+/**
+ * Resolves the world-space forward direction for target-relative character
+ * controls. Camera mode, perspective, orbit, and zoom are intentionally absent.
+ */
+export function planThreeDTargetRelativeNavigation(input: {
+  characterPosition: ThreeDPlanarPosition;
+  targetPosition: ThreeDPlanarPosition;
+}): ThreeDTargetRelativeNavigationPlan {
+  if (!isFinitePosition(input.characterPosition)) {
+    throw new ThreeDInteractionPlanningError('invalid_character_position');
+  }
+  if (!isFinitePosition(input.targetPosition)) {
+    throw new ThreeDInteractionPlanningError('invalid_target_position');
+  }
+
+  const deltaX = input.targetPosition.x - input.characterPosition.x;
+  const deltaZ = input.targetPosition.z - input.characterPosition.z;
+  const distanceToTarget = Math.hypot(deltaX, deltaZ);
+  const hasDirection = distanceToTarget > 0.001;
+
+  return Object.freeze({
+    distanceToTarget,
+    hasDirection,
+    forwardDirection: Object.freeze(hasDirection
+      ? {
+        x: deltaX / distanceToTarget,
+        y: 0,
+        z: deltaZ / distanceToTarget,
+      }
+      : { x: 0, y: 0, z: 0 }),
   });
 }

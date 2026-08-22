@@ -14,12 +14,14 @@ import { Settings, ChevronDown, ChevronUp, X, Target, Layers } from 'lucide-reac
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
 import { FadingRing } from '@/components/threed/shared/FadingRing';
+import { PulseRing } from '@/components/threed/shared/PulseRing';
 import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
 import { PlantMarker3D } from '@/components/threed/markers/PlantMarker3D';
 import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
 import { ModelMarker3D } from '@/components/threed/markers/ModelMarker3D';
 import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
 import type { ThreeDActionTarget } from '@/lib/types/map';
+import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orchestration/interaction-core';
 
 interface ThreeDSceneProps {
   incidents: any[];
@@ -423,10 +425,11 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
           livePositionsRef={livePositionsRef}
           markerId={marker.id}
           movementTargetPosition={
-            isCtrl && actionTarget?.type === 'farmbot'
+            isCtrl && actionTarget != null
               ? actionTarget.position
               : undefined
           }
+          isActionTarget={isActionTarget}
         />
       );
     }
@@ -441,6 +444,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
         >
           <GardenCharacter character={marker.data} positionedByParent />
           {isSelected && <FadingRing position={[0, 0.01, 0]} innerRadius={0.7} outerRadius={1.0} />}
+          {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.85} />}
         </group>
       </RigidBody>
     );
@@ -453,6 +457,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
         <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
           <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={3.2} outerRadius={4.0} segments={48} />}
+          {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={3.5} />}
         </group>
       </RigidBody>
     );
@@ -483,6 +488,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
             animationSpeed={marker.data?.animationSpeed || 1}
           />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
+          {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
         </group>
       </RigidBody>
     );
@@ -570,26 +576,6 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
       </mesh>
       {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={size * 1.2} outerRadius={size * 1.5} />}
     </group>
-  );
-}
-
-// Animated pulse ring for selected/hovered markers
-function PulseRing({ position, color, size = 1.0 }: { position: [number, number, number]; color: string; size?: number }) {
-  const ringRef = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (ringRef.current) {
-      const t = state.clock.elapsedTime;
-      const scale = 1 + Math.sin(t * 3) * 0.25;
-      ringRef.current.scale.set(scale, scale, scale);
-      const mat = ringRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.3 + Math.sin(t * 2) * 0.2;
-    }
-  });
-  return (
-    <mesh ref={ringRef} position={position} rotation={[-Math.PI / 2, 0, 0]}>
-      <ringGeometry args={[size * 1.2, size * 1.6, 32]} />
-      <meshBasicMaterial color={color} transparent opacity={0.5} side={THREE.DoubleSide} depthWrite={false} />
-    </mesh>
   );
 }
 
@@ -741,8 +727,8 @@ export function ThreeDScene({
   const [isAnimating, setIsAnimating] = useState(false);
 
   // ✅ Layer visibility state
-  const [activeLayers, setActiveLayers] = useState<Set<string>>(new Set(['beds', 'characters', 'farmbots', 'plantings', 'layers']));
-  const [availableLayers, setAvailableLayers] = useState<string[]>(['beds', 'characters', 'farmbots', 'plantings', 'layers']);
+  const [activeLayers, setActiveLayers] = useState<Set<string>>(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
+  const [availableLayers, setAvailableLayers] = useState<string[]>(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
 
   // ✅ View presets state
   const [viewPresets, setViewPresets] = useState<ViewPreset[]>([]);
@@ -801,8 +787,8 @@ export function ThreeDScene({
     const fetchLayers = async () => {
       try {
         if (!projectId) {
-          setAvailableLayers(['beds', 'characters', 'farmbots', 'plantings', 'layers']);
-          setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'plantings', 'layers']));
+          setAvailableLayers(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
+          setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
           return;
         }
         
@@ -812,19 +798,19 @@ export function ThreeDScene({
           // ✅ Use known marker types for activeLayers (not DB layerType values which differ)
           // DB layers store their display category in layerType, but markers use
           // their sub-module names: plantings, beds, characters, farmbots
-          const markerTypes = ['beds', 'characters', 'farmbots', 'plantings', 'layers'];
+          const markerTypes = ['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers'];
           const dbLayerTypes = data.data.map((layer: any) => layer.layerType || layer.name);
           setAvailableLayers(dbLayerTypes);
           // ✅ Always include the known marker-producing types so they render
           setActiveLayers(new Set(markerTypes));
         } else {
-          setAvailableLayers(['beds', 'characters', 'farmbots', 'plantings', 'layers']);
-          setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'plantings', 'layers']));
+          setAvailableLayers(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
+          setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
         }
       } catch (error) {
         console.error('Failed to fetch layers:', error);
-        setAvailableLayers(['beds', 'characters', 'farmbots', 'plantings', 'layers']);
-        setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'plantings', 'layers']));
+        setAvailableLayers(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
+        setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
       }
     };
     
@@ -839,6 +825,7 @@ export function ThreeDScene({
       'bed': 'beds',
       'character': 'characters',
       'farmbot': 'farmbots',
+      'model': 'models',
       'layer': 'layers',
       'marker': 'markers',
     };
@@ -994,17 +981,20 @@ export function ThreeDScene({
     ) {
       const characterPosition = cameraFollowRef.current;
       if (characterPosition) {
-        const deltaX = Number(position.x) - characterPosition.x;
-        const deltaZ = Number(position.z) - characterPosition.z;
-        const distance = Math.hypot(deltaX, deltaZ);
-        if (distance > 0.001) {
+        const navigation = planThreeDTargetRelativeNavigation({
+          characterPosition,
+          targetPosition: position,
+        });
+        if (navigation.hasDirection) {
           const viewDistance = 6;
           focusOnMarker(
             { position },
             {
-              x: characterPosition.x - (deltaX / distance) * viewDistance,
+              x: characterPosition.x
+                - navigation.forwardDirection.x * viewDistance,
               y: characterPosition.y + 3,
-              z: characterPosition.z - (deltaZ / distance) * viewDistance,
+              z: characterPosition.z
+                - navigation.forwardDirection.z * viewDistance,
             },
           );
           return;
@@ -1428,10 +1418,7 @@ export function ThreeDScene({
                   marker.id === actionTarget.markerId ||
                   (
                     (
-                      (actionTarget.type === 'planting'
-                        && (marker.type === 'planting' || marker.type === 'plantings'))
-                      || (actionTarget.type === 'farmbot'
-                        && (marker.type === 'farmbot' || marker.type === 'farmbots'))
+                      actionTarget.type === marker.type
                     ) &&
                     Number(marker.data?.id) === actionTarget.id
                   )
