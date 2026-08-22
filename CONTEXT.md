@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.4b — Dashboard Surface Cleanup** |
-| Current release candidate | **v0.18.5a — ThreeD Character Orchestration Simulation** |
-| Current development milestone | **v0.18.5a Phase 5A — ThreeD FarmBot orchestration simulation foundation; no command delivery or physical behavior** |
-| Previous checkpoint | **v0.18.4a — Admin and Dashboard UI Improvements** |
+| Current stable version | **v0.18.5a — ThreeD Character Orchestration Simulation** |
+| Current release candidate | **None designated** |
+| Current development milestone | **Post-release checkpoint; Phase 5B remains a separate approval gate** |
+| Previous checkpoint | **v0.18.4b — Dashboard Surface Cleanup** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -374,6 +374,7 @@ API (/api/map/threed)
 | **v0.18.3b** | **2026-08-21** | **Production release — Phase 4L-D–4L-K emergency audit persistence, disabled worker boundary, correlation, and acknowledgement reporting** |
 | **v0.18.4a** | **2026-08-21** | **Production release — Admin and Dashboard UI improvements for navigation, project controls, asset tabs, and inline FarmBot management** |
 | **v0.18.4b** | **2026-08-21** | **Production release — Dashboard surface cleanup for ThreeD routing, one Music player page, and unified Traffic source layers with linked map/list selection** |
+| **v0.18.5a** | **2026-08-22** | **Production release — ThreeD character orchestration simulation with live Ecctrl range gating, target-facing animation sequencing, and client-only lifecycle status** |
 
 ---
 
@@ -1266,7 +1267,7 @@ Status: Phases 2A–2D were individually approved, implemented, manually verifie
 - Preserve FBX loading, semantic Animation Action Mapping, GardenCharacter and EcctrlCharacter separation, task-to-locomotion crossfades, DetailsCard controls, and existing Planting-targeted Water and Pick Fruit behavior.
 - Keep MQTT ownership in the worker; ThreeD components display status and request approved semantic operations only.
 
-Phase 5A is implemented as the v0.18.5a release candidate. It adds an offline provider-independent approach/facing planner, requires Take Control and a live Ecctrl physics position before FarmBot interactions can enter range, keeps approach manual through WASD, and runs Point, Point Gesture, or Talk through the established semantic animation path. A facing tolerance avoids unnecessary turns; larger heading changes select one shortest-direction turn clip and reverse that same clip after the task to restore the prior direction. Browser-only request-ID correlation reports interacting, completed, or cancelled simulation state. No database schema, API route, MQTT publish, worker command, peripheral change, or physical FarmBot behavior is included.
+Phase 5A was released to production as v0.18.5a. It adds an offline provider-independent approach/facing planner, requires Take Control and a live Ecctrl physics position before FarmBot interactions can enter range, keeps approach manual through WASD, and runs Point, Point Gesture, or Talk through the established semantic animation path. A facing tolerance avoids unnecessary turns; larger heading changes select one shortest-direction turn clip and reverse that same clip after the task to restore the prior direction. Browser-only request-ID correlation reports interacting, completed, or cancelled simulation state. No database schema, API route, MQTT publish, worker command, peripheral change, or physical FarmBot behavior is included.
 
 ### v0.18.5+ — Phase 6+: Controlled operation expansion
 
