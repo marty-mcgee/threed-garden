@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.5b — ThreeD Target-Relative Character Navigation** |
-| Current release candidate | **v0.18.6a — ThreeD Markers Action Target Module** |
-| Current development milestone | **Phase 5C–5D release preparation and production verification** |
-| Previous checkpoint | **v0.18.5a — ThreeD Character Orchestration Simulation** |
+| Current stable version | **v0.18.6a — ThreeD Markers Action Target Module** |
+| Current release candidate | **None designated** |
+| Current development milestone | **Post-release checkpoint; next Phase 5 step requires review** |
+| Previous checkpoint | **v0.18.5b — ThreeD Target-Relative Character Navigation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -376,6 +376,7 @@ API (/api/map/threed)
 | **v0.18.4b** | **2026-08-21** | **Production release — Dashboard surface cleanup for ThreeD routing, one Music player page, and unified Traffic source layers with linked map/list selection** |
 | **v0.18.5a** | **2026-08-22** | **Production release — ThreeD character orchestration simulation with live Ecctrl range gating, target-facing animation sequencing, and client-only lifecycle status** |
 | **v0.18.5b** | **2026-08-22** | **Production release — target-relative Ecctrl FarmBot navigation, aligned target focusing, and tested client orchestration lifecycle transitions** |
+| **v0.18.6a** | **2026-08-22** | **Production release — ThreeD-owned Action Targets for Plantings, Beds, Characters, FarmBots, and Models with shared navigation, highlighting, lifecycle, and capability-filtered actions** |
 
 ---
 

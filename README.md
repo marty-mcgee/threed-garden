@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.18.5b "ThreeD Target-Relative Character Navigation"`
+> **Current production version:** `v0.18.6a "ThreeD Markers Action Target Module"`
 
 ## Documentation
 
@@ -277,9 +277,9 @@ The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.4b pro
 | v0.18.4b | Dashboard Surface Cleanup | Released: ThreeD Dashboard CRUD routes move to the Admin surface, Music uses one Dashboard player page, and Traffic uses source-layer controls with a linked map and incident list. No schema, MQTT, or physical-command behavior changes. |
 | v0.18.5a | Phase 5A — ThreeD orchestration simulation | Released: live Ecctrl range gating, provider-independent planning, target-facing animation sequencing, and client-only lifecycle correlation. It adds no command delivery or physical behavior. |
 | v0.18.5b | Phase 5B — Target-relative character navigation | Released: tested client lifecycle transitions, camera-independent FarmBot approach controls, and aligned target focusing. It adds no command delivery or physical behavior. |
-| v0.18.6a | Phase 5C–5D — ThreeD Markers Action Target Module | Release candidate: shared target-relative navigation planning and ThreeD-owned target identity, pulse, focus, lifecycle, and capability-filtered actions for Plantings, Beds, Characters, FarmBots, and Models. |
+| v0.18.6a | Phase 5C–5D — ThreeD Markers Action Target Module | Released: shared target-relative navigation planning and ThreeD-owned target identity, pulse, focus, lifecycle, and capability-filtered actions for Plantings, Beds, Characters, FarmBots, and Models. |
 | Later | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
 
-Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, Phase 4 through v0.18.3b, and Phase 5A–5B are released and production-verified. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.
+Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, Phase 4 through v0.18.3b, and Phase 5A–5D are released and production-verified. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.
 
 Approval of this plan does not by itself authorize a new external resource, database schema change, MQTT connection, MQTT publish, or physical FarmBot command. Each phase remains a separate approval and validation gate.
