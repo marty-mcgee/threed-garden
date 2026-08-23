@@ -18,7 +18,10 @@ import {
   THREED_ACTION_TARGET_MARKER_TYPES,
   THREED_GENERIC_TARGET_ACTIONS,
   THREED_PLANTING_TARGET_ACTIONS,
+  ThreeDActionTargetError,
+  createThreeDActionTarget,
   getThreeDActionTargetCapabilities,
+  isMatchingThreeDActionTarget,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/orchestration/action-target-core.ts';
 
@@ -227,6 +230,77 @@ for (const markerType of THREED_ACTION_TARGET_MARKER_TYPES) {
   );
 }
 validationStep('Every rendered ThreeD Sub-Module marker is an Action Target');
+
+for (const markerType of THREED_ACTION_TARGET_MARKER_TYPES) {
+  const target = createThreeDActionTarget({
+    markerId: ` ${markerType}-3 `,
+    markerType,
+    assetId: 3,
+    name: ` ${markerType} target `,
+    position: { x: 4, y: 0, z: 8 },
+  });
+  assert.equal(target.markerId, `${markerType}-3`);
+  assert.equal(target.type, markerType);
+  assert.equal(target.name, `${markerType} target`);
+  assert.equal(Object.isFrozen(target), true);
+  assert.equal(Object.isFrozen(target.position), true);
+}
+assert.equal(
+  createThreeDActionTarget({
+    markerId: 'farmbots-3',
+    markerType: 'farmbot',
+    assetId: 3,
+    name: 'FarmBot Gamma',
+    position: { x: 4, y: 0, z: 8 },
+  }).type,
+  'farmbots',
+);
+validationStep('Runtime Markers create normalized immutable Action Targets');
+
+const validTargetInput = {
+  markerId: 'farmbots-3',
+  markerType: 'farmbots',
+  assetId: 3,
+  name: 'FarmBot Gamma',
+  position: { x: 4, y: 0, z: 8 },
+};
+for (const [overrides, expectedCode] of [
+  [{ markerType: 'traffic' }, 'invalid_marker_type'],
+  [{ markerId: ' ' }, 'invalid_marker_id'],
+  [{ assetId: 0 }, 'invalid_asset_id'],
+  [{ name: ' ' }, 'invalid_name'],
+  [{ position: { x: Number.NaN, y: 0, z: 0 } }, 'invalid_position'],
+] as const) {
+  assert.throws(
+    () => createThreeDActionTarget({ ...validTargetInput, ...overrides }),
+    (error) => error instanceof ThreeDActionTargetError
+      && error.code === expectedCode,
+  );
+}
+validationStep('Invalid Action Target identity and position fail closed');
+
+const identityTarget = createThreeDActionTarget(validTargetInput);
+assert.equal(isMatchingThreeDActionTarget(identityTarget, {
+  markerType: 'farmbot',
+  assetId: 3,
+}), true);
+assert.equal(isMatchingThreeDActionTarget(identityTarget, {
+  markerType: 'farmbots',
+  assetId: 3,
+}), true);
+assert.equal(isMatchingThreeDActionTarget(identityTarget, {
+  markerType: 'characters',
+  assetId: 3,
+}), false);
+assert.equal(isMatchingThreeDActionTarget(identityTarget, {
+  markerType: 'farmbots',
+  assetId: 4,
+}), false);
+assert.equal(isMatchingThreeDActionTarget(identityTarget, {
+  markerType: 'traffic',
+  assetId: 3,
+}), false);
+validationStep('Target identity matching normalizes marker aliases and fails closed');
 
 for (const markerType of THREED_ACTION_TARGET_MARKER_TYPES) {
   const request = createThreeDCharacterOrchestrationRequest({

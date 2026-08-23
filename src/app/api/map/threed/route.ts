@@ -26,8 +26,22 @@ import {
   trafficBayArea511Events,
   trafficCalfireIncidents,
 } from '@/lib/schema/traffic';
-import { project, projectAssets, projectThreed, projectTraffic } from '@/lib/schema/project';
+import {
+  project,
+  projectAssets,
+  projectThreed,
+  projectThreedMarkers,
+  projectTraffic,
+} from '@/lib/schema/project';
 import { eq, and, desc, sql, inArray } from 'drizzle-orm';
+
+const MARKER_ASSET_TYPE_BY_MODULE = {
+  plantings: 'threed_plantings',
+  beds: 'threed_beds',
+  characters: 'threed_characters',
+  farmbots: 'threed_farmbots',
+  models: 'threed_models',
+} as const;
 
 // ============================================
 // GET /api/map/threed - Get ThreeD data for project map
@@ -134,6 +148,8 @@ export async function GET(request: NextRequest) {
     };
 
     const counts: Record<string, number> = {};
+    const activeThreeDMarkerAssignments = new Set<string>();
+    let savedProjectMarkers: (typeof projectThreedMarkers.$inferSelect)[] = [];
 
     // ✅ Helper function to fetch items and sanitize/normalize position columns
     const fetchItems = async (table: any, ids: number[], orderField: any, tableName: string) => {
@@ -229,6 +245,7 @@ export async function GET(request: NextRequest) {
     if (threeDModuleIds.length > 0) {
       const threeDAssets = await db
         .select({
+          moduleId: projectAssets.moduleId,
           assetType: projectAssets.assetType,
           assetId: projectAssets.assetId,
         })
@@ -247,6 +264,9 @@ export async function GET(request: NextRequest) {
       if (threeDAssets.length > 0) {
         const assetIdsByType: Record<string, number[]> = {};
         threeDAssets.forEach((asset) => {
+          activeThreeDMarkerAssignments.add(
+            `${asset.moduleId}:${asset.assetType}:${asset.assetId}`,
+          );
           if (!assetIdsByType[asset.assetType]) {
             assetIdsByType[asset.assetType] = [];
           }
@@ -280,6 +300,21 @@ export async function GET(request: NextRequest) {
           });
         }
       }
+
+      savedProjectMarkers = await db
+        .select()
+        .from(projectThreedMarkers)
+        .where(and(
+          eq(projectThreedMarkers.projectId, parsedProjectId),
+          inArray(projectThreedMarkers.threedId, threeDModuleIds),
+        ));
+
+      savedProjectMarkers = savedProjectMarkers.filter((marker) => {
+        const assetType = MARKER_ASSET_TYPE_BY_MODULE[marker.markerType];
+        return activeThreeDMarkerAssignments.has(
+          `${marker.threedId}:${assetType}:${marker.sourceAssetId}`,
+        );
+      });
     }
 
     // ✅ Fetch Traffic assets
@@ -348,6 +383,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: allData,
+      markerSnapshot: savedProjectMarkers,
       counts,
       total,
     });

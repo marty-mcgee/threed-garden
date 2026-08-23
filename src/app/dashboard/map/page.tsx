@@ -21,6 +21,7 @@ import {
   Plus,
   Filter,
   Clock,
+  Save,
   X,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
@@ -37,7 +38,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
-import { UnifiedMapView } from '@/components/map/UnifiedMapView';
+import {
+  UnifiedMapView,
+  type ProjectThreeDMarkerSnapshotProvider,
+  type ThreeDRuntimeMarkerPositionResolver,
+} from '@/components/map/UnifiedMapView';
 import {
   MapLayerConfig,
   MapViewMode,
@@ -55,7 +60,9 @@ import {
 } from '@/lib/services/threed/orchestration/interaction-core';
 import {
   THREED_GENERIC_TARGET_ACTIONS,
+  createThreeDActionTarget,
   getThreeDActionTargetCapabilities,
+  isMatchingThreeDActionTarget,
 } from '@/lib/services/threed/orchestration/action-target-core';
 import {
   getTrafficIcon,
@@ -279,7 +286,7 @@ function FarmBotMqttStatusSummary({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget }: {
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
@@ -298,6 +305,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   onSetActionTarget?: (target: ThreeDActionTarget) => void;
   onClearActionTarget?: () => void;
   onFocusActionTarget?: () => void;
+  resolveRuntimeMarkerPosition?: ThreeDRuntimeMarkerPositionResolver;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
@@ -344,6 +352,10 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   const actionTargetCapabilities = actionTarget
     ? getThreeDActionTargetCapabilities(actionTarget.type)
     : null;
+  const currentActionTargetPosition = actionTarget
+    ? resolveRuntimeMarkerPosition?.(actionTarget.type, actionTarget.id)
+      ?? actionTarget.position
+    : null;
   const isEcctrlCharacter = isCharacterMarker && d.isMovable === true;
   const characterId = Number(d.id);
   const isSelectedCharacterControlled = isEcctrlCharacter
@@ -360,7 +372,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     try {
       targetApproachPlan = planThreeDInteractionApproach({
         characterPosition: liveControlledCharacterPosition.position,
-        targetPosition: actionTarget.position,
+        targetPosition: currentActionTargetPosition ?? actionTarget.position,
       });
     } catch {
       targetApproachPlan = null;
@@ -460,7 +472,10 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         const fallbackName = `${selectedTargetCapabilities.markerType.replace(/s$/, '')} #${targetId}`;
         const targetName = selected.name || selected.label || d.plantName || d.commonName
           || fallbackName;
-        const isCurrentTarget = actionTarget?.type === targetType && actionTarget.id === targetId;
+        const isCurrentTarget = actionTarget != null && isMatchingThreeDActionTarget(
+          actionTarget,
+          { markerType: targetType, assetId: targetId },
+        );
 
         return (
           <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-1.5">
@@ -468,20 +483,22 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (!Number.isFinite(targetId) || !selected.position) return;
-                const targetPosition = {
-                  x: Number(selected.position.x),
-                  y: Number(selected.position.y),
-                  z: Number(selected.position.z),
-                };
+                if (!Number.isFinite(targetId)) return;
+                const targetPosition = resolveRuntimeMarkerPosition?.(targetType, targetId)
+                  ?? (selected.position ? {
+                    x: Number(selected.position.x),
+                    y: Number(selected.position.y),
+                    z: Number(selected.position.z),
+                  } : null);
+                if (!targetPosition) return;
                 if (!Object.values(targetPosition).every(Number.isFinite)) return;
-                onSetActionTarget({
+                onSetActionTarget(createThreeDActionTarget({
                   markerId: markerId || `${targetType}-${targetId}`,
-                  type: targetType,
-                  id: targetId,
-                  name: targetName,
+                  markerType: targetType,
+                  assetId: targetId,
+                  name: String(targetName),
                   position: targetPosition,
-                });
+                }));
               }}
               className={`block w-full text-center text-[11px] font-medium py-1.5 px-2 rounded transition-colors ${
                 isCurrentTarget
@@ -707,7 +724,9 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
                           requestId: crypto.randomUUID(),
                           characterId: charId,
                           action,
-                          target: actionTarget,
+                          target: currentActionTargetPosition
+                            ? { ...actionTarget, position: currentActionTargetPosition }
+                            : actionTarget,
                         });
                         window.dispatchEvent(new CustomEvent(
                           THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
@@ -840,6 +859,7 @@ function UnifiedMapPageInner() {
   const [isDefaultView, setIsDefaultView] = useState(!projectIdParam);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [savingProjectMarkers, setSavingProjectMarkers] = useState(false);
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
   
   // ✅ Live Data Status Indicator
@@ -866,6 +886,69 @@ function UnifiedMapPageInner() {
   const [orchestrationStatus, setOrchestrationStatus] =
     useState<ThreeDOrchestrationLifecycleState | null>(null);
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
+  const projectMarkerSnapshotProviderRef =
+    useRef<ProjectThreeDMarkerSnapshotProvider | null>(null);
+  const runtimeMarkerPositionResolverRef =
+    useRef<ThreeDRuntimeMarkerPositionResolver | null>(null);
+
+  const handleProjectMarkerSnapshotProviderChange = useCallback((
+    provider: ProjectThreeDMarkerSnapshotProvider | null,
+  ) => {
+    projectMarkerSnapshotProviderRef.current = provider;
+  }, []);
+
+  const handleRuntimeMarkerPositionResolverChange = useCallback((
+    resolver: ThreeDRuntimeMarkerPositionResolver | null,
+  ) => {
+    runtimeMarkerPositionResolverRef.current = resolver;
+  }, []);
+
+  const resolveRuntimeMarkerPosition = useCallback<ThreeDRuntimeMarkerPositionResolver>((
+    moduleType,
+    assetId,
+  ) => runtimeMarkerPositionResolverRef.current?.(moduleType, assetId) ?? null, []);
+
+  const handleSaveThreeDProject = useCallback(async () => {
+    if (!selectedProjectId || savingProjectMarkers) return;
+    const provider = projectMarkerSnapshotProviderRef.current;
+    if (!provider) {
+      showToastRef.current('ThreeD Project marker data is not ready to save', 'error');
+      return;
+    }
+
+    setSavingProjectMarkers(true);
+    try {
+      const markers = provider();
+      const response = await fetch('/api/project/threed-markers', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: Number(selectedProjectId),
+          markers,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Project save failed (${response.status})`);
+      }
+
+      setLastUpdated(new Date());
+      showToastRef.current(
+        `ThreeD Project saved (${result.data.markerCount} markers)`,
+        'success',
+      );
+    } catch (error) {
+      console.error('Failed to save ThreeD Project marker snapshot', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to save ThreeD Project',
+        'error',
+      );
+    } finally {
+      setSavingProjectMarkers(false);
+    }
+  }, [savingProjectMarkers, selectedProjectId]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -1064,9 +1147,11 @@ function UnifiedMapPageInner() {
     if (!actionTarget || loading) return;
     const targetCollection = data.threed.raw?.[actionTarget.type] ?? [];
 
-    const targetStillExists = targetCollection.some(
-      (asset: any) => Number(asset.id) === actionTarget.id,
-    );
+    const targetStillExists = targetCollection.some((asset: any) =>
+      isMatchingThreeDActionTarget(actionTarget, {
+        markerType: actionTarget.type,
+        assetId: Number(asset.id),
+      }));
 
     if (!targetStillExists) {
       setActionTarget(null);
@@ -1295,6 +1380,7 @@ function UnifiedMapPageInner() {
             harvests: (resultData.harvests || []) as any[],
             weatherLogs: (resultData.weatherLogs || []) as any[],
             models: (resultData.models || []) as any[],
+            projectThreedMarkers: (result.markerSnapshot || []) as any[],
           };
           
           const trafficTotal = Object.values(trafficRaw).reduce((sum, arr) => sum + arr.length, 0);
@@ -1550,6 +1636,19 @@ function UnifiedMapPageInner() {
               <div className="flex flex-wrap gap-1 border-t pt-2">
                 <Button
                   type="button"
+                  variant="default"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={savingProjectMarkers}
+                  onClick={handleSaveThreeDProject}
+                >
+                  {savingProjectMarkers
+                    ? <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    : <Save className="mr-1 h-3 w-3" />}
+                  Save ThreeD Project
+                </Button>
+                <Button
+                  type="button"
                   variant="outline"
                   size="sm"
                   className="h-7 text-xs"
@@ -1797,6 +1896,8 @@ function UnifiedMapPageInner() {
                       focusRequest={focusRequest}
                       actionTarget={actionTarget}
                       actionTargetFocusRequest={actionTargetFocusRequest}
+                      onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
+                      onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                     />
                   </div>
                 </div>
@@ -1857,6 +1958,8 @@ function UnifiedMapPageInner() {
                 focusRequest={focusRequest}
                 actionTarget={actionTarget}
                 actionTargetFocusRequest={actionTargetFocusRequest}
+                onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
+                onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
               />
             )}
 
@@ -1915,6 +2018,7 @@ function UnifiedMapPageInner() {
           showToast('Action target cleared', 'info');
         }}
         onFocusActionTarget={handleFocusActionTarget}
+        resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
       />
       
     </div>

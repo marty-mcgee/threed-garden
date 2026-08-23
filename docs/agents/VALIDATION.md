@@ -8,21 +8,23 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 2. Run `npm run validate:assets` when character animation assets or their manifest change.
 3. Run `npm run validate:farmbot-crypto` when FarmBot credential cryptography changes.
 4. Run `npm run typecheck`; TypeScript errors are release-blocking.
-5. Run `npm run validate:threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
-6. Run `npm run validate:threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
-7. Run `npm run validate:farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
-8. Run `npm run validate:farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
-9. Run `npm run validate:farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
-10. Run a file-scoped lint command only when an ESLint executable/configuration is available.
-11. Run targeted tests when a matching test exists.
-12. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
-13. Perform the relevant manual regression checklist for interactive ThreeD behavior.
+5. Run `npm run validate:threed-runtime-markers` when ThreeD Marker identity, registry, position resolution, or marker adapters change.
+6. Run `npm run validate:threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
+7. Run `npm run validate:threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
+8. Run `npm run validate:farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
+9. Run `npm run validate:farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
+10. Run `npm run validate:farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
+11. Run a file-scoped lint command only when an ESLint executable/configuration is available.
+12. Run targeted tests when a matching test exists.
+13. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
+14. Perform the relevant manual regression checklist for interactive ThreeD behavior.
 
 ## Commands
 
 ```bash
 git diff --check
 npm run validate:assets
+npm run validate:threed-runtime-markers
 npm run validate:threed-orchestration
 npm run validate:farmbot-crypto
 npm run validate:threed-mqtt
@@ -32,6 +34,8 @@ npm run validate:farmbot-command-policy
 npm run typecheck
 npm run build
 ```
+
+The ThreeD Runtime Marker validation is offline and provider-independent. It checks supported Sub-Module normalization, canonical identity keys, overlapping numeric IDs across modules, immutable snapshots, saved/asset and live position selection, refresh preservation, removal, atomic duplicate rejection, invalid input, and Project-scoped clearing. The registry is an in-memory mirror; database-driven Project assignments, source assets, Layers, and the explicit `project_threed_markers` saved snapshot remain the Project-session authority. The validator must not access React, Three.js, physics, APIs, persistence, MQTT, workers, FarmBot services, or physical devices.
 
 The ThreeD orchestration validation is offline and provider-independent. It checks the versioned simulation policy, safe planar stopping position, facing rotation, arrival tolerance, lifecycle transitions, target-relative forward direction on every cardinal world axis, coincident positions, the five rendered ThreeD Marker target capabilities, and rejection of invalid positions, unsupported marker types, or unsafe interaction distances. It must not access React, animation mixers, APIs, persistence, MQTT, workers, FarmBot credentials, or physical devices.
 
@@ -188,6 +192,16 @@ While that FarmBot remains targeted, confirm the character card shows only the *
 For the FarmBot parent-identity schema revision, inspect the `db:push` proposal before accepting it. Confirm `threed_farmbots.device_id` is renamed to `asset_code`, existing asset-code values are preserved, nullable `farmbot_device_id` and `broker_device_id` are added to `threed_farmbots`, and the existing snapshot-owned broker column is retained during backfill. Afterward, use **Test** and verify the parent row stores the REST ID and exactly `device_<REST ID>`. Reopen the dialog and confirm the verified identity is displayed and the Water assignment remains intact.
 
 `npm run typecheck` is the canonical full TypeScript command and expands to `tsc --noEmit --pretty false`.
+
+## v0.18.6b release-candidate checks
+
+- Run `npm run validate:threed-runtime-markers` and confirm all registry, builder, snapshot validation, and saved-position merge groups pass.
+- Run `npm run validate:threed-orchestration` and confirm all Action Target identity, capability, range, lifecycle, and direction groups pass.
+- Run `npm run typecheck` and `git diff --check`.
+- Manually confirm movement does not write `project_threed_markers`; **Save ThreeD Project** writes the complete unfiltered snapshot; refresh restores saved Ecctrl coordinates; and removed or inactive Project assignments do not restore stale markers.
+- Manually recheck selection, layers, DetailsCard, Take/Release Control, camera modes, Action Target range and generic interactions, GardenCharacter wandering, targeted Water, Pick Fruit persistence, and task-to-locomotion crossfades.
+- Confirm no marker snapshot path exposes credentials, publishes MQTT, invokes the worker, or authorizes a physical operation.
+- Run the production build from the client environment and use Vercel as the deployment build gate.
 
 `npm run validate:assets` verifies that every file in the external character animation manifest exists under `public/`. It must pass in a clean Git checkout before deployment; in CI, successful validation after `actions/checkout` also proves the required assets are tracked by Git.
 

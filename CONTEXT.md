@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.6a — ThreeD Markers Action Target Module** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; next Phase 5 step requires review** |
+| Current release candidate | **v0.18.6b — ThreeD Project Marker Snapshots** |
+| Current development milestone | **Phase 5E–5L release preparation complete** |
 | Previous checkpoint | **v0.18.5b — ThreeD Target-Relative Character Navigation** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -131,7 +131,7 @@ The harvest row and its project association are created transactionally. The ser
 
 - **Default Data Flow**: Admin → Database → API → Dashboard. Dashboard is primarily a visualization surface. Explicit authenticated interaction endpoints (for example World Actions) may perform narrowly scoped writes when the user intentionally triggers an in-world action.
 - **Publish Gate**: Every module has `isPublic`/`isActive`/`status` enforced at the API layer.
-- **Runtime Rendering**: Dashboard visualizations (map markers, 3D objects, stats) are generated at runtime from source data. There are no stored "display" records.
+- **Runtime Rendering**: Dashboard visualizations (map markers, 3D objects, stats) are generated at runtime. ThreeD Projects may explicitly save their current marker state in `project_threed_markers`; the map load path restores eligible snapshot positions into Runtime Markers and the in-memory registry without writing on every render update.
 - **Project Scoping**: Dashboard Surface is always scoped to a Project for multi-tenant access.
 
 ### Current Surface Coverage
@@ -377,6 +377,7 @@ API (/api/map/threed)
 | **v0.18.5a** | **2026-08-22** | **Production release — ThreeD character orchestration simulation with live Ecctrl range gating, target-facing animation sequencing, and client-only lifecycle status** |
 | **v0.18.5b** | **2026-08-22** | **Production release — target-relative Ecctrl FarmBot navigation, aligned target focusing, and tested client orchestration lifecycle transitions** |
 | **v0.18.6a** | **2026-08-22** | **Production release — ThreeD-owned Action Targets for Plantings, Beds, Characters, FarmBots, and Models with shared navigation, highlighting, lifecycle, and capability-filtered actions** |
+| **v0.18.6b** | **Release candidate** | **ThreeD Project Marker Snapshots — explicit owner-scoped save/restore, Runtime Marker registry integration, Ecctrl live-position capture, and current-position Action Target resolution** |
 
 ---
 
@@ -1714,3 +1715,57 @@ The August 21, 2026 production release improves the two application surfaces wit
 - The Admin header removes duplicate navigation controls, centers the same Dashboard/Admin surface selector used by the Dashboard header, and retains a smaller left-aligned search field.
 
 The user manually verified the requested Admin and Dashboard behavior, `npm run build` passed, and the GitHub-to-Vercel production deployment was confirmed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K; all production executors and MQTT publishing remain disabled.
+
+## Phase 5E — Runtime Marker Action Target construction
+
+After the v0.18.6a production checkpoint, target construction was moved from the Dashboard component into the provider-independent ThreeD orchestration service. The shared constructor normalizes supported marker aliases and validates runtime marker identity, positive asset identity, display name, and finite scene coordinates before creating an immutable Action Target. The Dashboard keeps the same visible selection behavior, while invalid or unsupported marker data now fails before it can enter orchestration state.
+
+This is a simulation-only architecture step. It changes no schema, API contract, persistence behavior, MQTT path, worker behavior, FarmBot command boundary, animation mixer path, or physical operation.
+
+## Phase 5F — Shared Action Target identity matching
+
+The DetailsCard, refreshed-project reconciliation, and ThreeD scene marker highlighting now use one provider-independent Action Target identity matcher. The matcher normalizes supported singular/plural Runtime Marker types and requires the same ThreeD marker module and positive asset identity. This removes separate component-level matching rules while preserving existing selection, refresh clearing, and persistent target highlighting behavior.
+
+This step adds no target type, action, API behavior, persistence, MQTT operation, worker capability, animation change, or physical command authority.
+
+## Phase 5G — Provider-neutral Runtime Marker registry core
+
+ThreeD now owns a dormant in-memory registry core under `src/lib/services/threed/markers`. It normalizes the five supported marker-producing Sub-Modules, derives canonical source keys and scene marker IDs, separates database-backed and live positions, resolves the current position, preserves matching live overrides during an atomic asset refresh, and fails closed for invalid, unknown, or duplicate marker identities.
+
+Database-driven, Project-assigned ThreeD data is the authority for the current Project session. Persisted marker-producing Sub-Module assets and Project assignments determine eligibility, persisted `threed_layers` records determine the available Layers, and an explicit Project save records the current marker snapshot in `project_threed_markers`. The Runtime Marker registry remains the in-memory bridge between saved Project state and visible Runtime Markers; it does not create ownership, Project assignments, or Layer records.
+
+Action Target normalization now consumes ThreeD Marker normalization rather than defining its own marker aliases. The registry has no React or scene caller yet and changes no rendered marker, layer, selection, navigation, API, schema, persistence, MQTT, worker, animation, or physical behavior. `npm run validate:threed-runtime-markers` provides offline coverage for this boundary.
+
+## Phase 5H — Provider-neutral Runtime Marker builder extraction
+
+The existing Project Sub-Module-to-Runtime Marker transformation now lives under `src/lib/services/threed/markers` instead of inside `UnifiedMapView`. The extracted builder preserves the established Planting, Bed, Character, FarmBot, and Model marker order and the current position, naming, color, icon, visibility, activity, raw-data, and metadata behavior. `UnifiedMapView` continues to memoize that output and retains all layer and UI filtering responsibilities.
+
+This extraction does not connect the Phase 5G registry, change Runtime Marker eligibility, modify a route or schema, or add persistence, MQTT, worker, animation, or physical behavior. Offline marker validation now covers both registry rules and builder compatibility.
+
+## Phase 5I — Unfiltered Runtime Marker registry synchronization
+
+`UnifiedMapView` now owns one stable in-memory registry and replaces its Project-scoped asset marker set from the complete Phase 5H builder output. Synchronization occurs independently of layer, search, active-only, and asset-type filters, and registry state is cleared on an invalid replacement or component unmount. The existing rendered `RuntimeMarker[]` remains the presentation path.
+
+No component reads the registry yet, and Ecctrl live positions remain in their established scene/page paths. This step changes no visible marker, layer, selection, Action Target position, API, schema, persistence, MQTT, worker, animation, or physical behavior. Offline validation now proves the five unfiltered builder marker types map to distinct registry identities.
+
+## Phase 5J — Transitional Ecctrl live-position registry writes
+
+Ecctrl live physics reports now also update the matching Runtime Marker registry entry using explicit ThreeD Sub-Module type and asset ID. The existing `ThreeDScene` marker-ID position map and unchanged throttled Dashboard callback remain active and retain their current ordering and behavior. The registry update returns only a success flag so frequent movement reports do not allocate unused immutable snapshots.
+
+No registry position reader is active yet. Camera focus, range calculations, target-relative movement, Action Target request snapshots, GardenCharacter behavior, APIs, schema, persistence, MQTT, workers, animations, and physical operations remain unchanged.
+
+## Saved ThreeD Project marker snapshot
+
+The Project Drizzle schema now declares `project_threed_markers`. It stores one current saved marker row per Project, ThreeD module, marker Sub-Module, and source asset, including the current saved position and presentation snapshots. This is an explicit ThreeD Project save boundary: render frames, physics position reports, MQTT messages, camera changes, and filter changes do not write to the table automatically.
+
+`GET` and `PUT /api/project/threed-markers` now provide the authenticated persistence boundary. The server derives ThreeD module identity from active Project assignments, rejects missing or ambiguous marker assignments, limits snapshot size, rejects credential-like JSON keys, and transactionally replaces the current Project marker snapshot under a Project-scoped lock.
+
+The Dashboard Project dropdown now exposes **Save ThreeD Project**. It requests the complete unfiltered Runtime Marker registry only on click, so current Ecctrl positions are saved without adding movement-triggered database writes. The map loader returns saved rows separately and only when their source assets remain actively assigned through the saved ThreeD module. The marker builder restores valid saved rows and falls back to the established source-asset path for Projects without a snapshot.
+
+## Phase 5L — On-demand Runtime Marker position resolution
+
+`UnifiedMapView` now exposes a stable on-demand reader for the registry's current position without copying registry state into React or causing render-frame writes. The Dashboard uses it when a Runtime Marker becomes an Action Target, when DetailsCard calculates interaction range, and immediately before a generic target interaction request is dispatched. A registry miss preserves the established selected-marker or Action Target position fallback.
+
+This step does not replace `ThreeDScene`'s established camera-focus position map, report autonomous GardenCharacter movement, change marker eligibility, add persistence, alter animation paths, publish MQTT, invoke a worker, or authorize physical behavior.
+
+Saved marker restoration updates both the outer Runtime Marker position and its embedded `data.positionX/Y/Z`. This preserves one saved location across static marker placement and the Ecctrl physics-body spawn path without changing the character components or their locomotion behavior.

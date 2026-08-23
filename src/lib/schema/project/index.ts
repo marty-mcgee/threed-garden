@@ -1,5 +1,5 @@
 // lib/schema/projects/index.ts
-import { pgTable, pgEnum, text, timestamp, boolean, jsonb, serial, index, uniqueIndex, integer } from 'drizzle-orm/pg-core';
+import { pgTable, pgEnum, text, timestamp, boolean, jsonb, serial, index, uniqueIndex, integer, decimal } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 // PROJECT OWNER
 import { user } from '../auth';
@@ -43,6 +43,19 @@ export const assetTypeEnum = pgEnum('asset_type', [
   'traffic_bay_area_511_events',
   'traffic_calfire_incidents',
 ]);
+
+export const projectThreeDMarkerTypeEnum = pgEnum('project_threed_marker_type', [
+  'plantings',
+  'beds',
+  'characters',
+  'farmbots',
+  'models',
+]);
+
+export const projectThreeDMarkerPositionSourceEnum = pgEnum(
+  'project_threed_marker_position_source',
+  ['asset', 'runtime'],
+);
 
 // ============================================
 // PROJECTS TABLE
@@ -140,6 +153,66 @@ export const projectAssets = pgTable('project_assets', {
 }));
 
 // ============================================
+// SAVED THREED PROJECT MARKER SNAPSHOT
+// ============================================
+
+/**
+ * Current saved Runtime Marker state for a ThreeD Project.
+ *
+ * This table is written only by an explicit Project-save workflow. It is not
+ * an animation-frame, physics, or MQTT event log. The source Sub-Module asset
+ * remains addressable through markerType + sourceAssetId, while the saved
+ * position and display payload reproduce the Project's current marker view.
+ */
+export const projectThreedMarkers = pgTable('project_threed_markers', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id')
+    .notNull()
+    .references(() => project.id, { onDelete: 'cascade' }),
+  threedId: integer('threed_id')
+    .notNull()
+    .references(() => threed.id, { onDelete: 'cascade' }),
+
+  markerType: projectThreeDMarkerTypeEnum('marker_type').notNull(),
+  sourceAssetId: integer('source_asset_id').notNull(),
+  markerId: text('marker_id').notNull(),
+  name: text('name').notNull(),
+
+  positionX: decimal('position_x', { precision: 12, scale: 3 }).notNull(),
+  positionY: decimal('position_y', { precision: 12, scale: 3 }).notNull(),
+  positionZ: decimal('position_z', { precision: 12, scale: 3 }).notNull(),
+  positionSource: projectThreeDMarkerPositionSourceEnum('position_source')
+    .notNull()
+    .default('asset'),
+
+  color: text('color').notNull(),
+  icon: text('icon').notNull(),
+  label: text('label').notNull(),
+  isVisible: boolean('is_visible').notNull().default(true),
+  isActive: boolean('is_active').notNull().default(true),
+  data: jsonb('data').notNull().default({}),
+  metadata: jsonb('metadata').notNull().default({}),
+
+  savedAt: timestamp('saved_at').notNull().defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => ({
+  projectIdIdx: index('idx_project_threed_markers_project_id')
+    .on(table.projectId),
+  threedIdIdx: index('idx_project_threed_markers_threed_id')
+    .on(table.threedId),
+  ownerProjectIdx: index('idx_project_threed_markers_owner_project')
+    .on(table.userId, table.projectId),
+  uniqueSourceMarker: uniqueIndex('idx_project_threed_markers_unique_source')
+    .on(table.projectId, table.threedId, table.markerType, table.sourceAssetId),
+  uniqueRuntimeMarker: uniqueIndex('idx_project_threed_markers_unique_runtime')
+    .on(table.projectId, table.markerId),
+}));
+
+// ============================================
 // RELATIONS
 // ============================================
 
@@ -148,6 +221,7 @@ export const projectRelations = relations(project, ({ many }) => ({
   projectTraffics: many(projectTraffic),
   projectMusics: many(projectMusic),
   projectAssets: many(projectAssets),
+  projectThreedMarkers: many(projectThreedMarkers),
 }));
 
 export const projectAssetsRelations = relations(projectAssets, ({ one }) => ({
@@ -160,3 +234,21 @@ export const projectAssetsRelations = relations(projectAssets, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+export const projectThreedMarkersRelations = relations(
+  projectThreedMarkers,
+  ({ one }) => ({
+    project: one(project, {
+      fields: [projectThreedMarkers.projectId],
+      references: [project.id],
+    }),
+    threed: one(threed, {
+      fields: [projectThreedMarkers.threedId],
+      references: [threed.id],
+    }),
+    user: one(user, {
+      fields: [projectThreedMarkers.userId],
+      references: [user.id],
+    }),
+  }),
+);

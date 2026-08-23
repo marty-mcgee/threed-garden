@@ -62,19 +62,42 @@ export interface RuntimeMarker {
   title?: string;
 }
 
-/** Client-side identity and position for a supported ThreeD world-action target. */
-export type ThreeDActionTargetType =
+/** Database row shape returned for an explicitly saved ThreeD Project marker. */
+export interface ProjectThreeDMarkerRecord {
+  markerType: string;
+  sourceAssetId: number;
+  markerId: string;
+  name: string;
+  positionX: string | number;
+  positionY: string | number;
+  positionZ: string | number;
+  positionSource: 'asset' | 'runtime';
+  color: string;
+  icon: string;
+  label: string;
+  isVisible: boolean;
+  isActive: boolean;
+  data: Record<string, unknown>;
+  metadata: Record<string, unknown>;
+  savedAt?: string | Date;
+}
+
+/** Persisted Sub-Module identity for a supported ThreeD Runtime Marker. */
+export type ThreeDRuntimeMarkerModuleType =
   | 'plantings'
   | 'beds'
   | 'characters'
   | 'farmbots'
   | 'models';
 
+/** Client-side identity and position for a supported ThreeD world-action target. */
+export type ThreeDActionTargetType = ThreeDRuntimeMarkerModuleType;
+
 export interface ThreeDActionTarget {
   /** Runtime marker identity, for example `plantings-12`. */
   markerId: string;
   type: ThreeDActionTargetType;
-  /** Database identity used by the World Actions endpoint. */
+  /** Source asset identity within the marker's ThreeD Sub-Module. */
   id: number;
   name: string;
   position: { x: number; y: number; z: number };
@@ -137,6 +160,7 @@ export interface UnifiedMapData {
       tasks: any[];
       harvests: any[];
       weatherLogs: any[];
+      projectThreedMarkers?: ProjectThreeDMarkerRecord[];
     } | null;
     total: number;
     plantsCount: number;

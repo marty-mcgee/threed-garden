@@ -1,30 +1,17 @@
-import type { ThreeDActionTargetType } from '../../../types/map';
+import type {
+  ThreeDActionTarget,
+  ThreeDActionTargetType,
+} from '../../../types/map';
+import {
+  THREED_RUNTIME_MARKER_MODULE_TYPES,
+  normalizeThreeDRuntimeMarkerModuleType,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../markers/runtime-marker-core.ts';
 
-export const THREED_ACTION_TARGET_MARKER_TYPES = [
-  'plantings',
-  'beds',
-  'characters',
-  'farmbots',
-  'models',
-] as const satisfies readonly ThreeDActionTargetType[];
+export const THREED_ACTION_TARGET_MARKER_TYPES =
+  THREED_RUNTIME_MARKER_MODULE_TYPES;
 
 export type ThreeDActionTargetMarkerType = ThreeDActionTargetType;
-
-const THREED_ACTION_TARGET_MARKER_TYPE_ALIASES: Record<
-  string,
-  ThreeDActionTargetMarkerType
-> = {
-  planting: 'plantings',
-  plantings: 'plantings',
-  bed: 'beds',
-  beds: 'beds',
-  character: 'characters',
-  characters: 'characters',
-  farmbot: 'farmbots',
-  farmbots: 'farmbots',
-  model: 'models',
-  models: 'models',
-};
 
 export const THREED_GENERIC_TARGET_ACTIONS = [
   'point',
@@ -58,6 +45,36 @@ export interface ThreeDActionTargetCapabilities {
   moduleActions: readonly ThreeDPlantingTargetAction[];
 }
 
+export type ThreeDActionTargetErrorCode =
+  | 'invalid_marker_type'
+  | 'invalid_marker_id'
+  | 'invalid_asset_id'
+  | 'invalid_name'
+  | 'invalid_position';
+
+export class ThreeDActionTargetError extends Error {
+  readonly code: ThreeDActionTargetErrorCode;
+
+  constructor(code: ThreeDActionTargetErrorCode) {
+    super(code);
+    this.name = 'ThreeDActionTargetError';
+    this.code = code;
+  }
+}
+
+export interface CreateThreeDActionTargetInput {
+  markerId: string;
+  markerType: string;
+  assetId: number;
+  name: string;
+  position: { x: number; y: number; z: number };
+}
+
+export interface ThreeDActionTargetIdentityCandidate {
+  markerType: string;
+  assetId: number;
+}
+
 export function isThreeDActionTargetMarkerType(
   value: string,
 ): value is ThreeDActionTargetMarkerType {
@@ -69,9 +86,70 @@ export function isThreeDActionTargetMarkerType(
 export function normalizeThreeDActionTargetMarkerType(
   value: string,
 ): ThreeDActionTargetMarkerType | null {
-  return THREED_ACTION_TARGET_MARKER_TYPE_ALIASES[
-    value.trim().toLowerCase()
-  ] ?? null;
+  return normalizeThreeDRuntimeMarkerModuleType(value);
+}
+
+/**
+ * Creates the shared client-side identity used when a Runtime Marker becomes
+ * an Action Target. Provider commands and persistence remain outside this
+ * simulation-only boundary.
+ */
+export function createThreeDActionTarget(
+  input: CreateThreeDActionTargetInput,
+): ThreeDActionTarget {
+  const markerType = normalizeThreeDActionTargetMarkerType(input.markerType);
+  if (!markerType) {
+    throw new ThreeDActionTargetError('invalid_marker_type');
+  }
+
+  const markerId = input.markerId.trim();
+  if (!markerId) {
+    throw new ThreeDActionTargetError('invalid_marker_id');
+  }
+
+  if (!Number.isSafeInteger(input.assetId) || input.assetId <= 0) {
+    throw new ThreeDActionTargetError('invalid_asset_id');
+  }
+
+  const name = input.name.trim();
+  if (!name) {
+    throw new ThreeDActionTargetError('invalid_name');
+  }
+
+  const position = {
+    x: input.position.x,
+    y: input.position.y,
+    z: input.position.z,
+  };
+  if (!Object.values(position).every(Number.isFinite)) {
+    throw new ThreeDActionTargetError('invalid_position');
+  }
+
+  return Object.freeze({
+    markerId,
+    type: markerType,
+    id: input.assetId,
+    name,
+    position: Object.freeze(position),
+  });
+}
+
+/** Matches refreshed or rendered marker identity to an existing target. */
+export function isMatchingThreeDActionTarget(
+  target: ThreeDActionTarget,
+  candidate: ThreeDActionTargetIdentityCandidate,
+): boolean {
+  const markerType = normalizeThreeDActionTargetMarkerType(candidate.markerType);
+  if (
+    !markerType
+    || markerType !== target.type
+    || !Number.isSafeInteger(candidate.assetId)
+    || candidate.assetId <= 0
+  ) {
+    return false;
+  }
+
+  return candidate.assetId === target.id;
 }
 
 /**

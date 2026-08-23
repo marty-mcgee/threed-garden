@@ -22,6 +22,7 @@ import { ModelMarker3D } from '@/components/threed/markers/ModelMarker3D';
 import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
 import type { ThreeDActionTarget } from '@/lib/types/map';
 import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orchestration/interaction-core';
+import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestration/action-target-core';
 
 interface ThreeDSceneProps {
   incidents: any[];
@@ -38,6 +39,12 @@ interface ThreeDSceneProps {
   controlledCharacterId?: number | null;
   /** Called when an ecctrl character's control state changes, with its current world position */
   onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
+  /** Sends explicit source identity and live physics position to the Runtime Marker mirror. */
+  onRuntimeMarkerPositionChange?: (
+    moduleType: string,
+    assetId: number,
+    pos: { x: number; y: number; z: number },
+  ) => void;
   /** Override camera view mode (selected by user in DetailsCard) */
   cameraMode?: CameraViewMode;
   /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
@@ -400,10 +407,15 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
   const handleCharacterControlChange = useCallback(
     (position: { x: number; y: number; z: number }) => {
       if (onControlChange) {
-        onControlChange(marker.id, position);
+        onControlChange(
+          marker.id,
+          marker.type,
+          Number(marker.data?.id),
+          position,
+        );
       }
     },
-    [marker.id, onControlChange]
+    [marker.data?.id, marker.id, marker.type, onControlChange]
   );
 
   // ✅ v0.15.0/15.2: Render rich markers for types that have dedicated components
@@ -703,6 +715,7 @@ export function ThreeDScene({
   projectId,
   controlledCharacterId,
   onControlChange,
+  onRuntimeMarkerPositionChange,
   cameraMode,
   focusRequest = 0,
   actionTarget,
@@ -892,10 +905,16 @@ export function ThreeDScene({
   // v0.16.2-beta: Record an ecctrl character's live physics position and forward it up
   // so the parent can keep the DetailsCard coordinates in sync on control changes.
   // useCallback keeps the identity stable so EcctrlCharacter's effect doesn't re-fire endlessly.
-  const storeLivePosition = useCallback((markerId: string, pos: { x: number; y: number; z: number }) => {
+  const storeLivePosition = useCallback((
+    markerId: string,
+    moduleType: string,
+    assetId: number,
+    pos: { x: number; y: number; z: number },
+  ) => {
     livePositionsRef.current.set(markerId, pos);
-    if (onControlChange) onControlChange(markerId, pos);
-  }, [onControlChange]);
+    onRuntimeMarkerPositionChange?.(moduleType, assetId, pos);
+    onControlChange?.(markerId, pos);
+  }, [onControlChange, onRuntimeMarkerPositionChange]);
 
   // ✅ Enhanced marker click handler
   const handleMarkerClick = (marker: any) => {
@@ -1414,15 +1433,10 @@ export function ThreeDScene({
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
               isActionTarget={
                 actionTarget != null &&
-                (
-                  marker.id === actionTarget.markerId ||
-                  (
-                    (
-                      actionTarget.type === marker.type
-                    ) &&
-                    Number(marker.data?.id) === actionTarget.id
-                  )
-                )
+                isMatchingThreeDActionTarget(actionTarget, {
+                  markerType: String(marker.type ?? ''),
+                  assetId: Number(marker.data?.id),
+                })
               }
               actionTarget={actionTarget}
               controlledCharacterId={controlledCharacterId}

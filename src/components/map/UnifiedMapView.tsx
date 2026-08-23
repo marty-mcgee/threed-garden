@@ -1,11 +1,23 @@
 // components/map/UnifiedMapView.tsx
 'use client';
 
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { Loader2 } from 'lucide-react';
 import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
 import { LeafletMap } from '@/components/map/LeafletMap';
+import {
+  buildThreeDRuntimeMarkers,
+  createThreeDRuntimeMarkerRegistrations,
+} from '@/lib/services/threed/markers/runtime-marker-builder';
+import { ThreeDRuntimeMarkerRegistry } from '@/lib/services/threed/markers/runtime-marker-core';
+import type { ProjectThreeDMarkerSnapshotInput } from '@/lib/services/threed/markers/project-marker-snapshot-core';
+
+export type ProjectThreeDMarkerSnapshotProvider = () => ProjectThreeDMarkerSnapshotInput[];
+export type ThreeDRuntimeMarkerPositionResolver = (
+  moduleType: string,
+  assetId: number,
+) => { x: number; y: number; z: number } | null;
 
 // ✅ Dynamically import ThreeD Scene (3D) to avoid SSR issues
 const ThreeDScene = dynamic(
@@ -47,20 +59,15 @@ interface UnifiedMapViewProps {
   actionTarget?: ThreeDActionTarget | null;
   /** Increments to request camera focus on the current action target. */
   actionTargetFocusRequest?: number;
+  /** Registers an on-demand provider for an explicit ThreeD Project save. */
+  onProjectMarkerSnapshotProviderChange?: (
+    provider: ProjectThreeDMarkerSnapshotProvider | null,
+  ) => void;
+  /** Registers an on-demand reader for a marker's current registry position. */
+  onRuntimeMarkerPositionResolverChange?: (
+    resolver: ThreeDRuntimeMarkerPositionResolver | null,
+  ) => void;
 }
-
-const MARKER_CONFIG: Record<string, { color: string; icon: string; label: string }> = {
-  planting: { color: '#22c55e', icon: '🌱', label: 'Planting' },
-  plantings: { color: '#22c55e', icon: '🌱', label: 'Planting' },
-  bed: { color: '#f59e0b', icon: '🧑‍🌾', label: 'Bed' },
-  beds: { color: '#f59e0b', icon: '🧑‍🌾', label: 'Bed' },
-  character: { color: '#8b5cf6', icon: '🧚', label: 'Character' },
-  characters: { color: '#8b5cf6', icon: '🧚', label: 'Character' },
-  farmbot: { color: '#64748b', icon: '🤖', label: 'FarmBot' },
-  farmbots: { color: '#64748b', icon: '🤖', label: 'FarmBot' },
-  model: { color: '#06b6d4', icon: '🧊', label: 'Model' },
-  models: { color: '#06b6d4', icon: '🧊', label: 'Model' },
-};
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
   return 'source' in m;
@@ -87,85 +94,105 @@ export function UnifiedMapView({
   focusRequest = 0,
   actionTarget,
   actionTargetFocusRequest = 0,
+  onProjectMarkerSnapshotProviderChange,
+  onRuntimeMarkerPositionResolverChange,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const runtimeMarkerRegistryRef = useRef<ThreeDRuntimeMarkerRegistry | null>(null);
+  if (!runtimeMarkerRegistryRef.current) {
+    runtimeMarkerRegistryRef.current = new ThreeDRuntimeMarkerRegistry();
+  }
   const [autoRotate, setAutoRotate] = useState(false);
 
-  const runtimeMarkers = useMemo((): RuntimeMarker[] => {
-    if (!data.threed.raw) return [];
-    const now = new Date().toISOString();
-    const markers: RuntimeMarker[] = [];
+  const runtimeMarkers = useMemo(
+    () => buildThreeDRuntimeMarkers(data.threed.raw),
+    [data.threed.raw],
+  );
 
-    const extractPosition = (item: any): { x: number; y: number; z: number } | null => {
-      // ✅ Prefer flat DB column names (positionX, positionY, positionZ) over nested JSON position.x/y/z
-      // DB rows return decimal columns as strings, so parse them
-      const rawX = item.positionX ?? item.position?.x ?? item.latitude ?? item.lat ?? null;
-      const rawY = item.positionY ?? item.position?.y ?? item.height ?? null;
-      const rawZ = item.positionZ ?? item.position?.z ?? item.longitude ?? item.lng ?? null;
-      if (rawX === null && rawY === null && rawZ === null) return null;
-      const x = typeof rawX === 'string' ? parseFloat(rawX) : (rawX ?? 0);
-      const y = typeof rawY === 'string' ? parseFloat(rawY) : (rawY ?? 0);
-      const z = typeof rawZ === 'string' ? parseFloat(rawZ) : (rawZ ?? 0);
-      // Only skip if ALL three are NaN — zero is a valid coordinate (e.g. ground marker at origin or y=0)
-      if (isNaN(x) && isNaN(y) && isNaN(z)) return null;
-      // Ensure NaN defaults to 0 for partially missing axes
-      return { x: isNaN(x) ? 0 : x, y: isNaN(y) ? 0 : y, z: isNaN(z) ? 0 : z };
-    };
-
-    const extractName = (item: any, type: string) => {
-      if (type === 'plantings' && item.plantId) {
-        const plant = data.threed.raw?.plants?.find((p: any) => p.id === item.plantId);
-        if (plant) return plant.commonName || plant.name || `${type} #${item.id}`;
-      }
-      return item.name || item.commonName || item.modelName || item.title || item.plantId || `${type} #${item.id}`;
-    };
-
-    // ✅ Helper to add a marker only when position is valid
-    const pushIfPositioned = (
-      id: string, name: string, type: string, item: any,
-      config: { color: string; icon: string; label: string }
-    ) => {
-      const position = extractPosition(item);
-      if (!position) return;
-      markers.push({
-        id, name, type, position,
-        color: item.color || config.color,
-        icon: config.icon, label: name,
-        isVisible: item.isVisible ?? true,
-        isActive: item.isActive ?? true,
-        data: { id: item.id, description: item.notes || item.description || '', ...item },
-        metadata: { source: 'sub-module' as const, generatedAt: now },
-      });
-    };
-
-    // Plantings
-    if (data.threed.raw.plantings?.length > 0) {
-      data.threed.raw.plantings.forEach((item: any) => {
-        pushIfPositioned(
-          `plantings-${item.id}`,
-          extractName(item, 'plantings'),
-          'plantings', item,
-          MARKER_CONFIG.plantings
-        );
+  // Keep the complete Project-scoped marker set in the registry. Layer and UI
+  // filters below remain presentation-only and do not remove marker identity.
+  useEffect(() => {
+    const registry = runtimeMarkerRegistryRef.current;
+    if (!registry) return;
+    try {
+      registry.replaceAssetMarkers(
+        createThreeDRuntimeMarkerRegistrations(runtimeMarkers),
+      );
+    } catch (error) {
+      registry.clear();
+      console.error('Failed to synchronize ThreeD Runtime Marker registry', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
       });
     }
+  }, [runtimeMarkers]);
 
-    const raw = data.threed.raw as Record<string, any[]>;
-    const typesToProcess = ['beds', 'characters', 'farmbots', 'models'];
-    typesToProcess.forEach((type) => {
-      if (!raw[type]) return;
-      raw[type].forEach((item: any) => {
-        const config = MARKER_CONFIG[type] || MARKER_CONFIG.planting;
-        pushIfPositioned(
-          `${type}-${item.id}`,
-          extractName(item, type),
-          type, item, config
-        );
-      });
+  useEffect(() => () => {
+    runtimeMarkerRegistryRef.current?.clear();
+  }, []);
+
+  const handleRuntimeMarkerPositionChange = useCallback((
+    moduleType: string,
+    assetId: number,
+    position: { x: number; y: number; z: number },
+  ) => {
+    runtimeMarkerRegistryRef.current?.updateLivePosition(
+      moduleType,
+      assetId,
+      position,
+    );
+  }, []);
+
+  const getProjectMarkerSnapshot = useCallback((): ProjectThreeDMarkerSnapshotInput[] => {
+    const registry = runtimeMarkerRegistryRef.current;
+    if (!registry) return [];
+
+    return runtimeMarkers.map((marker) => {
+      const assetId = Number(marker.data?.id);
+      const registered = registry.resolve(marker.type, assetId);
+      if (!registered) {
+        throw new Error('Runtime Marker registry is not synchronized');
+      }
+      return {
+        moduleType: registered.identity.moduleType,
+        assetId: registered.identity.assetId,
+        name: marker.name,
+        position: registered.currentPosition,
+        positionSource: registered.positionSource === 'runtime'
+          || marker.metadata?.positionSource === 'runtime'
+          ? 'runtime'
+          : 'asset',
+        color: marker.color,
+        icon: marker.icon,
+        label: marker.label,
+        isVisible: marker.isVisible,
+        isActive: marker.isActive,
+        data: marker.data,
+        metadata: marker.metadata,
+      };
     });
+  }, [runtimeMarkers]);
 
-    return markers;
-  }, [data.threed.raw]);
+  const resolveRuntimeMarkerPosition = useCallback<ThreeDRuntimeMarkerPositionResolver>((
+    moduleType,
+    assetId,
+  ) => {
+    const position = runtimeMarkerRegistryRef.current
+      ?.resolve(moduleType, assetId)
+      ?.currentPosition;
+    return position ? { ...position } : null;
+  }, []);
+
+  useEffect(() => {
+    if (!onProjectMarkerSnapshotProviderChange) return;
+    onProjectMarkerSnapshotProviderChange(getProjectMarkerSnapshot);
+    return () => onProjectMarkerSnapshotProviderChange(null);
+  }, [getProjectMarkerSnapshot, onProjectMarkerSnapshotProviderChange]);
+
+  useEffect(() => {
+    if (!onRuntimeMarkerPositionResolverChange) return;
+    onRuntimeMarkerPositionResolverChange(resolveRuntimeMarkerPosition);
+    return () => onRuntimeMarkerPositionResolverChange(null);
+  }, [onRuntimeMarkerPositionResolverChange, resolveRuntimeMarkerPosition]);
 
   const spreadOverlappingMarkers = (markers: RuntimeMarker[], spreadDistance: number = 1.5): RuntimeMarker[] => {
     if (markers.length === 0) return markers;
@@ -407,6 +434,7 @@ export function UnifiedMapView({
         onAutoRotateToggle={() => setAutoRotate(!autoRotate)}
         controlledCharacterId={controlledCharacterId}
         onControlChange={onControlChange}
+        onRuntimeMarkerPositionChange={handleRuntimeMarkerPositionChange}
         cameraMode={cameraMode as any}
         focusRequest={focusRequest}
         actionTarget={actionTarget}

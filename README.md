@@ -8,6 +8,8 @@ This is a **Dual-Surface Platform**:
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
 > **Current production version:** `v0.18.6a "ThreeD Markers Action Target Module"`
+>
+> **Prepared release candidate:** `v0.18.6b "ThreeD Project Marker Snapshots"`
 
 ## Documentation
 
