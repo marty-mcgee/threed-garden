@@ -38,11 +38,11 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.6a "ThreeD Markers Action Target Module".
+Current production version: v0.18.6b "ThreeD Project Marker Snapshots".
 
-Current release candidate: v0.18.6b "ThreeD Project Marker Snapshots".
+No later release candidate is currently designated.
 
-v0.18.6a is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
+v0.18.6b is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
 The v0.18.5a release is simulation-only. It adds no database schema, FarmBot command delivery, MQTT publishing, peripheral operation, or physical-device behavior.
 
@@ -50,7 +50,7 @@ The v0.18.5b release centralizes the client-only orchestration lifecycle and mak
 
 The v0.18.6a release establishes ThreeD ownership of marker targeting. Plantings, Beds, Characters, FarmBots, and Models share target identity, focus, highlighting, navigation, lifecycle, and generic semantic interactions. Module-specific effects remain separately gated; the release adds no schema, MQTT publishing, worker command, or physical-device behavior.
 
-The v0.18.6b release candidate adds explicit owner-scoped ThreeD Project marker snapshots, manual Save and eligible snapshot restoration, Runtime Marker registry synchronization, Ecctrl live-position capture, and on-demand Action Target position resolution. It does not write on render or movement, replace GardenCharacter/Ecctrl runtime separation, publish MQTT, invoke a worker, or authorize physical-device behavior.
+The v0.18.6b release adds explicit owner-scoped ThreeD Project marker snapshots, manual Save and eligible snapshot restoration, Runtime Marker registry synchronization, Ecctrl live-position capture, and on-demand Action Target position resolution. It does not write on render or movement, replace GardenCharacter/Ecctrl runtime separation, publish MQTT, invoke a worker, or authorize physical-device behavior.
 
 Production character animations are Git-tracked under `public/assets/animations`. When the external animation manifest or those files change, run `npm run validate:assets`. The GitHub workflow treats missing production animation assets and TypeScript diagnostics as blocking failures. Vercel remains the production-build gate.
 
@@ -68,7 +68,7 @@ as release-blocking.
 
 ## ThreeD FarmBot Integration Plan rules
 
-- Current production checkpoint: v0.18.6a "ThreeD Markers Action Target Module". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+- Current production checkpoint: v0.18.6b "ThreeD Project Marker Snapshots". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 - ThreeD owns the provider-neutral MQTT service. FarmBot and future integrations such as OpenFarm may depend on ThreeD services; `src/lib/services/threed/mqtt` must never import provider adapters.
 - Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
 - FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.

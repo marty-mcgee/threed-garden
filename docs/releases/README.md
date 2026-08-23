@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.18.6b — ThreeD Project Marker Snapshots](v0.18.6b.md)
 - [v0.18.6a — ThreeD Markers Action Target Module](v0.18.6a.md)
 - [v0.18.5b — ThreeD Target-Relative Character Navigation](v0.18.5b.md)
 - [v0.18.5a — ThreeD Character Orchestration Simulation](v0.18.5a.md)

@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture agreed after the v0.18.6a **ThreeD Markers Action Target Module** production checkpoint. Phase 5E through Phase 5L form the prepared v0.18.6b **ThreeD Project Marker Snapshots** release candidate.
+This document records the marker architecture through the v0.18.6b **ThreeD Project Marker Snapshots** production checkpoint. Phase 5E through Phase 5L are included in that release.
 
 ## Hierarchy and terminology
 

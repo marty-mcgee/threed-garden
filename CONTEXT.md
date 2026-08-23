@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.6a — ThreeD Markers Action Target Module** |
-| Current release candidate | **v0.18.6b — ThreeD Project Marker Snapshots** |
-| Current development milestone | **Phase 5E–5L release preparation complete** |
-| Previous checkpoint | **v0.18.5b — ThreeD Target-Relative Character Navigation** |
+| Current stable version | **v0.18.6b — ThreeD Project Marker Snapshots** |
+| Current release candidate | **None designated** |
+| Current development milestone | **Post-release checkpoint; next Phase 5 step requires review** |
+| Previous checkpoint | **v0.18.6a — ThreeD Markers Action Target Module** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -377,7 +377,7 @@ API (/api/map/threed)
 | **v0.18.5a** | **2026-08-22** | **Production release — ThreeD character orchestration simulation with live Ecctrl range gating, target-facing animation sequencing, and client-only lifecycle status** |
 | **v0.18.5b** | **2026-08-22** | **Production release — target-relative Ecctrl FarmBot navigation, aligned target focusing, and tested client orchestration lifecycle transitions** |
 | **v0.18.6a** | **2026-08-22** | **Production release — ThreeD-owned Action Targets for Plantings, Beds, Characters, FarmBots, and Models with shared navigation, highlighting, lifecycle, and capability-filtered actions** |
-| **v0.18.6b** | **Release candidate** | **ThreeD Project Marker Snapshots — explicit owner-scoped save/restore, Runtime Marker registry integration, Ecctrl live-position capture, and current-position Action Target resolution** |
+| **v0.18.6b** | **2026-08-22** | **Production release — explicit owner-scoped ThreeD Project marker save/restore, Runtime Marker registry integration, Ecctrl live-position capture, and current-position Action Target resolution** |
 
 ---
 
