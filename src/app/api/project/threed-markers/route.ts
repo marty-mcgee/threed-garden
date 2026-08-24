@@ -13,12 +13,20 @@ import {
   threed,
   threedBeds,
   threedModels,
+  threedPlantings,
+  threedPlants,
 } from '@/lib/schema/threed';
 import {
   parseCreateProjectBedPlacement,
   parseUpdateProjectBedPlacement,
   ProjectBedPlacementInputError,
 } from '@/lib/services/threed/beds/project-bed-placement-core';
+import {
+  calculateProjectPlantingVisualPositions,
+  parseCreateProjectPlantingPlacement,
+  parseUpdateProjectPlantingPlacement,
+  ProjectPlantingPlacementInputError,
+} from '@/lib/services/threed/plantings/project-planting-placement-core';
 import {
   parseProjectThreeDMarkerSnapshot,
   ProjectMarkerSnapshotError,
@@ -105,6 +113,41 @@ async function readEligibleModel(userId: string, modelId: number) {
     ))
     .limit(1);
   return model ?? null;
+}
+
+async function readOwnedActivePlant(userId: string, plantId: number) {
+  const [plant] = await db.select().from(threedPlants).where(and(
+    eq(threedPlants.id, plantId),
+    eq(threedPlants.userId, userId),
+    eq(threedPlants.isActive, true),
+    eq(threedPlants.status, 'active'),
+  )).limit(1);
+  return plant ?? null;
+}
+
+async function requireAssignedBed(
+  userId: string,
+  projectId: number,
+  threedId: number,
+  bedId: number,
+) {
+  const [assigned] = await db.select({ id: projectAssets.id })
+    .from(projectAssets)
+    .innerJoin(threedBeds, and(
+      eq(threedBeds.id, projectAssets.assetId),
+      eq(threedBeds.userId, userId),
+      eq(threedBeds.isActive, true),
+    ))
+    .where(and(
+      eq(projectAssets.userId, userId),
+      eq(projectAssets.projectId, projectId),
+      eq(projectAssets.moduleId, threedId),
+      eq(projectAssets.moduleType, 'threed'),
+      eq(projectAssets.assetType, 'threed_beds'),
+      eq(projectAssets.assetId, bedId),
+      eq(projectAssets.isActive, true),
+    )).limit(1);
+  return assigned ?? null;
 }
 
 async function readOwnedModelMarker(userId: string, id: number) {
@@ -405,6 +448,132 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, data: created }, { status: 201 });
     }
 
+    if (
+      typeof body === 'object'
+      && body !== null
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).markerType === 'plantings'
+    ) {
+      const input = parseCreateProjectPlantingPlacement(body);
+      const userId = session.user.id;
+      if (!await requireOwnedProject(userId, input.projectId)) {
+        return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+      }
+      if (!await requireActiveThreeDAssignment(userId, input.projectId, input.threedId)) {
+        return NextResponse.json(
+          { success: false, error: 'Active ThreeD Project assignment not found' },
+          { status: 404 },
+        );
+      }
+      const plant = await readOwnedActivePlant(userId, input.plantId);
+      if (!plant) {
+        return NextResponse.json({ success: false, error: 'Plant not found' }, { status: 404 });
+      }
+      const assignedBed = input.bedId
+        ? await requireAssignedBed(userId, input.projectId, input.threedId, input.bedId)
+        : null;
+      if (input.bedId && !assignedBed) {
+        return NextResponse.json(
+          { success: false, error: 'Assigned Project Bed not found' },
+          { status: 404 },
+        );
+      }
+
+      const model = plant.modelId
+        ? (await db.select().from(threedModels)
+            .where(and(eq(threedModels.id, plant.modelId), eq(threedModels.isActive, true)))
+            .limit(1))[0] ?? null
+        : null;
+
+      await ensureTableSequence('threed_plantings');
+      const created = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${input.projectId}`}))`,
+        );
+        const offsets = calculateProjectPlantingVisualPositions(
+          input.quantity,
+          input.spacingInches,
+        );
+        const positions = offsets.map((offset) => ({
+          x: input.positionX + offset.x,
+          y: input.positionY,
+          z: input.positionZ + offset.z,
+        }));
+        const plantings = [];
+        const markers = [];
+        for (const position of positions) {
+          const positionX = position.x;
+          const positionY = position.y;
+          const positionZ = position.z;
+          const [planting] = await tx.insert(threedPlantings).values({
+            userId,
+            plantingId: `PLANTING-${crypto.randomUUID()}`,
+            plantId: input.plantId,
+            bedId: input.bedId,
+            customModelId: null,
+            modelScale: input.modelScale.toFixed(2),
+            modelOffset: { x: 0, y: 0, z: 0 },
+            quantity: 1,
+            spacingInches: input.spacingInches,
+            positionX: positionX.toFixed(2),
+            positionY: positionY.toFixed(2),
+            positionZ: positionZ.toFixed(2),
+            plantedDate: new Date().toISOString(),
+            isActive: true,
+            status: 'planted',
+            growthStage: 'seed',
+            health: 'good',
+          }).returning();
+
+          await tx.insert(projectAssets).values({
+            userId,
+            projectId: input.projectId,
+            moduleId: input.threedId,
+            moduleType: 'threed',
+            assetType: 'threed_plantings',
+            assetId: planting.id,
+            config: {},
+            isActive: true,
+          });
+
+          const markerData = {
+            ...planting,
+            quantity: 1,
+            plantName: plant.commonName,
+            commonName: plant.commonName,
+            scientificName: plant.scientificName,
+            plant,
+            model,
+          };
+          const [marker] = await tx.insert(projectThreedMarkers).values({
+            userId,
+            projectId: input.projectId,
+            threedId: input.threedId,
+            markerType: 'plantings',
+            sourceAssetId: planting.id,
+            markerId: `plantings-${planting.id}`,
+            name: plant.commonName,
+            positionX: positionX.toFixed(3),
+            positionY: positionY.toFixed(3),
+            positionZ: positionZ.toFixed(3),
+            positionSource: 'asset',
+            color: '#22c55e',
+            icon: '🌱',
+            label: plant.commonName,
+            isVisible: true,
+            isActive: true,
+            data: markerData,
+            metadata: { source: 'project-marker' },
+          }).returning();
+          plantings.push(planting);
+          markers.push(marker);
+        }
+        return { plantings, markers };
+      });
+
+      return NextResponse.json({ success: true, data: created }, { status: 201 });
+    }
+
     const input = parseCreateProjectModelInstance(body);
     const userId = session.user.id;
     if (!await requireOwnedProject(userId, input.projectId)) {
@@ -488,6 +657,7 @@ export async function POST(request: NextRequest) {
     if (
       error instanceof ProjectModelInstanceInputError
       || error instanceof ProjectBedPlacementInputError
+      || error instanceof ProjectPlantingPlacementInputError
     ) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
@@ -542,6 +712,30 @@ async function updateProjectMarker(request: NextRequest, id: number) {
       return NextResponse.json({ success: true, data: updated });
     }
 
+    if (marker.markerType === 'plantings') {
+      const update = parseUpdateProjectPlantingPlacement(body);
+      const [updated] = await db.update(projectThreedMarkers).set({
+        positionX: update.positionX.toFixed(3),
+        positionY: update.positionY.toFixed(3),
+        positionZ: update.positionZ.toFixed(3),
+        positionSource: 'asset',
+        data: {
+          ...currentData,
+          quantity: 1,
+          modelScale: update.modelScale,
+          positionX: update.positionX,
+          positionY: update.positionY,
+          positionZ: update.positionZ,
+        },
+        updatedAt: new Date(),
+      }).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, session.user.id),
+        eq(projectThreedMarkers.markerType, 'plantings'),
+      )).returning();
+      return NextResponse.json({ success: true, data: updated });
+    }
+
     if (marker.markerType !== 'models') {
       return NextResponse.json(
         { success: false, error: 'Marker type is not editable here' },
@@ -579,6 +773,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     if (
       error instanceof ProjectModelInstanceInputError
       || error instanceof ProjectBedPlacementInputError
+      || error instanceof ProjectPlantingPlacementInputError
     ) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
@@ -610,16 +805,47 @@ export async function DELETE(request: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
+  const userId = session.user.id;
   const id = parsePositiveId(new URL(request.url).searchParams.get('id'));
   if (!id) {
     return NextResponse.json({ success: false, error: 'Invalid marker ID' }, { status: 400 });
   }
-  if (!await readOwnedModelMarker(session.user.id, id)) {
+  const marker = await readOwnedProjectMarker(userId, id);
+  if (!marker || (marker.markerType !== 'models' && marker.markerType !== 'plantings')) {
+    return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
+  }
+  if (marker.markerType === 'plantings') {
+    const sourceAssetId = Number(marker.sourceAssetId);
+    if (!Number.isSafeInteger(sourceAssetId) || sourceAssetId <= 0) {
+      return NextResponse.json({ success: false, error: 'Planting source not found' }, { status: 404 });
+    }
+    const deleted = await db.transaction(async (tx) => {
+      await tx.delete(projectThreedMarkers).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, userId),
+        eq(projectThreedMarkers.markerType, 'plantings'),
+      ));
+      await tx.delete(projectAssets).where(and(
+        eq(projectAssets.userId, userId),
+        eq(projectAssets.projectId, marker.projectId),
+        eq(projectAssets.moduleId, marker.threedId),
+        eq(projectAssets.assetType, 'threed_plantings'),
+        eq(projectAssets.assetId, sourceAssetId),
+      ));
+      const [planting] = await tx.delete(threedPlantings).where(and(
+        eq(threedPlantings.id, sourceAssetId),
+        eq(threedPlantings.userId, userId),
+      )).returning({ id: threedPlantings.id });
+      return planting;
+    });
+    return NextResponse.json({ success: true, data: deleted });
+  }
+  if (!await readOwnedModelMarker(userId, id)) {
     return NextResponse.json({ success: false, error: 'Model marker not found' }, { status: 404 });
   }
   const [deleted] = await db.delete(projectThreedMarkers).where(and(
     eq(projectThreedMarkers.id, id),
-    eq(projectThreedMarkers.userId, session.user.id),
+    eq(projectThreedMarkers.userId, userId),
     eq(projectThreedMarkers.markerType, 'models'),
   )).returning({ id: projectThreedMarkers.id });
   return NextResponse.json({ success: true, data: deleted });

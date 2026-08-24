@@ -1,7 +1,13 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
-import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, Environment, Html, Plane, Grid, 
@@ -74,6 +80,21 @@ interface ThreeDSceneProps {
   placementBedName?: string | null;
   /** Called with the ground point selected for a new Bed. */
   onBedPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** New Planting currently awaiting a ground placement click. */
+  placementPlantingName?: string | null;
+  /** Called with the ground point selected for a new Planting. */
+  onPlantingPlacement?: (position: { x: number; y: number; z: number }) => void;
+}
+
+function isRapierFrameError(reason: unknown): boolean {
+  const message = reason instanceof Error
+    ? reason.message
+    : typeof reason === 'string'
+      ? reason
+      : '';
+  return message.includes('unreachable executed')
+    || message.includes('recursive use of an object detected which would lead to unsafe aliasing in rust')
+    || message.includes('attempted to take ownership of Rust value while it was borrowed');
 }
 
 // ✅ View Preset Types
@@ -440,35 +461,21 @@ function SceneMarkerRigidBody({
   ...props
 }: RigidBodyProps & { sceneEnabled: boolean }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
-  const markerPosition = Array.isArray(props.position)
-    ? props.position as [number, number, number]
-    : null;
-  const markerRotation = Array.isArray(props.rotation)
-    ? props.rotation as [number, number, number]
-    : null;
+  const previousSceneEnabledRef = useRef(sceneEnabled);
+
+  useEffect(() => () => {
+    // @react-three/rapier 2.2.0 does not clear forwarded RigidBody refs when
+    // the body is removed. Never retain a wrapper around a freed WASM handle.
+    rigidBodyRef.current = null;
+  }, []);
 
   useEffect(() => {
-    rigidBodyRef.current?.setEnabled(sceneEnabled);
+    if (previousSceneEnabledRef.current === sceneEnabled) return;
+    const body = rigidBodyRef.current;
+    if (!body) return;
+    previousSceneEnabledRef.current = sceneEnabled;
+    body.setEnabled(sceneEnabled);
   }, [sceneEnabled]);
-
-  useEffect(() => {
-    if (!markerPosition || !rigidBodyRef.current) return;
-    rigidBodyRef.current.setTranslation({
-      x: Number(markerPosition[0]) || 0,
-      y: Number(markerPosition[1]) || 0,
-      z: Number(markerPosition[2]) || 0,
-    }, true);
-  }, [markerPosition?.[0], markerPosition?.[1], markerPosition?.[2]]);
-
-  useEffect(() => {
-    if (!markerRotation || !rigidBodyRef.current) return;
-    const quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(
-      Number(markerRotation[0]) || 0,
-      Number(markerRotation[1]) || 0,
-      Number(markerRotation[2]) || 0,
-    ));
-    rigidBodyRef.current.setRotation(quaternion, true);
-  }, [markerRotation?.[0], markerRotation?.[1], markerRotation?.[2]]);
 
   return <RigidBody ref={rigidBodyRef} {...props} />;
 }
@@ -611,7 +618,7 @@ function ProjectModelMarkerBody({
 }
 
 // ✅ ThreeD Marker Component
-function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug }: any) {
+function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -664,7 +671,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
       <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
         <group
           visible={isLayerEnabled}
-          onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}
+          onClick={(e) => { if (!isLayerEnabled || placementActive) return; e.stopPropagation(); if (onClick) onClick(); }}
           onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
           onPointerLeave={() => setHovered(false)}
         >
@@ -692,7 +699,20 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
         <group
           visible={isLayerEnabled}
           scale={[bedScale, bedScale, bedScale]}
-          onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}
+          onPointerMove={(e) => {
+            if (!isLayerEnabled || !placementActive) return;
+            e.stopPropagation();
+            onPlacementHover?.({ x: e.point.x, y: e.point.y, z: e.point.z });
+          }}
+          onClick={(e) => {
+            if (!isLayerEnabled) return;
+            e.stopPropagation();
+            if (placementActive) {
+              onPlacementClick?.({ x: e.point.x, y: e.point.y, z: e.point.z });
+              return;
+            }
+            if (onClick) onClick();
+          }}
         >
           <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={3.2} outerRadius={4.0} segments={48} />}
@@ -704,10 +724,19 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
 
   // v0.16.2-alpha: Plantings — restore click, wrap in RigidBody
   if (marker.type === 'planting' || marker.type === 'plantings') {
+    const plantingModelScale = Math.max(Number(marker.data?.modelScale) || 1, 0.01);
     return (
       <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
-        <group visible={isLayerEnabled} onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}>
-          <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: marker.data?.quantity, status: marker.data?.status }} position={[0, 0, 0]} />
+        <group
+          visible={isLayerEnabled}
+          scale={[plantingModelScale, plantingModelScale, plantingModelScale]}
+          onClick={(event) => {
+            if (!isLayerEnabled || placementActive) return;
+            event.stopPropagation();
+            onClick?.();
+          }}
+        >
+          <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: 1, status: marker.data?.status }} position={[0, 0, 0]} />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.5} outerRadius={0.75} />}
           {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.72} />}
         </group>
@@ -981,8 +1010,10 @@ export function ThreeDScene({
   onModelPlacement,
   placementBedName,
   onBedPlacement,
+  placementPlantingName,
+  onPlantingPlacement,
 }: ThreeDSceneProps) {
-  const placementLabel = placementBedName || placementModel?.modelName || null;
+  const placementLabel = placementPlantingName || placementBedName || placementModel?.modelName || null;
   // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
   const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
   // v0.16.2-beta: Persistent store of each ecctrl character's live physics position,
@@ -992,10 +1023,30 @@ export function ThreeDScene({
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
-  const [physicsDebug, setPhysicsDebug] = useState(() => (
-    typeof window !== 'undefined'
-      && new URLSearchParams(window.location.search).get('physicsDebug') === '1'
-  ));
+  // Start with debug reads disabled even when an old bookmarked URL contains
+  // `physicsDebug=1`. The user may enable diagnostics after the Rapier world
+  // has mounted successfully through the Controls menu.
+  const [physicsDebug, setPhysicsDebug] = useState(false);
+  const [physicsFailed, setPhysicsFailed] = useState(false);
+  const stopCanvasFrameLoopRef = useRef<(() => void) | null>(null);
+  const physicsFailureHandledRef = useRef(false);
+  const physicsUnmountTimerRef = useRef<number | null>(null);
+  const stopPhysicsFrameLoop = useCallback(() => {
+    if (physicsFailureHandledRef.current) return;
+    physicsFailureHandledRef.current = true;
+    // Stop R3F synchronously, but do not free Rapier values while the failed
+    // physics step still holds its WASM borrow. The timer runs only after the
+    // current JavaScript/Rapier call stack has fully unwound.
+    stopCanvasFrameLoopRef.current?.();
+    physicsUnmountTimerRef.current = window.setTimeout(() => {
+      physicsUnmountTimerRef.current = null;
+      setPhysicsFailed(true);
+    }, 0);
+  }, []);
+  const [physicsIsolation] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    return new URLSearchParams(window.location.search).get('physicsIsolation');
+  });
   const [showControls, setShowControls] = useState(false);
   const [showGizmoCube, setShowGizmoCube] = useState(true);
   const [controlsReady, setControlsReady] = useState(false);
@@ -1009,6 +1060,30 @@ export function ThreeDScene({
   useEffect(() => {
     if (!placementLabel) setPlacementPreviewPosition(null);
   }, [placementLabel]);
+
+  useEffect(() => {
+    const handleWindowError = (event: ErrorEvent) => {
+      if (!isRapierFrameError(event.error ?? event.message)) return;
+      event.preventDefault();
+      stopPhysicsFrameLoop();
+    };
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      if (!isRapierFrameError(event.reason)) return;
+      event.preventDefault();
+      stopPhysicsFrameLoop();
+    };
+
+    window.addEventListener('error', handleWindowError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    return () => {
+      window.removeEventListener('error', handleWindowError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      if (physicsUnmountTimerRef.current !== null) {
+        window.clearTimeout(physicsUnmountTimerRef.current);
+        physicsUnmountTimerRef.current = null;
+      }
+    };
+  }, [stopPhysicsFrameLoop]);
   
   // ✅ Camera focus state
   const [focusTarget, setFocusTarget] = useState<any>(null);
@@ -1016,6 +1091,32 @@ export function ThreeDScene({
 
   // ✅ Layer visibility state
   const [activeLayers, setActiveLayers] = useState<Set<string>>(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
+  const sceneMarkers = useMemo(() => {
+    if (physicsIsolation === 'all-markers') return [];
+    if (physicsIsolation?.startsWith('only-')) {
+      const isolatedLayers = new Set(
+        physicsIsolation
+          .slice('only-'.length)
+          .split(',')
+          .map((layer) => layer.trim())
+          .filter(Boolean),
+      );
+      return markers.filter((marker) => (
+        isolatedLayers.has(normalizeSceneLayerType(marker.type))
+      ));
+    }
+    return markers;
+  }, [markers, physicsIsolation]);
+
+  useEffect(() => {
+    if (physicsIsolation) {
+      console.debug('[ThreeD Physics Isolation]', {
+        mode: physicsIsolation,
+        sourceMarkerCount: markers.length,
+        mountedMarkerCount: sceneMarkers.length,
+      });
+    }
+  }, [markers.length, physicsIsolation, sceneMarkers.length]);
 
   // ✅ View presets state
   const [viewPresets, setViewPresets] = useState<ViewPreset[]>([]);
@@ -1558,7 +1659,20 @@ export function ThreeDScene({
         Left-click: Select • Right-click: Zoom
       </div> */}
 
+      {physicsFailed ? (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/90 p-4">
+          <div className="w-80 rounded border border-red-400/40 bg-black p-4 text-center text-white shadow-xl">
+            <div className="text-sm font-semibold text-red-300">ThreeD physics stopped</div>
+            <div className="mt-1 text-xs text-white/70">
+              The Canvas was unmounted after a physics error. Restart the development server before testing again.
+            </div>
+          </div>
+        </div>
+      ) : (
       <Canvas
+        onCreated={(state) => {
+          stopCanvasFrameLoopRef.current = () => state.setFrameloop('never');
+        }}
         camera={{
           position: [centerX + cameraDistance * 0.4, cameraDistance * 0.5, centerZ + cameraDistance * 0.4],
           fov: 45,
@@ -1655,7 +1769,11 @@ export function ThreeDScene({
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
               onPlacementLeave={() => setPlacementPreviewPosition(null)}
-              onPlacementClick={placementBedName ? onBedPlacement : onModelPlacement}
+              onPlacementClick={placementPlantingName
+                ? onPlantingPlacement
+                : placementBedName
+                  ? onBedPlacement
+                  : onModelPlacement}
             />
           </RigidBody>
 
@@ -1715,13 +1833,20 @@ export function ThreeDScene({
             />
           ))}
 
-          {markers.map((marker, idx) => (
+          {sceneMarkers.map((marker, idx) => (
             <ThreeDMarkerComponent
               key={`threed-marker-${marker.type}-${marker.id ?? idx}`}
               marker={marker}
               onClick={() => handleMarkerClick(marker)}
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
               isLayerEnabled={activeLayers.has(normalizeSceneLayerType(marker.type))}
+              placementActive={Boolean(placementLabel)}
+              onPlacementHover={setPlacementPreviewPosition}
+              onPlacementClick={placementPlantingName
+                ? onPlantingPlacement
+                : placementBedName
+                  ? onBedPlacement
+                  : onModelPlacement}
               isActionTarget={
                 actionTarget != null &&
                 isMatchingThreeDActionTarget(actionTarget, {
@@ -1748,6 +1873,7 @@ export function ThreeDScene({
           </Html>
         )}
       </Canvas>
+      )}
     </div>
   );
 }

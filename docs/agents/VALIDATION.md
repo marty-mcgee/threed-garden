@@ -228,6 +228,21 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Confirm the edited `project_threed_markers` row contains the new instance values, while its source `threed_beds` row remains unchanged.
 - Refresh and confirm the edited Project instance restores. Then change the source Bed and refresh again; the saved Project instance must not drift to the source values.
 - After editing the Bed, Take Control of an EcctrlCharacter and confirm the Character, collider, and selection halo still move together with WASD.
+
+### Post-v0.18.7b Planting placement and editing check
+
+- Open an owned Project with an active ThreeD module, open the Project menu, and choose **Add Planting**.
+- Confirm the panel lists only the authenticated user's active Plants. Select a Plant and optionally a Bed already assigned to the current Project and ThreeD module.
+- Set quantity, optional spacing, and model scale. Choose **Place Planting**, click the Scene ground once, and confirm one `threed_plantings`, one active `project_assets`, and one `project_threed_markers` row are created together.
+- Set quantity to 4 and confirm the Scene renders four independently selectable Plantings in a centered layout. Confirm four `threed_plantings`, four `project_assets`, and four `project_threed_markers` rows were created, each source has `quantity = 1`, and spacing controls their separate XYZ positions.
+- While placement is active, hover and click the top of an assigned Bed. Confirm the preview follows the Bed surface, the Bed is not selected, and the saved Planting Y position uses the clicked Bed surface rather than ground Y=0.
+- Confirm an optional Bed assignment is accepted only when that Bed belongs to the same Project and ThreeD module. Spatial restriction to the Bed boundary is deferred; assigned and unassigned Plantings currently retain their requested XYZ positions.
+- Confirm the Planting appears immediately without a Project reload. If its Plant has a model, confirm that model renders; otherwise confirm the procedural Plant marker renders.
+- Select one Planting and confirm its editor has no quantity or spacing fields. Edit model scale and X/Y/Z position, then save. Confirm only that visual and collider update immediately.
+- Click **Delete Planting**, confirm the prompt, and verify only the selected marker, its `project_assets` assignment, and its dedicated `threed_plantings` source are removed. Sibling Plantings must remain visible and stored.
+- Confirm only `project_threed_markers` changes during instance editing. The source Planting, Plant, optional Bed, and Model must remain unchanged.
+- Refresh and confirm the Planting restores its saved Project-instance values. Confirm cancelling before ground click creates no records and repeated clicks cannot create duplicates.
+- Recheck Planting Action Target behavior, targeted Water/Pick Fruit, layer visibility, Physics Debug, and Ecctrl Take/Release Control plus WASD after Planting creation and editing.
 - Select an Ecctrl Character after placement and confirm Take Control, WASD, the Character model, and its selection halo still move together.
 
 `npm run validate:assets` verifies that every file in the external character animation manifest and every required local Three.js DRACO decoder file exists under `public/`. It must pass in a clean Git checkout before deployment; in CI, successful validation after `actions/checkout` also proves the required assets are tracked by Git.
@@ -271,6 +286,8 @@ Do not suppress new diagnostics or make TypeScript non-blocking to land unrelate
 
 - Farmer FBX model renders.
 - After shared ThreeD Scene or Model renderer changes, Character selection and Ecctrl Take Control / WASD / Release Control work before and after a hard browser refresh. Report any hot-reload-only loss of controls as a regression watch even when refresh restores operation.
+- With several independent Planting RigidBodies loaded, toggle Physics Debug on and off and confirm collider outlines update without a Rapier `recursive use of an object` error or Canvas error loop.
+- Repeat the same check with several Plantings that share one asynchronously loaded GLB/FBX Plant model. Confirm each receives its own explicit collider and the Canvas remains mounted while the model bounds finish loading.
 - External FBX animations load.
 - Idle, walk, and run work.
 - `GardenCharacter` autonomous movement works.
@@ -279,6 +296,16 @@ Do not suppress new diagnostics or make TypeScript non-blocking to land unrelate
 - DetailsCard opens and targeting controls work.
 - Targeted Water persists after animation completion.
 - Targeted Pick Fruit creates one project-scoped harvest record.
+
+## v0.18.7c ThreeD Layers Scene contract checks
+
+- Open a normal owned Project without `physicsIsolation` or `physicsDebug` URL parameters. Confirm the persistent Canvas mounts once and contains an Ecctrl Character together with fixed Beds, Plantings, Models, and FarmBots.
+- Confirm the browser and development-server consoles contain no `unreachable executed`, `attempted to take ownership of Rust value while it was borrowed`, or `recursive use of an object detected which would lead to unsafe aliasing in rust` errors.
+- Hide and show each ThreeD Layer. Confirm only that Layer's visuals, pointer behavior, input, collision participation, and Physics Debug output change. Marker positions and unrelated runtime state must remain unchanged.
+- Edit one Bed or Planting instance. Confirm only its stable `marker_id` transaction changes and the Canvas, Physics world, Character, and unrelated markers are not remounted.
+- Select a movable Character, Take Control, use WASD, and confirm the Character model, Ecctrl body, and selection halo move together before and after another marker transaction.
+- Treat activation of the Canvas Rapier failure circuit as failed validation. Containing the error is not a passing physics result.
+- Run `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. Run `npm run build` manually in the client environment before deployment.
 
 ## Reporting
 

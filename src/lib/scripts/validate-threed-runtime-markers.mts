@@ -36,6 +36,13 @@ import {
   ProjectBedPlacementInputError,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/beds/project-bed-placement-core.ts';
+import {
+  parseCreateProjectPlantingPlacement,
+  calculateProjectPlantingVisualPositions,
+  parseUpdateProjectPlantingPlacement,
+  ProjectPlantingPlacementInputError,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/plantings/project-planting-placement-core.ts';
 
 let completedValidationSteps = 0;
 function validationStep(label: string): void {
@@ -149,6 +156,65 @@ assert.throws(
   ProjectBedPlacementInputError,
 );
 validationStep('Project Bed instance dimension updates remain bounded');
+
+assert.deepEqual(parseCreateProjectPlantingPlacement({
+  markerType: 'plantings',
+  projectId: 5,
+  threedId: 2,
+  plantId: 9,
+  bedId: 4,
+  quantity: 3,
+  spacingInches: 12,
+  modelScale: 1.5,
+  positionX: 2,
+  positionY: 0,
+  positionZ: -3,
+}), {
+  markerType: 'plantings',
+  projectId: 5,
+  threedId: 2,
+  plantId: 9,
+  bedId: 4,
+  quantity: 3,
+  spacingInches: 12,
+  modelScale: 1.5,
+  positionX: 2,
+  positionY: 0,
+  positionZ: -3,
+});
+assert.deepEqual(parseUpdateProjectPlantingPlacement({
+  markerType: 'plantings',
+  modelScale: 0.75,
+  positionX: 1,
+  positionY: 0.5,
+  positionZ: 6,
+}), {
+  markerType: 'plantings',
+  modelScale: 0.75,
+  positionX: 1,
+  positionY: 0.5,
+  positionZ: 6,
+});
+assert.throws(
+  () => parseCreateProjectPlantingPlacement({
+    markerType: 'plantings', projectId: 5, threedId: 2, plantId: 0,
+    positionX: 0, positionY: 0, positionZ: 0,
+  }),
+  ProjectPlantingPlacementInputError,
+);
+validationStep('Project Planting placement and instance updates remain bounded');
+
+assert.deepEqual(calculateProjectPlantingVisualPositions(2, 12), [
+  { x: -0.5, y: 0, z: 0 },
+  { x: 0.5, y: 0, z: 0 },
+]);
+assert.deepEqual(calculateProjectPlantingVisualPositions(4, 24), [
+  { x: -1, y: 0, z: -1 },
+  { x: 1, y: 0, z: -1 },
+  { x: -1, y: 0, z: 1 },
+  { x: 1, y: 0, z: 1 },
+]);
+validationStep('Planting creation expands quantity and inch-based spacing into centered instance positions');
 
 assert.deepEqual(parseCreateProjectModelInstance({
   projectId: 2,
@@ -340,6 +406,12 @@ const builtMarkers = buildThreeDRuntimeMarkers({
     positionX: '1.250',
     positionY: '0.000',
     positionZ: '2.500',
+  }, {
+    id: 1,
+    plantId: 101,
+    positionX: '99',
+    positionY: '99',
+    positionZ: '99',
   }],
   beds: [{ id: 1, name: 'North Bed', position: { x: 3, y: 0, z: 4 } }],
   characters: [{
@@ -399,6 +471,7 @@ assert.equal(builtMarkers[3].color, '#123456');
 assert.equal(builtMarkers[3].isVisible, false);
 assert.deepEqual(builtMarkers[4].position, { x: 9, y: 0, z: 10 });
 validationStep('Project Sub-Modules build the established five Runtime Marker shapes');
+validationStep('Duplicate Project asset rows resolve to one marker identity before Scene physics');
 
 const integratedRegistry = new ThreeDRuntimeMarkerRegistry();
 integratedRegistry.replaceAssetMarkers(

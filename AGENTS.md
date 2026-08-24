@@ -40,7 +40,9 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 Current production version: v0.18.7b "ThreeD Bed Project Placement and Editing".
 
-No later release candidate is currently designated.
+Current release candidate: v0.18.7c "ThreeD Layers Scene Contracts".
+
+The v0.18.7c candidate defines ThreeD Layers as the Scene transaction boundary. Layer operations must preserve one persistent Canvas and Rapier world, stable `marker_id` identity, saved transforms, and Sub-Module-owned rendering and physics. They must not remount unrelated markers or issue duplicate imperative Rapier initialization writes. The Rapier frame-error circuit is containment only; activation is release-blocking.
 
 v0.18.7b is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 

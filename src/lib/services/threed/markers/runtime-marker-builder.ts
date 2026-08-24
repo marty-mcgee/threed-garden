@@ -168,15 +168,19 @@ export function buildThreeDRuntimeMarkers(
   if (!raw) return [];
 
   const markers: RuntimeMarker[] = [];
+  const markerIds = new Set<string>();
+  const appendMarker = (marker: RuntimeMarker | null) => {
+    if (!marker || markerIds.has(marker.id)) return;
+    markerIds.add(marker.id);
+    markers.push(marker);
+  };
   for (const item of raw.plantings ?? []) {
-    const marker = createMarker(item, 'plantings', raw, generatedAt);
-    if (marker) markers.push(marker);
+    appendMarker(createMarker(item, 'plantings', raw, generatedAt));
   }
 
   for (const moduleType of THREED_NON_PLANTING_MARKER_TYPES) {
     for (const item of raw[moduleType] ?? []) {
-      const marker = createMarker(item, moduleType, raw, generatedAt);
-      if (marker) markers.push(marker);
+      appendMarker(createMarker(item, moduleType, raw, generatedAt));
     }
   }
 

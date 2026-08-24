@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture through the v0.18.7b **ThreeD Bed Project Placement and Editing** production checkpoint.
+This document records the marker architecture through the v0.18.7b **ThreeD Bed Project Placement and Editing** production checkpoint and the v0.18.7c **ThreeD Layers Scene Contracts** pre-release milestone.
 
 ## Hierarchy and terminology
 
@@ -11,6 +11,34 @@ Database-driven, Project-assigned ThreeD data is the authority for the current P
 A **Runtime Marker** is the in-memory representation created from the saved Project marker snapshot and its eligible source asset. The Runtime Marker registry mirrors identity and current runtime position; it does not create ownership, Project assignment, or Layer records. `project_threed_markers` is the current saved Project snapshot. The old `threed_markers` table remains legacy and is not the foundation of this system.
 
 A **ThreeD Layer** organizes and controls the visibility of Runtime Markers. An **Action Target** is an optional capability of an eligible Runtime Marker; it is not the parent identity model and does not grant persistence, MQTT, worker, or physical-device authority.
+
+## ThreeD Layer Scene contract
+
+ThreeD Layers are contracts and transactions with the persistent R3F Canvas. They do not create another marker authority. `project_threed_markers` remains the saved Project-instance authority, the Runtime Marker collection remains keyed by stable `marker_id`, and each Sub-Module remains responsible for its own rendering and Rapier body.
+
+```text
+Project ThreeD Markers
+        ↓
+ThreeD Layer transaction
+        ↓
+Stable Runtime Marker collection
+        ↓
+Bed | Planting | Character | Model | FarmBot runtime
+        ↓
+Persistent ThreeD Scene and Rapier Physics world
+```
+
+A Layer transaction may add, update, remove, show, or hide a marker. It must preserve these rules:
+
+- One marker change does not reload the Canvas or rebuild the Physics world.
+- Unrelated markers retain their React identity, transform, runtime state, and Sub-Module ownership.
+- A hidden marker stops visual, pointer, input, collision, and Physics Debug participation without losing its saved transform.
+- Showing a marker restores the same marker identity and transform.
+- Character selection and Ecctrl control remain owned by the Character instance and cannot move to another marker or selection halo.
+- Position, rotation, and scale use declarative Scene/RigidBody props. Layer code does not repeat the same initialization through imperative Rapier calls.
+- Imperative Rapier calls are reserved for later runtime transactions that cannot be expressed through stable props and must not run during an active physics step.
+
+The Canvas-level Rapier failure circuit limits a frame error to one contained Scene failure. It is a troubleshooting boundary only. A release still requires an error-free normal Scene containing Characters together with fixed marker types.
 
 The current ThreeD Scene Controls expose runtime visibility by the canonical marker types actually present in the loaded marker collection. Singular and legacy aliases such as `plant`, `plants`, and `planting` resolve to the single `plantings` Scene Layer entry. The controls do not pretend that a `threed_layers.layer_type` assigns individual Runtime Markers to that database Layer: no such per-marker relationship currently exists. Establishing that relationship requires a separately approved data-model milestone.
 
@@ -143,6 +171,10 @@ General Project Model collision uses the complete rendered asset boundary. Exter
 
 The **Show/Hide Physics Debug** control in the ThreeD Scene Controls panel enables Rapier collider outlines and bounded `console.debug` Model measurements without reloading the Scene or rebuilding marker colliders. Adding `physicsDebug=1` to the Dashboard Map URL starts a session with debugging enabled. Normal sessions do not render or log this diagnostic information.
 
+Physics Debug reads Rapier's debug buffer only through the library's after-physics-step hook. It must not call `world.debugRender()` from an unrelated R3F frame callback while Rapier may be stepping or adding independent marker bodies; that overlap can trigger the WebAssembly unsafe-aliasing error and repeatedly remount the Canvas error boundary.
+
+Plantings with asynchronously loaded Plant models do not use Rapier's automatic child-mesh collider discovery. Each Planting owns an explicit fixed collider: a small procedural bound while loading, followed by the measured whole-model bound reported through the established `ModelMarker3D` callback. This matches the stable general-Model path and prevents several independent Plant model graphs from changing automatic collider discovery while Rapier is creating bodies.
+
 This is not a new marker schema or wrapper contract. `project_threed_markers`, the existing Runtime Marker builder, `ThreeDScene`, and each Sub-Module renderer retain their current responsibilities.
 
 ### Character-control regression watch
@@ -162,6 +194,22 @@ The first implementation covers a new rectangular Bed. Its pre-placement form ac
 ### Manually verified Bed placement checkpoint
 
 On August 24, 2026, the user verified both new Bed placement and existing Project Bed editing. Creation writes the owned `threed_beds` source, active `project_assets` relationship, and authoritative `project_threed_markers` instance together. Editing changes only the Project instance's width, length, height, X/Y/Z position, and degree-based Y rotation. The selected fixed Rapier body applies translation and rotation changes immediately, keeping its visual and collider aligned without refreshing the Project or remounting unrelated markers. Refresh restores the edited values, while later changes to the reusable source Bed do not overwrite the saved Project instance.
+
+## Planting Project placement and editing after v0.18.7b
+
+A Planting is not a generic Model. It references an owned active `threed_plants` record, may reference an active Bed assigned to the same Project and ThreeD module, and may render the model owned by its Plant. The Planting remains the Runtime Marker and fixed-RigidBody owner; the Plant model is only its visual. When no model is available or loading fails, `PlantMarker3D` remains the procedural fallback.
+
+The Dashboard **Add Planting** panel loads the owner's active Plants, offers an optional assigned Project Bed, and accepts quantity, spacing, and model scale before entering one-shot ground placement. One transaction expands that request into an independent `threed_plantings` source, active `project_assets` assignment, and authoritative `project_threed_markers` instance for each requested Plant. All returned sources and markers are injected into the existing client Scene without a Project reload.
+
+Selecting a saved Planting exposes Project-instance model scale and X/Y/Z position editing in DetailsCard. PATCH updates only the owner-scoped Project marker and synchronizes the existing fixed body translation immediately. It does not mutate the source Planting, Plant, optional Bed, or Model.
+
+Planting quantity is a creation instruction, not a saved visual group. The server converts `spacing_in_inches` into Scene feet, calculates centered positions, and creates one complete `threed_plantings` source, `project_assets` assignment, and `project_threed_markers` instance per requested Plant. Every created Planting has `quantity = 1`, its own XYZ position, marker identity, visual, and fixed RigidBody. The complete batch is atomic: all requested Plantings are committed or none are.
+
+DetailsCard edits only one selected Planting's model scale and XYZ position. Quantity and spacing are absent because changing either would change the number or layout of independent Plantings. **Delete Planting** removes the selected Project marker, its dedicated Project Asset assignment, and its dedicated source Planting together; sibling Plantings from the same creation request remain unchanged.
+
+While any one-shot placement mode is active, a Bed click no longer changes the selected marker. The Bed surface instead supplies its actual world X/Y/Z point to the placement preview and create request. This permits a Planting to be placed on the top surface of a Bed rather than being forced to ground Y=0. This checkpoint is implemented and awaits manual verification.
+
+An optional Bed assignment currently records and validates the Project relationship only. Bed-local clamping, rotation-aware offsets, forced surface Y, and oversized-layout rejection were rolled back during Rapier regression isolation. Plantings retain the XYZ positions requested during creation and editing. Spatial restriction and awareness must remain deferred until the normal Character-plus-fixed-marker physics Scene is stable again.
 
 ## Current development boundary
 

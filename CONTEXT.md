@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.7b — ThreeD Bed Project Placement and Editing** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; next milestone requires review** |
+| Current release candidate | **v0.18.7c — ThreeD Layers Scene Contracts** |
+| Current development milestone | **Pre-release: Layer transactions and persistent Scene authority** |
 | Previous checkpoint | **v0.18.6b — ThreeD Project Marker Snapshots** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1819,3 +1819,35 @@ The first scoped implementation adds new rectangular Beds from the Dashboard. Th
 The user manually verified this Bed checkpoint on August 24, 2026. New Bed creation, immediate rendering, instance dimension editing, live X/Y/Z translation, live Y rotation, and refresh restoration all pass. Fixed Rapier bodies now synchronize changed translations and rotations through their existing body refs, so the visual and collider move together without remounting the persistent Scene. The Project marker remains authoritative after creation; changing the source `threed_beds` row does not change the saved Project instance.
 
 This checkpoint was released successfully to production through GitHub and Vercel as **v0.18.7b — ThreeD Bed Project Placement and Editing** on August 24, 2026.
+
+## Post-v0.18.7b development — ThreeD Planting Project placement and editing
+
+The next Sub-Module placement path preserves Planting relationships instead of treating a Planting as a generic Model. A new Planting references an owned active `threed_plants` source, may reference a Bed actively assigned to the same Project and ThreeD module, and may use the model referenced by its Plant. The Planting remains the Runtime Marker and fixed-RigidBody owner; the Plant model is its visual, with the procedural `PlantMarker3D` shape as fallback.
+
+The Dashboard **Add Planting** panel selects the Plant, optional Project Bed, quantity, optional spacing, and model scale before one-shot ground placement. One authenticated transaction expands the request into an owned `threed_plantings` row, active `project_assets` assignment, and authoritative `project_threed_markers` instance for every requested Plant. Creation inserts all returned sources and markers into client state.
+
+DetailsCard editing updates Project-instance model scale and X/Y/Z position. The owner-scoped PATCH changes only `project_threed_markers`; fixed Rapier translation synchronization moves the existing visual and collider without a Project reload. Quantity and spacing are creation-only inputs. Automated validation passes, and manual verification remains pending.
+
+Planting quantity is used only when creating independent Plantings. The server converts spacing inches into centered Scene offsets and atomically creates one `threed_plantings`, `project_assets`, and `project_threed_markers` record set per requested Plant, with `quantity = 1` on every source. Each marker owns one visual and one fixed RigidBody. Existing Planting editing therefore exposes scale and XYZ only. Deleting a selected Planting removes its marker, assignment, and dedicated source without affecting its siblings. During placement, Bed surface intersections take priority over Bed selection and supply their world XYZ coordinates.
+
+When `bed_id` is present, the API currently validates only that the Bed belongs to the same Project and ThreeD module. The later Bed-local spatial restriction experiment—rotation-aware clamping, forced top-surface Y, and oversized-layout rejection—was rolled back after it marked the regression boundary for repeated Rapier WASM frame failures. Planting creation and editing again retain their requested XYZ positions. Keep this spatial-awareness work deferred until Character and fixed-marker physics coexist without containment being triggered.
+
+## v0.18.7c pre-release milestone — ThreeD Layers Scene Contracts
+
+ThreeD Layers are the transaction boundary between Project marker data and the persistent React Three Fiber Scene. A Layer does not own a second marker collection or Physics world. It applies add, update, remove, show, and hide transactions to the stable collection keyed by `marker_id`, while each ThreeD Sub-Module continues to own its renderer and Rapier behavior.
+
+```text
+Project ThreeD Markers
+        ↓
+ThreeD Layer contract
+        ↓
+Stable Scene marker collection
+        ↓
+Sub-Module runtime
+        ↓
+Persistent R3F Canvas and Rapier world
+```
+
+One marker transaction must not reload the Canvas, rebuild the Physics world, remount unrelated markers, or transfer Character/Ecctrl authority to another marker. Hiding a Layer removes that Layer's presentation, pointer behavior, runtime input, collision participation, and Physics Debug output without deleting its saved transform. Showing it restores the same marker identity and transform. Initial and updated transforms flow through React/RigidBody props; Layer transactions must not issue duplicate Rapier initialization writes.
+
+The development Scene retains a bounded Canvas failure circuit for Rapier frame errors so one Sub-Module failure cannot produce an unbounded browser loop. This containment is diagnostic protection, not proof that physics is healthy. A normal Project session containing an Ecctrl Character plus fixed Beds, Plantings, Models, and FarmBots must run without `unreachable executed`, Rust ownership, or unsafe-aliasing errors before v0.18.7c may be released.

@@ -1064,6 +1064,15 @@ export function EcctrlCharacter({
       null
     );
 
+  const previousLayerEnabledRef =
+    useRef(layerEnabled);
+
+  useEffect(() => () => {
+    // Ecctrl exposes Rapier values through this handle. Clear it before a
+    // removed body can be read by a later R3F frame.
+    ecctrlRef.current = null;
+  }, []);
+
   const targetForwardDirectionRef =
     useRef(new THREE.Vector3(0, 0, 1));
 
@@ -1099,8 +1108,10 @@ export function EcctrlCharacter({
     );
 
   useEffect(() => {
+    if (previousLayerEnabledRef.current === layerEnabled) return;
     const ecctrl = ecctrlRef.current;
-    if (!ecctrl) return;
+    if (!ecctrl?.body || !ecctrl.collider) return;
+    previousLayerEnabledRef.current = layerEnabled;
 
     if (layerEnabled) {
       ecctrl.collider.setEnabled(true);
@@ -1915,14 +1926,14 @@ export function EcctrlCharacter({
   // ======================================================
 
   useFrame((_, delta) => {
-    if (
-      !ecctrlRef.current
-    ) {
+    const ec = ecctrlRef.current;
+    // Do not call Rapier's isValid() from every R3F frame. Depending on frame
+    // ordering, that query can overlap the active physics step and trigger the
+    // same WASM borrow error it is intended to prevent. The unmount cleanup
+    // above clears stale handles; this callback only needs the null boundary.
+    if (!ec?.body) {
       return;
     }
-
-    const ec =
-      ecctrlRef.current;
 
     if (isControlled && movementTargetPosition) {
       const position = ec.currPos;

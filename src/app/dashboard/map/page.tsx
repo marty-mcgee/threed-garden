@@ -529,7 +529,101 @@ function BedInstanceEditor({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId }: {
+function PlantingInstanceEditor({
+  markerId,
+  initialModelScale,
+  initialPosition,
+  updating,
+  deleting,
+  onSave,
+  onDelete,
+}: {
+  markerId: number;
+  initialModelScale: number;
+  initialPosition: { x: number; y: number; z: number };
+  updating: boolean;
+  deleting: boolean;
+  onSave: (markerId: number, input: {
+    modelScale: number;
+    positionX: number;
+    positionY: number;
+    positionZ: number;
+  }) => void;
+  onDelete: (markerId: number, name: string) => void;
+}) {
+  const [modelScale, setModelScale] = useState(String(initialModelScale));
+  const [positionX, setPositionX] = useState(String(initialPosition.x));
+  const [positionY, setPositionY] = useState(String(initialPosition.y));
+  const [positionZ, setPositionZ] = useState(String(initialPosition.z));
+  const parsed = {
+    modelScale: Number(modelScale),
+    positionX: Number(positionX),
+    positionY: Number(positionY),
+    positionZ: Number(positionZ),
+  };
+  const valid = Number.isFinite(parsed.modelScale)
+    && parsed.modelScale >= 0.01
+    && parsed.modelScale <= 1_000
+    && [parsed.positionX, parsed.positionY, parsed.positionZ].every(
+      (value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000,
+    );
+
+  return (
+    <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
+      <div className="text-[10px] font-medium text-white/60">Project Planting Instance</div>
+      <div className="grid grid-cols-2 gap-1.5">
+        {[
+          ['Model scale', modelScale, setModelScale, '0.01'],
+          ['Position X', positionX, setPositionX, '0.1'],
+          ['Position Y', positionY, setPositionY, '0.1'],
+          ['Position Z', positionZ, setPositionZ, '0.1'],
+        ].map(([label, value, setter, step]) => (
+          <label key={label as string} className="block space-y-1">
+            <span className="text-[9px] text-white/50">{label as string}</span>
+            <input
+              type="number"
+              step={step as string}
+              value={value as string}
+              disabled={updating || deleting}
+              onChange={(event) => (setter as (value: string) => void)(event.target.value)}
+              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+            />
+          </label>
+        ))}
+      </div>
+      <div className="grid grid-cols-2 gap-1.5">
+        <button
+          type="button"
+          disabled={!valid || updating || deleting}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSave(markerId, parsed);
+          }}
+          className="flex w-full items-center justify-center gap-1.5 rounded bg-emerald-600/35 px-2 py-1.5 text-[11px] font-medium text-emerald-100 transition-colors hover:bg-emerald-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        >
+          {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          Save Planting
+        </button>
+        <button
+          type="button"
+          disabled={updating || deleting}
+          onClick={(event) => {
+            event.stopPropagation();
+            const name = 'this Planting';
+            if (!window.confirm(`Delete ${name} from this ThreeD Project?`)) return;
+            onDelete(markerId, name);
+          }}
+          className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        >
+          {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+          Delete Planting
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
@@ -567,6 +661,15 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     rotation: number;
   }) => void;
   updatingBedMarkerId?: number | null;
+  onUpdatePlantingInstance?: (markerId: number, input: {
+    modelScale: number;
+    positionX: number;
+    positionY: number;
+    positionZ: number;
+  }) => void;
+  updatingPlantingMarkerId?: number | null;
+  onDeletePlantingInstance?: (markerId: number, name: string) => void;
+  deletingPlantingMarkerId?: number | null;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
@@ -620,6 +723,11 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
     && Number.isSafeInteger(bedMarkerId)
     && bedMarkerId > 0;
+  const plantingMarkerId = Number(d.projectMarkerId);
+  const isProjectPlantingInstance = isPlantingMarker
+    && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
+    && Number.isSafeInteger(plantingMarkerId)
+    && plantingMarkerId > 0;
   const selectedTargetCapabilities = getThreeDActionTargetCapabilities(normalizedType);
   const actionTargetCapabilities = actionTarget
     ? getThreeDActionTargetCapabilities(actionTarget.type)
@@ -665,7 +773,6 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     if (d.plantName || d.commonName) metaRows.push({ label: 'Plant', value: d.plantName || d.commonName });
     if (d.growthStage) metaRows.push({ label: 'Stage', value: d.growthStage });
     if (d.health != null) metaRows.push({ label: 'Health', value: `${d.health}` });
-    if (d.quantity) metaRows.push({ label: 'Qty', value: `${d.quantity}` });
     if (d.plantedDate) metaRows.push({ label: 'Planted', value: new Date(d.plantedDate).toLocaleDateString() });
   }
   if (type === 'beds' || type === 'bed') {
@@ -1073,6 +1180,26 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         />
       )}
 
+      {isProjectPlantingInstance && onUpdatePlantingInstance && onDeletePlantingInstance && (
+        <PlantingInstanceEditor
+          key={plantingMarkerId}
+          markerId={plantingMarkerId}
+          initialModelScale={Number(d.modelScale ?? 1)}
+          initialPosition={{
+            x: Number(selected.position?.x ?? d.positionX ?? 0),
+            y: Number(selected.position?.y ?? d.positionY ?? 0),
+            z: Number(selected.position?.z ?? d.positionZ ?? 0),
+          }}
+          updating={updatingPlantingMarkerId === plantingMarkerId}
+          deleting={deletingPlantingMarkerId === plantingMarkerId}
+          onSave={onUpdatePlantingInstance}
+          onDelete={(markerId, name) => onDeletePlantingInstance(
+            markerId,
+            String(selected.name || d.plantName || d.commonName || name),
+          )}
+        />
+      )}
+
       {/* Admin Edit link */}
       {(() => {
         const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
@@ -1175,6 +1302,7 @@ function UnifiedMapPageInner() {
   }>>([]);
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
+  const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [loadingLibraryModels, setLoadingLibraryModels] = useState(false);
   const [placementModel, setPlacementModel] = useState<ThreeDModelLibraryItem | null>(null);
@@ -1182,6 +1310,7 @@ function UnifiedMapPageInner() {
   const [placementScaleMultiplier, setPlacementScaleMultiplier] = useState('1');
   const [placingModel, setPlacingModel] = useState(false);
   const [placingBed, setPlacingBed] = useState(false);
+  const [placingPlanting, setPlacingPlanting] = useState(false);
   const [bedPlacementActive, setBedPlacementActive] = useState(false);
   const [bedPlacementDraft, setBedPlacementDraft] = useState({
     name: 'New Garden Bed',
@@ -1193,11 +1322,24 @@ function UnifiedMapPageInner() {
     rotation: '0',
     scale: '1',
   });
+  const [plantingOptions, setPlantingOptions] = useState<any[]>([]);
+  const [loadingPlantingOptions, setLoadingPlantingOptions] = useState(false);
+  const [plantingPlacementActive, setPlantingPlacementActive] = useState(false);
+  const [plantingPlacementDraft, setPlantingPlacementDraft] = useState({
+    plantId: '',
+    bedId: '',
+    quantity: '1',
+    spacingInches: '',
+    modelScale: '1',
+  });
   const [updatingModelInstanceId, setUpdatingModelInstanceId] = useState<number | null>(null);
   const [deletingModelInstanceId, setDeletingModelInstanceId] = useState<number | null>(null);
   const [updatingBedMarkerId, setUpdatingBedMarkerId] = useState<number | null>(null);
+  const [updatingPlantingMarkerId, setUpdatingPlantingMarkerId] = useState<number | null>(null);
+  const [deletingPlantingMarkerId, setDeletingPlantingMarkerId] = useState<number | null>(null);
   const placingModelRef = useRef(false);
   const placingBedRef = useRef(false);
+  const placingPlantingRef = useRef(false);
   
   // ✅ Live Data Status Indicator
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -1271,6 +1413,8 @@ function UnifiedMapPageInner() {
   const openModelLibrary = useCallback(async () => {
     setIsBedPlacementOpen(false);
     setBedPlacementActive(false);
+    setIsPlantingPlacementOpen(false);
+    setPlantingPlacementActive(false);
     setIsModelLibraryOpen(true);
     setIsProjectSummaryOpen(false);
     setSelectedMarker(null);
@@ -1296,6 +1440,42 @@ function UnifiedMapPageInner() {
       setLoadingLibraryModels(false);
     }
   }, [libraryModels.length, loadingLibraryModels]);
+
+  const openPlantingPlacement = useCallback(async () => {
+    setIsModelLibraryOpen(false);
+    setPlacementModel(null);
+    setIsBedPlacementOpen(false);
+    setBedPlacementActive(false);
+    setIsPlantingPlacementOpen(true);
+    setIsProjectSummaryOpen(false);
+    setSelectedMarker(null);
+    if (plantingOptions.length > 0 || loadingPlantingOptions) return;
+
+    setLoadingPlantingOptions(true);
+    try {
+      const response = await fetch('/api/threed/plants?isActive=true&status=active&limit=100');
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Plant list failed (${response.status})`);
+      }
+      const plants = Array.isArray(result.data) ? result.data : [];
+      setPlantingOptions(plants);
+      setPlantingPlacementDraft((current) => ({
+        ...current,
+        plantId: current.plantId || String(plants[0]?.id ?? ''),
+      }));
+    } catch (error) {
+      console.error('Failed to load ThreeD Plants for placement', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to load ThreeD Plants',
+        'error',
+      );
+    } finally {
+      setLoadingPlantingOptions(false);
+    }
+  }, [loadingPlantingOptions, plantingOptions.length]);
 
   const handleSaveThreeDProject = useCallback(async () => {
     if (!selectedProjectId || savingProjectMarkers) return;
@@ -1476,6 +1656,8 @@ function UnifiedMapPageInner() {
     setIsModelLibraryOpen(false);
     setBedPlacementActive(false);
     setIsBedPlacementOpen(false);
+    setPlantingPlacementActive(false);
+    setIsPlantingPlacementOpen(false);
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
     window.history.pushState({}, '', url.toString());
@@ -2029,6 +2211,96 @@ function UnifiedMapPageInner() {
     selectedProjectId,
   ]);
 
+  const handlePlantingPlacement = useCallback(async (
+    position: { x: number; y: number; z: number },
+  ) => {
+    if (
+      !selectedProjectId
+      || !placementThreedId
+      || !plantingPlacementActive
+      || !plantingPlacementDraft.plantId
+      || placingPlantingRef.current
+    ) return;
+
+    placingPlantingRef.current = true;
+    setPlacingPlanting(true);
+    try {
+      const response = await fetch('/api/project/threed-markers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          markerType: 'plantings',
+          projectId: Number(selectedProjectId),
+          threedId: placementThreedId,
+          plantId: Number(plantingPlacementDraft.plantId),
+          bedId: plantingPlacementDraft.bedId
+            ? Number(plantingPlacementDraft.bedId)
+            : null,
+          quantity: Number(plantingPlacementDraft.quantity),
+          spacingInches: plantingPlacementDraft.spacingInches
+            ? Number(plantingPlacementDraft.spacingInches)
+            : null,
+          modelScale: Number(plantingPlacementDraft.modelScale),
+          positionX: position.x,
+          positionY: position.y,
+          positionZ: position.z,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success || !Array.isArray(result.data?.plantings) || !Array.isArray(result.data?.markers)) {
+        throw new Error(result?.error || `Planting placement failed (${response.status})`);
+      }
+
+      setData((current) => {
+        const raw = current.threed.raw;
+        if (!raw) return current;
+        const projectThreedMarkers = [
+          ...(raw.projectThreedMarkers ?? []),
+          ...(result.data.markers as ProjectThreeDMarkerRecord[]),
+        ];
+        return {
+          ...current,
+          threed: {
+            ...current.threed,
+            raw: {
+              ...raw,
+              plantings: [...(raw.plantings ?? []), ...result.data.plantings],
+              projectThreedMarkers,
+            },
+            markersCount: projectThreedMarkers.length,
+          },
+        };
+      });
+
+      const plantName = plantingOptions.find(
+        (plant) => Number(plant.id) === Number(plantingPlacementDraft.plantId),
+      )?.commonName ?? 'Planting';
+      setPlantingPlacementActive(false);
+      setIsPlantingPlacementOpen(false);
+      showToastRef.current(
+        `${result.data.plantings.length} ${plantName} Planting${result.data.plantings.length === 1 ? '' : 's'} added to the ThreeD Scene`,
+        'success',
+      );
+    } catch (error) {
+      console.error('Failed to place ThreeD Planting', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to place ThreeD Planting',
+        'error',
+      );
+    } finally {
+      placingPlantingRef.current = false;
+      setPlacingPlanting(false);
+    }
+  }, [
+    placementThreedId,
+    plantingOptions,
+    plantingPlacementActive,
+    plantingPlacementDraft,
+    selectedProjectId,
+  ]);
+
   const handleUpdateModelInstance = useCallback(async (
     instanceId: number,
     input: {
@@ -2145,6 +2417,109 @@ function UnifiedMapPageInner() {
       setUpdatingBedMarkerId(null);
     }
   }, [updateProjectThreeDMarkers, updatingBedMarkerId]);
+
+  const handleUpdatePlantingInstance = useCallback(async (
+    markerId: number,
+    input: {
+      modelScale: number;
+      positionX: number;
+      positionY: number;
+      positionZ: number;
+    },
+  ) => {
+    if (updatingPlantingMarkerId != null || deletingPlantingMarkerId != null) return;
+    setUpdatingPlantingMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markerType: 'plantings', ...input }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Planting instance update failed (${response.status})`);
+      }
+      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
+        Number(marker.id) === markerId
+          ? {
+              ...marker,
+              ...result.data,
+              data: { ...marker.data, ...(result.data?.data ?? {}) },
+              metadata: { ...marker.metadata, ...(result.data?.metadata ?? {}) },
+            }
+          : marker
+      )));
+      setSelectedMarker(null);
+      showToastRef.current('Project Planting instance updated', 'success');
+    } catch (error) {
+      console.error('Failed to update Project Planting instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to update Project Planting instance',
+        'error',
+      );
+    } finally {
+      setUpdatingPlantingMarkerId(null);
+    }
+  }, [deletingPlantingMarkerId, updateProjectThreeDMarkers, updatingPlantingMarkerId]);
+
+  const handleDeletePlantingInstance = useCallback(async (
+    markerId: number,
+    name: string,
+  ) => {
+    if (deletingPlantingMarkerId != null || updatingPlantingMarkerId != null) return;
+    setDeletingPlantingMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Planting deletion failed (${response.status})`);
+      }
+      updateProjectThreeDMarkers((markers) => markers.filter(
+        (marker) => Number(marker.id) !== markerId,
+      ));
+      const deletedPlantingId = Number(result.data?.id);
+      setData((current) => {
+        const raw = current.threed.raw;
+        if (!raw || !Number.isSafeInteger(deletedPlantingId)) return current;
+        return {
+          ...current,
+          threed: {
+            ...current.threed,
+            raw: {
+              ...raw,
+              plantings: (raw.plantings ?? []).filter(
+                (planting: any) => Number(planting.id) !== deletedPlantingId,
+              ),
+            },
+          },
+        };
+      });
+      setSelectedMarker(null);
+      setActionTarget((current) => current
+        && isMatchingThreeDActionTarget(current, {
+          markerType: 'plantings',
+          assetId: deletedPlantingId,
+        })
+        ? null
+        : current);
+      setOrchestrationStatus(null);
+      showToastRef.current(`${name} removed from the ThreeD Project`, 'success');
+    } catch (error) {
+      console.error('Failed to delete Project ThreeD Planting instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to delete ThreeD Planting',
+        'error',
+      );
+    } finally {
+      setDeletingPlantingMarkerId(null);
+    }
+  }, [deletingPlantingMarkerId, updateProjectThreeDMarkers, updatingPlantingMarkerId]);
 
   const handleDeleteModelInstance = useCallback(async (
     instanceId: number,
@@ -2407,12 +2782,25 @@ function UnifiedMapPageInner() {
                   onClick={() => {
                     setIsModelLibraryOpen(false);
                     setPlacementModel(null);
+                    setIsPlantingPlacementOpen(false);
+                    setPlantingPlacementActive(false);
                     setIsBedPlacementOpen(true);
                     setIsProjectSummaryOpen(false);
                   }}
                 >
                   <Plus className="mr-1 h-3 w-3" />
                   Add Bed
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={projectThreeDModules.length === 0}
+                  onClick={() => void openPlantingPlacement()}
+                >
+                  <Plus className="mr-1 h-3 w-3" />
+                  Add Planting
                 </Button>
               </div>
             </div>
@@ -2743,6 +3131,146 @@ function UnifiedMapPageInner() {
         </div>
       )}
 
+      {selectedProjectId && isPlantingPlacementOpen && (
+        <div className="absolute left-1 top-9 z-40 w-[min(26rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold">Add ThreeD Planting</h2>
+              <p className="text-[11px] text-muted-foreground">
+                Select a Plant, then choose its location in the ThreeD Scene.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              disabled={placingPlanting}
+              onClick={() => {
+                setPlantingPlacementActive(false);
+                setIsPlantingPlacementOpen(false);
+              }}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+
+          {projectThreeDModules.length > 1 && (
+            <label className="mb-2 block text-xs">
+              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={placementThreedId ?? ''}
+                disabled={plantingPlacementActive || placingPlanting}
+                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
+              >
+                {projectThreeDModules.map((module) => (
+                  <option key={module.id} value={module.id}>{module.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <label className="col-span-2">
+              <span className="mb-1 block text-muted-foreground">Plant</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={plantingPlacementDraft.plantId}
+                disabled={plantingPlacementActive || placingPlanting || loadingPlantingOptions}
+                onChange={(event) => setPlantingPlacementDraft((current) => ({
+                  ...current,
+                  plantId: event.target.value,
+                }))}
+              >
+                {loadingPlantingOptions && <option value="">Loading Plants…</option>}
+                {!loadingPlantingOptions && plantingOptions.length === 0 && (
+                  <option value="">No active Plants available</option>
+                )}
+                {plantingOptions.map((plant) => (
+                  <option key={plant.id} value={plant.id}>
+                    {plant.commonName}{plant.variety ? ` — ${plant.variety}` : ''}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="col-span-2">
+              <span className="mb-1 block text-muted-foreground">Project Bed (optional)</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={plantingPlacementDraft.bedId}
+                disabled={plantingPlacementActive || placingPlanting}
+                onChange={(event) => setPlantingPlacementDraft((current) => ({
+                  ...current,
+                  bedId: event.target.value,
+                }))}
+              >
+                <option value="">No Bed</option>
+                {(data.threed.raw?.beds ?? []).map((bed: any) => (
+                  <option key={bed.id} value={bed.id}>{bed.name || `Bed #${bed.id}`}</option>
+                ))}
+              </select>
+            </label>
+            {([
+              ['quantity', 'Quantity', '1'],
+              ['spacingInches', 'Spacing (in)', '1'],
+              ['modelScale', 'Model scale', '0.01'],
+            ] as const).map(([field, label, step]) => (
+              <label key={field}>
+                <span className="mb-1 block text-muted-foreground">{label}</span>
+                <Input
+                  type="number"
+                  step={step}
+                  value={plantingPlacementDraft[field]}
+                  disabled={plantingPlacementActive || placingPlanting}
+                  className="h-8 text-xs"
+                  onChange={(event) => setPlantingPlacementDraft((current) => ({
+                    ...current,
+                    [field]: event.target.value,
+                  }))}
+                />
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-3 flex items-center justify-end gap-2 border-t pt-3">
+            {plantingPlacementActive && (
+              <span className="mr-auto text-[11px] text-emerald-600">
+                Click the Scene ground to place the Planting.
+              </span>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={placingPlanting}
+              onClick={() => setPlantingPlacementActive(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={
+                !placementThreedId
+                || !plantingPlacementDraft.plantId
+                || plantingPlacementActive
+                || placingPlanting
+              }
+              onClick={() => {
+                setPlantingPlacementActive(true);
+                setViewMode('3d');
+              }}
+            >
+              {placingPlanting ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
+              Place Planting
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* ✅ v0.13.0-beta: Advanced Filtering Panel */}
       {showFilterPanel && (
         <Card className="border-primary/20">
@@ -2907,6 +3435,10 @@ function UnifiedMapPageInner() {
                       onModelPlacement={handleModelPlacement}
                       placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
                       onBedPlacement={handleBedPlacement}
+                      placementPlantingName={plantingPlacementActive
+                        ? plantingOptions.find((plant) => String(plant.id) === plantingPlacementDraft.plantId)?.commonName ?? 'Planting'
+                        : null}
+                      onPlantingPlacement={handlePlantingPlacement}
                       onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                       onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                     />
@@ -2975,6 +3507,10 @@ function UnifiedMapPageInner() {
                 onModelPlacement={handleModelPlacement}
                 placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
                 onBedPlacement={handleBedPlacement}
+                placementPlantingName={plantingPlacementActive
+                  ? plantingOptions.find((plant) => String(plant.id) === plantingPlacementDraft.plantId)?.commonName ?? 'Planting'
+                  : null}
+                onPlantingPlacement={handlePlantingPlacement}
                 onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                 onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
               />
@@ -3043,6 +3579,10 @@ function UnifiedMapPageInner() {
         deletingModelInstanceId={deletingModelInstanceId}
         onUpdateBedInstance={handleUpdateBedInstance}
         updatingBedMarkerId={updatingBedMarkerId}
+        onUpdatePlantingInstance={handleUpdatePlantingInstance}
+        updatingPlantingMarkerId={updatingPlantingMarkerId}
+        onDeletePlantingInstance={handleDeletePlantingInstance}
+        deletingPlantingMarkerId={deletingPlantingMarkerId}
       />
       
     </div>

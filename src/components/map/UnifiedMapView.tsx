@@ -78,6 +78,10 @@ interface UnifiedMapViewProps {
   placementBedName?: string | null;
   /** Receives the selected ThreeD ground coordinate for a new Bed. */
   onBedPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** New Planting currently awaiting a ground placement click. */
+  placementPlantingName?: string | null;
+  /** Receives the selected ThreeD ground coordinate for a new Planting. */
+  onPlantingPlacement?: (position: { x: number; y: number; z: number }) => void;
 }
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
@@ -144,6 +148,8 @@ export function UnifiedMapView({
   onModelPlacement,
   placementBedName,
   onBedPlacement,
+  placementPlantingName,
+  onPlantingPlacement,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stableMarkersRef = useRef<Map<string, RuntimeMarker>>(new Map());
@@ -511,6 +517,8 @@ export function UnifiedMapView({
         onModelPlacement={onModelPlacement}
         placementBedName={placementBedName}
         onBedPlacement={onBedPlacement}
+        placementPlantingName={placementPlantingName}
+        onPlantingPlacement={onPlantingPlacement}
       />
     );
   };
