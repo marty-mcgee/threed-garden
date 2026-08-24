@@ -19,8 +19,8 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.7a — ThreeD Model Library Project Placements** |
-| Current release candidate | **v0.18.7b — ThreeD Bed Project Placement and Editing** |
+| Current stable version | **v0.18.7b — ThreeD Bed Project Placement and Editing** |
+| Current release candidate | **None designated** |
 | Current development milestone | **Post-release checkpoint; next milestone requires review** |
 | Previous checkpoint | **v0.18.6b — ThreeD Project Marker Snapshots** |
 | Character FBX model loading | ✅ Working |
@@ -379,6 +379,7 @@ API (/api/map/threed)
 | **v0.18.6a** | **2026-08-22** | **Production release — ThreeD-owned Action Targets for Plantings, Beds, Characters, FarmBots, and Models with shared navigation, highlighting, lifecycle, and capability-filtered actions** |
 | **v0.18.6b** | **2026-08-22** | **Production release — explicit owner-scoped ThreeD Project marker save/restore, Runtime Marker registry integration, Ecctrl live-position capture, and current-position Action Target resolution** |
 | **v0.18.7a** | **2026-08-24** | **Production release — general ThreeD Model Library Project placements, owner-scoped CRUD, DRACO rendering, whole-asset collision, persistent Scene authority, and selective Scene Layer physics/debug control** |
+| **v0.18.7b** | **2026-08-24** | **Production release — transactional ThreeD Bed Project placement, authoritative instance dimensions/transforms, and live Rapier translation/rotation synchronization** |
 
 ---
 
@@ -1809,10 +1810,12 @@ ThreeD Scene Layer state controls visual, pointer, input, and physics participat
 
 This development was released to production as **v0.18.7a — ThreeD Model Library Project Placements** on August 24, 2026. The user confirmed the manual build and production deployment.
 
-## v0.18.7b release candidate — ThreeD Bed Project Placement and Editing
+## v0.18.7b production checkpoint — ThreeD Bed Project Placement and Editing
 
 The next approved placement direction preserves three separate authorities: each `threed_*` Sub-Module row is the reusable source, `project_assets` assigns it to a Project and ThreeD module, and `project_threed_markers` owns the saved Project instance. Existing Project instance data does not drift when its source row later changes. General Models may have multiple Project placements per reusable Model; Beds, Plantings, Characters, and FarmBots initially use one placement per source asset per Project.
 
 The first scoped implementation adds new rectangular Beds from the Dashboard. The user sets name, width, length, height, color, Y rotation, and scale before entering one-shot ground placement. One authenticated transaction creates the owned `threed_beds` row, active `project_assets` assignment, and `project_threed_markers` row. The returned Bed and marker are inserted into current client state without reloading the Project or remounting unrelated Scene markers. The existing Bed Sub-Module renderer applies the saved instance height, rotation, and scale. DetailsCard updates width, length, height, X/Y/Z position, and degree-based Y rotation only in the owner-scoped Project marker and patches only that live marker. Bed rotation remains stored in degrees and is converted to radians only by the Scene renderer. Additional Bed shapes, other edit fields, removal semantics, and other Sub-Module placement types remain later steps.
 
 The user manually verified this Bed checkpoint on August 24, 2026. New Bed creation, immediate rendering, instance dimension editing, live X/Y/Z translation, live Y rotation, and refresh restoration all pass. Fixed Rapier bodies now synchronize changed translations and rotations through their existing body refs, so the visual and collider move together without remounting the persistent Scene. The Project marker remains authoritative after creation; changing the source `threed_beds` row does not change the saved Project instance.
+
+This checkpoint was released successfully to production through GitHub and Vercel as **v0.18.7b — ThreeD Bed Project Placement and Editing** on August 24, 2026.

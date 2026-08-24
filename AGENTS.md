@@ -38,13 +38,13 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.7a "ThreeD Model Library Project Placements".
+Current production version: v0.18.7b "ThreeD Bed Project Placement and Editing".
 
-Current release candidate: v0.18.7b "ThreeD Bed Project Placement and Editing".
+No later release candidate is currently designated.
 
-v0.18.7a is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
+v0.18.7b is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
-The v0.18.7b candidate adds manually verified rectangular Bed creation plus Project-instance editing for width, length, height, X/Y/Z position, and degree-based Y rotation. `project_threed_markers` is authoritative after creation; edits must not mutate the reusable `threed_beds` source or reload the Project. Fixed marker bodies synchronize translation and rotation through their existing Rapier refs so visuals and colliders remain aligned.
+The v0.18.7b release adds manually verified rectangular Bed creation plus Project-instance editing for width, length, height, X/Y/Z position, and degree-based Y rotation. `project_threed_markers` is authoritative after creation; edits must not mutate the reusable `threed_beds` source or reload the Project. Fixed marker bodies synchronize translation and rotation through their existing Rapier refs so visuals and colliders remain aligned.
 
 The v0.18.7a release adds the general non-Character Model Library placement path: public/library classification, owner-scoped Project Model marker CRUD, one-shot Scene placement, local DRACO decoding, scale composition, grounding, DetailsCard editing/deletion, and whole-rendered-asset fixed collision bounds. Model CRUD patches only the affected `project_threed_markers` entry; it must not reload the Project or remount unrelated markers. The Canvas and Rapier Physics world remain persistent, the marker collection is keyed by stable `marker_id`, and each marker retains its Sub-Module-owned runtime/RigidBody path. Scene Layer visibility must suspend only the matching marker owners' visuals, pointer input, physics participation, and debug outlines; it must not filter the persistent marker collection, rebuild colliders, or change Scene bounds. Models classified for Characters remain excluded because they require GardenCharacter or EcctrlCharacter runtime rules. Preserve Character selection, Take/Release Control, WASD, collision, and animation behavior when reviewing shared Scene changes.
 
@@ -72,7 +72,7 @@ as release-blocking.
 
 ## ThreeD FarmBot Integration Plan rules
 
-- Current production checkpoint: v0.18.7a "ThreeD Model Library Project Placements". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+- Current production checkpoint: v0.18.7b "ThreeD Bed Project Placement and Editing". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 - ThreeD owns the provider-neutral MQTT service. FarmBot and future integrations such as OpenFarm may depend on ThreeD services; `src/lib/services/threed/mqtt` must never import provider adapters.
 - Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
 - FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.

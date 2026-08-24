@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture through the v0.18.7a **ThreeD Model Library Project Placements** production checkpoint.
+This document records the marker architecture through the v0.18.7b **ThreeD Bed Project Placement and Editing** production checkpoint.
 
 ## Hierarchy and terminology
 
