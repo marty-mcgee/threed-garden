@@ -1,29 +1,41 @@
 // src/components/threed/markers/ModelMarker3D.tsx — v0.16.1-alpha "ThreeD Models"
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, type ReactNode } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import {
+  calculateThreeDModelGroundedY,
+  calculateThreeDModelFitMultiplier,
+  type ThreeDVisualBounds,
+} from '@/lib/services/threed/markers/model-visual-fit-core';
 
 // ============================================
 // TYPES
 // ============================================
-interface ModelData {
+export interface ModelData {
   id: number;
   modelName: string;
   modelType: string;
   filePath: string;
-  scale?: string | number;
-  rotationY?: string | number;
-  offsetX?: string | number;
-  offsetY?: string | number;
-  offsetZ?: string | number;
-  animations?: string[];
-  defaultAnimation?: string;
+  scale?: string | number | null;
+  rotationY?: string | number | null;
+  offsetX?: string | number | null;
+  offsetY?: string | number | null;
+  offsetZ?: string | number | null;
+  animations?: unknown;
+  defaultAnimation?: string | null;
   animationSpeed?: number; // from character wrapper
+}
+
+export interface ModelCollisionBounds {
+  center: [number, number, number];
+  halfExtents: [number, number, number];
 }
 
 interface ModelMarker3DProps {
@@ -32,6 +44,12 @@ interface ModelMarker3DProps {
   name?: string;
   scale?: number;
   animationSpeed?: number;
+  fallback?: ReactNode;
+  fitBounds?: ThreeDVisualBounds;
+  /** False when the caller applies the composed base + instance scale outside the loaded object. */
+  applyStoredScale?: boolean;
+  /** Reports loaded, grounded geometry bounds for the marker-owned Rapier collider. */
+  onCollisionBoundsChange?: (bounds: ModelCollisionBounds | null) => void;
 }
 
 // ============================================
@@ -39,16 +57,30 @@ interface ModelMarker3DProps {
 // ============================================
 const modelCache = new Map<string, THREE.Group>();
 
+// Reuse one decoder pool. Decoder files are copied from the installed Three.js
+// version and served by this App so model loading does not depend on a CDN.
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('/assets/draco/');
+dracoLoader.setWorkerLimit(2);
+
 // ============================================
 // MODEL LOADER HOOK
 // ============================================
-function useModelLoad(model: ModelData) {
+function useModelLoad(
+  model: ModelData,
+  fitBounds?: ThreeDVisualBounds,
+  applyStoredScale = true,
+) {
   const [loadedModel, setLoadedModel] = useState<THREE.Group | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fitWidth = fitBounds?.width;
+  const fitHeight = fitBounds?.height;
+  const fitDepth = fitBounds?.depth;
 
   useEffect(() => {
     if (!model.filePath) return;
+    let cancelled = false;
 
     const loadModel = async () => {
       setLoading(true);
@@ -71,14 +103,21 @@ function useModelLoad(model: ModelData) {
             m = await loader.loadAsync(model.filePath) as unknown as THREE.Group;
           } else {
             const loader = new GLTFLoader();
+            loader.setDRACOLoader(dracoLoader);
             const gltf = await loader.loadAsync(model.filePath);
             m = gltf.scene;
+            m.animations = gltf.animations;
           }
           modelCache.set(cacheKey, m.clone());
         }
 
         // Apply model config transforms
-        const modelScale = parseFloat(String(model.scale || '1'));
+        const storedModelScale = Number(model.scale ?? 1);
+        const modelScale = applyStoredScale
+          && Number.isFinite(storedModelScale)
+          && storedModelScale > 0
+          ? storedModelScale
+          : 1;
         const modelRotY = parseFloat(String(model.rotationY || '0'));
         const offsetX = parseFloat(String(model.offsetX || '0'));
         const offsetY = parseFloat(String(model.offsetY || '0'));
@@ -86,7 +125,34 @@ function useModelLoad(model: ModelData) {
 
         m.scale.setScalar(modelScale);
         m.rotation.y = (modelRotY * Math.PI) / 180;
-        m.position.set(offsetX, offsetY, offsetZ);
+
+        if (fitWidth != null && fitHeight != null && fitDepth != null) {
+          m.position.set(0, 0, 0);
+          m.updateMatrixWorld(true);
+          const size = new THREE.Box3().setFromObject(m).getSize(new THREE.Vector3());
+          const fitMultiplier = calculateThreeDModelFitMultiplier(
+            { width: size.x, height: size.y, depth: size.z },
+            { width: fitWidth, height: fitHeight, depth: fitDepth },
+          );
+          m.scale.multiplyScalar(fitMultiplier);
+          m.updateMatrixWorld(true);
+          const fittedBox = new THREE.Box3().setFromObject(m);
+          const fittedCenter = fittedBox.getCenter(new THREE.Vector3());
+          m.position.set(
+            offsetX - fittedCenter.x,
+            calculateThreeDModelGroundedY(fittedBox.min.y, offsetY),
+            offsetZ - fittedCenter.z,
+          );
+        } else {
+          m.position.set(0, 0, 0);
+          m.updateMatrixWorld(true);
+          const modelBox = new THREE.Box3().setFromObject(m);
+          m.position.set(
+            offsetX,
+            calculateThreeDModelGroundedY(modelBox.min.y, offsetY),
+            offsetZ,
+          );
+        }
 
         // Enable shadows
         m.traverse((child) => {
@@ -96,17 +162,26 @@ function useModelLoad(model: ModelData) {
           }
         });
 
-        setLoadedModel(m);
+        if (!cancelled) {
+          setLoadedModel(m);
+        }
       } catch (err) {
-        console.error(`ModelMarker3D: failed to load "${model.modelName}":`, err);
-        setError(String(err));
+        if (!cancelled) {
+          console.error(`ModelMarker3D: failed to load "${model.modelName}":`, err);
+          setError(String(err));
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    loadModel();
-  }, [model]);
+    void loadModel();
+    return () => {
+      cancelled = true;
+    };
+  }, [applyStoredScale, fitDepth, fitHeight, fitWidth, model]);
 
   return { loadedModel, loading, error };
 }
@@ -135,9 +210,76 @@ function ModelFallback({ name, position }: { name?: string; position: [number, n
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1 }: ModelMarker3DProps) {
-  const { loadedModel, loading, error } = useModelLoad(model);
+export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange }: ModelMarker3DProps) {
+  const { loadedModel, error } = useModelLoad(model, fitBounds, applyStoredScale);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
+  const visualGroupRef = useRef<THREE.Group | null>(null);
+  const collisionMeasurementRef = useRef({
+    model: null as THREE.Group | null,
+    scale: 0,
+    frames: 0,
+    reported: false,
+  });
+
+  useEffect(() => {
+    collisionMeasurementRef.current = {
+      model: loadedModel,
+      scale,
+      frames: 0,
+      reported: false,
+    };
+    onCollisionBoundsChange?.(null);
+    return () => onCollisionBoundsChange?.(null);
+  }, [loadedModel, onCollisionBoundsChange, scale]);
+
+  useFrame(() => {
+    const measurement = collisionMeasurementRef.current;
+    if (
+      !loadedModel
+      || measurement.model !== loadedModel
+      || measurement.scale !== scale
+      || measurement.reported
+      || !Number.isFinite(scale)
+      || scale <= 0
+    ) return;
+
+    // Wait until R3F has attached and rendered the external scene graph. Skinned
+    // geometry can report its import/bind-pose bounds during the load effect.
+    measurement.frames += 1;
+    if (measurement.frames < 2) return;
+
+    const visualGroup = visualGroupRef.current;
+    if (!visualGroup?.parent) return;
+
+    loadedModel.traverse((child) => {
+      if (child instanceof THREE.SkinnedMesh) child.skeleton.update();
+    });
+    visualGroup.updateWorldMatrix(true, true);
+    const box = new THREE.Box3().setFromObject(visualGroup, true);
+    const inverseBodyWorld = visualGroup.parent.matrixWorld.clone().invert();
+    box.applyMatrix4(inverseBodyWorld);
+    const center = box.getCenter(new THREE.Vector3());
+    const halfExtents = box.getSize(new THREE.Vector3()).multiplyScalar(0.5);
+    const values = [
+      center.x,
+      center.y,
+      center.z,
+      halfExtents.x,
+      halfExtents.y,
+      halfExtents.z,
+    ];
+    if (box.isEmpty() || !values.every(Number.isFinite)) return;
+
+    measurement.reported = true;
+    onCollisionBoundsChange?.({
+      center: [center.x, center.y, center.z],
+      halfExtents: [
+        Math.max(halfExtents.x, 0.025),
+        Math.max(halfExtents.y, 0.025),
+        Math.max(halfExtents.z, 0.025),
+      ],
+    });
+  });
 
   // Auto-play default animation
   useEffect(() => {
@@ -161,15 +303,18 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
 
   // Fallback if no model loaded
   if (!loadedModel || error) {
-    if (loading) {
-      return <ModelFallback name={name || model.modelName} position={position} />;
-    }
-    return <ModelFallback name={name || model.modelName} position={position} />;
+    return (
+      <group scale={[scale, scale, scale]}>
+        {fallback || (
+          <ModelFallback name={name || model.modelName} position={position} />
+        )}
+      </group>
+    );
   }
 
   return (
-    <group position={position}>
-      <primitive object={loadedModel} scale={[scale, scale, scale]} />
+    <group ref={visualGroupRef} position={position} scale={[scale, scale, scale]}>
+      <primitive object={loadedModel} />
       {name && (
         <Html position={[0, 1.5, 0]} center transform occlude distanceFactor={1}>
           <div className="bg-black/60 text-white px-2 py-0.5 rounded text-[10px] whitespace-nowrap pointer-events-none select-none">

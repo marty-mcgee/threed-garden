@@ -12,6 +12,7 @@ import {
 } from '@/lib/services/threed/markers/runtime-marker-builder';
 import { ThreeDRuntimeMarkerRegistry } from '@/lib/services/threed/markers/runtime-marker-core';
 import type { ProjectThreeDMarkerSnapshotInput } from '@/lib/services/threed/markers/project-marker-snapshot-core';
+import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
 
 export type ProjectThreeDMarkerSnapshotProvider = () => ProjectThreeDMarkerSnapshotInput[];
 export type ThreeDRuntimeMarkerPositionResolver = (
@@ -33,6 +34,8 @@ const ThreeDScene = dynamic(
 );
 
 interface UnifiedMapViewProps {
+  /** Active Project identity; changing it starts a separate marker collection. */
+  projectId?: number | null;
   data: UnifiedMapData;
   layers: MapLayerConfig;
   viewMode: MapViewMode;
@@ -67,13 +70,50 @@ interface UnifiedMapViewProps {
   onRuntimeMarkerPositionResolverChange?: (
     resolver: ThreeDRuntimeMarkerPositionResolver | null,
   ) => void;
+  /** Library model currently awaiting a ground placement click. */
+  placementModel?: ThreeDModelLibraryItem | null;
+  /** Receives the selected ThreeD ground coordinate. */
+  onModelPlacement?: (position: { x: number; y: number; z: number }) => void;
 }
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
   return 'source' in m;
 }
 
+function shallowEqualRecord(
+  left: Record<string, unknown> | null | undefined,
+  right: Record<string, unknown> | null | undefined,
+  ignoredKeys: ReadonlySet<string> = new Set(),
+): boolean {
+  const leftRecord = left ?? {};
+  const rightRecord = right ?? {};
+  const leftKeys = Object.keys(leftRecord).filter((key) => !ignoredKeys.has(key));
+  const rightKeys = Object.keys(rightRecord).filter((key) => !ignoredKeys.has(key));
+  return leftKeys.length === rightKeys.length
+    && leftKeys.every((key) => Object.prototype.hasOwnProperty.call(rightRecord, key)
+      && Object.is(leftRecord[key], rightRecord[key]));
+}
+
+const GENERATED_METADATA_KEYS = new Set(['generatedAt']);
+
+function isSameRuntimeMarker(left: RuntimeMarker, right: RuntimeMarker): boolean {
+  return left.id === right.id
+    && left.name === right.name
+    && left.type === right.type
+    && left.position.x === right.position.x
+    && left.position.y === right.position.y
+    && left.position.z === right.position.z
+    && left.color === right.color
+    && left.icon === right.icon
+    && left.label === right.label
+    && left.isVisible === right.isVisible
+    && left.isActive === right.isActive
+    && shallowEqualRecord(left.data, right.data)
+    && shallowEqualRecord(left.metadata, right.metadata, GENERATED_METADATA_KEYS);
+}
+
 export function UnifiedMapView({
+  projectId,
   data,
   layers,
   viewMode,
@@ -96,18 +136,38 @@ export function UnifiedMapView({
   actionTargetFocusRequest = 0,
   onProjectMarkerSnapshotProviderChange,
   onRuntimeMarkerPositionResolverChange,
+  placementModel,
+  onModelPlacement,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const stableMarkersRef = useRef<Map<string, RuntimeMarker>>(new Map());
+  const markerProjectIdRef = useRef<number | null | undefined>(projectId);
   const runtimeMarkerRegistryRef = useRef<ThreeDRuntimeMarkerRegistry | null>(null);
   if (!runtimeMarkerRegistryRef.current) {
     runtimeMarkerRegistryRef.current = new ThreeDRuntimeMarkerRegistry();
   }
   const [autoRotate, setAutoRotate] = useState(false);
 
-  const runtimeMarkers = useMemo(
-    () => buildThreeDRuntimeMarkers(data.threed.raw),
-    [data.threed.raw],
-  );
+  const runtimeMarkers = useMemo(() => {
+    if (markerProjectIdRef.current !== projectId) {
+      stableMarkersRef.current.clear();
+      runtimeMarkerRegistryRef.current?.clear();
+      markerProjectIdRef.current = projectId;
+    }
+
+    const previous = stableMarkersRef.current;
+    const next = new Map<string, RuntimeMarker>();
+    const markers = buildThreeDRuntimeMarkers(data.threed.raw).map((marker) => {
+      const existing = previous.get(marker.id);
+      const stableMarker = existing && isSameRuntimeMarker(existing, marker)
+        ? existing
+        : marker;
+      next.set(marker.id, stableMarker);
+      return stableMarker;
+    });
+    stableMarkersRef.current = next;
+    return markers;
+  }, [data.threed.raw, projectId]);
 
   // Keep the complete Project-scoped marker set in the registry. Layer and UI
   // filters below remain presentation-only and do not remove marker identity.
@@ -153,8 +213,11 @@ export function UnifiedMapView({
         throw new Error('Runtime Marker registry is not synchronized');
       }
       return {
+        markerId: marker.id,
         moduleType: registered.identity.moduleType,
-        assetId: registered.identity.assetId,
+        assetId: marker.type === 'models'
+          ? Number(marker.data?.modelId)
+          : registered.identity.assetId,
         name: marker.name,
         position: registered.currentPosition,
         positionSource: registered.positionSource === 'runtime'
@@ -390,13 +453,7 @@ export function UnifiedMapView({
 
   // ✅ 3D scene: use raw filteredMarkers for accurate 3D positions (spreadMarkers is for 2D leaflet overlap prevention)
   const threeDMarkers = useMemo(() => filteredMarkers
-    .filter((m) => m.position && m.position.x !== undefined)
-    .map((m) => ({
-      id: m.id, name: m.name, type: m.type,
-      position: m.position, color: m.color,
-      icon: m.icon, label: m.label,
-      metadata: m.metadata, data: m.data,
-    })), [filteredMarkers]);
+    .filter((m) => m.position && m.position.x !== undefined), [filteredMarkers]);
 
   const render2DView = () => (
     <LeafletMap
@@ -423,10 +480,15 @@ export function UnifiedMapView({
       }));
     return (
       <ThreeDScene
+        projectId={projectId ?? undefined}
         incidents={sceneIncidents}
         markers={threeDMarkers}
         onIncidentClick={handleIncidentClick}
         onMarkerClick={handleMarkerClick}
+        onClearSelection={() => {
+          onIncidentSelect?.(null);
+          onMarkerSelect?.(null);
+        }}
         selectedIncident={selectedIncident}
         selectedMarker={selectedMarker}
         height="100%"
@@ -439,6 +501,8 @@ export function UnifiedMapView({
         focusRequest={focusRequest}
         actionTarget={actionTarget}
         actionTargetFocusRequest={actionTargetFocusRequest}
+        placementModel={placementModel}
+        onModelPlacement={onModelPlacement}
       />
     );
   };

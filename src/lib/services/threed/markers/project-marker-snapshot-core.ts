@@ -12,6 +12,7 @@ export const MAX_PROJECT_MARKER_SNAPSHOT_JSON_BYTES = 32_768;
 const FORBIDDEN_SNAPSHOT_KEY = /(password|secret|token|credential|ciphertext|authTag|apiKey)/i;
 
 export interface ProjectThreeDMarkerSnapshotInput {
+  markerId: string;
   moduleType: ThreeDRuntimeMarkerModuleType;
   assetId: number;
   name: string;
@@ -125,7 +126,8 @@ export function parseProjectThreeDMarkerSnapshot(
     throw new ProjectMarkerSnapshotError('too_many_markers');
   }
 
-  const identities = new Set<string>();
+  const markerIds = new Set<string>();
+  const nonModelSourceIdentities = new Set<string>();
   return value.map((candidate) => {
     if (!isRecord(candidate)) {
       throw new ProjectMarkerSnapshotError('invalid_snapshot');
@@ -138,11 +140,17 @@ export function parseProjectThreeDMarkerSnapshot(
       throw new ProjectMarkerSnapshotError('invalid_snapshot');
     }
 
-    const identity = `${moduleType}:${assetId}`;
-    if (identities.has(identity)) {
+    const markerId = requireShortText(candidate.markerId, 250);
+    if (markerIds.has(markerId)) {
       throw new ProjectMarkerSnapshotError('duplicate_marker');
     }
-    identities.add(identity);
+    markerIds.add(markerId);
+
+    const sourceIdentity = `${moduleType}:${assetId}`;
+    if (moduleType !== 'models' && nonModelSourceIdentities.has(sourceIdentity)) {
+      throw new ProjectMarkerSnapshotError('duplicate_marker');
+    }
+    if (moduleType !== 'models') nonModelSourceIdentities.add(sourceIdentity);
 
     const positionSource = candidate.positionSource ?? 'asset';
     if (positionSource !== 'asset' && positionSource !== 'runtime') {
@@ -153,6 +161,7 @@ export function parseProjectThreeDMarkerSnapshot(
     }
 
     return {
+      markerId,
       moduleType,
       assetId,
       name: requireShortText(candidate.name, 250),

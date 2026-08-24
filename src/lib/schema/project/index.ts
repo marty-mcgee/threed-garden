@@ -206,8 +206,6 @@ export const projectThreedMarkers = pgTable('project_threed_markers', {
     .on(table.threedId),
   ownerProjectIdx: index('idx_project_threed_markers_owner_project')
     .on(table.userId, table.projectId),
-  uniqueSourceMarker: uniqueIndex('idx_project_threed_markers_unique_source')
-    .on(table.projectId, table.threedId, table.markerType, table.sourceAssetId),
   uniqueRuntimeMarker: uniqueIndex('idx_project_threed_markers_unique_runtime')
     .on(table.projectId, table.markerId),
 }));

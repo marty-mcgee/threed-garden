@@ -209,9 +209,54 @@ export interface ThreeDModel {
   textureCount: number;
   isActive: boolean;
   isDefault: boolean;
+  isPublic: boolean;
+  isLibraryItem: boolean;
   uploadedBy: string | null;
   uploadedAt: string | null;
   metadata: any;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Client-safe model record returned by the shared ThreeD Model Library. */
+export interface ThreeDModelLibraryItem {
+  id: number;
+  modelName: string;
+  modelType: ModelType;
+  filePath: string;
+  fileSize: number | null;
+  thumbnailUrl: string | null;
+  usedByPlants: boolean | null;
+  usedByCharacters: boolean | null;
+  scale: string | number | null;
+  rotationY: string | number | null;
+  offsetX: string | number | null;
+  offsetY: string | number | null;
+  offsetZ: string | number | null;
+  animations: unknown;
+  defaultAnimation: string | null;
+  isPublic: boolean;
+  isLibraryItem: boolean;
+}
+
+/** Project-owned placement of a reusable ThreeD Model Library asset. */
+export interface ProjectThreeDModelInstance {
+  id: number;
+  userId: string;
+  projectId: number;
+  threedId: number;
+  modelId: number;
+  instanceName: string | null;
+  positionX: string | number;
+  positionY: string | number;
+  positionZ: string | number;
+  rotationX: string | number;
+  rotationY: string | number;
+  rotationZ: string | number;
+  scaleMultiplier: string | number;
+  isVisible: boolean;
+  isActive: boolean;
+  metadata: unknown;
   createdAt: string;
   updatedAt: string;
 }
@@ -1319,9 +1364,6 @@ export const HARVEST_UNIT_OPTIONS: ThreeDSelectOption[] = [
   { value: HarvestUnit.BUNCHES, label: 'Bunches' },
   { value: HarvestUnit.POUNDS, label: 'Pounds' },
 ];
-
-
-
 
 
 

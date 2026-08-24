@@ -17,6 +17,30 @@ A record normally must be owned/accessible, active, and explicitly assigned befo
 
 Beds, plantings, characters, FarmBots, and models become runtime markers from project assets. There is no current persisted `threed_markers` table. `threed_weather_logs` is deferred and should not be expanded without a separate approved milestone.
 
+### ThreeD Model Library visibility
+
+The current development schema adds `threed_models.is_public` and `threed_models.is_library_item`, both defaulting to false. Ownership remains on `user_id`: these flags allow an active model to appear in the shared read-only ThreeD Model Library but never grant update, upload, file deletion, or model deletion authority. Shared-library reads require both flags plus active model status and exclude `used_by_characters = true`. Character models must enter the Scene through the separate Character architecture. Owner-scoped Admin reads retain the complete management record; shared reads expose only rendering and associated-file fields.
+
+Admin Model CRUD persists the existing `used_by_plants` and `used_by_characters` flags on create and update. These fields classify reuse; they do not replace `model_type`, which describes the asset file/loader format.
+
+Library records are reusable assets rather than Project placements. Each placed Model receives its own Project-scoped marker identity and transform, so one Library model can be instantiated more than once. Existing Bed, Planting, Character, and FarmBot visuals are not replaced by Library selections.
+
+### Project ThreeD Model markers
+
+`project_threed_markers` is the Project Scene-placement authority. A Model placement uses `marker_type = 'models'`, references its reusable `threed_models` asset through `source_asset_id`, and has a unique `marker_id`. Many marker rows may reference the same Model within one Project.
+
+The marker stores its display name, position, visibility, active state, and placement data such as rotation and scale multiplier. The Model record continues to own the file URL and base scale/rotation/offset.
+
+Placement CRUD is exposed through `/api/project/threed-markers`. Creation requires an owned Project, an active Project-to-ThreeD assignment, and an eligible non-Character Model. It creates or reactivates the corresponding `project_assets` assignment. `PATCH` and `DELETE` use `?id=X`; snapshot `PUT` remains the explicit whole-Project Save path when no ID is supplied.
+
+The map payload joins saved Model markers to reusable Model render data and returns them through `projectThreedMarkers`; there is no separate Model-instance runtime feed.
+
+Dashboard placement is an explicit user action rather than a render-frame writer. Selecting a Library item and clicking the Scene ground creates one `project_threed_markers` row. Ordinary rendering, pointer movement, camera movement, and Character movement do not create placement rows.
+
+The placement `scaleMultiplier` is relative to the reusable Model's stored `scale`; rendering multiplies both values once.
+
+The model and supporting-file records continue to point to their existing Vercel Blob or Amazon S3 URLs. No second model catalog, placement table, or storage manifest is introduced.
+
 ### ThreeD FarmBot identity and security data
 
 `threed_farmbots.id` is the App database primary key used by child records and Project asset relationships. The three external-facing identity fields have separate purposes:

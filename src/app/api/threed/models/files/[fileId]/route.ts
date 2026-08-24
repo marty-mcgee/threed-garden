@@ -2,9 +2,10 @@
 // Route is mounted at /api/threed/models/files/[fileId] (no [id] segment),
 // so the model id is derived from the file record itself.
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedModels, threedModelFiles } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { del } from '@vercel/blob';
 
 // DELETE /api/threed/models/files/[fileId] - Delete a specific model file
@@ -13,6 +14,14 @@ export async function DELETE(
   { params }: { params: Promise<{ fileId: string }> }
 ) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 },
+      );
+    }
+
     const { fileId: fileIdParam } = await params;
     const fileId = parseInt(fileIdParam);
 
@@ -41,6 +50,21 @@ export async function DELETE(
       return NextResponse.json(
         { success: false, error: 'File is not associated with a model' },
         { status: 400 }
+      );
+    }
+
+    const [ownedModel] = await db.select({ id: threedModels.id })
+      .from(threedModels)
+      .where(and(
+        eq(threedModels.id, modelId),
+        eq(threedModels.userId, session.user.id),
+      ))
+      .limit(1);
+
+    if (!ownedModel) {
+      return NextResponse.json(
+        { success: false, error: 'File not found' },
+        { status: 404 },
       );
     }
 

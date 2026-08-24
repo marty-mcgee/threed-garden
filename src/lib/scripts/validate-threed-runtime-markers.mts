@@ -18,6 +18,18 @@ import {
   parseProjectThreeDMarkerSnapshot,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/markers/project-marker-snapshot-core.ts';
+import {
+  calculateThreeDModelGroundedY,
+  calculateThreeDModelInstanceScale,
+  calculateThreeDModelFitMultiplier,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/markers/model-visual-fit-core.ts';
+import {
+  parseCreateProjectModelInstance,
+  parseUpdateProjectModelInstance,
+  ProjectModelInstanceInputError,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/project-model-instance-core.ts';
 
 let completedValidationSteps = 0;
 function validationStep(label: string): void {
@@ -27,6 +39,78 @@ function validationStep(label: string): void {
 
 console.log('\nThreeD Runtime Marker registry validation');
 console.log('─'.repeat(42));
+
+assert.equal(calculateThreeDModelFitMultiplier(
+  { width: 4, height: 2, depth: 1 },
+  { width: 2, height: 2, depth: 2 },
+), 0.5);
+assert.equal(calculateThreeDModelFitMultiplier(
+  { width: 0.1, height: 0.2, depth: 0.1 },
+  { width: 1, height: 1, depth: 1 },
+), 2.5);
+assert.equal(calculateThreeDModelFitMultiplier(
+  { width: 0.5, height: 0.75, depth: 0.5 },
+  { width: 1, height: 1, depth: 1 },
+), 1);
+assert.equal(calculateThreeDModelFitMultiplier(
+  { width: 0, height: 1, depth: 1 },
+  { width: 1, height: 1, depth: 1 },
+), 1);
+assert.equal(calculateThreeDModelInstanceScale('0.02', '1.0000'), 0.02);
+assert.equal(calculateThreeDModelInstanceScale(0.02, 1.5), 0.03);
+assert.equal(calculateThreeDModelInstanceScale('invalid', 1), 1);
+assert.equal(calculateThreeDModelGroundedY(-2.5, 0), 2.5);
+assert.equal(calculateThreeDModelGroundedY(0, 0.25), 0.25);
+assert.equal(calculateThreeDModelGroundedY(-1, -0.5), 1);
+assert.equal(calculateThreeDModelGroundedY(Number.POSITIVE_INFINITY, Number.NaN), 0);
+validationStep('Model visual fitting, scale composition, and grounding remain bounded');
+
+assert.deepEqual(parseCreateProjectModelInstance({
+  projectId: 2,
+  threedId: 3,
+  modelId: 4,
+  instanceName: ' Garden Bench ',
+  positionX: 12.5,
+  positionY: 0,
+  positionZ: -6.25,
+}), {
+  projectId: 2,
+  threedId: 3,
+  modelId: 4,
+  instanceName: 'Garden Bench',
+  positionX: 12.5,
+  positionY: 0,
+  positionZ: -6.25,
+  rotationX: 0,
+  rotationY: 0,
+  rotationZ: 0,
+  scaleMultiplier: 1,
+  isVisible: true,
+  isActive: true,
+  metadata: {},
+});
+assert.deepEqual(parseUpdateProjectModelInstance({
+  rotationY: 1.57,
+  scaleMultiplier: 0.75,
+  isVisible: false,
+}), {
+  rotationY: 1.57,
+  scaleMultiplier: 0.75,
+  isVisible: false,
+});
+assert.throws(
+  () => parseCreateProjectModelInstance({ projectId: 2, threedId: 3, modelId: 4, positionX: Infinity }),
+  ProjectModelInstanceInputError,
+);
+assert.throws(
+  () => parseUpdateProjectModelInstance({ scaleMultiplier: 0 }),
+  ProjectModelInstanceInputError,
+);
+assert.throws(
+  () => parseUpdateProjectModelInstance({ projectId: 99 }),
+  ProjectModelInstanceInputError,
+);
+validationStep('Project Model marker inputs allow bounded transforms and reject unsafe updates');
 
 assert.deepEqual(THREED_RUNTIME_MARKER_MODULE_TYPES, [
   'plantings',
@@ -190,7 +274,25 @@ const builtMarkers = buildThreeDRuntimeMarkers({
     color: '#123456',
     isVisible: false,
   }],
-  models: [{ id: 1, modelName: 'Greenhouse', positionX: 9, positionZ: 10 }],
+  models: [{ id: 41, modelName: 'Greenhouse', filePath: '/greenhouse.glb' }],
+  projectThreedMarkers: [{
+    id: 1,
+    markerType: 'models',
+    sourceAssetId: 41,
+    markerId: 'models-placement-1',
+    name: 'Greenhouse',
+    positionX: 9,
+    positionY: 0,
+    positionZ: 10,
+    positionSource: 'asset',
+    color: '#06b6d4',
+    icon: '🧊',
+    label: 'Greenhouse',
+    isVisible: true,
+    isActive: true,
+    data: { modelName: 'Greenhouse', modelType: 'glb', filePath: '/greenhouse.glb' },
+    metadata: {},
+  }],
   layers: [],
   tasks: [],
   harvests: [],
@@ -199,7 +301,7 @@ const builtMarkers = buildThreeDRuntimeMarkers({
 assert.equal(builtMarkers.length, 5);
 assert.deepEqual(
   builtMarkers.map((marker) => marker.id),
-  ['plantings-1', 'beds-1', 'characters-1', 'farmbots-1', 'models-1'],
+  ['plantings-1', 'beds-1', 'characters-1', 'farmbots-1', 'models-placement-1'],
 );
 assert.equal(builtMarkers[0].name, 'Tomato');
 assert.deepEqual(builtMarkers[0].position, { x: 1.25, y: 0, z: 2.5 });
@@ -254,6 +356,7 @@ assert.deepEqual(buildThreeDRuntimeMarkers(null, generatedAt), []);
 validationStep('Missing positions are skipped and established fallbacks remain intact');
 
 const validSavedSnapshot = parseProjectThreeDMarkerSnapshot([{
+  markerId: 'characters-9',
   moduleType: 'character',
   assetId: 9,
   name: ' Farmer ',
@@ -268,6 +371,7 @@ const validSavedSnapshot = parseProjectThreeDMarkerSnapshot([{
   metadata: { source: 'sub-module' },
 }]);
 assert.equal(validSavedSnapshot[0].moduleType, 'characters');
+assert.equal(validSavedSnapshot[0].markerId, 'characters-9');
 assert.equal(validSavedSnapshot[0].name, 'Farmer');
 assert.deepEqual(validSavedSnapshot[0].position, { x: 2.1254, y: 0, z: -4 });
 assert.equal(validSavedSnapshot[0].positionSource, 'runtime');
@@ -282,6 +386,29 @@ assert.throws(
     && error.code === 'duplicate_marker',
 );
 assert.throws(
+  () => parseProjectThreeDMarkerSnapshot([
+    { ...validSavedSnapshot[0] },
+    { ...validSavedSnapshot[0], markerId: 'characters-9-copy' },
+  ]),
+  (error) => error instanceof ProjectMarkerSnapshotError
+    && error.code === 'duplicate_marker',
+);
+const repeatedModelSourceSnapshot = parseProjectThreeDMarkerSnapshot([
+  {
+    ...validSavedSnapshot[0],
+    markerId: 'models-placement-a',
+    moduleType: 'models',
+    assetId: 12,
+  },
+  {
+    ...validSavedSnapshot[0],
+    markerId: 'models-placement-b',
+    moduleType: 'models',
+    assetId: 12,
+  },
+]);
+assert.equal(repeatedModelSourceSnapshot.length, 2);
+assert.throws(
   () => parseProjectThreeDMarkerSnapshot([{
     ...validSavedSnapshot[0],
     data: { credentialToken: 'must-not-persist' },
@@ -289,13 +416,17 @@ assert.throws(
   (error) => error instanceof ProjectMarkerSnapshotError
     && error.code === 'unsafe_snapshot_data',
 );
-validationStep('Duplicate identities and credential-like snapshot fields fail closed');
+validationStep('Marker identities stay unique while Model sources may repeat');
 
 assert.throws(
   () => parseProjectThreeDMarkerSnapshot(
     Array.from(
       { length: MAX_PROJECT_MARKER_SNAPSHOT_ROWS + 1 },
-      (_, index) => ({ ...validSavedSnapshot[0], assetId: index + 1 }),
+      (_, index) => ({
+        ...validSavedSnapshot[0],
+        markerId: `characters-${index + 1}`,
+        assetId: index + 1,
+      }),
     ),
   ),
   (error) => error instanceof ProjectMarkerSnapshotError
@@ -309,7 +440,7 @@ const restoredProjectMarkers = buildThreeDRuntimeMarkers({
   beds: [{ id: 4, name: 'Unsaved Bed', positionX: 1, positionY: 0, positionZ: 1 }],
   characters: [],
   farmbots: [],
-  models: [{ id: 8, modelName: 'Newly Assigned Model', positionX: 2, positionY: 0, positionZ: 6 }],
+  models: [{ id: 80, modelName: 'Newly Placed Model', filePath: '/placed.glb' }],
   layers: [],
   tasks: [],
   harvests: [],
@@ -332,6 +463,24 @@ const restoredProjectMarkers = buildThreeDRuntimeMarkers({
       data: { id: 999, notes: 'saved data' },
       metadata: { source: 'old-value' },
       savedAt: '2026-08-22T20:00:00.000Z',
+    },
+    {
+      id: 8,
+      markerType: 'models',
+      sourceAssetId: 80,
+      markerId: 'models-placement-8',
+      name: 'Newly Placed Model',
+      positionX: 2,
+      positionY: 0,
+      positionZ: 6,
+      positionSource: 'asset',
+      color: '#06b6d4',
+      icon: '🧊',
+      label: 'Newly Placed Model',
+      isVisible: true,
+      isActive: true,
+      data: { modelName: 'Newly Placed Model', filePath: '/placed.glb' },
+      metadata: {},
     },
     {
       markerType: 'farmbots',
@@ -363,9 +512,62 @@ assert.equal(restoredProjectMarkers[0].data.positionZ, -3.5);
 assert.equal(restoredProjectMarkers[0].isVisible, false);
 assert.equal(restoredProjectMarkers[0].metadata.source, 'project-snapshot');
 assert.equal(restoredProjectMarkers[0].metadata.positionSource, 'runtime');
-assert.equal(restoredProjectMarkers[1].id, 'models-8');
+assert.equal(restoredProjectMarkers[1].id, 'models-placement-8');
 assert.deepEqual(restoredProjectMarkers[1].position, { x: 2, y: 0, z: 6 });
 validationStep('Saved state overrides matches without hiding new or restoring unavailable markers');
+
+const projectModelInstanceMarkers = buildThreeDRuntimeMarkers({
+  plants: [],
+  plantings: [],
+  beds: [],
+  characters: [],
+  farmbots: [],
+  models: [{ id: 7, modelName: 'Reusable Bench', positionX: 99, positionY: 0, positionZ: 99 }],
+  layers: [],
+  tasks: [],
+  harvests: [],
+  weatherLogs: [],
+  projectThreedMarkers: [
+    {
+      id: 31,
+      markerType: 'models',
+      sourceAssetId: 7,
+      markerId: 'models-placement-31',
+      name: 'Bench One',
+      positionX: '2.000',
+      positionY: '0.000',
+      positionZ: '4.000',
+      positionSource: 'asset',
+      color: '#06b6d4', icon: '🧊', label: 'Bench One',
+      isVisible: true, isActive: true,
+      data: { modelName: 'Reusable Bench', filePath: '/bench.glb', scaleMultiplier: 0.75, rotationYInstance: 1.57 },
+      metadata: {},
+    },
+    {
+      id: 32,
+      markerType: 'models',
+      sourceAssetId: 7,
+      markerId: 'models-placement-32',
+      name: 'Reusable Bench',
+      positionX: 8, positionY: 0, positionZ: 4,
+      positionSource: 'asset',
+      color: '#06b6d4', icon: '🧊', label: 'Reusable Bench',
+      isVisible: true, isActive: true,
+      data: { modelName: 'Reusable Bench', filePath: '/bench.glb', scaleMultiplier: 1 },
+      metadata: {},
+    },
+  ],
+}, generatedAt);
+const generalProjectModelMarkers = projectModelInstanceMarkers.filter(
+  (marker) => marker.type === 'models',
+);
+assert.equal(generalProjectModelMarkers.length, 2);
+assert.equal(generalProjectModelMarkers[0].id, 'models-placement-31');
+assert.equal(generalProjectModelMarkers[0].data.modelId, 7);
+assert.equal(generalProjectModelMarkers[0].data.scaleMultiplier, 0.75);
+assert.equal(generalProjectModelMarkers[0].data.rotationYInstance, 1.57);
+assert.deepEqual(generalProjectModelMarkers[1].position, { x: 8, y: 0, z: 4 });
+validationStep('Project Model placements use marker identity and reusable model render data');
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);

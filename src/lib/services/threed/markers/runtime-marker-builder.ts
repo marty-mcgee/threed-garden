@@ -29,7 +29,6 @@ const THREED_NON_PLANTING_MARKER_TYPES = [
   'beds',
   'characters',
   'farmbots',
-  'models',
 ] as const satisfies readonly ThreeDRuntimeMarkerModuleType[];
 
 function buildSavedProjectMarkers(
@@ -55,8 +54,14 @@ function buildSavedProjectMarkers(
       continue;
     }
 
+    const isModelMarker = moduleType === 'models';
+    const markerRecordId = Number(record.id);
+    if (isModelMarker && (!Number.isSafeInteger(markerRecordId) || markerRecordId <= 0)) {
+      continue;
+    }
+
     markers.push({
-      id: `${moduleType}-${assetId}`,
+      id: record.markerId,
       name: record.name,
       type: moduleType,
       position,
@@ -67,14 +72,15 @@ function buildSavedProjectMarkers(
       isActive: record.isActive,
       data: {
         ...record.data,
-        id: assetId,
+        id: isModelMarker ? markerRecordId : assetId,
+        ...(isModelMarker ? { modelId: assetId, instanceId: markerRecordId } : {}),
         positionX: position.x,
         positionY: position.y,
         positionZ: position.z,
       },
       metadata: {
         ...record.metadata,
-        source: 'project-snapshot' as const,
+        source: isModelMarker ? 'project-marker' as const : 'project-snapshot' as const,
         savedAt: record.savedAt,
         positionSource: record.positionSource,
       },
@@ -179,7 +185,14 @@ export function buildThreeDRuntimeMarkers(
     buildSavedProjectMarkers(raw.projectThreedMarkers)
       .map((marker) => [marker.id, marker]),
   );
-  return markers.map((marker) => savedMarkers.get(marker.id) ?? marker);
+  const restoredMarkers = markers.map((marker) => savedMarkers.get(marker.id) ?? marker);
+  const existingIds = new Set(restoredMarkers.map((marker) => marker.id));
+  for (const savedMarker of savedMarkers.values()) {
+    if (!existingIds.has(savedMarker.id) && savedMarker.type === 'models') {
+      restoredMarkers.push(savedMarker);
+    }
+  }
+  return restoredMarkers;
 }
 
 /** Maps complete builder output into the registry's provider-neutral shape. */

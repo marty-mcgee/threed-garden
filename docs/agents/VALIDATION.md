@@ -5,7 +5,7 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 ## Validation order
 
 1. Inspect `git diff --check` for whitespace and patch errors.
-2. Run `npm run validate:assets` when character animation assets or their manifest change.
+2. Run `npm run validate:assets` when character animation assets, their manifest, or the local Three.js DRACO decoder assets change.
 3. Run `npm run validate:farmbot-crypto` when FarmBot credential cryptography changes.
 4. Run `npm run typecheck`; TypeScript errors are release-blocking.
 5. Run `npm run validate:threed-runtime-markers` when ThreeD Marker identity, registry, position resolution, or marker adapters change.
@@ -203,7 +203,20 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Confirm no marker snapshot path exposes credentials, publishes MQTT, invokes the worker, or authorizes a physical operation.
 - Run the production build from the client environment and use Vercel as the deployment build gate.
 
-`npm run validate:assets` verifies that every file in the external character animation manifest exists under `public/`. It must pass in a clean Git checkout before deployment; in CI, successful validation after `actions/checkout` also proves the required assets are tracked by Git.
+## v0.18.7a pre-release checks
+
+- Run `npm run validate:assets`, `npm run validate:threed-runtime-markers`, `npm run validate:threed-orchestration`, `npm run typecheck`, and `git diff --check`.
+- Upload or select an active, public, non-Character Library model and place it once in the 3D Scene. Confirm one `project_threed_markers` row is created and no write occurs during hover or render frames.
+- Select the placed Model and verify instance name, scale multiplier, and Y rotation update only that marker. Delete a disposable placement and confirm the reusable `threed_models` row and stored file remain.
+- Confirm Model create/update/delete does not visibly reload the Canvas or reset unrelated markers.
+- Open the Map Controls and enable **Physics Debug**; confirm each placed general Model has one fixed collider enclosing the whole visible asset. Toggle it off and on without reloading the Scene, take control of an Ecctrl Character, and confirm it cannot walk through the Model. Change instance scale and verify the collider follows the resized asset boundary. `physicsDebug=1` may be used when the debug view must start enabled.
+- With Physics Debug enabled, hide each Scene Layer individually. Confirm its visuals and collider outlines disappear, hidden Character movement input stops, and the enabled layers retain their own Physics Debug outlines without moving the ground, camera center, or any marker. Show the layer again and confirm the same retained marker instances and collider outlines return at their prior runtime positions without requiring Take Control again.
+- Regression sequence: edit a Model scale, select a movable Character, choose **Take Control**, use WASD, and confirm the Character model, Ecctrl physics body, and blue halo move together. Repeat **Release Control**. A hard refresh must not be required to recover control.
+- Refresh explicitly and verify the Model placement, composed scale, rotation, and grounded Y position restore from `project_threed_markers`.
+- Recheck GardenCharacter wandering, external FBX animations, idle/walk/run, task-to-locomotion crossfades, DetailsCard, Action Targets, targeted Water, and Pick Fruit persistence.
+- Run `npm run build` manually in the client environment and use Vercel as the deployment build gate.
+
+`npm run validate:assets` verifies that every file in the external character animation manifest and every required local Three.js DRACO decoder file exists under `public/`. It must pass in a clean Git checkout before deployment; in CI, successful validation after `actions/checkout` also proves the required assets are tracked by Git.
 
 `npm run validate:farmbot-crypto` exercises the server-side FarmBot credential envelope, persistence conversion, versioned key-provider policy, token-response validation, limited JWT metadata decoding, strict broker-metadata validation, allowlisted read-only device/peripheral parsing, and fail-closed peripheral-binding snapshot validation without using a real credential, database, network connection, or hardware device.
 
@@ -243,6 +256,7 @@ Do not suppress new diagnostics or make TypeScript non-blocking to land unrelate
 ## ThreeD release-blocking manual checks
 
 - Farmer FBX model renders.
+- After shared ThreeD Scene or Model renderer changes, Character selection and Ecctrl Take Control / WASD / Release Control work before and after a hard browser refresh. Report any hot-reload-only loss of controls as a regression watch even when refresh restores operation.
 - External FBX animations load.
 - Idle, walk, and run work.
 - `GardenCharacter` autonomous movement works.

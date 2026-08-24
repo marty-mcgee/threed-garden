@@ -8,7 +8,14 @@ import {
   GizmoHelper, GizmoViewcube, GizmoViewport,
   Text, Sphere, Box, Cylinder, Cone, Ring 
 } from '@react-three/drei';
-import { Physics, RigidBody } from '@react-three/rapier';
+import {
+  CuboidCollider,
+  Physics,
+  RigidBody,
+  type RapierRigidBody,
+  type RigidBodyProps,
+  useRapier,
+} from '@react-three/rapier';
 import * as THREE from 'three';
 import { Settings, ChevronDown, ChevronUp, X, Target, Layers } from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
@@ -18,17 +25,23 @@ import { PulseRing } from '@/components/threed/shared/PulseRing';
 import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
 import { PlantMarker3D } from '@/components/threed/markers/PlantMarker3D';
 import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
-import { ModelMarker3D } from '@/components/threed/markers/ModelMarker3D';
+import {
+  ModelMarker3D,
+  type ModelCollisionBounds,
+} from '@/components/threed/markers/ModelMarker3D';
 import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
 import type { ThreeDActionTarget } from '@/lib/types/map';
+import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
 import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orchestration/interaction-core';
 import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestration/action-target-core';
+import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers/model-visual-fit-core';
 
 interface ThreeDSceneProps {
   incidents: any[];
   markers: any[];
   onIncidentClick?: (incident: any) => void;
   onMarkerClick?: (marker: any) => void;
+  onClearSelection?: () => void;
   selectedIncident?: any;
   selectedMarker?: any;
   height?: string;
@@ -53,6 +66,10 @@ interface ThreeDSceneProps {
   actionTarget?: ThreeDActionTarget | null;
   /** Increments to request camera focus on the current action target. */
   actionTargetFocusRequest?: number;
+  /** Library model selected for one click-to-place operation. */
+  placementModel?: ThreeDModelLibraryItem | null;
+  /** Called with the ground point selected during placement mode. */
+  onModelPlacement?: (position: { x: number; y: number; z: number }) => void;
 }
 
 // ✅ View Preset Types
@@ -76,6 +93,22 @@ const getMarkerColor = (type: string): string => {
     farmbots: '#64748b',
   };
   return colors[type] || '#6b7280';
+};
+
+const normalizeSceneLayerType = (type: unknown): string => {
+  const normalized = String(type ?? '').trim().toLowerCase();
+  const aliases: Record<string, string> = {
+    plant: 'plantings',
+    plants: 'plantings',
+    planting: 'plantings',
+    bed: 'beds',
+    character: 'characters',
+    farmbot: 'farmbots',
+    model: 'models',
+    layer: 'layers',
+    marker: 'markers',
+  };
+  return aliases[normalized] || normalized;
 };
 
 function calculateBounds(positions: { x: number; z: number }[]) {
@@ -398,8 +431,158 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
   );
 }
 
+function SceneMarkerRigidBody({
+  sceneEnabled,
+  ...props
+}: RigidBodyProps & { sceneEnabled: boolean }) {
+  const rigidBodyRef = useRef<RapierRigidBody>(null);
+
+  useEffect(() => {
+    rigidBodyRef.current?.setEnabled(sceneEnabled);
+  }, [sceneEnabled]);
+
+  return <RigidBody ref={rigidBodyRef} {...props} />;
+}
+
+function EnabledColliderDebug() {
+  const { world } = useRapier();
+  const geometryRef = useRef<THREE.BufferGeometry>(null);
+
+  useFrame(() => {
+    const geometry = geometryRef.current;
+    if (!geometry) return;
+
+    const { vertices, colors } = world.debugRender();
+    const visibleVertices: number[] = [];
+    const visibleColors: number[] = [];
+    const isDisabledColor = (offset: number) => {
+      const red = colors[offset];
+      const green = colors[offset + 1];
+      const blue = colors[offset + 2];
+      return Math.abs(red - green) < 0.000001 && Math.abs(green - blue) < 0.000001;
+    };
+
+    // Rapier keeps disabled colliders in its debug buffer and renders their
+    // line segments in grayscale. Filter those complete segments so layer
+    // visibility affects only that layer's diagnostic outline.
+    for (let vertexOffset = 0; vertexOffset < vertices.length; vertexOffset += 6) {
+      const firstColorOffset = (vertexOffset / 3) * 4;
+      const secondColorOffset = firstColorOffset + 4;
+      if (isDisabledColor(firstColorOffset) && isDisabledColor(secondColorOffset)) continue;
+
+      visibleVertices.push(...vertices.slice(vertexOffset, vertexOffset + 6));
+      visibleColors.push(
+        colors[firstColorOffset],
+        colors[firstColorOffset + 1],
+        colors[firstColorOffset + 2],
+        colors[secondColorOffset],
+        colors[secondColorOffset + 1],
+        colors[secondColorOffset + 2],
+      );
+    }
+
+    geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(visibleVertices, 3),
+    );
+    geometry.setAttribute(
+      'color',
+      new THREE.Float32BufferAttribute(visibleColors, 3),
+    );
+  });
+
+  return (
+    <lineSegments frustumCulled={false}>
+      <lineBasicMaterial vertexColors toneMapped={false} />
+      <bufferGeometry ref={geometryRef} />
+    </lineSegments>
+  );
+}
+
+function ProjectModelMarkerBody({
+  marker,
+  position,
+  rotation,
+  scale,
+  onClick,
+  isSelected,
+  isActionTarget,
+  isLayerEnabled,
+  physicsDebug,
+}: {
+  marker: any;
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale: number;
+  onClick?: () => void;
+  isSelected: boolean;
+  isActionTarget: boolean;
+  isLayerEnabled: boolean;
+  physicsDebug: boolean;
+}) {
+  const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
+  const handleCollisionBoundsChange = useCallback((bounds: ModelCollisionBounds | null) => {
+    setCollisionBounds(bounds);
+  }, []);
+
+  useEffect(() => {
+    if (physicsDebug) {
+      console.debug('[ThreeD Model Physics]', {
+        markerId: marker.id,
+        modelId: marker.data?.modelId,
+        scale,
+        bounds: collisionBounds,
+      });
+    }
+  }, [collisionBounds, marker.data?.modelId, marker.id, physicsDebug, scale]);
+
+  const colliderKey = collisionBounds
+    ? [...collisionBounds.center, ...collisionBounds.halfExtents]
+        .map((value) => value.toFixed(4))
+        .join(':')
+    : null;
+
+  return (
+    <SceneMarkerRigidBody
+      sceneEnabled={isLayerEnabled}
+      type="fixed"
+      colliders={false}
+      position={position}
+      rotation={rotation}
+    >
+      {collisionBounds && colliderKey && (
+        <CuboidCollider
+          key={colliderKey}
+          args={collisionBounds.halfExtents}
+          position={collisionBounds.center}
+        />
+      )}
+      <group
+        visible={isLayerEnabled}
+        onClick={(event) => {
+          if (!isLayerEnabled) return;
+          event.stopPropagation();
+          onClick?.();
+        }}
+      >
+        <ModelMarker3D
+          model={marker.data}
+          position={[0, 0, 0]}
+          name={marker.name}
+          scale={scale}
+          applyStoredScale={false}
+          animationSpeed={marker.data?.animationSpeed || 1}
+          onCollisionBoundsChange={handleCollisionBoundsChange}
+        />
+        {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
+        {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
+      </group>
+    </SceneMarkerRigidBody>
+  );
+}
+
 // ✅ ThreeD Marker Component
-function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef }: any) {
+function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -431,6 +614,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
           character={marker.data}
           isControlled={isCtrl}
           isSelected={isSelected}
+          layerEnabled={isLayerEnabled}
           onClick={() => { if (onClick) onClick(); }}
           onControlChange={handleCharacterControlChange}
           cameraFollowRef={cameraFollowRef}
@@ -448,62 +632,70 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
 
     // v0.16.2-alpha: Non-ecctrl characters — restore click/hover on group, wrap in RigidBody
     return (
-      <RigidBody type="fixed" colliders="cuboid" position={pos}>
+      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
         <group
-          onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-          onPointerEnter={() => setHovered(true)}
+          visible={isLayerEnabled}
+          onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}
+          onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
           onPointerLeave={() => setHovered(false)}
         >
           <GardenCharacter character={marker.data} positionedByParent />
           {isSelected && <FadingRing position={[0, 0.01, 0]} innerRadius={0.7} outerRadius={1.0} />}
           {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.85} />}
         </group>
-      </RigidBody>
+      </SceneMarkerRigidBody>
     );
   }
 
   // v0.16.2-alpha: Beds — restore click, wrap in RigidBody
   if (marker.type === 'bed' || marker.type === 'beds') {
     return (
-      <RigidBody type="fixed" colliders="cuboid" position={pos}>
-        <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
+      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
+        <group visible={isLayerEnabled} onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}>
           <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={3.2} outerRadius={4.0} segments={48} />}
           {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={3.5} />}
         </group>
-      </RigidBody>
+      </SceneMarkerRigidBody>
     );
   }
 
   // v0.16.2-alpha: Plantings — restore click, wrap in RigidBody
   if (marker.type === 'planting' || marker.type === 'plantings') {
     return (
-      <RigidBody type="fixed" colliders="cuboid" position={pos}>
-        <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
+      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
+        <group visible={isLayerEnabled} onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}>
           <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: marker.data?.quantity, status: marker.data?.status }} position={[0, 0, 0]} />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.5} outerRadius={0.75} />}
           {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.72} />}
         </group>
-      </RigidBody>
+      </SceneMarkerRigidBody>
     );
   }
 
-  // v0.16.2-alpha: Models get fixed RigidBody sphere collider
+  // Project Models own a fixed body with an explicit collider. Their external
+  // geometry loads after mount, so automatic child-derived colliders are not reliable.
   if (marker.type === 'model' || marker.type === 'models') {
-    return (
-      <RigidBody type="fixed" colliders="ball" position={pos}>
-        <group onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}>
-          <ModelMarker3D
-            model={marker.data}
-            position={[0, 0, 0]}
-            name={marker.name}
-            animationSpeed={marker.data?.animationSpeed || 1}
-          />
-          {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
-          {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
-        </group>
-      </RigidBody>
+    const instanceRotation: [number, number, number] = [
+      Number(marker.data?.rotationX ?? 0),
+      Number(marker.data?.rotationYInstance ?? 0),
+      Number(marker.data?.rotationZ ?? 0),
+    ];
+    const instanceScale = calculateThreeDModelInstanceScale(
+      marker.data?.scale,
+      marker.data?.scaleMultiplier,
     );
+    return <ProjectModelMarkerBody
+      marker={marker}
+      position={pos}
+      rotation={instanceRotation}
+      scale={instanceScale}
+      onClick={onClick}
+      isSelected={isSelected}
+      isActionTarget={isActionTarget}
+      isLayerEnabled={isLayerEnabled}
+      physicsDebug={physicsDebug}
+    />;
   }
 
   // v0.16.2-alpha: Farmbots get fixed RigidBody cuboid collider
@@ -513,10 +705,11 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
     const fbStatusColor = ({ online: '#22c55e', offline: '#ef4444', busy: '#f59e0b', maintenance: '#3b82f6', error: '#ef4444' } as Record<string, string>)[fbStatus] || '#6b7280';
 
     return (
-      <RigidBody type="fixed" colliders="cuboid" position={pos}>
+      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
         <group
-          onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-          onPointerEnter={() => setHovered(true)}
+          visible={isLayerEnabled}
+          onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}
+          onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
           onPointerLeave={() => setHovered(false)}
         >
           <mesh position={[0, 0.15, 0]} castShadow>
@@ -561,7 +754,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.5} outerRadius={0.75} />}
           {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.72} />}
         </group>
-      </RigidBody>
+      </SceneMarkerRigidBody>
     );
   }
 
@@ -577,9 +770,10 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, ac
 
   return (
     <group
+      visible={isLayerEnabled}
       position={[Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0]}
-      onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
-      onPointerEnter={() => setHovered(true)}
+      onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}
+      onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
       onPointerLeave={() => setHovered(false)}
     >
       <mesh>
@@ -655,7 +849,16 @@ function ShadowLight({ centerX, centerZ }: { centerX: number; centerZ: number })
 }
 
 // Interactive Ground with shadow catching + left-click deselect
-function InteractiveGround({ size, centerX, centerZ, onClick }: any) {
+function InteractiveGround({
+  size,
+  centerX,
+  centerZ,
+  onClick,
+  placementActive,
+  onPlacementHover,
+  onPlacementLeave,
+  onPlacementClick,
+}: any) {
   const grassTexture = useMemo(() => {
     const tex = createGrassTexture();
     const repeat = Math.max(size / 4, 1);
@@ -694,7 +897,19 @@ function InteractiveGround({ size, centerX, centerZ, onClick }: any) {
         args={[size, size]}
         rotation={[-Math.PI / 2, 0, 0]}
         position={[centerX, -0.03, centerZ]}
-        onClick={(e) => { e.stopPropagation(); if (onClick) onClick(); }}
+        onPointerMove={(e) => {
+          if (!placementActive) return;
+          onPlacementHover?.({ x: e.point.x, y: 0, z: e.point.z });
+        }}
+        onPointerLeave={() => onPlacementLeave?.()}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (placementActive) {
+            onPlacementClick?.({ x: e.point.x, y: 0, z: e.point.z });
+          } else if (onClick) {
+            onClick();
+          }
+        }}
       >
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </Plane>
@@ -707,12 +922,12 @@ export function ThreeDScene({
   markers,
   onIncidentClick,
   onMarkerClick,
+  onClearSelection,
   selectedIncident,
   selectedMarker,
   height = '100%',
   autoRotate = false,
   onAutoRotateToggle,
-  projectId,
   controlledCharacterId,
   onControlChange,
   onRuntimeMarkerPositionChange,
@@ -720,6 +935,8 @@ export function ThreeDScene({
   focusRequest = 0,
   actionTarget,
   actionTargetFocusRequest = 0,
+  placementModel,
+  onModelPlacement,
 }: ThreeDSceneProps) {
   // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
   const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
@@ -730,10 +947,23 @@ export function ThreeDScene({
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
+  const [physicsDebug, setPhysicsDebug] = useState(() => (
+    typeof window !== 'undefined'
+      && new URLSearchParams(window.location.search).get('physicsDebug') === '1'
+  ));
   const [showControls, setShowControls] = useState(false);
   const [showGizmoCube, setShowGizmoCube] = useState(true);
   const [controlsReady, setControlsReady] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
+  const [placementPreviewPosition, setPlacementPreviewPosition] = useState<{
+    x: number;
+    y: number;
+    z: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!placementModel) setPlacementPreviewPosition(null);
+  }, [placementModel]);
   
   // ✅ Camera focus state
   const [focusTarget, setFocusTarget] = useState<any>(null);
@@ -741,7 +971,6 @@ export function ThreeDScene({
 
   // ✅ Layer visibility state
   const [activeLayers, setActiveLayers] = useState<Set<string>>(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
-  const [availableLayers, setAvailableLayers] = useState<string[]>(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
 
   // ✅ View presets state
   const [viewPresets, setViewPresets] = useState<ViewPreset[]>([]);
@@ -795,66 +1024,24 @@ export function ThreeDScene({
     }
   }, [envPreset]);
 
-  // ✅ Fetch layers from API
-  useEffect(() => {
-    const fetchLayers = async () => {
-      try {
-        if (!projectId) {
-          setAvailableLayers(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
-          setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
-          return;
-        }
-        
-        const response = await fetch(`/api/threed/layers?projectId=${projectId}`);
-        const data = await response.json();
-        if (data.success && data.data.length > 0) {
-          // ✅ Use known marker types for activeLayers (not DB layerType values which differ)
-          // DB layers store their display category in layerType, but markers use
-          // their sub-module names: plantings, beds, characters, farmbots
-          const markerTypes = ['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers'];
-          const dbLayerTypes = data.data.map((layer: any) => layer.layerType || layer.name);
-          setAvailableLayers(dbLayerTypes);
-          // ✅ Always include the known marker-producing types so they render
-          setActiveLayers(new Set(markerTypes));
-        } else {
-          setAvailableLayers(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
-          setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
-        }
-      } catch (error) {
-        console.error('Failed to fetch layers:', error);
-        setAvailableLayers(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
-        setActiveLayers(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
-      }
-    };
-    
-    fetchLayers();
-  }, [projectId]);
-
-  // ✅ Filter markers by active layers (normalize singular/plural type names)
-  const normalizeType = (type: string): string => {
-    // Ensure marker types match activeLayers keys (both singular → plural)
-    const singularMap: Record<string, string> = {
-      'planting': 'plantings',
-      'bed': 'beds',
-      'character': 'characters',
-      'farmbot': 'farmbots',
-      'model': 'models',
-      'layer': 'layers',
-      'marker': 'markers',
-    };
-    return singularMap[type] || type;
-  };
+  // Scene visibility controls operate on the marker types that are actually
+  // present. Database ThreeD Layer records do not currently assign individual
+  // Runtime Markers to a layer record, so they cannot accurately drive this UI.
+  const availableLayers = useMemo(() => Array.from(new Set(
+    markers
+      .map((marker) => normalizeSceneLayerType(marker.type))
+      .filter(Boolean),
+  )).sort(), [markers]);
 
   const visibleMarkers = markers.filter((marker) => {
     if (activeLayers.size === 0) return false;
-    const normalizedType = normalizeType(marker.type);
-    return activeLayers.has(marker.type) || activeLayers.has(normalizedType);
+    return activeLayers.has(normalizeSceneLayerType(marker.type));
   });
 
   const visibleIncidents = showIncidents ? incidents : [];
   const allPositions = [
     ...visibleIncidents.map((i: any) => ({ x: Number(i.position.x) || 0, z: Number(i.position.z) || 0 })),
-    ...visibleMarkers.map((m: any) => ({ x: Number(m.position.x) || 0, z: Number(m.position.z) || 0 }))
+    ...markers.map((m: any) => ({ x: Number(m.position.x) || 0, z: Number(m.position.z) || 0 }))
   ];
   const bounds = calculateBounds(allPositions);
   const centerX = isFinite(bounds.centerX) ? bounds.centerX : 0;
@@ -863,10 +1050,20 @@ export function ThreeDScene({
   const cameraDistance = Math.min(Math.max(maxDimension * 1.5, 20), 750);
   const groundSize = Math.min(Math.max(maxDimension + 10, 30), 500);
 
-  const typeCounts = visibleMarkers.reduce((acc: any, m: any) => {
-    acc[m.type] = (acc[m.type] || 0) + 1;
+  const availableTypeCounts = markers.reduce((acc: Record<string, number>, marker: any) => {
+    const type = normalizeSceneLayerType(marker.type);
+    if (type) acc[type] = (acc[type] || 0) + 1;
     return acc;
   }, {});
+
+  const typeCounts = visibleMarkers.reduce((acc: Record<string, number>, marker: any) => {
+    const type = normalizeSceneLayerType(marker.type);
+    if (type) acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {});
+
+  const allAvailableLayersVisible = availableLayers.length > 0
+    && availableLayers.every((layer) => activeLayers.has(layer));
 
   const zoomToPosition = (x: number, z: number) => {
     if (controlsRef.current) {
@@ -958,7 +1155,9 @@ export function ThreeDScene({
       metadata.interactable = currentMarker.data.interactable || false;
     }
     
-    setSelectedDetails({
+    const isAlreadySelected = selectedMarker?.id === currentMarker.id
+      && selectedMarker?.type === currentMarker.type;
+    setSelectedDetails(isAlreadySelected ? null : {
       name: currentMarker.name || currentMarker.label || 'Unknown',
       type: currentMarker.type,
       position: currentMarker.position,
@@ -969,7 +1168,8 @@ export function ThreeDScene({
   };
 
   const handleIncidentClick = (incident: any) => {
-    setSelectedDetails({
+    const isAlreadySelected = (selectedIncident as any)?.key === incident.key;
+    setSelectedDetails(isAlreadySelected ? null : {
       name: incident.title,
       type: 'incident',
       position: incident.position,
@@ -1027,6 +1227,7 @@ export function ThreeDScene({
 
   const clearDetails = () => {
     setSelectedDetails(null);
+    onClearSelection?.();
   };
 
   // ✅ Save current view as preset
@@ -1084,7 +1285,15 @@ export function ThreeDScene({
   };
 
   return (
-    <div className="relative w-full" style={{ height, minHeight: '300px' }}>
+    <div
+      className={`relative w-full ${placementModel ? 'cursor-crosshair' : ''}`}
+      style={{ height, minHeight: '300px' }}
+    >
+      {placementModel && (
+        <div className="pointer-events-none absolute left-3 top-3 z-10 rounded border border-cyan-300/40 bg-black/70 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm">
+          Click the ground to place <span className="font-medium">{placementModel.modelName}</span>
+        </div>
+      )}
       {/* Controls Panel */}
       <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1">
         <button
@@ -1097,7 +1306,7 @@ export function ThreeDScene({
         </button>
 
         {showControls && (
-          <div className="bg-black/70 backdrop-blur-sm rounded border border-white/10 p-1 pb-2.5 min-h-[260px] overflow-y-auto w-[160px] space-y-0.5">
+          <div className="bg-black/70 backdrop-blur-sm rounded border border-white/10 p-1 pb-2.5 min-h-[260px] overflow-y-auto w-[176px] space-y-0.5">
             <button onClick={onAutoRotateToggle} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
               {autoRotate ? '⏸️ Pause Rotation' : '▶️ Auto-Rotate'}
             </button>
@@ -1109,6 +1318,13 @@ export function ThreeDScene({
                 {showLegend ? '📋 Hide Legend' : '📋 Show Legend'}
               </button>
             )}
+            <button
+              onClick={() => setPhysicsDebug(!physicsDebug)}
+              className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors"
+              aria-pressed={physicsDebug}
+            >
+              {physicsDebug ? '🧱 Hide Physics Debug' : '🧱 Show Physics Debug'}
+            </button>
             <button onClick={() => setShowGizmoCube(!showGizmoCube)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
               {showGizmoCube ? '🔢 Hide Gizmo' : '🔳 Show Gizmo'}
             </button>
@@ -1181,10 +1397,10 @@ export function ThreeDScene({
                 <div className="border-t border-white/10 my-1"></div>
                 <div className="text-[10px] text-white/60 px-2 py-0.5 flex items-center gap-1">
                   <Layers className="w-3 h-3" />
-                  <span>Layers</span>
+                  <span>Scene Layers</span>
                   <button
                     onClick={() => {
-                      if (activeLayers.size === availableLayers.length) {
+                      if (allAvailableLayersVisible) {
                         setActiveLayers(new Set());
                       } else {
                         setActiveLayers(new Set(availableLayers));
@@ -1192,7 +1408,7 @@ export function ThreeDScene({
                     }}
                     className="ml-auto text-[10px] text-white/40 hover:text-white/80 transition-colors"
                   >
-                    {activeLayers.size === availableLayers.length ? 'Hide All' : 'Show All'}
+                    {allAvailableLayersVisible ? 'Hide All' : 'Show All'}
                   </button>
                 </div>
                 {availableLayers.map((layer) => (
@@ -1213,11 +1429,13 @@ export function ThreeDScene({
                         : 'text-white/40 hover:bg-white/5'
                     }`}
                   >
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      activeLayers.has(layer) ? getMarkerColor(layer) || 'bg-gray-400' : 'bg-gray-600'
-                    }`} />
+                    <span
+                      className="w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: activeLayers.has(layer) ? getMarkerColor(layer) : '#4b5563' }}
+                    />
                     <span className="capitalize">{layer}</span>
-                    <span className="ml-auto text-[10px]">
+                    <span className="ml-auto text-[10px] flex items-center gap-1">
+                      <span className="text-white/40">{availableTypeCounts[layer] ?? 0}</span>
                       {activeLayers.has(layer) ? '👁️' : '👁️‍🗨️'}
                     </span>
                   </button>
@@ -1381,10 +1599,37 @@ export function ThreeDScene({
         />
 
         <Physics gravity={[0, -9.81, 0]}>
+          {physicsDebug && <EnabledColliderDebug />}
           {/* v0.16.0-alpha: Interactive ground plane as fixed physics body */}
           <RigidBody type="fixed" colliders="cuboid">
-            <InteractiveGround size={groundSize} centerX={centerX} centerZ={centerZ} onClick={clearDetails} />
+            <InteractiveGround
+              size={groundSize}
+              centerX={centerX}
+              centerZ={centerZ}
+              onClick={clearDetails}
+              placementActive={Boolean(placementModel)}
+              onPlacementHover={setPlacementPreviewPosition}
+              onPlacementLeave={() => setPlacementPreviewPosition(null)}
+              onPlacementClick={onModelPlacement}
+            />
           </RigidBody>
+
+          {placementModel && placementPreviewPosition && (
+            <group position={[
+              placementPreviewPosition.x,
+              placementPreviewPosition.y + 0.25,
+              placementPreviewPosition.z,
+            ]}>
+              <mesh raycast={() => null}>
+                <boxGeometry args={[0.5, 0.5, 0.5]} />
+                <meshStandardMaterial color="#22d3ee" transparent opacity={0.45} />
+              </mesh>
+              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.24, 0]} raycast={() => null}>
+                <ringGeometry args={[0.45, 0.6, 32]} />
+                <meshBasicMaterial color="#22d3ee" transparent opacity={0.8} side={THREE.DoubleSide} />
+              </mesh>
+            </group>
+          )}
 
           {showGrid && (
             <Grid
@@ -1425,12 +1670,13 @@ export function ThreeDScene({
             />
           ))}
 
-          {visibleMarkers.map((marker, idx) => (
+          {markers.map((marker, idx) => (
             <ThreeDMarkerComponent
               key={`threed-marker-${marker.type}-${marker.id ?? idx}`}
               marker={marker}
               onClick={() => handleMarkerClick(marker)}
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
+              isLayerEnabled={activeLayers.has(normalizeSceneLayerType(marker.type))}
               isActionTarget={
                 actionTarget != null &&
                 isMatchingThreeDActionTarget(actionTarget, {
@@ -1443,6 +1689,7 @@ export function ThreeDScene({
               onControlChange={storeLivePosition}
               cameraFollowRef={cameraFollowRef}
               livePositionsRef={livePositionsRef}
+              physicsDebug={physicsDebug}
             />
           ))}
         </Physics>

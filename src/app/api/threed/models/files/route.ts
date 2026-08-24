@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedModels, threedModelFiles } from '@/lib/schema/threed';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { put } from '@vercel/blob';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
@@ -30,6 +30,7 @@ function detectTextureType(name: string): string {
 }
 
 async function storeFile(
+  userId: string,
   modelId: number,
   file: File,
   fileType: string,
@@ -46,6 +47,7 @@ async function storeFile(
   return db
     .insert(threedModelFiles)
     .values({
+      userId,
       modelId,
       fileName: file.name,
       fileType,
@@ -84,7 +86,10 @@ export async function POST(request: NextRequest) {
     const [model] = await db
       .select()
       .from(threedModels)
-      .where(eq(threedModels.id, modelId))
+      .where(and(
+        eq(threedModels.id, modelId),
+        eq(threedModels.userId, session.user.id),
+      ))
       .limit(1);
 
     if (!model) {
@@ -117,7 +122,7 @@ export async function POST(request: NextRequest) {
         fileType = 'other';
       }
 
-      const [record] = await storeFile(modelId, file, fileType, textureType, uploaded.length, isBinaryBuffer);
+      const [record] = await storeFile(session.user.id, modelId, file, fileType, textureType, uploaded.length, isBinaryBuffer);
 
       if (fileType === 'texture') textureCount += 1;
       if (fileType === 'model' && firstModelFileId == null) firstModelFileId = record.id;
@@ -133,7 +138,10 @@ export async function POST(request: NextRequest) {
         textureCount,
         mainModelFileId: firstModelFileId,
       })
-      .where(eq(threedModels.id, modelId));
+      .where(and(
+        eq(threedModels.id, modelId),
+        eq(threedModels.userId, session.user.id),
+      ));
 
     return NextResponse.json({
       success: true,

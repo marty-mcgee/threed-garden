@@ -117,6 +117,8 @@ interface EcctrlCharacterProps {
 
   isControlled?: boolean;
   isSelected?: boolean;
+  /** Layer authority without unmounting the Ecctrl instance. */
+  layerEnabled?: boolean;
 
   onClick?: () => void;
 
@@ -1040,6 +1042,9 @@ export function EcctrlCharacter({
   isSelected =
     false,
 
+  layerEnabled =
+    true,
+
   onClick,
 
   onControlChange,
@@ -1092,6 +1097,21 @@ export function EcctrlCharacter({
         'active' &&
         character.visible
     );
+
+  useEffect(() => {
+    const ecctrl = ecctrlRef.current;
+    if (!ecctrl) return;
+
+    if (layerEnabled) {
+      ecctrl.collider.setEnabled(true);
+      ecctrl.body.setEnabled(true);
+    } else {
+      ecctrl.body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      ecctrl.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      ecctrl.collider.setEnabled(false);
+      ecctrl.body.setEnabled(false);
+    }
+  }, [error, layerEnabled, loading, model]);
 
   const [
     hovered,
@@ -2127,6 +2147,10 @@ export function EcctrlCharacter({
       (
         event: any
       ) => {
+        if (!layerEnabled) {
+          return;
+        }
+
         event.stopPropagation();
 
         if (
@@ -2154,16 +2178,18 @@ export function EcctrlCharacter({
       [
         onClick,
         onControlChange,
+        layerEnabled,
       ]
     );
 
   const handleEnter =
     useCallback(
-      () =>
-        setHovered(
-          true
-        ),
-      []
+      () => {
+        if (layerEnabled) {
+          setHovered(true);
+        }
+      },
+      [layerEnabled]
     );
 
   const handleLeave =
@@ -2179,7 +2205,7 @@ export function EcctrlCharacter({
   // OVERLAYS
   // ======================================================
 
-  const overlays = (
+  const overlays = layerEnabled ? (
     <>
       {currentEmote && (
         <Html
@@ -2304,7 +2330,7 @@ export function EcctrlCharacter({
         />
       )}
     </>
-  );
+  ) : null;
 
   // ======================================================
   // POSITION
@@ -2386,9 +2412,10 @@ export function EcctrlCharacter({
         useCustomForward={
           isControlled && movementTargetPosition != null
         }
-        enable
+        enable={layerEnabled}
       >
         <mesh
+          visible={layerEnabled}
           castShadow
           receiveShadow
           position={[
@@ -2427,7 +2454,7 @@ export function EcctrlCharacter({
         </mesh>
 
         {overlays}
-        {isActionTarget && (
+        {layerEnabled && isActionTarget && (
           <PulseRing
             position={[0, -GROUND_OFFSET + 0.025, 0]}
             color="#10b981"
@@ -2462,7 +2489,7 @@ export function EcctrlCharacter({
       useCustomForward={
         isControlled && movementTargetPosition != null
       }
-      enable
+      enable={layerEnabled}
       capsuleHalfHeight={
         CAPSULE_HALF_HEIGHT
       }
@@ -2531,6 +2558,7 @@ export function EcctrlCharacter({
 
       {model && (
         <group
+          visible={layerEnabled}
           position={[
             0,
             -GROUND_OFFSET,
@@ -2545,7 +2573,7 @@ export function EcctrlCharacter({
         </group>
       )}
 
-      {isActionTarget && (
+      {layerEnabled && isActionTarget && (
         <PulseRing
           position={[0, -GROUND_OFFSET + 0.025, 0]}
           color="#10b981"

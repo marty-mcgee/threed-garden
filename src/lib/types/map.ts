@@ -64,6 +64,8 @@ export interface RuntimeMarker {
 
 /** Database row shape returned for an explicitly saved ThreeD Project marker. */
 export interface ProjectThreeDMarkerRecord {
+  id?: number;
+  threedId?: number;
   markerType: string;
   sourceAssetId: number;
   markerId: string;

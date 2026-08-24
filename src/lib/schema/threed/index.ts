@@ -265,6 +265,8 @@ export const threedModels = pgTable('threed_models', {
   isActive: boolean('is_active').default(true),
   status: modelStatusEnum('status').default('active'),
   isDefault: boolean('is_default').default(false),
+  isPublic: boolean('is_public').notNull().default(false),
+  isLibraryItem: boolean('is_library_item').notNull().default(false),
   uploadedBy: varchar('uploaded_by', { length: 255 }),
   uploadedAt: timestamp('uploaded_at').defaultNow(),
   
@@ -277,6 +279,11 @@ export const threedModels = pgTable('threed_models', {
   modelTypeIdx: index('idx_threed_models_type').on(table.modelType),
   activeIdx: index('idx_threed_models_active').on(table.isActive),
   statusIdx: index('idx_threed_models_status').on(table.status),
+  publicLibraryIdx: index('idx_threed_models_public_library').on(
+    table.isPublic,
+    table.isLibraryItem,
+    table.isActive,
+  ),
 }));
 
 // ============================================

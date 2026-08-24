@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { sanitizeFarmBotRecord } from '@/lib/services/threed/farmbot/sanitize';
 import { 
+  threed,
   threedPlants,
   threedBeds,
   threedCharacters,
@@ -92,8 +93,15 @@ export async function GET(request: NextRequest) {
 
     // ✅ Get ThreeD module IDs
     const projectThreeDModules = await db
-      .select({ threedId: projectThreed.threedId })
+      .select({
+        threedId: projectThreed.threedId,
+        name: threed.name,
+      })
       .from(projectThreed)
+      .innerJoin(threed, and(
+        eq(threed.id, projectThreed.threedId),
+        eq(threed.isActive, true),
+      ))
       .where(
         and(
           eq(projectThreed.projectId, parsedProjectId),
@@ -315,6 +323,18 @@ export async function GET(request: NextRequest) {
           `${marker.threedId}:${assetType}:${marker.sourceAssetId}`,
         );
       });
+
+      const modelById = new Map(threedData.models.map((model: any) => [model.id, model]));
+      savedProjectMarkers = savedProjectMarkers.map((marker) => marker.markerType === 'models'
+        ? {
+            ...marker,
+            data: {
+              ...(modelById.get(marker.sourceAssetId) ?? {}),
+              ...(marker.data as Record<string, unknown>),
+              modelId: marker.sourceAssetId,
+            },
+          }
+        : marker);
     }
 
     // ✅ Fetch Traffic assets
@@ -383,6 +403,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: allData,
+      projectContext: {
+        projectId: projectData.id,
+        projectName: projectData.name,
+        threedModules: projectThreeDModules
+          .filter((module) => module.threedId !== null)
+          .map((module) => ({ id: module.threedId, name: module.name })),
+      },
       markerSnapshot: savedProjectMarkers,
       counts,
       total,

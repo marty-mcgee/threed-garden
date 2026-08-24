@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.6b — ThreeD Project Marker Snapshots** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-release checkpoint; next Phase 5 step requires review** |
+| Current release candidate | **v0.18.7a — ThreeD Model Library Project Placements** |
+| Current development milestone | **Release validation for general non-Character Project Model placement CRUD** |
 | Previous checkpoint | **v0.18.6a — ThreeD Markers Action Target Module** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -1769,3 +1769,41 @@ The Dashboard Project dropdown now exposes **Save ThreeD Project**. It requests 
 This step does not replace `ThreeDScene`'s established camera-focus position map, report autonomous GardenCharacter movement, change marker eligibility, add persistence, alter animation paths, publish MQTT, invoke a worker, or authorize physical behavior.
 
 Saved marker restoration updates both the outer Runtime Marker position and its embedded `data.positionX/Y/Z`. This preserves one saved location across static marker placement and the Ecctrl physics-body spawn path without changing the character components or their locomotion behavior.
+
+## ThreeD Model Library — Step 1
+
+The approved minimal Model Library milestone reuses `threed_models` and `threed_model_files`; it introduces no second catalog or storage manifest. The development schema adds `is_public` and `is_library_item`, both private by default. Authenticated `scope=library` reads require both flags plus active status and return a limited rendering-safe shape. Owner CRUD remains owner-scoped, and model-file upload/deletion plus parent deletion now establish model ownership before changing database or Blob state.
+
+## ThreeD Model Library — approved placement direction
+
+The runtime visual-swapping experiment was removed before release. Beds, Plantings, Characters, and FarmBots retain their established visuals, and GardenCharacter/EcctrlCharacter remain on their saved model and animation paths.
+
+The approved direction is a Library-to-Scene placement workflow built on the existing Project hierarchy. `threed_models` remains the reusable owned/public asset catalog, `project_assets` authorizes the source Model for a ThreeD module, and `project_threed_markers` owns every Project placement. Multiple marker rows may reference the same Model, while each row has a unique `marker_id` and its own transform.
+
+The authenticated `/api/project/threed-markers` route owns Model placement creation, update, deletion, snapshot save, and Project marker reads. Model creation verifies the owned Project and active ThreeD assignment, verifies Model eligibility, creates or reactivates the required Project Asset assignment, and inserts a `models` marker. `PATCH` and `DELETE` address the marker row through `?id=X`. No separate Model-instance API or runtime population feed remains active.
+
+The map read path restores Model placements directly from `project_threed_markers` and joins their referenced `threed_models` render data. The Runtime Marker builder adds those saved Model markers to the Scene while preserving the established Sub-Module paths for Beds, Plantings, Characters, and FarmBots.
+
+The Dashboard Project menu now opens a ThreeD Model Library panel. It loads active shared Library models, selects the active ThreeD module explicitly when a Project has more than one, and starts a one-shot click-to-place mode. Ground hover shows a cyan placement guide; ground click posts one Project model instance, inserts only the returned marker into client state, and exits placement mode. A local request lock prevents duplicate placement from rapid clicks. Closing or cancelling the panel writes nothing. Existing ground-click deselection remains unchanged outside placement mode.
+
+Placed-model rendering composes `threed_models.scale` with the instance `scale_multiplier` and applies the result at the outer React Three Fiber group. The loaded FBX/GLB/OBJ object therefore cannot discard the reusable model's base scale during loading or cloning. A model scale of `0.02` with the default instance multiplier `1.00` renders at `0.02`; the database multiplier remains an instance adjustment rather than a duplicate of base scale.
+
+## Verified post-v0.18.6b development checkpoint — ThreeD Model Library placement
+
+On August 23, 2026, the user manually verified the first complete general-model placement path. A Tomato Plant GLB uploaded through Admin Model CRUD to Vercel Blob appears in the authenticated non-Character ThreeD Model Library, creates a Project-owned marker through one-shot Dashboard ground placement, and reloads as a visible `models` Runtime Marker in the ThreeD Scene. The corrected hierarchy stores that placement in `project_threed_markers`.
+
+The verified GLB uses DRACO-compressed geometry. `ModelMarker3D` attaches one reused `DRACOLoader` to its GLTF/GLB loader and serves matching Three.js decoder files locally from `public/assets/draco`, avoiding a runtime dependency on an external decoder CDN. `npm run validate:assets` now checks these production files together with the established external animation assets.
+
+This checkpoint applies only to general Model instances. Models marked `used_by_characters = true` are excluded from the direct Library query and rejected by direct placement creation because Character assets require GardenCharacter or EcctrlCharacter rules. Admin Model CRUD now manages the existing `used_by_plants` and `used_by_characters` classifications and can upload a replacement primary model file during Edit. No Character Library or Character placement workflow is implemented yet.
+
+The Dashboard now exposes the basic placement CRUD lifecycle: create by one-shot Library ground placement, read through Project map loading and DetailsCard, update instance name/scale/Y rotation through the owner-scoped PATCH route, and delete only the selected Project instance after confirmation. These controls never update or delete the reusable Model or its Blob file. Position dragging remains outside this checkpoint.
+
+Manual testing exposed a scene-authority regression: saving a Model placement reloaded the complete Project data, reconstructed unrelated Character marker data, and allowed the Ecctrl selection halo to move while the visible Character remained stationary. Marker create/update/delete now patch only the affected `project_threed_markers` entry. `UnifiedMapView` reconciles the complete marker collection by stable `marker_id` and passes unchanged marker objects directly into the persistent ThreeD Scene. The user verified that editing a Model no longer breaks Character Take Control or WASD and that the Character plus halo move together.
+
+The v0.18.7a scene hierarchy is: one persistent Canvas, one persistent Rapier Physics world, one stable Project marker collection keyed by `marker_id`, and one Sub-Module-owned runtime/RigidBody path per marker. Explicit Refresh or Project switching may reload data; ordinary marker CRUD must not reload or remount unrelated Scene objects.
+
+Project Model collision is derived from the whole final rendered asset boundary rather than import-time model bounds. R3F first attaches the asynchronously loaded and composed Model group; after render, the Model path measures its complete world bounds, converts them into its marker-owned fixed RigidBody coordinates, and creates one explicit cuboid collider. This includes instance scale, grounding, nested objects, and skinned geometry and prevents Ecctrl Characters from passing through general Library Model placements. The ThreeD Scene Controls panel owns the primary **Show/Hide Physics Debug** control for Rapier outlines and debug-only Model-bound reporting. `physicsDebug=1` remains available only to start a Map session with debugging enabled.
+
+ThreeD Scene Layer state controls visual, pointer, input, and physics participation without controlling marker lifecycle. The complete marker collection remains mounted inside the persistent Physics world and continues to determine Scene bounds and the ground coordinate frame. Hiding a Scene Layer disables its existing module-owned RigidBody and suspends Ecctrl input without removing, rebuilding, or changing the collider structure of the marker owner. The Scene-level Physics Debug renderer filters Rapier's disabled-collider line segments, so a hidden layer loses only its own diagnostic outlines while enabled layers remain visible in the debug view. This preserves every retained instance and runtime transform.
+
+This verified development is designated as release candidate **v0.18.7a — ThreeD Model Library Project Placements**. The production boundary remains v0.18.6b until deployment and production smoke checks are confirmed.

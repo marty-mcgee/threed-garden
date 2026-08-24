@@ -8,7 +8,7 @@ const validationStep = (label) => {
   console.log(`  ✓ ${label}`);
 };
 
-console.log('\nThreeD static animation asset validation');
+console.log('\nThreeD static asset validation');
 console.log('─'.repeat(40));
 const manifestPath = resolve(
   repositoryRoot,
@@ -45,6 +45,30 @@ if (failures.length > 0) {
 }
 validationStep('Every configured asset exists under public/');
 
+const requiredDracoDecoderPaths = [
+  '/assets/draco/draco_decoder.js',
+  '/assets/draco/draco_decoder.wasm',
+  '/assets/draco/draco_wasm_wrapper.js',
+];
+
+for (const filePath of requiredDracoDecoderPaths) {
+  const relativePath = `public/${filePath.replace(/^\/+/, '')}`;
+  if (!existsSync(resolve(repositoryRoot, relativePath))) {
+    failures.push(`${filePath} (missing)`);
+  }
+}
+
+if (failures.length > 0) {
+  console.error('Invalid configured ThreeD static assets:');
+  for (const failure of failures) {
+    console.error(`- ${failure}`);
+  }
+  process.exit(1);
+}
+validationStep('Required GLTF DRACO decoder assets exist under public/');
+
 console.log('─'.repeat(40));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);
-console.log(`Validated ${configuredPaths.length} configured static animation assets.\n`);
+console.log(
+  `Validated ${configuredPaths.length} animation assets and ${requiredDracoDecoderPaths.length} DRACO decoder assets.\n`,
+);

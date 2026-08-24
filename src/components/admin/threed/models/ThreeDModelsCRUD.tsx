@@ -50,6 +50,8 @@ interface Model {
   filePath: string;
   fileSize: number | null;
   thumbnailUrl: string | null;
+  usedByPlants: boolean | null;
+  usedByCharacters: boolean | null;
   scale: string;
   rotationY: string;
   offsetX: string;
@@ -65,6 +67,8 @@ interface Model {
   isActive: boolean;
   status: string;
   isDefault: boolean;
+  isPublic: boolean;
+  isLibraryItem: boolean;
   uploadedBy: string | null;
   metadata: any;
   createdAt: string;
@@ -78,6 +82,8 @@ interface FormData {
   filePath: string;
   fileSize: string;
   thumbnailUrl: string;
+  usedByPlants: boolean;
+  usedByCharacters: boolean;
   scale: string;
   rotationY: string;
   offsetX: string;
@@ -91,6 +97,8 @@ interface FormData {
   isActive: boolean;
   status: string;
   isDefault: boolean;
+  isPublic: boolean;
+  isLibraryItem: boolean;
   uploadedBy: string;
   metadata: string;
 }
@@ -211,6 +219,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     filePath: '',
     fileSize: '',
     thumbnailUrl: '',
+    usedByPlants: false,
+    usedByCharacters: false,
     scale: '1.0',
     rotationY: '0.0',
     offsetX: '0.0',
@@ -224,6 +234,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     isActive: true,
     status: 'active',
     isDefault: false,
+    isPublic: false,
+    isLibraryItem: false,
     uploadedBy: '',
     metadata: '{}',
   });
@@ -464,9 +476,11 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
   function resetForm() {
     setFormData({
       modelName: '', modelType: '', filePath: '', fileSize: '', thumbnailUrl: '',
+      usedByPlants: false, usedByCharacters: false,
       scale: '1.0', rotationY: '0.0', offsetX: '0.0', offsetY: '0.0', offsetZ: '0.0',
       hasLOD: false, lodLevels: '{}', animations: '[]', defaultAnimation: '',
       mainModelFileId: '', isActive: true, status: 'active', isDefault: false,
+      isPublic: false, isLibraryItem: false,
       uploadedBy: '', metadata: '{}',
     });
   }
@@ -479,6 +493,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       filePath: model.filePath,
       fileSize: model.fileSize ? String(model.fileSize) : '',
       thumbnailUrl: model.thumbnailUrl || '',
+      usedByPlants: model.usedByPlants ?? false,
+      usedByCharacters: model.usedByCharacters ?? false,
       scale: model.scale || '1.0',
       rotationY: model.rotationY || '0.0',
       offsetX: model.offsetX || '0.0',
@@ -492,6 +508,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       isActive: model.isActive ?? true,
       status: model.status || 'active',
       isDefault: model.isDefault ?? false,
+      isPublic: model.isPublic ?? false,
+      isLibraryItem: model.isLibraryItem ?? false,
       uploadedBy: model.uploadedBy || '',
       metadata: JSON.stringify(model.metadata || {}),
     });
@@ -665,6 +683,29 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                     onCheckedChange={(v) => setFormData({ ...formData, isDefault: v })} disabled={isSubmitting} />
                   <Label htmlFor="isDefault">Default Model</Label>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Switch id="isPublic" checked={formData.isPublic}
+                    onCheckedChange={(v) => setFormData({ ...formData, isPublic: v })} disabled={isSubmitting} />
+                  <Label htmlFor="isPublic">Public</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch id="isLibraryItem" checked={formData.isLibraryItem}
+                    onCheckedChange={(v) => setFormData({ ...formData, isLibraryItem: v })} disabled={isSubmitting} />
+                  <Label htmlFor="isLibraryItem">Model Library Item</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch id="usedByPlants" checked={formData.usedByPlants}
+                    onCheckedChange={(v) => setFormData({ ...formData, usedByPlants: v })} disabled={isSubmitting} />
+                  <Label htmlFor="usedByPlants">Used by Plants</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch id="usedByCharacters" checked={formData.usedByCharacters}
+                    onCheckedChange={(v) => setFormData({ ...formData, usedByCharacters: v })} disabled={isSubmitting} />
+                  <Label htmlFor="usedByCharacters">Used by Characters</Label>
+                </div>
+                <p className="text-[10px] text-muted-foreground">
+                  Character models use Character runtime rules and are excluded from direct Model Library placement.
+                </p>
                 <div>
                   <Label htmlFor="uploadedBy" className="text-xs">Uploaded By</Label>
                   <Input id="uploadedBy" value={formData.uploadedBy}
@@ -727,6 +768,10 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                         <Box className="w-3.5 h-3.5 text-blue-500" />
                         {model.modelName}
                         {model.isDefault && <Badge variant="default" className="text-[10px]">Default</Badge>}
+                        {model.isPublic && <Badge variant="outline" className="text-[10px]">Public</Badge>}
+                        {model.isLibraryItem && <Badge variant="outline" className="text-[10px]">Library</Badge>}
+                        {model.usedByPlants && <Badge variant="outline" className="text-[10px]">Plants</Badge>}
+                        {model.usedByCharacters && <Badge variant="outline" className="text-[10px]">Characters</Badge>}
                         {!model.isActive && <Badge variant="secondary" className="text-[10px]">Inactive</Badge>}
                       </div>
                     </TableCell>
@@ -801,6 +846,22 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                 <Input id="edit-filePath" value={formData.filePath}
                   onChange={(e) => setFormData({ ...formData, filePath: e.target.value })} disabled={isSubmitting} />
               </div>
+              <div className="flex items-center gap-2">
+                <input id="edit-model-file-upload" type="file" className="hidden"
+                  accept=".glb,.gltf,.fbx,.obj,.usdz"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePrimaryFileUpload(f); e.target.value = ''; }}
+                  disabled={uploadingPrimary || isSubmitting} />
+                <Button type="button" variant="outline" size="sm" className="h-8 text-xs"
+                  onClick={() => document.getElementById('edit-model-file-upload')?.click()}
+                  disabled={uploadingPrimary || isSubmitting}>
+                  {uploadingPrimary ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
+                  Upload Replacement File
+                </Button>
+                {formData.filePath && <span className="text-xs text-muted-foreground truncate">✓ file selected</span>}
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Uploading updates this form. Click Update Model to save the replacement file URL.
+              </p>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label htmlFor="edit-fileSize" className="text-xs">File Size (bytes)</Label>
@@ -917,6 +978,29 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                   onCheckedChange={(v) => setFormData({ ...formData, isDefault: v })} disabled={isSubmitting} />
                 <Label htmlFor="edit-isDefault">Default Model</Label>
               </div>
+              <div className="flex items-center gap-2">
+                <Switch id="edit-isPublic" checked={formData.isPublic}
+                  onCheckedChange={(v) => setFormData({ ...formData, isPublic: v })} disabled={isSubmitting} />
+                <Label htmlFor="edit-isPublic">Public</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch id="edit-isLibraryItem" checked={formData.isLibraryItem}
+                  onCheckedChange={(v) => setFormData({ ...formData, isLibraryItem: v })} disabled={isSubmitting} />
+                <Label htmlFor="edit-isLibraryItem">Model Library Item</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch id="edit-usedByPlants" checked={formData.usedByPlants}
+                  onCheckedChange={(v) => setFormData({ ...formData, usedByPlants: v })} disabled={isSubmitting} />
+                <Label htmlFor="edit-usedByPlants">Used by Plants</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch id="edit-usedByCharacters" checked={formData.usedByCharacters}
+                  onCheckedChange={(v) => setFormData({ ...formData, usedByCharacters: v })} disabled={isSubmitting} />
+                <Label htmlFor="edit-usedByCharacters">Used by Characters</Label>
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Character models use Character runtime rules and are excluded from direct Model Library placement.
+              </p>
               <div>
                 <Label htmlFor="edit-uploadedBy" className="text-xs">Uploaded By</Label>
                 <Input id="edit-uploadedBy" value={formData.uploadedBy}

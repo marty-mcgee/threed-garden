@@ -2,7 +2,9 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.6b **ThreeD Project Marker Snapshots**. No later release candidate is designated. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.18.6b **ThreeD Project Marker Snapshots**. The current release candidate is v0.18.7a **ThreeD Model Library Project Placements**. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+
+The v0.18.7a candidate has manually verified a non-Character ThreeD Model Library path from Admin Vercel Blob GLB upload through Project Model marker CRUD, DRACO-capable Scene rendering, grounding, and whole-rendered-asset collision. It preserves one persistent Canvas/Physics world and unrelated Character/Ecctrl state when a Model marker changes. Scene Layer controls suspend only the selected layer's presentation, input, physics participation, and Physics Debug outlines without remounting retained markers or changing their positions. See [ThreeD Marker architecture](developers/THREED_MARKERS.md) for its boundary; this does not change the production version until deployment is confirmed.
 
 ## Human users
 

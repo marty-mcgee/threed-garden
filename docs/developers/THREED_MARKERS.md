@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture through the v0.18.6b **ThreeD Project Marker Snapshots** production checkpoint. Phase 5E through Phase 5L are included in that release.
+This document records the marker architecture through the v0.18.6b **ThreeD Project Marker Snapshots** production checkpoint and the v0.18.7a **ThreeD Model Library Project Placements** release candidate. Production remains v0.18.6b until deployment and smoke checks are confirmed.
 
 ## Hierarchy and terminology
 
@@ -11,6 +11,8 @@ Database-driven, Project-assigned ThreeD data is the authority for the current P
 A **Runtime Marker** is the in-memory representation created from the saved Project marker snapshot and its eligible source asset. The Runtime Marker registry mirrors identity and current runtime position; it does not create ownership, Project assignment, or Layer records. `project_threed_markers` is the current saved Project snapshot. The old `threed_markers` table remains legacy and is not the foundation of this system.
 
 A **ThreeD Layer** organizes and controls the visibility of Runtime Markers. An **Action Target** is an optional capability of an eligible Runtime Marker; it is not the parent identity model and does not grant persistence, MQTT, worker, or physical-device authority.
+
+The current ThreeD Scene Controls expose runtime visibility by the canonical marker types actually present in the loaded marker collection. Singular and legacy aliases such as `plant`, `plants`, and `planting` resolve to the single `plantings` Scene Layer entry. The controls do not pretend that a `threed_layers.layer_type` assigns individual Runtime Markers to that database Layer: no such per-marker relationship currently exists. Establishing that relationship requires a separately approved data-model milestone.
 
 ## Current flow
 
@@ -67,7 +69,7 @@ The runtime `markerId`, such as `farmbots-3`, is a derived scene identity. Marke
 
 A persisted asset produces a Runtime Marker only when its Project assignment and source asset permit loading, its Sub-Module has a registered marker adapter, and it provides a usable ThreeD position.
 
-Hiding a ThreeD Layer hides its markers and prevents direct selection, but does not remove Project ownership or automatically clear an Action Target. Removing the Project assignment or making the source unavailable removes its Runtime Marker and clears or cancels client-side state that depends on it.
+Hiding a ThreeD Scene Layer hides its marker visuals, prevents new direct pointer selection, suspends its module-owned Rapier body, and disables Ecctrl movement input. It does not filter the marker out of the persistent render collection, unmount its module owner, or change its collider structure. The Scene-level Physics Debug renderer keeps Rapier's real collider outlines for enabled layers and filters the grayscale segments Rapier emits for disabled colliders. Scene bounds and the ground coordinate frame are calculated from the complete marker collection rather than the enabled subset. Removing the Project assignment or making the source unavailable is a separate lifecycle event that removes its Runtime Marker and clears or cancels client-side state that depends on it.
 
 ## Position authority
 
@@ -85,6 +87,71 @@ An Action Target retains source identity. Interaction planning should resolve th
 All eligible Runtime Markers may support selection, details, camera focus, Action Target selection, Point, Point Gesture, and Talk. Sub-Modules may add their own actions. Planting farming actions remain separate from generic marker capabilities.
 
 Target eligibility never grants database persistence, API authorization, MQTT publishing, worker access, or physical operation. Those effects remain behind their action-specific server boundaries.
+
+## ThreeD Model Library and placement boundary
+
+Beds, Plantings, Characters, and FarmBots retain their established Sub-Module visuals. The Dashboard does not swap those visuals at runtime. GardenCharacter and EcctrlCharacter remain separate and continue using their saved Character model relationships.
+
+The Model Library reuses `threed_models` and `threed_model_files`. Its first increment adds `is_public` and `is_library_item`, an owner-safe shared-library read scope, Admin controls, model-file ownership enforcement, and reusable model loading helpers that honor stored scale, Y rotation, and X/Y/Z offsets. Models marked `used_by_characters = true` are excluded from direct Model placement because they require the established Character runtime path rather than generic Model rules.
+
+The Models Admin create and edit forms expose the existing `used_by_plants` and `used_by_characters` classifications. A general directly placeable model may leave both classifications false while remaining active, public, and marked as a Library item. Setting `used_by_characters` removes it from direct placement; it does not delete the model or alter existing Character relationships.
+
+`ModelMarker3D` supports GLTF/GLB models using `KHR_draco_mesh_compression` through one reused `DRACOLoader`. Matching decoder files from the installed Three.js version are served from `/assets/draco/`; model loading therefore does not depend on an external decoder CDN. Static-asset validation treats those decoder files as required production assets.
+
+The approved next direction is multiple Model placements per Project. A Library model is a reusable asset; a placement is a separate Project-owned scene instance with its own identity and transform. The same model may therefore appear more than once in one Project.
+
+The existing `project_threed_markers` table owns Model placements. A `models` marker references its reusable Model through `source_asset_id`; every placement has a unique `marker_id`, position, display data, rotation, and scale multiplier. Reusing one Model therefore produces independently selectable markers without a second placement table.
+
+Owner-scoped create/update/delete actions use `/api/project/threed-markers`. Marker-level `PUT`, `PATCH`, and `DELETE` use `?id=X`, while `PUT` without an ID remains the explicit whole-Project snapshot save. Creation also ensures the Model is an active Project Asset for the chosen ThreeD module. Scene frames do not write these rows.
+
+## Dashboard Model Library placement
+
+The Project dropdown exposes **Model Library** when the Project has at least one active ThreeD module. The panel reads the shared non-Character Library scope and, for Projects with multiple ThreeD modules, requires an explicit module selection. Choosing **Place** switches to the 3D view and enters a one-shot placement mode. A cyan ground guide follows the pointer; one ground click creates the instance through the owner-scoped API, inserts only the returned marker into the current Project marker collection, and exits placement mode. Cancel or panel close performs no write. The creation API independently enforces the non-Character boundary so a manually constructed request cannot bypass the Library filter.
+
+This is intentionally click-to-place rather than HTML drag-and-drop. It establishes one Scene-coordinate placement path without conflicting with OrbitControls or touch input. A future drag source can activate this same placement mode without adding another persistence path.
+
+Placed model scale is calculated as `threed_models.scale × project_threed_markers.data.scaleMultiplier`. The placement panel allows the user to set the multiplier before choosing the ground location. Character sizing remains owned by the separate Character path.
+
+### Manually verified general-model checkpoint
+
+On August 23, 2026, a Tomato Plant GLB was uploaded to Vercel Blob through Admin Model CRUD, classified for non-Character Library use, selected from the Dashboard ThreeD Model Library, and placed into a Project. The resulting `project_threed_markers` record reloads and renders through the `models` Runtime Marker path. Its DRACO-compressed geometry successfully decodes using the App-hosted decoder files under `/assets/draco/`.
+
+Selecting a Project Model marker exposes **Delete Model** in DetailsCard. After confirmation, it deletes only the owner-scoped `project_threed_markers` row. It does not delete the reusable Model or its Blob file.
+
+DetailsCard also completes the basic placement update UI for instance name, scale multiplier, and Y rotation. Rotation is displayed in degrees and converted to the stored Scene radians on save. The existing owner-scoped PATCH route persists only the placement row; saving replaces only that marker in client state and clears stale selection or matching Action Target state. Position dragging and direct Scene manipulation remain deferred.
+
+After loading and applying base scale plus Y rotation, `ModelMarker3D` measures the transformed geometry and offsets its local Y position from the bounding-box minimum. General Library models therefore rest on or above their Project placement ground point instead of treating a center-origin model as though its center were its base. A configured positive model Y offset adds lift above that baseline; negative offsets are clamped at ground level for direct Scene placement.
+
+## Persistent Scene and marker runtime authority
+
+The Dashboard ThreeD Canvas and its Rapier `<Physics>` world are persistent for the current Project session. The visible collection is keyed by stable `marker_id`. Every marker owns exactly one module-specific runtime path and physics body:
+
+```text
+ThreeD Canvas
+  └─ persistent ThreeD Scene
+      └─ stable marker collection keyed by marker_id
+          ├─ Character — owns GardenCharacter or Ecctrl behavior
+          ├─ Model — owns general Model behavior
+          ├─ Bed — owns Bed behavior
+          ├─ Planting — owns Planting behavior
+          └─ FarmBot — owns FarmBot behavior
+```
+
+Model placement POST, PATCH, and DELETE operations update only the affected `project_threed_markers` entry in client state. They do not call the whole-Project loader. `UnifiedMapView` reconciles rebuilt marker data by `marker.id`, preserves unchanged marker object identities, and passes those same objects into `ThreeDScene`. Consequently, changing a Model must not remount an unrelated Character, transfer Ecctrl movement to a selection halo, or reset another marker's runtime state. Explicit Project switching and user-requested Refresh remain allowed full-data boundaries.
+
+General Project Model collision uses the complete rendered asset boundary. External GLB/FBX/OBJ geometry loads asynchronously, so Rapier cannot safely derive its collider during the initial RigidBody mount. After R3F attaches and renders the composed Model group, `ModelMarker3D` measures that final group—including reusable transforms, instance scale, grounding, nested objects, and skinned geometry—then converts its world bounds into the marker RigidBody's local coordinates. The marker creates one explicit fixed cuboid collider from those bounds. This keeps physics aligned with the whole visible asset and prevents Ecctrl Characters from walking through placed Models.
+
+The **Show/Hide Physics Debug** control in the ThreeD Scene Controls panel enables Rapier collider outlines and bounded `console.debug` Model measurements without reloading the Scene or rebuilding marker colliders. Adding `physicsDebug=1` to the Dashboard Map URL starts a session with debugging enabled. Normal sessions do not render or log this diagnostic information.
+
+This is not a new marker schema or wrapper contract. `project_threed_markers`, the existing Runtime Marker builder, `ThreeDScene`, and each Sub-Module renderer retain their current responsibilities.
+
+### Character-control regression watch
+
+During manual development testing, saving one Model's scale previously reloaded the complete Project data. The Character model object was then reconstructed while its Ecctrl/selection runtime remained active, producing a severe split: WASD moved the blue halo while the visible Character stayed behind. The fix removed whole-Project reloads from marker CRUD and preserved unrelated marker identity through the scene bridge. The user verified that the Character, Ecctrl body, and halo now move together after another marker is edited.
+
+Any future marker CRUD or scene-population change must repeat this sequence: edit a non-Character marker, confirm the Canvas does not reload, select a movable Character, Take Control, move with WASD, and confirm the Character plus halo move together. A hard refresh is not an acceptable workaround for a failed result.
+
+This verifies the general Model path only. Direct placement excludes `used_by_characters = true`, and no Character Library workflow is implied by this checkpoint. This work is designated as the v0.18.7a release candidate; it remains post-v0.18.6b development until deployment is confirmed.
 
 ## Current development boundary
 

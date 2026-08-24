@@ -6,8 +6,52 @@ import {
   threedModels,
   threedModelFiles,
 } from '@/lib/schema/threed';
-import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
+import { eq, and, or, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
+
+type ModelWithFiles = typeof threedModels.$inferSelect & {
+  files: Array<typeof threedModelFiles.$inferSelect>;
+};
+
+function serializeLibraryModel(model: ModelWithFiles) {
+  return {
+    id: model.id,
+    modelName: model.modelName,
+    modelType: model.modelType,
+    filePath: model.filePath,
+    fileSize: model.fileSize,
+    thumbnailUrl: model.thumbnailUrl,
+    usedByPlants: model.usedByPlants,
+    usedByCharacters: model.usedByCharacters,
+    scale: model.scale,
+    rotationY: model.rotationY,
+    offsetX: model.offsetX,
+    offsetY: model.offsetY,
+    offsetZ: model.offsetZ,
+    hasLOD: model.hasLOD,
+    lodLevels: model.lodLevels,
+    animations: model.animations,
+    defaultAnimation: model.defaultAnimation,
+    hasExternalFiles: model.hasExternalFiles,
+    textureCount: model.textureCount,
+    mainModelFileId: model.mainModelFileId,
+    isActive: model.isActive,
+    status: model.status,
+    isDefault: model.isDefault,
+    isPublic: model.isPublic,
+    isLibraryItem: model.isLibraryItem,
+    files: model.files.map((file) => ({
+      id: file.id,
+      fileName: file.fileName,
+      fileType: file.fileType,
+      textureType: file.textureType,
+      filePath: file.filePath,
+      fileSize: file.fileSize,
+      isBinaryBuffer: file.isBinaryBuffer,
+      loadOrder: file.loadOrder,
+    })),
+  };
+}
 
 // ============================================
 // GET /api/threed/models - List ThreeD Models
@@ -16,6 +60,7 @@ import { ensureTableSequence } from '@/lib/db/sequence';
 //   - modelType (optional): Filter by model type
 //   - status (optional): Filter by model status
 //   - isActive (optional): Filter by active status
+//   - scope=library: Public non-Character models eligible for direct placement
 //   - search (optional): Search by modelName or modelType
 //   - limit (optional): Number of records (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
@@ -33,6 +78,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
     const isActive = searchParams.get('isActive');
     const search = searchParams.get('search');
+    const scope = searchParams.get('scope');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -46,7 +92,15 @@ export async function GET(request: NextRequest) {
         .where(
           and(
             eq(threedModels.id, parseInt(id)),
-            eq(threedModels.userId, userId)
+            or(
+              eq(threedModels.userId, userId),
+              and(
+                eq(threedModels.isPublic, true),
+                eq(threedModels.isLibraryItem, true),
+                eq(threedModels.isActive, true),
+                eq(threedModels.status, 'active'),
+              ),
+            ),
           )
         )
         .limit(1);
@@ -65,18 +119,27 @@ export async function GET(request: NextRequest) {
         .where(eq(threedModelFiles.modelId, model.id))
         .orderBy(threedModelFiles.loadOrder);
 
+      const modelWithFiles = { ...model, files: files || [] };
+      const canManage = model.userId === userId;
       return NextResponse.json({
         success: true,
-        data: {
-          ...model,
-          files: files || [],
-        },
+        data: canManage
+          ? modelWithFiles
+          : serializeLibraryModel(modelWithFiles),
       });
     }
 
     type ModelType = (typeof threedModels.$inferSelect)['modelType'];
     type ModelStatus = NonNullable<(typeof threedModels.$inferSelect)['status']>;
-    const conditions: SQL[] = [eq(threedModels.userId, userId)];
+    const conditions: SQL[] = scope === 'library'
+      ? [
+          eq(threedModels.isPublic, true),
+          eq(threedModels.isLibraryItem, true),
+          eq(threedModels.isActive, true),
+          eq(threedModels.status, 'active'),
+          sql`${threedModels.usedByCharacters} IS NOT TRUE`,
+        ]
+      : [eq(threedModels.userId, userId)];
 
     // ✅ Apply filters
     if (modelType) {
@@ -135,7 +198,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: modelsWithFiles,
+      data: scope === 'library'
+        ? modelsWithFiles.map(serializeLibraryModel)
+        : modelsWithFiles,
       pagination: {
         limit,
         offset,
@@ -170,6 +235,8 @@ export async function POST(request: NextRequest) {
       filePath,
       fileSize,
       thumbnailUrl,
+      usedByPlants,
+      usedByCharacters,
       scale,
       rotationY,
       offsetX,
@@ -185,6 +252,8 @@ export async function POST(request: NextRequest) {
       isActive,
       status,
       isDefault,
+      isPublic,
+      isLibraryItem,
       uploadedBy,
       metadata,
     } = body;
@@ -224,6 +293,8 @@ export async function POST(request: NextRequest) {
         filePath,
         fileSize: fileSize || null,
         thumbnailUrl: thumbnailUrl || null,
+        usedByPlants: usedByPlants ?? false,
+        usedByCharacters: usedByCharacters ?? false,
         scale: scale || '1.0',
         rotationY: rotationY || '0.0',
         offsetX: offsetX || '0.0',
@@ -239,6 +310,8 @@ export async function POST(request: NextRequest) {
         isActive: isActive ?? true,
         status: status || 'active',
         isDefault: isDefault ?? false,
+        isPublic: isPublic ?? false,
+        isLibraryItem: isLibraryItem ?? false,
         uploadedBy: uploadedBy || null,
         metadata: metadata || {},
       })
@@ -401,10 +474,11 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const { id: _bodyId, userId: _bodyUserId, createdAt: _createdAt, ...updates } = body;
     const [updated] = await db
       .update(threedModels)
       .set({
-        ...body,
+        ...updates,
         updatedAt: new Date(),
       })
       .where(
@@ -481,10 +555,11 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    const { id: _bodyId, userId: _bodyUserId, createdAt: _createdAt, ...updates } = body;
     const [updated] = await db
       .update(threedModels)
       .set({
-        ...body,
+        ...updates,
         updatedAt: new Date(),
       })
       .where(
@@ -544,7 +619,23 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // ✅ Delete associated files first
+    const [existing] = await db
+      .select({ id: threedModels.id })
+      .from(threedModels)
+      .where(and(
+        eq(threedModels.id, parsedId),
+        eq(threedModels.userId, userId),
+      ))
+      .limit(1);
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Model not found' },
+        { status: 404 }
+      );
+    }
+
+    // ✅ Delete associated files only after ownership is established
     await db
       .delete(threedModelFiles)
       .where(eq(threedModelFiles.modelId, parsedId));

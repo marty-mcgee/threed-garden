@@ -22,6 +22,7 @@ import {
   Filter,
   Clock,
   Save,
+  Trash2,
   X,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
@@ -46,10 +47,12 @@ import {
 import {
   MapLayerConfig,
   MapViewMode,
+  ProjectThreeDMarkerRecord,
   ThreeDActionTarget,
   ThreeDCharacterOrchestrationRequest,
   UnifiedMapData,
 } from '@/lib/types/map';
+import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
 import {
   createThreeDOrchestrationLifecycleState,
   createThreeDCharacterOrchestrationRequest,
@@ -286,7 +289,126 @@ function FarmBotMqttStatusSummary({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition }: {
+function ModelInstancePlacementEditor({
+  instanceId,
+  initialName,
+  initialScaleMultiplier,
+  initialRotationY,
+  baseModelScale,
+  updating,
+  deleting,
+  onSave,
+  onDelete,
+}: {
+  instanceId: number;
+  initialName: string;
+  initialScaleMultiplier: number;
+  initialRotationY: number;
+  baseModelScale: number;
+  updating: boolean;
+  deleting: boolean;
+  onSave: (input: {
+    instanceName: string;
+    scaleMultiplier: number;
+    rotationY: number;
+  }) => void;
+  onDelete: (instanceId: number, name: string) => void;
+}) {
+  const [instanceName, setInstanceName] = useState(initialName);
+  const [scaleMultiplier, setScaleMultiplier] = useState(String(initialScaleMultiplier));
+  const [rotationYDegrees, setRotationYDegrees] = useState(String(
+    Number((initialRotationY * 180 / Math.PI).toFixed(2)),
+  ));
+  const parsedScale = Number(scaleMultiplier);
+  const parsedRotationDegrees = Number(rotationYDegrees);
+  const valid = instanceName.trim().length <= 120
+    && Number.isFinite(parsedScale)
+    && parsedScale >= 0.0001
+    && parsedScale <= 10_000
+    && Number.isFinite(parsedRotationDegrees);
+  const busy = updating || deleting;
+
+  return (
+    <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
+      <div className="text-[10px] font-medium text-white/60">Model Placement</div>
+      <label className="block space-y-1">
+        <span className="text-[10px] text-white/50">Instance name</span>
+        <input
+          value={instanceName}
+          maxLength={120}
+          disabled={busy}
+          onChange={(event) => setInstanceName(event.target.value)}
+          className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+        />
+      </label>
+      <div className="grid grid-cols-2 gap-2">
+        <label className="block space-y-1">
+          <span className="text-[10px] text-white/50">Instance scale</span>
+          <input
+            type="number"
+            min="0.0001"
+            max="10000"
+            step="any"
+            value={scaleMultiplier}
+            disabled={busy}
+            onChange={(event) => setScaleMultiplier(event.target.value)}
+            className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+          />
+        </label>
+        <label className="block space-y-1">
+          <span className="text-[10px] text-white/50">Y rotation (°)</span>
+          <input
+            type="number"
+            step="1"
+            value={rotationYDegrees}
+            disabled={busy}
+            onChange={(event) => setRotationYDegrees(event.target.value)}
+            className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+          />
+        </label>
+      </div>
+      <div className="text-[9px] text-white/35">
+        Effective scale: {(baseModelScale * (Number.isFinite(parsedScale) ? parsedScale : 0)).toLocaleString()}
+      </div>
+      <div className="grid grid-cols-2 gap-1.5">
+        <button
+          type="button"
+          disabled={!valid || busy}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSave({
+              instanceName: instanceName.trim(),
+              scaleMultiplier: parsedScale,
+              rotationY: parsedRotationDegrees * Math.PI / 180,
+            });
+          }}
+          className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        >
+          {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          Save Placement
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={(event) => {
+            event.stopPropagation();
+            const name = instanceName.trim() || `Model instance #${instanceId}`;
+            if (!window.confirm(`Delete "${name}" from this ThreeD Project?`)) return;
+            onDelete(instanceId, name);
+          }}
+          className="flex items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        >
+          {deleting
+            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            : <Trash2 className="h-3.5 w-3.5" />}
+          Delete Model
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
@@ -306,6 +428,14 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   onClearActionTarget?: () => void;
   onFocusActionTarget?: () => void;
   resolveRuntimeMarkerPosition?: ThreeDRuntimeMarkerPositionResolver;
+  onUpdateModelInstance?: (instanceId: number, input: {
+    instanceName: string;
+    scaleMultiplier: number;
+    rotationY: number;
+  }) => void;
+  updatingModelInstanceId?: number | null;
+  onDeleteModelInstance?: (instanceId: number, name: string) => void;
+  deletingModelInstanceId?: number | null;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
@@ -348,6 +478,12 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     || normalizedType === 'farmbots'
     || normalizedType === 'threed_farmbots';
   const isCharacterMarker = type === 'characters' || type === 'character';
+  const modelInstanceId = Number(d.instanceId);
+  const isProjectModelInstance = (
+    normalizedType === 'model' || normalizedType === 'models'
+  ) && selected.metadata?.source === 'project-marker'
+    && Number.isSafeInteger(modelInstanceId)
+    && modelInstanceId > 0;
   const selectedTargetCapabilities = getThreeDActionTargetCapabilities(normalizedType);
   const actionTargetCapabilities = actionTarget
     ? getThreeDActionTargetCapabilities(actionTarget.type)
@@ -768,15 +904,33 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         </div>
       )}
 
+      {isProjectModelInstance && onUpdateModelInstance && onDeleteModelInstance && (
+        <ModelInstancePlacementEditor
+          key={modelInstanceId}
+          instanceId={modelInstanceId}
+          initialName={String(d.instanceName || selected.name || '')}
+          initialScaleMultiplier={Number(d.scaleMultiplier ?? 1)}
+          initialRotationY={Number(d.rotationYInstance ?? 0)}
+          baseModelScale={Number(d.scale ?? 1)}
+          updating={updatingModelInstanceId === modelInstanceId}
+          deleting={deletingModelInstanceId === modelInstanceId}
+          onSave={(input) => onUpdateModelInstance(modelInstanceId, input)}
+          onDelete={onDeleteModelInstance}
+        />
+      )}
+
       {/* Admin Edit link */}
       {(() => {
         const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
-        const adminId = selected.metadata?.data?.id || selected.id;
+        const adminId = isProjectModelInstance
+          ? d.modelId
+          : selected.metadata?.data?.id || selected.id;
         const routeMap: Record<string, string> = {
           plantings: '/admin/threed/plantings', planting: '/admin/threed/plantings',
           beds: '/admin/threed/beds', bed: '/admin/threed/beds',
           characters: '/admin/threed/characters', character: '/admin/threed/characters',
           farmbots: '/admin/threed/farmbots', farmbot: '/admin/threed/farmbots',
+          models: '/admin/threed/models', model: '/admin/threed/models',
           chpCad: '/admin/traffic/chp-cad', chpCadIncidents: '/admin/traffic/chp-cad',
           chpCases: '/admin/traffic/chp-cases', chpCenters: '/admin/traffic/chp-centers',
           caltransLaneClosures: '/admin/traffic/caltrans', caltransClosures: '/admin/traffic/caltrans',
@@ -861,6 +1015,20 @@ function UnifiedMapPageInner() {
   const [refreshing, setRefreshing] = useState(false);
   const [savingProjectMarkers, setSavingProjectMarkers] = useState(false);
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
+  const [projectThreeDModules, setProjectThreeDModules] = useState<Array<{
+    id: number;
+    name: string;
+  }>>([]);
+  const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
+  const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
+  const [loadingLibraryModels, setLoadingLibraryModels] = useState(false);
+  const [placementModel, setPlacementModel] = useState<ThreeDModelLibraryItem | null>(null);
+  const [placementThreedId, setPlacementThreedId] = useState<number | null>(null);
+  const [placementScaleMultiplier, setPlacementScaleMultiplier] = useState('1');
+  const [placingModel, setPlacingModel] = useState(false);
+  const [updatingModelInstanceId, setUpdatingModelInstanceId] = useState<number | null>(null);
+  const [deletingModelInstanceId, setDeletingModelInstanceId] = useState<number | null>(null);
+  const placingModelRef = useRef(false);
   
   // ✅ Live Data Status Indicator
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -891,6 +1059,29 @@ function UnifiedMapPageInner() {
   const runtimeMarkerPositionResolverRef =
     useRef<ThreeDRuntimeMarkerPositionResolver | null>(null);
 
+  const updateProjectThreeDMarkers = useCallback((
+    update: (markers: ProjectThreeDMarkerRecord[]) => ProjectThreeDMarkerRecord[],
+  ) => {
+    setData((current) => {
+      const raw = current.threed.raw;
+      if (!raw) return current;
+      const markers = raw.projectThreedMarkers ?? [];
+      const nextMarkers = update(markers);
+      if (nextMarkers === markers) return current;
+      return {
+        ...current,
+        threed: {
+          ...current.threed,
+          raw: {
+            ...raw,
+            projectThreedMarkers: nextMarkers,
+          },
+          markersCount: nextMarkers.length,
+        },
+      };
+    });
+  }, []);
+
   const handleProjectMarkerSnapshotProviderChange = useCallback((
     provider: ProjectThreeDMarkerSnapshotProvider | null,
   ) => {
@@ -907,6 +1098,33 @@ function UnifiedMapPageInner() {
     moduleType,
     assetId,
   ) => runtimeMarkerPositionResolverRef.current?.(moduleType, assetId) ?? null, []);
+
+  const openModelLibrary = useCallback(async () => {
+    setIsModelLibraryOpen(true);
+    setIsProjectSummaryOpen(false);
+    setSelectedMarker(null);
+    if (libraryModels.length > 0 || loadingLibraryModels) return;
+
+    setLoadingLibraryModels(true);
+    try {
+      const response = await fetch('/api/threed/models?scope=library&limit=100');
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Model Library failed (${response.status})`);
+      }
+      setLibraryModels(Array.isArray(result.data) ? result.data : []);
+    } catch (error) {
+      console.error('Failed to load ThreeD Model Library', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to load ThreeD Model Library',
+        'error',
+      );
+    } finally {
+      setLoadingLibraryModels(false);
+    }
+  }, [libraryModels.length, loadingLibraryModels]);
 
   const handleSaveThreeDProject = useCallback(async () => {
     if (!selectedProjectId || savingProjectMarkers) return;
@@ -1013,6 +1231,13 @@ function UnifiedMapPageInner() {
   const handleControlChange = useCallback((_markerId: string, pos: { x: number; y: number; z: number }) => {
     setSelectedMarker((prev: any) => {
       if (!prev) return prev;
+      const previousCharacterId = Number(prev.data?.id ?? prev.metadata?.data?.id);
+      const isControlledCharacterSelection = (
+        prev.type === 'characters' || prev.type === 'character'
+      ) && controlledCharacterId != null
+        && previousCharacterId === controlledCharacterId
+        && prev.id === _markerId;
+      if (!isControlledCharacterSelection) return prev;
       return { ...prev, position: { ...prev.position, x: pos.x, y: pos.y, z: pos.z } };
     });
     const markerCharacterId = Number(_markerId.match(/(\d+)$/)?.[1]);
@@ -1026,20 +1251,6 @@ function UnifiedMapPageInner() {
       });
     }
   }, [controlledCharacterId]);
-
-  // v0.16.3-alpha: Selecting a different marker/incident disengages the currently
-  // controlled character so only the newly engaged entity is the active focus.
-  useEffect(() => {
-    if (controlledCharacterId == null) return;
-    const sel = selectedMarker || selectedIncident;
-    if (!sel) return;
-    const selCharId = sel.data?.id ?? sel.metadata?.data?.id ?? sel.id;
-    const isChar = sel.type === 'characters' || sel.type === 'character';
-    if (!isChar || selCharId !== controlledCharacterId) {
-      setControlledCharacterId(null);
-      setLiveControlledCharacterPosition(null);
-    }
-  }, [selectedMarker, selectedIncident, controlledCharacterId]);
 
   // ✅ Advanced Filtering Panel State
   const [showFilterPanel, setShowFilterPanel] = useState(false);
@@ -1087,6 +1298,11 @@ function UnifiedMapPageInner() {
     setActionTarget(null); // Action targets are scoped to the current project.
     setOrchestrationStatus(null);
     setLiveControlledCharacterPosition(null);
+    setProjectThreeDModules([]);
+    setPlacementThreedId(null);
+    setPlacementModel(null);
+    setPlacementScaleMultiplier('1');
+    setIsModelLibraryOpen(false);
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
     window.history.pushState({}, '', url.toString());
@@ -1357,6 +1573,22 @@ function UnifiedMapPageInner() {
         if (result.success) {
           // ✅ Split combined API response into separate threed vs traffic data
           const resultData = result.data || {};
+          const threedModules = Array.isArray(result.projectContext?.threedModules)
+            ? result.projectContext.threedModules.filter((module: any) => (
+                Number.isSafeInteger(Number(module?.id))
+                && Number(module.id) > 0
+                && typeof module?.name === 'string'
+              )).map((module: any) => ({
+                id: Number(module.id),
+                name: module.name,
+              }))
+            : [];
+          setProjectThreeDModules(threedModules);
+          setPlacementThreedId((current) => (
+            current && threedModules.some((module: { id: number }) => module.id === current)
+              ? current
+              : threedModules[0]?.id ?? null
+          ));
           
           const trafficRaw = {
             chpCadIncidents: (resultData.chpCadIncidents || []) as any[],
@@ -1443,7 +1675,7 @@ function UnifiedMapPageInner() {
           setData(unifiedData);
           setLastUpdated(new Date());
           setProjectInfo({
-            name: `Project #${selectedProjectId}`,
+            name: result.projectContext?.projectName || `Project #${selectedProjectId}`,
             hasData: result.total > 0,
           });
           setIsDefaultView(false);
@@ -1472,6 +1704,193 @@ function UnifiedMapPageInner() {
       setRefreshing(false);
     }
   }, [selectedProjectId]);
+
+  const handleModelPlacement = useCallback(async (
+    position: { x: number; y: number; z: number },
+  ) => {
+    const scaleMultiplier = Number(placementScaleMultiplier);
+    if (
+      !selectedProjectId
+      || !placementModel
+      || !placementThreedId
+      || placingModelRef.current
+    ) return;
+    if (
+      !Number.isFinite(scaleMultiplier)
+      || scaleMultiplier < 0.0001
+      || scaleMultiplier > 10_000
+    ) {
+      showToastRef.current(
+        'Instance scale must be between 0.0001 and 10,000',
+        'error',
+      );
+      return;
+    }
+
+    placingModelRef.current = true;
+    setPlacingModel(true);
+    try {
+      const response = await fetch('/api/project/threed-markers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: Number(selectedProjectId),
+          threedId: placementThreedId,
+          modelId: placementModel.id,
+          instanceName: placementModel.modelName,
+          positionX: position.x,
+          positionY: position.y,
+          positionZ: position.z,
+          scaleMultiplier,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Model placement failed (${response.status})`);
+      }
+
+      const createdMarker: ProjectThreeDMarkerRecord = {
+        ...result.data,
+        data: {
+          ...placementModel,
+          ...(result.data?.data ?? {}),
+          modelId: placementModel.id,
+        },
+      };
+      updateProjectThreeDMarkers((markers) => [...markers, createdMarker]);
+
+      setPlacementModel(null);
+      setPlacementScaleMultiplier('1');
+      showToastRef.current(`${placementModel.modelName} placed in the ThreeD Scene`, 'success');
+    } catch (error) {
+      console.error('Failed to place ThreeD Model Library item', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to place ThreeD model',
+        'error',
+      );
+    } finally {
+      placingModelRef.current = false;
+      setPlacingModel(false);
+    }
+  }, [
+    placementModel,
+    placementScaleMultiplier,
+    placementThreedId,
+    selectedProjectId,
+    updateProjectThreeDMarkers,
+  ]);
+
+  const handleUpdateModelInstance = useCallback(async (
+    instanceId: number,
+    input: {
+      instanceName: string;
+      scaleMultiplier: number;
+      rotationY: number;
+    },
+  ) => {
+    if (updatingModelInstanceId != null || deletingModelInstanceId != null) return;
+    setUpdatingModelInstanceId(instanceId);
+    try {
+      const response = await fetch(
+        `/api/project/threed-markers?id=${instanceId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(input),
+        },
+      );
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Model placement update failed (${response.status})`);
+      }
+
+      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
+        Number(marker.id) === instanceId
+          ? {
+              ...marker,
+              ...result.data,
+              data: {
+                ...marker.data,
+                ...(result.data?.data ?? {}),
+              },
+              metadata: {
+                ...marker.metadata,
+                ...(result.data?.metadata ?? {}),
+              },
+            }
+          : marker
+      )));
+
+      setSelectedMarker(null);
+      setActionTarget((current) => current
+        && isMatchingThreeDActionTarget(current, {
+          markerType: 'models',
+          assetId: instanceId,
+        })
+        ? null
+        : current);
+      setOrchestrationStatus(null);
+      showToastRef.current(
+        `${input.instanceName || 'Model placement'} updated`,
+        'success',
+      );
+    } catch (error) {
+      console.error('Failed to update Project ThreeD Model instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to update ThreeD Model placement',
+        'error',
+      );
+    } finally {
+      setUpdatingModelInstanceId(null);
+    }
+  }, [deletingModelInstanceId, updateProjectThreeDMarkers, updatingModelInstanceId]);
+
+  const handleDeleteModelInstance = useCallback(async (
+    instanceId: number,
+    name: string,
+  ) => {
+    if (deletingModelInstanceId != null) return;
+    setDeletingModelInstanceId(instanceId);
+    try {
+      const response = await fetch(
+        `/api/project/threed-markers?id=${instanceId}`,
+        { method: 'DELETE' },
+      );
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Model deletion failed (${response.status})`);
+      }
+
+      updateProjectThreeDMarkers((markers) => markers.filter(
+        (marker) => Number(marker.id) !== instanceId,
+      ));
+
+      setSelectedMarker(null);
+      setActionTarget((current) => current
+        && isMatchingThreeDActionTarget(current, {
+          markerType: 'models',
+          assetId: instanceId,
+        })
+        ? null
+        : current);
+      setOrchestrationStatus(null);
+      showToastRef.current(`${name} removed from the ThreeD Project`, 'success');
+    } catch (error) {
+      console.error('Failed to delete Project ThreeD Model instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to delete ThreeD Model placement',
+        'error',
+      );
+    } finally {
+      setDeletingModelInstanceId(null);
+    }
+  }, [deletingModelInstanceId, updateProjectThreeDMarkers]);
 
   useEffect(() => {
     loadData();
@@ -1558,7 +1977,7 @@ function UnifiedMapPageInner() {
   const hasRealData = data ? (data.traffic.total > 0 || data.threed.total > 0) : false;
 
   return (
-    <div className="space-y-1.5">
+    <div className="relative space-y-1.5">
       {ToastComponent}
 
       {/* Project Selector Dialog */}
@@ -1671,6 +2090,17 @@ function UnifiedMapPageInner() {
                   <Settings className="mr-1 h-3 w-3" />
                   Admin Details
                 </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={projectThreeDModules.length === 0}
+                  onClick={() => void openModelLibrary()}
+                >
+                  <Box className="mr-1 h-3 w-3" />
+                  Model Library
+                </Button>
               </div>
             </div>
           )}
@@ -1736,6 +2166,126 @@ function UnifiedMapPageInner() {
           </Button>
         </div>
       </div>
+
+      {selectedProjectId && isModelLibraryOpen && (
+        <div className="absolute left-1 top-9 z-40 w-[min(24rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold">ThreeD Model Library</h2>
+              <p className="text-[11px] text-muted-foreground">
+                Select a model, then click its location in the ThreeD Scene.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              disabled={placingModel}
+              onClick={() => {
+                setPlacementModel(null);
+                setPlacementScaleMultiplier('1');
+                setIsModelLibraryOpen(false);
+              }}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+
+          {projectThreeDModules.length > 1 && (
+            <label className="mb-2 block text-xs">
+              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={placementThreedId ?? ''}
+                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
+              >
+                {projectThreeDModules.map((module) => (
+                  <option key={module.id} value={module.id}>{module.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          {placementModel && (
+            <div className="mb-2 space-y-2 rounded border border-cyan-500/40 bg-cyan-500/10 p-2 text-xs">
+              <div className="flex items-center justify-between gap-2">
+                <span>
+                  Placing <strong>{placementModel.modelName}</strong>
+                  {placingModel ? '…' : ' — click the ground'}
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-6 text-[10px]"
+                  disabled={placingModel}
+                  onClick={() => {
+                    setPlacementModel(null);
+                    setPlacementScaleMultiplier('1');
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+              <label className="grid grid-cols-[1fr_7rem] items-center gap-2">
+                <span>
+                  Instance scale
+                  <span className="ml-1 text-[10px] text-muted-foreground">
+                    (model base: {Number(placementModel.scale ?? 1)})
+                  </span>
+                </span>
+                <Input
+                  type="number"
+                  min="0.0001"
+                  max="10000"
+                  step="any"
+                  value={placementScaleMultiplier}
+                  disabled={placingModel}
+                  onChange={(event) => setPlacementScaleMultiplier(event.target.value)}
+                  className="h-7 px-2 text-xs"
+                  aria-label="Model instance scale multiplier"
+                />
+              </label>
+            </div>
+          )}
+
+          <div className="max-h-72 space-y-1 overflow-y-auto pr-1">
+            {loadingLibraryModels ? (
+              <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> Loading models…
+              </div>
+            ) : libraryModels.length === 0 ? (
+              <p className="py-6 text-center text-xs text-muted-foreground">
+                No active public Library models are available.
+              </p>
+            ) : libraryModels.map((model) => (
+              <div key={model.id} className="flex items-center gap-2 rounded border p-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-cyan-500/10 text-cyan-600">
+                  <Box className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-xs font-medium">{model.modelName}</div>
+                  <div className="text-[10px] uppercase text-muted-foreground">{model.modelType}</div>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={!placementThreedId || placingModel}
+                  onClick={() => {
+                    setPlacementModel(model);
+                    setPlacementScaleMultiplier('1');
+                    setViewMode('3d');
+                  }}
+                >
+                  Place
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ✅ v0.13.0-beta: Advanced Filtering Panel */}
       {showFilterPanel && (
@@ -1878,6 +2428,7 @@ function UnifiedMapPageInner() {
                 >
                   <div className="relative w-full h-full rounded-t-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
+                      projectId={selectedProjectId ? Number(selectedProjectId) : null}
                       data={data}
                       layers={layers}
                       viewMode="3d"
@@ -1896,6 +2447,8 @@ function UnifiedMapPageInner() {
                       focusRequest={focusRequest}
                       actionTarget={actionTarget}
                       actionTargetFocusRequest={actionTargetFocusRequest}
+                      placementModel={placementModel}
+                      onModelPlacement={handleModelPlacement}
                       onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                       onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                     />
@@ -1917,6 +2470,7 @@ function UnifiedMapPageInner() {
                 >
                   <div className="relative w-full h-full rounded-b-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
+                      projectId={selectedProjectId ? Number(selectedProjectId) : null}
                       data={data}
                       layers={layers}
                       viewMode="2d"
@@ -1939,6 +2493,7 @@ function UnifiedMapPageInner() {
 
             {viewMode === '3d' && (
               <UnifiedMapView
+                projectId={selectedProjectId ? Number(selectedProjectId) : null}
                 data={data}
                 layers={layers}
                 viewMode="3d"
@@ -1958,6 +2513,8 @@ function UnifiedMapPageInner() {
                 focusRequest={focusRequest}
                 actionTarget={actionTarget}
                 actionTargetFocusRequest={actionTargetFocusRequest}
+                placementModel={placementModel}
+                onModelPlacement={handleModelPlacement}
                 onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                 onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
               />
@@ -1965,6 +2522,7 @@ function UnifiedMapPageInner() {
 
             {viewMode === '2d' && (
               <UnifiedMapView
+                projectId={selectedProjectId ? Number(selectedProjectId) : null}
                 data={data}
                 layers={layers}
                 viewMode="2d"
@@ -2019,6 +2577,10 @@ function UnifiedMapPageInner() {
         }}
         onFocusActionTarget={handleFocusActionTarget}
         resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
+        onUpdateModelInstance={handleUpdateModelInstance}
+        updatingModelInstanceId={updatingModelInstanceId}
+        onDeleteModelInstance={handleDeleteModelInstance}
+        deletingModelInstanceId={deletingModelInstanceId}
       />
       
     </div>
