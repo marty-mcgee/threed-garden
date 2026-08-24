@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.18.7b "ThreeD Bed Project Placement and Editing"`
+> **Current production version:** `v0.18.7c "ThreeD Layers Scene Contracts"`
 
 The v0.18.7b production release adds manually verified rectangular Bed creation and Project-instance editing. Bed width, length, height, X/Y/Z position, and degree-based Y rotation are saved in the authoritative Project marker and applied to its existing Scene/Rapier owner without reloading the Project.
 

@@ -38,13 +38,13 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.7b "ThreeD Bed Project Placement and Editing".
+Current production version: v0.18.7c "ThreeD Layers Scene Contracts".
 
-Current release candidate: v0.18.7c "ThreeD Layers Scene Contracts".
+No later release candidate is currently designated.
 
 The v0.18.7c candidate defines ThreeD Layers as the Scene transaction boundary. Layer operations must preserve one persistent Canvas and Rapier world, stable `marker_id` identity, saved transforms, and Sub-Module-owned rendering and physics. They must not remount unrelated markers or issue duplicate imperative Rapier initialization writes. The Rapier frame-error circuit is containment only; activation is release-blocking.
 
-v0.18.7b is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
+v0.18.7c is the production boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
 
 The v0.18.7b release adds manually verified rectangular Bed creation plus Project-instance editing for width, length, height, X/Y/Z position, and degree-based Y rotation. `project_threed_markers` is authoritative after creation; edits must not mutate the reusable `threed_beds` source or reload the Project. Fixed marker bodies synchronize translation and rotation through their existing Rapier refs so visuals and colliders remain aligned.
 
@@ -74,7 +74,7 @@ as release-blocking.
 
 ## ThreeD FarmBot Integration Plan rules
 
-- Current production checkpoint: v0.18.7b "ThreeD Bed Project Placement and Editing". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+- Current production checkpoint: v0.18.7c "ThreeD Layers Scene Contracts". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 - ThreeD owns the provider-neutral MQTT service. FarmBot and future integrations such as OpenFarm may depend on ThreeD services; `src/lib/services/threed/mqtt` must never import provider adapters.
 - Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
 - FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.

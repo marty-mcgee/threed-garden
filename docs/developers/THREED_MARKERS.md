@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture through the v0.18.7b **ThreeD Bed Project Placement and Editing** production checkpoint and the v0.18.7c **ThreeD Layers Scene Contracts** pre-release milestone.
+This document records the marker architecture through the v0.18.7c **ThreeD Layers Scene Contracts** production checkpoint.
 
 ## Hierarchy and terminology
 

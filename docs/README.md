@@ -2,9 +2,9 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.7b **ThreeD Bed Project Placement and Editing**. The current pre-release candidate is v0.18.7c **ThreeD Layers Scene Contracts**. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.18.7c **ThreeD Layers Scene Contracts**. No later release candidate is designated. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
-The v0.18.7c milestone defines ThreeD Layers as the transaction boundary between `project_threed_markers` and the persistent R3F/Rapier Scene. Layer changes preserve stable marker identity and Sub-Module ownership and must not reload the Canvas, rebuild Physics, or remount unrelated markers. A clean Character-plus-fixed-marker physics session remains a release gate.
+The v0.18.7c production release defines ThreeD Layers as the transaction boundary between `project_threed_markers` and the persistent R3F/Rapier Scene. Layer changes preserve stable marker identity and Sub-Module ownership and must not reload the Canvas, rebuild Physics, or remount unrelated markers.
 
 The v0.18.7b production release has manually verified new rectangular Bed placement and Project-instance editing for dimensions, X/Y/Z position, and degree-based Y rotation. These edits patch only the selected `project_threed_markers` instance and its existing Rapier body; the source Bed and unrelated Scene markers remain unchanged.
 
@@ -39,8 +39,9 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
-- [v0.18.7a production checkpoint](releases/v0.18.7a.md)
+- [v0.18.7c production checkpoint](releases/v0.18.7c.md)
 - [v0.18.7b production checkpoint](releases/v0.18.7b.md)
+- [v0.18.7a production checkpoint](releases/v0.18.7a.md)
 - [v0.18.6b production checkpoint](releases/v0.18.6b.md)
 - [v0.18.6a production checkpoint](releases/v0.18.6a.md)
 - [v0.18.5b production checkpoint](releases/v0.18.5b.md)
