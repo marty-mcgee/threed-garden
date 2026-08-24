@@ -20,7 +20,7 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.7a — ThreeD Model Library Project Placements** |
-| Current release candidate | **None designated** |
+| Current release candidate | **v0.18.7b — ThreeD Bed Project Placement and Editing** |
 | Current development milestone | **Post-release checkpoint; next milestone requires review** |
 | Previous checkpoint | **v0.18.6b — ThreeD Project Marker Snapshots** |
 | Character FBX model loading | ✅ Working |
@@ -1808,3 +1808,11 @@ Project Model collision is derived from the whole final rendered asset boundary 
 ThreeD Scene Layer state controls visual, pointer, input, and physics participation without controlling marker lifecycle. The complete marker collection remains mounted inside the persistent Physics world and continues to determine Scene bounds and the ground coordinate frame. Hiding a Scene Layer disables its existing module-owned RigidBody and suspends Ecctrl input without removing, rebuilding, or changing the collider structure of the marker owner. The Scene-level Physics Debug renderer filters Rapier's disabled-collider line segments, so a hidden layer loses only its own diagnostic outlines while enabled layers remain visible in the debug view. This preserves every retained instance and runtime transform.
 
 This development was released to production as **v0.18.7a — ThreeD Model Library Project Placements** on August 24, 2026. The user confirmed the manual build and production deployment.
+
+## v0.18.7b release candidate — ThreeD Bed Project Placement and Editing
+
+The next approved placement direction preserves three separate authorities: each `threed_*` Sub-Module row is the reusable source, `project_assets` assigns it to a Project and ThreeD module, and `project_threed_markers` owns the saved Project instance. Existing Project instance data does not drift when its source row later changes. General Models may have multiple Project placements per reusable Model; Beds, Plantings, Characters, and FarmBots initially use one placement per source asset per Project.
+
+The first scoped implementation adds new rectangular Beds from the Dashboard. The user sets name, width, length, height, color, Y rotation, and scale before entering one-shot ground placement. One authenticated transaction creates the owned `threed_beds` row, active `project_assets` assignment, and `project_threed_markers` row. The returned Bed and marker are inserted into current client state without reloading the Project or remounting unrelated Scene markers. The existing Bed Sub-Module renderer applies the saved instance height, rotation, and scale. DetailsCard updates width, length, height, X/Y/Z position, and degree-based Y rotation only in the owner-scoped Project marker and patches only that live marker. Bed rotation remains stored in degrees and is converted to radians only by the Scene renderer. Additional Bed shapes, other edit fields, removal semantics, and other Sub-Module placement types remain later steps.
+
+The user manually verified this Bed checkpoint on August 24, 2026. New Bed creation, immediate rendering, instance dimension editing, live X/Y/Z translation, live Y rotation, and refresh restoration all pass. Fixed Rapier bodies now synchronize changed translations and rotations through their existing body refs, so the visual and collider move together without remounting the persistent Scene. The Project marker remains authoritative after creation; changing the source `threed_beds` row does not change the saved Project instance.

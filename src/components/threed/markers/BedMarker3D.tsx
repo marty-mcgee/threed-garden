@@ -12,6 +12,7 @@ interface BedData {
   depth?: number;
   length?: number;
   lengthFeet?: number;
+  heightFeet?: number;
   soilType?: string;
   sunExposure?: string;
   color?: string;
@@ -37,6 +38,7 @@ export function BedMarker3D({ bed, position }: BedMarker3DProps) {
 
   const bedWidth = Number(bed.width || bed.widthFeet) || 4;
   const bedDepth = Number(bed.depth || bed.length || bed.lengthFeet) || 8;
+  const bedHeight = Math.max(Number(bed.heightFeet) || 0.3, 0.1);
   const soilColor = bed.soilType ? (SOIL_COLORS[bed.soilType.toLowerCase()] || '#8B7355') : (bed.color || '#8B7355');
 
   return (
@@ -47,8 +49,8 @@ export function BedMarker3D({ bed, position }: BedMarker3DProps) {
     >
       {/* Main bed body */}
       <Box
-        args={[bedWidth, 0.3, bedDepth]}
-        position={[0, 0.15, 0]}
+        args={[bedWidth, bedHeight, bedDepth]}
+        position={[0, bedHeight / 2, 0]}
         castShadow
         receiveShadow
       >
@@ -56,22 +58,22 @@ export function BedMarker3D({ bed, position }: BedMarker3DProps) {
       </Box>
 
       {/* Border frame — four walls */}
-      <Box args={[bedWidth + 0.1, 0.15, 0.08]} position={[0, 0.35, bedDepth / 2 + 0.04]} castShadow>
+      <Box args={[bedWidth + 0.1, 0.15, 0.08]} position={[0, bedHeight + 0.075, bedDepth / 2 + 0.04]} castShadow>
         <meshStandardMaterial color="#5C4033" roughness={0.85} />
       </Box>
-      <Box args={[bedWidth + 0.1, 0.15, 0.08]} position={[0, 0.35, -(bedDepth / 2 + 0.04)]} castShadow>
+      <Box args={[bedWidth + 0.1, 0.15, 0.08]} position={[0, bedHeight + 0.075, -(bedDepth / 2 + 0.04)]} castShadow>
         <meshStandardMaterial color="#5C4033" roughness={0.85} />
       </Box>
-      <Box args={[0.08, 0.15, bedDepth + 0.1]} position={[bedWidth / 2 + 0.04, 0.35, 0]} castShadow>
+      <Box args={[0.08, 0.15, bedDepth + 0.1]} position={[bedWidth / 2 + 0.04, bedHeight + 0.075, 0]} castShadow>
         <meshStandardMaterial color="#5C4033" roughness={0.85} />
       </Box>
-      <Box args={[0.08, 0.15, bedDepth + 0.1]} position={[-(bedWidth / 2 + 0.04), 0.35, 0]} castShadow>
+      <Box args={[0.08, 0.15, bedDepth + 0.1]} position={[-(bedWidth / 2 + 0.04), bedHeight + 0.075, 0]} castShadow>
         <meshStandardMaterial color="#5C4033" roughness={0.85} />
       </Box>
 
       {/* Tooltip on hover */}
       {hovered && (
-        <Html position={[0, 0.7, 0]} center distanceFactor={10}>
+        <Html position={[0, bedHeight + 0.5, 0]} center distanceFactor={10}>
           <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
             {bed.name} — {bedWidth}ft × {bedDepth}ft{bed.soilType ? ` — ${bed.soilType}` : ''}
           </div>

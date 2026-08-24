@@ -73,6 +73,7 @@ function buildSavedProjectMarkers(
       data: {
         ...record.data,
         id: isModelMarker ? markerRecordId : assetId,
+        projectMarkerId: markerRecordId,
         ...(isModelMarker ? { modelId: assetId, instanceId: markerRecordId } : {}),
         positionX: position.x,
         positionY: position.y,
@@ -185,6 +186,9 @@ export function buildThreeDRuntimeMarkers(
     buildSavedProjectMarkers(raw.projectThreedMarkers)
       .map((marker) => [marker.id, marker]),
   );
+  // A saved Project marker is an instance of its source asset. Once saved,
+  // its complete instance payload (including Bed dimensions) is authoritative
+  // for that Project and must not drift when the source row later changes.
   const restoredMarkers = markers.map((marker) => savedMarkers.get(marker.id) ?? marker);
   const existingIds = new Set(restoredMarkers.map((marker) => marker.id));
   for (const savedMarker of savedMarkers.values()) {

@@ -2,7 +2,9 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.7a **ThreeD Model Library Project Placements**. No later release candidate is designated. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.18.7a **ThreeD Model Library Project Placements**. Current release candidate is v0.18.7b **ThreeD Bed Project Placement and Editing**. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+
+The v0.18.7b candidate has manually verified new rectangular Bed placement and Project-instance editing for dimensions, X/Y/Z position, and degree-based Y rotation. These edits patch only the selected `project_threed_markers` instance and its existing Rapier body; the source Bed and unrelated Scene markers remain unchanged.
 
 The v0.18.7a production release provides a non-Character ThreeD Model Library path from Admin Vercel Blob GLB upload through Project Model marker CRUD, DRACO-capable Scene rendering, grounding, and whole-rendered-asset collision. It preserves one persistent Canvas/Physics world and unrelated Character/Ecctrl state when a Model marker changes. Scene Layer controls suspend only the selected layer's presentation, input, physics participation, and Physics Debug outlines without remounting retained markers or changing their positions. See [ThreeD Marker architecture](developers/THREED_MARKERS.md) for its boundary.
 
@@ -36,6 +38,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 - [Release index](releases/README.md)
 - [v0.18.7a production checkpoint](releases/v0.18.7a.md)
+- [v0.18.7b release candidate](releases/v0.18.7b.md)
 - [v0.18.6b production checkpoint](releases/v0.18.6b.md)
 - [v0.18.6a production checkpoint](releases/v0.18.6a.md)
 - [v0.18.5b production checkpoint](releases/v0.18.5b.md)

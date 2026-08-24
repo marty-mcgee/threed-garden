@@ -70,6 +70,10 @@ interface ThreeDSceneProps {
   placementModel?: ThreeDModelLibraryItem | null;
   /** Called with the ground point selected during placement mode. */
   onModelPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** New Bed currently awaiting a ground placement click. */
+  placementBedName?: string | null;
+  /** Called with the ground point selected for a new Bed. */
+  onBedPlacement?: (position: { x: number; y: number; z: number }) => void;
 }
 
 // ✅ View Preset Types
@@ -436,10 +440,35 @@ function SceneMarkerRigidBody({
   ...props
 }: RigidBodyProps & { sceneEnabled: boolean }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
+  const markerPosition = Array.isArray(props.position)
+    ? props.position as [number, number, number]
+    : null;
+  const markerRotation = Array.isArray(props.rotation)
+    ? props.rotation as [number, number, number]
+    : null;
 
   useEffect(() => {
     rigidBodyRef.current?.setEnabled(sceneEnabled);
   }, [sceneEnabled]);
+
+  useEffect(() => {
+    if (!markerPosition || !rigidBodyRef.current) return;
+    rigidBodyRef.current.setTranslation({
+      x: Number(markerPosition[0]) || 0,
+      y: Number(markerPosition[1]) || 0,
+      z: Number(markerPosition[2]) || 0,
+    }, true);
+  }, [markerPosition?.[0], markerPosition?.[1], markerPosition?.[2]]);
+
+  useEffect(() => {
+    if (!markerRotation || !rigidBodyRef.current) return;
+    const quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+      Number(markerRotation[0]) || 0,
+      Number(markerRotation[1]) || 0,
+      Number(markerRotation[2]) || 0,
+    ));
+    rigidBodyRef.current.setRotation(quaternion, true);
+  }, [markerRotation?.[0], markerRotation?.[1], markerRotation?.[2]]);
 
   return <RigidBody ref={rigidBodyRef} {...props} />;
 }
@@ -649,9 +678,22 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
 
   // v0.16.2-alpha: Beds — restore click, wrap in RigidBody
   if (marker.type === 'bed' || marker.type === 'beds') {
+    const bedRotationDegrees = Number(marker.data?.rotation) || 0;
+    const bedRotation = bedRotationDegrees * Math.PI / 180;
+    const bedScale = Math.max(Number(marker.data?.scale) || 1, 0.01);
     return (
-      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
-        <group visible={isLayerEnabled} onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}>
+      <SceneMarkerRigidBody
+        sceneEnabled={isLayerEnabled}
+        type="fixed"
+        colliders="cuboid"
+        position={pos}
+        rotation={[0, bedRotation, 0]}
+      >
+        <group
+          visible={isLayerEnabled}
+          scale={[bedScale, bedScale, bedScale]}
+          onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}
+        >
           <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={3.2} outerRadius={4.0} segments={48} />}
           {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={3.5} />}
@@ -937,7 +979,10 @@ export function ThreeDScene({
   actionTargetFocusRequest = 0,
   placementModel,
   onModelPlacement,
+  placementBedName,
+  onBedPlacement,
 }: ThreeDSceneProps) {
+  const placementLabel = placementBedName || placementModel?.modelName || null;
   // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
   const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
   // v0.16.2-beta: Persistent store of each ecctrl character's live physics position,
@@ -962,8 +1007,8 @@ export function ThreeDScene({
   } | null>(null);
 
   useEffect(() => {
-    if (!placementModel) setPlacementPreviewPosition(null);
-  }, [placementModel]);
+    if (!placementLabel) setPlacementPreviewPosition(null);
+  }, [placementLabel]);
   
   // ✅ Camera focus state
   const [focusTarget, setFocusTarget] = useState<any>(null);
@@ -1286,12 +1331,12 @@ export function ThreeDScene({
 
   return (
     <div
-      className={`relative w-full ${placementModel ? 'cursor-crosshair' : ''}`}
+      className={`relative w-full ${placementLabel ? 'cursor-crosshair' : ''}`}
       style={{ height, minHeight: '300px' }}
     >
-      {placementModel && (
+      {placementLabel && (
         <div className="pointer-events-none absolute left-3 top-3 z-10 rounded border border-cyan-300/40 bg-black/70 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm">
-          Click the ground to place <span className="font-medium">{placementModel.modelName}</span>
+          Click the ground to place <span className="font-medium">{placementLabel}</span>
         </div>
       )}
       {/* Controls Panel */}
@@ -1607,14 +1652,14 @@ export function ThreeDScene({
               centerX={centerX}
               centerZ={centerZ}
               onClick={clearDetails}
-              placementActive={Boolean(placementModel)}
+              placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
               onPlacementLeave={() => setPlacementPreviewPosition(null)}
-              onPlacementClick={onModelPlacement}
+              onPlacementClick={placementBedName ? onBedPlacement : onModelPlacement}
             />
           </RigidBody>
 
-          {placementModel && placementPreviewPosition && (
+          {placementLabel && placementPreviewPosition && (
             <group position={[
               placementPreviewPosition.x,
               placementPreviewPosition.y + 0.25,

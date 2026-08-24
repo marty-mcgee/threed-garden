@@ -9,6 +9,10 @@ This is a **Dual-Surface Platform**:
 
 > **Current production version:** `v0.18.7a "ThreeD Model Library Project Placements"`
 
+> **Current release candidate:** `v0.18.7b "ThreeD Bed Project Placement and Editing"`
+
+The v0.18.7b candidate adds manually verified rectangular Bed creation and Project-instance editing. Bed width, length, height, X/Y/Z position, and degree-based Y rotation are saved in the authoritative Project marker and applied to its existing Scene/Rapier owner without reloading the Project.
+
 ## Documentation
 
 Start with the [Documentation Hub](docs/README.md) for audience-specific guides:
@@ -280,6 +284,7 @@ The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.4b pro
 | v0.18.6a | Phase 5C–5D — ThreeD Markers Action Target Module | Released: shared target-relative navigation planning and ThreeD-owned target identity, pulse, focus, lifecycle, and capability-filtered actions for Plantings, Beds, Characters, FarmBots, and Models. |
 | v0.18.6b | Phase 5E–5L — ThreeD Project Marker Snapshots | Released: explicit owner-scoped marker snapshots, manual save and eligible restore, Runtime Marker registry integration, Ecctrl live-position capture, and current-position Action Target resolution. |
 | v0.18.7a | ThreeD Model Library Project Placements | Released: public Library eligibility, Admin classification and replacement uploads, owner-scoped Project Model marker CRUD, one-shot Scene placement, local DRACO decoding, scale composition, grounding, whole-asset collision, DetailsCard editing/deletion, and marker-ID-local Scene updates. The persistent Canvas/Physics world preserves unrelated Character/Ecctrl state, while Scene Layers suspend only their own visuals, input, physics, and debug outlines. Character-classified models remain outside this placement path. |
+| v0.18.7b | ThreeD Bed Project Placement and Editing | Release candidate: transactional Bed source/assignment/marker creation, one-shot Scene placement, authoritative Project-instance dimensions and transforms, live Rapier translation/rotation synchronization, and degree-based Y rotation. |
 | Later | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
 
 Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, Phase 4 through v0.18.3b, and Phase 5A–5D are released and production-verified. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.

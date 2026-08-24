@@ -408,7 +408,128 @@ function ModelInstancePlacementEditor({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId }: {
+function BedInstanceEditor({
+  markerId,
+  initialWidthFeet,
+  initialLengthFeet,
+  initialHeightFeet,
+  initialPosition,
+  initialRotation,
+  updating,
+  onSave,
+}: {
+  markerId: number;
+  initialWidthFeet: number;
+  initialLengthFeet: number;
+  initialHeightFeet: number;
+  initialPosition: { x: number; y: number; z: number };
+  initialRotation: number;
+  updating: boolean;
+  onSave: (markerId: number, input: {
+    widthFeet: number;
+    lengthFeet: number;
+    heightFeet: number;
+    positionX: number;
+    positionY: number;
+    positionZ: number;
+    rotation: number;
+  }) => void;
+}) {
+  const [widthFeet, setWidthFeet] = useState(String(initialWidthFeet));
+  const [lengthFeet, setLengthFeet] = useState(String(initialLengthFeet));
+  const [heightFeet, setHeightFeet] = useState(String(initialHeightFeet));
+  const [positionX, setPositionX] = useState(String(initialPosition.x));
+  const [positionY, setPositionY] = useState(String(initialPosition.y));
+  const [positionZ, setPositionZ] = useState(String(initialPosition.z));
+  const [rotationDegrees, setRotationDegrees] = useState(String(initialRotation));
+  const dimensions = [Number(widthFeet), Number(lengthFeet), Number(heightFeet)];
+  const positions = [Number(positionX), Number(positionY), Number(positionZ)];
+  const parsedRotationDegrees = Number(rotationDegrees);
+  const valid = dimensions.every((value) => (
+    Number.isFinite(value) && value >= 0.1 && value <= 1_000
+  ))
+    && positions.every((value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000)
+    && Number.isFinite(parsedRotationDegrees);
+
+  return (
+    <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
+      <div className="text-[10px] font-medium text-white/60">Project Bed Instance</div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {[
+          ['Width (ft)', widthFeet, setWidthFeet],
+          ['Length (ft)', lengthFeet, setLengthFeet],
+          ['Height (ft)', heightFeet, setHeightFeet],
+        ].map(([label, value, setter]) => (
+          <label key={label as string} className="block space-y-1">
+            <span className="text-[9px] text-white/50">{label as string}</span>
+            <input
+              type="number"
+              min="0.1"
+              max="1000"
+              step="0.1"
+              value={value as string}
+              disabled={updating}
+              onChange={(event) => (setter as (value: string) => void)(event.target.value)}
+              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+            />
+          </label>
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {[
+          ['Position X', positionX, setPositionX],
+          ['Position Y', positionY, setPositionY],
+          ['Position Z', positionZ, setPositionZ],
+        ].map(([label, value, setter]) => (
+          <label key={label as string} className="block space-y-1">
+            <span className="text-[9px] text-white/50">{label as string}</span>
+            <input
+              type="number"
+              step="0.1"
+              value={value as string}
+              disabled={updating}
+              onChange={(event) => (setter as (value: string) => void)(event.target.value)}
+              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+            />
+          </label>
+        ))}
+      </div>
+      <label className="block space-y-1">
+        <span className="text-[9px] text-white/50">Y rotation (°)</span>
+        <input
+          type="number"
+          step="1"
+          value={rotationDegrees}
+          disabled={updating}
+          onChange={(event) => setRotationDegrees(event.target.value)}
+          className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+        />
+      </label>
+      <button
+        type="button"
+        disabled={!valid || updating}
+        onClick={(event) => {
+          event.stopPropagation();
+          onSave(markerId, {
+            widthFeet: dimensions[0],
+            lengthFeet: dimensions[1],
+            heightFeet: dimensions[2],
+            positionX: positions[0],
+            positionY: positions[1],
+            positionZ: positions[2],
+            rotation: parsedRotationDegrees,
+          });
+        }}
+        className="flex w-full items-center justify-center gap-1.5 rounded bg-amber-600/35 px-2 py-1.5 text-[11px] font-medium text-amber-100 transition-colors hover:bg-amber-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+      >
+        {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+        Save Bed Instance
+      </button>
+    </div>
+  );
+}
+
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
@@ -436,6 +557,16 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   updatingModelInstanceId?: number | null;
   onDeleteModelInstance?: (instanceId: number, name: string) => void;
   deletingModelInstanceId?: number | null;
+  onUpdateBedInstance?: (markerId: number, input: {
+    widthFeet: number;
+    lengthFeet: number;
+    heightFeet: number;
+    positionX: number;
+    positionY: number;
+    positionZ: number;
+    rotation: number;
+  }) => void;
+  updatingBedMarkerId?: number | null;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
@@ -484,6 +615,11 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   ) && selected.metadata?.source === 'project-marker'
     && Number.isSafeInteger(modelInstanceId)
     && modelInstanceId > 0;
+  const bedMarkerId = Number(d.projectMarkerId);
+  const isProjectBedInstance = (normalizedType === 'bed' || normalizedType === 'beds')
+    && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
+    && Number.isSafeInteger(bedMarkerId)
+    && bedMarkerId > 0;
   const selectedTargetCapabilities = getThreeDActionTargetCapabilities(normalizedType);
   const actionTargetCapabilities = actionTarget
     ? getThreeDActionTargetCapabilities(actionTarget.type)
@@ -919,6 +1055,24 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         />
       )}
 
+      {isProjectBedInstance && onUpdateBedInstance && (
+        <BedInstanceEditor
+          key={bedMarkerId}
+          markerId={bedMarkerId}
+          initialWidthFeet={Number(d.widthFeet ?? d.width ?? 4)}
+          initialLengthFeet={Number(d.lengthFeet ?? d.length ?? d.depth ?? 8)}
+          initialHeightFeet={Number(d.heightFeet ?? 1)}
+          initialPosition={{
+            x: Number(selected.position?.x ?? d.positionX ?? 0),
+            y: Number(selected.position?.y ?? d.positionY ?? 0),
+            z: Number(selected.position?.z ?? d.positionZ ?? 0),
+          }}
+          initialRotation={Number(d.rotation ?? 0)}
+          updating={updatingBedMarkerId === bedMarkerId}
+          onSave={onUpdateBedInstance}
+        />
+      )}
+
       {/* Admin Edit link */}
       {(() => {
         const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
@@ -1020,15 +1174,30 @@ function UnifiedMapPageInner() {
     name: string;
   }>>([]);
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
+  const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [loadingLibraryModels, setLoadingLibraryModels] = useState(false);
   const [placementModel, setPlacementModel] = useState<ThreeDModelLibraryItem | null>(null);
   const [placementThreedId, setPlacementThreedId] = useState<number | null>(null);
   const [placementScaleMultiplier, setPlacementScaleMultiplier] = useState('1');
   const [placingModel, setPlacingModel] = useState(false);
+  const [placingBed, setPlacingBed] = useState(false);
+  const [bedPlacementActive, setBedPlacementActive] = useState(false);
+  const [bedPlacementDraft, setBedPlacementDraft] = useState({
+    name: 'New Garden Bed',
+    shape: 'rectangle',
+    widthFeet: '4',
+    lengthFeet: '8',
+    heightFeet: '1',
+    color: '#8B5E3C',
+    rotation: '0',
+    scale: '1',
+  });
   const [updatingModelInstanceId, setUpdatingModelInstanceId] = useState<number | null>(null);
   const [deletingModelInstanceId, setDeletingModelInstanceId] = useState<number | null>(null);
+  const [updatingBedMarkerId, setUpdatingBedMarkerId] = useState<number | null>(null);
   const placingModelRef = useRef(false);
+  const placingBedRef = useRef(false);
   
   // ✅ Live Data Status Indicator
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -1100,6 +1269,8 @@ function UnifiedMapPageInner() {
   ) => runtimeMarkerPositionResolverRef.current?.(moduleType, assetId) ?? null, []);
 
   const openModelLibrary = useCallback(async () => {
+    setIsBedPlacementOpen(false);
+    setBedPlacementActive(false);
     setIsModelLibraryOpen(true);
     setIsProjectSummaryOpen(false);
     setSelectedMarker(null);
@@ -1303,6 +1474,8 @@ function UnifiedMapPageInner() {
     setPlacementModel(null);
     setPlacementScaleMultiplier('1');
     setIsModelLibraryOpen(false);
+    setBedPlacementActive(false);
+    setIsBedPlacementOpen(false);
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
     window.history.pushState({}, '', url.toString());
@@ -1782,6 +1955,80 @@ function UnifiedMapPageInner() {
     updateProjectThreeDMarkers,
   ]);
 
+  const handleBedPlacement = useCallback(async (
+    position: { x: number; y: number; z: number },
+  ) => {
+    if (
+      !selectedProjectId
+      || !placementThreedId
+      || !bedPlacementActive
+      || placingBedRef.current
+    ) return;
+
+    placingBedRef.current = true;
+    setPlacingBed(true);
+    try {
+      const response = await fetch('/api/project/threed-markers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          markerType: 'beds',
+          projectId: Number(selectedProjectId),
+          threedId: placementThreedId,
+          ...bedPlacementDraft,
+          positionX: position.x,
+          positionY: position.y,
+          positionZ: position.z,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success || !result.data?.bed || !result.data?.marker) {
+        throw new Error(result?.error || `Bed placement failed (${response.status})`);
+      }
+
+      setData((current) => {
+        const raw = current.threed.raw;
+        if (!raw) return current;
+        const projectThreedMarkers = [
+          ...(raw.projectThreedMarkers ?? []),
+          result.data.marker as ProjectThreeDMarkerRecord,
+        ];
+        return {
+          ...current,
+          threed: {
+            ...current.threed,
+            raw: {
+              ...raw,
+              beds: [...(raw.beds ?? []), result.data.bed],
+              projectThreedMarkers,
+            },
+            markersCount: projectThreedMarkers.length,
+          },
+        };
+      });
+
+      setBedPlacementActive(false);
+      setIsBedPlacementOpen(false);
+      showToastRef.current(`${bedPlacementDraft.name.trim()} placed in the ThreeD Scene`, 'success');
+    } catch (error) {
+      console.error('Failed to place ThreeD Bed', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to place ThreeD Bed',
+        'error',
+      );
+    } finally {
+      placingBedRef.current = false;
+      setPlacingBed(false);
+    }
+  }, [
+    bedPlacementActive,
+    bedPlacementDraft,
+    placementThreedId,
+    selectedProjectId,
+  ]);
+
   const handleUpdateModelInstance = useCallback(async (
     instanceId: number,
     input: {
@@ -1848,6 +2095,56 @@ function UnifiedMapPageInner() {
       setUpdatingModelInstanceId(null);
     }
   }, [deletingModelInstanceId, updateProjectThreeDMarkers, updatingModelInstanceId]);
+
+  const handleUpdateBedInstance = useCallback(async (
+    markerId: number,
+    input: {
+      widthFeet: number;
+      lengthFeet: number;
+      heightFeet: number;
+      positionX: number;
+      positionY: number;
+      positionZ: number;
+      rotation: number;
+    },
+  ) => {
+    if (updatingBedMarkerId != null) return;
+    setUpdatingBedMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markerType: 'beds', ...input }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Bed instance update failed (${response.status})`);
+      }
+
+      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
+        Number(marker.id) === markerId
+          ? {
+              ...marker,
+              ...result.data,
+              data: { ...marker.data, ...(result.data?.data ?? {}) },
+              metadata: { ...marker.metadata, ...(result.data?.metadata ?? {}) },
+            }
+          : marker
+      )));
+      setSelectedMarker(null);
+      showToastRef.current('Project Bed instance updated', 'success');
+    } catch (error) {
+      console.error('Failed to update Project Bed instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to update Project Bed instance',
+        'error',
+      );
+    } finally {
+      setUpdatingBedMarkerId(null);
+    }
+  }, [updateProjectThreeDMarkers, updatingBedMarkerId]);
 
   const handleDeleteModelInstance = useCallback(async (
     instanceId: number,
@@ -2101,6 +2398,22 @@ function UnifiedMapPageInner() {
                   <Box className="mr-1 h-3 w-3" />
                   Model Library
                 </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={projectThreeDModules.length === 0}
+                  onClick={() => {
+                    setIsModelLibraryOpen(false);
+                    setPlacementModel(null);
+                    setIsBedPlacementOpen(true);
+                    setIsProjectSummaryOpen(false);
+                  }}
+                >
+                  <Plus className="mr-1 h-3 w-3" />
+                  Add Bed
+                </Button>
               </div>
             </div>
           )}
@@ -2287,6 +2600,149 @@ function UnifiedMapPageInner() {
         </div>
       )}
 
+      {selectedProjectId && isBedPlacementOpen && (
+        <div className="absolute left-1 top-9 z-40 w-[min(26rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold">Add ThreeD Bed</h2>
+              <p className="text-[11px] text-muted-foreground">
+                Set the Bed parameters, then choose its location in the ThreeD Scene.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              disabled={placingBed}
+              onClick={() => {
+                setBedPlacementActive(false);
+                setIsBedPlacementOpen(false);
+              }}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+
+          {projectThreeDModules.length > 1 && (
+            <label className="mb-2 block text-xs">
+              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={placementThreedId ?? ''}
+                disabled={bedPlacementActive || placingBed}
+                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
+              >
+                {projectThreeDModules.map((module) => (
+                  <option key={module.id} value={module.id}>{module.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <label className="col-span-2">
+              <span className="mb-1 block text-muted-foreground">Bed name</span>
+              <Input
+                value={bedPlacementDraft.name}
+                disabled={bedPlacementActive || placingBed}
+                maxLength={100}
+                className="h-8 text-xs"
+                onChange={(event) => setBedPlacementDraft((current) => ({
+                  ...current,
+                  name: event.target.value,
+                }))}
+              />
+            </label>
+            <label>
+              <span className="mb-1 block text-muted-foreground">Shape</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={bedPlacementDraft.shape}
+                disabled
+                onChange={(event) => setBedPlacementDraft((current) => ({
+                  ...current,
+                  shape: event.target.value,
+                }))}
+              >
+                <option value="rectangle">rectangle</option>
+              </select>
+            </label>
+            <label>
+              <span className="mb-1 block text-muted-foreground">Color</span>
+              <Input
+                type="color"
+                value={bedPlacementDraft.color}
+                disabled={bedPlacementActive || placingBed}
+                className="h-8 w-full p-1"
+                onChange={(event) => setBedPlacementDraft((current) => ({
+                  ...current,
+                  color: event.target.value,
+                }))}
+              />
+            </label>
+            {([
+              ['widthFeet', 'Width (ft)', '0.1'],
+              ['lengthFeet', 'Length (ft)', '0.1'],
+              ['heightFeet', 'Height (ft)', '0.1'],
+              ['rotation', 'Y rotation', '0.1'],
+              ['scale', 'Scale', '0.01'],
+            ] as const).map(([field, label, step]) => (
+              <label key={field}>
+                <span className="mb-1 block text-muted-foreground">{label}</span>
+                <Input
+                  type="number"
+                  step={step}
+                  value={bedPlacementDraft[field]}
+                  disabled={bedPlacementActive || placingBed}
+                  className="h-8 text-xs"
+                  onChange={(event) => setBedPlacementDraft((current) => ({
+                    ...current,
+                    [field]: event.target.value,
+                  }))}
+                />
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-3 flex items-center justify-end gap-2 border-t pt-3">
+            {bedPlacementActive && (
+              <span className="mr-auto text-[11px] text-cyan-600">
+                Click the Scene ground to place the Bed.
+              </span>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={placingBed}
+              onClick={() => setBedPlacementActive(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={
+                !placementThreedId
+                || !bedPlacementDraft.name.trim()
+                || bedPlacementActive
+                || placingBed
+              }
+              onClick={() => {
+                setBedPlacementActive(true);
+                setViewMode('3d');
+              }}
+            >
+              {placingBed ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
+              Place Bed
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* ✅ v0.13.0-beta: Advanced Filtering Panel */}
       {showFilterPanel && (
         <Card className="border-primary/20">
@@ -2449,6 +2905,8 @@ function UnifiedMapPageInner() {
                       actionTargetFocusRequest={actionTargetFocusRequest}
                       placementModel={placementModel}
                       onModelPlacement={handleModelPlacement}
+                      placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
+                      onBedPlacement={handleBedPlacement}
                       onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                       onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                     />
@@ -2515,6 +2973,8 @@ function UnifiedMapPageInner() {
                 actionTargetFocusRequest={actionTargetFocusRequest}
                 placementModel={placementModel}
                 onModelPlacement={handleModelPlacement}
+                placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
+                onBedPlacement={handleBedPlacement}
                 onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                 onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
               />
@@ -2581,6 +3041,8 @@ function UnifiedMapPageInner() {
         updatingModelInstanceId={updatingModelInstanceId}
         onDeleteModelInstance={handleDeleteModelInstance}
         deletingModelInstanceId={deletingModelInstanceId}
+        onUpdateBedInstance={handleUpdateBedInstance}
+        updatingBedMarkerId={updatingBedMarkerId}
       />
       
     </div>

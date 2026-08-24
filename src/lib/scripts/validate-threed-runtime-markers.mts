@@ -30,6 +30,12 @@ import {
   ProjectModelInstanceInputError,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/models/project-model-instance-core.ts';
+import {
+  parseCreateProjectBedPlacement,
+  parseUpdateProjectBedPlacement,
+  ProjectBedPlacementInputError,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/beds/project-bed-placement-core.ts';
 
 let completedValidationSteps = 0;
 function validationStep(label: string): void {
@@ -64,6 +70,85 @@ assert.equal(calculateThreeDModelGroundedY(0, 0.25), 0.25);
 assert.equal(calculateThreeDModelGroundedY(-1, -0.5), 1);
 assert.equal(calculateThreeDModelGroundedY(Number.POSITIVE_INFINITY, Number.NaN), 0);
 validationStep('Model visual fitting, scale composition, and grounding remain bounded');
+
+assert.deepEqual(parseCreateProjectBedPlacement({
+  markerType: 'beds',
+  projectId: 2,
+  threedId: 3,
+  name: ' North Bed ',
+  shape: 'raised',
+  widthFeet: 4,
+  lengthFeet: 8,
+  heightFeet: 1.5,
+  color: '#8B5E3C',
+  positionX: 12.5,
+  positionY: 0,
+  positionZ: -6.25,
+  rotation: 1.57,
+  scale: 1.25,
+}), {
+  markerType: 'beds',
+  projectId: 2,
+  threedId: 3,
+  name: 'North Bed',
+  shape: 'raised',
+  widthFeet: 4,
+  lengthFeet: 8,
+  heightFeet: 1.5,
+  color: '#8B5E3C',
+  positionX: 12.5,
+  positionY: 0,
+  positionZ: -6.25,
+  rotation: 1.57,
+  scale: 1.25,
+});
+assert.throws(
+  () => parseCreateProjectBedPlacement({
+    markerType: 'beds', projectId: 2, threedId: 3, name: 'Bad Bed', widthFeet: 0,
+  }),
+  ProjectBedPlacementInputError,
+);
+assert.throws(
+  () => parseCreateProjectBedPlacement({
+    markerType: 'beds', projectId: 2, threedId: 3, name: 'Bad Bed', color: 'red',
+  }),
+  ProjectBedPlacementInputError,
+);
+validationStep('Project Bed placement inputs preserve bounded Sub-Module parameters');
+
+assert.deepEqual(parseUpdateProjectBedPlacement({
+  markerType: 'beds',
+  widthFeet: 6,
+  lengthFeet: 12,
+  heightFeet: 2.5,
+  positionX: -4.5,
+  positionY: 1,
+  positionZ: 8.25,
+  rotation: 90,
+}), {
+  markerType: 'beds',
+  widthFeet: 6,
+  lengthFeet: 12,
+  heightFeet: 2.5,
+  positionX: -4.5,
+  positionY: 1,
+  positionZ: 8.25,
+  rotation: 90,
+});
+assert.throws(
+  () => parseUpdateProjectBedPlacement({
+    markerType: 'beds',
+    widthFeet: 0,
+    lengthFeet: 12,
+    heightFeet: 2.5,
+    positionX: 0,
+    positionY: 0,
+    positionZ: 0,
+    rotation: 0,
+  }),
+  ProjectBedPlacementInputError,
+);
+validationStep('Project Bed instance dimension updates remain bounded');
 
 assert.deepEqual(parseCreateProjectModelInstance({
   projectId: 2,
@@ -437,7 +522,14 @@ validationStep('Project-save snapshot row limits are enforced before persistence
 const restoredProjectMarkers = buildThreeDRuntimeMarkers({
   plants: [],
   plantings: [],
-  beds: [{ id: 4, name: 'Unsaved Bed', positionX: 1, positionY: 0, positionZ: 1 }],
+  beds: [{
+    id: 4,
+    name: 'Unsaved Bed',
+    positionX: 1,
+    positionY: 0,
+    positionZ: 1,
+    heightFeet: '2.50',
+  }],
   characters: [],
   farmbots: [],
   models: [{ id: 80, modelName: 'Newly Placed Model', filePath: '/placed.glb' }],
@@ -447,6 +539,7 @@ const restoredProjectMarkers = buildThreeDRuntimeMarkers({
   weatherLogs: [],
   projectThreedMarkers: [
     {
+      id: 7,
       markerType: 'beds',
       sourceAssetId: 4,
       markerId: 'beds-4',
@@ -460,7 +553,7 @@ const restoredProjectMarkers = buildThreeDRuntimeMarkers({
       label: 'Saved Bed Label',
       isVisible: false,
       isActive: true,
-      data: { id: 999, notes: 'saved data' },
+      data: { id: 999, notes: 'saved data', heightFeet: '1.00' },
       metadata: { source: 'old-value' },
       savedAt: '2026-08-22T20:00:00.000Z',
     },
@@ -506,6 +599,8 @@ assert.equal(restoredProjectMarkers[0].id, 'beds-4');
 assert.equal(restoredProjectMarkers[0].name, 'Saved Bed');
 assert.deepEqual(restoredProjectMarkers[0].position, { x: 8.125, y: 0, z: -3.5 });
 assert.equal(restoredProjectMarkers[0].data.id, 4);
+assert.equal(restoredProjectMarkers[0].data.heightFeet, '1.00');
+assert.equal(restoredProjectMarkers[0].data.projectMarkerId, 7);
 assert.equal(restoredProjectMarkers[0].data.positionX, 8.125);
 assert.equal(restoredProjectMarkers[0].data.positionY, 0);
 assert.equal(restoredProjectMarkers[0].data.positionZ, -3.5);

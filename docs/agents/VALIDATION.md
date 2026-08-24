@@ -216,6 +216,20 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Recheck GardenCharacter wandering, external FBX animations, idle/walk/run, task-to-locomotion crossfades, DetailsCard, Action Targets, targeted Water, and Pick Fruit persistence.
 - Run `npm run build` manually in the client environment and use Vercel as the deployment build gate.
 
+### v0.18.7b Bed placement and editing check
+
+- Open an owned Project with an active ThreeD module, open the Project menu, and choose **Add Bed**.
+- Enter a unique name and visible width, length, height, color, rotation, and scale values. Choose **Place Bed**, then click the Scene ground once.
+- Confirm one success toast, one new `threed_beds` row, one active `project_assets` assignment with `asset_type = 'threed_beds'`, and one `project_threed_markers` row with `marker_type = 'beds'` and `marker_id = beds-{bed.id}`.
+- Confirm the new Bed appears immediately without a Project reload, uses the entered dimensions/color/rotation/scale, participates in collision and Physics Debug, and remains at the selected position after refresh.
+- Confirm rapid or repeated ground clicks do not create duplicate Beds, and cancelling before ground click creates no database rows.
+- Select the placed Bed and edit its width, length, height, X/Y/Z position, and Y rotation in DetailsCard. Save and confirm the visual plus Physics Debug collider update immediately without a Project reload.
+- Confirm Y rotation is entered and stored in degrees. The Scene alone converts it to radians for Three.js and Rapier.
+- Confirm the edited `project_threed_markers` row contains the new instance values, while its source `threed_beds` row remains unchanged.
+- Refresh and confirm the edited Project instance restores. Then change the source Bed and refresh again; the saved Project instance must not drift to the source values.
+- After editing the Bed, Take Control of an EcctrlCharacter and confirm the Character, collider, and selection halo still move together with WASD.
+- Select an Ecctrl Character after placement and confirm Take Control, WASD, the Character model, and its selection halo still move together.
+
 `npm run validate:assets` verifies that every file in the external character animation manifest and every required local Three.js DRACO decoder file exists under `public/`. It must pass in a clean Git checkout before deployment; in CI, successful validation after `actions/checkout` also proves the required assets are tracked by Git.
 
 `npm run validate:farmbot-crypto` exercises the server-side FarmBot credential envelope, persistence conversion, versioned key-provider policy, token-response validation, limited JWT metadata decoding, strict broker-metadata validation, allowlisted read-only device/peripheral parsing, and fail-closed peripheral-binding snapshot validation without using a real credential, database, network connection, or hardware device.

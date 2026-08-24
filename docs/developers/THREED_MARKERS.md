@@ -153,6 +153,16 @@ Any future marker CRUD or scene-population change must repeat this sequence: edi
 
 This verifies the general Model path only. Direct placement excludes `used_by_characters = true`, and no Character Library workflow is implied by this production checkpoint.
 
+## v0.18.7b Bed Project placement and editing
+
+New Bed, Planting, Character, and FarmBot placement does not turn these assets into generic Models. The source `threed_*` row is the reusable origin, `project_assets` owns active Project membership, and `project_threed_markers` is authoritative for the saved Project instance after creation. A later change to the source row must not silently change an existing Project instance. Creation must commit these related records together so a failed placement cannot leave an unassigned source object or an ineligible marker.
+
+The first implementation covers a new rectangular Bed. Its pre-placement form accepts name, width, length, height, color, Y rotation, and scale. Ground click creates the owned `threed_beds` record, Project assignment, and `beds-{sourceAssetId}` marker in one transaction, then injects only the returned Bed and marker into the persistent client Scene. Rendering and physics remain on `BedMarker3D` and its Bed-owned fixed RigidBody path. DetailsCard can update width, length, height, X/Y/Z position, and Y rotation on only the saved `project_threed_markers` Bed instance; it does not mutate `threed_beds` or reload the Project. Rotation is displayed and stored in degrees, then converted to radians only at the Three.js/Rapier rendering boundary. Additional shapes and other Bed fields remain later steps.
+
+### Manually verified Bed placement checkpoint
+
+On August 24, 2026, the user verified both new Bed placement and existing Project Bed editing. Creation writes the owned `threed_beds` source, active `project_assets` relationship, and authoritative `project_threed_markers` instance together. Editing changes only the Project instance's width, length, height, X/Y/Z position, and degree-based Y rotation. The selected fixed Rapier body applies translation and rotation changes immediately, keeping its visual and collider aligned without refreshing the Project or remounting unrelated markers. Refresh restores the edited values, while later changes to the reusable source Bed do not overwrite the saved Project instance.
+
 ## Current development boundary
 
 Phase 5E centralizes validated Runtime Marker-to-Action Target construction. Phase 5F centralizes target identity matching across the DetailsCard, refreshed Project data, and ThreeD scene highlighting using normalized Sub-Module type plus asset ID.

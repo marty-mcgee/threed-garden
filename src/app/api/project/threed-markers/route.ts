@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { and, eq, inArray, or, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
+import { ensureTableSequence } from '@/lib/db/sequence';
 import {
   project,
   projectAssets,
@@ -10,8 +11,14 @@ import {
 } from '@/lib/schema/project';
 import {
   threed,
+  threedBeds,
   threedModels,
 } from '@/lib/schema/threed';
+import {
+  parseCreateProjectBedPlacement,
+  parseUpdateProjectBedPlacement,
+  ProjectBedPlacementInputError,
+} from '@/lib/services/threed/beds/project-bed-placement-core';
 import {
   parseProjectThreeDMarkerSnapshot,
   ProjectMarkerSnapshotError,
@@ -112,6 +119,22 @@ async function readOwnedModelMarker(userId: string, id: number) {
       eq(projectThreedMarkers.id, id),
       eq(projectThreedMarkers.userId, userId),
       eq(projectThreedMarkers.markerType, 'models'),
+    ))
+    .limit(1);
+  return marker?.project_threed_markers ?? null;
+}
+
+async function readOwnedProjectMarker(userId: string, id: number) {
+  const [marker] = await db
+    .select()
+    .from(projectThreedMarkers)
+    .innerJoin(project, and(
+      eq(project.id, projectThreedMarkers.projectId),
+      eq(project.userId, userId),
+    ))
+    .where(and(
+      eq(projectThreedMarkers.id, id),
+      eq(projectThreedMarkers.userId, userId),
     ))
     .limit(1);
   return marker?.project_threed_markers ?? null;
@@ -301,7 +324,88 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const input = parseCreateProjectModelInstance(await readJsonBody(request));
+    const body = await readJsonBody(request);
+    if (
+      typeof body === 'object'
+      && body !== null
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).markerType === 'beds'
+    ) {
+      const input = parseCreateProjectBedPlacement(body);
+      const userId = session.user.id;
+      if (!await requireOwnedProject(userId, input.projectId)) {
+        return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+      }
+      if (!await requireActiveThreeDAssignment(userId, input.projectId, input.threedId)) {
+        return NextResponse.json(
+          { success: false, error: 'Active ThreeD Project assignment not found' },
+          { status: 404 },
+        );
+      }
+
+      await ensureTableSequence('threed_beds');
+      const created = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${input.projectId}`}))`,
+        );
+        const [bed] = await tx.insert(threedBeds).values({
+          userId,
+          bedId: `BED-${crypto.randomUUID()}`,
+          name: input.name,
+          shape: input.shape,
+          widthFeet: input.widthFeet.toFixed(2),
+          lengthFeet: input.lengthFeet.toFixed(2),
+          squareFeet: (input.widthFeet * input.lengthFeet).toFixed(2),
+          heightFeet: input.heightFeet.toFixed(2),
+          positionX: input.positionX.toFixed(2),
+          positionY: input.positionY.toFixed(2),
+          positionZ: input.positionZ.toFixed(2),
+          rotation: input.rotation.toFixed(2),
+          scale: input.scale.toFixed(2),
+          isActive: true,
+          status: 'active',
+          color: input.color,
+        }).returning();
+
+        await tx.insert(projectAssets).values({
+          userId,
+          projectId: input.projectId,
+          moduleId: input.threedId,
+          moduleType: 'threed',
+          assetType: 'threed_beds',
+          assetId: bed.id,
+          config: {},
+          isActive: true,
+        });
+
+        const [marker] = await tx.insert(projectThreedMarkers).values({
+          userId,
+          projectId: input.projectId,
+          threedId: input.threedId,
+          markerType: 'beds',
+          sourceAssetId: bed.id,
+          markerId: `beds-${bed.id}`,
+          name: bed.name,
+          positionX: input.positionX.toFixed(3),
+          positionY: input.positionY.toFixed(3),
+          positionZ: input.positionZ.toFixed(3),
+          positionSource: 'asset',
+          color: input.color,
+          icon: '🧑‍🌾',
+          label: bed.name,
+          isVisible: true,
+          isActive: true,
+          data: bed,
+          metadata: { source: 'project-marker' },
+        }).returning();
+
+        return { bed, marker };
+      });
+
+      return NextResponse.json({ success: true, data: created }, { status: 201 });
+    }
+
+    const input = parseCreateProjectModelInstance(body);
     const userId = session.user.id;
     if (!await requireOwnedProject(userId, input.projectId)) {
       return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
@@ -381,33 +485,71 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: marker }, { status: 201 });
   } catch (error) {
-    if (error instanceof ProjectModelInstanceInputError) {
+    if (
+      error instanceof ProjectModelInstanceInputError
+      || error instanceof ProjectBedPlacementInputError
+    ) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
-    console.error('Failed to create Project ThreeD Model marker', {
+    console.error('Failed to create Project ThreeD marker', {
       errorName: error instanceof Error ? error.name : 'UnknownError',
       ...getSafeDatabaseError(error),
     });
     return NextResponse.json(
-      { success: false, error: 'Failed to create Project ThreeD Model marker' },
+      { success: false, error: 'Failed to create Project ThreeD marker' },
       { status: 500 },
     );
   }
 }
 
-async function updateModelMarker(request: NextRequest, id: number) {
+async function updateProjectMarker(request: NextRequest, id: number) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const update = parseUpdateProjectModelInstance(await readJsonBody(request));
-    const marker = await readOwnedModelMarker(session.user.id, id);
+    const body = await readJsonBody(request);
+    const marker = await readOwnedProjectMarker(session.user.id, id);
     if (!marker) {
-      return NextResponse.json({ success: false, error: 'Model marker not found' }, { status: 404 });
+      return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
     }
     const currentData = marker.data && typeof marker.data === 'object' ? marker.data : {};
+
+    if (marker.markerType === 'beds') {
+      const update = parseUpdateProjectBedPlacement(body);
+      const [updated] = await db.update(projectThreedMarkers).set({
+        positionX: update.positionX.toFixed(3),
+        positionY: update.positionY.toFixed(3),
+        positionZ: update.positionZ.toFixed(3),
+        positionSource: 'asset',
+        data: {
+          ...currentData,
+          widthFeet: update.widthFeet,
+          lengthFeet: update.lengthFeet,
+          heightFeet: update.heightFeet,
+          positionX: update.positionX,
+          positionY: update.positionY,
+          positionZ: update.positionZ,
+          rotation: update.rotation,
+        },
+        updatedAt: new Date(),
+      }).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, session.user.id),
+        eq(projectThreedMarkers.markerType, 'beds'),
+      )).returning();
+      return NextResponse.json({ success: true, data: updated });
+    }
+
+    if (marker.markerType !== 'models') {
+      return NextResponse.json(
+        { success: false, error: 'Marker type is not editable here' },
+        { status: 400 },
+      );
+    }
+
+    const update = parseUpdateProjectModelInstance(body);
     const values: Partial<typeof projectThreedMarkers.$inferInsert> = { updatedAt: new Date() };
     if (update.instanceName !== undefined) {
       values.name = update.instanceName || marker.name;
@@ -434,14 +576,17 @@ async function updateModelMarker(request: NextRequest, id: number) {
     )).returning();
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
-    if (error instanceof ProjectModelInstanceInputError) {
+    if (
+      error instanceof ProjectModelInstanceInputError
+      || error instanceof ProjectBedPlacementInputError
+    ) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
-    console.error('Failed to update Project ThreeD Model marker', {
+    console.error('Failed to update Project ThreeD marker', {
       errorName: error instanceof Error ? error.name : 'UnknownError',
     });
     return NextResponse.json(
-      { success: false, error: 'Failed to update Project ThreeD Model marker' },
+      { success: false, error: 'Failed to update Project ThreeD marker' },
       { status: 500 },
     );
   }
@@ -449,7 +594,7 @@ async function updateModelMarker(request: NextRequest, id: number) {
 
 export async function PUT(request: NextRequest) {
   const id = parsePositiveId(new URL(request.url).searchParams.get('id'));
-  return id ? updateModelMarker(request, id) : saveSnapshot(request);
+  return id ? updateProjectMarker(request, id) : saveSnapshot(request);
 }
 
 export async function PATCH(request: NextRequest) {
@@ -457,7 +602,7 @@ export async function PATCH(request: NextRequest) {
   if (!id) {
     return NextResponse.json({ success: false, error: 'Invalid marker ID' }, { status: 400 });
   }
-  return updateModelMarker(request, id);
+  return updateProjectMarker(request, id);
 }
 
 export async function DELETE(request: NextRequest) {
