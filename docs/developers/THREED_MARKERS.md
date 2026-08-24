@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture through the v0.18.6b **ThreeD Project Marker Snapshots** production checkpoint and the v0.18.7a **ThreeD Model Library Project Placements** release candidate. Production remains v0.18.6b until deployment and smoke checks are confirmed.
+This document records the marker architecture through the v0.18.7a **ThreeD Model Library Project Placements** production checkpoint.
 
 ## Hierarchy and terminology
 
@@ -151,7 +151,7 @@ During manual development testing, saving one Model's scale previously reloaded 
 
 Any future marker CRUD or scene-population change must repeat this sequence: edit a non-Character marker, confirm the Canvas does not reload, select a movable Character, Take Control, move with WASD, and confirm the Character plus halo move together. A hard refresh is not an acceptable workaround for a failed result.
 
-This verifies the general Model path only. Direct placement excludes `used_by_characters = true`, and no Character Library workflow is implied by this checkpoint. This work is designated as the v0.18.7a release candidate; it remains post-v0.18.6b development until deployment is confirmed.
+This verifies the general Model path only. Direct placement excludes `used_by_characters = true`, and no Character Library workflow is implied by this production checkpoint.
 
 ## Current development boundary
 

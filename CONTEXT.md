@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.6b — ThreeD Project Marker Snapshots** |
-| Current release candidate | **v0.18.7a — ThreeD Model Library Project Placements** |
-| Current development milestone | **Release validation for general non-Character Project Model placement CRUD** |
-| Previous checkpoint | **v0.18.6a — ThreeD Markers Action Target Module** |
+| Current stable version | **v0.18.7a — ThreeD Model Library Project Placements** |
+| Current release candidate | **None designated** |
+| Current development milestone | **Post-release checkpoint; next milestone requires review** |
+| Previous checkpoint | **v0.18.6b — ThreeD Project Marker Snapshots** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -378,6 +378,7 @@ API (/api/map/threed)
 | **v0.18.5b** | **2026-08-22** | **Production release — target-relative Ecctrl FarmBot navigation, aligned target focusing, and tested client orchestration lifecycle transitions** |
 | **v0.18.6a** | **2026-08-22** | **Production release — ThreeD-owned Action Targets for Plantings, Beds, Characters, FarmBots, and Models with shared navigation, highlighting, lifecycle, and capability-filtered actions** |
 | **v0.18.6b** | **2026-08-22** | **Production release — explicit owner-scoped ThreeD Project marker save/restore, Runtime Marker registry integration, Ecctrl live-position capture, and current-position Action Target resolution** |
+| **v0.18.7a** | **2026-08-24** | **Production release — general ThreeD Model Library Project placements, owner-scoped CRUD, DRACO rendering, whole-asset collision, persistent Scene authority, and selective Scene Layer physics/debug control** |
 
 ---
 
@@ -1788,7 +1789,7 @@ The Dashboard Project menu now opens a ThreeD Model Library panel. It loads acti
 
 Placed-model rendering composes `threed_models.scale` with the instance `scale_multiplier` and applies the result at the outer React Three Fiber group. The loaded FBX/GLB/OBJ object therefore cannot discard the reusable model's base scale during loading or cloning. A model scale of `0.02` with the default instance multiplier `1.00` renders at `0.02`; the database multiplier remains an instance adjustment rather than a duplicate of base scale.
 
-## Verified post-v0.18.6b development checkpoint — ThreeD Model Library placement
+## v0.18.7a production checkpoint — ThreeD Model Library placement
 
 On August 23, 2026, the user manually verified the first complete general-model placement path. A Tomato Plant GLB uploaded through Admin Model CRUD to Vercel Blob appears in the authenticated non-Character ThreeD Model Library, creates a Project-owned marker through one-shot Dashboard ground placement, and reloads as a visible `models` Runtime Marker in the ThreeD Scene. The corrected hierarchy stores that placement in `project_threed_markers`.
 
@@ -1806,4 +1807,4 @@ Project Model collision is derived from the whole final rendered asset boundary 
 
 ThreeD Scene Layer state controls visual, pointer, input, and physics participation without controlling marker lifecycle. The complete marker collection remains mounted inside the persistent Physics world and continues to determine Scene bounds and the ground coordinate frame. Hiding a Scene Layer disables its existing module-owned RigidBody and suspends Ecctrl input without removing, rebuilding, or changing the collider structure of the marker owner. The Scene-level Physics Debug renderer filters Rapier's disabled-collider line segments, so a hidden layer loses only its own diagnostic outlines while enabled layers remain visible in the debug view. This preserves every retained instance and runtime transform.
 
-This verified development is designated as release candidate **v0.18.7a — ThreeD Model Library Project Placements**. The production boundary remains v0.18.6b until deployment and production smoke checks are confirmed.
+This development was released to production as **v0.18.7a — ThreeD Model Library Project Placements** on August 24, 2026. The user confirmed the manual build and production deployment.
