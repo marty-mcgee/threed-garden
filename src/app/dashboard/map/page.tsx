@@ -413,31 +413,43 @@ function BedInstanceEditor({
   initialWidthFeet,
   initialLengthFeet,
   initialHeightFeet,
+  initialScale,
+  initialColor,
   initialPosition,
   initialRotation,
   updating,
+  deleting,
   onSave,
+  onDelete,
 }: {
   markerId: number;
   initialWidthFeet: number;
   initialLengthFeet: number;
   initialHeightFeet: number;
+  initialScale: number;
+  initialColor: string;
   initialPosition: { x: number; y: number; z: number };
   initialRotation: number;
   updating: boolean;
+  deleting: boolean;
   onSave: (markerId: number, input: {
     widthFeet: number;
     lengthFeet: number;
     heightFeet: number;
+    scale: number;
+    color: string;
     positionX: number;
     positionY: number;
     positionZ: number;
     rotation: number;
   }) => void;
+  onDelete: (markerId: number, name: string) => void;
 }) {
   const [widthFeet, setWidthFeet] = useState(String(initialWidthFeet));
   const [lengthFeet, setLengthFeet] = useState(String(initialLengthFeet));
   const [heightFeet, setHeightFeet] = useState(String(initialHeightFeet));
+  const [scale, setScale] = useState(String(initialScale));
+  const [color, setColor] = useState(initialColor);
   const [positionX, setPositionX] = useState(String(initialPosition.x));
   const [positionY, setPositionY] = useState(String(initialPosition.y));
   const [positionZ, setPositionZ] = useState(String(initialPosition.z));
@@ -445,11 +457,15 @@ function BedInstanceEditor({
   const dimensions = [Number(widthFeet), Number(lengthFeet), Number(heightFeet)];
   const positions = [Number(positionX), Number(positionY), Number(positionZ)];
   const parsedRotationDegrees = Number(rotationDegrees);
+  const parsedScale = Number(scale);
   const valid = dimensions.every((value) => (
     Number.isFinite(value) && value >= 0.1 && value <= 1_000
   ))
     && positions.every((value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000)
-    && Number.isFinite(parsedRotationDegrees);
+    && Number.isFinite(parsedRotationDegrees)
+    && Number.isFinite(parsedScale) && parsedScale >= 0.01 && parsedScale <= 1_000
+    && /^#[0-9a-f]{6}$/i.test(color);
+  const busy = updating || deleting;
 
   return (
     <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
@@ -468,7 +484,7 @@ function BedInstanceEditor({
               max="1000"
               step="0.1"
               value={value as string}
-              disabled={updating}
+              disabled={busy}
               onChange={(event) => (setter as (value: string) => void)(event.target.value)}
               className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
             />
@@ -487,33 +503,45 @@ function BedInstanceEditor({
               type="number"
               step="0.1"
               value={value as string}
-              disabled={updating}
+              disabled={busy}
               onChange={(event) => (setter as (value: string) => void)(event.target.value)}
               className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
             />
           </label>
         ))}
       </div>
-      <label className="block space-y-1">
-        <span className="text-[9px] text-white/50">Y rotation (°)</span>
-        <input
-          type="number"
-          step="1"
-          value={rotationDegrees}
-          disabled={updating}
-          onChange={(event) => setRotationDegrees(event.target.value)}
-          className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-        />
-      </label>
+      <div className="grid grid-cols-3 gap-1.5">
+        <label className="block space-y-1">
+          <span className="text-[9px] text-white/50">Y rotation (°)</span>
+          <input type="number" step="1" value={rotationDegrees} disabled={busy}
+            onChange={(event) => setRotationDegrees(event.target.value)}
+            className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50" />
+        </label>
+        <label className="block space-y-1">
+          <span className="text-[9px] text-white/50">Scale</span>
+          <input type="number" min="0.01" max="1000" step="0.01" value={scale} disabled={busy}
+            onChange={(event) => setScale(event.target.value)}
+            className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50" />
+        </label>
+        <label className="block space-y-1">
+          <span className="text-[9px] text-white/50">Color</span>
+          <input type="color" value={color} disabled={busy}
+            onChange={(event) => setColor(event.target.value)}
+            className="h-7 w-full cursor-pointer rounded border border-white/10 bg-white/5 p-0.5 disabled:opacity-50" />
+        </label>
+      </div>
+      <div className="grid grid-cols-2 gap-1.5">
       <button
         type="button"
-        disabled={!valid || updating}
+        disabled={!valid || busy}
         onClick={(event) => {
           event.stopPropagation();
           onSave(markerId, {
             widthFeet: dimensions[0],
             lengthFeet: dimensions[1],
             heightFeet: dimensions[2],
+            scale: parsedScale,
+            color,
             positionX: positions[0],
             positionY: positions[1],
             positionZ: positions[2],
@@ -525,6 +553,20 @@ function BedInstanceEditor({
         {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
         Save Bed Instance
       </button>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={(event) => {
+          event.stopPropagation();
+          if (!window.confirm('Remove this Bed from this ThreeD Project?')) return;
+          onDelete(markerId, 'Bed');
+        }}
+        className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+      >
+        {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+        Remove Bed
+      </button>
+      </div>
     </div>
   );
 }
@@ -623,7 +665,7 @@ function PlantingInstanceEditor({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId }: {
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
@@ -655,12 +697,16 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     widthFeet: number;
     lengthFeet: number;
     heightFeet: number;
+    scale: number;
+    color: string;
     positionX: number;
     positionY: number;
     positionZ: number;
     rotation: number;
   }) => void;
   updatingBedMarkerId?: number | null;
+  onDeleteBedInstance?: (markerId: number, name: string) => void;
+  deletingBedMarkerId?: number | null;
   onUpdatePlantingInstance?: (markerId: number, input: {
     modelScale: number;
     positionX: number;
@@ -1162,13 +1208,15 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         />
       )}
 
-      {isProjectBedInstance && onUpdateBedInstance && (
+      {isProjectBedInstance && onUpdateBedInstance && onDeleteBedInstance && (
         <BedInstanceEditor
           key={bedMarkerId}
           markerId={bedMarkerId}
           initialWidthFeet={Number(d.widthFeet ?? d.width ?? 4)}
           initialLengthFeet={Number(d.lengthFeet ?? d.length ?? d.depth ?? 8)}
           initialHeightFeet={Number(d.heightFeet ?? 1)}
+          initialScale={Number(d.scale ?? 1)}
+          initialColor={String(d.color ?? selected.color ?? '#8B5E3C')}
           initialPosition={{
             x: Number(selected.position?.x ?? d.positionX ?? 0),
             y: Number(selected.position?.y ?? d.positionY ?? 0),
@@ -1176,7 +1224,12 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
           }}
           initialRotation={Number(d.rotation ?? 0)}
           updating={updatingBedMarkerId === bedMarkerId}
+          deleting={deletingBedMarkerId === bedMarkerId}
           onSave={onUpdateBedInstance}
+          onDelete={(markerId, name) => onDeleteBedInstance(
+            markerId,
+            String(selected.name || name),
+          )}
         />
       )}
 
@@ -1335,6 +1388,7 @@ function UnifiedMapPageInner() {
   const [updatingModelInstanceId, setUpdatingModelInstanceId] = useState<number | null>(null);
   const [deletingModelInstanceId, setDeletingModelInstanceId] = useState<number | null>(null);
   const [updatingBedMarkerId, setUpdatingBedMarkerId] = useState<number | null>(null);
+  const [deletingBedMarkerId, setDeletingBedMarkerId] = useState<number | null>(null);
   const [updatingPlantingMarkerId, setUpdatingPlantingMarkerId] = useState<number | null>(null);
   const [deletingPlantingMarkerId, setDeletingPlantingMarkerId] = useState<number | null>(null);
   const placingModelRef = useRef(false);
@@ -1392,6 +1446,28 @@ function UnifiedMapPageInner() {
       };
     });
   }, []);
+
+  const handleRejectedProjectMarkerDelete = useCallback(async (recordId: number) => {
+    try {
+      const response = await fetch(
+        `/api/project/threed-markers?id=${recordId}&snapshotOnly=1`,
+        { method: 'DELETE' },
+      );
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Saved marker removal failed (${response.status})`);
+      }
+      updateProjectThreeDMarkers((markers) => markers.filter(
+        (marker) => Number(marker.id) !== recordId,
+      ));
+      showToastRef.current('Invalid saved ThreeD marker removed; source asset preserved', 'success');
+    } catch (error) {
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to remove saved ThreeD marker',
+        'error',
+      );
+    }
+  }, [updateProjectThreeDMarkers]);
 
   const handleProjectMarkerSnapshotProviderChange = useCallback((
     provider: ProjectThreeDMarkerSnapshotProvider | null,
@@ -2374,13 +2450,15 @@ function UnifiedMapPageInner() {
       widthFeet: number;
       lengthFeet: number;
       heightFeet: number;
+      scale: number;
+      color: string;
       positionX: number;
       positionY: number;
       positionZ: number;
       rotation: number;
     },
   ) => {
-    if (updatingBedMarkerId != null) return;
+    if (updatingBedMarkerId != null || deletingBedMarkerId != null) return;
     setUpdatingBedMarkerId(markerId);
     try {
       const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
@@ -2416,7 +2494,64 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingBedMarkerId(null);
     }
-  }, [updateProjectThreeDMarkers, updatingBedMarkerId]);
+  }, [deletingBedMarkerId, updateProjectThreeDMarkers, updatingBedMarkerId]);
+
+  const handleDeleteBedInstance = useCallback(async (
+    markerId: number,
+    name: string,
+  ) => {
+    if (deletingBedMarkerId != null || updatingBedMarkerId != null) return;
+    setDeletingBedMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Bed deletion failed (${response.status})`);
+      }
+      updateProjectThreeDMarkers((markers) => markers.filter(
+        (marker) => Number(marker.id) !== markerId,
+      ));
+      const deletedBedId = Number(result.data?.sourceAssetId);
+      setData((current) => {
+        const raw = current.threed.raw;
+        if (!raw || !Number.isSafeInteger(deletedBedId)) return current;
+        return {
+          ...current,
+          threed: {
+            ...current.threed,
+            raw: {
+              ...raw,
+              beds: (raw.beds ?? []).filter(
+                (bed: any) => Number(bed.id) !== deletedBedId,
+              ),
+            },
+          },
+        };
+      });
+      setSelectedMarker(null);
+      setActionTarget((current) => current
+        && isMatchingThreeDActionTarget(current, {
+          markerType: 'beds',
+          assetId: Number(result.data?.sourceAssetId),
+        })
+        ? null
+        : current);
+      setOrchestrationStatus(null);
+      showToastRef.current(`${name} removed from the ThreeD Project`, 'success');
+    } catch (error) {
+      console.error('Failed to delete Project Bed instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to delete Project Bed instance',
+        'error',
+      );
+    } finally {
+      setDeletingBedMarkerId(null);
+    }
+  }, [deletingBedMarkerId, updateProjectThreeDMarkers, updatingBedMarkerId]);
 
   const handleUpdatePlantingInstance = useCallback(async (
     markerId: number,
@@ -3441,6 +3576,7 @@ function UnifiedMapPageInner() {
                       onPlantingPlacement={handlePlantingPlacement}
                       onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                       onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
+                      onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
                     />
                   </div>
                 </div>
@@ -3513,6 +3649,7 @@ function UnifiedMapPageInner() {
                 onPlantingPlacement={handlePlantingPlacement}
                 onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                 onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
+                onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
               />
             )}
 
@@ -3579,6 +3716,8 @@ function UnifiedMapPageInner() {
         deletingModelInstanceId={deletingModelInstanceId}
         onUpdateBedInstance={handleUpdateBedInstance}
         updatingBedMarkerId={updatingBedMarkerId}
+        onDeleteBedInstance={handleDeleteBedInstance}
+        deletingBedMarkerId={deletingBedMarkerId}
         onUpdatePlantingInstance={handleUpdatePlantingInstance}
         updatingPlantingMarkerId={updatingPlantingMarkerId}
         onDeletePlantingInstance={handleDeletePlantingInstance}

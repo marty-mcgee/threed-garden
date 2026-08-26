@@ -1047,6 +1047,14 @@ export function ThreeDScene({
     if (typeof window === 'undefined') return null;
     return new URLSearchParams(window.location.search).get('physicsIsolation');
   });
+  const [characterIsolation] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    return new URLSearchParams(window.location.search).get('characterIsolation');
+  });
+  const [characterMarkerIsolation] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    return new URLSearchParams(window.location.search).get('characterMarkerId');
+  });
   const [showControls, setShowControls] = useState(false);
   const [showGizmoCube, setShowGizmoCube] = useState(true);
   const [controlsReady, setControlsReady] = useState(false);
@@ -1093,6 +1101,14 @@ export function ThreeDScene({
   const [activeLayers, setActiveLayers] = useState<Set<string>>(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
   const sceneMarkers = useMemo(() => {
     if (physicsIsolation === 'all-markers') return [];
+    const filterCharacterRuntime = (candidateMarkers: typeof markers) => candidateMarkers.filter(
+      (marker) => {
+        if (normalizeSceneLayerType(marker.type) !== 'characters') return true;
+        if (characterIsolation === 'movable' && marker.data?.isMovable !== true) return false;
+        if (characterIsolation === 'non-movable' && marker.data?.isMovable === true) return false;
+        return characterMarkerIsolation === null || String(marker.id) === characterMarkerIsolation;
+      },
+    );
     if (physicsIsolation?.startsWith('only-')) {
       const isolatedLayers = new Set(
         physicsIsolation
@@ -1101,22 +1117,50 @@ export function ThreeDScene({
           .map((layer) => layer.trim())
           .filter(Boolean),
       );
-      return markers.filter((marker) => (
+      return filterCharacterRuntime(markers.filter((marker) => (
         isolatedLayers.has(normalizeSceneLayerType(marker.type))
-      ));
+      )));
     }
-    return markers;
-  }, [markers, physicsIsolation]);
+    return filterCharacterRuntime(markers);
+  }, [characterIsolation, characterMarkerIsolation, markers, physicsIsolation]);
 
   useEffect(() => {
     if (physicsIsolation) {
       console.debug('[ThreeD Physics Isolation]', {
         mode: physicsIsolation,
+        characterMode: characterIsolation,
+        characterMarkerId: characterMarkerIsolation,
         sourceMarkerCount: markers.length,
         mountedMarkerCount: sceneMarkers.length,
+        markers: sceneMarkers.map((marker) => ({
+          markerId: String(marker.id),
+          type: normalizeSceneLayerType(marker.type),
+          position: {
+            x: Number(marker.position?.x),
+            y: Number(marker.position?.y),
+            z: Number(marker.position?.z),
+          },
+          ...(normalizeSceneLayerType(marker.type) === 'beds' ? {
+            dimensions: {
+              widthFeet: Number(marker.data?.widthFeet ?? marker.data?.width ?? 4),
+              lengthFeet: Number(
+                marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8,
+              ),
+              heightFeet: Number(marker.data?.heightFeet ?? 1),
+              scale: Number(marker.data?.scale ?? 1),
+              rotationDegrees: Number(marker.data?.rotation ?? 0),
+            },
+          } : {}),
+          ...(normalizeSceneLayerType(marker.type) === 'characters' ? {
+            character: {
+              isMovable: marker.data?.isMovable === true,
+              movementType: String(marker.data?.movementType ?? ''),
+            },
+          } : {}),
+        })),
       });
     }
-  }, [markers.length, physicsIsolation, sceneMarkers.length]);
+  }, [characterIsolation, characterMarkerIsolation, markers.length, physicsIsolation, sceneMarkers]);
 
   // ✅ View presets state
   const [viewPresets, setViewPresets] = useState<ViewPreset[]>([]);

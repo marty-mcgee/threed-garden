@@ -31,37 +31,119 @@ const THREED_NON_PLANTING_MARKER_TYPES = [
   'farmbots',
 ] as const satisfies readonly ThreeDRuntimeMarkerModuleType[];
 
+export interface ThreeDRuntimeMarkerIssue {
+  source: 'project_threed_markers' | 'threed_sub_module';
+  recordId: number | null;
+  markerId: string;
+  markerType: string;
+  reasons: string[];
+}
+
+export interface ThreeDRuntimeMarkerBuildResult {
+  markers: RuntimeMarker[];
+  issues: ThreeDRuntimeMarkerIssue[];
+}
+
+const MAX_SCENE_COORDINATE = 1_000_000;
+const MAX_MARKER_SCALE = 1_000;
+const MAX_MARKER_DIMENSION = 100_000;
+
+function validateOptionalNumber(
+  data: Record<string, unknown>,
+  field: string,
+  options: { positive?: boolean; max: number },
+): string | null {
+  const rawValue = data[field];
+  if (rawValue === undefined || rawValue === null || rawValue === '') return null;
+  const value = Number(rawValue);
+  if (!Number.isFinite(value)) return `${field} must be a finite number`;
+  if (options.positive && value <= 0) return `${field} must be greater than zero`;
+  if (Math.abs(value) > options.max) return `${field} exceeds the supported limit`;
+  return null;
+}
+
+function validateSavedProjectMarker(
+  record: ProjectThreeDMarkerRecord,
+): { moduleType: ThreeDRuntimeMarkerModuleType | null; reasons: string[] } {
+  const reasons: string[] = [];
+  const moduleType = THREED_RUNTIME_MARKER_VISUALS[
+    record.markerType as ThreeDRuntimeMarkerModuleType
+  ] ? record.markerType as ThreeDRuntimeMarkerModuleType : null;
+  const recordId = Number(record.id);
+  const assetId = Number(record.sourceAssetId);
+  const markerId = String(record.markerId ?? '').trim();
+  const position = [record.positionX, record.positionY, record.positionZ].map(Number);
+  const data = record.data && typeof record.data === 'object' && !Array.isArray(record.data)
+    ? record.data
+    : {};
+
+  if (!moduleType) reasons.push(`unsupported marker type "${String(record.markerType)}"`);
+  if (!Number.isSafeInteger(recordId) || recordId <= 0) reasons.push('database row ID is invalid');
+  if (!Number.isSafeInteger(assetId) || assetId <= 0) reasons.push('source asset ID is invalid');
+  if (!markerId || markerId.length > 200) reasons.push('marker ID is missing or too long');
+  if (!position.every(Number.isFinite)) reasons.push('position must contain finite X, Y, and Z values');
+  if (position.some((value) => Math.abs(value) > MAX_SCENE_COORDINATE)) {
+    reasons.push('position exceeds the supported Scene boundary');
+  }
+
+  for (const field of ['scale', 'scaleMultiplier', 'modelScale']) {
+    const reason = validateOptionalNumber(data, field, {
+      positive: true,
+      max: MAX_MARKER_SCALE,
+    });
+    if (reason) reasons.push(reason);
+  }
+  for (const field of ['widthFeet', 'lengthFeet', 'heightFeet', 'width', 'length', 'height', 'depth']) {
+    const reason = validateOptionalNumber(data, field, {
+      positive: true,
+      max: MAX_MARKER_DIMENSION,
+    });
+    if (reason) reasons.push(reason);
+  }
+  for (const field of ['rotation', 'rotationX', 'rotationYInstance', 'rotationZ']) {
+    const reason = validateOptionalNumber(data, field, { max: 1_000_000 });
+    if (reason) reasons.push(reason);
+  }
+
+  return { moduleType, reasons };
+}
+
 function buildSavedProjectMarkers(
   records: readonly ProjectThreeDMarkerRecord[],
+  issues: ThreeDRuntimeMarkerIssue[],
 ): RuntimeMarker[] {
   const markers: RuntimeMarker[] = [];
+  const acceptedMarkerIds = new Set<string>();
   for (const record of records) {
-    const moduleType = THREED_RUNTIME_MARKER_VISUALS[
-      record.markerType as ThreeDRuntimeMarkerModuleType
-    ] ? record.markerType as ThreeDRuntimeMarkerModuleType : null;
+    const validation = validateSavedProjectMarker(record);
+    const moduleType = validation.moduleType;
     const assetId = Number(record.sourceAssetId);
+    const markerId = String(record.markerId ?? '').trim();
     const position = {
       x: Number(record.positionX),
       y: Number(record.positionY),
       z: Number(record.positionZ),
     };
-    if (
-      !moduleType
-      || !Number.isSafeInteger(assetId)
-      || assetId <= 0
-      || !Object.values(position).every(Number.isFinite)
-    ) {
+    if (acceptedMarkerIds.has(markerId)) {
+      validation.reasons.push('duplicate marker ID in the Project payload');
+    }
+    if (!moduleType || validation.reasons.length > 0) {
+      issues.push({
+        source: 'project_threed_markers',
+        recordId: Number.isSafeInteger(Number(record.id)) ? Number(record.id) : null,
+        markerId: markerId || '(missing)',
+        markerType: String(record.markerType ?? '(missing)'),
+        reasons: validation.reasons,
+      });
       continue;
     }
 
     const isModelMarker = moduleType === 'models';
     const markerRecordId = Number(record.id);
-    if (isModelMarker && (!Number.isSafeInteger(markerRecordId) || markerRecordId <= 0)) {
-      continue;
-    }
+    acceptedMarkerIds.add(markerId);
 
     markers.push({
-      id: record.markerId,
+      id: markerId,
       name: record.name,
       type: moduleType,
       position,
@@ -135,9 +217,43 @@ function createMarker(
   moduleType: ThreeDRuntimeMarkerModuleType,
   raw: ThreeDRawProjectData,
   generatedAt: string,
+  issues: ThreeDRuntimeMarkerIssue[],
 ): RuntimeMarker | null {
+  const reasons: string[] = [];
+  const assetId = Number(item.id);
   const position = extractPosition(item);
-  if (!position) return null;
+  if (!Number.isSafeInteger(assetId) || assetId <= 0) reasons.push('source asset ID is invalid');
+  if (!position) {
+    reasons.push('position must contain finite X, Y, and Z values');
+  } else if (Object.values(position).some(
+    (value) => !Number.isFinite(value) || Math.abs(value) > MAX_SCENE_COORDINATE,
+  )) {
+    reasons.push('position exceeds the supported Scene boundary');
+  }
+  for (const field of ['scale', 'scaleMultiplier', 'modelScale']) {
+    const reason = validateOptionalNumber(item, field, {
+      positive: true,
+      max: MAX_MARKER_SCALE,
+    });
+    if (reason) reasons.push(reason);
+  }
+  for (const field of ['widthFeet', 'lengthFeet', 'heightFeet', 'width', 'length', 'height', 'depth']) {
+    const reason = validateOptionalNumber(item, field, {
+      positive: true,
+      max: MAX_MARKER_DIMENSION,
+    });
+    if (reason) reasons.push(reason);
+  }
+  if (!position || reasons.length > 0) {
+    issues.push({
+      source: 'threed_sub_module',
+      recordId: Number.isSafeInteger(assetId) ? assetId : null,
+      markerId: Number.isSafeInteger(assetId) ? `${moduleType}-${assetId}` : '(invalid)',
+      markerType: moduleType,
+      reasons,
+    });
+    return null;
+  }
 
   const name = extractName(item, moduleType, raw);
   const visual = THREED_RUNTIME_MARKER_VISUALS[moduleType];
@@ -160,14 +276,71 @@ function createMarker(
   };
 }
 
+function rejectOverlappingEcctrlSpawns(
+  markers: readonly RuntimeMarker[],
+  issues: ThreeDRuntimeMarkerIssue[],
+): RuntimeMarker[] {
+  const movableCharacters = markers.filter(
+    (marker) => marker.type === 'characters' && marker.data?.isMovable === true,
+  );
+  const markersBySpawn = new Map<string, RuntimeMarker[]>();
+
+  for (const marker of movableCharacters) {
+    const spawnKey = [marker.position.x, marker.position.y, marker.position.z]
+      .map((value) => Number(value).toFixed(6))
+      .join(':');
+    const matchingMarkers = markersBySpawn.get(spawnKey) ?? [];
+    matchingMarkers.push(marker);
+    markersBySpawn.set(spawnKey, matchingMarkers);
+  }
+
+  const rejectedMarkerIds = new Set<string>();
+  for (const matchingMarkers of markersBySpawn.values()) {
+    if (matchingMarkers.length < 2) continue;
+    const position = matchingMarkers[0].position;
+    for (const marker of matchingMarkers) {
+      rejectedMarkerIds.add(marker.id);
+      issues.push({
+        source: marker.metadata?.source === 'project-snapshot'
+          ? 'project_threed_markers'
+          : 'threed_sub_module',
+        recordId: Number.isSafeInteger(Number(marker.data?.projectMarkerId ?? marker.data?.id))
+          ? Number(marker.data?.projectMarkerId ?? marker.data?.id)
+          : null,
+        markerId: marker.id,
+        markerType: marker.type,
+        reasons: [
+          `movable Character shares Ecctrl spawn position X:${position.x}, Y:${position.y}, Z:${position.z} with ${matchingMarkers.length - 1} other movable Character${matchingMarkers.length === 2 ? '' : 's'}`,
+        ],
+      });
+    }
+  }
+
+  return rejectedMarkerIds.size === 0
+    ? [...markers]
+    : markers.filter((marker) => !rejectedMarkerIds.has(marker.id));
+}
+
 /** Converts project-scoped ThreeD Sub-Module rows into scene Runtime Markers. */
 export function buildThreeDRuntimeMarkers(
   raw: ThreeDRawProjectData | null,
   generatedAt = new Date().toISOString(),
 ): RuntimeMarker[] {
-  if (!raw) return [];
+  return buildThreeDRuntimeMarkerResult(raw, generatedAt).markers;
+}
+
+/**
+ * Builds Scene-safe Runtime Markers and returns bounded, user-displayable
+ * diagnostics for database rows that were rejected before reaching Rapier.
+ */
+export function buildThreeDRuntimeMarkerResult(
+  raw: ThreeDRawProjectData | null,
+  generatedAt = new Date().toISOString(),
+): ThreeDRuntimeMarkerBuildResult {
+  if (!raw) return { markers: [], issues: [] };
 
   const markers: RuntimeMarker[] = [];
+  const issues: ThreeDRuntimeMarkerIssue[] = [];
   const markerIds = new Set<string>();
   const appendMarker = (marker: RuntimeMarker | null) => {
     if (!marker || markerIds.has(marker.id)) return;
@@ -175,19 +348,21 @@ export function buildThreeDRuntimeMarkers(
     markers.push(marker);
   };
   for (const item of raw.plantings ?? []) {
-    appendMarker(createMarker(item, 'plantings', raw, generatedAt));
+    appendMarker(createMarker(item, 'plantings', raw, generatedAt, issues));
   }
 
   for (const moduleType of THREED_NON_PLANTING_MARKER_TYPES) {
     for (const item of raw[moduleType] ?? []) {
-      appendMarker(createMarker(item, moduleType, raw, generatedAt));
+      appendMarker(createMarker(item, moduleType, raw, generatedAt, issues));
     }
   }
 
-  if (!raw.projectThreedMarkers?.length) return markers;
+  if (!raw.projectThreedMarkers?.length) {
+    return { markers: rejectOverlappingEcctrlSpawns(markers, issues), issues };
+  }
 
   const savedMarkers = new Map(
-    buildSavedProjectMarkers(raw.projectThreedMarkers)
+    buildSavedProjectMarkers(raw.projectThreedMarkers, issues)
       .map((marker) => [marker.id, marker]),
   );
   // A saved Project marker is an instance of its source asset. Once saved,
@@ -200,7 +375,10 @@ export function buildThreeDRuntimeMarkers(
       restoredMarkers.push(savedMarker);
     }
   }
-  return restoredMarkers;
+  return {
+    markers: rejectOverlappingEcctrlSpawns(restoredMarkers, issues),
+    issues,
+  };
 }
 
 /** Maps complete builder output into the registry's provider-neutral shape. */

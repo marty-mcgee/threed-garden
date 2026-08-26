@@ -439,7 +439,10 @@ export async function POST(request: NextRequest) {
           isVisible: true,
           isActive: true,
           data: bed,
-          metadata: { source: 'project-marker' },
+          metadata: {
+            source: 'project-marker',
+            placementKind: 'dashboard-created',
+          },
         }).returning();
 
         return { bed, marker };
@@ -693,11 +696,14 @@ async function updateProjectMarker(request: NextRequest, id: number) {
         positionY: update.positionY.toFixed(3),
         positionZ: update.positionZ.toFixed(3),
         positionSource: 'asset',
+        color: update.color,
         data: {
           ...currentData,
           widthFeet: update.widthFeet,
           lengthFeet: update.lengthFeet,
           heightFeet: update.heightFeet,
+          color: update.color,
+          scale: update.scale,
           positionX: update.positionX,
           positionY: update.positionY,
           positionZ: update.positionZ,
@@ -811,8 +817,67 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Invalid marker ID' }, { status: 400 });
   }
   const marker = await readOwnedProjectMarker(userId, id);
-  if (!marker || (marker.markerType !== 'models' && marker.markerType !== 'plantings')) {
+  const snapshotOnly = new URL(request.url).searchParams.get('snapshotOnly') === '1';
+  if (snapshotOnly) {
+    if (!marker) {
+      return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
+    }
+    const [deleted] = await db.delete(projectThreedMarkers).where(and(
+      eq(projectThreedMarkers.id, id),
+      eq(projectThreedMarkers.userId, userId),
+    )).returning({ id: projectThreedMarkers.id });
+    return NextResponse.json({ success: true, data: deleted });
+  }
+  if (!marker || !['models', 'plantings', 'beds'].includes(marker.markerType)) {
     return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
+  }
+  if (marker.markerType === 'beds') {
+    const metadata = marker.metadata && typeof marker.metadata === 'object' && !Array.isArray(marker.metadata)
+      ? marker.metadata as Record<string, unknown>
+      : {};
+    const isDashboardCreated = metadata.placementKind === 'dashboard-created';
+    const sourceAssetId = Number(marker.sourceAssetId);
+    if (!Number.isSafeInteger(sourceAssetId) || sourceAssetId <= 0) {
+      return NextResponse.json({ success: false, error: 'Bed source not found' }, { status: 404 });
+    }
+    const assignedPlantings = await db.select({ id: threedPlantings.id })
+      .from(threedPlantings)
+      .where(and(
+        eq(threedPlantings.userId, userId),
+        eq(threedPlantings.bedId, sourceAssetId),
+        eq(threedPlantings.isActive, true),
+      ))
+      .limit(1);
+    if (assignedPlantings.length > 0) {
+      return NextResponse.json({
+        success: false,
+        error: 'Move or delete the Plantings assigned to this Bed before deleting it',
+      }, { status: 409 });
+    }
+    const deleted = await db.transaction(async (tx) => {
+      const [deletedMarker] = await tx.delete(projectThreedMarkers).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, userId),
+        eq(projectThreedMarkers.markerType, 'beds'),
+      )).returning({ id: projectThreedMarkers.id });
+
+      await tx.delete(projectAssets).where(and(
+        eq(projectAssets.userId, userId),
+        eq(projectAssets.projectId, marker.projectId),
+        eq(projectAssets.moduleId, marker.threedId),
+        eq(projectAssets.assetType, 'threed_beds'),
+        eq(projectAssets.assetId, sourceAssetId),
+      ));
+      if (!isDashboardCreated) {
+        return { marker: deletedMarker, sourceAssetId, sourceDeleted: false };
+      }
+      const [source] = await tx.delete(threedBeds).where(and(
+        eq(threedBeds.id, sourceAssetId),
+        eq(threedBeds.userId, userId),
+      )).returning({ id: threedBeds.id });
+      return { marker: deletedMarker, sourceAssetId, sourceDeleted: Boolean(source) };
+    });
+    return NextResponse.json({ success: true, data: deleted });
   }
   if (marker.markerType === 'plantings') {
     const sourceAssetId = Number(marker.sourceAssetId);

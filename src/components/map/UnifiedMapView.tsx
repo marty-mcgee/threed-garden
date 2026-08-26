@@ -3,11 +3,11 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
 import { LeafletMap } from '@/components/map/LeafletMap';
 import {
-  buildThreeDRuntimeMarkers,
+  buildThreeDRuntimeMarkerResult,
   createThreeDRuntimeMarkerRegistrations,
 } from '@/lib/services/threed/markers/runtime-marker-builder';
 import { ThreeDRuntimeMarkerRegistry } from '@/lib/services/threed/markers/runtime-marker-core';
@@ -82,6 +82,8 @@ interface UnifiedMapViewProps {
   placementPlantingName?: string | null;
   /** Receives the selected ThreeD ground coordinate for a new Planting. */
   onPlantingPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Removes only a rejected saved Project marker row after user confirmation. */
+  onRejectedProjectMarkerDelete?: (recordId: number) => Promise<void>;
 }
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
@@ -150,6 +152,7 @@ export function UnifiedMapView({
   onBedPlacement,
   placementPlantingName,
   onPlantingPlacement,
+  onRejectedProjectMarkerDelete,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stableMarkersRef = useRef<Map<string, RuntimeMarker>>(new Map());
@@ -159,6 +162,12 @@ export function UnifiedMapView({
     runtimeMarkerRegistryRef.current = new ThreeDRuntimeMarkerRegistry();
   }
   const [autoRotate, setAutoRotate] = useState(false);
+  const [deletingRejectedMarkerId, setDeletingRejectedMarkerId] = useState<number | null>(null);
+
+  const markerBuildResult = useMemo(
+    () => buildThreeDRuntimeMarkerResult(data.threed.raw),
+    [data.threed.raw],
+  );
 
   const runtimeMarkers = useMemo(() => {
     if (markerProjectIdRef.current !== projectId) {
@@ -169,7 +178,7 @@ export function UnifiedMapView({
 
     const previous = stableMarkersRef.current;
     const next = new Map<string, RuntimeMarker>();
-    const markers = buildThreeDRuntimeMarkers(data.threed.raw).map((marker) => {
+    const markers = markerBuildResult.markers.map((marker) => {
       const existing = previous.get(marker.id);
       const stableMarker = existing && isSameRuntimeMarker(existing, marker)
         ? existing
@@ -179,7 +188,7 @@ export function UnifiedMapView({
     });
     stableMarkersRef.current = next;
     return markers;
-  }, [data.threed.raw, projectId]);
+  }, [markerBuildResult.markers, projectId]);
 
   // Keep the complete Project-scoped marker set in the registry. Layer and UI
   // filters below remain presentation-only and do not remove marker identity.
@@ -531,5 +540,77 @@ export function UnifiedMapView({
     }
   };
 
-  return <div ref={containerRef} className="w-full h-full">{renderMap()}</div>;
+  return (
+    <div ref={containerRef} className="relative h-full w-full">
+      {markerBuildResult.issues.length > 0 && (
+        <details className="absolute left-3 top-3 z-40 max-w-lg rounded border border-amber-400/40 bg-black/90 text-white shadow-xl">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-xs font-medium text-amber-200">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            {markerBuildResult.issues.length} ThreeD marker record{markerBuildResult.issues.length === 1 ? '' : 's'} skipped for safety
+          </summary>
+          <div className="max-h-72 space-y-2 overflow-y-auto border-t border-white/10 px-3 py-2 text-[11px]">
+            <p className="text-white/65">
+              These records were not sent to the ThreeD Scene or Rapier. Correct or delete the listed records in Admin.
+            </p>
+            {markerBuildResult.issues.some((issue) => (
+              issue.source === 'threed_sub_module' && issue.markerType === 'characters'
+            )) && (
+              <a
+                href="/admin/threed/characters"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex rounded border border-amber-300/30 bg-amber-500/15 px-2 py-1 text-[10px] font-medium text-amber-100 hover:bg-amber-500/30"
+              >
+                Edit ThreeD Characters
+              </a>
+            )}
+            {markerBuildResult.issues.slice(0, 10).map((issue, index) => (
+              <div
+                key={`${issue.source}-${issue.recordId ?? issue.markerId}-${index}`}
+                className="rounded bg-amber-500/10 px-2 py-1.5"
+              >
+                <div className="font-medium text-amber-100">
+                  {issue.source} row {issue.recordId ?? 'unknown'} · {issue.markerType} · {issue.markerId}
+                </div>
+                <ul className="mt-1 list-disc space-y-0.5 pl-4 text-white/70">
+                  {issue.reasons.map((reason) => <li key={reason}>{reason}</li>)}
+                </ul>
+                {issue.source === 'project_threed_markers'
+                  && issue.recordId != null
+                  && onRejectedProjectMarkerDelete && (
+                    <button
+                      type="button"
+                      disabled={deletingRejectedMarkerId != null}
+                      onClick={async () => {
+                        if (issue.recordId == null) return;
+                        if (!window.confirm(
+                          `Remove saved ThreeD marker row ${issue.recordId}? The reusable source asset will remain.`,
+                        )) return;
+                        setDeletingRejectedMarkerId(issue.recordId);
+                        try {
+                          await onRejectedProjectMarkerDelete(issue.recordId);
+                        } finally {
+                          setDeletingRejectedMarkerId(null);
+                        }
+                      }}
+                      className="mt-2 rounded border border-red-300/30 bg-red-500/15 px-2 py-1 text-[10px] font-medium text-red-100 hover:bg-red-500/30 disabled:opacity-50"
+                    >
+                      {deletingRejectedMarkerId === issue.recordId
+                        ? 'Removing…'
+                        : 'Remove Saved Marker'}
+                    </button>
+                  )}
+              </div>
+            ))}
+            {markerBuildResult.issues.length > 10 && (
+              <p className="text-white/55">
+                Plus {markerBuildResult.issues.length - 10} additional rejected records.
+              </p>
+            )}
+          </div>
+        </details>
+      )}
+      {renderMap()}
+    </div>
+  );
 }

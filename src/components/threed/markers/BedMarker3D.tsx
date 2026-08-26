@@ -39,7 +39,9 @@ export function BedMarker3D({ bed, position }: BedMarker3DProps) {
   const bedWidth = Number(bed.width || bed.widthFeet) || 4;
   const bedDepth = Number(bed.depth || bed.length || bed.lengthFeet) || 8;
   const bedHeight = Math.max(Number(bed.heightFeet) || 0.3, 0.1);
-  const soilColor = bed.soilType ? (SOIL_COLORS[bed.soilType.toLowerCase()] || '#8B7355') : (bed.color || '#8B7355');
+  const soilColor = bed.soilType
+    ? (SOIL_COLORS[bed.soilType.toLowerCase()] || '#8B7355')
+    : (bed.color || '#8B7355');
 
   return (
     <group

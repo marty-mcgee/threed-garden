@@ -107,6 +107,8 @@ export interface UpdateProjectBedPlacementInput {
   widthFeet: number;
   lengthFeet: number;
   heightFeet: number;
+  color: string;
+  scale: number;
   positionX: number;
   positionY: number;
   positionZ: number;
@@ -150,6 +152,8 @@ export function parseUpdateProjectBedPlacement(
     widthFeet: boundedNumber(body.widthFeet, 'widthFeet', MIN_DIMENSION, MAX_DIMENSION),
     lengthFeet: boundedNumber(body.lengthFeet, 'lengthFeet', MIN_DIMENSION, MAX_DIMENSION),
     heightFeet: boundedNumber(body.heightFeet, 'heightFeet', MIN_DIMENSION, MAX_DIMENSION),
+    color: bedColor(body.color),
+    scale: boundedNumber(body.scale, 'scale', MIN_SCALE, MAX_SCALE),
     positionX: boundedNumber(body.positionX, 'positionX', -MAX_POSITION, MAX_POSITION),
     positionY: boundedNumber(body.positionY, 'positionY', -MAX_POSITION, MAX_POSITION),
     positionZ: boundedNumber(body.positionZ, 'positionZ', -MAX_POSITION, MAX_POSITION),

@@ -8,6 +8,7 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/markers/runtime-marker-core.ts';
 import {
+  buildThreeDRuntimeMarkerResult,
   buildThreeDRuntimeMarkers,
   createThreeDRuntimeMarkerRegistrations,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
@@ -128,6 +129,8 @@ assert.deepEqual(parseUpdateProjectBedPlacement({
   widthFeet: 6,
   lengthFeet: 12,
   heightFeet: 2.5,
+  color: '#336633',
+  scale: 1.5,
   positionX: -4.5,
   positionY: 1,
   positionZ: 8.25,
@@ -137,6 +140,8 @@ assert.deepEqual(parseUpdateProjectBedPlacement({
   widthFeet: 6,
   lengthFeet: 12,
   heightFeet: 2.5,
+  color: '#336633',
+  scale: 1.5,
   positionX: -4.5,
   positionY: 1,
   positionZ: 8.25,
@@ -148,6 +153,8 @@ assert.throws(
     widthFeet: 0,
     lengthFeet: 12,
     heightFeet: 2.5,
+    color: '#336633',
+    scale: 1,
     positionX: 0,
     positionY: 0,
     positionZ: 0,
@@ -155,7 +162,7 @@ assert.throws(
   }),
   ProjectBedPlacementInputError,
 );
-validationStep('Project Bed instance dimension updates remain bounded');
+validationStep('Project Bed instance sizing, color, and transform updates remain bounded');
 
 assert.deepEqual(parseCreateProjectPlantingPlacement({
   markerType: 'plantings',
@@ -736,6 +743,107 @@ assert.equal(generalProjectModelMarkers[0].data.scaleMultiplier, 0.75);
 assert.equal(generalProjectModelMarkers[0].data.rotationYInstance, 1.57);
 assert.deepEqual(generalProjectModelMarkers[1].position, { x: 8, y: 0, z: 4 });
 validationStep('Project Model placements use marker identity and reusable model render data');
+
+const rejectedMarkerResult = buildThreeDRuntimeMarkerResult({
+  plants: [],
+  plantings: [{
+    id: 91,
+    commonName: 'Unsafe Planting',
+    positionX: Number.POSITIVE_INFINITY,
+    positionY: 0,
+    positionZ: 0,
+  }],
+  beds: [],
+  characters: [],
+  farmbots: [],
+  models: [{ id: 7, modelName: 'Reusable Bench' }],
+  layers: [],
+  tasks: [],
+  harvests: [],
+  weatherLogs: [],
+  projectThreedMarkers: [
+    {
+      id: 41,
+      markerType: 'models',
+      sourceAssetId: 7,
+      markerId: 'models-placement-41',
+      name: 'Safe Bench',
+      positionX: 2, positionY: 0, positionZ: 4,
+      positionSource: 'asset',
+      color: '#06b6d4', icon: '🧊', label: 'Safe Bench',
+      isVisible: true, isActive: true,
+      data: { modelName: 'Reusable Bench', filePath: '/bench.glb', scaleMultiplier: 1 },
+      metadata: {},
+    },
+    {
+      id: 42,
+      markerType: 'models',
+      sourceAssetId: 7,
+      markerId: 'models-placement-42',
+      name: 'Unsafe Bench',
+      positionX: 3, positionY: 0, positionZ: 4,
+      positionSource: 'asset',
+      color: '#06b6d4', icon: '🧊', label: 'Unsafe Bench',
+      isVisible: true, isActive: true,
+      data: { modelName: 'Reusable Bench', filePath: '/bench.glb', scaleMultiplier: 0 },
+      metadata: {},
+    },
+    {
+      id: 43,
+      markerType: 'models',
+      sourceAssetId: 7,
+      markerId: 'models-placement-41',
+      name: 'Duplicate Bench',
+      positionX: 5, positionY: 0, positionZ: 4,
+      positionSource: 'asset',
+      color: '#06b6d4', icon: '🧊', label: 'Duplicate Bench',
+      isVisible: true, isActive: true,
+      data: { modelName: 'Reusable Bench', filePath: '/bench.glb', scaleMultiplier: 1 },
+      metadata: {},
+    },
+  ],
+}, generatedAt);
+assert.deepEqual(rejectedMarkerResult.markers.map((marker) => marker.id), ['models-placement-41']);
+assert.equal(rejectedMarkerResult.issues.length, 3);
+assert.equal(rejectedMarkerResult.issues[0].source, 'threed_sub_module');
+assert.match(rejectedMarkerResult.issues[0].reasons.join(' '), /Scene boundary/);
+assert.equal(rejectedMarkerResult.issues[1].recordId, 42);
+assert.match(rejectedMarkerResult.issues[1].reasons.join(' '), /scaleMultiplier must be greater than zero/);
+assert.equal(rejectedMarkerResult.issues[2].recordId, 43);
+assert.match(rejectedMarkerResult.issues[2].reasons.join(' '), /duplicate marker ID/);
+validationStep('Unsafe marker rows are reported and excluded before Scene physics');
+
+const overlappingEcctrlResult = buildThreeDRuntimeMarkerResult({
+  plants: [],
+  plantings: [],
+  beds: [{ id: 1, name: 'Safe Bed', positionX: 4, positionY: 0, positionZ: 4 }],
+  characters: [
+    { id: 2, name: 'Farmer A', isMovable: true, positionX: 0, positionY: 0, positionZ: 0 },
+    { id: 3, name: 'Farmer B', isMovable: true, positionX: 0, positionY: 0, positionZ: 0 },
+    { id: 4, name: 'Farmer C', isMovable: true, positionX: 8, positionY: 0, positionZ: 8 },
+    { id: 5, name: 'Garden Visitor', isMovable: false, positionX: 0, positionY: 0, positionZ: 0 },
+  ],
+  farmbots: [],
+  models: [],
+  layers: [],
+  tasks: [],
+  harvests: [],
+  weatherLogs: [],
+  projectThreedMarkers: [],
+}, generatedAt);
+assert.deepEqual(
+  overlappingEcctrlResult.markers.map((marker) => marker.id),
+  ['beds-1', 'characters-4', 'characters-5'],
+);
+assert.deepEqual(
+  overlappingEcctrlResult.issues.map((issue) => issue.markerId),
+  ['characters-2', 'characters-3'],
+);
+assert.match(
+  overlappingEcctrlResult.issues[0].reasons.join(' '),
+  /shares Ecctrl spawn position X:0, Y:0, Z:0/,
+);
+validationStep('Overlapping movable Character spawns are rejected before Rapier mounts Ecctrl bodies');
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);
