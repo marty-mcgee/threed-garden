@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.7d — ThreeD Ecctrl Spawn Safety** |
-| Current release candidate | **v0.18.8-beta — ThreeD Ecctrl Position Authority** |
-| Current development milestone | **Manually verified; prepared for production publication** |
+| Current stable version | **v0.18.8-beta — ThreeD Ecctrl Position Authority** |
+| Current release candidate | **None designated** |
+| Current development milestone | **Production checkpoint; next milestone requires review** |
 | Previous checkpoint | **v0.18.6b — ThreeD Project Marker Snapshots** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -382,7 +382,7 @@ API (/api/map/threed)
 | **v0.18.7b** | **2026-08-24** | **Production release — transactional ThreeD Bed Project placement, authoritative instance dimensions/transforms, and live Rapier translation/rotation synchronization** |
 | **v0.18.7d** | **2026-08-25** | **Production release — pre-render Ecctrl overlap rejection, bounded Scene diagnostics, and Admin Character recovery** |
 | **v0.18.8a** | **2026-08-25** | **Release candidate — Runtime Marker spawn authority for Ecctrl and one safe Rapier owner per shared spawn** |
-| **v0.18.8-beta** | **2026-08-25** | **Beta candidate — promotion of the manually verified ThreeD Ecctrl Position Authority checkpoint** |
+| **v0.18.8-beta** | **2026-08-25** | **Production release — Runtime Marker position authority for Ecctrl and one safe Rapier owner per shared spawn** |
 
 ---
 
