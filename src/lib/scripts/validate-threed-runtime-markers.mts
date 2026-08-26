@@ -894,17 +894,17 @@ const overlappingEcctrlResult = buildThreeDRuntimeMarkerResult({
 }, generatedAt);
 assert.deepEqual(
   overlappingEcctrlResult.markers.map((marker) => marker.id),
-  ['beds-1', 'characters-4', 'characters-5'],
+  ['beds-1', 'characters-2', 'characters-4', 'characters-5'],
 );
 assert.deepEqual(
   overlappingEcctrlResult.issues.map((issue) => issue.markerId),
-  ['characters-2', 'characters-3'],
+  ['characters-3'],
 );
 assert.match(
   overlappingEcctrlResult.issues[0].reasons.join(' '),
-  /shares Ecctrl spawn position X:0, Y:0, Z:0/,
+  /characters-2 already owns that Rapier spawn/,
 );
-validationStep('Overlapping movable Character spawns are rejected before Rapier mounts Ecctrl bodies');
+validationStep('One movable Character owns each Rapier spawn and later overlaps are rejected');
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);

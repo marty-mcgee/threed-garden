@@ -298,7 +298,8 @@ function rejectOverlappingEcctrlSpawns(
   for (const matchingMarkers of markersBySpawn.values()) {
     if (matchingMarkers.length < 2) continue;
     const position = matchingMarkers[0].position;
-    for (const marker of matchingMarkers) {
+    const retainedMarker = matchingMarkers[0];
+    for (const marker of matchingMarkers.slice(1)) {
       rejectedMarkerIds.add(marker.id);
       issues.push({
         source: marker.metadata?.source === 'project-snapshot'
@@ -310,7 +311,7 @@ function rejectOverlappingEcctrlSpawns(
         markerId: marker.id,
         markerType: marker.type,
         reasons: [
-          `movable Character shares Ecctrl spawn position X:${position.x}, Y:${position.y}, Z:${position.z} with ${matchingMarkers.length - 1} other movable Character${matchingMarkers.length === 2 ? '' : 's'}`,
+          `movable Character shares Ecctrl spawn position X:${position.x}, Y:${position.y}, Z:${position.z}; ${retainedMarker.id} already owns that Rapier spawn`,
         ],
       });
     }

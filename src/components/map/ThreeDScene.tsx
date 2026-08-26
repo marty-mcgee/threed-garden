@@ -648,6 +648,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
       return (
         <EcctrlCharacter
           character={marker.data}
+          runtimePosition={pos}
           isControlled={isCtrl}
           isSelected={isSelected}
           layerEnabled={isLayerEnabled}

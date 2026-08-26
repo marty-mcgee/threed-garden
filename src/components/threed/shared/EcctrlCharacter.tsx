@@ -115,6 +115,12 @@ interface CharacterData {
 interface EcctrlCharacterProps {
   character: CharacterData;
 
+  /**
+   * Authoritative world position resolved by the ThreeD Runtime Marker layer.
+   * Ecctrl must not independently derive its spawn position from Character data.
+   */
+  runtimePosition: [number, number, number];
+
   isControlled?: boolean;
   isSelected?: boolean;
   /** Layer authority without unmounting the Ecctrl instance. */
@@ -1036,6 +1042,8 @@ function useWASD(
 export function EcctrlCharacter({
   character,
 
+  runtimePosition,
+
   isControlled =
     false,
 
@@ -1081,12 +1089,7 @@ export function EcctrlCharacter({
    * settle the capsule.
    */
   const startY =
-    (
-      Number(
-        character.positionY
-      ) ||
-      0
-    ) +
+    runtimePosition[1] +
     GROUND_OFFSET +
     SPAWN_LIFT;
 
@@ -2353,17 +2356,11 @@ export function EcctrlCharacter({
       number,
       number,
     ] = [
-      Number(
-        character.positionX
-      ) ||
-        0,
+      runtimePosition[0],
 
       startY,
 
-      Number(
-        character.positionZ
-      ) ||
-        0,
+      runtimePosition[2],
     ];
 
   // ======================================================

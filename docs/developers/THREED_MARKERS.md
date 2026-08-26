@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture through the v0.18.7d **ThreeD Ecctrl Spawn Safety** production checkpoint.
+This document records the marker architecture through the manually verified v0.18.8a **ThreeD Ecctrl Position Authority** release candidate. The current production checkpoint remains v0.18.7d until deployment is confirmed.
 
 ## Hierarchy and terminology
 
@@ -225,7 +225,9 @@ For an authenticated owner, a rejected `project_threed_markers` row also offers 
 
 Validation itself does not repair, delete, or rewrite database data. The separate confirmed cleanup action is limited to the rejected saved row described above. This remains a fail-closed rendering guard and troubleshooting aid; database constraints and authenticated API validation remain the write-side authority.
 
-Movable Characters have an additional pre-render Ecctrl safety check. If two or more movable Character markers resolve to the same XYZ spawn position, the complete overlapping set is rejected before any Ecctrl body enters Rapier. Each rejected Character appears in the bounded warning with its marker ID and shared position. The builder does not move the Characters, convert them into GardenCharacters, or choose one body to keep; the source or saved Project positions must be corrected so every movable Character has a unique spawn. On August 25, 2026, this guard was manually verified with five movable Characters at `0,0,0`: the warning listed five skipped records and the rest of the ThreeD Scene loaded without a Rapier error.
+Movable Characters have an additional pre-render Ecctrl safety check. One movable Character may own a given XYZ Rapier spawn position. If later movable Character markers resolve to that same position, the first stable marker remains available and only the later conflicts are rejected before their Ecctrl bodies mount. Each rejected Character appears in the bounded warning with its marker ID, shared position, and retained spawn owner. The builder does not move records, rewrite Project data, delete rows, or convert Characters into GardenCharacters. Unique Project-instance positions remain the normal way to make every movable Character available.
+
+For v0.18.8a, `ThreeDScene` passes the position already resolved by the Runtime Marker builder directly into `EcctrlCharacter`. Ecctrl uses that explicit position to initialize its Rapier body instead of independently reading embedded Character position fields or inventing a second spawn authority. The user manually verified that the retained Character remains selectable and that Take Control keeps its model, capsule, halo, camera tracking, and WASD movement together.
 
 ## Current development boundary
 

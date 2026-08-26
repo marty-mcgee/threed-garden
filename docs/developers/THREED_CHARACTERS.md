@@ -21,6 +21,12 @@ Both runtimes preserve:
 - task-to-locomotion crossfades;
 - the `garden-character-action-complete` event used by the page-level world-action layer.
 
+## v0.18.8a Ecctrl position authority
+
+The Runtime Marker layer resolves the Project-specific Character position before runtime routing. `ThreeDScene` passes that position explicitly to `EcctrlCharacter`, and Ecctrl uses it to initialize the Rapier body. Ecctrl does not independently fall back to the reusable Character row's XYZ fields, so the Character model, capsule, selection halo, camera tracking, and live-position reporting share one physical owner.
+
+Only one movable Character may mount an Ecctrl body at a given XYZ spawn. The stable first marker owns that spawn; later overlapping movable Characters are skipped and reported before Rapier mounting. This keeps one Character selectable for recovery and prevents overlapping Ecctrl bodies without moving, deleting, or rewriting saved data. GardenCharacter routing remains separate and unchanged.
+
 ## Why the runtime files remain separate
 
 GardenCharacter and EcctrlCharacter have incompatible position authorities. Combining them into one large component would mix internal Three.js movement with Rapier/Ecctrl movement and increase regression risk for collisions, WASD, autonomous movement, camera tracking, and action recovery.
