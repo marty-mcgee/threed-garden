@@ -2,9 +2,9 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.8-beta **ThreeD Ecctrl Position Authority**. The prepared release candidate is v0.18.9a **ThreeD Character Library and Snapshot Recovery**. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.18.9a **ThreeD Character Library and Snapshot Recovery**. No later release candidate is designated. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
-The v0.18.9a candidate adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
+The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
 The v0.18.7d production release prevents multiple movable Characters at one XYZ spawn from entering Rapier as overlapping Ecctrl bodies. Unsafe Characters are listed in a bounded Scene warning and remain editable through the existing Admin Character CRUD.
 
@@ -43,7 +43,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
-- [v0.18.9a release candidate](releases/v0.18.9a.md)
+- [v0.18.9a production checkpoint](releases/v0.18.9a.md)
 - [v0.18.7c production checkpoint](releases/v0.18.7c.md)
 - [v0.18.7d production checkpoint](releases/v0.18.7d.md)
 - [v0.18.7b production checkpoint](releases/v0.18.7b.md)
