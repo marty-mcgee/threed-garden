@@ -9,6 +9,10 @@ This is a **Dual-Surface Platform**:
 
 > **Current production version:** `v0.18.8-beta "ThreeD Ecctrl Position Authority"`
 
+> **Prepared release candidate:** `v0.18.9a "ThreeD Character Library and Snapshot Recovery"`
+
+The **v0.18.9a — ThreeD Character Library and Snapshot Recovery** candidate adds owner-scoped Character Library placement and Project-instance position editing, keeps marker CRUD local to the persistent Scene, preserves Project marker row IDs during explicit saves, and prevents uncontrolled Ecctrl mount positions from entering saved snapshots. Overlapping Ecctrl capsule spawns are rejected before Rapier and can be restored to their source Character positions through the bounded Scene warning.
+
 The **v0.18.8-beta — ThreeD Ecctrl Position Authority** production release passes each resolved Runtime Marker position directly into its Ecctrl runtime. One movable Character safely owns a shared Rapier spawn while later overlaps are skipped and reported, keeping a selectable Character available without changing database records.
 
 The v0.18.7b production release adds manually verified rectangular Bed creation and Project-instance editing. Bed width, length, height, X/Y/Z position, and degree-based Y rotation are saved in the authoritative Project marker and applied to its existing Scene/Rapier owner without reloading the Project.
@@ -289,6 +293,7 @@ The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.4b pro
 | v0.18.7d | ThreeD Ecctrl Spawn Safety | Released: Project-scoped pre-render rejection of overlapping movable Character spawn positions, bounded marker diagnostics, and an Admin Character recovery link. |
 | v0.18.8a | ThreeD Ecctrl Position Authority | Release candidate: Runtime Marker position directly initializes Ecctrl, and one safe Character owns a shared Rapier spawn while later overlaps are reported. |
 | v0.18.8-beta | ThreeD Ecctrl Position Authority | Released: Runtime Marker position directly initializes Ecctrl, and one safe Character owns a shared Rapier spawn while later overlaps are reported. |
+| v0.18.9a | ThreeD Character Library and Snapshot Recovery | Release candidate: Character Library placement and editing, stable snapshot upserts, local Planting/Character marker updates, controlled-only Ecctrl live-position reporting, capsule-overlap rejection, and authenticated source-position recovery. |
 | Later | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
 
 Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, Phase 4 through v0.18.3b, and Phase 5A–5D are released and production-verified. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.

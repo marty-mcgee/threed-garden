@@ -11,6 +11,7 @@ import {
 } from 'react';
 
 import { useFrame } from '@react-three/fiber';
+import { useBeforePhysicsStep } from '@react-three/rapier';
 
 import * as THREE from 'three';
 
@@ -1074,6 +1075,33 @@ export function EcctrlCharacter({
 
   const previousLayerEnabledRef =
     useRef(layerEnabled);
+  const runtimePositionKey = `${runtimePosition[0]}:${runtimePosition[1]}:${runtimePosition[2]}`;
+  const appliedRuntimePositionKeyRef = useRef(runtimePositionKey);
+  const pendingRuntimePositionRef = useRef<{
+    x: number;
+    y: number;
+    z: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (appliedRuntimePositionKeyRef.current === runtimePositionKey) return;
+    appliedRuntimePositionKeyRef.current = runtimePositionKey;
+    pendingRuntimePositionRef.current = {
+      x: runtimePosition[0],
+      y: runtimePosition[1] + GROUND_OFFSET + 0.05,
+      z: runtimePosition[2],
+    };
+  }, [runtimePositionKey, runtimePosition]);
+
+  useBeforePhysicsStep(() => {
+    const pending = pendingRuntimePositionRef.current;
+    const body = ecctrlRef.current?.body;
+    if (!pending || !body) return;
+    pendingRuntimePositionRef.current = null;
+    body.setTranslation(pending, true);
+    body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+    body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+  });
 
   useEffect(() => () => {
     // Ecctrl exposes Rapier values through this handle. Clear it before a
@@ -1201,7 +1229,12 @@ export function EcctrlCharacter({
   const reportControlledPosition =
     useCallback(
       (position: { x: number; y: number; z: number }) => {
-        if (!onControlChange) {
+        if (
+          !onControlChange
+          || !Number.isFinite(position.x)
+          || !Number.isFinite(position.y)
+          || !Number.isFinite(position.z)
+        ) {
           return;
         }
 
@@ -2095,6 +2128,17 @@ export function EcctrlCharacter({
     const position =
       ec.currPos;
 
+    // Ecctrl/Rapier can briefly expose an incomplete position while its body
+    // is synchronizing. Never allow that transient frame to reach the camera,
+    // live-position store, or Runtime Marker registry.
+    if (
+      !Number.isFinite(position.x)
+      || !Number.isFinite(position.y)
+      || !Number.isFinite(position.z)
+    ) {
+      return;
+    }
+
     if (
       cameraFollowRef
     ) {
@@ -2133,6 +2177,7 @@ export function EcctrlCharacter({
 
   useEffect(() => {
     if (
+      isControlled &&
       onControlChange &&
       ecctrlRef.current
     ) {
@@ -2168,6 +2213,7 @@ export function EcctrlCharacter({
         event.stopPropagation();
 
         if (
+          isControlled &&
           onControlChange &&
           ecctrlRef.current
         ) {
@@ -2191,6 +2237,7 @@ export function EcctrlCharacter({
       },
       [
         onClick,
+        isControlled,
         onControlChange,
         layerEnabled,
       ]

@@ -8,6 +8,7 @@ import {
 } from '@/lib/schema/threed';
 import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
+import { resolveThreeDCharacterLibraryAccess } from '@/lib/services/threed/characters/character-library-access-core';
 
 // Normalize an incoming character body so empty-string/nullable optional fields
 // don't collide with enum/decimal/integer column types (e.g. '' for an enum fails).
@@ -54,6 +55,7 @@ function normalizeCharacterBody(body: Record<string, any>) {
 //   - status (optional): Filter by character status
 //   - type (optional): Filter by character type
 //   - isActive (optional): Filter by active status
+//   - scope=library: List owned Characters eligible for Garden/Ecctrl placement
 //   - search (optional): Search by name, characterId, or description
 //   - limit (optional): Number of records (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
@@ -71,6 +73,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const isActive = searchParams.get('isActive');
     const search = searchParams.get('search');
+    const scope = searchParams.get('scope');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -115,6 +118,13 @@ export async function GET(request: NextRequest) {
     type CharacterStatus = NonNullable<(typeof threedCharacters.$inferSelect)['status']>;
     type CharacterType = NonNullable<(typeof threedCharacters.$inferSelect)['type']>;
     const conditions: SQL[] = [eq(threedCharacters.userId, userId)];
+
+    if (scope === 'library') {
+      conditions.push(
+        eq(threedCharacters.isActive, true),
+        eq(threedCharacters.status, 'active'),
+      );
+    }
 
     // ✅ Apply filters
     if (status) {
@@ -165,20 +175,33 @@ export async function GET(request: NextRequest) {
           .where(eq(threedModels.id, character.modelId))
           .limit(1) : [];
 
+        const accessibleModel = model && (
+          model.userId === userId
+          || (
+            model.isPublic === true
+            && model.isLibraryItem === true
+          )
+        ) ? model : null;
+        const libraryAccess = resolveThreeDCharacterLibraryAccess(character, accessibleModel);
         return {
           ...character,
-          model: model || null,
+          model: accessibleModel,
+          ...(scope === 'library' ? { libraryAccess } : {}),
         };
       })
     );
 
+    const responseCharacters = scope === 'library'
+      ? charactersWithModels.filter((character) => character.libraryAccess?.eligible === true)
+      : charactersWithModels;
+
     return NextResponse.json({
       success: true,
-      data: charactersWithModels,
+      data: responseCharacters,
       pagination: {
         limit,
         offset,
-        total,
+        total: scope === 'library' ? responseCharacters.length : total,
       },
     });
   } catch (error) {

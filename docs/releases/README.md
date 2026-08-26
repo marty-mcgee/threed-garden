@@ -2,6 +2,8 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.18.9a — ThreeD Character Library and Snapshot Recovery](v0.18.9a.md) — release candidate
+
 - [v0.18.7d — ThreeD Ecctrl Spawn Safety](v0.18.7d.md)
 - [v0.18.7c — ThreeD Layers Scene Contracts](v0.18.7c.md)
 - [v0.18.7b — ThreeD Bed Project Placement and Editing](v0.18.7b.md)

@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useCallback,
+  memo,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
@@ -20,6 +21,7 @@ import {
   RigidBody,
   type RapierRigidBody,
   type RigidBodyProps,
+  useBeforePhysicsStep,
   useRapier,
 } from '@react-three/rapier';
 import * as THREE from 'three';
@@ -45,6 +47,8 @@ import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers
 interface ThreeDSceneProps {
   incidents: any[];
   markers: any[];
+  /** Presentation visibility without removing stable marker runtimes. */
+  visibleMarkerIds?: ReadonlySet<string>;
   onIncidentClick?: (incident: any) => void;
   onMarkerClick?: (marker: any) => void;
   onClearSelection?: () => void;
@@ -76,6 +80,10 @@ interface ThreeDSceneProps {
   placementModel?: ThreeDModelLibraryItem | null;
   /** Called with the ground point selected during placement mode. */
   onModelPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Character Library item currently awaiting a ground placement click. */
+  placementCharacterName?: string | null;
+  /** Called with the ground point selected for a Character. */
+  onCharacterPlacement?: (position: { x: number; y: number; z: number }) => void;
   /** New Bed currently awaiting a ground placement click. */
   placementBedName?: string | null;
   /** Called with the ground point selected for a new Bed. */
@@ -458,10 +466,53 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 
 function SceneMarkerRigidBody({
   sceneEnabled,
+  position,
+  rotation,
   ...props
 }: RigidBodyProps & { sceneEnabled: boolean }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const previousSceneEnabledRef = useRef(sceneEnabled);
+  const positionTuple = position as [number, number, number] | undefined;
+  const rotationTuple = rotation as [number, number, number] | undefined;
+  const positionKey = positionTuple?.join(':') ?? '';
+  const rotationKey = rotationTuple?.join(':') ?? '';
+  const appliedTransformKeyRef = useRef(`${positionKey}|${rotationKey}`);
+  const pendingTransformRef = useRef<{
+    position?: [number, number, number];
+    rotation?: [number, number, number];
+  } | null>(null);
+
+  useEffect(() => {
+    const transformKey = `${positionKey}|${rotationKey}`;
+    if (appliedTransformKeyRef.current === transformKey) return;
+    appliedTransformKeyRef.current = transformKey;
+    pendingTransformRef.current = {
+      position: positionTuple ? [...positionTuple] : undefined,
+      rotation: rotationTuple ? [...rotationTuple] : undefined,
+    };
+  }, [positionKey, rotationKey]);
+
+  useBeforePhysicsStep(() => {
+    const pending = pendingTransformRef.current;
+    const body = rigidBodyRef.current;
+    if (!pending || !body) return;
+    pendingTransformRef.current = null;
+    if (pending.position) {
+      body.setTranslation({
+        x: pending.position[0],
+        y: pending.position[1],
+        z: pending.position[2],
+      }, true);
+    }
+    if (pending.rotation) {
+      const quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+        pending.rotation[0],
+        pending.rotation[1],
+        pending.rotation[2],
+      ));
+      body.setRotation(quaternion, true);
+    }
+  });
 
   useEffect(() => () => {
     // @react-three/rapier 2.2.0 does not clear forwarded RigidBody refs when
@@ -477,7 +528,7 @@ function SceneMarkerRigidBody({
     body.setEnabled(sceneEnabled);
   }, [sceneEnabled]);
 
-  return <RigidBody ref={rigidBodyRef} {...props} />;
+  return <RigidBody ref={rigidBodyRef} position={position} rotation={rotation} {...props} />;
 }
 
 function EnabledColliderDebug() {
@@ -618,10 +669,11 @@ function ProjectModelMarkerBody({
 }
 
 // ✅ ThreeD Marker Component
-function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug }: any) {
+const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
+  const selectMarker = useCallback(() => onClick?.(marker), [marker, onClick]);
 
   const handleCharacterControlChange = useCallback(
     (position: { x: number; y: number; z: number }) => {
@@ -652,7 +704,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
           isControlled={isCtrl}
           isSelected={isSelected}
           layerEnabled={isLayerEnabled}
-          onClick={() => { if (onClick) onClick(); }}
+          onClick={selectMarker}
           onControlChange={handleCharacterControlChange}
           cameraFollowRef={cameraFollowRef}
           livePositionsRef={livePositionsRef}
@@ -672,7 +724,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
       <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
         <group
           visible={isLayerEnabled}
-          onClick={(e) => { if (!isLayerEnabled || placementActive) return; e.stopPropagation(); if (onClick) onClick(); }}
+          onClick={(e) => { if (!isLayerEnabled || placementActive) return; e.stopPropagation(); selectMarker(); }}
           onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
           onPointerLeave={() => setHovered(false)}
         >
@@ -712,7 +764,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
               onPlacementClick?.({ x: e.point.x, y: e.point.y, z: e.point.z });
               return;
             }
-            if (onClick) onClick();
+            selectMarker();
           }}
         >
           <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
@@ -734,7 +786,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
           onClick={(event) => {
             if (!isLayerEnabled || placementActive) return;
             event.stopPropagation();
-            onClick?.();
+            selectMarker();
           }}
         >
           <PlantMarker3D plant={{ ...(marker.data || {}), name: marker.name, species: marker.data?.plantType || marker.data?.commonName || marker.data?.plantName || '', z: marker.position.z, x: marker.position.x, plantedAt: marker.data?.plantedDate || marker.data?.plantedAt || '', growthStage: marker.data?.growthStage, health: marker.data?.health, quantity: 1, status: marker.data?.status }} position={[0, 0, 0]} />
@@ -762,7 +814,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
       position={pos}
       rotation={instanceRotation}
       scale={instanceScale}
-      onClick={onClick}
+      onClick={selectMarker}
       isSelected={isSelected}
       isActionTarget={isActionTarget}
       isLayerEnabled={isLayerEnabled}
@@ -780,7 +832,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
       <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
         <group
           visible={isLayerEnabled}
-          onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}
+          onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); selectMarker(); }}
           onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
           onPointerLeave={() => setHovered(false)}
         >
@@ -844,7 +896,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
     <group
       visible={isLayerEnabled}
       position={[Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0]}
-      onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); if (onClick) onClick(); }}
+      onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); selectMarker(); }}
       onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
       onPointerLeave={() => setHovered(false)}
     >
@@ -855,7 +907,7 @@ function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, is
       {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={size * 1.2} outerRadius={size * 1.5} />}
     </group>
   );
-}
+});
 
 // ✅ Procedural grass texture generator (canvas-based, no external files needed)
 function createGrassTexture(): THREE.Texture {
@@ -992,6 +1044,7 @@ function InteractiveGround({
 export function ThreeDScene({
   incidents,
   markers,
+  visibleMarkerIds,
   onIncidentClick,
   onMarkerClick,
   onClearSelection,
@@ -1009,17 +1062,25 @@ export function ThreeDScene({
   actionTargetFocusRequest = 0,
   placementModel,
   onModelPlacement,
+  placementCharacterName,
+  onCharacterPlacement,
   placementBedName,
   onBedPlacement,
   placementPlantingName,
   onPlantingPlacement,
 }: ThreeDSceneProps) {
-  const placementLabel = placementPlantingName || placementBedName || placementModel?.modelName || null;
+  const placementLabel = placementCharacterName
+    || placementPlantingName
+    || placementBedName
+    || placementModel?.modelName
+    || null;
   // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
   const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
   // v0.16.2-beta: Persistent store of each ecctrl character's live physics position,
   // keyed by marker id — so re-selecting a moved character focuses its current spot.
   const livePositionsRef = useRef<Map<string, { x: number; y: number; z: number }>>(new Map());
+  const selectedMarkerRef = useRef(selectedMarker);
+  selectedMarkerRef.current = selectedMarker;
   const controlsRef = useRef<any>(null);
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
@@ -1226,7 +1287,8 @@ export function ThreeDScene({
 
   const visibleMarkers = markers.filter((marker) => {
     if (activeLayers.size === 0) return false;
-    return activeLayers.has(normalizeSceneLayerType(marker.type));
+    return activeLayers.has(normalizeSceneLayerType(marker.type))
+      && (visibleMarkerIds?.has(String(marker.id)) ?? true);
   });
 
   const visibleIncidents = showIncidents ? incidents : [];
@@ -1305,7 +1367,7 @@ export function ThreeDScene({
   }, [onControlChange, onRuntimeMarkerPositionChange]);
 
   // ✅ Enhanced marker click handler
-  const handleMarkerClick = (marker: any) => {
+  const handleMarkerClick = useCallback((marker: any) => {
     // v0.16.2-beta: Prefer the tracked live position (if any) so camera focus and the
     // DetailsCard reflect where the ecctrl character actually is, not its DB origin.
     const livePos = livePositionsRef.current.get(marker.id);
@@ -1346,8 +1408,8 @@ export function ThreeDScene({
       metadata.interactable = currentMarker.data.interactable || false;
     }
     
-    const isAlreadySelected = selectedMarker?.id === currentMarker.id
-      && selectedMarker?.type === currentMarker.type;
+    const isAlreadySelected = selectedMarkerRef.current?.id === currentMarker.id
+      && selectedMarkerRef.current?.type === currentMarker.type;
     setSelectedDetails(isAlreadySelected ? null : {
       name: currentMarker.name || currentMarker.label || 'Unknown',
       type: currentMarker.type,
@@ -1356,7 +1418,7 @@ export function ThreeDScene({
     });
     
     if (onMarkerClick) onMarkerClick(currentMarker);
-  };
+  }, [onMarkerClick]);
 
   const handleIncidentClick = (incident: any) => {
     const isAlreadySelected = (selectedIncident as any)?.key === incident.key;
@@ -1814,11 +1876,13 @@ export function ThreeDScene({
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
               onPlacementLeave={() => setPlacementPreviewPosition(null)}
-              onPlacementClick={placementPlantingName
-                ? onPlantingPlacement
-                : placementBedName
-                  ? onBedPlacement
-                  : onModelPlacement}
+              onPlacementClick={placementCharacterName
+                ? onCharacterPlacement
+                : placementPlantingName
+                  ? onPlantingPlacement
+                  : placementBedName
+                    ? onBedPlacement
+                    : onModelPlacement}
             />
           </RigidBody>
 
@@ -1880,18 +1944,23 @@ export function ThreeDScene({
 
           {sceneMarkers.map((marker, idx) => (
             <ThreeDMarkerComponent
-              key={`threed-marker-${marker.type}-${marker.id ?? idx}`}
+              key={`threed-marker-${marker.id ?? `${marker.type}-${idx}`}`}
               marker={marker}
-              onClick={() => handleMarkerClick(marker)}
+              onClick={handleMarkerClick}
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
-              isLayerEnabled={activeLayers.has(normalizeSceneLayerType(marker.type))}
+              isLayerEnabled={
+                activeLayers.has(normalizeSceneLayerType(marker.type))
+                && (visibleMarkerIds?.has(String(marker.id)) ?? true)
+              }
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
-              onPlacementClick={placementPlantingName
-                ? onPlantingPlacement
-                : placementBedName
-                  ? onBedPlacement
-                  : onModelPlacement}
+              onPlacementClick={placementCharacterName
+                ? onCharacterPlacement
+                : placementPlantingName
+                  ? onPlantingPlacement
+                  : placementBedName
+                    ? onBedPlacement
+                    : onModelPlacement}
               isActionTarget={
                 actionTarget != null &&
                 isMatchingThreeDActionTarget(actionTarget, {
@@ -1900,7 +1969,12 @@ export function ThreeDScene({
                 })
               }
               actionTarget={actionTarget}
-              controlledCharacterId={controlledCharacterId}
+              controlledCharacterId={
+                normalizeSceneLayerType(marker.type) === 'characters'
+                && Number(marker.data?.id) === controlledCharacterId
+                  ? controlledCharacterId
+                  : null
+              }
               onControlChange={storeLivePosition}
               cameraFollowRef={cameraFollowRef}
               livePositionsRef={livePositionsRef}

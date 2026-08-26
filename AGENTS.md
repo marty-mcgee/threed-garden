@@ -38,9 +38,9 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.7d "ThreeD Ecctrl Spawn Safety".
+Current production version: v0.18.8-beta "ThreeD Ecctrl Position Authority".
 
-No later release candidate is currently designated.
+Current release candidate: v0.18.9a "ThreeD Character Library and Snapshot Recovery".
 
 The v0.18.7c candidate defines ThreeD Layers as the Scene transaction boundary. Layer operations must preserve one persistent Canvas and Rapier world, stable `marker_id` identity, saved transforms, and Sub-Module-owned rendering and physics. They must not remount unrelated markers or issue duplicate imperative Rapier initialization writes. The Rapier frame-error circuit is containment only; activation is release-blocking.
 

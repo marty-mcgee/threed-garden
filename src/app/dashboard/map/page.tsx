@@ -52,7 +52,10 @@ import {
   ThreeDCharacterOrchestrationRequest,
   UnifiedMapData,
 } from '@/lib/types/map';
-import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+import type {
+  ThreeDCharacterLibraryItem,
+  ThreeDModelLibraryItem,
+} from '@/lib/types/threed';
 import {
   createThreeDOrchestrationLifecycleState,
   createThreeDCharacterOrchestrationRequest,
@@ -73,6 +76,7 @@ import {
   getThreeDIcon,
   getThreeDLabel,
 } from '@/lib/utils/map-helpers';
+import { applyThreeDProjectClientTransaction } from '@/lib/services/threed/markers/project-marker-client-state-core';
 
 // ✅ Project Selector Dialog Component
 function ProjectSelectorDialog({ 
@@ -665,7 +669,72 @@ function PlantingInstanceEditor({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId }: {
+function CharacterInstancePositionEditor({
+  markerId,
+  initialPosition,
+  disabled,
+  updating,
+  onSave,
+}: {
+  markerId: number;
+  initialPosition: { x: number; y: number; z: number };
+  disabled: boolean;
+  updating: boolean;
+  onSave: (markerId: number, position: { positionX: number; positionY: number; positionZ: number }) => void;
+}) {
+  const [positionX, setPositionX] = useState(String(initialPosition.x));
+  const [positionY, setPositionY] = useState(String(initialPosition.y));
+  const [positionZ, setPositionZ] = useState(String(initialPosition.z));
+  const position = {
+    positionX: Number(positionX),
+    positionY: Number(positionY),
+    positionZ: Number(positionZ),
+  };
+  const valid = Object.values(position).every(
+    (value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000,
+  );
+  return (
+    <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
+      <div className="text-[10px] font-medium text-white/60">Project Character Position</div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {[
+          ['X', positionX, setPositionX],
+          ['Y', positionY, setPositionY],
+          ['Z', positionZ, setPositionZ],
+        ].map(([label, value, setter]) => (
+          <label key={label as string} className="block space-y-1">
+            <span className="text-[9px] text-white/50">Position {label as string}</span>
+            <input
+              type="number"
+              step="0.1"
+              value={value as string}
+              disabled={disabled || updating}
+              onChange={(event) => (setter as (next: string) => void)(event.target.value)}
+              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+            />
+          </label>
+        ))}
+      </div>
+      <button
+        type="button"
+        disabled={!valid || disabled || updating}
+        onClick={(event) => {
+          event.stopPropagation();
+          onSave(markerId, position);
+        }}
+        className="flex w-full items-center justify-center gap-1.5 rounded bg-violet-600/35 px-2 py-1.5 text-[11px] font-medium text-violet-100 transition-colors hover:bg-violet-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+      >
+        {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+        Save Character Position
+      </button>
+      {disabled && (
+        <p className="text-[9px] text-amber-200/75">Release Control before changing the Character position.</p>
+      )}
+    </div>
+  );
+}
+
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, onUpdateCharacterPosition, updatingCharacterMarkerId }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
@@ -716,6 +785,12 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   updatingPlantingMarkerId?: number | null;
   onDeletePlantingInstance?: (markerId: number, name: string) => void;
   deletingPlantingMarkerId?: number | null;
+  onUpdateCharacterPosition?: (markerId: number, position: {
+    positionX: number;
+    positionY: number;
+    positionZ: number;
+  }) => void;
+  updatingCharacterMarkerId?: number | null;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
@@ -758,6 +833,11 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     || normalizedType === 'farmbots'
     || normalizedType === 'threed_farmbots';
   const isCharacterMarker = type === 'characters' || type === 'character';
+  const characterMarkerId = Number(d.projectMarkerId);
+  const isProjectCharacterInstance = isCharacterMarker
+    && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
+    && Number.isSafeInteger(characterMarkerId)
+    && characterMarkerId > 0;
   const modelInstanceId = Number(d.instanceId);
   const isProjectModelInstance = (
     normalizedType === 'model' || normalizedType === 'models'
@@ -1253,6 +1333,21 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         />
       )}
 
+      {isProjectCharacterInstance && onUpdateCharacterPosition && (
+        <CharacterInstancePositionEditor
+          key={characterMarkerId}
+          markerId={characterMarkerId}
+          initialPosition={{
+            x: Number(selected.position?.x ?? d.positionX ?? 0),
+            y: Number(selected.position?.y ?? d.positionY ?? 0),
+            z: Number(selected.position?.z ?? d.positionZ ?? 0),
+          }}
+          disabled={controlledCharacterId != null}
+          updating={updatingCharacterMarkerId === characterMarkerId}
+          onSave={onUpdateCharacterPosition}
+        />
+      )}
+
       {/* Admin Edit link */}
       {(() => {
         const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
@@ -1354,14 +1449,19 @@ function UnifiedMapPageInner() {
     name: string;
   }>>([]);
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
+  const [isCharacterLibraryOpen, setIsCharacterLibraryOpen] = useState(false);
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
+  const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
   const [loadingLibraryModels, setLoadingLibraryModels] = useState(false);
+  const [loadingLibraryCharacters, setLoadingLibraryCharacters] = useState(false);
   const [placementModel, setPlacementModel] = useState<ThreeDModelLibraryItem | null>(null);
+  const [placementCharacter, setPlacementCharacter] = useState<ThreeDCharacterLibraryItem | null>(null);
   const [placementThreedId, setPlacementThreedId] = useState<number | null>(null);
   const [placementScaleMultiplier, setPlacementScaleMultiplier] = useState('1');
   const [placingModel, setPlacingModel] = useState(false);
+  const [placingCharacter, setPlacingCharacter] = useState(false);
   const [placingBed, setPlacingBed] = useState(false);
   const [placingPlanting, setPlacingPlanting] = useState(false);
   const [bedPlacementActive, setBedPlacementActive] = useState(false);
@@ -1391,7 +1491,9 @@ function UnifiedMapPageInner() {
   const [deletingBedMarkerId, setDeletingBedMarkerId] = useState<number | null>(null);
   const [updatingPlantingMarkerId, setUpdatingPlantingMarkerId] = useState<number | null>(null);
   const [deletingPlantingMarkerId, setDeletingPlantingMarkerId] = useState<number | null>(null);
+  const [updatingCharacterMarkerId, setUpdatingCharacterMarkerId] = useState<number | null>(null);
   const placingModelRef = useRef(false);
+  const placingCharacterRef = useRef(false);
   const placingBedRef = useRef(false);
   const placingPlantingRef = useRef(false);
   
@@ -1469,6 +1571,48 @@ function UnifiedMapPageInner() {
     }
   }, [updateProjectThreeDMarkers]);
 
+  const handleRejectedCharacterMarkerRepair = useCallback(async (recordId: number) => {
+    const raw = data.threed.raw;
+    const marker = raw?.projectThreedMarkers?.find(
+      (candidate) => Number(candidate.id) === recordId && candidate.markerType === 'characters',
+    );
+    const character = raw?.characters?.find(
+      (candidate: Record<string, unknown>) => Number(candidate.id) === Number(marker?.sourceAssetId),
+    ) as Record<string, unknown> | undefined;
+    if (!marker || !character) {
+      showToastRef.current('Character source position is unavailable', 'error');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${recordId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          markerType: 'characters',
+          positionX: Number(character.positionX ?? 0),
+          positionY: Number(character.positionY ?? 0),
+          positionZ: Number(character.positionZ ?? 0),
+          rotation: Number(marker.data?.rotation ?? character.rotation ?? 0),
+          scaleMultiplier: Number(marker.data?.scaleMultiplier ?? 1),
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Character position repair failed (${response.status})`);
+      }
+      updateProjectThreeDMarkers((markers) => markers.map(
+        (candidate) => Number(candidate.id) === recordId ? result.data : candidate,
+      ));
+      showToastRef.current('Character restored to its source position', 'success');
+    } catch (error) {
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to restore Character position',
+        'error',
+      );
+    }
+  }, [data.threed.raw, updateProjectThreeDMarkers]);
+
   const handleProjectMarkerSnapshotProviderChange = useCallback((
     provider: ProjectThreeDMarkerSnapshotProvider | null,
   ) => {
@@ -1487,6 +1631,8 @@ function UnifiedMapPageInner() {
   ) => runtimeMarkerPositionResolverRef.current?.(moduleType, assetId) ?? null, []);
 
   const openModelLibrary = useCallback(async () => {
+    setIsCharacterLibraryOpen(false);
+    setPlacementCharacter(null);
     setIsBedPlacementOpen(false);
     setBedPlacementActive(false);
     setIsPlantingPlacementOpen(false);
@@ -1517,7 +1663,43 @@ function UnifiedMapPageInner() {
     }
   }, [libraryModels.length, loadingLibraryModels]);
 
+  const openCharacterLibrary = useCallback(async () => {
+    setIsModelLibraryOpen(false);
+    setPlacementModel(null);
+    setPlacementCharacter(null);
+    setIsBedPlacementOpen(false);
+    setBedPlacementActive(false);
+    setIsPlantingPlacementOpen(false);
+    setPlantingPlacementActive(false);
+    setIsCharacterLibraryOpen(true);
+    setIsProjectSummaryOpen(false);
+    setSelectedMarker(null);
+    if (libraryCharacters.length > 0 || loadingLibraryCharacters) return;
+
+    setLoadingLibraryCharacters(true);
+    try {
+      const response = await fetch('/api/threed/characters?scope=library&limit=100');
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Character Library failed (${response.status})`);
+      }
+      setLibraryCharacters(Array.isArray(result.data) ? result.data : []);
+    } catch (error) {
+      console.error('Failed to load ThreeD Character Library', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to load ThreeD Character Library',
+        'error',
+      );
+    } finally {
+      setLoadingLibraryCharacters(false);
+    }
+  }, [libraryCharacters.length, loadingLibraryCharacters]);
+
   const openPlantingPlacement = useCallback(async () => {
+    setIsCharacterLibraryOpen(false);
+    setPlacementCharacter(null);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
     setIsBedPlacementOpen(false);
@@ -1728,8 +1910,10 @@ function UnifiedMapPageInner() {
     setProjectThreeDModules([]);
     setPlacementThreedId(null);
     setPlacementModel(null);
+    setPlacementCharacter(null);
     setPlacementScaleMultiplier('1');
     setIsModelLibraryOpen(false);
+    setIsCharacterLibraryOpen(false);
     setBedPlacementActive(false);
     setIsBedPlacementOpen(false);
     setPlantingPlacementActive(false);
@@ -2213,6 +2397,82 @@ function UnifiedMapPageInner() {
     updateProjectThreeDMarkers,
   ]);
 
+  const handleCharacterPlacement = useCallback(async (
+    position: { x: number; y: number; z: number },
+  ) => {
+    if (
+      !selectedProjectId
+      || !placementCharacter
+      || !placementThreedId
+      || placingCharacterRef.current
+    ) return;
+
+    placingCharacterRef.current = true;
+    setPlacingCharacter(true);
+    try {
+      const response = await fetch('/api/project/threed-markers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          markerType: 'characters',
+          projectId: Number(selectedProjectId),
+          threedId: placementThreedId,
+          characterId: placementCharacter.id,
+          positionX: position.x,
+          positionY: position.y,
+          positionZ: position.z,
+          rotation: 0,
+          scaleMultiplier: Number(placementCharacter.scaleMultiplier ?? 1),
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success || !result.data?.marker) {
+        throw new Error(result?.error || `Character placement failed (${response.status})`);
+      }
+
+      setData((current) => {
+        const raw = current.threed.raw;
+        if (!raw) return current;
+        const projectThreedMarkers = [
+          ...(raw.projectThreedMarkers ?? []),
+          result.data.marker as ProjectThreeDMarkerRecord,
+        ];
+        return {
+          ...current,
+          threed: {
+            ...current.threed,
+            raw: {
+              ...raw,
+              characters: [...(raw.characters ?? []), result.data.character],
+              projectThreedMarkers,
+            },
+            markersCount: projectThreedMarkers.length,
+          },
+        };
+      });
+      setPlacementCharacter(null);
+      showToastRef.current(
+        `${placementCharacter.name} placed with ${placementCharacter.libraryAccess.runtime} runtime`,
+        'success',
+      );
+    } catch (error) {
+      console.error('Failed to place ThreeD Character Library item', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to place ThreeD Character',
+        'error',
+      );
+    } finally {
+      placingCharacterRef.current = false;
+      setPlacingCharacter(false);
+    }
+  }, [
+    placementCharacter,
+    placementThreedId,
+    selectedProjectId,
+  ]);
+
   const handleBedPlacement = useCallback(async (
     position: { x: number; y: number; z: number },
   ) => {
@@ -2327,26 +2587,16 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Planting placement failed (${response.status})`);
       }
 
-      setData((current) => {
-        const raw = current.threed.raw;
-        if (!raw) return current;
-        const projectThreedMarkers = [
-          ...(raw.projectThreedMarkers ?? []),
-          ...(result.data.markers as ProjectThreeDMarkerRecord[]),
-        ];
-        return {
-          ...current,
-          threed: {
-            ...current.threed,
-            raw: {
-              ...raw,
-              plantings: [...(raw.plantings ?? []), ...result.data.plantings],
-              projectThreedMarkers,
-            },
-            markersCount: projectThreedMarkers.length,
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: {
+          upsert: result.data.markers as ProjectThreeDMarkerRecord[],
+        },
+        sources: {
+          plantings: {
+            upsert: result.data.plantings,
           },
-        };
-      });
+        },
+      }));
 
       const plantName = plantingOptions.find(
         (plant) => Number(plant.id) === Number(plantingPlacementDraft.plantId),
@@ -2443,6 +2693,66 @@ function UnifiedMapPageInner() {
       setUpdatingModelInstanceId(null);
     }
   }, [deletingModelInstanceId, updateProjectThreeDMarkers, updatingModelInstanceId]);
+
+  const handleUpdateCharacterPosition = useCallback(async (
+    markerId: number,
+    position: { positionX: number; positionY: number; positionZ: number },
+  ) => {
+    if (updatingCharacterMarkerId != null || controlledCharacterId != null) return;
+    setUpdatingCharacterMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markerType: 'characters', ...position }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Character position update failed (${response.status})`);
+      }
+      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
+        Number(marker.id) === markerId
+          ? {
+              ...marker,
+              ...result.data,
+              data: {
+                ...marker.data,
+                ...(result.data?.data ?? {}),
+              },
+              metadata: {
+                ...marker.metadata,
+                ...(result.data?.metadata ?? {}),
+              },
+            }
+          : marker
+      )));
+      setSelectedMarker((current: any) => current ? {
+        ...current,
+        position: {
+          x: position.positionX,
+          y: position.positionY,
+          z: position.positionZ,
+        },
+        data: {
+          ...(current.data ?? {}),
+          positionX: position.positionX,
+          positionY: position.positionY,
+          positionZ: position.positionZ,
+        },
+      } : current);
+      showToastRef.current('Character position updated', 'success');
+    } catch (error) {
+      console.error('Failed to update Project Character position', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to update Character position',
+        'error',
+      );
+    } finally {
+      setUpdatingCharacterMarkerId(null);
+    }
+  }, [controlledCharacterId, updateProjectThreeDMarkers, updatingCharacterMarkerId]);
 
   const handleUpdateBedInstance = useCallback(async (
     markerId: number,
@@ -2574,16 +2884,11 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Planting instance update failed (${response.status})`);
       }
-      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
-        Number(marker.id) === markerId
-          ? {
-              ...marker,
-              ...result.data,
-              data: { ...marker.data, ...(result.data?.data ?? {}) },
-              metadata: { ...marker.metadata, ...(result.data?.metadata ?? {}) },
-            }
-          : marker
-      )));
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: {
+          upsert: [result.data as ProjectThreeDMarkerRecord],
+        },
+      }));
       setSelectedMarker(null);
       showToastRef.current('Project Planting instance updated', 'success');
     } catch (error) {
@@ -2597,7 +2902,7 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingPlantingMarkerId(null);
     }
-  }, [deletingPlantingMarkerId, updateProjectThreeDMarkers, updatingPlantingMarkerId]);
+  }, [deletingPlantingMarkerId, updatingPlantingMarkerId]);
 
   const handleDeletePlantingInstance = useCallback(async (
     markerId: number,
@@ -2613,26 +2918,13 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Planting deletion failed (${response.status})`);
       }
-      updateProjectThreeDMarkers((markers) => markers.filter(
-        (marker) => Number(marker.id) !== markerId,
-      ));
       const deletedPlantingId = Number(result.data?.id);
-      setData((current) => {
-        const raw = current.threed.raw;
-        if (!raw || !Number.isSafeInteger(deletedPlantingId)) return current;
-        return {
-          ...current,
-          threed: {
-            ...current.threed,
-            raw: {
-              ...raw,
-              plantings: (raw.plantings ?? []).filter(
-                (planting: any) => Number(planting.id) !== deletedPlantingId,
-              ),
-            },
-          },
-        };
-      });
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { removeRecordIds: [markerId] },
+        sources: Number.isSafeInteger(deletedPlantingId) && deletedPlantingId > 0
+          ? { plantings: { removeIds: [deletedPlantingId] } }
+          : undefined,
+      }));
       setSelectedMarker(null);
       setActionTarget((current) => current
         && isMatchingThreeDActionTarget(current, {
@@ -2654,7 +2946,7 @@ function UnifiedMapPageInner() {
     } finally {
       setDeletingPlantingMarkerId(null);
     }
-  }, [deletingPlantingMarkerId, updateProjectThreeDMarkers, updatingPlantingMarkerId]);
+  }, [deletingPlantingMarkerId, updatingPlantingMarkerId]);
 
   const handleDeleteModelInstance = useCallback(async (
     instanceId: number,
@@ -2914,7 +3206,20 @@ function UnifiedMapPageInner() {
                   size="sm"
                   className="h-7 text-xs"
                   disabled={projectThreeDModules.length === 0}
+                  onClick={() => void openCharacterLibrary()}
+                >
+                  <Plus className="mr-1 h-3 w-3" />
+                  Character Library
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={projectThreeDModules.length === 0}
                   onClick={() => {
+                    setIsCharacterLibraryOpen(false);
+                    setPlacementCharacter(null);
                     setIsModelLibraryOpen(false);
                     setPlacementModel(null);
                     setIsPlantingPlacementOpen(false);
@@ -3112,6 +3417,104 @@ function UnifiedMapPageInner() {
                   onClick={() => {
                     setPlacementModel(model);
                     setPlacementScaleMultiplier('1');
+                    setViewMode('3d');
+                  }}
+                >
+                  Place
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {selectedProjectId && isCharacterLibraryOpen && (
+        <div className="absolute left-1 top-9 z-40 w-[min(24rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold">ThreeD Character Library</h2>
+              <p className="text-[11px] text-muted-foreground">
+                Select a Character, then click its unique spawn location in the ThreeD Scene.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              disabled={placingCharacter}
+              onClick={() => {
+                setPlacementCharacter(null);
+                setIsCharacterLibraryOpen(false);
+              }}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+
+          {projectThreeDModules.length > 1 && (
+            <label className="mb-2 block text-xs">
+              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={placementThreedId ?? ''}
+                disabled={placingCharacter}
+                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
+              >
+                {projectThreeDModules.map((module) => (
+                  <option key={module.id} value={module.id}>{module.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          {placementCharacter && (
+            <div className="mb-2 flex items-center justify-between gap-2 rounded border border-violet-500/40 bg-violet-500/10 p-2 text-xs">
+              <span>
+                Placing <strong>{placementCharacter.name}</strong>
+                {' '}with {placementCharacter.libraryAccess.runtime} runtime
+                {placingCharacter ? '…' : ' — click the ground'}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-6 text-[10px]"
+                disabled={placingCharacter}
+                onClick={() => setPlacementCharacter(null)}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+
+          <div className="max-h-72 space-y-1 overflow-y-auto pr-1">
+            {loadingLibraryCharacters ? (
+              <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> Loading Characters…
+              </div>
+            ) : libraryCharacters.length === 0 ? (
+              <p className="py-6 text-center text-xs text-muted-foreground">
+                No eligible Character Library items are available. Character models must be active and classified for Character use.
+              </p>
+            ) : libraryCharacters.map((character) => (
+              <div key={character.id} className="flex items-center gap-2 rounded border p-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-violet-500/10 text-violet-600">
+                  {character.libraryAccess.runtime === 'ecctrl' ? '🎮' : '🧚'}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-xs font-medium">{character.name}</div>
+                  <div className="text-[10px] uppercase text-muted-foreground">
+                    {character.libraryAccess.runtime} · {character.type ?? 'character'}
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={!placementThreedId || placingCharacter}
+                  onClick={() => {
+                    setPlacementCharacter(character);
                     setViewMode('3d');
                   }}
                 >
@@ -3568,6 +3971,8 @@ function UnifiedMapPageInner() {
                       actionTargetFocusRequest={actionTargetFocusRequest}
                       placementModel={placementModel}
                       onModelPlacement={handleModelPlacement}
+                      placementCharacterName={placementCharacter?.name ?? null}
+                      onCharacterPlacement={handleCharacterPlacement}
                       placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
                       onBedPlacement={handleBedPlacement}
                       placementPlantingName={plantingPlacementActive
@@ -3577,6 +3982,7 @@ function UnifiedMapPageInner() {
                       onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                       onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                       onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
+                      onRejectedCharacterMarkerRepair={handleRejectedCharacterMarkerRepair}
                     />
                   </div>
                 </div>
@@ -3641,6 +4047,8 @@ function UnifiedMapPageInner() {
                 actionTargetFocusRequest={actionTargetFocusRequest}
                 placementModel={placementModel}
                 onModelPlacement={handleModelPlacement}
+                placementCharacterName={placementCharacter?.name ?? null}
+                onCharacterPlacement={handleCharacterPlacement}
                 placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
                 onBedPlacement={handleBedPlacement}
                 placementPlantingName={plantingPlacementActive
@@ -3650,6 +4058,7 @@ function UnifiedMapPageInner() {
                 onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                 onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                 onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
+                onRejectedCharacterMarkerRepair={handleRejectedCharacterMarkerRepair}
               />
             )}
 
@@ -3722,6 +4131,8 @@ function UnifiedMapPageInner() {
         updatingPlantingMarkerId={updatingPlantingMarkerId}
         onDeletePlantingInstance={handleDeletePlantingInstance}
         deletingPlantingMarkerId={deletingPlantingMarkerId}
+        onUpdateCharacterPosition={handleUpdateCharacterPosition}
+        updatingCharacterMarkerId={updatingCharacterMarkerId}
       />
       
     </div>

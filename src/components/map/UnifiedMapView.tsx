@@ -74,6 +74,10 @@ interface UnifiedMapViewProps {
   placementModel?: ThreeDModelLibraryItem | null;
   /** Receives the selected ThreeD ground coordinate. */
   onModelPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Character Library item currently awaiting a ground placement click. */
+  placementCharacterName?: string | null;
+  /** Receives the selected ThreeD ground coordinate for a Character. */
+  onCharacterPlacement?: (position: { x: number; y: number; z: number }) => void;
   /** New Bed currently awaiting a ground placement click. */
   placementBedName?: string | null;
   /** Receives the selected ThreeD ground coordinate for a new Bed. */
@@ -84,6 +88,8 @@ interface UnifiedMapViewProps {
   onPlantingPlacement?: (position: { x: number; y: number; z: number }) => void;
   /** Removes only a rejected saved Project marker row after user confirmation. */
   onRejectedProjectMarkerDelete?: (recordId: number) => Promise<void>;
+  /** Restores a rejected Character snapshot to its source Character position. */
+  onRejectedCharacterMarkerRepair?: (recordId: number) => Promise<void>;
 }
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
@@ -148,13 +154,18 @@ export function UnifiedMapView({
   onRuntimeMarkerPositionResolverChange,
   placementModel,
   onModelPlacement,
+  placementCharacterName,
+  onCharacterPlacement,
   placementBedName,
   onBedPlacement,
   placementPlantingName,
   onPlantingPlacement,
   onRejectedProjectMarkerDelete,
+  onRejectedCharacterMarkerRepair,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const selectedMarkerRef = useRef<RuntimeMarker | null | undefined>(selectedMarker);
+  selectedMarkerRef.current = selectedMarker;
   const stableMarkersRef = useRef<Map<string, RuntimeMarker>>(new Map());
   const markerProjectIdRef = useRef<number | null | undefined>(projectId);
   const runtimeMarkerRegistryRef = useRef<ThreeDRuntimeMarkerRegistry | null>(null);
@@ -163,6 +174,7 @@ export function UnifiedMapView({
   }
   const [autoRotate, setAutoRotate] = useState(false);
   const [deletingRejectedMarkerId, setDeletingRejectedMarkerId] = useState<number | null>(null);
+  const [repairingRejectedMarkerId, setRepairingRejectedMarkerId] = useState<number | null>(null);
 
   const markerBuildResult = useMemo(
     () => buildThreeDRuntimeMarkerResult(data.threed.raw),
@@ -403,8 +415,10 @@ export function UnifiedMapView({
   }, [onIncidentSelect, selectedIncident]);
 
   const handleMarkerClick = useCallback((marker: RuntimeMarker) => {
-    if (onMarkerSelect) onMarkerSelect(selectedMarker?.id === marker.id ? null : marker);
-  }, [onMarkerSelect, selectedMarker]);
+    if (onMarkerSelect) {
+      onMarkerSelect(selectedMarkerRef.current?.id === marker.id ? null : marker);
+    }
+  }, [onMarkerSelect]);
 
   // ✅ Type-safe focus marker handler
   const handleFocusMarker = useCallback((marker: RuntimeMarker | TrafficIncident) => {
@@ -472,9 +486,15 @@ export function UnifiedMapView({
     return result;
   }, [spreadMarkers, gpsCenter]);
 
-  // ✅ 3D scene: use raw filteredMarkers for accurate 3D positions (spreadMarkers is for 2D leaflet overlap prevention)
-  const threeDMarkers = useMemo(() => filteredMarkers
-    .filter((m) => m.position && m.position.x !== undefined), [filteredMarkers]);
+  // The persistent ThreeD Scene receives every validated Project marker.
+  // Presentation filters are passed separately so hiding one marker suspends
+  // its existing Sub-Module runtime instead of unmounting its React/Rapier owner.
+  const threeDMarkers = useMemo(() => runtimeMarkers
+    .filter((m) => m.position && m.position.x !== undefined), [runtimeMarkers]);
+  const visibleThreeDMarkerIds = useMemo(
+    () => new Set(filteredMarkers.map((marker) => String(marker.id))),
+    [filteredMarkers],
+  );
 
   const render2DView = () => (
     <LeafletMap
@@ -504,6 +524,7 @@ export function UnifiedMapView({
         projectId={projectId ?? undefined}
         incidents={sceneIncidents}
         markers={threeDMarkers}
+        visibleMarkerIds={visibleThreeDMarkerIds}
         onIncidentClick={handleIncidentClick}
         onMarkerClick={handleMarkerClick}
         onClearSelection={() => {
@@ -524,6 +545,8 @@ export function UnifiedMapView({
         actionTargetFocusRequest={actionTargetFocusRequest}
         placementModel={placementModel}
         onModelPlacement={onModelPlacement}
+        placementCharacterName={placementCharacterName}
+        onCharacterPlacement={onCharacterPlacement}
         placementBedName={placementBedName}
         onBedPlacement={onBedPlacement}
         placementPlantingName={placementPlantingName}
@@ -575,6 +598,29 @@ export function UnifiedMapView({
                 <ul className="mt-1 list-disc space-y-0.5 pl-4 text-white/70">
                   {issue.reasons.map((reason) => <li key={reason}>{reason}</li>)}
                 </ul>
+                {issue.source === 'project_threed_markers'
+                  && issue.markerType === 'characters'
+                  && issue.recordId != null
+                  && onRejectedCharacterMarkerRepair && (
+                    <button
+                      type="button"
+                      disabled={repairingRejectedMarkerId != null}
+                      onClick={async () => {
+                        if (issue.recordId == null) return;
+                        setRepairingRejectedMarkerId(issue.recordId);
+                        try {
+                          await onRejectedCharacterMarkerRepair(issue.recordId);
+                        } finally {
+                          setRepairingRejectedMarkerId(null);
+                        }
+                      }}
+                      className="mr-2 mt-2 rounded border border-emerald-300/30 bg-emerald-500/15 px-2 py-1 text-[10px] font-medium text-emerald-100 hover:bg-emerald-500/30 disabled:opacity-50"
+                    >
+                      {repairingRejectedMarkerId === issue.recordId
+                        ? 'Restoring…'
+                        : 'Restore Source Position'}
+                    </button>
+                  )}
                 {issue.source === 'project_threed_markers'
                   && issue.recordId != null
                   && onRejectedProjectMarkerDelete && (

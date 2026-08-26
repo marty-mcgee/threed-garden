@@ -239,6 +239,23 @@ export interface ThreeDModelLibraryItem {
   isLibraryItem: boolean;
 }
 
+/** Owner-scoped Character record eligible for Garden/Ecctrl Project placement. */
+export interface ThreeDCharacterLibraryItem {
+  id: number;
+  name: string;
+  type: string | null;
+  isMovable: boolean | null;
+  movementType: string | null;
+  scale: string | number | null;
+  scaleMultiplier: string | number | null;
+  model: ThreeDModel;
+  libraryAccess: {
+    eligible: true;
+    runtime: 'garden' | 'ecctrl';
+    issues: [];
+  };
+}
+
 /** Project-owned placement of a reusable ThreeD Model Library asset. */
 export interface ProjectThreeDModelInstance {
   id: number;
@@ -1364,7 +1381,6 @@ export const HARVEST_UNIT_OPTIONS: ThreeDSelectOption[] = [
   { value: HarvestUnit.BUNCHES, label: 'Bunches' },
   { value: HarvestUnit.POUNDS, label: 'Pounds' },
 ];
-
 
 
 

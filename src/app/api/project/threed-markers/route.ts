@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { and, eq, inArray, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, notInArray, or, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { ensureTableSequence } from '@/lib/db/sequence';
@@ -12,6 +12,7 @@ import {
 import {
   threed,
   threedBeds,
+  threedCharacters,
   threedModels,
   threedPlantings,
   threedPlants,
@@ -21,6 +22,14 @@ import {
   parseUpdateProjectBedPlacement,
   ProjectBedPlacementInputError,
 } from '@/lib/services/threed/beds/project-bed-placement-core';
+import {
+  parseCreateProjectCharacterPlacement,
+  parseUpdateProjectCharacterPlacement,
+  ProjectCharacterPlacementInputError,
+} from '@/lib/services/threed/characters/project-character-placement-core';
+import {
+  resolveThreeDCharacterLibraryAccess,
+} from '@/lib/services/threed/characters/character-library-access-core';
 import {
   calculateProjectPlantingVisualPositions,
   parseCreateProjectPlantingPlacement,
@@ -113,6 +122,33 @@ async function readEligibleModel(userId: string, modelId: number) {
     ))
     .limit(1);
   return model ?? null;
+}
+
+async function readEligibleCharacter(userId: string, characterId: number) {
+  const [result] = await db
+    .select({ character: threedCharacters, model: threedModels })
+    .from(threedCharacters)
+    .innerJoin(threedModels, eq(threedModels.id, threedCharacters.modelId))
+    .where(and(
+      eq(threedCharacters.id, characterId),
+      eq(threedCharacters.userId, userId),
+      or(
+        eq(threedModels.userId, userId),
+        and(
+          eq(threedModels.isPublic, true),
+          eq(threedModels.isLibraryItem, true),
+        ),
+      ),
+    ))
+    .limit(1);
+  if (!result) return null;
+  const libraryAccess = resolveThreeDCharacterLibraryAccess(
+    result.character,
+    result.model,
+  );
+  return libraryAccess.eligible
+    ? { ...result, libraryAccess }
+    : null;
 }
 
 async function readOwnedActivePlant(userId: string, plantId: number) {
@@ -327,21 +363,57 @@ async function saveSnapshot(request: NextRequest) {
       await tx.execute(
         sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${projectId}`}))`,
       );
-      await tx
-        .delete(projectThreedMarkers)
-        .where(and(
+      if (rows.length === 0) {
+        await tx.delete(projectThreedMarkers).where(and(
           eq(projectThreedMarkers.projectId, projectId),
           eq(projectThreedMarkers.userId, userId),
         ));
-      if (rows.length > 0) {
-        await tx.insert(projectThreedMarkers).values(rows);
+        return [];
       }
-      return rows.length;
+
+      const savedRows = await tx.insert(projectThreedMarkers)
+        .values(rows)
+        .onConflictDoUpdate({
+          target: [projectThreedMarkers.projectId, projectThreedMarkers.markerId],
+          set: {
+            userId: sql`excluded.user_id`,
+            threedId: sql`excluded.threed_id`,
+            markerType: sql`excluded.marker_type`,
+            sourceAssetId: sql`excluded.source_asset_id`,
+            name: sql`excluded.name`,
+            positionX: sql`excluded.position_x`,
+            positionY: sql`excluded.position_y`,
+            positionZ: sql`excluded.position_z`,
+            positionSource: sql`excluded.position_source`,
+            color: sql`excluded.color`,
+            icon: sql`excluded.icon`,
+            label: sql`excluded.label`,
+            isVisible: sql`excluded.is_visible`,
+            isActive: sql`excluded.is_active`,
+            data: sql`excluded.data`,
+            metadata: sql`excluded.metadata`,
+            savedAt: sql`excluded.saved_at`,
+            updatedAt: sql`excluded.updated_at`,
+          },
+        })
+        .returning();
+
+      await tx.delete(projectThreedMarkers).where(and(
+        eq(projectThreedMarkers.projectId, projectId),
+        eq(projectThreedMarkers.userId, userId),
+        notInArray(projectThreedMarkers.markerId, rows.map((row) => row.markerId)),
+      ));
+      return savedRows;
     });
 
     return NextResponse.json({
       success: true,
-      data: { projectId, markerCount: saved, savedAt: new Date().toISOString() },
+      data: {
+        projectId,
+        markerCount: saved.length,
+        markers: saved,
+        savedAt: new Date().toISOString(),
+      },
     });
   } catch (error) {
     if (error instanceof ProjectMarkerSnapshotError) {
@@ -577,6 +649,139 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, data: created }, { status: 201 });
     }
 
+    if (
+      typeof body === 'object'
+      && body !== null
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).markerType === 'characters'
+    ) {
+      const input = parseCreateProjectCharacterPlacement(body);
+      const userId = session.user.id;
+      if (!await requireOwnedProject(userId, input.projectId)) {
+        return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+      }
+      if (!await requireActiveThreeDAssignment(userId, input.projectId, input.threedId)) {
+        return NextResponse.json(
+          { success: false, error: 'Active ThreeD Project assignment not found' },
+          { status: 404 },
+        );
+      }
+      const eligible = await readEligibleCharacter(userId, input.characterId);
+      if (!eligible) {
+        return NextResponse.json(
+          { success: false, error: 'Character is not eligible for Character Library placement' },
+          { status: 404 },
+        );
+      }
+
+      const positionX = input.positionX.toFixed(3);
+      const positionY = input.positionY.toFixed(3);
+      const positionZ = input.positionZ.toFixed(3);
+      const markerId = `characters-${eligible.character.id}`;
+      const created = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-characters:${input.projectId}`}))`,
+        );
+        const [existingMarker] = await tx.select({ id: projectThreedMarkers.id })
+          .from(projectThreedMarkers)
+          .where(and(
+            eq(projectThreedMarkers.projectId, input.projectId),
+            eq(projectThreedMarkers.userId, userId),
+            eq(projectThreedMarkers.markerId, markerId),
+          ))
+          .limit(1);
+        if (existingMarker) {
+          throw new ProjectCharacterPlacementInputError(
+            'Character is already placed in this ThreeD Project',
+          );
+        }
+        if (eligible.libraryAccess.runtime === 'ecctrl') {
+          const [occupiedSpawn] = await tx.select({ markerId: projectThreedMarkers.markerId })
+            .from(projectThreedMarkers)
+            .where(and(
+              eq(projectThreedMarkers.projectId, input.projectId),
+              eq(projectThreedMarkers.userId, userId),
+              eq(projectThreedMarkers.markerType, 'characters'),
+              eq(projectThreedMarkers.isActive, true),
+              eq(projectThreedMarkers.positionX, positionX),
+              eq(projectThreedMarkers.positionY, positionY),
+              eq(projectThreedMarkers.positionZ, positionZ),
+            ))
+            .limit(1);
+          if (occupiedSpawn) {
+            throw new ProjectCharacterPlacementInputError(
+              `Character spawn is already occupied by ${occupiedSpawn.markerId}`,
+            );
+          }
+        }
+
+        await tx.insert(projectAssets).values({
+          userId,
+          projectId: input.projectId,
+          moduleId: input.threedId,
+          moduleType: 'threed',
+          assetType: 'threed_characters',
+          assetId: eligible.character.id,
+          config: {},
+          isActive: true,
+        }).onConflictDoUpdate({
+          target: [
+            projectAssets.projectId,
+            projectAssets.moduleId,
+            projectAssets.assetType,
+            projectAssets.assetId,
+          ],
+          set: {
+            userId,
+            moduleType: 'threed',
+            isActive: true,
+            updatedAt: new Date(),
+          },
+        });
+
+        const markerData = {
+          ...eligible.character,
+          model: eligible.model,
+          positionX: input.positionX,
+          positionY: input.positionY,
+          positionZ: input.positionZ,
+          rotation: input.rotation,
+          scaleMultiplier: input.scaleMultiplier,
+        };
+        const [marker] = await tx.insert(projectThreedMarkers).values({
+          userId,
+          projectId: input.projectId,
+          threedId: input.threedId,
+          markerType: 'characters',
+          sourceAssetId: eligible.character.id,
+          markerId,
+          name: eligible.character.name,
+          positionX,
+          positionY,
+          positionZ,
+          positionSource: 'asset',
+          color: '#8b5cf6',
+          icon: '🧚',
+          label: eligible.character.name,
+          isVisible: true,
+          isActive: true,
+          data: markerData,
+          metadata: {
+            source: 'project-marker',
+            placementKind: 'character-library',
+            characterRuntime: eligible.libraryAccess.runtime,
+          },
+        }).returning();
+        return {
+          character: eligible.character,
+          marker,
+          libraryAccess: eligible.libraryAccess,
+        };
+      });
+
+      return NextResponse.json({ success: true, data: created }, { status: 201 });
+    }
+
     const input = parseCreateProjectModelInstance(body);
     const userId = session.user.id;
     if (!await requireOwnedProject(userId, input.projectId)) {
@@ -661,6 +866,7 @@ export async function POST(request: NextRequest) {
       error instanceof ProjectModelInstanceInputError
       || error instanceof ProjectBedPlacementInputError
       || error instanceof ProjectPlantingPlacementInputError
+      || error instanceof ProjectCharacterPlacementInputError
     ) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
@@ -680,14 +886,75 @@ async function updateProjectMarker(request: NextRequest, id: number) {
   if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
+  const ownerId = session.user.id;
 
   try {
     const body = await readJsonBody(request);
-    const marker = await readOwnedProjectMarker(session.user.id, id);
+    const marker = await readOwnedProjectMarker(ownerId, id);
     if (!marker) {
       return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
     }
     const currentData = marker.data && typeof marker.data === 'object' ? marker.data : {};
+
+    if (marker.markerType === 'characters') {
+      const updateBody = typeof body === 'object' && body !== null && !Array.isArray(body)
+        ? body as Record<string, unknown>
+        : {};
+      const update = parseUpdateProjectCharacterPlacement({
+        ...updateBody,
+        rotation: updateBody.rotation ?? (currentData as Record<string, unknown>).rotation ?? 0,
+        scaleMultiplier: updateBody.scaleMultiplier
+          ?? (currentData as Record<string, unknown>).scaleMultiplier
+          ?? 1,
+      });
+      const positionX = update.positionX.toFixed(3);
+      const positionY = update.positionY.toFixed(3);
+      const positionZ = update.positionZ.toFixed(3);
+      const updated = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-characters:${marker.projectId}`}))`,
+        );
+        const occupiedSpawns = await tx.select({
+          id: projectThreedMarkers.id,
+          markerId: projectThreedMarkers.markerId,
+        }).from(projectThreedMarkers).where(and(
+          eq(projectThreedMarkers.projectId, marker.projectId),
+          eq(projectThreedMarkers.userId, ownerId),
+          eq(projectThreedMarkers.markerType, 'characters'),
+          eq(projectThreedMarkers.isActive, true),
+          eq(projectThreedMarkers.positionX, positionX),
+          eq(projectThreedMarkers.positionY, positionY),
+          eq(projectThreedMarkers.positionZ, positionZ),
+        ));
+        const occupiedSpawn = occupiedSpawns.find((candidate) => candidate.id !== id);
+        if (occupiedSpawn) {
+          throw new ProjectCharacterPlacementInputError(
+            `Character spawn is already occupied by ${occupiedSpawn.markerId}`,
+          );
+        }
+        const [saved] = await tx.update(projectThreedMarkers).set({
+          positionX,
+          positionY,
+          positionZ,
+          positionSource: 'asset',
+          data: {
+            ...currentData,
+            positionX: update.positionX,
+            positionY: update.positionY,
+            positionZ: update.positionZ,
+            rotation: update.rotation,
+            scaleMultiplier: update.scaleMultiplier,
+          },
+          updatedAt: new Date(),
+        }).where(and(
+          eq(projectThreedMarkers.id, id),
+          eq(projectThreedMarkers.userId, ownerId),
+          eq(projectThreedMarkers.markerType, 'characters'),
+        )).returning();
+        return saved;
+      });
+      return NextResponse.json({ success: true, data: updated });
+    }
 
     if (marker.markerType === 'beds') {
       const update = parseUpdateProjectBedPlacement(body);
@@ -780,6 +1047,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
       error instanceof ProjectModelInstanceInputError
       || error instanceof ProjectBedPlacementInputError
       || error instanceof ProjectPlantingPlacementInputError
+      || error instanceof ProjectCharacterPlacementInputError
     ) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }

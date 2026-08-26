@@ -51,6 +51,14 @@ import {
   ProjectCharacterPlacementInputError,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/characters/project-character-placement-core.ts';
+import {
+  resolveThreeDCharacterLibraryAccess,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/characters/character-library-access-core.ts';
+import {
+  applyThreeDProjectClientTransaction,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/markers/project-marker-client-state-core.ts';
 
 let completedValidationSteps = 0;
 function validationStep(label: string): void {
@@ -114,6 +122,165 @@ assert.throws(
   ProjectCharacterPlacementInputError,
 );
 validationStep('Project Character placement inputs and spawn identity remain bounded');
+
+const clientState = {
+  traffic: {
+    raw: null,
+    total: 0,
+    chpCadCount: 0,
+    chpCasesCount: 0,
+    chpCentersCount: 0,
+    caltransClosuresCount: 0,
+    caltransCctvCount: 0,
+    caltransDistrictsCount: 0,
+    bayArea511Count: 0,
+    calfireIncidentsCount: 0,
+  },
+  threed: {
+    raw: {
+      plants: [],
+      beds: [{ id: 8, name: 'Stable Bed' }],
+      characters: [],
+      layers: [],
+      farmbots: [],
+      models: [],
+      plantings: [{ id: 12, name: 'Sunflower' }],
+      tasks: [],
+      harvests: [],
+      weatherLogs: [],
+      projectThreedMarkers: [{
+        id: 91,
+        markerType: 'plantings' as const,
+        sourceAssetId: 12,
+        markerId: 'plantings-12',
+        name: 'Sunflower',
+        positionX: '1.000',
+        positionY: '0.000',
+        positionZ: '2.000',
+        positionSource: 'asset' as const,
+        color: '#22c55e',
+        icon: '🌱',
+        label: 'Sunflower',
+        isVisible: true,
+        isActive: true,
+        data: { modelScale: 1, preserved: true },
+        metadata: { source: 'project-marker' },
+      }],
+    },
+    total: 2,
+    plantsCount: 0,
+    bedsCount: 1,
+    charactersCount: 0,
+    markersCount: 1,
+    layersCount: 0,
+    farmbotsCount: 0,
+    plantingsCount: 1,
+    tasksCount: 0,
+    harvestsCount: 0,
+    weatherLogsCount: 0,
+    layers: [],
+  },
+};
+const stableBeds = clientState.threed.raw.beds;
+const updatedClientState = applyThreeDProjectClientTransaction(clientState, {
+  markers: {
+    upsert: [{
+      ...clientState.threed.raw.projectThreedMarkers[0],
+      positionZ: '9.000',
+      data: { modelScale: 1.5 },
+    }],
+  },
+  sources: {
+    plantings: {
+      upsert: [{ id: 12, name: 'Sunflower Updated' }, { id: 13, name: 'Tomato' }],
+    },
+  },
+});
+assert.equal(updatedClientState.threed.raw?.beds, stableBeds);
+assert.equal(updatedClientState.threed.raw?.projectThreedMarkers?.length, 1);
+assert.equal(updatedClientState.threed.raw?.projectThreedMarkers?.[0].positionZ, '9.000');
+assert.deepEqual(updatedClientState.threed.raw?.projectThreedMarkers?.[0].data, {
+  modelScale: 1.5,
+  preserved: true,
+});
+assert.equal(updatedClientState.threed.raw?.plantings.length, 2);
+assert.equal(updatedClientState.threed.plantingsCount, 2);
+const removedClientState = applyThreeDProjectClientTransaction(updatedClientState, {
+  markers: { removeRecordIds: [91] },
+  sources: { plantings: { removeIds: [12] } },
+});
+assert.equal(removedClientState.threed.raw?.projectThreedMarkers?.length, 0);
+assert.deepEqual(removedClientState.threed.raw?.plantings.map((record) => record.id), [13]);
+assert.equal(removedClientState.threed.markersCount, 0);
+assert.equal(removedClientState.threed.plantingsCount, 1);
+const replacedClientState = applyThreeDProjectClientTransaction(updatedClientState, {
+  markers: {
+    replace: [{
+      ...updatedClientState.threed.raw!.projectThreedMarkers![0],
+      id: 501,
+    }],
+  },
+});
+assert.equal(replacedClientState.threed.raw?.projectThreedMarkers?.length, 1);
+assert.equal(replacedClientState.threed.raw?.projectThreedMarkers?.[0].id, 501);
+validationStep('Project marker and Sub-Module client state update in one transaction');
+
+const ecctrlLibraryAccess = resolveThreeDCharacterLibraryAccess({
+  id: 9,
+  isActive: true,
+  status: 'active',
+  visible: true,
+  isMovable: true,
+  modelId: 11,
+}, {
+  id: 11,
+  isActive: true,
+  status: 'active',
+  usedByCharacters: true,
+  filePath: '/characters/farmer.fbx',
+});
+assert.deepEqual(ecctrlLibraryAccess, {
+  eligible: true,
+  runtime: 'ecctrl',
+  issues: [],
+});
+
+const gardenLibraryAccess = resolveThreeDCharacterLibraryAccess({
+  id: 10,
+  isActive: true,
+  status: 'active',
+  visible: true,
+  isMovable: false,
+  modelId: 12,
+}, {
+  id: 12,
+  isActive: true,
+  status: 'active',
+  usedByCharacters: true,
+  filePath: '/characters/visitor.glb',
+});
+assert.equal(gardenLibraryAccess.eligible, true);
+assert.equal(gardenLibraryAccess.runtime, 'garden');
+
+assert.deepEqual(resolveThreeDCharacterLibraryAccess({
+  id: 11,
+  isActive: true,
+  status: 'active',
+  visible: true,
+  isMovable: true,
+  modelId: 13,
+}, {
+  id: 13,
+  isActive: true,
+  status: 'active',
+  usedByCharacters: false,
+  filePath: '/models/bench.glb',
+}), {
+  eligible: false,
+  runtime: 'ecctrl',
+  issues: ['model_not_for_characters'],
+});
+validationStep('Character Library access selects Garden or Ecctrl without using Model runtime rules');
 
 assert.equal(calculateThreeDModelFitMultiplier(
   { width: 4, height: 2, depth: 1 },
@@ -902,9 +1069,34 @@ assert.deepEqual(
 );
 assert.match(
   overlappingEcctrlResult.issues[0].reasons.join(' '),
-  /characters-2 already owns that Rapier spawn/,
+  /Ecctrl spawn owned by characters-2/,
 );
 validationStep('One movable Character owns each Rapier spawn and later overlaps are rejected');
+
+const nearbyEcctrlResult = buildThreeDRuntimeMarkerResult({
+  plants: [],
+  plantings: [],
+  beds: [],
+  characters: [
+    { id: 20, name: 'Farmer A', isMovable: true, positionX: 0, positionY: 1.172, positionZ: 0 },
+    { id: 21, name: 'Farmer B', isMovable: true, positionX: 0, positionY: 0, positionZ: 0 },
+    { id: 22, name: 'Farmer C', isMovable: true, positionX: 2, positionY: 0, positionZ: 0 },
+  ],
+  farmbots: [],
+  models: [],
+  layers: [],
+  tasks: [],
+  harvests: [],
+  weatherLogs: [],
+  projectThreedMarkers: [],
+}, generatedAt);
+assert.deepEqual(
+  nearbyEcctrlResult.markers.map((marker) => marker.id),
+  ['characters-20', 'characters-22'],
+);
+assert.equal(nearbyEcctrlResult.issues[0].markerId, 'characters-21');
+assert.match(nearbyEcctrlResult.issues[0].reasons.join(' '), /overlaps the Ecctrl spawn/);
+validationStep('Nearby movable Character capsules cannot share an Ecctrl spawn area');
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);

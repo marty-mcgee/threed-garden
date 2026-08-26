@@ -283,38 +283,36 @@ function rejectOverlappingEcctrlSpawns(
   const movableCharacters = markers.filter(
     (marker) => marker.type === 'characters' && marker.data?.isMovable === true,
   );
-  const markersBySpawn = new Map<string, RuntimeMarker[]>();
-
-  for (const marker of movableCharacters) {
-    const spawnKey = [marker.position.x, marker.position.y, marker.position.z]
-      .map((value) => Number(value).toFixed(6))
-      .join(':');
-    const matchingMarkers = markersBySpawn.get(spawnKey) ?? [];
-    matchingMarkers.push(marker);
-    markersBySpawn.set(spawnKey, matchingMarkers);
-  }
-
   const rejectedMarkerIds = new Set<string>();
-  for (const matchingMarkers of markersBySpawn.values()) {
-    if (matchingMarkers.length < 2) continue;
-    const position = matchingMarkers[0].position;
-    const retainedMarker = matchingMarkers[0];
-    for (const marker of matchingMarkers.slice(1)) {
-      rejectedMarkerIds.add(marker.id);
-      issues.push({
-        source: marker.metadata?.source === 'project-snapshot'
-          ? 'project_threed_markers'
-          : 'threed_sub_module',
-        recordId: Number.isSafeInteger(Number(marker.data?.projectMarkerId ?? marker.data?.id))
-          ? Number(marker.data?.projectMarkerId ?? marker.data?.id)
-          : null,
-        markerId: marker.id,
-        markerType: marker.type,
-        reasons: [
-          `movable Character shares Ecctrl spawn position X:${position.x}, Y:${position.y}, Z:${position.z}; ${retainedMarker.id} already owns that Rapier spawn`,
-        ],
-      });
+  const retainedCharacters: RuntimeMarker[] = [];
+  for (const marker of movableCharacters) {
+    const retainedMarker = retainedCharacters.find((candidate) => {
+      const horizontalDistance = Math.hypot(
+        marker.position.x - candidate.position.x,
+        marker.position.z - candidate.position.z,
+      );
+      const verticalDistance = Math.abs(marker.position.y - candidate.position.y);
+      return horizontalDistance < 0.5 && verticalDistance < 3;
+    });
+    if (!retainedMarker) {
+      retainedCharacters.push(marker);
+      continue;
     }
+
+    rejectedMarkerIds.add(marker.id);
+    issues.push({
+      source: marker.metadata?.source === 'project-snapshot'
+        ? 'project_threed_markers'
+        : 'threed_sub_module',
+      recordId: Number.isSafeInteger(Number(marker.data?.projectMarkerId ?? marker.data?.id))
+        ? Number(marker.data?.projectMarkerId ?? marker.data?.id)
+        : null,
+      markerId: marker.id,
+      markerType: marker.type,
+      reasons: [
+        `movable Character overlaps the Ecctrl spawn owned by ${retainedMarker.id}; assign separate Character positions before loading physics`,
+      ],
+    });
   }
 
   return rejectedMarkerIds.size === 0

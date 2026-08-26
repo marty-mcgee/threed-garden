@@ -27,6 +27,16 @@ The Runtime Marker layer resolves the Project-specific Character position before
 
 Only one movable Character may mount an Ecctrl body at a given XYZ spawn. The stable first marker owns that spawn; later overlapping movable Characters are skipped and reported before Rapier mounting. This keeps one Character selectable for recovery and prevents overlapping Ecctrl bodies without moving, deleting, or rewriting saved data. GardenCharacter routing remains separate and unchanged.
 
+## v0.18.9a Character Library and snapshot recovery
+
+The Dashboard Character Library exposes only active Character records whose related models are eligible for Character use. Placement creates an owner-scoped Character Project Asset and `project_threed_markers` instance through the authenticated API. `isMovable` continues to choose Ecctrl or Garden runtime rules; a Character model is never routed through the generic Model placement runtime.
+
+Character position editing patches only the selected Project marker and synchronizes its existing runtime owner. Planting or Character CRUD updates the matching client records without reloading the Project, replacing the persistent Canvas, or remounting unrelated marker owners.
+
+Ecctrl publishes live position only while the Character is under **Take Control**. Mounting, selecting, or clicking an uncontrolled Character cannot promote Ecctrl's temporary initialization coordinate into Runtime Marker state. Every reported position must contain finite X/Y/Z values before it can update camera tracking, the Scene live-position map, or the Runtime Marker registry.
+
+Spawn safety uses the Ecctrl capsule area rather than exact XYZ string equality. A later movable Character within the protected horizontal and vertical spawn range is rejected before Rapier mounts it. The bounded warning identifies the saved Project marker and offers **Restore Source Position**, which patches only that snapshot to the reusable Character's stored XYZ position. It does not delete or rewrite the source Character.
+
 ## Why the runtime files remain separate
 
 GardenCharacter and EcctrlCharacter have incompatible position authorities. Combining them into one large component would mix internal Three.js movement with Rapier/Ecctrl movement and increase regression risk for collisions, WASD, autonomous movement, camera tracking, and action recovery.

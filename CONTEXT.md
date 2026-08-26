@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.8-beta — ThreeD Ecctrl Position Authority** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Production checkpoint; next milestone requires review** |
+| Current release candidate | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
+| Current development milestone | **Release prepared; manual production checks pending** |
 | Previous checkpoint | **v0.18.6b — ThreeD Project Marker Snapshots** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -383,6 +383,7 @@ API (/api/map/threed)
 | **v0.18.7d** | **2026-08-25** | **Production release — pre-render Ecctrl overlap rejection, bounded Scene diagnostics, and Admin Character recovery** |
 | **v0.18.8a** | **2026-08-25** | **Release candidate — Runtime Marker spawn authority for Ecctrl and one safe Rapier owner per shared spawn** |
 | **v0.18.8-beta** | **2026-08-25** | **Production release — Runtime Marker position authority for Ecctrl and one safe Rapier owner per shared spawn** |
+| **v0.18.9a** | **2026-08-26** | **Release candidate — Character Library placement/editing, stable Project snapshot identity, controlled-only Ecctrl position reporting, overlapping-capsule containment, and source-position recovery** |
 
 ---
 
