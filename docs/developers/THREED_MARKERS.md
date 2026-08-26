@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture through the v0.18.7c **ThreeD Layers Scene Contracts** production checkpoint.
+This document records the marker architecture through the v0.18.7d **ThreeD Ecctrl Spawn Safety** production checkpoint.
 
 ## Hierarchy and terminology
 

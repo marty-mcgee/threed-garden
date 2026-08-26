@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.18.7d — ThreeD Ecctrl Spawn Safety](v0.18.7d.md)
 - [v0.18.7c — ThreeD Layers Scene Contracts](v0.18.7c.md)
 - [v0.18.7b — ThreeD Bed Project Placement and Editing](v0.18.7b.md)
 - [v0.18.7a — ThreeD Model Library Project Placements](v0.18.7a.md)

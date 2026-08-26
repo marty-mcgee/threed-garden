@@ -1,6 +1,6 @@
 # ThreeD FarmBot Integration Plan
 
-Status: v0.18.7c is the current production release. Its ThreeD Model Library, Project marker placement, ThreeD Layers Scene contract, ThreeD Marker snapshot, and Action Target behavior preserve the v0.18.3b FarmBot safety boundary through Phase 4L-K. MQTT publishing and physical device commands remain disabled. Any later command-linked orchestration requires separate approval.
+Status: v0.18.7d is the current production release. Its Ecctrl spawn safety, ThreeD Model Library, Project marker placement, ThreeD Layers Scene contract, ThreeD Marker snapshot, and Action Target behavior preserve the v0.18.3b FarmBot safety boundary through Phase 4L-K. MQTT publishing and physical device commands remain disabled. Any later command-linked orchestration requires separate approval.
 
 ## Integration boundary
 

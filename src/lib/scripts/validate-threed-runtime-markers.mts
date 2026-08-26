@@ -44,6 +44,13 @@ import {
   ProjectPlantingPlacementInputError,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/plantings/project-planting-placement-core.ts';
+import {
+  createProjectCharacterSpawnKey,
+  parseCreateProjectCharacterPlacement,
+  parseUpdateProjectCharacterPlacement,
+  ProjectCharacterPlacementInputError,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/characters/project-character-placement-core.ts';
 
 let completedValidationSteps = 0;
 function validationStep(label: string): void {
@@ -53,6 +60,60 @@ function validationStep(label: string): void {
 
 console.log('\nThreeD Runtime Marker registry validation');
 console.log('─'.repeat(42));
+
+assert.deepEqual(parseCreateProjectCharacterPlacement({
+  markerType: 'characters',
+  projectId: 5,
+  threedId: 2,
+  characterId: 9,
+  positionX: 4,
+  positionY: 0,
+  positionZ: -6,
+  rotation: 90,
+  scaleMultiplier: 1.25,
+}), {
+  markerType: 'characters',
+  projectId: 5,
+  threedId: 2,
+  characterId: 9,
+  positionX: 4,
+  positionY: 0,
+  positionZ: -6,
+  rotation: 90,
+  scaleMultiplier: 1.25,
+});
+assert.deepEqual(parseUpdateProjectCharacterPlacement({
+  markerType: 'characters',
+  positionX: 8,
+  positionY: 0.5,
+  positionZ: 3,
+  rotation: -45,
+  scaleMultiplier: 0.8,
+}), {
+  markerType: 'characters',
+  positionX: 8,
+  positionY: 0.5,
+  positionZ: 3,
+  rotation: -45,
+  scaleMultiplier: 0.8,
+});
+assert.equal(
+  createProjectCharacterSpawnKey({ x: 1, y: 2, z: 3 }),
+  createProjectCharacterSpawnKey({ x: 1.0000001, y: 2, z: 3 }),
+);
+assert.throws(
+  () => parseCreateProjectCharacterPlacement({
+    markerType: 'characters',
+    projectId: 5,
+    threedId: 2,
+    characterId: 9,
+    positionX: Number.NaN,
+    positionY: 0,
+    positionZ: 0,
+  }),
+  ProjectCharacterPlacementInputError,
+);
+validationStep('Project Character placement inputs and spawn identity remain bounded');
 
 assert.equal(calculateThreeDModelFitMultiplier(
   { width: 4, height: 2, depth: 1 },

@@ -19,7 +19,7 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.7c — ThreeD Layers Scene Contracts** |
+| Current stable version | **v0.18.7d — ThreeD Ecctrl Spawn Safety** |
 | Current release candidate | **None designated** |
 | Current development milestone | **Post-release checkpoint; next milestone requires review** |
 | Previous checkpoint | **v0.18.6b — ThreeD Project Marker Snapshots** |
@@ -380,6 +380,7 @@ API (/api/map/threed)
 | **v0.18.6b** | **2026-08-22** | **Production release — explicit owner-scoped ThreeD Project marker save/restore, Runtime Marker registry integration, Ecctrl live-position capture, and current-position Action Target resolution** |
 | **v0.18.7a** | **2026-08-24** | **Production release — general ThreeD Model Library Project placements, owner-scoped CRUD, DRACO rendering, whole-asset collision, persistent Scene authority, and selective Scene Layer physics/debug control** |
 | **v0.18.7b** | **2026-08-24** | **Production release — transactional ThreeD Bed Project placement, authoritative instance dimensions/transforms, and live Rapier translation/rotation synchronization** |
+| **v0.18.7d** | **2026-08-25** | **Production release — pre-render Ecctrl overlap rejection, bounded Scene diagnostics, and Admin Character recovery** |
 
 ---
 

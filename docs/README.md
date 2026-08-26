@@ -2,7 +2,9 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.7c **ThreeD Layers Scene Contracts**. No later release candidate is designated. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.18.7d **ThreeD Ecctrl Spawn Safety**. No later release candidate is designated. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+
+The v0.18.7d production release prevents multiple movable Characters at one XYZ spawn from entering Rapier as overlapping Ecctrl bodies. Unsafe Characters are listed in a bounded Scene warning and remain editable through the existing Admin Character CRUD.
 
 The v0.18.7c production release defines ThreeD Layers as the transaction boundary between `project_threed_markers` and the persistent R3F/Rapier Scene. Layer changes preserve stable marker identity and Sub-Module ownership and must not reload the Canvas, rebuild Physics, or remount unrelated markers.
 
@@ -40,6 +42,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 - [Release index](releases/README.md)
 - [v0.18.7c production checkpoint](releases/v0.18.7c.md)
+- [v0.18.7d production checkpoint](releases/v0.18.7d.md)
 - [v0.18.7b production checkpoint](releases/v0.18.7b.md)
 - [v0.18.7a production checkpoint](releases/v0.18.7a.md)
 - [v0.18.6b production checkpoint](releases/v0.18.6b.md)

@@ -38,7 +38,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.7c "ThreeD Layers Scene Contracts".
+Current production version: v0.18.7d "ThreeD Ecctrl Spawn Safety".
 
 No later release candidate is currently designated.
 
