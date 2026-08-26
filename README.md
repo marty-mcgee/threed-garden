@@ -11,7 +11,7 @@ This is a **Dual-Surface Platform**:
 
 The v0.18.7d production release rejects overlapping movable Character spawn positions before Ecctrl bodies enter Rapier, keeps valid Scene markers available, and provides a bounded warning plus an Admin recovery link.
 
-The manually verified **v0.18.8a — ThreeD Ecctrl Position Authority** release candidate passes each resolved Runtime Marker position directly into its Ecctrl runtime. One movable Character safely owns a shared Rapier spawn while later overlaps are skipped and reported, keeping a selectable Character available without changing database records.
+The manually verified **v0.18.8-beta — ThreeD Ecctrl Position Authority** release candidate passes each resolved Runtime Marker position directly into its Ecctrl runtime. One movable Character safely owns a shared Rapier spawn while later overlaps are skipped and reported, keeping a selectable Character available without changing database records.
 
 The v0.18.7b production release adds manually verified rectangular Bed creation and Project-instance editing. Bed width, length, height, X/Y/Z position, and degree-based Y rotation are saved in the authoritative Project marker and applied to its existing Scene/Rapier owner without reloading the Project.
 
@@ -290,6 +290,7 @@ The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.4b pro
 | v0.18.7c | ThreeD Layers Scene Contracts | Released: persistent Scene transaction authority, stable marker identity, Sub-Module-owned physics, Layer-local visibility/input/collision control, and bounded Rapier frame-error containment. |
 | v0.18.7d | ThreeD Ecctrl Spawn Safety | Released: Project-scoped pre-render rejection of overlapping movable Character spawn positions, bounded marker diagnostics, and an Admin Character recovery link. |
 | v0.18.8a | ThreeD Ecctrl Position Authority | Release candidate: Runtime Marker position directly initializes Ecctrl, and one safe Character owns a shared Rapier spawn while later overlaps are reported. |
+| v0.18.8-beta | ThreeD Ecctrl Position Authority | Beta promotion of the manually verified v0.18.8a runtime checkpoint; no additional behavior or authority is introduced. |
 | Later | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
 
 Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, Phase 4 through v0.18.3b, and Phase 5A–5D are released and production-verified. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.

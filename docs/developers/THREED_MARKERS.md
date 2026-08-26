@@ -1,6 +1,6 @@
 # ThreeD Marker Architecture
 
-This document records the marker architecture through the manually verified v0.18.8a **ThreeD Ecctrl Position Authority** release candidate. The current production checkpoint remains v0.18.7d until deployment is confirmed.
+This document records the marker architecture through the manually verified v0.18.8-beta **ThreeD Ecctrl Position Authority** release candidate. The beta promotes the v0.18.8a runtime checkpoint without adding behavior. The current production checkpoint remains v0.18.7d until deployment is confirmed.
 
 ## Hierarchy and terminology
 
