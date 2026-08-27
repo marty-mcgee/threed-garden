@@ -38,9 +38,9 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.9d "ThreeD Scene Navigation UX".
+Current production version: v0.19.0a "Shared ThreeD Model Library Placement" (`package.json` version `0.19.0-alpha`).
 
-Current release candidate: v0.19.0a "Shared ThreeD Model Library Placement" (`package.json` version `0.19.0-alpha`). Its 2D Map, ThreeD Scene, Combined View, cancellation, invalid-drop, and one-record-per-placement manual checks passed. It preserves the authenticated `project_threed_markers` creation path, Runtime Marker ownership, persistent Canvas/Rapier world, and Character runtime separation.
+No later release candidate is currently designated. v0.19.0a preserves the authenticated `project_threed_markers` creation path, Runtime Marker ownership, persistent Canvas/Rapier world, and Character runtime separation. The developer-local `reference/` directory remains ignored and is not production source or a deployed asset path.
 
 The v0.18.7c candidate defines ThreeD Layers as the Scene transaction boundary. Layer operations must preserve one persistent Canvas and Rapier world, stable `marker_id` identity, saved transforms, and Sub-Module-owned rendering and physics. They must not remount unrelated markers or issue duplicate imperative Rapier initialization writes. The Rapier frame-error circuit is containment only; activation is release-blocking.
 

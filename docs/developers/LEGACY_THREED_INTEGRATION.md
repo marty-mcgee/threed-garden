@@ -4,7 +4,7 @@
 
 `v0.19.0-alpha` begins an assessment-first effort to adapt selected possibilities from legacy JavaScript into the current ThreeD App. The first release candidate is `v0.19.0a — Shared ThreeD Model Library Placement`. It does not authorize a wholesale legacy-code import or replacement of established ThreeD architecture.
 
-Production remains `v0.18.9d — ThreeD Scene Navigation UX` until a later release passes its manual gates.
+`v0.19.0a — Shared ThreeD Model Library Placement` passed its manual gates and was released successfully to production on August 27, 2026.
 
 ## Supplied reference source
 

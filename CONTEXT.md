@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.9d — ThreeD Scene Navigation UX** |
-| Current release candidate | **v0.19.0a — Shared ThreeD Model Library Placement** |
-| Current development milestone | **Release-ready after successful 2D Map, ThreeD Scene, Combined View, cancellation, and invalid-drop manual checks** |
+| Current stable version | **v0.19.0a — Shared ThreeD Model Library Placement** |
+| Current release candidate | **None designated** |
+| Current development milestone | **v0.19.0a deployed and production verified** |
 | Previous checkpoint | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -387,6 +387,7 @@ API (/api/map/threed)
 | **v0.18.9b** | **2026-08-27** | **Production release — Project marker CRUD for Beds, FarmBots, Models, Plantings, and Characters with synchronized visuals, transforms, fixed colliders, and Physics Debug outlines** |
 | **v0.18.9c** | **2026-08-27** | **Production release — uniform Project dropdown, Scene Controls, and compact marker DetailsCards across the ThreeD Dashboard** |
 | **v0.18.9d** | **2026-08-27** | **Production release — persistent marker selection, Stationary Take Control camera, and user-owned zoom behavior** |
+| **v0.19.0a** | **2026-08-27** | **Production release — shared Model Library click and drag placement across the existing Leaflet 2D Map and R3F ThreeD Scene through one Project-marker transaction** |
 
 ---
 

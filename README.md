@@ -7,11 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.18.9d "ThreeD Scene Navigation UX"` (`package.json` version `0.18.9-delta`)
+> **Current production version:** `v0.19.0a "Shared ThreeD Model Library Placement"` (`package.json` version `0.19.0-alpha`)
 
-> **Current development candidate:** `v0.19.0a "Shared ThreeD Model Library Placement"` (`package.json` version `0.19.0-alpha`)
-
-The v0.19.0a candidate lets one existing Model Library start a Project placement on either the existing Leaflet 2D Map or React Three Fiber Scene through click placement or native drag-and-drop. Both surfaces call the same authenticated Project-marker creation workflow and render the returned marker through current Runtime Marker and Sub-Module ownership. Legacy code remains evidence, not runtime authority: the candidate adds no Paper.js runtime, duplicate Canvas, map, Rapier world, registry, persistence format, or Character-model routing change.
+The v0.19.0a production release lets one existing Model Library start a Project placement on either the existing Leaflet 2D Map or React Three Fiber Scene through click placement or native drag-and-drop. Both surfaces call the same authenticated Project-marker creation workflow and render the returned marker through current Runtime Marker and Sub-Module ownership. Legacy code remains evidence, not runtime authority: the release adds no Paper.js runtime, duplicate Canvas, map, Rapier world, registry, persistence format, or Character-model routing change.
 
 The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.
 
