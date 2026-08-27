@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
-| Current release candidate | **v0.18.9b — ThreeD Project Marker CRUD and Physics Synchronization** |
-| Current development milestone | **Release candidate prepared; manual build and production verification pending** |
-| Previous checkpoint | **v0.18.6b — ThreeD Project Marker Snapshots** |
+| Current stable version | **v0.18.9b — ThreeD Project Marker CRUD and Physics Synchronization** |
+| Current release candidate | **None designated** |
+| Current development milestone | **Production checkpoint; next milestone requires review** |
+| Previous checkpoint | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -384,6 +384,7 @@ API (/api/map/threed)
 | **v0.18.8a** | **2026-08-25** | **Release candidate — Runtime Marker spawn authority for Ecctrl and one safe Rapier owner per shared spawn** |
 | **v0.18.8-beta** | **2026-08-25** | **Production release — Runtime Marker position authority for Ecctrl and one safe Rapier owner per shared spawn** |
 | **v0.18.9a** | **2026-08-26** | **Production release — Character Library placement/editing, stable Project snapshot identity, controlled-only Ecctrl position reporting, overlapping-capsule containment, and source-position recovery** |
+| **v0.18.9b** | **2026-08-27** | **Production release — Project marker CRUD for Beds, FarmBots, Models, Plantings, and Characters with synchronized visuals, transforms, fixed colliders, and Physics Debug outlines** |
 
 ---
 

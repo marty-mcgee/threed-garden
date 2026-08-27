@@ -7,11 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.18.9a "ThreeD Character Library and Snapshot Recovery"`
+> **Current production version:** `v0.18.9b "ThreeD Project Marker CRUD and Physics Synchronization"` (`package.json` version `0.18.9-beta`)
 
-> **Prepared release candidate:** `v0.18.9b "ThreeD Project Marker CRUD and Physics Synchronization"` (`package.json` version `0.18.9-beta`)
-
-The v0.18.9b candidate completes verified Project-marker placement and editing coverage across Beds, FarmBots, Models, Plantings, and Characters. Marker transactions remain local to the persistent Scene; edited visuals, fixed Rapier bodies, and Physics Debug outlines stay synchronized without remounting unrelated markers. FarmBot Project removal preserves the reusable device and all credential, broker, and MQTT records.
+The v0.18.9b production release completes verified Project-marker placement and editing coverage across Beds, FarmBots, Models, Plantings, and Characters. Marker transactions remain local to the persistent Scene; edited visuals, fixed Rapier bodies, and Physics Debug outlines stay synchronized without remounting unrelated markers. FarmBot Project removal preserves the reusable device and all credential, broker, and MQTT records.
 
 The **v0.18.9a — ThreeD Character Library and Snapshot Recovery** production release adds owner-scoped Character Library placement and Project-instance position editing, keeps marker CRUD local to the persistent Scene, preserves Project marker row IDs during explicit saves, and prevents uncontrolled Ecctrl mount positions from entering saved snapshots. Overlapping Ecctrl capsule spawns are rejected before Rapier and can be restored to their source Character positions through the bounded Scene warning.
 
