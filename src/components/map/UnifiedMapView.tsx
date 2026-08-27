@@ -78,6 +78,10 @@ interface UnifiedMapViewProps {
   placementCharacterName?: string | null;
   /** Receives the selected ThreeD ground coordinate for a Character. */
   onCharacterPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Existing FarmBot currently awaiting a Project Scene placement click. */
+  placementFarmBotName?: string | null;
+  /** Receives the selected ThreeD ground coordinate for a FarmBot. */
+  onFarmBotPlacement?: (position: { x: number; y: number; z: number }) => void;
   /** New Bed currently awaiting a ground placement click. */
   placementBedName?: string | null;
   /** Receives the selected ThreeD ground coordinate for a new Bed. */
@@ -156,6 +160,8 @@ export function UnifiedMapView({
   onModelPlacement,
   placementCharacterName,
   onCharacterPlacement,
+  placementFarmBotName,
+  onFarmBotPlacement,
   placementBedName,
   onBedPlacement,
   placementPlantingName,
@@ -547,6 +553,8 @@ export function UnifiedMapView({
         onModelPlacement={onModelPlacement}
         placementCharacterName={placementCharacterName}
         onCharacterPlacement={onCharacterPlacement}
+        placementFarmBotName={placementFarmBotName}
+        onFarmBotPlacement={onFarmBotPlacement}
         placementBedName={placementBedName}
         onBedPlacement={onBedPlacement}
         placementPlantingName={placementPlantingName}

@@ -298,6 +298,7 @@ function ModelInstancePlacementEditor({
   initialName,
   initialScaleMultiplier,
   initialRotationY,
+  initialPosition,
   baseModelScale,
   updating,
   deleting,
@@ -308,6 +309,7 @@ function ModelInstancePlacementEditor({
   initialName: string;
   initialScaleMultiplier: number;
   initialRotationY: number;
+  initialPosition: { x: number; y: number; z: number };
   baseModelScale: number;
   updating: boolean;
   deleting: boolean;
@@ -315,6 +317,9 @@ function ModelInstancePlacementEditor({
     instanceName: string;
     scaleMultiplier: number;
     rotationY: number;
+    positionX: number;
+    positionY: number;
+    positionZ: number;
   }) => void;
   onDelete: (instanceId: number, name: string) => void;
 }) {
@@ -323,13 +328,18 @@ function ModelInstancePlacementEditor({
   const [rotationYDegrees, setRotationYDegrees] = useState(String(
     Number((initialRotationY * 180 / Math.PI).toFixed(2)),
   ));
+  const [positionX, setPositionX] = useState(String(initialPosition.x));
+  const [positionY, setPositionY] = useState(String(initialPosition.y));
+  const [positionZ, setPositionZ] = useState(String(initialPosition.z));
   const parsedScale = Number(scaleMultiplier);
   const parsedRotationDegrees = Number(rotationYDegrees);
+  const parsedPosition = [Number(positionX), Number(positionY), Number(positionZ)];
   const valid = instanceName.trim().length <= 120
     && Number.isFinite(parsedScale)
     && parsedScale >= 0.0001
     && parsedScale <= 10_000
-    && Number.isFinite(parsedRotationDegrees);
+    && Number.isFinite(parsedRotationDegrees)
+    && parsedPosition.every((value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000);
   const busy = updating || deleting;
 
   return (
@@ -371,6 +381,25 @@ function ModelInstancePlacementEditor({
           />
         </label>
       </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {[
+          ['Position X', positionX, setPositionX],
+          ['Position Y', positionY, setPositionY],
+          ['Position Z', positionZ, setPositionZ],
+        ].map(([label, value, setter]) => (
+          <label key={label as string} className="block space-y-1">
+            <span className="text-[9px] text-white/50">{label as string}</span>
+            <input
+              type="number"
+              step="0.1"
+              value={value as string}
+              disabled={busy}
+              onChange={(event) => (setter as (value: string) => void)(event.target.value)}
+              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+            />
+          </label>
+        ))}
+      </div>
       <div className="text-[9px] text-white/35">
         Effective scale: {(baseModelScale * (Number.isFinite(parsedScale) ? parsedScale : 0)).toLocaleString()}
       </div>
@@ -384,6 +413,9 @@ function ModelInstancePlacementEditor({
               instanceName: instanceName.trim(),
               scaleMultiplier: parsedScale,
               rotationY: parsedRotationDegrees * Math.PI / 180,
+              positionX: parsedPosition[0],
+              positionY: parsedPosition[1],
+              positionZ: parsedPosition[2],
             });
           }}
           className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
@@ -425,6 +457,7 @@ function BedInstanceEditor({
   deleting,
   onSave,
   onDelete,
+  entityLabel = 'Bed',
 }: {
   markerId: number;
   initialWidthFeet: number;
@@ -448,6 +481,7 @@ function BedInstanceEditor({
     rotation: number;
   }) => void;
   onDelete: (markerId: number, name: string) => void;
+  entityLabel?: 'Bed' | 'FarmBot';
 }) {
   const [widthFeet, setWidthFeet] = useState(String(initialWidthFeet));
   const [lengthFeet, setLengthFeet] = useState(String(initialLengthFeet));
@@ -473,7 +507,7 @@ function BedInstanceEditor({
 
   return (
     <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
-      <div className="text-[10px] font-medium text-white/60">Project Bed Instance</div>
+      <div className="text-[10px] font-medium text-white/60">Project {entityLabel} Instance</div>
       <div className="grid grid-cols-3 gap-1.5">
         {[
           ['Width (ft)', widthFeet, setWidthFeet],
@@ -555,20 +589,20 @@ function BedInstanceEditor({
         className="flex w-full items-center justify-center gap-1.5 rounded bg-amber-600/35 px-2 py-1.5 text-[11px] font-medium text-amber-100 transition-colors hover:bg-amber-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
       >
         {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-        Save Bed Instance
+        Save {entityLabel} Instance
       </button>
       <button
         type="button"
         disabled={busy}
         onClick={(event) => {
           event.stopPropagation();
-          if (!window.confirm('Remove this Bed from this ThreeD Project?')) return;
-          onDelete(markerId, 'Bed');
+          if (!window.confirm(`Remove this ${entityLabel} from this ThreeD Project?`)) return;
+          onDelete(markerId, entityLabel);
         }}
         className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
       >
         {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-        Remove Bed
+        Remove {entityLabel}
       </button>
       </div>
     </div>
@@ -674,13 +708,17 @@ function CharacterInstancePositionEditor({
   initialPosition,
   disabled,
   updating,
+  deleting,
   onSave,
+  onDelete,
 }: {
   markerId: number;
   initialPosition: { x: number; y: number; z: number };
   disabled: boolean;
   updating: boolean;
+  deleting: boolean;
   onSave: (markerId: number, position: { positionX: number; positionY: number; positionZ: number }) => void;
+  onDelete: (markerId: number) => void;
 }) {
   const [positionX, setPositionX] = useState(String(initialPosition.x));
   const [positionY, setPositionY] = useState(String(initialPosition.y));
@@ -708,7 +746,7 @@ function CharacterInstancePositionEditor({
               type="number"
               step="0.1"
               value={value as string}
-              disabled={disabled || updating}
+              disabled={disabled || updating || deleting}
               onChange={(event) => (setter as (next: string) => void)(event.target.value)}
               className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
             />
@@ -717,7 +755,7 @@ function CharacterInstancePositionEditor({
       </div>
       <button
         type="button"
-        disabled={!valid || disabled || updating}
+        disabled={!valid || disabled || updating || deleting}
         onClick={(event) => {
           event.stopPropagation();
           onSave(markerId, position);
@@ -727,6 +765,19 @@ function CharacterInstancePositionEditor({
         {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
         Save Character Position
       </button>
+      <button
+        type="button"
+        disabled={disabled || updating || deleting}
+        onClick={(event) => {
+          event.stopPropagation();
+          if (!window.confirm('Remove this Character from the ThreeD Project? The reusable Character will remain available in the Library.')) return;
+          onDelete(markerId);
+        }}
+        className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+      >
+        {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+        Delete Character
+      </button>
       {disabled && (
         <p className="text-[9px] text-amber-200/75">Release Control before changing the Character position.</p>
       )}
@@ -734,7 +785,7 @@ function CharacterInstancePositionEditor({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, onUpdateCharacterPosition, updatingCharacterMarkerId }: {
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
@@ -758,6 +809,9 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     instanceName: string;
     scaleMultiplier: number;
     rotationY: number;
+    positionX: number;
+    positionY: number;
+    positionZ: number;
   }) => void;
   updatingModelInstanceId?: number | null;
   onDeleteModelInstance?: (instanceId: number, name: string) => void;
@@ -776,6 +830,20 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   updatingBedMarkerId?: number | null;
   onDeleteBedInstance?: (markerId: number, name: string) => void;
   deletingBedMarkerId?: number | null;
+  onUpdateFarmBotInstance?: (markerId: number, input: {
+    widthFeet: number;
+    lengthFeet: number;
+    heightFeet: number;
+    scale: number;
+    color: string;
+    positionX: number;
+    positionY: number;
+    positionZ: number;
+    rotation: number;
+  }) => void;
+  updatingFarmBotMarkerId?: number | null;
+  onDeleteFarmBotInstance?: (markerId: number, name: string) => void;
+  deletingFarmBotMarkerId?: number | null;
   onUpdatePlantingInstance?: (markerId: number, input: {
     modelScale: number;
     positionX: number;
@@ -791,6 +859,8 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     positionZ: number;
   }) => void;
   updatingCharacterMarkerId?: number | null;
+  onDeleteCharacterInstance?: (markerId: number, name: string) => void;
+  deletingCharacterMarkerId?: number | null;
 }) {
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
@@ -854,6 +924,11 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
     && Number.isSafeInteger(plantingMarkerId)
     && plantingMarkerId > 0;
+  const farmBotMarkerId = Number(d.projectMarkerId);
+  const isProjectFarmBotInstance = isFarmBotMarker
+    && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
+    && Number.isSafeInteger(farmBotMarkerId)
+    && farmBotMarkerId > 0;
   const selectedTargetCapabilities = getThreeDActionTargetCapabilities(normalizedType);
   const actionTargetCapabilities = actionTarget
     ? getThreeDActionTargetCapabilities(actionTarget.type)
@@ -1280,6 +1355,11 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
           initialName={String(d.instanceName || selected.name || '')}
           initialScaleMultiplier={Number(d.scaleMultiplier ?? 1)}
           initialRotationY={Number(d.rotationYInstance ?? 0)}
+          initialPosition={{
+            x: Number(selected.position?.x ?? d.positionX ?? 0),
+            y: Number(selected.position?.y ?? d.positionY ?? 0),
+            z: Number(selected.position?.z ?? d.positionZ ?? 0),
+          }}
           baseModelScale={Number(d.scale ?? 1)}
           updating={updatingModelInstanceId === modelInstanceId}
           deleting={deletingModelInstanceId === modelInstanceId}
@@ -1313,6 +1393,32 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         />
       )}
 
+      {isProjectFarmBotInstance && onUpdateFarmBotInstance && onDeleteFarmBotInstance && (
+        <BedInstanceEditor
+          key={farmBotMarkerId}
+          markerId={farmBotMarkerId}
+          entityLabel="FarmBot"
+          initialWidthFeet={Number(d.widthFeet ?? 3)}
+          initialLengthFeet={Number(d.lengthFeet ?? 6)}
+          initialHeightFeet={Number(d.heightFeet ?? 3)}
+          initialScale={Number(d.scale ?? 1)}
+          initialColor={String(d.color ?? selected.color ?? '#4B5563')}
+          initialPosition={{
+            x: Number(selected.position?.x ?? d.positionX ?? 0),
+            y: Number(selected.position?.y ?? d.positionY ?? 0),
+            z: Number(selected.position?.z ?? d.positionZ ?? 0),
+          }}
+          initialRotation={Number(d.rotation ?? 0)}
+          updating={updatingFarmBotMarkerId === farmBotMarkerId}
+          deleting={deletingFarmBotMarkerId === farmBotMarkerId}
+          onSave={onUpdateFarmBotInstance}
+          onDelete={(markerId, name) => onDeleteFarmBotInstance(
+            markerId,
+            String(selected.name || name),
+          )}
+        />
+      )}
+
       {isProjectPlantingInstance && onUpdatePlantingInstance && onDeletePlantingInstance && (
         <PlantingInstanceEditor
           key={plantingMarkerId}
@@ -1333,7 +1439,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         />
       )}
 
-      {isProjectCharacterInstance && onUpdateCharacterPosition && (
+      {isProjectCharacterInstance && onUpdateCharacterPosition && onDeleteCharacterInstance && (
         <CharacterInstancePositionEditor
           key={characterMarkerId}
           markerId={characterMarkerId}
@@ -1344,7 +1450,12 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
           }}
           disabled={controlledCharacterId != null}
           updating={updatingCharacterMarkerId === characterMarkerId}
+          deleting={deletingCharacterMarkerId === characterMarkerId}
           onSave={onUpdateCharacterPosition}
+          onDelete={(markerId) => onDeleteCharacterInstance(
+            markerId,
+            String(selected.name || d.name || 'Character'),
+          )}
         />
       )}
 
@@ -1450,18 +1561,23 @@ function UnifiedMapPageInner() {
   }>>([]);
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
   const [isCharacterLibraryOpen, setIsCharacterLibraryOpen] = useState(false);
+  const [isFarmBotLibraryOpen, setIsFarmBotLibraryOpen] = useState(false);
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
+  const [libraryFarmBots, setLibraryFarmBots] = useState<any[]>([]);
   const [loadingLibraryModels, setLoadingLibraryModels] = useState(false);
   const [loadingLibraryCharacters, setLoadingLibraryCharacters] = useState(false);
+  const [loadingLibraryFarmBots, setLoadingLibraryFarmBots] = useState(false);
   const [placementModel, setPlacementModel] = useState<ThreeDModelLibraryItem | null>(null);
   const [placementCharacter, setPlacementCharacter] = useState<ThreeDCharacterLibraryItem | null>(null);
+  const [placementFarmBot, setPlacementFarmBot] = useState<any | null>(null);
   const [placementThreedId, setPlacementThreedId] = useState<number | null>(null);
   const [placementScaleMultiplier, setPlacementScaleMultiplier] = useState('1');
   const [placingModel, setPlacingModel] = useState(false);
   const [placingCharacter, setPlacingCharacter] = useState(false);
+  const [placingFarmBot, setPlacingFarmBot] = useState(false);
   const [placingBed, setPlacingBed] = useState(false);
   const [placingPlanting, setPlacingPlanting] = useState(false);
   const [bedPlacementActive, setBedPlacementActive] = useState(false);
@@ -1485,15 +1601,27 @@ function UnifiedMapPageInner() {
     spacingInches: '',
     modelScale: '1',
   });
+  const [farmBotPlacementDraft, setFarmBotPlacementDraft] = useState({
+    widthFeet: '3',
+    lengthFeet: '6',
+    heightFeet: '3',
+    color: '#4B5563',
+    rotation: '0',
+    scale: '1',
+  });
   const [updatingModelInstanceId, setUpdatingModelInstanceId] = useState<number | null>(null);
   const [deletingModelInstanceId, setDeletingModelInstanceId] = useState<number | null>(null);
   const [updatingBedMarkerId, setUpdatingBedMarkerId] = useState<number | null>(null);
   const [deletingBedMarkerId, setDeletingBedMarkerId] = useState<number | null>(null);
+  const [updatingFarmBotMarkerId, setUpdatingFarmBotMarkerId] = useState<number | null>(null);
+  const [deletingFarmBotMarkerId, setDeletingFarmBotMarkerId] = useState<number | null>(null);
   const [updatingPlantingMarkerId, setUpdatingPlantingMarkerId] = useState<number | null>(null);
   const [deletingPlantingMarkerId, setDeletingPlantingMarkerId] = useState<number | null>(null);
   const [updatingCharacterMarkerId, setUpdatingCharacterMarkerId] = useState<number | null>(null);
+  const [deletingCharacterMarkerId, setDeletingCharacterMarkerId] = useState<number | null>(null);
   const placingModelRef = useRef(false);
   const placingCharacterRef = useRef(false);
+  const placingFarmBotRef = useRef(false);
   const placingBedRef = useRef(false);
   const placingPlantingRef = useRef(false);
   
@@ -1631,6 +1759,8 @@ function UnifiedMapPageInner() {
   ) => runtimeMarkerPositionResolverRef.current?.(moduleType, assetId) ?? null, []);
 
   const openModelLibrary = useCallback(async () => {
+    setIsFarmBotLibraryOpen(false);
+    setPlacementFarmBot(null);
     setIsCharacterLibraryOpen(false);
     setPlacementCharacter(null);
     setIsBedPlacementOpen(false);
@@ -1664,6 +1794,8 @@ function UnifiedMapPageInner() {
   }, [libraryModels.length, loadingLibraryModels]);
 
   const openCharacterLibrary = useCallback(async () => {
+    setIsFarmBotLibraryOpen(false);
+    setPlacementFarmBot(null);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
     setPlacementCharacter(null);
@@ -1697,7 +1829,44 @@ function UnifiedMapPageInner() {
     }
   }, [libraryCharacters.length, loadingLibraryCharacters]);
 
+  const openFarmBotLibrary = useCallback(async () => {
+    setIsModelLibraryOpen(false);
+    setPlacementModel(null);
+    setIsCharacterLibraryOpen(false);
+    setPlacementCharacter(null);
+    setIsBedPlacementOpen(false);
+    setBedPlacementActive(false);
+    setIsPlantingPlacementOpen(false);
+    setPlantingPlacementActive(false);
+    setIsFarmBotLibraryOpen(true);
+    setIsProjectSummaryOpen(false);
+    setSelectedMarker(null);
+    if (libraryFarmBots.length > 0 || loadingLibraryFarmBots) return;
+
+    setLoadingLibraryFarmBots(true);
+    try {
+      const response = await fetch('/api/threed/farmbots?isActive=true&limit=100');
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `FarmBot Library failed (${response.status})`);
+      }
+      setLibraryFarmBots(Array.isArray(result.data) ? result.data : []);
+    } catch (error) {
+      console.error('Failed to load ThreeD FarmBot Library', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to load ThreeD FarmBot Library',
+        'error',
+      );
+    } finally {
+      setLoadingLibraryFarmBots(false);
+    }
+  }, [libraryFarmBots.length, loadingLibraryFarmBots]);
+
   const openPlantingPlacement = useCallback(async () => {
+    setIsFarmBotLibraryOpen(false);
+    setPlacementFarmBot(null);
     setIsCharacterLibraryOpen(false);
     setPlacementCharacter(null);
     setIsModelLibraryOpen(false);
@@ -2473,6 +2642,69 @@ function UnifiedMapPageInner() {
     selectedProjectId,
   ]);
 
+  const handleFarmBotPlacement = useCallback(async (
+    position: { x: number; y: number; z: number },
+  ) => {
+    if (
+      !selectedProjectId
+      || !placementFarmBot
+      || !placementThreedId
+      || placingFarmBotRef.current
+    ) return;
+
+    placingFarmBotRef.current = true;
+    setPlacingFarmBot(true);
+    try {
+      const response = await fetch('/api/project/threed-markers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          markerType: 'farmbots',
+          projectId: Number(selectedProjectId),
+          threedId: placementThreedId,
+          farmbotId: Number(placementFarmBot.id),
+          widthFeet: Number(farmBotPlacementDraft.widthFeet),
+          lengthFeet: Number(farmBotPlacementDraft.lengthFeet),
+          heightFeet: Number(farmBotPlacementDraft.heightFeet),
+          color: farmBotPlacementDraft.color,
+          rotation: Number(farmBotPlacementDraft.rotation),
+          scale: Number(farmBotPlacementDraft.scale),
+          positionX: position.x,
+          positionY: position.y,
+          positionZ: position.z,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success || !result.data?.farmbot || !result.data?.marker) {
+        throw new Error(result?.error || `FarmBot placement failed (${response.status})`);
+      }
+
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data.marker as ProjectThreeDMarkerRecord] },
+        sources: { farmbots: { upsert: [result.data.farmbot] } },
+      }));
+      setPlacementFarmBot(null);
+      setIsFarmBotLibraryOpen(false);
+      showToastRef.current(`${placementFarmBot.name} placed in the ThreeD Scene`, 'success');
+    } catch (error) {
+      console.error('Failed to place ThreeD FarmBot Library item', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to place ThreeD FarmBot',
+        'error',
+      );
+    } finally {
+      placingFarmBotRef.current = false;
+      setPlacingFarmBot(false);
+    }
+  }, [
+    farmBotPlacementDraft,
+    placementFarmBot,
+    placementThreedId,
+    selectedProjectId,
+  ]);
+
   const handleBedPlacement = useCallback(async (
     position: { x: number; y: number; z: number },
   ) => {
@@ -2633,6 +2865,9 @@ function UnifiedMapPageInner() {
       instanceName: string;
       scaleMultiplier: number;
       rotationY: number;
+      positionX: number;
+      positionY: number;
+      positionZ: number;
     },
   ) => {
     if (updatingModelInstanceId != null || deletingModelInstanceId != null) return;
@@ -2754,6 +2989,54 @@ function UnifiedMapPageInner() {
     }
   }, [controlledCharacterId, updateProjectThreeDMarkers, updatingCharacterMarkerId]);
 
+  const handleDeleteCharacterInstance = useCallback(async (
+    markerId: number,
+    name: string,
+  ) => {
+    if (
+      deletingCharacterMarkerId != null
+      || updatingCharacterMarkerId != null
+      || controlledCharacterId != null
+    ) return;
+    setDeletingCharacterMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Character deletion failed (${response.status})`);
+      }
+      const sourceAssetId = Number(result.data?.sourceAssetId);
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { removeRecordIds: [markerId] },
+        sources: Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
+          ? { characters: { removeIds: [sourceAssetId] } }
+          : undefined,
+      }));
+      setSelectedMarker(null);
+      setActionTarget((current) => current
+        && isMatchingThreeDActionTarget(current, {
+          markerType: 'characters',
+          assetId: sourceAssetId,
+        })
+        ? null
+        : current);
+      setOrchestrationStatus(null);
+      showToastRef.current(`${name} removed from the ThreeD Project`, 'success');
+    } catch (error) {
+      console.error('Failed to delete Project Character instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to delete Project Character',
+        'error',
+      );
+    } finally {
+      setDeletingCharacterMarkerId(null);
+    }
+  }, [controlledCharacterId, deletingCharacterMarkerId, updatingCharacterMarkerId]);
+
   const handleUpdateBedInstance = useCallback(async (
     markerId: number,
     input: {
@@ -2862,6 +3145,94 @@ function UnifiedMapPageInner() {
       setDeletingBedMarkerId(null);
     }
   }, [deletingBedMarkerId, updateProjectThreeDMarkers, updatingBedMarkerId]);
+
+  const handleUpdateFarmBotInstance = useCallback(async (
+    markerId: number,
+    input: {
+      widthFeet: number;
+      lengthFeet: number;
+      heightFeet: number;
+      scale: number;
+      color: string;
+      positionX: number;
+      positionY: number;
+      positionZ: number;
+      rotation: number;
+    },
+  ) => {
+    if (updatingFarmBotMarkerId != null || deletingFarmBotMarkerId != null) return;
+    setUpdatingFarmBotMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markerType: 'farmbots', ...input }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `FarmBot instance update failed (${response.status})`);
+      }
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
+      }));
+      setSelectedMarker(null);
+      showToastRef.current('Project FarmBot instance updated', 'success');
+    } catch (error) {
+      console.error('Failed to update Project FarmBot instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to update Project FarmBot instance',
+        'error',
+      );
+    } finally {
+      setUpdatingFarmBotMarkerId(null);
+    }
+  }, [deletingFarmBotMarkerId, updatingFarmBotMarkerId]);
+
+  const handleDeleteFarmBotInstance = useCallback(async (
+    markerId: number,
+    name: string,
+  ) => {
+    if (deletingFarmBotMarkerId != null || updatingFarmBotMarkerId != null) return;
+    setDeletingFarmBotMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `FarmBot removal failed (${response.status})`);
+      }
+      const sourceAssetId = Number(result.data?.sourceAssetId);
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { removeRecordIds: [markerId] },
+        sources: Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
+          ? { farmbots: { removeIds: [sourceAssetId] } }
+          : undefined,
+      }));
+      setSelectedMarker(null);
+      setActionTarget((current) => current
+        && isMatchingThreeDActionTarget(current, {
+          markerType: 'farmbots',
+          assetId: sourceAssetId,
+        })
+        ? null
+        : current);
+      setOrchestrationStatus(null);
+      showToastRef.current(`${name} removed from the ThreeD Project`, 'success');
+    } catch (error) {
+      console.error('Failed to remove Project FarmBot instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to remove Project FarmBot instance',
+        'error',
+      );
+    } finally {
+      setDeletingFarmBotMarkerId(null);
+    }
+  }, [deletingFarmBotMarkerId, updatingFarmBotMarkerId]);
 
   const handleUpdatePlantingInstance = useCallback(async (
     markerId: number,
@@ -3217,7 +3588,20 @@ function UnifiedMapPageInner() {
                   size="sm"
                   className="h-7 text-xs"
                   disabled={projectThreeDModules.length === 0}
+                  onClick={() => void openFarmBotLibrary()}
+                >
+                  <Plus className="mr-1 h-3 w-3" />
+                  FarmBot Library
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={projectThreeDModules.length === 0}
                   onClick={() => {
+                    setIsFarmBotLibraryOpen(false);
+                    setPlacementFarmBot(null);
                     setIsCharacterLibraryOpen(false);
                     setPlacementCharacter(null);
                     setIsModelLibraryOpen(false);
@@ -3497,7 +3881,17 @@ function UnifiedMapPageInner() {
               <p className="py-6 text-center text-xs text-muted-foreground">
                 No eligible Character Library items are available. Character models must be active and classified for Character use.
               </p>
-            ) : libraryCharacters.map((character) => (
+            ) : libraryCharacters.map((character) => {
+              const isPlaced = (
+                (data.threed.raw?.projectThreedMarkers ?? []).some(
+                  (marker) => marker.markerType === 'characters'
+                    && Number(marker.sourceAssetId) === Number(character.id),
+                )
+                || (data.threed.raw?.characters ?? []).some(
+                  (projectCharacter) => Number(projectCharacter.id) === Number(character.id),
+                )
+              );
+              return (
               <div key={character.id} className="flex items-center gap-2 rounded border p-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded bg-violet-500/10 text-violet-600">
                   {character.libraryAccess.runtime === 'ecctrl' ? '🎮' : '🧚'}
@@ -3512,16 +3906,157 @@ function UnifiedMapPageInner() {
                   type="button"
                   size="sm"
                   className="h-7 text-xs"
-                  disabled={!placementThreedId || placingCharacter}
+                  disabled={!placementThreedId || placingCharacter || isPlaced}
                   onClick={() => {
                     setPlacementCharacter(character);
                     setViewMode('3d');
                   }}
                 >
-                  Place
+                  {isPlaced ? 'Placed' : 'Place'}
                 </Button>
               </div>
-            ))}
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {selectedProjectId && isFarmBotLibraryOpen && (
+        <div className="absolute left-1 top-9 z-40 w-[min(26rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold">ThreeD FarmBot Library</h2>
+              <p className="text-[11px] text-muted-foreground">
+                Select an existing FarmBot, set its Project dimensions, then click the Scene ground.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              disabled={placingFarmBot}
+              onClick={() => {
+                setPlacementFarmBot(null);
+                setIsFarmBotLibraryOpen(false);
+              }}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+
+          {projectThreeDModules.length > 1 && (
+            <label className="mb-2 block text-xs">
+              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={placementThreedId ?? ''}
+                disabled={placingFarmBot}
+                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
+              >
+                {projectThreeDModules.map((module) => (
+                  <option key={module.id} value={module.id}>{module.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          {placementFarmBot && (
+            <div className="mb-2 grid grid-cols-2 gap-2 rounded border border-slate-500/40 bg-slate-500/10 p-2 text-xs">
+              <div className="col-span-2 font-medium">
+                Placing {placementFarmBot.name}{placingFarmBot ? '…' : ' — click the Scene ground'}
+              </div>
+              {([
+                ['widthFeet', 'Width (ft)', '0.1'],
+                ['lengthFeet', 'Length (ft)', '0.1'],
+                ['heightFeet', 'Height (ft)', '0.1'],
+                ['rotation', 'Y rotation', '0.1'],
+                ['scale', 'Scale', '0.01'],
+              ] as const).map(([field, label, step]) => (
+                <label key={field}>
+                  <span className="mb-1 block text-muted-foreground">{label}</span>
+                  <Input
+                    type="number"
+                    step={step}
+                    value={farmBotPlacementDraft[field]}
+                    disabled={placingFarmBot}
+                    className="h-8 text-xs"
+                    onChange={(event) => setFarmBotPlacementDraft((current) => ({
+                      ...current,
+                      [field]: event.target.value,
+                    }))}
+                  />
+                </label>
+              ))}
+              <label>
+                <span className="mb-1 block text-muted-foreground">Color</span>
+                <Input
+                  type="color"
+                  value={farmBotPlacementDraft.color}
+                  disabled={placingFarmBot}
+                  className="h-8 w-full p-1"
+                  onChange={(event) => setFarmBotPlacementDraft((current) => ({
+                    ...current,
+                    color: event.target.value,
+                  }))}
+                />
+              </label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-7 self-end text-xs"
+                disabled={placingFarmBot}
+                onClick={() => setPlacementFarmBot(null)}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+
+          <div className="max-h-64 space-y-1 overflow-y-auto pr-1">
+            {loadingLibraryFarmBots ? (
+              <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" /> Loading FarmBots…
+              </div>
+            ) : libraryFarmBots.length === 0 ? (
+              <p className="py-6 text-center text-xs text-muted-foreground">
+                No active owned FarmBots are available.
+              </p>
+            ) : libraryFarmBots.map((farmbot) => {
+              const isPlaced = (
+                (data.threed.raw?.projectThreedMarkers ?? []).some(
+                  (marker) => marker.markerType === 'farmbots'
+                    && Number(marker.sourceAssetId) === Number(farmbot.id),
+                )
+                || (data.threed.raw?.farmbots ?? []).some(
+                  (projectFarmBot) => Number(projectFarmBot.id) === Number(farmbot.id),
+                )
+              );
+              return (
+                <div key={farmbot.id} className="flex items-center gap-2 rounded border p-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-500/10">🤖</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-xs font-medium">{farmbot.name}</div>
+                    <div className="truncate text-[10px] text-muted-foreground">
+                      {farmbot.assetCode} · {farmbot.status ?? 'offline'}
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-7 text-xs"
+                    disabled={!placementThreedId || placingFarmBot || isPlaced}
+                    onClick={() => {
+                      setPlacementFarmBot(farmbot);
+                      setViewMode('3d');
+                    }}
+                  >
+                    {isPlaced ? 'Placed' : 'Place'}
+                  </Button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -3973,6 +4508,8 @@ function UnifiedMapPageInner() {
                       onModelPlacement={handleModelPlacement}
                       placementCharacterName={placementCharacter?.name ?? null}
                       onCharacterPlacement={handleCharacterPlacement}
+                      placementFarmBotName={placementFarmBot?.name ?? null}
+                      onFarmBotPlacement={handleFarmBotPlacement}
                       placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
                       onBedPlacement={handleBedPlacement}
                       placementPlantingName={plantingPlacementActive
@@ -4049,6 +4586,8 @@ function UnifiedMapPageInner() {
                 onModelPlacement={handleModelPlacement}
                 placementCharacterName={placementCharacter?.name ?? null}
                 onCharacterPlacement={handleCharacterPlacement}
+                placementFarmBotName={placementFarmBot?.name ?? null}
+                onFarmBotPlacement={handleFarmBotPlacement}
                 placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
                 onBedPlacement={handleBedPlacement}
                 placementPlantingName={plantingPlacementActive
@@ -4127,12 +4666,18 @@ function UnifiedMapPageInner() {
         updatingBedMarkerId={updatingBedMarkerId}
         onDeleteBedInstance={handleDeleteBedInstance}
         deletingBedMarkerId={deletingBedMarkerId}
+        onUpdateFarmBotInstance={handleUpdateFarmBotInstance}
+        updatingFarmBotMarkerId={updatingFarmBotMarkerId}
+        onDeleteFarmBotInstance={handleDeleteFarmBotInstance}
+        deletingFarmBotMarkerId={deletingFarmBotMarkerId}
         onUpdatePlantingInstance={handleUpdatePlantingInstance}
         updatingPlantingMarkerId={updatingPlantingMarkerId}
         onDeletePlantingInstance={handleDeletePlantingInstance}
         deletingPlantingMarkerId={deletingPlantingMarkerId}
         onUpdateCharacterPosition={handleUpdateCharacterPosition}
         updatingCharacterMarkerId={updatingCharacterMarkerId}
+        onDeleteCharacterInstance={handleDeleteCharacterInstance}
+        deletingCharacterMarkerId={deletingCharacterMarkerId}
       />
       
     </div>

@@ -231,6 +231,20 @@ Rejected saved Character snapshots expose **Restore Source Position**. The authe
 
 For v0.18.8a, `ThreeDScene` passes the position already resolved by the Runtime Marker builder directly into `EcctrlCharacter`. Ecctrl uses that explicit position to initialize its Rapier body instead of independently reading embedded Character position fields or inventing a second spawn authority. The user manually verified that the retained Character remains selectable and that Take Control keeps its model, capsule, halo, camera tracking, and WASD movement together.
 
+## Project marker CRUD and collider synchronization checkpoint
+
+The Dashboard now exposes Project-instance Add/Edit/Delete coverage for Beds, FarmBots, Models, Plantings, and Characters while preserving each Sub-Module's runtime ownership. These operations patch only the selected `project_threed_markers` record and the matching Project source collection in client state. They do not reload the Project, remount the persistent Canvas or Rapier world, or rebuild unrelated markers.
+
+- Bed instances edit dimensions, scale, color, XYZ position, and degree-based Y rotation.
+- FarmBot placement selects an existing authenticated owner's active FarmBot. Its Project instance edits dimensions, scale, color, XYZ position, and degree-based Y rotation. Removing it deletes only its Project marker and assignment; it never deletes the reusable FarmBot, credentials, broker metadata, or MQTT records.
+- Model instances edit their name, scale multiplier, XYZ position, and degree-based Y rotation. The underlying reusable `threed_models` row remains unchanged.
+- Planting instances edit model scale and XYZ position. Each Planting remains an independent marker and source record.
+- Character instances retain the established Character Library placement, position editing, deletion/re-placement, Garden/Ecctrl routing, and Scene-owned visual hierarchy.
+
+Beds and FarmBots use explicit fixed cuboid colliders derived from the same Project-instance dimensions and scale as their visuals. Plantings use explicit bounds derived from the active procedural growth shape or loaded model path. Models continue to use measured whole-rendered-asset bounds. Position and rotation changes are applied to the existing fixed RigidBody before a physics step; dimension or scale changes replace only that marker's collider. Physics Debug therefore follows the edited visual without changing another marker's body or Character control state.
+
+The user manually verified Bed, Planting, FarmBot, and Model editing plus collider synchronization. The verified regression sequence also confirms that selecting and controlling an Ecctrl Character after these marker transactions keeps the model, capsule, halo, camera, and WASD movement together.
+
 ## Current development boundary
 
 Phase 5E centralizes validated Runtime Marker-to-Action Target construction. Phase 5F centralizes target identity matching across the DetailsCard, refreshed Project data, and ThreeD scene highlighting using normalized Sub-Module type plus asset ID.

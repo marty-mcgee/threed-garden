@@ -38,6 +38,14 @@ const GROWTH_SHAPES: Record<string, { stemHeight: number; canopySize: number; ca
   dormant: { stemHeight: 0.3, canopySize: 0.15, canopyColor: '#A0A0A0' },
 };
 
+export function calculatePlantMarkerVisualBounds(growthStage?: string) {
+  const stage = growthStage?.toLowerCase() || 'seedling';
+  const shape = GROWTH_SHAPES[stage] ?? GROWTH_SHAPES.seedling;
+  const radius = Math.max(shape.canopySize, 0.05);
+  const height = shape.stemHeight + 0.05 + shape.canopySize;
+  return { radius, height };
+}
+
 export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
   const [hovered, setHovered] = useState(false);
 

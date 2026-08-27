@@ -31,7 +31,10 @@ import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
 import { FadingRing } from '@/components/threed/shared/FadingRing';
 import { PulseRing } from '@/components/threed/shared/PulseRing';
 import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
-import { PlantMarker3D } from '@/components/threed/markers/PlantMarker3D';
+import {
+  PlantMarker3D,
+  calculatePlantMarkerVisualBounds,
+} from '@/components/threed/markers/PlantMarker3D';
 import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
 import {
   ModelMarker3D,
@@ -84,6 +87,10 @@ interface ThreeDSceneProps {
   placementCharacterName?: string | null;
   /** Called with the ground point selected for a Character. */
   onCharacterPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Existing FarmBot currently awaiting a Project Scene placement click. */
+  placementFarmBotName?: string | null;
+  /** Called with the ground point selected for a FarmBot. */
+  onFarmBotPlacement?: (position: { x: number; y: number; z: number }) => void;
   /** New Bed currently awaiting a ground placement click. */
   placementBedName?: string | null;
   /** Called with the ground point selected for a new Bed. */
@@ -668,6 +675,133 @@ function ProjectModelMarkerBody({
   );
 }
 
+function characterSceneSignature(marker: any): string {
+  const data = marker?.data ?? {};
+  const model = data.model ?? {};
+  return JSON.stringify({
+    markerId: String(marker?.id ?? ''),
+    sourceId: Number(data.id),
+    characterId: String(data.characterId ?? ''),
+    name: String(data.name ?? marker?.name ?? ''),
+    type: String(data.type ?? ''),
+    status: String(data.status ?? ''),
+    visible: data.visible !== false,
+    isMovable: data.isMovable === true,
+    movementType: String(data.movementType ?? ''),
+    speed: Number(data.speed ?? 0),
+    scale: Number(data.scale ?? 1),
+    rotation: Number(data.rotation ?? 0),
+    model: {
+      id: Number(model.id),
+      filePath: String(model.filePath ?? ''),
+      modelType: String(model.modelType ?? ''),
+      modelName: String(model.modelName ?? ''),
+      scale: String(model.scale ?? '1'),
+      rotationY: String(model.rotationY ?? '0'),
+      animationMap: model.metadata?.animationMap ?? null,
+    },
+  });
+}
+
+const CharacterSceneInstance = memo(function CharacterSceneInstance({
+  marker,
+  isSelected,
+  isActionTarget,
+  isLayerEnabled,
+  placementActive,
+  controlledCharacterId,
+  actionTarget,
+  onClick,
+  onControlChange,
+  cameraFollowRef,
+  livePositionsRef,
+}: any) {
+  const signature = characterSceneSignature(marker);
+  const characterDataRef = useRef(marker.data);
+  const characterSignatureRef = useRef(signature);
+  if (characterSignatureRef.current !== signature) {
+    characterSignatureRef.current = signature;
+    characterDataRef.current = marker.data;
+  }
+  const characterData = characterDataRef.current;
+  const position: [number, number, number] = [
+    Number(marker.position?.x) || 0,
+    Number(marker.position?.y) || 0,
+    Number(marker.position?.z) || 0,
+  ];
+  const sourceCharacterId = Number(characterData?.id);
+  const isControlled = controlledCharacterId != null
+    && controlledCharacterId === sourceCharacterId;
+  const selectCharacter = useCallback(() => onClick?.(marker), [marker, onClick]);
+  const reportControlChange = useCallback(
+    (nextPosition: { x: number; y: number; z: number }) => {
+      onControlChange?.(
+        marker.id,
+        marker.type,
+        sourceCharacterId,
+        nextPosition,
+      );
+    },
+    [marker.id, marker.type, onControlChange, sourceCharacterId],
+  );
+
+  if (characterData?.isMovable === true) {
+    return (
+      <EcctrlCharacter
+        character={characterData}
+        runtimePosition={position}
+        isControlled={isControlled}
+        isSelected={isSelected}
+        layerEnabled={isLayerEnabled}
+        onClick={selectCharacter}
+        onControlChange={reportControlChange}
+        cameraFollowRef={cameraFollowRef}
+        livePositionsRef={livePositionsRef}
+        markerId={marker.id}
+        movementTargetPosition={
+          isControlled && actionTarget != null
+            ? actionTarget.position
+            : undefined
+        }
+        isActionTarget={isActionTarget}
+      />
+    );
+  }
+
+  return (
+    <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={position}>
+      <group
+        visible={isLayerEnabled}
+        onClick={(event) => {
+          if (!isLayerEnabled || placementActive) return;
+          event.stopPropagation();
+          selectCharacter();
+        }}
+      >
+        <GardenCharacter character={characterData} positionedByParent />
+        {isSelected && <FadingRing position={[0, 0.01, 0]} innerRadius={0.7} outerRadius={1.0} />}
+        {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.85} />}
+      </group>
+    </SceneMarkerRigidBody>
+  );
+}, (previous: any, next: any) => (
+  String(previous.marker.id) === String(next.marker.id)
+  && characterSceneSignature(previous.marker) === characterSceneSignature(next.marker)
+  && Number(previous.marker.position?.x) === Number(next.marker.position?.x)
+  && Number(previous.marker.position?.y) === Number(next.marker.position?.y)
+  && Number(previous.marker.position?.z) === Number(next.marker.position?.z)
+  && previous.isSelected === next.isSelected
+  && previous.isActionTarget === next.isActionTarget
+  && previous.isLayerEnabled === next.isLayerEnabled
+  && previous.placementActive === next.placementActive
+  && previous.controlledCharacterId === next.controlledCharacterId
+  && previous.actionTarget === next.actionTarget
+  && previous.onClick === next.onClick
+  && previous.onControlChange === next.onControlChange
+  && previous.cameraFollowRef === next.cameraFollowRef
+  && previous.livePositionsRef === next.livePositionsRef
+));
+
 // ✅ ThreeD Marker Component
 const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug }: any) {
   const [hovered, setHovered] = useState(false);
@@ -675,64 +809,24 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
   const size = isSelected ? 1.0 : 0.6;
   const selectMarker = useCallback(() => onClick?.(marker), [marker, onClick]);
 
-  const handleCharacterControlChange = useCallback(
-    (position: { x: number; y: number; z: number }) => {
-      if (onControlChange) {
-        onControlChange(
-          marker.id,
-          marker.type,
-          Number(marker.data?.id),
-          position,
-        );
-      }
-    },
-    [marker.data?.id, marker.id, marker.type, onControlChange]
-  );
-
   // ✅ v0.15.0/15.2: Render rich markers for types that have dedicated components
   const pos: [number, number, number] = [Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0];
 
   if (marker.type === 'character' || marker.type === 'characters') {
-    // v0.16.3-alpha: Route movable characters (isMovable === true) to the
-    // physics-based EcctrlCharacter; non-movable characters use GardenCharacter.
-    if (marker.data?.isMovable === true) {
-      const isCtrl = controlledCharacterId != null && controlledCharacterId === marker.data?.id;
-      return (
-        <EcctrlCharacter
-          character={marker.data}
-          runtimePosition={pos}
-          isControlled={isCtrl}
-          isSelected={isSelected}
-          layerEnabled={isLayerEnabled}
-          onClick={selectMarker}
-          onControlChange={handleCharacterControlChange}
-          cameraFollowRef={cameraFollowRef}
-          livePositionsRef={livePositionsRef}
-          markerId={marker.id}
-          movementTargetPosition={
-            isCtrl && actionTarget != null
-              ? actionTarget.position
-              : undefined
-          }
-          isActionTarget={isActionTarget}
-        />
-      );
-    }
-
-    // v0.16.2-alpha: Non-ecctrl characters — restore click/hover on group, wrap in RigidBody
     return (
-      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
-        <group
-          visible={isLayerEnabled}
-          onClick={(e) => { if (!isLayerEnabled || placementActive) return; e.stopPropagation(); selectMarker(); }}
-          onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
-          onPointerLeave={() => setHovered(false)}
-        >
-          <GardenCharacter character={marker.data} positionedByParent />
-          {isSelected && <FadingRing position={[0, 0.01, 0]} innerRadius={0.7} outerRadius={1.0} />}
-          {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.85} />}
-        </group>
-      </SceneMarkerRigidBody>
+      <CharacterSceneInstance
+        marker={marker}
+        isSelected={isSelected}
+        isActionTarget={isActionTarget}
+        isLayerEnabled={isLayerEnabled}
+        placementActive={placementActive}
+        controlledCharacterId={controlledCharacterId}
+        actionTarget={actionTarget}
+        onClick={onClick}
+        onControlChange={onControlChange}
+        cameraFollowRef={cameraFollowRef}
+        livePositionsRef={livePositionsRef}
+      />
     );
   }
 
@@ -741,14 +835,39 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
     const bedRotationDegrees = Number(marker.data?.rotation) || 0;
     const bedRotation = bedRotationDegrees * Math.PI / 180;
     const bedScale = Math.max(Number(marker.data?.scale) || 1, 0.01);
+    const bedWidth = Math.max(Number(marker.data?.widthFeet ?? marker.data?.width) || 4, 0.1);
+    const bedLength = Math.max(
+      Number(marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth) || 8,
+      0.1,
+    );
+    const bedHeight = Math.max(Number(marker.data?.heightFeet) || 0.3, 0.1);
+    const bedColliderSize = {
+      width: (bedWidth + 0.1) * bedScale,
+      height: (bedHeight + 0.15) * bedScale,
+      length: (bedLength + 0.1) * bedScale,
+    };
+    const bedColliderKey = [
+      bedColliderSize.width,
+      bedColliderSize.height,
+      bedColliderSize.length,
+    ].map((value) => value.toFixed(4)).join(':');
     return (
       <SceneMarkerRigidBody
         sceneEnabled={isLayerEnabled}
         type="fixed"
-        colliders="cuboid"
+        colliders={false}
         position={pos}
         rotation={[0, bedRotation, 0]}
       >
+        <CuboidCollider
+          key={bedColliderKey}
+          args={[
+            bedColliderSize.width / 2,
+            bedColliderSize.height / 2,
+            bedColliderSize.length / 2,
+          ]}
+          position={[0, bedColliderSize.height / 2, 0]}
+        />
         <group
           visible={isLayerEnabled}
           scale={[bedScale, bedScale, bedScale]}
@@ -767,7 +886,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
             selectMarker();
           }}
         >
-          <BedMarker3D bed={{ ...(marker.data || {}), width: marker.data?.widthFeet ?? marker.data?.width ?? 4, depth: marker.data?.lengthFeet ?? marker.data?.length ?? marker.data?.depth ?? 8, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
+          <BedMarker3D bed={{ ...(marker.data || {}), width: bedWidth, depth: bedLength, heightFeet: bedHeight, name: marker.name, soilType: marker.data?.soilType, sunExposure: marker.data?.sunExposure, plantingsCount: marker.data?.plantingsCount ?? marker.data?._plantingsCount ?? 0 }} position={[0, 0, 0]} />
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={3.2} outerRadius={4.0} segments={48} />}
           {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={3.5} />}
         </group>
@@ -778,8 +897,23 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
   // v0.16.2-alpha: Plantings — restore click, wrap in RigidBody
   if (marker.type === 'planting' || marker.type === 'plantings') {
     const plantingModelScale = Math.max(Number(marker.data?.modelScale) || 1, 0.01);
+    const plantingVisualBounds = calculatePlantMarkerVisualBounds(marker.data?.growthStage);
+    const plantingColliderRadius = plantingVisualBounds.radius * plantingModelScale;
+    const plantingColliderHeight = plantingVisualBounds.height * plantingModelScale;
+    const plantingColliderKey = [plantingColliderRadius, plantingColliderHeight]
+      .map((value) => value.toFixed(4))
+      .join(':');
     return (
-      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
+      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders={false} position={pos}>
+        <CuboidCollider
+          key={plantingColliderKey}
+          args={[
+            plantingColliderRadius,
+            plantingColliderHeight / 2,
+            plantingColliderRadius,
+          ]}
+          position={[0, plantingColliderHeight / 2, 0]}
+        />
         <group
           visible={isLayerEnabled}
           scale={[plantingModelScale, plantingModelScale, plantingModelScale]}
@@ -827,18 +961,39 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
     const fbData = marker.data || {};
     const fbStatus = fbData.status?.toLowerCase() || 'offline';
     const fbStatusColor = ({ online: '#22c55e', offline: '#ef4444', busy: '#f59e0b', maintenance: '#3b82f6', error: '#ef4444' } as Record<string, string>)[fbStatus] || '#6b7280';
+    const farmBotScale = Math.max(Number(fbData.scale) || 1, 0.01);
+    const farmBotWidth = Math.max(Number(fbData.widthFeet) || 3, 0.1) * farmBotScale;
+    const farmBotLength = Math.max(Number(fbData.lengthFeet) || 6, 0.1) * farmBotScale;
+    const farmBotHeight = Math.max(Number(fbData.heightFeet) || 3, 0.1) * farmBotScale;
+    const farmBotRotation = (Number(fbData.rotation) || 0) * Math.PI / 180;
+    const farmBotColor = typeof fbData.color === 'string' ? fbData.color : '#4B5563';
+    const farmBotColliderKey = [farmBotWidth, farmBotHeight, farmBotLength]
+      .map((value) => value.toFixed(4))
+      .join(':');
 
     return (
-      <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={pos}>
+      <SceneMarkerRigidBody
+        sceneEnabled={isLayerEnabled}
+        type="fixed"
+        colliders={false}
+        position={pos}
+        rotation={[0, farmBotRotation, 0]}
+      >
+        <CuboidCollider
+          key={farmBotColliderKey}
+          args={[farmBotWidth / 2, farmBotHeight / 2, farmBotLength / 2]}
+          position={[0, farmBotHeight / 2, 0]}
+        />
         <group
           visible={isLayerEnabled}
+          scale={[farmBotWidth / 0.6, farmBotHeight / 0.58, farmBotLength / 0.4]}
           onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); selectMarker(); }}
           onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
           onPointerLeave={() => setHovered(false)}
         >
           <mesh position={[0, 0.15, 0]} castShadow>
             <boxGeometry args={[0.6, 0.3, 0.4]} />
-            <meshStandardMaterial color="#4B5563" roughness={0.3} metalness={0.6} />
+            <meshStandardMaterial color={farmBotColor} roughness={0.3} metalness={0.6} />
           </mesh>
           <mesh position={[0, 0.27, 0]} castShadow>
             <boxGeometry args={[0.55, 0.04, 0.35]} />
@@ -1064,12 +1219,15 @@ export function ThreeDScene({
   onModelPlacement,
   placementCharacterName,
   onCharacterPlacement,
+  placementFarmBotName,
+  onFarmBotPlacement,
   placementBedName,
   onBedPlacement,
   placementPlantingName,
   onPlantingPlacement,
 }: ThreeDSceneProps) {
   const placementLabel = placementCharacterName
+    || placementFarmBotName
     || placementPlantingName
     || placementBedName
     || placementModel?.modelName
@@ -1878,6 +2036,8 @@ export function ThreeDScene({
               onPlacementLeave={() => setPlacementPreviewPosition(null)}
               onPlacementClick={placementCharacterName
                 ? onCharacterPlacement
+                : placementFarmBotName
+                  ? onFarmBotPlacement
                 : placementPlantingName
                   ? onPlantingPlacement
                   : placementBedName
@@ -1956,6 +2116,8 @@ export function ThreeDScene({
               onPlacementHover={setPlacementPreviewPosition}
               onPlacementClick={placementCharacterName
                 ? onCharacterPlacement
+                : placementFarmBotName
+                  ? onFarmBotPlacement
                 : placementPlantingName
                   ? onPlantingPlacement
                   : placementBedName

@@ -49,6 +49,8 @@ During each FarmBot simulation, confirm the DetailsCard reports `Simulation: int
 
 For the ThreeD Marker Action Target boundary, select one visible Planting, Bed, Character, FarmBot, and Model in turn. Each DetailsCard must offer **Use as Action Target**, and each current target must retain the green pulse when selecting a character actor. Beds, Characters, FarmBots, and Models must expose only Point, Point Gesture, and Talk. Plantings may additionally expose their declared farming and harvesting actions but must not inherit Cow Milking. Verify Focus Target and target-relative Ecctrl navigation for each type, then clear the target and confirm ordinary camera-relative WASD returns. Refresh while the target still exists and confirm it remains; removing it from refreshed project assets must clear it. Retest targeted Water and Pick Fruit persistence and confirm no generic interaction creates a persistence, MQTT, worker, or physical-device request.
 
+For Character deletion and replacement, take control of one movable Character, move it away from its saved position, release control, and delete it through the DetailsCard. Place that same reusable Character at a different Scene position. Confirm the new FBX model begins inside the new capsule and that no visual remains at the deleted position. Take control again and verify the model, capsule, halo, WASD movement, and camera tracking remain one complete unit. Then select or edit an unrelated Planting and repeat Take/Release Control. This flow must not reuse an animated model hierarchy, physics handle, or live position from the deleted Character instance.
+
 For facing tolerance, test once while the character is already aimed approximately toward the FarmBot and once while it is clearly facing away. Within roughly 22.5 degrees, the task should begin without a turn animation or forced heading correction. Outside that tolerance, the normal turn, task, and return-turn sequence should run.
 
 Repository validation scripts print a checkmark after each completed test group and a final group count. If an assertion fails, later groups are not printed, which helps identify the affected section. Validation output must remain limited to group descriptions and counts; it must not log credentials, raw broker payloads, encryption material, or other secrets.
@@ -303,6 +305,9 @@ Do not suppress new diagnostics or make TypeScript non-blocking to land unrelate
 - DetailsCard opens and targeting controls work.
 - Targeted Water persists after animation completion.
 - Targeted Pick Fruit creates one project-scoped harvest record.
+- For each Project marker editor (Bed, FarmBot, Model, and Planting), change XYZ position and a size/scale field with Physics Debug enabled. Confirm the visual and outline update together without refreshing the Project.
+- Remove and re-place a Character after non-Character marker edits. Confirm the Character model, Ecctrl capsule, halo, camera, and WASD movement remain one unit.
+- Removing a Project FarmBot must leave its reusable FarmBot, credentials, broker metadata, and MQTT records unchanged and available for later Project placement.
 
 ## v0.18.7c ThreeD Layers Scene contract checks
 

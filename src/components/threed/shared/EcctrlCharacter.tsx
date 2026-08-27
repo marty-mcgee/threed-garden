@@ -180,13 +180,6 @@ interface EcctrlCharacterProps {
 }
 
 // ========================================================
-// MODEL CACHE
-// ========================================================
-
-const modelCache =
-  new Map<string, THREE.Group>();
-
-// ========================================================
 // ECCTRL BODY / GROUND CONSTANTS
 // ========================================================
 
@@ -443,74 +436,55 @@ function useCharacterModel(
               ?.toLowerCase() ||
             'glb';
 
-          const cacheKey =
-            `${modelPath}-${modelType}`;
-
           let loadedModel:
             THREE.Group;
 
           // ==================================================
-          // LOAD PRIMARY CHARACTER MODEL
+          // LOAD THE SCENE-OWNED CHARACTER VISUAL
           // ==================================================
 
+          // Animated Character objects are mutable runtime state. A visual
+          // hierarchy must never outlive or be shared between Scene marker
+          // owners, because its bones and mixer retain instance transforms.
+          // Browser asset caching may reuse downloaded bytes, while this load
+          // creates a new Three.js object hierarchy for this Ecctrl instance.
           if (
-            modelCache.has(
-              cacheKey
-            )
+            modelType ===
+            'fbx'
           ) {
             loadedModel =
-              modelCache
-                .get(
-                  cacheKey
-                )!
-                .clone();
+              await new FBXLoader()
+                .loadAsync(
+                  modelPath
+                ) as THREE.Group;
+          } else if (
+            modelType ===
+            'obj'
+          ) {
+            loadedModel =
+              await new OBJLoader()
+                .loadAsync(
+                  modelPath
+                ) as unknown as THREE.Group;
           } else {
-            if (
-              modelType ===
-              'fbx'
-            ) {
-              loadedModel =
-                await new FBXLoader()
-                  .loadAsync(
-                    modelPath
-                  ) as THREE.Group;
-            } else if (
-              modelType ===
-              'obj'
-            ) {
-              loadedModel =
-                await new OBJLoader()
-                  .loadAsync(
-                    modelPath
-                  ) as unknown as THREE.Group;
-            } else {
-              /**
-               * Preserve GLTF animations on the scene object.
-               *
-               * Your existing component later reads
-               * loadedModel.animations, so copy the GLTF
-               * animation array onto the scene.
-               */
-              const gltf =
-                await new GLTFLoader()
-                  .loadAsync(
-                    modelPath
-                  );
-
-              loadedModel =
-                gltf.scene;
-
-              loadedModel.animations =
-                gltf.animations;
-            }
-
             /**
-             * Cache a clone of the primary model.
+             * Preserve GLTF animations on the scene object.
+             *
+             * Your existing component later reads
+             * loadedModel.animations, so copy the GLTF
+             * animation array onto the scene.
              */
-            modelCache.set(
-              cacheKey,
-              loadedModel.clone()
-            );
+            const gltf =
+              await new GLTFLoader()
+                .loadAsync(
+                  modelPath
+                );
+
+            loadedModel =
+              gltf.scene;
+
+            loadedModel.animations =
+              gltf.animations;
           }
 
           if (cancelled) {
@@ -753,7 +727,7 @@ function useCharacterModel(
               .clips.length >
             0
           ) {
-            console.info(
+            console.debug(
               `[EcctrlCharacter] External animation library loaded for "${character.model!.modelName}"`,
               {
                 externalClips:

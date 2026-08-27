@@ -38,6 +38,12 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/beds/project-bed-placement-core.ts';
 import {
+  parseCreateProjectFarmBotPlacement,
+  parseUpdateProjectFarmBotPlacement,
+  ProjectFarmBotPlacementInputError,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/farmbot/project-farmbot-placement-core.ts';
+import {
   parseCreateProjectPlantingPlacement,
   calculateProjectPlantingVisualPositions,
   parseUpdateProjectPlantingPlacement,
@@ -391,6 +397,72 @@ assert.throws(
   ProjectBedPlacementInputError,
 );
 validationStep('Project Bed instance sizing, color, and transform updates remain bounded');
+
+assert.deepEqual(parseCreateProjectFarmBotPlacement({
+  markerType: 'farmbots',
+  projectId: 5,
+  threedId: 2,
+  farmbotId: 9,
+  widthFeet: 3,
+  lengthFeet: 8,
+  heightFeet: 4,
+  color: '#4B5563',
+  scale: 1.25,
+  positionX: -12,
+  positionY: 0,
+  positionZ: 7.5,
+  rotation: 90,
+}), {
+  markerType: 'farmbots',
+  projectId: 5,
+  threedId: 2,
+  farmbotId: 9,
+  widthFeet: 3,
+  lengthFeet: 8,
+  heightFeet: 4,
+  color: '#4B5563',
+  scale: 1.25,
+  positionX: -12,
+  positionY: 0,
+  positionZ: 7.5,
+  rotation: 90,
+});
+assert.deepEqual(parseUpdateProjectFarmBotPlacement({
+  markerType: 'farmbots',
+  widthFeet: 4,
+  lengthFeet: 10,
+  heightFeet: 5,
+  color: '#336633',
+  scale: 0.75,
+  positionX: 4,
+  positionY: 1,
+  positionZ: -8,
+  rotation: -45,
+}), {
+  markerType: 'farmbots',
+  widthFeet: 4,
+  lengthFeet: 10,
+  heightFeet: 5,
+  color: '#336633',
+  scale: 0.75,
+  positionX: 4,
+  positionY: 1,
+  positionZ: -8,
+  rotation: -45,
+});
+assert.throws(
+  () => parseCreateProjectFarmBotPlacement({
+    markerType: 'farmbots', projectId: 5, threedId: 2, farmbotId: 0,
+  }),
+  ProjectFarmBotPlacementInputError,
+);
+assert.throws(
+  () => parseUpdateProjectFarmBotPlacement({
+    markerType: 'farmbots', widthFeet: 0,
+  }),
+  ProjectFarmBotPlacementInputError,
+);
+validationStep('Project FarmBot placement and instance transforms remain bounded');
 
 assert.deepEqual(parseCreateProjectPlantingPlacement({
   markerType: 'plantings',

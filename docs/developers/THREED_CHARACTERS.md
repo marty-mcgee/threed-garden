@@ -37,6 +37,12 @@ Ecctrl publishes live position only while the Character is under **Take Control*
 
 Spawn safety uses the Ecctrl capsule area rather than exact XYZ string equality. A later movable Character within the protected horizontal and vertical spawn range is rejected before Rapier mounts it. The bounded warning identifies the saved Project marker and offers **Restore Source Position**, which patches only that snapshot to the reusable Character's stored XYZ position. It does not delete or rewrite the source Character.
 
+## Scene-owned Character instances
+
+`ThreeDScene` owns the complete runtime instance associated with each stable Character marker ID. That Scene boundary chooses exactly one runtime: movable Characters receive `EcctrlCharacter`, while non-movable Characters receive `GardenCharacter`. Selection, camera state, Layer visibility, or an unrelated Project marker update must not replace the Character data passed into an unchanged runtime instance.
+
+An Ecctrl instance owns its model, animation mixer, capsule, selection halo, camera tracking, and live-position reporting for the same lifetime. Animated Three.js model hierarchies are mutable and are not shared through a module-level model-object cache. Deleting a Character removes that complete Scene instance. Placing the same reusable Character again creates a new visual hierarchy at the new Project marker position; no bones, model transform, physics handle, or camera state may survive from the deleted instance.
+
 ## Why the runtime files remain separate
 
 GardenCharacter and EcctrlCharacter have incompatible position authorities. Combining them into one large component would mix internal Three.js movement with Rapier/Ecctrl movement and increase regression risk for collisions, WASD, autonomous movement, camera tracking, and action recovery.
