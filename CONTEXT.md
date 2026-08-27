@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.9b — ThreeD Project Marker CRUD and Physics Synchronization** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Production checkpoint; next milestone requires review** |
+| Current release candidate | **v0.18.9c — ThreeD Project Header and DetailsCard UI** |
+| Current development milestone | **Visual release candidate prepared; manual build and production verification pending** |
 | Previous checkpoint | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

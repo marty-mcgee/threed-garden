@@ -25,7 +25,25 @@ import {
   useRapier,
 } from '@react-three/rapier';
 import * as THREE from 'three';
-import { Settings, ChevronDown, ChevronUp, X, Target, Layers } from 'lucide-react';
+import {
+  Settings,
+  ChevronDown,
+  ChevronUp,
+  X,
+  Target,
+  Layers,
+  RotateCw,
+  Grid3X3,
+  List,
+  BrickWall,
+  Move3D,
+  Siren,
+  Crosshair,
+  Save,
+  Eye,
+  EyeOff,
+  Trash2,
+} from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
 import { FadingRing } from '@/components/threed/shared/FadingRing';
@@ -1717,31 +1735,37 @@ export function ThreeDScene({
         </button>
 
         {showControls && (
-          <div className="bg-black/70 backdrop-blur-sm rounded border border-white/10 p-1 pb-2.5 min-h-[260px] overflow-y-auto w-[176px] space-y-0.5">
-            <button onClick={onAutoRotateToggle} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
-              {autoRotate ? '⏸️ Pause Rotation' : '▶️ Auto-Rotate'}
+          <div className="w-48 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 bg-black/75 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
+            <button onClick={onAutoRotateToggle} aria-pressed={autoRotate} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${autoRotate ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+              <RotateCw className={`h-3.5 w-3.5 ${autoRotate ? 'animate-spin [animation-duration:4s]' : ''}`} />
+              {autoRotate ? 'Pause Rotation' : 'Auto-Rotate'}
             </button>
-            <button onClick={() => setShowGrid(!showGrid)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
-              {showGrid ? '🔲 Hide Grid' : '🔳 Show Grid'}
+            <button onClick={() => setShowGrid(!showGrid)} aria-pressed={showGrid} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showGrid ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+              <Grid3X3 className="h-3.5 w-3.5" />
+              {showGrid ? 'Hide Grid' : 'Show Grid'}
             </button>
             {hasData && Object.keys(typeCounts).length > 0 && (
-              <button onClick={() => setShowLegend(!showLegend)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
-                {showLegend ? '📋 Hide Legend' : '📋 Show Legend'}
+              <button onClick={() => setShowLegend(!showLegend)} aria-pressed={showLegend} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showLegend ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+                <List className="h-3.5 w-3.5" />
+                {showLegend ? 'Hide Legend' : 'Show Legend'}
               </button>
             )}
             <button
               onClick={() => setPhysicsDebug(!physicsDebug)}
-              className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors"
+              className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${physicsDebug ? 'bg-amber-500/20 text-amber-100' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
               aria-pressed={physicsDebug}
             >
-              {physicsDebug ? '🧱 Hide Physics Debug' : '🧱 Show Physics Debug'}
+              <BrickWall className="h-3.5 w-3.5" />
+              {physicsDebug ? 'Hide Physics Debug' : 'Show Physics Debug'}
             </button>
-            <button onClick={() => setShowGizmoCube(!showGizmoCube)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
-              {showGizmoCube ? '🔢 Hide Gizmo' : '🔳 Show Gizmo'}
+            <button onClick={() => setShowGizmoCube(!showGizmoCube)} aria-pressed={showGizmoCube} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showGizmoCube ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+              <Move3D className="h-3.5 w-3.5" />
+              {showGizmoCube ? 'Hide Gizmo' : 'Show Gizmo'}
             </button>
             {incidents.length > 0 && (
-              <button onClick={() => setShowIncidents(!showIncidents)} className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors">
-                {showIncidents ? '🚨 Hide Incidents' : '🚨 Show Incidents'}
+              <button onClick={() => setShowIncidents(!showIncidents)} aria-pressed={showIncidents} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showIncidents ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+                <Siren className="h-3.5 w-3.5" />
+                {showIncidents ? 'Hide Incidents' : 'Show Incidents'}
               </button>
             )}
             <div className="border-t border-white/10 my-1" />
@@ -1761,17 +1785,19 @@ export function ThreeDScene({
                 setSelectedDetails(null);
                 if (controlsRef.current) zoomToPosition(centerX, centerZ);
               }}
-              className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors"
+              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
             >
-              🎯 Center View
+              <Crosshair className="h-3.5 w-3.5" />
+              Center View
             </button>
             
             {/* ✅ Save View button */}
             <button
               onClick={() => setShowPresetDialog(true)}
-              className="w-full text-left text-white/90 hover:bg-white/10 px-2 py-0.5 rounded text-xs transition-colors"
+              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
             >
-              💾 Save Current View
+              <Save className="h-3.5 w-3.5" />
+              Save Current View
             </button>
             
             {/* ✅ View presets list */}
@@ -1795,7 +1821,7 @@ export function ThreeDScene({
                       onClick={() => deleteViewPreset(preset.id)}
                       className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 transition-all text-xs px-1"
                     >
-                      ✕
+                      <Trash2 className="h-3 w-3" />
                     </button>
                   </div>
                 ))}
@@ -1847,7 +1873,9 @@ export function ThreeDScene({
                     <span className="capitalize">{layer}</span>
                     <span className="ml-auto text-[10px] flex items-center gap-1">
                       <span className="text-white/40">{availableTypeCounts[layer] ?? 0}</span>
-                      {activeLayers.has(layer) ? '👁️' : '👁️‍🗨️'}
+                      {activeLayers.has(layer)
+                        ? <Eye className="h-3 w-3" />
+                        : <EyeOff className="h-3 w-3" />}
                     </span>
                   </button>
                 ))}

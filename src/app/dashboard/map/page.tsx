@@ -24,6 +24,13 @@ import {
   Save,
   Trash2,
   X,
+  User,
+  Sprout,
+  ExternalLink,
+  Crosshair,
+  Gamepad2,
+  Pause,
+  ScanSearch,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
@@ -260,7 +267,7 @@ function FarmBotMqttStatusSummary({
     && runtime.positionZ !== null;
 
   return (
-    <div className="mt-2.5 border-t border-white/10 pt-2">
+    <div className="mt-2 rounded bg-white/[0.035] p-2">
       <div className="mb-1.5 flex items-center justify-between gap-2">
         <span className="text-[10px] font-medium text-white/60">MQTT Status</span>
         {loading ? (
@@ -343,8 +350,11 @@ function ModelInstancePlacementEditor({
   const busy = updating || deleting;
 
   return (
-    <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
-      <div className="text-[10px] font-medium text-white/60">Model Placement</div>
+    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-cyan-100/75">
+        <Box className="h-3.5 w-3.5" />
+        Project Model Instance
+      </div>
       <label className="block space-y-1">
         <span className="text-[10px] text-white/50">Instance name</span>
         <input
@@ -387,7 +397,7 @@ function ModelInstancePlacementEditor({
           ['Position Y', positionY, setPositionY],
           ['Position Z', positionZ, setPositionZ],
         ].map(([label, value, setter]) => (
-          <label key={label as string} className="block space-y-1">
+          <label key={label as string} className="block min-w-0 space-y-1">
             <span className="text-[9px] text-white/50">{label as string}</span>
             <input
               type="number"
@@ -420,7 +430,7 @@ function ModelInstancePlacementEditor({
           }}
           className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
         >
-          {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
           Save Placement
         </button>
         <button
@@ -506,15 +516,20 @@ function BedInstanceEditor({
   const busy = updating || deleting;
 
   return (
-    <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
-      <div className="text-[10px] font-medium text-white/60">Project {entityLabel} Instance</div>
+    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-100/75">
+        {entityLabel === 'FarmBot'
+          ? <Settings className="h-3.5 w-3.5" />
+          : <Layers className="h-3.5 w-3.5" />}
+        Project {entityLabel} Instance
+      </div>
       <div className="grid grid-cols-3 gap-1.5">
         {[
           ['Width (ft)', widthFeet, setWidthFeet],
           ['Length (ft)', lengthFeet, setLengthFeet],
           ['Height (ft)', heightFeet, setHeightFeet],
         ].map(([label, value, setter]) => (
-          <label key={label as string} className="block space-y-1">
+          <label key={label as string} className="block min-w-0 space-y-1">
             <span className="text-[9px] text-white/50">{label as string}</span>
             <input
               type="number"
@@ -535,7 +550,7 @@ function BedInstanceEditor({
           ['Position Y', positionY, setPositionY],
           ['Position Z', positionZ, setPositionZ],
         ].map(([label, value, setter]) => (
-          <label key={label as string} className="block space-y-1">
+          <label key={label as string} className="block min-w-0 space-y-1">
             <span className="text-[9px] text-white/50">{label as string}</span>
             <input
               type="number"
@@ -588,7 +603,7 @@ function BedInstanceEditor({
         }}
         className="flex w-full items-center justify-center gap-1.5 rounded bg-amber-600/35 px-2 py-1.5 text-[11px] font-medium text-amber-100 transition-colors hover:bg-amber-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
       >
-        {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+        {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
         Save {entityLabel} Instance
       </button>
       <button
@@ -649,20 +664,35 @@ function PlantingInstanceEditor({
     );
 
   return (
-    <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
-      <div className="text-[10px] font-medium text-white/60">Project Planting Instance</div>
-      <div className="grid grid-cols-2 gap-1.5">
+    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/75">
+        <Sprout className="h-3.5 w-3.5" />
+        Project Planting Instance
+      </div>
+      <label className="block space-y-1">
+        <span className="text-[9px] text-white/50">Model scale</span>
+        <input
+          type="number"
+          min="0.01"
+          max="1000"
+          step="0.01"
+          value={modelScale}
+          disabled={updating || deleting}
+          onChange={(event) => setModelScale(event.target.value)}
+          className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+        />
+      </label>
+      <div className="grid grid-cols-3 gap-1.5">
         {[
-          ['Model scale', modelScale, setModelScale, '0.01'],
-          ['Position X', positionX, setPositionX, '0.1'],
-          ['Position Y', positionY, setPositionY, '0.1'],
-          ['Position Z', positionZ, setPositionZ, '0.1'],
-        ].map(([label, value, setter, step]) => (
-          <label key={label as string} className="block space-y-1">
+          ['Position X', positionX, setPositionX],
+          ['Position Y', positionY, setPositionY],
+          ['Position Z', positionZ, setPositionZ],
+        ].map(([label, value, setter]) => (
+          <label key={label as string} className="block min-w-0 space-y-1">
             <span className="text-[9px] text-white/50">{label as string}</span>
             <input
               type="number"
-              step={step as string}
+              step="0.1"
               value={value as string}
               disabled={updating || deleting}
               onChange={(event) => (setter as (value: string) => void)(event.target.value)}
@@ -681,7 +711,7 @@ function PlantingInstanceEditor({
           }}
           className="flex w-full items-center justify-center gap-1.5 rounded bg-emerald-600/35 px-2 py-1.5 text-[11px] font-medium text-emerald-100 transition-colors hover:bg-emerald-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
         >
-          {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
           Save Planting
         </button>
         <button
@@ -732,15 +762,18 @@ function CharacterInstancePositionEditor({
     (value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000,
   );
   return (
-    <div className="mt-2.5 space-y-2 border-t border-white/10 pt-2.5">
-      <div className="text-[10px] font-medium text-white/60">Project Character Position</div>
+    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-violet-100/75">
+        <User className="h-3.5 w-3.5" />
+        Project Character Instance
+      </div>
       <div className="grid grid-cols-3 gap-1.5">
         {[
           ['X', positionX, setPositionX],
           ['Y', positionY, setPositionY],
           ['Z', positionZ, setPositionZ],
         ].map(([label, value, setter]) => (
-          <label key={label as string} className="block space-y-1">
+          <label key={label as string} className="block min-w-0 space-y-1">
             <span className="text-[9px] text-white/50">Position {label as string}</span>
             <input
               type="number"
@@ -753,6 +786,7 @@ function CharacterInstancePositionEditor({
           </label>
         ))}
       </div>
+      <div className="grid grid-cols-2 gap-1.5">
       <button
         type="button"
         disabled={!valid || disabled || updating || deleting}
@@ -762,8 +796,8 @@ function CharacterInstancePositionEditor({
         }}
         className="flex w-full items-center justify-center gap-1.5 rounded bg-violet-600/35 px-2 py-1.5 text-[11px] font-medium text-violet-100 transition-colors hover:bg-violet-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
       >
-        {updating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-        Save Character Position
+        {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+        Save Position
       </button>
       <button
         type="button"
@@ -778,6 +812,7 @@ function CharacterInstancePositionEditor({
         {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
         Delete Character
       </button>
+      </div>
       {disabled && (
         <p className="text-[9px] text-amber-200/75">Release Control before changing the Character position.</p>
       )}
@@ -866,10 +901,6 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
   const isIncident = selected.latitude != null || selected.severity || (selected.title && selected.location);
   const typeLabel = selected.type || (isIncident ? 'Traffic Incident' : 'Marker');
-  const typeColor = selected.severity === 'critical' ? '#ef4444' :
-    selected.severity === 'high' ? '#f97316' :
-    selected.severity === 'medium' ? '#eab308' : '#22c55e';
-
   // Build key-value metadata rows from the data record
   const metaRows: { label: string; value: string }[] = [];
 
@@ -896,6 +927,10 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   // Marker type-specific
   const type = selected.type || '';
   const normalizedType = String(type).trim().toLowerCase();
+  metaRows.unshift({ label: 'Module', value: typeLabel });
+  if (selected.severity) {
+    metaRows.push({ label: 'Severity', value: String(selected.severity) });
+  }
   const isPlantingMarker = normalizedType === 'planting'
     || normalizedType === 'plantings'
     || normalizedType === 'threed_plantings';
@@ -1000,26 +1035,114 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   }
   if (d.notes || d.description) metaRows.push({ label: 'Notes', value: (d.notes || d.description).slice(0, 80) });
 
+  const selectedMarkerId = String(selected.id || '');
+  const selectedMarkerIdSuffix = selectedMarkerId.match(/(\d+)$/)?.[1];
+  const quickTargetId = Number(d.id ?? selectedMarkerIdSuffix);
+  const quickTargetType = selectedTargetCapabilities?.markerType;
+  const quickTargetName = selected.name || selected.label || d.plantName || d.commonName
+    || (quickTargetType ? `${quickTargetType.replace(/s$/, '')} #${quickTargetId}` : 'Marker');
+  const isQuickActionTarget = actionTarget != null
+    && quickTargetType != null
+    && isMatchingThreeDActionTarget(actionTarget, {
+      markerType: quickTargetType,
+      assetId: quickTargetId,
+    });
+  const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
+  const adminId = isProjectModelInstance ? d.modelId : selected.metadata?.data?.id || selected.id;
+  const adminRouteMap: Record<string, string> = {
+    plantings: '/admin/threed/plantings', planting: '/admin/threed/plantings',
+    beds: '/admin/threed/beds', bed: '/admin/threed/beds',
+    characters: '/admin/threed/characters', character: '/admin/threed/characters',
+    farmbots: '/admin/threed/farmbots', farmbot: '/admin/threed/farmbots',
+    models: '/admin/threed/models', model: '/admin/threed/models',
+    chpCad: '/admin/traffic/chp-cad', chpCadIncidents: '/admin/traffic/chp-cad',
+    chpCases: '/admin/traffic/chp-cases', chpCenters: '/admin/traffic/chp-centers',
+    caltransLaneClosures: '/admin/traffic/caltrans', caltransClosures: '/admin/traffic/caltrans',
+    caltransCctv: '/admin/traffic/caltrans-cctv', caltransDistricts: '/admin/traffic/caltrans-districts',
+    bayArea511: '/admin/traffic/bay-area-511', bayArea511Events: '/admin/traffic/bay-area-511',
+    calfireIncidents: '/admin/traffic/calfire', calfire: '/admin/traffic/calfire',
+  };
+  const adminRoute = adminRouteMap[adminType] || (isIncident ? '/admin/traffic' : '/admin/threed/plantings');
+
   return (
-    <div className="fixed top-20 left-4 z-[1000] bg-black/85 backdrop-blur-sm text-white p-3 rounded-lg border border-white/10 shadow-xl max-w-[260px] pointer-events-auto">
+    <div className="fixed left-3 top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/10 bg-black/85 p-2 text-white shadow-xl backdrop-blur-sm pointer-events-auto [scrollbar-width:thin]">
       {/* Header */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="text-sm font-medium text-white truncate max-w-[170px]">
-          {selected.name || selected.title || selected.label || 'Unknown'}
+      <div className="sticky top-0 z-10 -mx-2 -mt-2 flex items-start justify-between gap-2 rounded-t-lg bg-black/95 px-2 pb-2 pt-0.5 backdrop-blur-sm">
+        <div className="min-w-0 pb-1 pt-0.5">
+          <div className="truncate text-sm font-semibold text-white">
+            {selected.name || selected.title || selected.label || 'Unknown'}
+          </div>
         </div>
-        <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors shrink-0">
-          <X className="w-3.5 h-3.5" />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close marker details"
+          title="Close marker details"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          <X className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Type badge + severity */}
-      <div className="flex items-center gap-2 mt-1.5">
-        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 capitalize">{typeLabel}</span>
-        {selected.severity && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: typeColor + '30', color: typeColor }}>
-            {selected.severity}
-          </span>
+      <div className="mt-1.5 flex items-center gap-1">
+        {!isIncident && selectedTargetCapabilities && onSetActionTarget && (
+          <button
+            type="button"
+            aria-label={isQuickActionTarget ? 'Clear Action Target' : 'Use as Action Target'}
+            title={isQuickActionTarget ? 'Clear Action Target' : 'Use as Action Target'}
+            aria-pressed={isQuickActionTarget}
+            onClick={(event) => {
+              event.stopPropagation();
+              if (isQuickActionTarget && onClearActionTarget) {
+                onClearActionTarget();
+                return;
+              }
+              if (!quickTargetType || !Number.isFinite(quickTargetId)) return;
+              const targetPosition = resolveRuntimeMarkerPosition?.(quickTargetType, quickTargetId)
+                ?? (selected.position ? {
+                  x: Number(selected.position.x),
+                  y: Number(selected.position.y),
+                  z: Number(selected.position.z),
+                } : null);
+              if (!targetPosition || !Object.values(targetPosition).every(Number.isFinite)) return;
+              onSetActionTarget(createThreeDActionTarget({
+                markerId: selectedMarkerId || `${quickTargetType}-${quickTargetId}`,
+                markerType: quickTargetType,
+                assetId: quickTargetId,
+                name: String(quickTargetName),
+                position: targetPosition,
+              }));
+            }}
+            className={`flex h-7 w-7 items-center justify-center rounded transition-colors ${
+              isQuickActionTarget
+                ? 'bg-emerald-600 text-white'
+                : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <Crosshair className="h-3.5 w-3.5" />
+          </button>
         )}
+        {!isIncident && onZoomCenter && (
+          <button
+            type="button"
+            aria-label="Zoom and center marker"
+            title="Zoom + Center"
+            onClick={(event) => { event.stopPropagation(); onZoomCenter(); }}
+            className="flex h-7 w-7 items-center justify-center rounded bg-white/5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            <ScanSearch className="h-3.5 w-3.5" />
+          </button>
+        )}
+        <a
+          href={`${adminRoute}?id=${adminId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Edit marker in Admin"
+          title="Edit in Admin"
+          className="flex h-7 w-7 items-center justify-center rounded bg-white/5 text-white/60 no-underline transition-colors hover:bg-white/10 hover:text-white"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
       </div>
 
       {/* GPS coordinates (incidents) */}
@@ -1031,7 +1154,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
 
       {/* Metadata grid */}
       {metaRows.length > 0 && (
-        <div className="mt-2.5 border-t border-white/10 pt-2 space-y-0.5">
+        <div className="mt-2 space-y-0.5 rounded bg-white/[0.035] p-2">
           {metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}
         </div>
       )}
@@ -1042,63 +1165,6 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
           projectId={projectId}
         />
       )}
-
-      {/* World Action Target — v0.16.6b World Actions v2 */}
-      {!isIncident && selectedTargetCapabilities && onSetActionTarget && (() => {
-        const markerId = String(selected.id || '');
-        const markerIdSuffix = markerId.match(/(\d+)$/)?.[1];
-        const targetId = Number(d.id ?? markerIdSuffix);
-        const targetType = selectedTargetCapabilities.markerType;
-        const fallbackName = `${selectedTargetCapabilities.markerType.replace(/s$/, '')} #${targetId}`;
-        const targetName = selected.name || selected.label || d.plantName || d.commonName
-          || fallbackName;
-        const isCurrentTarget = actionTarget != null && isMatchingThreeDActionTarget(
-          actionTarget,
-          { markerType: targetType, assetId: targetId },
-        );
-
-        return (
-          <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-1.5">
-            <div className="text-[10px] font-medium text-white/60">World Action Target</div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!Number.isFinite(targetId)) return;
-                const targetPosition = resolveRuntimeMarkerPosition?.(targetType, targetId)
-                  ?? (selected.position ? {
-                    x: Number(selected.position.x),
-                    y: Number(selected.position.y),
-                    z: Number(selected.position.z),
-                  } : null);
-                if (!targetPosition) return;
-                if (!Object.values(targetPosition).every(Number.isFinite)) return;
-                onSetActionTarget(createThreeDActionTarget({
-                  markerId: markerId || `${targetType}-${targetId}`,
-                  markerType: targetType,
-                  assetId: targetId,
-                  name: String(targetName),
-                  position: targetPosition,
-                }));
-              }}
-              className={`block w-full text-center text-[11px] font-medium py-1.5 px-2 rounded transition-colors ${
-                isCurrentTarget
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white/5 hover:bg-white/10 text-white/75 hover:text-white'
-              }`}
-            >
-              {isCurrentTarget ? '🎯 Current Action Target' : '🎯 Use as Action Target'}
-            </button>
-            {isCurrentTarget && onClearActionTarget && (
-              <button
-                onClick={(e) => { e.stopPropagation(); onClearActionTarget(); }}
-                className="block w-full text-center text-[10px] text-white/45 hover:text-white/70 py-1"
-              >
-                Clear target
-              </button>
-            )}
-          </div>
-        );
-      })()}
 
       {/* Description (incidents) — only if no metaRows covered it */}
       {isIncident && selected.description && !metaRows.length && (
@@ -1113,7 +1179,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         const charId = d.id;
         const isControlling = controlledCharacterId === charId;
         return (
-          <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-2">
+          <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
             {isControlling ? (
               <>
                 {/* <div className="text-[10px] text-blue-300 flex items-center gap-1.5">
@@ -1124,7 +1190,10 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
                   onClick={(e) => { e.stopPropagation(); onReleaseControl(); }}
                   className="block w-full text-center text-[11px] font-medium bg-amber-600 hover:bg-amber-500 text-white py-1.5 px-2 rounded transition-colors"
                 >
-                  ⏸️ Release Control
+                  <span className="flex items-center justify-center gap-1.5">
+                    <Pause className="h-3.5 w-3.5" />
+                    Release Control
+                  </span>
                 </button>
                 {onCameraModeChange && (
                   <div className="space-y-1">
@@ -1148,7 +1217,10 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
                 onClick={(e) => { e.stopPropagation(); onTakeControl(charId); }}
                 className="block w-full text-center text-[11px] font-medium bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-2 rounded transition-colors"
               >
-                🎮 Take Control
+                <span className="flex items-center justify-center gap-1.5">
+                  <Gamepad2 className="h-3.5 w-3.5" />
+                  Take Control
+                </span>
               </button>
             )}
           </div>
@@ -1157,7 +1229,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
 
       {/* Character Actions — shared semantic animation controls */}
       {!isIncident && (type === 'characters' || type === 'character') && (
-        <div className="mt-2.5 border-t border-white/10 pt-2.5 space-y-2.5">
+        <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-1.5">
           {/* <div className="text-[10px] font-medium text-white/60">Character Actions</div> */}
 
           <div className="rounded bg-white/5 px-2 py-1.5 text-[10px] text-white/55">
@@ -1199,7 +1271,10 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
                       onClick={(e) => { e.stopPropagation(); onFocusActionTarget(); }}
                       className="rounded bg-emerald-600/25 px-2 py-1 text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white"
                     >
-                      Focus Target
+                      <span className="flex items-center justify-center gap-1.5">
+                        <ScanSearch className="h-3.5 w-3.5" />
+                        Focus Target
+                      </span>
                     </button>
                   )}
                   {onClearActionTarget && (
@@ -1272,12 +1347,12 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
             }))
             .filter((group) => group.actions.length > 0)
             .map((group) => (
-            <div key={group.title} className="space-y-1">
+            <div key={group.title} className="space-y-0.5">
               <div className="text-[9px] uppercase tracking-wide text-white/35">
                 {group.title}
               </div>
 
-              <div className="grid grid-cols-2 gap-1.5">
+              <div className="grid grid-cols-3 gap-1">
                 {group.actions.map(({ action, label }) => (
                   <button
                     key={action}
@@ -1325,7 +1400,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
                         },
                       }));
                     }}
-                    className="min-h-8 w-full rounded bg-emerald-600/25 px-2 py-1.5 text-center text-[10px] font-medium leading-tight text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+                    className="min-h-6 w-full rounded bg-emerald-600/25 px-1 py-1 text-center text-[9px] font-medium leading-tight text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
                   >
                     {label}
                   </button>
@@ -1333,18 +1408,6 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
               </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* v0.16.2-beta: Manual zoom + center action */}
-      {!isIncident && onZoomCenter && (
-        <div className="mt-2.5 border-t border-white/10 pt-2.5">
-          <button
-            onClick={(e) => { e.stopPropagation(); onZoomCenter(); }}
-            className="block w-full text-center text-[11px] font-medium bg-white/5 hover:bg-white/10 text-white/70 hover:text-white py-1.5 px-2 rounded transition-colors"
-          >
-            🎯 Zoom + Center
-          </button>
         </div>
       )}
 
@@ -1459,38 +1522,6 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         />
       )}
 
-      {/* Admin Edit link */}
-      {(() => {
-        const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
-        const adminId = isProjectModelInstance
-          ? d.modelId
-          : selected.metadata?.data?.id || selected.id;
-        const routeMap: Record<string, string> = {
-          plantings: '/admin/threed/plantings', planting: '/admin/threed/plantings',
-          beds: '/admin/threed/beds', bed: '/admin/threed/beds',
-          characters: '/admin/threed/characters', character: '/admin/threed/characters',
-          farmbots: '/admin/threed/farmbots', farmbot: '/admin/threed/farmbots',
-          models: '/admin/threed/models', model: '/admin/threed/models',
-          chpCad: '/admin/traffic/chp-cad', chpCadIncidents: '/admin/traffic/chp-cad',
-          chpCases: '/admin/traffic/chp-cases', chpCenters: '/admin/traffic/chp-centers',
-          caltransLaneClosures: '/admin/traffic/caltrans', caltransClosures: '/admin/traffic/caltrans',
-          caltransCctv: '/admin/traffic/caltrans-cctv', caltransDistricts: '/admin/traffic/caltrans-districts',
-          bayArea511: '/admin/traffic/bay-area-511', bayArea511Events: '/admin/traffic/bay-area-511',
-          calfireIncidents: '/admin/traffic/calfire', calfire: '/admin/traffic/calfire',
-        };
-        const adminRoute = routeMap[adminType] || (isIncident ? '/admin/traffic' : '/admin/threed/plantings');
-        return (
-          <div className="mt-2.5 border-t border-white/10 pt-2.5">
-            <a
-              href={`${adminRoute}?id=${adminId}`}
-              target="_blank" rel="noopener noreferrer"
-              className="block text-center text-[11px] font-medium bg-white/5 hover:bg-white/10 text-white/70 hover:text-white py-1.5 px-2 rounded transition-colors no-underline"
-            >
-              🔧 Edit in Admin
-            </a>
-          </div>
-        );
-      })()}
     </div>
   );
 }
@@ -3485,8 +3516,13 @@ function UnifiedMapPageInner() {
           </Button>
 
           {selectedProjectId && isProjectSummaryOpen && (
-            <div className="absolute left-0 top-full z-30 mt-1 min-w-64 space-y-2 rounded-md border bg-background p-3 shadow-lg">
-              <div className="flex flex-wrap items-center gap-2">
+            <div className="absolute left-0 top-full z-[2000] mt-1 w-80 space-y-3 rounded-lg border bg-background/95 p-3 shadow-xl backdrop-blur-sm">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <FolderOpen className="h-3 w-3" />
+                  Project Status
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
                 <Badge variant="outline" className="text-[10px]">
                   {data.traffic.total || 0} traffic items
                 </Badge>
@@ -3498,9 +3534,9 @@ function UnifiedMapPageInner() {
                     No Data
                   </Badge>
                 )}
-              </div>
+                </div>
 
-              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 rounded-md bg-muted/40 px-2 py-1.5">
                 <Clock className={`h-3 w-3 ${
                   isStale
                     ? 'text-amber-600'
@@ -3520,84 +3556,97 @@ function UnifiedMapPageInner() {
                 >
                   {dataAge !== '--' ? `Updated ${dataAge}` : 'Update time unavailable'}
                 </span>
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-1 border-t pt-2">
+              <div className="space-y-1.5 border-t pt-2.5">
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Project Actions
+                </div>
                 <Button
                   type="button"
                   variant="default"
                   size="sm"
-                  className="h-7 text-xs"
+                  className="h-8 w-full justify-start text-xs"
                   disabled={savingProjectMarkers}
                   onClick={handleSaveThreeDProject}
                 >
                   {savingProjectMarkers
-                    ? <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                    : <Save className="mr-1 h-3 w-3" />}
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <Save className="h-3.5 w-3.5" />}
                   Save ThreeD Project
                 </Button>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 justify-start text-xs"
+                    onClick={() => setIsProjectSelectorOpen(true)}
+                  >
+                    <FolderOpen className="h-3.5 w-3.5" />
+                    Change
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 justify-start text-xs"
+                    onClick={() => window.open(
+                      `/admin/projects/${selectedProjectId}`,
+                      '_blank',
+                      'noopener,noreferrer'
+                    )}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Admin
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 border-t pt-2.5">
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Add to Scene
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-7 text-xs"
-                  onClick={() => setIsProjectSelectorOpen(true)}
-                >
-                  <FolderOpen className="mr-1 h-3 w-3" />
-                  Change Project
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs"
-                  onClick={() => window.open(
-                    `/admin/projects/${selectedProjectId}`,
-                    '_blank',
-                    'noopener,noreferrer'
-                  )}
-                >
-                  <Settings className="mr-1 h-3 w-3" />
-                  Admin Details
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs"
+                  className="h-8 justify-start text-xs"
                   disabled={projectThreeDModules.length === 0}
                   onClick={() => void openModelLibrary()}
                 >
-                  <Box className="mr-1 h-3 w-3" />
-                  Model Library
+                  <Box className="h-3.5 w-3.5" />
+                  Models
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-7 text-xs"
+                  className="h-8 justify-start text-xs"
                   disabled={projectThreeDModules.length === 0}
                   onClick={() => void openCharacterLibrary()}
                 >
-                  <Plus className="mr-1 h-3 w-3" />
-                  Character Library
+                  <User className="h-3.5 w-3.5" />
+                  Characters
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-7 text-xs"
+                  className="h-8 justify-start text-xs"
                   disabled={projectThreeDModules.length === 0}
                   onClick={() => void openFarmBotLibrary()}
                 >
-                  <Plus className="mr-1 h-3 w-3" />
-                  FarmBot Library
+                  <Settings className="h-3.5 w-3.5" />
+                  FarmBots
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-7 text-xs"
+                  className="h-8 justify-start text-xs"
                   disabled={projectThreeDModules.length === 0}
                   onClick={() => {
                     setIsFarmBotLibraryOpen(false);
@@ -3612,20 +3661,21 @@ function UnifiedMapPageInner() {
                     setIsProjectSummaryOpen(false);
                   }}
                 >
-                  <Plus className="mr-1 h-3 w-3" />
-                  Add Bed
+                  <Plus className="h-3.5 w-3.5" />
+                  Bed
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-7 text-xs"
+                  className="h-8 justify-start text-xs"
                   disabled={projectThreeDModules.length === 0}
                   onClick={() => void openPlantingPlacement()}
                 >
-                  <Plus className="mr-1 h-3 w-3" />
-                  Add Planting
+                  <Sprout className="h-3.5 w-3.5" />
+                  Planting
                 </Button>
+                </div>
               </div>
             </div>
           )}

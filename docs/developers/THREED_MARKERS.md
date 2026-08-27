@@ -245,6 +245,14 @@ Beds and FarmBots use explicit fixed cuboid colliders derived from the same Proj
 
 The user manually verified Bed, Planting, FarmBot, and Model editing plus collider synchronization. The verified regression sequence also confirms that selecting and controlling an Ecctrl Character after these marker transactions keeps the model, capsule, halo, camera, and WASD movement together.
 
+## v0.18.9c visual hierarchy candidate
+
+The Dashboard separates controls by ownership: Project actions live in the top-left Project dropdown, Scene presentation and Layer controls live in the top-right Controls menu, and marker actions plus Project-instance forms live in the DetailsCard. The Project dropdown has the highest Dashboard overlay priority so it remains available above marker and Scene panels.
+
+DetailsCards share one compact visual shell across Characters, Beds, Plantings, Models, and FarmBots. The name and Close control remain in the header; module identity moves into metadata. Action Target, Zoom/Center, and Admin navigation use a small inline icon toolbar with accessible labels and hover titles. XYZ position rows and Width/Length/Height rows use equal thirds. Project-instance Save/Delete controls keep consistent locations, while Character animation controls use compact three-column rows to preserve Scene visibility.
+
+These changes are presentation-only. They do not change marker identity, API requests, CRUD ownership, Action Target construction, camera behavior, Character animation dispatch, Canvas persistence, Rapier bodies, Scene Layers, MQTT safety, or physical-device authority.
+
 ## Current development boundary
 
 Phase 5E centralizes validated Runtime Marker-to-Action Target construction. Phase 5F centralizes target identity matching across the DetailsCard, refreshed Project data, and ThreeD scene highlighting using normalized Sub-Module type plus asset ID.

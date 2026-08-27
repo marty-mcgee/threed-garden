@@ -308,6 +308,9 @@ Do not suppress new diagnostics or make TypeScript non-blocking to land unrelate
 - For each Project marker editor (Bed, FarmBot, Model, and Planting), change XYZ position and a size/scale field with Physics Debug enabled. Confirm the visual and outline update together without refreshing the Project.
 - Remove and re-place a Character after non-Character marker edits. Confirm the Character model, Ecctrl capsule, halo, camera, and WASD movement remain one unit.
 - Removing a Project FarmBot must leave its reusable FarmBot, credentials, broker metadata, and MQTT records unchanged and available for later Project placement.
+- Open the Project dropdown over an active DetailsCard and Scene Controls menu. Confirm the Project menu remains visually above both overlays and every Project action remains accessible.
+- Open Character, Bed, Planting, Model, and FarmBot DetailsCards. Confirm the shared top-left placement, compact scrolling, inline Quick Actions tooltips, equal-third XYZ/dimension rows, and consistent Save/Delete locations.
+- Confirm compact Character animation buttons still dispatch every visible semantic action and retain range-based disabled states.
 
 ## v0.18.7c ThreeD Layers Scene contract checks
 

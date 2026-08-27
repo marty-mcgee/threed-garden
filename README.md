@@ -9,6 +9,10 @@ This is a **Dual-Surface Platform**:
 
 > **Current production version:** `v0.18.9b "ThreeD Project Marker CRUD and Physics Synchronization"` (`package.json` version `0.18.9-beta`)
 
+> **Prepared release candidate:** `v0.18.9c "ThreeD Project Header and DetailsCard UI"` (`package.json` version `0.18.9-centaur`)
+
+The v0.18.9c candidate introduces a uniform visual hierarchy for Project, Scene, and marker controls. It reorganizes the Project dropdown, standardizes Scene Control icons and states, and makes marker DetailsCards smaller, consistently positioned, easier to scan, and less obstructive to the ThreeD Scene.
+
 The v0.18.9b production release completes verified Project-marker placement and editing coverage across Beds, FarmBots, Models, Plantings, and Characters. Marker transactions remain local to the persistent Scene; edited visuals, fixed Rapier bodies, and Physics Debug outlines stay synchronized without remounting unrelated markers. FarmBot Project removal preserves the reusable device and all credential, broker, and MQTT records.
 
 The **v0.18.9a — ThreeD Character Library and Snapshot Recovery** production release adds owner-scoped Character Library placement and Project-instance position editing, keeps marker CRUD local to the persistent Scene, preserves Project marker row IDs during explicit saves, and prevents uncontrolled Ecctrl mount positions from entering saved snapshots. Overlapping Ecctrl capsule spawns are rejected before Rapier and can be restored to their source Character positions through the bounded Scene warning.
