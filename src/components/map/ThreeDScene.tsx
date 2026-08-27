@@ -1216,6 +1216,64 @@ function InteractiveGround({
   );
 }
 
+function SceneModelDropTarget({
+  active,
+  size,
+  centerX,
+  centerZ,
+  onDrop,
+}: {
+  active: boolean;
+  size: number;
+  centerX: number;
+  centerZ: number;
+  onDrop?: (position: { x: number; y: number; z: number }) => void;
+}) {
+  const { camera, gl } = useThree();
+
+  useEffect(() => {
+    const canvas = gl.domElement;
+    if (!active || !onDrop) return;
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const intersection = new THREE.Vector3();
+
+    const handleDragOver = (event: DragEvent) => {
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+    };
+    const handleDrop = (event: DragEvent) => {
+      event.preventDefault();
+      const bounds = canvas.getBoundingClientRect();
+      pointer.set(
+        ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+        -((event.clientY - bounds.top) / bounds.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(pointer, camera);
+      if (!raycaster.ray.intersectPlane(groundPlane, intersection)) return;
+      const halfSize = size / 2;
+      if (
+        intersection.x < centerX - halfSize
+        || intersection.x > centerX + halfSize
+        || intersection.z < centerZ - halfSize
+        || intersection.z > centerZ + halfSize
+      ) return;
+      onDrop({ x: intersection.x, y: 0, z: intersection.z });
+    };
+
+    canvas.addEventListener('dragover', handleDragOver);
+    canvas.addEventListener('drop', handleDrop);
+    return () => {
+      canvas.removeEventListener('dragover', handleDragOver);
+      canvas.removeEventListener('drop', handleDrop);
+    };
+  }, [active, camera, centerX, centerZ, gl, onDrop, size]);
+
+  return null;
+}
+
 export function ThreeDScene({
   incidents,
   markers,
@@ -2056,6 +2114,14 @@ export function ThreeDScene({
           onToggleGrid={() => setShowGrid(!showGrid)}
           onFocusSelected={() => { if (selectedDetails?.position) focusOnMarker(selectedDetails); }}
           hasSelected={!!selectedDetails}
+        />
+
+        <SceneModelDropTarget
+          active={Boolean(placementModel)}
+          size={groundSize}
+          centerX={centerX}
+          centerZ={centerZ}
+          onDrop={onModelPlacement}
         />
 
         <Physics gravity={[0, -9.81, 0]}>

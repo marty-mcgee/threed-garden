@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.18.9d **ThreeD Scene Navigation UX**, using package version `0.18.9-delta`. No later release candidate is designated. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.18.9d **ThreeD Scene Navigation UX**. The release-ready candidate is v0.19.0a **Shared ThreeD Model Library Placement**, using package version `0.19.0-alpha`. Its 2D Map, ThreeD Scene, Combined View, cancellation, and invalid-drop manual checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -39,6 +39,10 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 - [Safe change areas](agents/SAFE_CHANGE_AREAS.md) — boundaries and approval gates.
 - [Task checklists](agents/TASK_CHECKLISTS.md) — prove, act, and document workflow.
 - [Validation](agents/VALIDATION.md) — narrow-first repository validation.
+
+## v0.19.0 development
+
+- [Legacy ThreeD integration assessment](developers/LEGACY_THREED_INTEGRATION.md) — legacy possibility inventory and the current-App shared Model Library placement contract.
 
 ## Releases
 

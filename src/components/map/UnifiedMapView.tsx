@@ -7,6 +7,10 @@ import { AlertTriangle, Loader2 } from 'lucide-react';
 import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
 import { LeafletMap } from '@/components/map/LeafletMap';
 import {
+  mapPositionToProjectPlanPosition,
+  projectPlanPositionToMapPosition,
+} from '@/lib/services/threed/markers/map-coordinate-core';
+import {
   buildThreeDRuntimeMarkerResult,
   createThreeDRuntimeMarkerRegistrations,
 } from '@/lib/services/threed/markers/runtime-marker-builder';
@@ -457,15 +461,13 @@ export function UnifiedMapView({
     .filter((incident: any) => incident.lat && incident.lng && incident.lat !== 0 && incident.lng !== 0)
     .map((incident: any) => ({ ...incident, lat: incident.lat, lng: incident.lng }));
 
-  // ✅ ThreeD markers on 2D map: scale raw 3D coords into a small "garden plot" around gpsCenter
-  //    Treat 1 unit in 3D space ≈ 0.0001° (~11m) so a 100-unit garden spans ~1.1km (½-mile plot)
-  const GPS_SCALE = 0.0001;
+  // ThreeD markers use the shared Project-plan ↔ map projection so the 2D
+  // placement path can later reverse the exact display calculation.
   const leafletMarkers = useMemo(() => {
     const markers = spreadMarkers
       .filter((m) => m.position && m.position.x !== undefined && m.position.z !== undefined)
       .map((m) => {
-        const lat = gpsCenter.lat + (m.position.z * GPS_SCALE);
-        const lng = gpsCenter.lng + (m.position.x * GPS_SCALE);
+        const { lat, lng } = projectPlanPositionToMapPosition(m.position, gpsCenter);
         return {
           id: m.id, name: m.name, type: m.type,
           lat, lng,
@@ -505,6 +507,11 @@ export function UnifiedMapView({
     [filteredMarkers],
   );
 
+  const handleMapModelPlacement = useCallback((position: { lat: number; lng: number }) => {
+    if (!placementModel || !onModelPlacement) return;
+    onModelPlacement(mapPositionToProjectPlanPosition(position, gpsCenter));
+  }, [gpsCenter, onModelPlacement, placementModel]);
+
   const render2DView = () => (
     <LeafletMap
       incidents={leafletIncidents}
@@ -518,6 +525,8 @@ export function UnifiedMapView({
       gpsCenter={gpsCenter}
       center={[gpsCenter.lat, gpsCenter.lng]}
       zoom={12}
+      placementActive={Boolean(placementModel)}
+      onPlacement={handleMapModelPlacement}
     />
   );
 

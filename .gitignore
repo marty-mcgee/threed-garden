@@ -40,8 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# custom public/other
-public/assets-archive
-
 # drizzle migrations
 /drizzle
+
+# custom public/other
+public/assets-archive
+reference/

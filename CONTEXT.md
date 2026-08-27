@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.18.9d — ThreeD Scene Navigation UX** |
-| Current release candidate | **None designated** |
-| Current development milestone | **v0.18.9d deployed and production verified** |
+| Current release candidate | **v0.19.0a — Shared ThreeD Model Library Placement** |
+| Current development milestone | **Release-ready after successful 2D Map, ThreeD Scene, Combined View, cancellation, and invalid-drop manual checks** |
 | Previous checkpoint | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

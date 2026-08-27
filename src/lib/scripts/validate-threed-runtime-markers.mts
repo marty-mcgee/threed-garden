@@ -65,6 +65,12 @@ import {
   applyThreeDProjectClientTransaction,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/markers/project-marker-client-state-core.ts';
+import {
+  mapPositionToProjectPlanPosition,
+  projectPlanPositionToMapPosition,
+  ThreeDMapCoordinateError,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/markers/map-coordinate-core.ts';
 
 let completedValidationSteps = 0;
 function validationStep(label: string): void {
@@ -1169,6 +1175,27 @@ assert.deepEqual(
 assert.equal(nearbyEcctrlResult.issues[0].markerId, 'characters-21');
 assert.match(nearbyEcctrlResult.issues[0].reasons.join(' '), /overlaps the Ecctrl spawn/);
 validationStep('Nearby movable Character capsules cannot share an Ecctrl spawn area');
+
+const projectPlanPosition = { x: 12.5, y: 3, z: -8.25 };
+const mapCenter = { lat: 39.514719, lng: -123.760382 };
+const projectedMapPosition = projectPlanPositionToMapPosition(projectPlanPosition, mapCenter);
+const restoredProjectPlanPosition = mapPositionToProjectPlanPosition(
+  projectedMapPosition,
+  mapCenter,
+  projectPlanPosition.y,
+);
+assert.ok(Math.abs(restoredProjectPlanPosition.x - projectPlanPosition.x) < 1e-8);
+assert.equal(restoredProjectPlanPosition.y, projectPlanPosition.y);
+assert.ok(Math.abs(restoredProjectPlanPosition.z - projectPlanPosition.z) < 1e-8);
+assert.throws(
+  () => mapPositionToProjectPlanPosition({ lat: 95, lng: 0 }, mapCenter),
+  ThreeDMapCoordinateError,
+);
+assert.throws(
+  () => projectPlanPositionToMapPosition({ x: Number.NaN, y: 0, z: 0 }, mapCenter),
+  ThreeDMapCoordinateError,
+);
+validationStep('2D map and ThreeD Project positions share one reversible projection');
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);

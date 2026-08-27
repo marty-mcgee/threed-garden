@@ -3748,7 +3748,7 @@ function UnifiedMapPageInner() {
             <div>
               <h2 className="text-sm font-semibold">ThreeD Model Library</h2>
               <p className="text-[11px] text-muted-foreground">
-                Select a model, then click its location in the ThreeD Scene.
+                Drag a model onto the active 2D Map or ThreeD Scene, or choose Place and click.
               </p>
             </div>
             <Button
@@ -3787,7 +3787,7 @@ function UnifiedMapPageInner() {
               <div className="flex items-center justify-between gap-2">
                 <span>
                   Placing <strong>{placementModel.modelName}</strong>
-                  {placingModel ? '…' : ' — click the ground'}
+                  {placingModel ? '…' : ' — click a map or Scene destination'}
                 </span>
                 <Button
                   type="button"
@@ -3835,7 +3835,18 @@ function UnifiedMapPageInner() {
                 No active public Library models are available.
               </p>
             ) : libraryModels.map((model) => (
-              <div key={model.id} className="flex items-center gap-2 rounded border p-2">
+              <div
+                key={model.id}
+                draggable={Boolean(placementThreedId) && !placingModel}
+                onDragStart={(event) => {
+                  setPlacementModel(model);
+                  setPlacementScaleMultiplier('1');
+                  event.dataTransfer.effectAllowed = 'copy';
+                  event.dataTransfer.setData('application/x-threed-model-id', String(model.id));
+                  event.dataTransfer.setData('text/plain', model.modelName);
+                }}
+                className="flex cursor-grab items-center gap-2 rounded border p-2 active:cursor-grabbing"
+              >
                 <div className="flex h-8 w-8 items-center justify-center rounded bg-cyan-500/10 text-cyan-600">
                   <Box className="h-4 w-4" />
                 </div>
@@ -3848,10 +3859,10 @@ function UnifiedMapPageInner() {
                   size="sm"
                   className="h-7 text-xs"
                   disabled={!placementThreedId || placingModel}
+                  draggable={false}
                   onClick={() => {
                     setPlacementModel(model);
                     setPlacementScaleMultiplier('1');
-                    setViewMode('3d');
                   }}
                 >
                   Place
@@ -4605,6 +4616,8 @@ function UnifiedMapPageInner() {
                       filterActiveOnly={filterActiveOnly}
                       filterAssetType={filterAssetType}
                       controlledCharacterId={controlledCharacterId}
+                      placementModel={placementModel}
+                      onModelPlacement={handleModelPlacement}
                     />
                   </div>
                 </div>
@@ -4671,6 +4684,8 @@ function UnifiedMapPageInner() {
                 filterAssetType={filterAssetType}
                 controlledCharacterId={controlledCharacterId}
                 onControlChange={handleControlChange}
+                placementModel={placementModel}
+                onModelPlacement={handleModelPlacement}
               />
             )}
 

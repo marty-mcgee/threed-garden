@@ -42,6 +42,10 @@ interface LeafletMapProps {
   zoom?: number;
   height?: string;
   gpsCenter?: { lat: number; lng: number };
+  /** Enables one pending Project Model placement on the map surface. */
+  placementActive?: boolean;
+  /** Reports the geographic point selected for the pending placement. */
+  onPlacement?: (position: { lat: number; lng: number }) => void;
 }
 
 
@@ -87,6 +91,8 @@ function LeafletMapComponent({
   zoom = 12,
   height = '100%',
   gpsCenter = { lat: 39.514719, lng: -123.760382 },
+  placementActive = false,
+  onPlacement,
 }: LeafletMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -97,12 +103,16 @@ function LeafletMapComponent({
   const onIncidentClickRef = useRef(onIncidentClick);
   const onMarkerClickRef = useRef(onMarkerClick);
   const onFocusMarkerRef = useRef(onFocusMarker);
+  const placementActiveRef = useRef(placementActive);
+  const onPlacementRef = useRef(onPlacement);
 
   useEffect(() => {
     onIncidentClickRef.current = onIncidentClick;
     onMarkerClickRef.current = onMarkerClick;
     onFocusMarkerRef.current = onFocusMarker;
-  }, [onIncidentClick, onMarkerClick, onFocusMarker]);
+    placementActiveRef.current = placementActive;
+    onPlacementRef.current = onPlacement;
+  }, [onIncidentClick, onMarkerClick, onFocusMarker, onPlacement, placementActive]);
 
   // Initialize map once
   useEffect(() => {
@@ -121,6 +131,10 @@ function LeafletMapComponent({
     }).addTo(map);
 
     mapInstanceRef.current = map;
+    map.on('click', (event) => {
+      if (!placementActiveRef.current) return;
+      onPlacementRef.current?.({ lat: event.latlng.lat, lng: event.latlng.lng });
+    });
 
     return () => {
       map.remove();
@@ -129,6 +143,40 @@ function LeafletMapComponent({
       previousSelectedRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const container = mapInstanceRef.current?.getContainer();
+    if (!container) return;
+    container.style.cursor = placementActive ? 'crosshair' : '';
+    return () => {
+      container.style.cursor = '';
+    };
+  }, [placementActive]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const container = map?.getContainer();
+    if (!map || !container || !placementActive) return;
+
+    const handleDragOver = (event: DragEvent) => {
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+    };
+    const handleDrop = (event: DragEvent) => {
+      event.preventDefault();
+      const bounds = container.getBoundingClientRect();
+      const point = L.point(event.clientX - bounds.left, event.clientY - bounds.top);
+      const latLng = map.containerPointToLatLng(point);
+      onPlacementRef.current?.({ lat: latLng.lat, lng: latLng.lng });
+    };
+
+    container.addEventListener('dragover', handleDragOver);
+    container.addEventListener('drop', handleDrop);
+    return () => {
+      container.removeEventListener('dragover', handleDragOver);
+      container.removeEventListener('drop', handleDrop);
+    };
+  }, [placementActive]);
 
   // Handle pan to selected marker
   useEffect(() => {
