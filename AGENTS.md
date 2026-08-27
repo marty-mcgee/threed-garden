@@ -38,7 +38,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.9c "ThreeD Project Header and DetailsCard UI".
+Current production version: v0.18.9d "ThreeD Scene Navigation UX".
 
 No later release candidate is currently designated.
 
