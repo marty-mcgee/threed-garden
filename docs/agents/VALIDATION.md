@@ -311,6 +311,9 @@ Do not suppress new diagnostics or make TypeScript non-blocking to land unrelate
 - Open the Project dropdown over an active DetailsCard and Scene Controls menu. Confirm the Project menu remains visually above both overlays and every Project action remains accessible.
 - Open Character, Bed, Planting, Model, and FarmBot DetailsCards. Confirm the shared top-left placement, compact scrolling, inline Quick Actions tooltips, equal-third XYZ/dimension rows, and consistent Save/Delete locations.
 - Confirm compact Character animation buttons still dispatch every visible semantic action and retain range-based disabled states.
+- Select a ThreeD Marker, then click-drag, rotate, and pan across the Scene ground. Confirm the marker remains selected and its DetailsCard stays open until Close, Escape, or another marker selection is used.
+- Select a movable Character and choose **Take Control**. Confirm the initial camera mode is **Stationary** and Ecctrl WASD remains available.
+- Change the controlled Character camera to **Follow**, then zoom inward and outward with the pointer wheel. Confirm the mode changes to **Stationary**, the chosen zoom is retained, and Character control continues working.
 
 ## v0.18.7c ThreeD Layers Scene contract checks
 

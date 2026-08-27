@@ -56,6 +56,8 @@ interface UnifiedMapViewProps {
   onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
   /** Camera mode override (selected by user in DetailsCard) */
   cameraMode?: string;
+  /** Reports a user-driven ThreeD camera mode change. */
+  onCameraModeChange?: (mode: string) => void;
   /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
   focusRequest?: number;
   /** Persistent client-side target for ThreeD character actions. */
@@ -151,6 +153,7 @@ export function UnifiedMapView({
   controlledCharacterId,
   onControlChange,
   cameraMode,
+  onCameraModeChange,
   focusRequest = 0,
   actionTarget,
   actionTargetFocusRequest = 0,
@@ -546,6 +549,7 @@ export function UnifiedMapView({
         onControlChange={onControlChange}
         onRuntimeMarkerPositionChange={handleRuntimeMarkerPositionChange}
         cameraMode={cameraMode as any}
+        onCameraModeChange={onCameraModeChange}
         focusRequest={focusRequest}
         actionTarget={actionTarget}
         actionTargetFocusRequest={actionTargetFocusRequest}

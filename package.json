@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.18.9-centaur",
+  "version": "0.18.9-delta",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",

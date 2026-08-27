@@ -91,6 +91,8 @@ interface ThreeDSceneProps {
   ) => void;
   /** Override camera view mode (selected by user in DetailsCard) */
   cameraMode?: CameraViewMode;
+  /** Reports an explicit user-driven camera mode change to the Dashboard owner. */
+  onCameraModeChange?: (mode: CameraViewMode) => void;
   /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
   focusRequest?: number;
   /** Persistent client-side target for ThreeD character actions. */
@@ -1230,6 +1232,7 @@ export function ThreeDScene({
   onControlChange,
   onRuntimeMarkerPositionChange,
   cameraMode,
+  onCameraModeChange,
   focusRequest = 0,
   actionTarget,
   actionTargetFocusRequest = 0,
@@ -1963,6 +1966,11 @@ export function ThreeDScene({
         </div>
       ) : (
       <Canvas
+        onWheel={() => {
+          if (cameraMode === 'follow') {
+            onCameraModeChange?.('stationary');
+          }
+        }}
         onCreated={(state) => {
           stopCanvasFrameLoopRef.current = () => state.setFrameloop('never');
         }}
@@ -2058,7 +2066,6 @@ export function ThreeDScene({
               size={groundSize}
               centerX={centerX}
               centerZ={centerZ}
-              onClick={clearDetails}
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
               onPlacementLeave={() => setPlacementPreviewPosition(null)}

@@ -1673,7 +1673,7 @@ function UnifiedMapPageInner() {
       characterId: number;
       position: { x: number; y: number; z: number };
     } | null>(null);
-  const [cameraMode, setCameraMode] = useState<string>('follow');
+  const [cameraMode, setCameraMode] = useState<string>('stationary');
   const [focusRequest, setFocusRequest] = useState(0);
   const [actionTarget, setActionTarget] = useState<ThreeDActionTarget | null>(null);
   const [actionTargetFocusRequest, setActionTargetFocusRequest] = useState(0);
@@ -4551,6 +4551,7 @@ function UnifiedMapPageInner() {
                       filterAssetType={filterAssetType}
                       controlledCharacterId={controlledCharacterId}
                       cameraMode={cameraMode}
+                      onCameraModeChange={setCameraMode}
                       focusRequest={focusRequest}
                       actionTarget={actionTarget}
                       actionTargetFocusRequest={actionTargetFocusRequest}
@@ -4629,6 +4630,7 @@ function UnifiedMapPageInner() {
                 controlledCharacterId={controlledCharacterId}
                 onControlChange={handleControlChange}
                 cameraMode={cameraMode}
+                onCameraModeChange={setCameraMode}
                 focusRequest={focusRequest}
                 actionTarget={actionTarget}
                 actionTargetFocusRequest={actionTargetFocusRequest}
@@ -4685,6 +4687,7 @@ function UnifiedMapPageInner() {
         liveControlledCharacterPosition={liveControlledCharacterPosition}
         onTakeControl={(id) => {
           setLiveControlledCharacterPosition(null);
+          setCameraMode('stationary');
           setControlledCharacterId(id);
         }}
         onReleaseControl={() => {

@@ -253,6 +253,23 @@ DetailsCards share one compact visual shell across Characters, Beds, Plantings, 
 
 These changes are presentation-only. They do not change marker identity, API requests, CRUD ownership, Action Target construction, camera behavior, Character animation dispatch, Canvas persistence, Rapier bodies, Scene Layers, MQTT safety, or physical-device authority.
 
+## v0.18.9d ThreeD Scene navigation UX boundary
+
+The v0.18.9d milestone is limited to small improvements that make the persistent ThreeD Scene easier to navigate and understand. Changes may improve camera-facing controls, navigation feedback, control placement, tooltips, or other visual guidance.
+
+The first navigation rules preserve the user's active marker context while manipulating the Scene. Clicking or dragging over the ground no longer dismisses the DetailsCard; selection is cleared through the explicit Close control, Escape shortcut, or another intentional selection. Taking control of an Ecctrl Character starts in Stationary camera mode. If the user selects Follow and then zooms with the pointer wheel, the Dashboard returns the camera to Stationary so the user's chosen distance is retained. Broader Follow-camera behavior remains deferred.
+
+This milestone must preserve:
+
+- one persistent React Three Fiber Canvas and Rapier world;
+- stable Runtime Marker identity and Sub-Module ownership;
+- existing Project marker Add/Edit/Delete transactions;
+- Character selection, Take/Release Control, Ecctrl WASD, camera tracking, and animation behavior;
+- Scene Layer visibility and Physics Debug behavior; and
+- the v0.18.9c Project dropdown and compact DetailsCard hierarchy.
+
+Database schema, API contracts, marker position authority, collider ownership, and physical-device behavior are outside this milestone.
+
 ## Current development boundary
 
 Phase 5E centralizes validated Runtime Marker-to-Action Target construction. Phase 5F centralizes target identity matching across the DetailsCard, refreshed Project data, and ThreeD scene highlighting using normalized Sub-Module type plus asset ID.

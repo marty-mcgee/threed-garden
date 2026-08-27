@@ -38,7 +38,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.18.9a "ThreeD Character Library and Snapshot Recovery".
+Current production version: v0.18.9c "ThreeD Project Header and DetailsCard UI".
 
 No later release candidate is currently designated.
 

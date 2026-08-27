@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.18.9b — ThreeD Project Marker CRUD and Physics Synchronization** |
-| Current release candidate | **v0.18.9c — ThreeD Project Header and DetailsCard UI** |
-| Current development milestone | **Visual release candidate prepared; manual build and production verification pending** |
+| Current stable version | **v0.18.9c — ThreeD Project Header and DetailsCard UI** |
+| Current release candidate | **v0.18.9d — ThreeD Scene Navigation UX** |
+| Current development milestone | **Navigation UX implemented and manually verified; release candidate ready** |
 | Previous checkpoint | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -385,6 +385,8 @@ API (/api/map/threed)
 | **v0.18.8-beta** | **2026-08-25** | **Production release — Runtime Marker position authority for Ecctrl and one safe Rapier owner per shared spawn** |
 | **v0.18.9a** | **2026-08-26** | **Production release — Character Library placement/editing, stable Project snapshot identity, controlled-only Ecctrl position reporting, overlapping-capsule containment, and source-position recovery** |
 | **v0.18.9b** | **2026-08-27** | **Production release — Project marker CRUD for Beds, FarmBots, Models, Plantings, and Characters with synchronized visuals, transforms, fixed colliders, and Physics Debug outlines** |
+| **v0.18.9c** | **2026-08-27** | **Production release — uniform Project dropdown, Scene Controls, and compact marker DetailsCards across the ThreeD Dashboard** |
+| **v0.18.9d** | **2026-08-27** | **Release candidate — persistent marker selection, Stationary Take Control camera, and user-owned zoom behavior** |
 
 ---
 
