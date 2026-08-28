@@ -309,8 +309,10 @@ function ModelInstancePlacementEditor({
   baseModelScale,
   updating,
   deleting,
+  moveActive,
   onSave,
   onDelete,
+  onMoveToggle,
 }: {
   instanceId: number;
   initialName: string;
@@ -320,6 +322,7 @@ function ModelInstancePlacementEditor({
   baseModelScale: number;
   updating: boolean;
   deleting: boolean;
+  moveActive: boolean;
   onSave: (input: {
     instanceName: string;
     scaleMultiplier: number;
@@ -329,6 +332,7 @@ function ModelInstancePlacementEditor({
     positionZ: number;
   }) => void;
   onDelete: (instanceId: number, name: string) => void;
+  onMoveToggle: (instanceId: number, name: string) => void;
 }) {
   const [instanceName, setInstanceName] = useState(initialName);
   const [scaleMultiplier, setScaleMultiplier] = useState(String(initialScaleMultiplier));
@@ -413,7 +417,7 @@ function ModelInstancePlacementEditor({
       <div className="text-[9px] text-white/35">
         Effective scale: {(baseModelScale * (Number.isFinite(parsedScale) ? parsedScale : 0)).toLocaleString()}
       </div>
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-3 gap-1.5">
         <button
           type="button"
           disabled={!valid || busy}
@@ -432,6 +436,18 @@ function ModelInstancePlacementEditor({
         >
           {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
           Save Placement
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={(event) => {
+            event.stopPropagation();
+            onMoveToggle(instanceId, instanceName.trim() || `Model instance #${instanceId}`);
+          }}
+          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        >
+          <Crosshair className="h-3.5 w-3.5" />
+          {moveActive ? 'Cancel Move' : 'Move Model'}
         </button>
         <button
           type="button"
@@ -820,7 +836,7 @@ function CharacterInstancePositionEditor({
   );
 }
 
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
+function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
   selected: any;
   projectId: string | null;
   onClose: () => void;
@@ -851,6 +867,8 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
   updatingModelInstanceId?: number | null;
   onDeleteModelInstance?: (instanceId: number, name: string) => void;
   deletingModelInstanceId?: number | null;
+  movingModelInstanceId?: number | null;
+  onMoveModelToggle?: (instanceId: number, name: string) => void;
   onUpdateBedInstance?: (markerId: number, input: {
     widthFeet: number;
     lengthFeet: number;
@@ -1411,7 +1429,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
         </div>
       )}
 
-      {isProjectModelInstance && onUpdateModelInstance && onDeleteModelInstance && (
+      {isProjectModelInstance && onUpdateModelInstance && onDeleteModelInstance && onMoveModelToggle && (
         <ModelInstancePlacementEditor
           key={modelInstanceId}
           instanceId={modelInstanceId}
@@ -1426,8 +1444,10 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
           baseModelScale={Number(d.scale ?? 1)}
           updating={updatingModelInstanceId === modelInstanceId}
           deleting={deletingModelInstanceId === modelInstanceId}
+          moveActive={movingModelInstanceId === modelInstanceId}
           onSave={(input) => onUpdateModelInstance(modelInstanceId, input)}
           onDelete={onDeleteModelInstance}
+          onMoveToggle={onMoveModelToggle}
         />
       )}
 
@@ -1642,6 +1662,10 @@ function UnifiedMapPageInner() {
   });
   const [updatingModelInstanceId, setUpdatingModelInstanceId] = useState<number | null>(null);
   const [deletingModelInstanceId, setDeletingModelInstanceId] = useState<number | null>(null);
+  const [movingModelInstance, setMovingModelInstance] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const [updatingBedMarkerId, setUpdatingBedMarkerId] = useState<number | null>(null);
   const [deletingBedMarkerId, setDeletingBedMarkerId] = useState<number | null>(null);
   const [updatingFarmBotMarkerId, setUpdatingFarmBotMarkerId] = useState<number | null>(null);
@@ -2959,6 +2983,92 @@ function UnifiedMapPageInner() {
       setUpdatingModelInstanceId(null);
     }
   }, [deletingModelInstanceId, updateProjectThreeDMarkers, updatingModelInstanceId]);
+
+  const handleMoveModelInstance = useCallback(async (
+    instanceId: number,
+    position: { x: number; y: number; z: number },
+  ): Promise<boolean> => {
+    if (updatingModelInstanceId != null || deletingModelInstanceId != null) return false;
+    setUpdatingModelInstanceId(instanceId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${instanceId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          positionX: position.x,
+          positionY: position.y,
+          positionZ: position.z,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Model position update failed (${response.status})`);
+      }
+
+      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
+        Number(marker.id) === instanceId
+          ? {
+              ...marker,
+              ...result.data,
+              data: {
+                ...marker.data,
+                ...(result.data?.data ?? {}),
+              },
+              metadata: {
+                ...marker.metadata,
+                ...(result.data?.metadata ?? {}),
+              },
+            }
+          : marker
+      )));
+      setSelectedMarker((current: any) => (
+        Number(current?.data?.instanceId ?? current?.data?.projectMarkerId) === instanceId
+          ? {
+              ...current,
+              position,
+              data: {
+                ...(current.data ?? {}),
+                positionX: position.x,
+                positionY: position.y,
+                positionZ: position.z,
+              },
+            }
+          : current
+      ));
+      showToastRef.current('Model position updated', 'success');
+      return true;
+    } catch (error) {
+      console.error('Failed to move Project ThreeD Model instance', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to move ThreeD Model',
+        'error',
+      );
+      return false;
+    } finally {
+      setUpdatingModelInstanceId(null);
+    }
+  }, [deletingModelInstanceId, updateProjectThreeDMarkers, updatingModelInstanceId]);
+
+  const handleMoveModelToggle = useCallback((instanceId: number, name: string) => {
+    setMovingModelInstance((current) => (
+      current?.id === instanceId ? null : { id: instanceId, name }
+    ));
+    setPlacementModel(null);
+    setPlacementCharacter(null);
+    setPlacementFarmBot(null);
+    setBedPlacementActive(false);
+    setPlantingPlacementActive(false);
+  }, []);
+
+  const handleThreeDModelReposition = useCallback(async (
+    position: { x: number; y: number; z: number },
+  ) => {
+    if (!movingModelInstance) return;
+    const moved = await handleMoveModelInstance(movingModelInstance.id, position);
+    if (moved) setMovingModelInstance(null);
+  }, [handleMoveModelInstance, movingModelInstance]);
 
   const handleUpdateCharacterPosition = useCallback(async (
     markerId: number,
@@ -4568,6 +4678,8 @@ function UnifiedMapPageInner() {
                       actionTargetFocusRequest={actionTargetFocusRequest}
                       placementModel={placementModel}
                       onModelPlacement={handleModelPlacement}
+                      movingModelName={movingModelInstance?.name ?? null}
+                      onModelReposition={handleThreeDModelReposition}
                       placementCharacterName={placementCharacter?.name ?? null}
                       onCharacterPlacement={handleCharacterPlacement}
                       placementFarmBotName={placementFarmBot?.name ?? null}
@@ -4618,6 +4730,7 @@ function UnifiedMapPageInner() {
                       controlledCharacterId={controlledCharacterId}
                       placementModel={placementModel}
                       onModelPlacement={handleModelPlacement}
+                      onModelMove={handleMoveModelInstance}
                     />
                   </div>
                 </div>
@@ -4649,6 +4762,8 @@ function UnifiedMapPageInner() {
                 actionTargetFocusRequest={actionTargetFocusRequest}
                 placementModel={placementModel}
                 onModelPlacement={handleModelPlacement}
+                movingModelName={movingModelInstance?.name ?? null}
+                onModelReposition={handleThreeDModelReposition}
                 placementCharacterName={placementCharacter?.name ?? null}
                 onCharacterPlacement={handleCharacterPlacement}
                 placementFarmBotName={placementFarmBot?.name ?? null}
@@ -4686,6 +4801,7 @@ function UnifiedMapPageInner() {
                 onControlChange={handleControlChange}
                 placementModel={placementModel}
                 onModelPlacement={handleModelPlacement}
+                onModelMove={handleMoveModelInstance}
               />
             )}
 
@@ -4730,6 +4846,8 @@ function UnifiedMapPageInner() {
         updatingModelInstanceId={updatingModelInstanceId}
         onDeleteModelInstance={handleDeleteModelInstance}
         deletingModelInstanceId={deletingModelInstanceId}
+        movingModelInstanceId={movingModelInstance?.id ?? null}
+        onMoveModelToggle={handleMoveModelToggle}
         onUpdateBedInstance={handleUpdateBedInstance}
         updatingBedMarkerId={updatingBedMarkerId}
         onDeleteBedInstance={handleDeleteBedInstance}

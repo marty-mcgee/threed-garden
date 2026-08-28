@@ -46,6 +46,11 @@ interface LeafletMapProps {
   placementActive?: boolean;
   /** Reports the geographic point selected for the pending placement. */
   onPlacement?: (position: { lat: number; lng: number }) => void;
+  /** Persists a dragged Project Model marker at its new map position. */
+  onModelMove?: (
+    instanceId: number,
+    position: { lat: number; lng: number },
+  ) => Promise<boolean>;
 }
 
 
@@ -93,6 +98,7 @@ function LeafletMapComponent({
   gpsCenter = { lat: 39.514719, lng: -123.760382 },
   placementActive = false,
   onPlacement,
+  onModelMove,
 }: LeafletMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -105,6 +111,7 @@ function LeafletMapComponent({
   const onFocusMarkerRef = useRef(onFocusMarker);
   const placementActiveRef = useRef(placementActive);
   const onPlacementRef = useRef(onPlacement);
+  const onModelMoveRef = useRef(onModelMove);
 
   useEffect(() => {
     onIncidentClickRef.current = onIncidentClick;
@@ -112,7 +119,8 @@ function LeafletMapComponent({
     onFocusMarkerRef.current = onFocusMarker;
     placementActiveRef.current = placementActive;
     onPlacementRef.current = onPlacement;
-  }, [onIncidentClick, onMarkerClick, onFocusMarker, onPlacement, placementActive]);
+    onModelMoveRef.current = onModelMove;
+  }, [onIncidentClick, onMarkerClick, onFocusMarker, onModelMove, onPlacement, placementActive]);
 
   // Initialize map once
   useEffect(() => {
@@ -364,6 +372,11 @@ function LeafletMapComponent({
 
       // Build detail rows from marker data
       const data = marker.metadata?.data || {};
+      const modelInstanceId = Number(data.instanceId ?? data.projectMarkerId);
+      const modelCanMove = marker.type === 'models'
+        && Number.isSafeInteger(modelInstanceId)
+        && modelInstanceId > 0
+        && Boolean(onModelMoveRef.current);
       let detailsHtml = '';
       const detailFields: Record<string, string[]> = {
         planting: ['growthStage', 'health', 'plantedDate', 'notes'],
@@ -426,7 +439,7 @@ function LeafletMapComponent({
         className: '',
       });
 
-      const lMarker = L.marker([lat, lng], { icon })
+      const lMarker = L.marker([lat, lng], { icon, draggable: modelCanMove })
         .bindPopup(popupContent, { maxWidth: 320, className: 'custom-popup' })
         .on('click', () => {
           if (onMarkerClickRef.current) {
@@ -447,6 +460,19 @@ function LeafletMapComponent({
           }
         })
         .addTo(group);
+
+      if (modelCanMove) {
+        lMarker.on('dragend', async () => {
+          const next = lMarker.getLatLng();
+          lMarker.dragging?.disable();
+          const saved = await onModelMoveRef.current?.(modelInstanceId, {
+            lat: next.lat,
+            lng: next.lng,
+          });
+          if (!saved) lMarker.setLatLng([lat, lng]);
+          lMarker.dragging?.enable();
+        });
+      }
 
       lMarker.on('popupopen', () => {
         const container = document.querySelector('.leaflet-popup-content');

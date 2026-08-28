@@ -21,7 +21,7 @@
 |---|---|
 | Current stable version | **v0.19.0a — Shared ThreeD Model Library Placement** |
 | Current release candidate | **None designated** |
-| Current development milestone | **v0.19.0a deployed and production verified** |
+| Current development milestone | **Post-v0.19.0a: existing Project Model repositioning; 2D verified and explicit ThreeD Move Model mode awaiting manual verification** |
 | Previous checkpoint | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

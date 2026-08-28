@@ -137,3 +137,13 @@ The drag payload carries only display identity; it is not a persistence authorit
 Manual verification passed for 2D click placement, 3D click placement, 2D drag-and-drop, 3D drag-and-drop, Combined View synchronization, cancellation, invalid drops, and one-record-per-placement behavior. The candidate is ready for the manual build and production deployment gates.
 
 The candidate adds no database migration or new API route. It does not mount Paper.js, another Leaflet map, another R3F Canvas, another Rapier world, or another Runtime Marker registry. The existing `project_threed_markers` route and client transaction remain the write and state-update authorities.
+
+## Post-v0.19.0a — existing Model repositioning
+
+The next incremental possibility is repositioning a previously placed Project Model through either visual surface. The first implementation is deliberately limited to Leaflet: Project Model markers are draggable on the existing 2D Map, the final map coordinate passes through the shared inverse projection, and a position-only PATCH updates the existing `project_threed_markers` row. The returned row patches the stable marker collection so the ThreeD visual and fixed Rapier body receive the new transform through their established owner.
+
+The reusable `threed_models` record is not changed. Other marker types are not draggable. A failed update returns the Leaflet marker to its saved position. ThreeD Scene dragging is deferred because it must coordinate marker pointer capture, OrbitControls, fixed-body synchronization, selection, and camera behavior separately.
+
+Manual verification passed for the Leaflet repositioning path. The ThreeD Scene now adds the matching safe interaction as an explicit **Move Model** mode in the selected Model's DetailsCard. This mode reuses the Scene's established ground preview and reports one replacement Project position to the same position-only PATCH transaction. A successful response patches the stable marker instance and ends move mode; cancelling writes nothing, and a failed request leaves move mode available for retry.
+
+The Model itself is not made freely draggable inside the R3F Canvas. This keeps ordinary marker selection, OrbitControls, and Ecctrl input unchanged when move mode is off. Beds, Plantings, FarmBots, and Characters remain outside this step.

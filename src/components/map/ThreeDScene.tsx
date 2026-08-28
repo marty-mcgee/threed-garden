@@ -103,6 +103,10 @@ interface ThreeDSceneProps {
   placementModel?: ThreeDModelLibraryItem | null;
   /** Called with the ground point selected during placement mode. */
   onModelPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Existing Project Model currently awaiting a new ground position. */
+  movingModelName?: string | null;
+  /** Called with the selected replacement position for an existing Project Model. */
+  onModelReposition?: (position: { x: number; y: number; z: number }) => void;
   /** Character Library item currently awaiting a ground placement click. */
   placementCharacterName?: string | null;
   /** Called with the ground point selected for a Character. */
@@ -1296,6 +1300,8 @@ export function ThreeDScene({
   actionTargetFocusRequest = 0,
   placementModel,
   onModelPlacement,
+  movingModelName,
+  onModelReposition,
   placementCharacterName,
   onCharacterPlacement,
   placementFarmBotName,
@@ -1305,7 +1311,8 @@ export function ThreeDScene({
   placementPlantingName,
   onPlantingPlacement,
 }: ThreeDSceneProps) {
-  const placementLabel = placementCharacterName
+  const placementLabel = movingModelName
+    || placementCharacterName
     || placementFarmBotName
     || placementPlantingName
     || placementBedName
@@ -1781,7 +1788,7 @@ export function ThreeDScene({
     >
       {placementLabel && (
         <div className="pointer-events-none absolute left-3 top-3 z-10 rounded border border-cyan-300/40 bg-black/70 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm">
-          Click the ground to place <span className="font-medium">{placementLabel}</span>
+          Click the ground to {movingModelName ? 'move' : 'place'} <span className="font-medium">{placementLabel}</span>
         </div>
       )}
       {/* Controls Panel */}
@@ -2135,7 +2142,9 @@ export function ThreeDScene({
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
               onPlacementLeave={() => setPlacementPreviewPosition(null)}
-              onPlacementClick={placementCharacterName
+              onPlacementClick={movingModelName
+                ? onModelReposition
+                : placementCharacterName
                 ? onCharacterPlacement
                 : placementFarmBotName
                   ? onFarmBotPlacement
@@ -2215,7 +2224,9 @@ export function ThreeDScene({
               }
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
-              onPlacementClick={placementCharacterName
+              onPlacementClick={movingModelName
+                ? onModelReposition
+                : placementCharacterName
                 ? onCharacterPlacement
                 : placementFarmBotName
                   ? onFarmBotPlacement

@@ -80,6 +80,15 @@ interface UnifiedMapViewProps {
   placementModel?: ThreeDModelLibraryItem | null;
   /** Receives the selected ThreeD ground coordinate. */
   onModelPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Persists an existing Project Model at a new Project-plan position. */
+  onModelMove?: (
+    instanceId: number,
+    position: { x: number; y: number; z: number },
+  ) => Promise<boolean>;
+  /** Existing Project Model currently awaiting a new ThreeD ground position. */
+  movingModelName?: string | null;
+  /** Persists the selected ThreeD replacement position. */
+  onModelReposition?: (position: { x: number; y: number; z: number }) => void;
   /** Character Library item currently awaiting a ground placement click. */
   placementCharacterName?: string | null;
   /** Receives the selected ThreeD ground coordinate for a Character. */
@@ -165,6 +174,9 @@ export function UnifiedMapView({
   onRuntimeMarkerPositionResolverChange,
   placementModel,
   onModelPlacement,
+  onModelMove,
+  movingModelName,
+  onModelReposition,
   placementCharacterName,
   onCharacterPlacement,
   placementFarmBotName,
@@ -512,6 +524,16 @@ export function UnifiedMapView({
     onModelPlacement(mapPositionToProjectPlanPosition(position, gpsCenter));
   }, [gpsCenter, onModelPlacement, placementModel]);
 
+  const handleMapModelMove = useCallback((
+    instanceId: number,
+    position: { lat: number; lng: number },
+  ) => (
+    onModelMove?.(
+      instanceId,
+      mapPositionToProjectPlanPosition(position, gpsCenter),
+    ) ?? Promise.resolve(false)
+  ), [gpsCenter, onModelMove]);
+
   const render2DView = () => (
     <LeafletMap
       incidents={leafletIncidents}
@@ -527,6 +549,7 @@ export function UnifiedMapView({
       zoom={12}
       placementActive={Boolean(placementModel)}
       onPlacement={handleMapModelPlacement}
+      onModelMove={handleMapModelMove}
     />
   );
 
@@ -564,6 +587,8 @@ export function UnifiedMapView({
         actionTargetFocusRequest={actionTargetFocusRequest}
         placementModel={placementModel}
         onModelPlacement={onModelPlacement}
+        movingModelName={movingModelName}
+        onModelReposition={onModelReposition}
         placementCharacterName={placementCharacterName}
         onCharacterPlacement={onCharacterPlacement}
         placementFarmBotName={placementFarmBotName}
