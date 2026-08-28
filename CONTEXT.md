@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.0a — Shared ThreeD Model Library Placement** |
+| Current stable version | **v0.19.0b — Shared ThreeD Model Repositioning** |
 | Current release candidate | **None designated** |
-| Current development milestone | **Post-v0.19.0a: existing Project Model repositioning; 2D verified and explicit ThreeD Move Model mode awaiting manual verification** |
-| Previous checkpoint | **v0.18.9a — ThreeD Character Library and Snapshot Recovery** |
+| Current development milestone | **Post-v0.19.0b: WGS84 Project-local/geographic marker coordinate contract implemented and validated; proposed Drizzle fields await migration review** |
+| Previous checkpoint | **v0.19.0a — Shared ThreeD Model Library Placement** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -388,6 +388,7 @@ API (/api/map/threed)
 | **v0.18.9c** | **2026-08-27** | **Production release — uniform Project dropdown, Scene Controls, and compact marker DetailsCards across the ThreeD Dashboard** |
 | **v0.18.9d** | **2026-08-27** | **Production release — persistent marker selection, Stationary Take Control camera, and user-owned zoom behavior** |
 | **v0.19.0a** | **2026-08-27** | **Production release — shared Model Library click and drag placement across the existing Leaflet 2D Map and R3F ThreeD Scene through one Project-marker transaction** |
+| **v0.19.0b** | **2026-08-28** | **Production release — existing Project Model repositioning through the Leaflet 2D Map and explicit ThreeD Scene Move Model mode** |
 
 ---
 

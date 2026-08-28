@@ -147,3 +147,9 @@ The reusable `threed_models` record is not changed. Other marker types are not d
 Manual verification passed for the Leaflet repositioning path. The ThreeD Scene now adds the matching safe interaction as an explicit **Move Model** mode in the selected Model's DetailsCard. This mode reuses the Scene's established ground preview and reports one replacement Project position to the same position-only PATCH transaction. A successful response patches the stable marker instance and ends move mode; cancelling writes nothing, and a failed request leaves move mode available for retry.
 
 The Model itself is not made freely draggable inside the R3F Canvas. This keeps ordinary marker selection, OrbitControls, and Ecctrl input unchanged when move mode is off. Beds, Plantings, FarmBots, and Characters remain outside this step.
+
+### v0.19.0b release checkpoint
+
+The 2D drag and explicit ThreeD Move Model paths passed manual verification and were released successfully to production on August 28, 2026 as **v0.19.0b — Shared ThreeD Model Repositioning**. The package version is `0.19.0-beta`.
+
+The release retains the v0.19.0a placement workflow and adds no schema migration, new API route, freely draggable R3F object, or change to Character, Bed, Planting, or FarmBot ownership.

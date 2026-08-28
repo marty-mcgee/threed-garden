@@ -7,9 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.0a "Shared ThreeD Model Library Placement"` (`package.json` version `0.19.0-alpha`)
+> **Current production version:** `v0.19.0b "Shared ThreeD Model Repositioning"` (`package.json` version `0.19.0-beta`)
 
-The v0.19.0a production release lets one existing Model Library start a Project placement on either the existing Leaflet 2D Map or React Three Fiber Scene through click placement or native drag-and-drop. Both surfaces call the same authenticated Project-marker creation workflow and render the returned marker through current Runtime Marker and Sub-Module ownership. Legacy code remains evidence, not runtime authority: the release adds no Paper.js runtime, duplicate Canvas, map, Rapier world, registry, persistence format, or Character-model routing change.
+The v0.19.0b production release lets users reposition an existing Project Model through either the Leaflet 2D Map or an explicit ThreeD Scene **Move Model** mode. Both surfaces use the same position-only authenticated Project-marker update, preserve stable marker identity, and synchronize the existing visual, fixed collider, and Physics Debug outline without reloading the Project. The reusable Model record and other ThreeD Sub-Modules remain unchanged.
 
 The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.
 

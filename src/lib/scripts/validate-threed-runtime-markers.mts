@@ -66,7 +66,9 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/markers/project-marker-client-state-core.ts';
 import {
+  geographicPositionToProjectLocalPosition,
   mapPositionToProjectPlanPosition,
+  projectLocalPositionToGeographicPosition,
   projectPlanPositionToMapPosition,
   ThreeDMapCoordinateError,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
@@ -1196,6 +1198,68 @@ assert.throws(
   ThreeDMapCoordinateError,
 );
 validationStep('2D map and ThreeD Project positions share one reversible projection');
+
+const geographicOrigins = [
+  {
+    latitude: 0,
+    longitude: 10,
+    altitude: 25,
+    headingDegrees: 0,
+    metersPerSceneUnit: 1,
+  },
+  {
+    latitude: 39.514719,
+    longitude: -123.760382,
+    altitude: 18.5,
+    headingDegrees: 0,
+    metersPerSceneUnit: 1,
+  },
+  {
+    latitude: 64.1466,
+    longitude: -21.9426,
+    altitude: 73,
+    headingDegrees: 37,
+    metersPerSceneUnit: 0.5,
+  },
+];
+for (const origin of geographicOrigins) {
+  const local = { x: 28.125, y: 4.75, z: -13.625 };
+  const geographic = projectLocalPositionToGeographicPosition(local, origin);
+  const restored = geographicPositionToProjectLocalPosition(geographic, origin);
+  assert.ok(Math.abs(restored.x - local.x) < 1e-8);
+  assert.ok(Math.abs(restored.y - local.y) < 1e-8);
+  assert.ok(Math.abs(restored.z - local.z) < 1e-8);
+}
+validationStep('WGS84 local positions round-trip across latitude, altitude, scale, and heading');
+
+const northAlignedOrigin = geographicOrigins[1];
+const tenMetresEast = projectLocalPositionToGeographicPosition(
+  { x: 10, y: 0, z: 0 },
+  northAlignedOrigin,
+);
+const tenMetresNorth = projectLocalPositionToGeographicPosition(
+  { x: 0, y: 0, z: 10 },
+  northAlignedOrigin,
+);
+assert.equal(tenMetresEast.latitude, northAlignedOrigin.latitude);
+assert.ok(Math.abs(tenMetresNorth.longitude - northAlignedOrigin.longitude) < 1e-12);
+assert.ok(tenMetresEast.longitude > northAlignedOrigin.longitude);
+assert.ok(tenMetresNorth.latitude > northAlignedOrigin.latitude);
+assert.throws(
+  () => projectLocalPositionToGeographicPosition(
+    { x: 0, y: 0, z: 0 },
+    { ...northAlignedOrigin, metersPerSceneUnit: 0 },
+  ),
+  ThreeDMapCoordinateError,
+);
+assert.throws(
+  () => geographicPositionToProjectLocalPosition(
+    { latitude: 0, longitude: 181, altitude: 0 },
+    northAlignedOrigin,
+  ),
+  ThreeDMapCoordinateError,
+);
+validationStep('Geographic axes remain explicit and unsafe coordinate inputs fail closed');
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);

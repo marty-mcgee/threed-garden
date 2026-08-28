@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.0b — Shared ThreeD Model Repositioning](v0.19.0b.md)
 - [v0.19.0a — Shared ThreeD Model Library Placement](v0.19.0a.md)
 - [v0.18.9d — ThreeD Scene Navigation UX](v0.18.9d.md)
 - [v0.18.9c — ThreeD Project Header and DetailsCard UI](v0.18.9c.md)

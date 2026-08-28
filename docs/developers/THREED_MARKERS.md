@@ -306,3 +306,39 @@ The completed persistence path declares `project_threed_markers`, provides its a
 6. Refresh the Dashboard. Confirm the character and all other markers restore at their saved positions and retain selection, layer, and Action Target behavior.
 7. Remove a source asset's active Project assignment and refresh. Confirm its stale saved row does not render.
 8. Recheck GardenCharacter wandering, Ecctrl Take/Release Control and WASD, camera modes, DetailsCard, targeted Water, Pick Fruit, and task-to-locomotion crossfades.
+
+# Local and geographic position contract
+
+The post-v0.19.0b positioning milestone gives every Project ThreeD Scene one geographic origin and gives every saved Project marker two synchronized representations of one location:
+
+```text
+Project ThreeD geographic origin
+        ↓
+Project-local X/Y/Z ↔ WGS84 latitude/longitude/altitude
+        ↓                         ↓
+R3F + Rapier                 Leaflet Map
+```
+
+The axes are explicit: local +X is geographic east when heading is zero, +Y is elevation, and +Z is geographic north. `heading_degrees` rotates Scene +Z clockwise from north. `meters_per_scene_unit` defines physical Scene scale. The WGS84 conversion uses a Project-local tangent plane, so east/west distance changes correctly with latitude and local coordinates round-trip without using a fixed degrees-per-unit value.
+
+Local X/Y/Z remains the R3F and Rapier transform authority. Geographic latitude/longitude/altitude is the synchronized Map representation. A client may submit either a local edit or a geographic edit, but the authenticated server must calculate the other representation from the same Project origin in one transaction. Clients must not submit two independently authoritative positions.
+
+## Proposed Drizzle fields — review boundary
+
+No schema change is included in the coordinate-core checkpoint. The proposed next migration is:
+
+`project_threed`:
+
+- `origin_latitude decimal(10, 7)` — nullable until an existing Project is configured;
+- `origin_longitude decimal(10, 7)` — nullable until configured;
+- `origin_altitude decimal(12, 3)` — default `0` metres;
+- `heading_degrees decimal(8, 3)` — default `0`;
+- `meters_per_scene_unit decimal(12, 6)` — default `11.119493` for current-layout compatibility.
+
+`project_threed_markers`:
+
+- `latitude decimal(10, 7)` — nullable only during migration/backfill;
+- `longitude decimal(10, 7)` — nullable only during migration/backfill;
+- `altitude decimal(12, 3)` — nullable only during migration/backfill.
+
+Existing marker GPS values must be backfilled only after their owning `project_threed` origin is configured. The migration must not guess a universal origin for unrelated Projects. After backfill, create/update routes keep both representations synchronized for Models, Beds, Plantings, FarmBots, and Characters through the same Project-marker transaction.
