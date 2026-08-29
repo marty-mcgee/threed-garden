@@ -20,8 +20,15 @@ import {
 import { ThreeDRuntimeMarkerRegistry } from '@/lib/services/threed/markers/runtime-marker-core';
 import type { ProjectThreeDMarkerSnapshotInput } from '@/lib/services/threed/markers/project-marker-snapshot-core';
 import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+import type {
+  ProjectMapViewState,
+  ProjectThreeDViewState,
+  ThreeDProjectViewState,
+} from '@/lib/services/threed/markers/project-view-state-core';
 
 export type ProjectThreeDMarkerSnapshotProvider = () => ProjectThreeDMarkerSnapshotInput[];
+export type ProjectThreeDViewStateProvider = () => ProjectThreeDViewState;
+export type ProjectMapViewStateProvider = () => ProjectMapViewState;
 export type ThreeDRuntimeMarkerPositionResolver = (
   moduleType: string,
   assetId: number,
@@ -76,6 +83,13 @@ interface UnifiedMapViewProps {
   /** Registers an on-demand provider for an explicit ThreeD Project save. */
   onProjectMarkerSnapshotProviderChange?: (
     provider: ProjectThreeDMarkerSnapshotProvider | null,
+  ) => void;
+  initialProjectViewState?: ThreeDProjectViewState | null;
+  onProjectThreeDViewStateProviderChange?: (
+    provider: ProjectThreeDViewStateProvider | null,
+  ) => void;
+  onProjectMapViewStateProviderChange?: (
+    provider: ProjectMapViewStateProvider | null,
   ) => void;
   /** Registers an on-demand reader for a marker's current registry position. */
   onRuntimeMarkerPositionResolverChange?: (
@@ -177,6 +191,9 @@ export function UnifiedMapView({
   actionTarget,
   actionTargetFocusRequest = 0,
   onProjectMarkerSnapshotProviderChange,
+  initialProjectViewState,
+  onProjectThreeDViewStateProviderChange,
+  onProjectMapViewStateProviderChange,
   onRuntimeMarkerPositionResolverChange,
   placementModel,
   onModelPlacement,
@@ -556,6 +573,8 @@ export function UnifiedMapView({
       gpsCenter={gpsCenter}
       center={[gpsCenter.lat, gpsCenter.lng]}
       zoom={12}
+      initialViewState={initialProjectViewState?.map}
+      onViewStateProviderChange={onProjectMapViewStateProviderChange}
       placementActive={Boolean(placementModel)}
       onPlacement={handleMapModelPlacement}
       onModelMove={handleMapModelMove}
@@ -587,6 +606,8 @@ export function UnifiedMapView({
         height="100%"
         autoRotate={autoRotate}
         onAutoRotateToggle={() => setAutoRotate(!autoRotate)}
+        initialViewState={initialProjectViewState?.threeD}
+        onViewStateProviderChange={onProjectThreeDViewStateProviderChange}
         controlledCharacterId={controlledCharacterId}
         onControlChange={onControlChange}
         onRuntimeMarkerPositionChange={handleRuntimeMarkerPositionChange}

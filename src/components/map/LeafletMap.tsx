@@ -6,6 +6,7 @@ import { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { TrafficIncident, RuntimeMarker as ThreeDMarker } from '@/lib/types/map';
+import type { ProjectMapViewState } from '@/lib/services/threed/markers/project-view-state-core';
 import { 
   getTrafficColor, 
   getTrafficLabel,
@@ -51,6 +52,8 @@ interface LeafletMapProps {
     instanceId: number,
     position: { lat: number; lng: number },
   ) => Promise<boolean>;
+  initialViewState?: ProjectMapViewState;
+  onViewStateProviderChange?: (provider: (() => ProjectMapViewState) | null) => void;
 }
 
 
@@ -99,11 +102,14 @@ function LeafletMapComponent({
   placementActive = false,
   onPlacement,
   onModelMove,
+  initialViewState,
+  onViewStateProviderChange,
 }: LeafletMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const initializedRef = useRef(false);
   const previousSelectedRef = useRef<string | null>(null);
+  const restoredViewKeyRef = useRef<string | null>(null);
 
   // Store callbacks in refs to prevent re-renders
   const onIncidentClickRef = useRef(onIncidentClick);
@@ -153,6 +159,35 @@ function LeafletMapComponent({
       previousSelectedRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (!onViewStateProviderChange) return;
+    onViewStateProviderChange(() => {
+      const map = mapInstanceRef.current;
+      const currentCenter = map?.getCenter();
+      return {
+        center: {
+          lat: currentCenter?.lat ?? center[0],
+          lng: currentCenter?.lng ?? center[1],
+        },
+        zoom: map?.getZoom() ?? zoom,
+      };
+    });
+    return () => onViewStateProviderChange(null);
+  }, [center, onViewStateProviderChange, zoom]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !initialViewState) return;
+    const key = `${initialViewState.center.lat}:${initialViewState.center.lng}:${initialViewState.zoom}`;
+    if (restoredViewKeyRef.current === key) return;
+    restoredViewKeyRef.current = key;
+    map.setView(
+      [initialViewState.center.lat, initialViewState.center.lng],
+      initialViewState.zoom,
+      { animate: false },
+    );
+  }, [initialViewState]);
 
   useEffect(() => {
     const container = mapInstanceRef.current?.getContainer();
@@ -540,14 +575,16 @@ function LeafletMapComponent({
     });
 
     // Fit bounds on first render only
-    if (hasMarkers && bounds.isValid() && !initializedRef.current) {
+    if (hasMarkers && bounds.isValid() && !initializedRef.current && !initialViewState) {
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+      initializedRef.current = true;
+    } else if (initialViewState) {
       initializedRef.current = true;
     }
   // ✅ v0.15.2: Don't include selectedIncident/selectedMarker in deps —
   // selection highlighting is cosmetic and redraw-on-select causes popup/open close loops.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [incidents, markers, gpsCenter]);
+  }, [incidents, markers, gpsCenter, initialViewState]);
 
   return <div ref={mapRef} style={{ height, width: '100%' }} />;
 }

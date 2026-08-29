@@ -65,6 +65,7 @@ import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
 import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orchestration/interaction-core';
 import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestration/action-target-core';
 import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers/model-visual-fit-core';
+import type { ProjectThreeDViewState } from '@/lib/services/threed/markers/project-view-state-core';
 
 interface ThreeDSceneProps {
   incidents: any[];
@@ -79,6 +80,8 @@ interface ThreeDSceneProps {
   height?: string;
   autoRotate?: boolean;
   onAutoRotateToggle?: () => void;
+  initialViewState?: ProjectThreeDViewState;
+  onViewStateProviderChange?: (provider: (() => ProjectThreeDViewState) | null) => void;
   projectId?: number;
   /** Clockwise bearing of local Scene -Z from true north. */
   geographicHeadingDegrees?: number;
@@ -1293,6 +1296,8 @@ export function ThreeDScene({
   height = '100%',
   autoRotate = false,
   onAutoRotateToggle,
+  initialViewState,
+  onViewStateProviderChange,
   geographicHeadingDegrees = 0,
   controlledCharacterId,
   onControlChange,
@@ -1330,6 +1335,7 @@ export function ThreeDScene({
   const selectedMarkerRef = useRef(selectedMarker);
   selectedMarkerRef.current = selectedMarker;
   const controlsRef = useRef<any>(null);
+  const restoredProjectViewKeyRef = useRef<string | null>(null);
   const compassNeedleRef = useRef<HTMLDivElement | null>(null);
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
@@ -1593,6 +1599,57 @@ export function ThreeDScene({
     if (Math.hypot(screenX, screenUp) < 1e-8) return;
     needle.style.transform = `rotate(${Math.atan2(screenX, screenUp)}rad)`;
   }, [geographicHeadingDegrees]);
+
+  useEffect(() => {
+    if (!onViewStateProviderChange || !controlsReady) return;
+    onViewStateProviderChange(() => {
+      const controls = controlsRef.current;
+      return {
+        cameraPosition: {
+          x: Number(controls?.object?.position?.x ?? 0),
+          y: Number(controls?.object?.position?.y ?? 0),
+          z: Number(controls?.object?.position?.z ?? 0),
+        },
+        cameraTarget: {
+          x: Number(controls?.target?.x ?? 0),
+          y: Number(controls?.target?.y ?? 0),
+          z: Number(controls?.target?.z ?? 0),
+        },
+        activeLayers: Array.from(activeLayers),
+        environment: envPreset,
+        autoRotate: Boolean(autoRotate),
+        showGrid,
+        showLegend,
+        showGizmo: showGizmoCube,
+      };
+    });
+    return () => onViewStateProviderChange(null);
+  }, [activeLayers, autoRotate, controlsReady, envPreset, onViewStateProviderChange, showGizmoCube, showGrid, showLegend]);
+
+  useEffect(() => {
+    if (!controlsReady || !controlsRef.current || !initialViewState) return;
+    const key = JSON.stringify(initialViewState);
+    if (restoredProjectViewKeyRef.current === key) return;
+    restoredProjectViewKeyRef.current = key;
+    controlsRef.current.object.position.set(
+      initialViewState.cameraPosition.x,
+      initialViewState.cameraPosition.y,
+      initialViewState.cameraPosition.z,
+    );
+    controlsRef.current.target.set(
+      initialViewState.cameraTarget.x,
+      initialViewState.cameraTarget.y,
+      initialViewState.cameraTarget.z,
+    );
+    controlsRef.current.update();
+    setActiveLayers(new Set(initialViewState.activeLayers));
+    setEnvPreset(initialViewState.environment);
+    setShowGrid(initialViewState.showGrid);
+    setShowLegend(initialViewState.showLegend);
+    setShowGizmoCube(initialViewState.showGizmo);
+    if (Boolean(autoRotate) !== initialViewState.autoRotate) onAutoRotateToggle?.();
+    updateGeographicCompass();
+  }, [autoRotate, controlsReady, initialViewState, onAutoRotateToggle, updateGeographicCompass]);
 
   const showNorthUpView = useCallback(() => {
     const controls = controlsRef.current;

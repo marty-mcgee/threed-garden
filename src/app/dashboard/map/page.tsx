@@ -48,7 +48,9 @@ import {
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import {
   UnifiedMapView,
+  type ProjectMapViewStateProvider,
   type ProjectThreeDMarkerSnapshotProvider,
+  type ProjectThreeDViewStateProvider,
   type ThreeDRuntimeMarkerPositionResolver,
 } from '@/components/map/UnifiedMapView';
 import {
@@ -85,6 +87,10 @@ import {
 } from '@/lib/utils/map-helpers';
 import { applyThreeDProjectClientTransaction } from '@/lib/services/threed/markers/project-marker-client-state-core';
 import type { ThreeDGeographicOrigin } from '@/lib/services/threed/markers/map-coordinate-core';
+import {
+  PROJECT_VIEW_STATE_VERSION,
+  type ThreeDProjectViewState,
+} from '@/lib/services/threed/markers/project-view-state-core';
 
 // ✅ Project Selector Dialog Component
 function ProjectSelectorDialog({ 
@@ -1711,6 +1717,7 @@ function UnifiedMapPageInner() {
   
   // ✅ Default view ['3d','2d','combined']
   const [viewMode, setViewMode] = useState<MapViewMode>('3d');
+  const [panelHeight, setPanelHeight] = useState(50);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
@@ -1730,8 +1737,20 @@ function UnifiedMapPageInner() {
   const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
   const projectMarkerSnapshotProviderRef =
     useRef<ProjectThreeDMarkerSnapshotProvider | null>(null);
+  const projectThreeDViewStateProviderRef = useRef<ProjectThreeDViewStateProvider | null>(null);
+  const projectMapViewStateProviderRef = useRef<ProjectMapViewStateProvider | null>(null);
+  const lastProjectThreeDViewStateRef = useRef<ReturnType<ProjectThreeDViewStateProvider> | undefined>(undefined);
+  const lastProjectMapViewStateRef = useRef<ReturnType<ProjectMapViewStateProvider> | undefined>(undefined);
+  const [initialProjectViewState, setInitialProjectViewState] =
+    useState<ThreeDProjectViewState | null>(null);
   const runtimeMarkerPositionResolverRef =
     useRef<ThreeDRuntimeMarkerPositionResolver | null>(null);
+
+  useEffect(() => {
+    if (!initialProjectViewState) return;
+    lastProjectThreeDViewStateRef.current = initialProjectViewState.threeD;
+    lastProjectMapViewStateRef.current = initialProjectViewState.map;
+  }, [initialProjectViewState]);
 
   const updateProjectThreeDMarkers = useCallback((
     update: (markers: ProjectThreeDMarkerRecord[]) => ProjectThreeDMarkerRecord[],
@@ -1824,6 +1843,24 @@ function UnifiedMapPageInner() {
     provider: ProjectThreeDMarkerSnapshotProvider | null,
   ) => {
     projectMarkerSnapshotProviderRef.current = provider;
+  }, []);
+
+  const handleProjectThreeDViewStateProviderChange = useCallback((
+    provider: ProjectThreeDViewStateProvider | null,
+  ) => {
+    if (!provider && projectThreeDViewStateProviderRef.current) {
+      lastProjectThreeDViewStateRef.current = projectThreeDViewStateProviderRef.current();
+    }
+    projectThreeDViewStateProviderRef.current = provider;
+  }, []);
+
+  const handleProjectMapViewStateProviderChange = useCallback((
+    provider: ProjectMapViewStateProvider | null,
+  ) => {
+    if (!provider && projectMapViewStateProviderRef.current) {
+      lastProjectMapViewStateRef.current = projectMapViewStateProviderRef.current();
+    }
+    projectMapViewStateProviderRef.current = provider;
   }, []);
 
   const handleRuntimeMarkerPositionResolverChange = useCallback((
@@ -1994,12 +2031,30 @@ function UnifiedMapPageInner() {
     setSavingProjectMarkers(true);
     try {
       const markers = provider();
+      const currentThreeDView = projectThreeDViewStateProviderRef.current?.()
+        ?? lastProjectThreeDViewStateRef.current
+        ?? initialProjectViewState?.threeD;
+      const currentMapView = projectMapViewStateProviderRef.current?.()
+        ?? lastProjectMapViewStateRef.current
+        ?? initialProjectViewState?.map;
+      if (currentThreeDView) lastProjectThreeDViewStateRef.current = currentThreeDView;
+      if (currentMapView) lastProjectMapViewStateRef.current = currentMapView;
+      const viewState: ThreeDProjectViewState = {
+        version: PROJECT_VIEW_STATE_VERSION,
+        savedAt: new Date().toISOString(),
+        viewMode,
+        panelHeight,
+        cameraMode: cameraMode as ThreeDProjectViewState['cameraMode'],
+        ...(currentThreeDView ? { threeD: currentThreeDView } : {}),
+        ...(currentMapView ? { map: currentMapView } : {}),
+      };
       const response = await fetch('/api/project/threed-markers', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectId: Number(selectedProjectId),
           markers,
+          viewState,
         }),
       });
       const result = await response.json().catch(() => null);
@@ -2023,7 +2078,7 @@ function UnifiedMapPageInner() {
     } finally {
       setSavingProjectMarkers(false);
     }
-  }, [savingProjectMarkers, selectedProjectId]);
+  }, [cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -2117,7 +2172,6 @@ function UnifiedMapPageInner() {
 
   // ✅ Panel resize state
   const containerRef = useRef<HTMLDivElement>(null);
-  const [panelHeight, setPanelHeight] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
 
   // ✅ Asset type visibility state
@@ -2423,6 +2477,7 @@ function UnifiedMapPageInner() {
     try {
       if (!selectedProjectId) {
         const defaultData = getDefaultMapData();
+        setInitialProjectViewState(null);
         setData(defaultData);
         setProjectInfo({ name: 'No Project Selected', hasData: false });
         setIsDefaultView(true);
@@ -2435,6 +2490,18 @@ function UnifiedMapPageInner() {
         const result = await response.json();
 
         if (result.success) {
+          const savedViewState = result.projectContext?.viewState as ThreeDProjectViewState | null;
+          setInitialProjectViewState(savedViewState ?? null);
+          if (savedViewState) {
+            setViewMode(savedViewState.viewMode);
+            setPanelHeight(savedViewState.panelHeight);
+            setCameraMode(savedViewState.cameraMode);
+            lastProjectThreeDViewStateRef.current = savedViewState.threeD;
+            lastProjectMapViewStateRef.current = savedViewState.map;
+          } else {
+            lastProjectThreeDViewStateRef.current = undefined;
+            lastProjectMapViewStateRef.current = undefined;
+          }
           // ✅ Split combined API response into separate threed vs traffic data
           const resultData = result.data || {};
           const threedModules = Array.isArray(result.projectContext?.threedModules)
@@ -4734,6 +4801,8 @@ function UnifiedMapPageInner() {
                         : null}
                       onPlantingPlacement={handlePlantingPlacement}
                       onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
+                      initialProjectViewState={initialProjectViewState}
+                      onProjectThreeDViewStateProviderChange={handleProjectThreeDViewStateProviderChange}
                       onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                       onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
                       onRejectedCharacterMarkerRepair={handleRejectedCharacterMarkerRepair}
@@ -4775,6 +4844,8 @@ function UnifiedMapPageInner() {
                       placementModel={placementModel}
                       onModelPlacement={handleModelPlacement}
                       onModelMove={handleMoveModelInstance}
+                      initialProjectViewState={initialProjectViewState}
+                      onProjectMapViewStateProviderChange={handleProjectMapViewStateProviderChange}
                     />
                   </div>
                 </div>
@@ -4820,6 +4891,8 @@ function UnifiedMapPageInner() {
                   : null}
                 onPlantingPlacement={handlePlantingPlacement}
                 onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
+                initialProjectViewState={initialProjectViewState}
+                onProjectThreeDViewStateProviderChange={handleProjectThreeDViewStateProviderChange}
                 onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                 onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
                 onRejectedCharacterMarkerRepair={handleRejectedCharacterMarkerRepair}
@@ -4848,6 +4921,8 @@ function UnifiedMapPageInner() {
                 placementModel={placementModel}
                 onModelPlacement={handleModelPlacement}
                 onModelMove={handleMoveModelInstance}
+                initialProjectViewState={initialProjectViewState}
+                onProjectMapViewStateProviderChange={handleProjectMapViewStateProviderChange}
               />
             )}
 

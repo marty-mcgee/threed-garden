@@ -374,3 +374,29 @@ The ThreeD Scene receives the calibrated Project heading as view context. Its tr
 The v0.19.0d candidate replaces horizontal tangent approximations with shared iterative WGS84 ellipsoidal forward/inverse calculations, exposes calibration span/scale/residual diagnostics, and removes both local-coordinate and latitude/longitude overlap spreading from Leaflet input. Manual comparison confirms the north-up ThreeD and 2D layouts now closely match.
 
 The release does not claim that two consumer GPS observations provide survey-grade accuracy. It preserves local XYZ as the R3F/Rapier authority, preserves Project altitude because the reference pairs contain no elevation, and does not move co-located markers merely to expose their icons. Future clustering or spiderfying must be temporary presentation behavior around the exact geographic anchor.
+
+## v0.19.1a Project view-state milestone
+
+**Save ThreeD Project** now captures a versioned presentation snapshot together with the complete Runtime Marker snapshot. The view state is stored under `project.config.threeDViewState`; no new table or schema field is required. The authenticated save route validates the bounded view contract and writes the marker snapshot and Project configuration in the same transaction.
+
+The saved state includes:
+
+- Dashboard view mode (`3d`, `2d`, or `combined`) and the combined-view panel split;
+- Character camera mode;
+- ThreeD camera position and OrbitControls target, which together reproduce orbit perspective and zoom distance;
+- Leaflet center and zoom level;
+- visible ThreeD Scene Layers, environment, auto-rotate, grid, legend, and gizmo preferences.
+
+Restore occurs only after the relevant ThreeD or Leaflet controls exist. It does not remount the persistent Canvas or Rapier world and does not alter marker transforms. Invalid or obsolete view-state JSON is ignored during Project load rather than preventing marker data from rendering.
+
+Transient interaction state is deliberately excluded: selected markers, DetailsCards, Take Control ownership, Action Targets, placement/edit modes, filters, open menus, and Physics Debug are never resumed from a saved Project. This keeps refresh restoration useful without reactivating input, diagnostics, or an unfinished mutation.
+
+### Manual verification
+
+1. Open an owned Project and choose **Combined View**. Resize the 3D/2D split.
+2. Orbit and zoom the ThreeD camera, then pan and zoom Leaflet to a recognizable location.
+3. Select a non-default camera mode, Scene Layer visibility, environment, grid, legend, or gizmo setting.
+4. Click **Save ThreeD Project** and confirm the existing marker-count success toast.
+5. Refresh `/dashboard/map` and confirm the view mode, panel split, ThreeD camera position/target, Leaflet center/zoom, camera mode, and saved display settings return.
+6. Confirm no Character is automatically controlled, no marker or Action Target is selected, no DetailsCard or placement form opens, and Physics Debug remains off.
+7. Confirm marker positions, Ecctrl Take/Release Control, WASD, collisions, Layer authority, and Project marker CRUD remain unchanged.

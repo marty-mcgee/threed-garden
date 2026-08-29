@@ -48,6 +48,10 @@ import {
   ProjectMarkerSnapshotError,
 } from '@/lib/services/threed/markers/project-marker-snapshot-core';
 import {
+  parseThreeDProjectViewState,
+  ProjectViewStateError,
+} from '@/lib/services/threed/markers/project-view-state-core';
+import {
   projectLocalPositionToGeographicPosition,
   type ThreeDGeographicOrigin,
 } from '@/lib/services/threed/markers/map-coordinate-core';
@@ -94,6 +98,7 @@ async function requireOwnedProject(userId: string, projectId: number) {
       originAltitude: project.originAltitude,
       headingDegrees: project.headingDegrees,
       metersPerSceneUnit: project.metersPerSceneUnit,
+      config: project.config,
     })
     .from(project)
     .where(and(eq(project.id, projectId), eq(project.userId, userId)))
@@ -340,6 +345,7 @@ async function saveSnapshot(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid project ID' }, { status: 400 });
     }
     const markers = parseProjectThreeDMarkerSnapshot(requestBody.markers);
+    const viewState = parseThreeDProjectViewState(requestBody.viewState);
 
     const ownedProject = await requireOwnedProject(userId, projectId);
     if (!ownedProject) {
@@ -419,17 +425,16 @@ async function saveSnapshot(request: NextRequest) {
       await tx.execute(
         sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${projectId}`}))`,
       );
+      let savedRows: (typeof projectThreedMarkers.$inferSelect)[] = [];
       if (rows.length === 0) {
         await tx.delete(projectThreedMarkers).where(and(
           eq(projectThreedMarkers.projectId, projectId),
           eq(projectThreedMarkers.userId, userId),
         ));
-        return [];
-      }
-
-      const savedRows = await tx.insert(projectThreedMarkers)
-        .values(rows)
-        .onConflictDoUpdate({
+      } else {
+        savedRows = await tx.insert(projectThreedMarkers)
+          .values(rows)
+          .onConflictDoUpdate({
           target: [projectThreedMarkers.projectId, projectThreedMarkers.markerId],
           set: {
             userId: sql`excluded.user_id`,
@@ -454,14 +459,20 @@ async function saveSnapshot(request: NextRequest) {
             savedAt: sql`excluded.saved_at`,
             updatedAt: sql`excluded.updated_at`,
           },
-        })
-        .returning();
+          })
+          .returning();
 
-      await tx.delete(projectThreedMarkers).where(and(
-        eq(projectThreedMarkers.projectId, projectId),
-        eq(projectThreedMarkers.userId, userId),
-        notInArray(projectThreedMarkers.markerId, rows.map((row) => row.markerId)),
-      ));
+        await tx.delete(projectThreedMarkers).where(and(
+          eq(projectThreedMarkers.projectId, projectId),
+          eq(projectThreedMarkers.userId, userId),
+          notInArray(projectThreedMarkers.markerId, rows.map((row) => row.markerId)),
+        ));
+      }
+
+      await tx.update(project).set({
+        config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ threeDViewState: viewState })}::jsonb`,
+        updatedAt: new Date(),
+      }).where(and(eq(project.id, projectId), eq(project.userId, userId)));
       return savedRows;
     });
 
@@ -475,10 +486,19 @@ async function saveSnapshot(request: NextRequest) {
       },
     });
   } catch (error) {
-    if (error instanceof ProjectMarkerSnapshotError) {
+    if (error instanceof ProjectMarkerSnapshotError || error instanceof ProjectViewStateError) {
       return NextResponse.json(
-        { success: false, error: 'Invalid ThreeD Project marker snapshot' },
-        { status: error.code === 'too_many_markers' ? 413 : 400 },
+        {
+          success: false,
+          error: error instanceof ProjectViewStateError
+            ? 'Invalid ThreeD Project view state'
+            : 'Invalid ThreeD Project marker snapshot',
+        },
+        {
+          status: error instanceof ProjectMarkerSnapshotError && error.code === 'too_many_markers'
+            ? 413
+            : 400,
+        },
       );
     }
     console.error('Failed to save ThreeD Project marker snapshot', {

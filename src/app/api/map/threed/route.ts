@@ -35,6 +35,7 @@ import {
   projectTraffic,
 } from '@/lib/schema/project';
 import { eq, and, desc, sql, inArray } from 'drizzle-orm';
+import { readThreeDProjectViewStateFromConfig } from '@/lib/services/threed/markers/project-view-state-core';
 
 const MARKER_ASSET_TYPE_BY_MODULE = {
   plantings: 'threed_plantings',
@@ -406,6 +407,7 @@ export async function GET(request: NextRequest) {
       projectContext: {
         projectId: projectData.id,
         projectName: projectData.name,
+        viewState: readThreeDProjectViewStateFromConfig(projectData.config),
         geographicOrigin: projectData.originLatitude !== null
           && projectData.originLongitude !== null
           ? {
