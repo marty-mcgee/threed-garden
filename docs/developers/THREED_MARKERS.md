@@ -319,21 +319,23 @@ Project-local X/Y/Z ↔ WGS84 latitude/longitude/altitude
 R3F + Rapier                 Leaflet Map
 ```
 
-The axes are explicit: local +X is geographic east when heading is zero, +Y is elevation, and +Z is geographic north. `heading_degrees` rotates Scene +Z clockwise from north. `meters_per_scene_unit` defines physical Scene scale. The WGS84 conversion uses a Project-local tangent plane, so east/west distance changes correctly with latitude and local coordinates round-trip without using a fixed degrees-per-unit value.
+The axes are explicit: local +X is geographic east when heading is zero, +Y is elevation, and -Z is geographic north. `heading_degrees` rotates Scene -Z clockwise from north. This preserves the Three.js ground-plane handedness: in a north-up overhead view, east is screen-right and north is screen-up rather than a reflected Map image. The established Bed dimensions and Planting spacing define one local Scene unit as one foot, so `meters_per_scene_unit` is `0.3048`. The WGS84 conversion uses a Project-local tangent plane, so east/west distance changes correctly with latitude and local coordinates round-trip without using a fixed degrees-per-unit value.
 
 Local X/Y/Z remains the R3F and Rapier transform authority. Geographic latitude/longitude/altitude is the synchronized Map representation. A client may submit either a local edit or a geographic edit, but the authenticated server must calculate the other representation from the same Project origin in one transaction. Clients must not submit two independently authoritative positions.
 
-## Proposed Drizzle fields — review boundary
+## Drizzle geographic fields — migration boundary
 
-No schema change is included in the coordinate-core checkpoint. The proposed next migration is:
+The reviewed Drizzle schema now declares:
 
-`project_threed`:
+`project`:
 
 - `origin_latitude decimal(10, 7)` — nullable until an existing Project is configured;
 - `origin_longitude decimal(10, 7)` — nullable until configured;
 - `origin_altitude decimal(12, 3)` — default `0` metres;
 - `heading_degrees decimal(8, 3)` — default `0`;
-- `meters_per_scene_unit decimal(12, 6)` — default `11.119493` for current-layout compatibility.
+- `meters_per_scene_unit decimal(12, 6)` — default `0.304800`, exactly one foot per local Scene unit.
+- `calibration_point_a_local_x/z decimal(12, 3)` and `calibration_point_b_local_x/z decimal(12, 3)` — nullable until a two-point calibration is saved;
+- `calibration_point_a_latitude/longitude decimal(10, 7)` and `calibration_point_b_latitude/longitude decimal(10, 7)` — the matching surveyed GPS references.
 
 `project_threed_markers`:
 
@@ -341,4 +343,24 @@ No schema change is included in the coordinate-core checkpoint. The proposed nex
 - `longitude decimal(10, 7)` — nullable only during migration/backfill;
 - `altitude decimal(12, 3)` — nullable only during migration/backfill.
 
-Existing marker GPS values must be backfilled only after their owning `project_threed` origin is configured. The migration must not guess a universal origin for unrelated Projects. After backfill, create/update routes keep both representations synchronized for Models, Beds, Plantings, FarmBots, and Characters through the same Project-marker transaction.
+The parent Project owns the origin because one Dashboard Scene may combine several active `project_threed` assignments. Those assignments must not introduce competing coordinate origins into the same Canvas. Existing marker GPS values must be backfilled only after their owning Project origin is configured; the migration must not guess a universal origin for unrelated Projects.
+
+The authenticated marker POST, PATCH, and explicit Project-save routes now derive marker latitude, longitude, and altitude from local X/Y/Z through that owned Project origin. A Project without a configured latitude/longitude retains nullable marker GPS values. The Project map response exposes the same origin. When an origin is configured, the Dashboard derives Leaflet display coordinates from authoritative local XYZ, preventing stale GPS after an origin, heading, or scale correction. R3F and Rapier continue to receive local X/Y/Z only. An explicit **Save ThreeD Project** refreshes persisted marker GPS values.
+
+Marker selection preserves the same authority split. Clicking a marker in either the ThreeD Scene or Leaflet supplies local X/Y/Z to DetailsCard form controls. Leaflet latitude/longitude/altitude is carried separately as read-only GPS metadata; display-only spreading of overlapping Leaflet icons must not alter that stored/derived geographic value.
+
+## Two-point Project coordinate calibration
+
+An owned Project can be calibrated from **Edit Project → Project Coordinate Calibration** using two surveyed reference pairs. Each pair contains one local Scene X/Z position and the latitude/longitude of that same real-world point. The points must be distinct in both coordinate systems.
+
+Calibration solves three Project-owned values together:
+
+- `meters_per_scene_unit` from GPS distance divided by local X/Z distance;
+- `heading_degrees` from the difference between the local and geographic point bearings;
+- `origin_latitude` and `origin_longitude` by projecting either reference back to local `0,0`.
+
+This replaces guessed scale correction with a measured Project transform. The authenticated Project PATCH applies the calibrated origin, heading, and scale in one database transaction, then recalculates latitude/longitude/altitude for every saved Project marker. Marker-local X/Y/Z, marker identity, Sub-Module data, R3F transforms, and Rapier bodies remain unchanged. Project origin altitude is retained because two latitude/longitude references do not independently determine vertical elevation.
+
+The same successful transaction stores all eight submitted reference values on the Project. Returning to **Edit Project** therefore reloads the exact saved local/GPS pairs instead of presenting an empty Point B or attempting to reconstruct inputs from the calculated result. Legacy Projects retain nullable references and use the Project origin only as the initial Point A fallback until their first saved calibration.
+
+The ThreeD Scene receives the calibrated Project heading as view context. Its true-north compass projects geographic north through the active camera, so it remains accurate while the user orbits. **North-Up View** places the camera above the current OrbitControls target with geographic north at the top of the display. This is a camera operation only; it does not rotate the Scene, markers, or Rapier world.

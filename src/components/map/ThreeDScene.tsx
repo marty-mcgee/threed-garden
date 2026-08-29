@@ -43,6 +43,7 @@ import {
   Eye,
   EyeOff,
   Trash2,
+  Compass,
 } from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
@@ -79,6 +80,8 @@ interface ThreeDSceneProps {
   autoRotate?: boolean;
   onAutoRotateToggle?: () => void;
   projectId?: number;
+  /** Clockwise bearing of local Scene -Z from true north. */
+  geographicHeadingDegrees?: number;
   /** ID of the ecctrl character currently being controlled by keyboard */
   controlledCharacterId?: number | null;
   /** Called when an ecctrl character's control state changes, with its current world position */
@@ -1290,6 +1293,7 @@ export function ThreeDScene({
   height = '100%',
   autoRotate = false,
   onAutoRotateToggle,
+  geographicHeadingDegrees = 0,
   controlledCharacterId,
   onControlChange,
   onRuntimeMarkerPositionChange,
@@ -1326,6 +1330,7 @@ export function ThreeDScene({
   const selectedMarkerRef = useRef(selectedMarker);
   selectedMarkerRef.current = selectedMarker;
   const controlsRef = useRef<any>(null);
+  const compassNeedleRef = useRef<HTMLDivElement | null>(null);
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
@@ -1574,6 +1579,41 @@ export function ThreeDScene({
       controlsRef.current.update();
     }
   };
+
+  const updateGeographicCompass = useCallback(() => {
+    const controls = controlsRef.current;
+    const needle = compassNeedleRef.current;
+    if (!controls?.object || !controls?.target || !needle) return;
+    const heading = THREE.MathUtils.degToRad(geographicHeadingDegrees);
+    const localNorth = new THREE.Vector3(-Math.sin(heading), 0, -Math.cos(heading));
+    const targetOnScreen = controls.target.clone().project(controls.object);
+    const northOnScreen = controls.target.clone().add(localNorth).project(controls.object);
+    const screenX = northOnScreen.x - targetOnScreen.x;
+    const screenUp = northOnScreen.y - targetOnScreen.y;
+    if (Math.hypot(screenX, screenUp) < 1e-8) return;
+    needle.style.transform = `rotate(${Math.atan2(screenX, screenUp)}rad)`;
+  }, [geographicHeadingDegrees]);
+
+  const showNorthUpView = useCallback(() => {
+    const controls = controlsRef.current;
+    if (!controls?.object || !controls?.target) return;
+    if (autoRotate) onAutoRotateToggle?.();
+    const heading = THREE.MathUtils.degToRad(geographicHeadingDegrees);
+    const localNorth = new THREE.Vector3(-Math.sin(heading), 0, -Math.cos(heading));
+    const target = controls.target.clone();
+    const distance = Math.max(controls.object.position.distanceTo(target), 8);
+    const horizontalOffset = Math.max(distance * 0.02, 0.1);
+    const verticalOffset = Math.sqrt(Math.max(
+      (distance * distance) - (horizontalOffset * horizontalOffset),
+      1,
+    ));
+    controls.object.up.set(0, 1, 0);
+    controls.object.position.copy(target)
+      .addScaledVector(localNorth, -horizontalOffset)
+      .add(new THREE.Vector3(0, verticalOffset, 0));
+    controls.update();
+    updateGeographicCompass();
+  }, [autoRotate, geographicHeadingDegrees, onAutoRotateToggle, updateGeographicCompass]);
 
   // ✅ Focus on marker
   const focusOnMarker = (
@@ -1830,6 +1870,13 @@ export function ThreeDScene({
               <Move3D className="h-3.5 w-3.5" />
               {showGizmoCube ? 'Hide Gizmo' : 'Show Gizmo'}
             </button>
+            <button
+              onClick={showNorthUpView}
+              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <Compass className="h-3.5 w-3.5" />
+              North-Up View
+            </button>
             {incidents.length > 0 && (
               <button onClick={() => setShowIncidents(!showIncidents)} aria-pressed={showIncidents} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showIncidents ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
                 <Siren className="h-3.5 w-3.5" />
@@ -2015,6 +2062,18 @@ export function ThreeDScene({
         </div>
       )}
 
+      <div
+        className={`pointer-events-none absolute left-3 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-sm ${showLegend ? 'bottom-24' : 'bottom-3'}`}
+        aria-label="True north compass"
+        title={`True north · Project heading ${geographicHeadingDegrees.toFixed(1)}°`}
+      >
+        <div ref={compassNeedleRef} className="flex h-10 w-10 flex-col items-center justify-start transition-transform duration-75">
+          <span className="text-[9px] font-bold leading-none text-red-300">N</span>
+          <span className="text-lg leading-4 text-red-300">↑</span>
+        </div>
+        <span className="absolute bottom-0.5 text-[7px] text-white/45">TRUE</span>
+      </div>
+
       {/* Tooltip */}
       {/* <div className="absolute bottom-3 right-3 z-10 text-[10px] text-white/40 bg-black/40 px-2 py-1 rounded">
         Left-click: Select • Right-click: Zoom
@@ -2064,10 +2123,14 @@ export function ThreeDScene({
           autoRotate={autoRotate}
           autoRotateSpeed={0.8}
           target={[centerX, 0, centerZ]}
+          onChange={updateGeographicCompass}
         />
         <ControlsReadyNotifier
           controlsRef={controlsRef}
-          onReady={() => setControlsReady(true)}
+          onReady={() => {
+            setControlsReady(true);
+            updateGeographicCompass();
+          }}
         />
 
         {/* v0.16.2-alpha: Camera controller — follows controlled ecctrl character

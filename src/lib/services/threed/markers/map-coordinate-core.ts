@@ -19,7 +19,7 @@ export interface ThreeDGeographicOrigin {
   latitude: number;
   longitude: number;
   altitude: number;
-  /** Clockwise bearing of Scene +Z from geographic north. */
+  /** Clockwise bearing of Scene -Z from geographic north. */
   headingDegrees: number;
   /** Physical metres represented by one local Scene unit. */
   metersPerSceneUnit: number;
@@ -32,10 +32,19 @@ export interface ThreeDGeographicPosition {
   altitude: number;
 }
 
-// The previous projection treated 0.0001 latitude degrees as one Scene unit.
-// Retaining that north/south size avoids an abrupt Project layout scale change
-// while making east/west distance latitude-aware.
-export const DEFAULT_THREED_METERS_PER_SCENE_UNIT = 11.119492664455874;
+export interface ThreeDCoordinateCalibrationPoint {
+  local: Pick<ThreeDProjectPlanPosition, 'x' | 'z'>;
+  geographic: Pick<ThreeDGeographicPosition, 'latitude' | 'longitude'>;
+}
+
+export interface ThreeDCoordinateCalibrationInput {
+  pointA: ThreeDCoordinateCalibrationPoint;
+  pointB: ThreeDCoordinateCalibrationPoint;
+  originAltitude?: number;
+}
+
+/** ThreeD dimensions and positions use feet: one Scene unit equals one foot. */
+export const DEFAULT_THREED_METERS_PER_SCENE_UNIT = 0.3048;
 
 const WGS84_SEMI_MAJOR_AXIS_METERS = 6_378_137;
 const WGS84_ECCENTRICITY_SQUARED = 6.69437999014e-3;
@@ -76,6 +85,10 @@ function normalizeLongitude(value: number): number {
   return ((((value + 180) % 360) + 360) % 360) - 180;
 }
 
+function normalizeHeading(value: number): number {
+  return ((value % 360) + 360) % 360;
+}
+
 function validateOrigin(origin: ThreeDGeographicOrigin): ThreeDGeographicOrigin {
   const metersPerSceneUnit = requireFinite(
     origin.metersPerSceneUnit,
@@ -111,6 +124,87 @@ function getWgs84Radii(latitudeDegrees: number): {
   };
 }
 
+
+/**
+ * Solves one Project origin, heading, and physical scale from two matching
+ * local/GPS reference points. This uses the same Project-scale WGS84 tangent
+ * plane as the forward and reverse position transforms.
+ */
+export function calibrateThreeDGeographicOrigin(
+  input: ThreeDCoordinateCalibrationInput,
+): ThreeDGeographicOrigin {
+  const localAX = requireFinite(input.pointA.local.x, 'Point A local X');
+  const localAZ = requireFinite(input.pointA.local.z, 'Point A local Z');
+  const localBX = requireFinite(input.pointB.local.x, 'Point B local X');
+  const localBZ = requireFinite(input.pointB.local.z, 'Point B local Z');
+  const latitudeA = requireLatitude(input.pointA.geographic.latitude, 'Point A latitude');
+  const longitudeA = requireLongitude(input.pointA.geographic.longitude, 'Point A longitude');
+  const latitudeB = requireLatitude(input.pointB.geographic.latitude, 'Point B latitude');
+  const longitudeB = requireLongitude(input.pointB.geographic.longitude, 'Point B longitude');
+  const localDX = localBX - localAX;
+  const localDZ = localBZ - localAZ;
+  const localDistance = Math.hypot(localDX, localDZ);
+  if (localDistance < 1e-6) {
+    throw new ThreeDMapCoordinateError('Calibration local points must be distinct');
+  }
+
+  const referenceLatitude = (latitudeA + latitudeB) / 2;
+  const radii = getWgs84Radii(referenceLatitude);
+  const northMeters = (
+    (latitudeB - latitudeA) * DEGREES_TO_RADIANS * radii.meridional
+  );
+  const eastMeters = (
+    normalizeLongitude(longitudeB - longitudeA)
+    * DEGREES_TO_RADIANS
+    * radii.primeVertical
+    * Math.cos(referenceLatitude * DEGREES_TO_RADIANS)
+  );
+  const geographicDistance = Math.hypot(eastMeters, northMeters);
+  if (geographicDistance < 0.01) {
+    throw new ThreeDMapCoordinateError('Calibration GPS points must be distinct');
+  }
+
+  const metersPerSceneUnit = geographicDistance / localDistance;
+  // Three.js ground-plane convention: +X is right/east and -Z is forward/north.
+  const localBearing = Math.atan2(localDX, -localDZ);
+  const geographicBearing = Math.atan2(eastMeters, northMeters);
+  const headingDegrees = normalizeHeading(
+    (geographicBearing - localBearing) * RADIANS_TO_DEGREES,
+  );
+  const heading = headingDegrees * DEGREES_TO_RADIANS;
+  const pointAEastMeters = metersPerSceneUnit * (
+    (localAX * Math.cos(heading)) - (localAZ * Math.sin(heading))
+  );
+  const pointANorthMeters = metersPerSceneUnit * (
+    (-localAX * Math.sin(heading)) - (localAZ * Math.cos(heading))
+  );
+
+  let originLatitude = latitudeA;
+  for (let iteration = 0; iteration < 4; iteration += 1) {
+    const originRadii = getWgs84Radii(originLatitude);
+    originLatitude = latitudeA - (
+      (pointANorthMeters / originRadii.meridional) * RADIANS_TO_DEGREES
+    );
+  }
+  const originRadii = getWgs84Radii(originLatitude);
+  const longitudeScale = originRadii.primeVertical
+    * Math.cos(originLatitude * DEGREES_TO_RADIANS);
+  if (Math.abs(longitudeScale) < 1e-6) {
+    throw new ThreeDMapCoordinateError('Project origins at the geographic poles are unsupported');
+  }
+  const originLongitude = normalizeLongitude(
+    longitudeA - ((pointAEastMeters / longitudeScale) * RADIANS_TO_DEGREES),
+  );
+
+  return validateOrigin({
+    latitude: originLatitude,
+    longitude: originLongitude,
+    altitude: requireFinite(input.originAltitude ?? 0, 'Origin altitude'),
+    headingDegrees,
+    metersPerSceneUnit,
+  });
+}
+
 /**
  * Converts Project-local coordinates into WGS84 latitude/longitude/altitude.
  * This tangent-plane calculation is for Project-scale Scenes, not long-range
@@ -125,8 +219,8 @@ export function projectLocalPositionToGeographicPosition(
   const yMeters = requireFinite(position.y, 'Project Y') * origin.metersPerSceneUnit;
   const zMeters = requireFinite(position.z, 'Project Z') * origin.metersPerSceneUnit;
   const heading = origin.headingDegrees * DEGREES_TO_RADIANS;
-  const eastMeters = (xMeters * Math.cos(heading)) + (zMeters * Math.sin(heading));
-  const northMeters = (-xMeters * Math.sin(heading)) + (zMeters * Math.cos(heading));
+  const eastMeters = (xMeters * Math.cos(heading)) - (zMeters * Math.sin(heading));
+  const northMeters = (-xMeters * Math.sin(heading)) - (zMeters * Math.cos(heading));
   const radii = getWgs84Radii(origin.latitude);
   const originLatitudeRadians = origin.latitude * DEGREES_TO_RADIANS;
   const longitudeScale = radii.primeVertical * Math.cos(originLatitudeRadians);
@@ -176,7 +270,7 @@ export function geographicPositionToProjectLocalPosition(
     ) / origin.metersPerSceneUnit,
     y: (altitude - origin.altitude) / origin.metersPerSceneUnit,
     z: (
-      (eastMeters * Math.sin(heading)) + (northMeters * Math.cos(heading))
+      (-eastMeters * Math.sin(heading)) - (northMeters * Math.cos(heading))
     ) / origin.metersPerSceneUnit,
   };
 }

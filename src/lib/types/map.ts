@@ -73,6 +73,9 @@ export interface ProjectThreeDMarkerRecord {
   positionX: string | number;
   positionY: string | number;
   positionZ: string | number;
+  latitude?: string | number | null;
+  longitude?: string | number | null;
+  altitude?: string | number | null;
   positionSource: 'asset' | 'runtime';
   color: string;
   icon: string;

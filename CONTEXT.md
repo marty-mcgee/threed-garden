@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.0b — Shared ThreeD Model Repositioning** |
-| Current release candidate | **None designated** |
-| Current development milestone | **Post-v0.19.0b: WGS84 Project-local/geographic marker coordinate contract implemented and validated; proposed Drizzle fields await migration review** |
+| Current release candidate | **v0.19.0c — Calibrated ThreeD Geographic Positioning** (`package.json` version `0.19.0-centaur`) |
+| Current development milestone | **v0.19.0c release gate passed: parent-Project WGS84 positioning, two-reference calibration, saved calibration inputs, expanded Leaflet zoom, and north-up Scene/Map parity** |
 | Previous checkpoint | **v0.19.0a — Shared ThreeD Model Library Placement** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

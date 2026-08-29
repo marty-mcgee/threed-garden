@@ -7,8 +7,11 @@ import { AlertTriangle, Loader2 } from 'lucide-react';
 import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
 import { LeafletMap } from '@/components/map/LeafletMap';
 import {
+  geographicPositionToProjectLocalPosition,
   mapPositionToProjectPlanPosition,
+  projectLocalPositionToGeographicPosition,
   projectPlanPositionToMapPosition,
+  type ThreeDGeographicOrigin,
 } from '@/lib/services/threed/markers/map-coordinate-core';
 import {
   buildThreeDRuntimeMarkerResult,
@@ -50,6 +53,8 @@ interface UnifiedMapViewProps {
   selectedMarker?: RuntimeMarker | null;
   height?: string;
   gpsCenter?: { lat: number; lng: number };
+  /** Project-owned WGS84 anchor used by both the ThreeD Scene and Leaflet. */
+  geographicOrigin?: ThreeDGeographicOrigin | null;
   visibleAssetTypes?: Set<string>;
   filterText?: string;
   filterActiveOnly?: boolean;
@@ -159,6 +164,7 @@ export function UnifiedMapView({
   selectedMarker,
   height = '100%',
   gpsCenter = { lat: 39.514719, lng: -123.760382 },
+  geographicOrigin = null,
   visibleAssetTypes,
   filterText = '',
   filterActiveOnly = false,
@@ -479,12 +485,51 @@ export function UnifiedMapView({
     const markers = spreadMarkers
       .filter((m) => m.position && m.position.x !== undefined && m.position.z !== undefined)
       .map((m) => {
-        const { lat, lng } = projectPlanPositionToMapPosition(m.position, gpsCenter);
+        const rawLatitude = (m.data as Record<string, unknown>)?.latitude;
+        const rawLongitude = (m.data as Record<string, unknown>)?.longitude;
+        const rawAltitude = (m.data as Record<string, unknown>)?.altitude;
+        const storedLatitude = rawLatitude === null || rawLatitude === undefined
+          ? null
+          : Number(rawLatitude);
+        const storedLongitude = rawLongitude === null || rawLongitude === undefined
+          ? null
+          : Number(rawLongitude);
+        // Local XYZ is authoritative. A configured Project origin therefore
+        // always derives the Map position, avoiding stale persisted GPS after
+        // an origin, heading, or physical-scale correction.
+        const geographic = geographicOrigin
+          ? projectLocalPositionToGeographicPosition(m.position, geographicOrigin)
+          : storedLatitude !== null
+            && storedLongitude !== null
+            && Number.isFinite(storedLatitude)
+            && Number.isFinite(storedLongitude)
+            ? { latitude: storedLatitude, longitude: storedLongitude }
+            : null;
+        const fallback = geographic
+          ? { lat: geographic.latitude, lng: geographic.longitude }
+          : projectPlanPositionToMapPosition(m.position, gpsCenter);
+        const storedAltitude = rawAltitude === null || rawAltitude === undefined
+          ? null
+          : Number(rawAltitude);
+        const altitude = geographicOrigin
+          ? geographicOrigin.altitude + (m.position.y * geographicOrigin.metersPerSceneUnit)
+          : storedAltitude !== null && Number.isFinite(storedAltitude)
+            ? storedAltitude
+            : null;
         return {
           id: m.id, name: m.name, type: m.type,
-          lat, lng,
+          lat: fallback.lat, lng: fallback.lng,
           color: m.color, size: 'medium',
-          metadata: { ...m.metadata, position: m.position, data: m.data },
+          metadata: {
+            ...m.metadata,
+            position: m.position,
+            data: m.data,
+            geographicPosition: {
+              latitude: fallback.lat,
+              longitude: fallback.lng,
+              altitude,
+            },
+          },
         };
       });
 
@@ -507,7 +552,7 @@ export function UnifiedMapView({
       });
     });
     return result;
-  }, [spreadMarkers, gpsCenter]);
+  }, [spreadMarkers, geographicOrigin, gpsCenter]);
 
   // The persistent ThreeD Scene receives every validated Project marker.
   // Presentation filters are passed separately so hiding one marker suspends
@@ -521,18 +566,36 @@ export function UnifiedMapView({
 
   const handleMapModelPlacement = useCallback((position: { lat: number; lng: number }) => {
     if (!placementModel || !onModelPlacement) return;
-    onModelPlacement(mapPositionToProjectPlanPosition(position, gpsCenter));
-  }, [gpsCenter, onModelPlacement, placementModel]);
+    onModelPlacement(geographicOrigin
+      ? geographicPositionToProjectLocalPosition({
+          latitude: position.lat,
+          longitude: position.lng,
+          altitude: geographicOrigin.altitude,
+        }, geographicOrigin)
+      : mapPositionToProjectPlanPosition(position, gpsCenter));
+  }, [geographicOrigin, gpsCenter, onModelPlacement, placementModel]);
 
   const handleMapModelMove = useCallback((
     instanceId: number,
     position: { lat: number; lng: number },
-  ) => (
-    onModelMove?.(
+  ) => {
+    const currentMarker = spreadMarkers.find((marker) => (
+      Number((marker.data as Record<string, unknown>)?.instanceId) === instanceId
+      || Number((marker.data as Record<string, unknown>)?.projectMarkerId) === instanceId
+    ));
+    const currentY = currentMarker?.position.y ?? 0;
+    return onModelMove?.(
       instanceId,
-      mapPositionToProjectPlanPosition(position, gpsCenter),
-    ) ?? Promise.resolve(false)
-  ), [gpsCenter, onModelMove]);
+      geographicOrigin
+        ? geographicPositionToProjectLocalPosition({
+            latitude: position.lat,
+            longitude: position.lng,
+            altitude: geographicOrigin.altitude
+              + (currentY * geographicOrigin.metersPerSceneUnit),
+          }, geographicOrigin)
+        : mapPositionToProjectPlanPosition(position, gpsCenter),
+    ) ?? Promise.resolve(false);
+  }, [geographicOrigin, gpsCenter, onModelMove, spreadMarkers]);
 
   const render2DView = () => (
     <LeafletMap
@@ -563,6 +626,7 @@ export function UnifiedMapView({
     return (
       <ThreeDScene
         projectId={projectId ?? undefined}
+        geographicHeadingDegrees={geographicOrigin?.headingDegrees ?? 0}
         incidents={sceneIncidents}
         markers={threeDMarkers}
         visibleMarkerIds={visibleThreeDMarkerIds}

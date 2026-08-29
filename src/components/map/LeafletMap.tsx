@@ -129,13 +129,15 @@ function LeafletMapComponent({
     const map = L.map(mapRef.current, {
       center,
       zoom,
+      maxZoom: 22,
       zoomControl: true,
       attributionControl: true,
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19,
+      maxNativeZoom: 19,
+      maxZoom: 22,
     }).addTo(map);
 
     mapInstanceRef.current = map;
@@ -443,19 +445,42 @@ function LeafletMapComponent({
         .bindPopup(popupContent, { maxWidth: 320, className: 'custom-popup' })
         .on('click', () => {
           if (onMarkerClickRef.current) {
+            const localPosition = marker.metadata?.position;
+            if (
+              !localPosition
+              || !Number.isFinite(Number(localPosition.x))
+              || !Number.isFinite(Number(localPosition.y))
+              || !Number.isFinite(Number(localPosition.z))
+            ) return;
+            const markerData = marker.metadata?.data || marker;
+            const geographicPosition = marker.metadata?.geographicPosition;
+            const rawAltitude = geographicPosition?.altitude ?? markerData?.altitude;
             onMarkerClickRef.current({
               id: marker.id,
               name: marker.name,
               type: marker.type as any,
-              position: { x: lat, y: 0, z: lng },
+              position: {
+                x: Number(localPosition.x),
+                y: Number(localPosition.y),
+                z: Number(localPosition.z),
+              },
               color: color,
               icon: emoji,
               label: marker.name,
               isVisible: true,
               isActive: true,
-              data: marker.metadata?.data || marker,
+              data: markerData,
               size: marker.size || 'medium',
-              metadata: marker.metadata || {},
+              metadata: {
+                ...(marker.metadata || {}),
+                geographicPosition: {
+                  latitude: geographicPosition?.latitude ?? lat,
+                  longitude: geographicPosition?.longitude ?? lng,
+                  altitude: rawAltitude === null || rawAltitude === undefined
+                    ? null
+                    : Number(rawAltitude),
+                },
+              },
             });
           }
         })

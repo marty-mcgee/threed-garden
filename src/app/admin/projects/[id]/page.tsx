@@ -9,7 +9,7 @@ import {
   Plus, Box, Car, Music, Edit, Trash2, Save, X, Loader2,
   CheckCircle, XCircle, MoreHorizontal, ChevronDown, ChevronRight,
   FolderOpen, Layers, Sprout, Package, User, AlertTriangle, Music2,
-  Image, Link2, FileText, Route, Flame, Radio
+  Image, Link2, FileText, Route, Flame, Radio, MapPin
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -61,6 +61,19 @@ interface Project {
   isPublic: boolean;
   createdAt: string;
   userId: string;
+  originLatitude: string | null;
+  originLongitude: string | null;
+  originAltitude: string;
+  headingDegrees: string;
+  metersPerSceneUnit: string;
+  calibrationPointALocalX: string | null;
+  calibrationPointALocalZ: string | null;
+  calibrationPointALatitude: string | null;
+  calibrationPointALongitude: string | null;
+  calibrationPointBLocalX: string | null;
+  calibrationPointBLocalZ: string | null;
+  calibrationPointBLatitude: string | null;
+  calibrationPointBLongitude: string | null;
 }
 
 interface Module {
@@ -210,6 +223,16 @@ export default function ProjectDetailPage() {
     isPublic: false,
     isActive: true,
   });
+  const [calibrationData, setCalibrationData] = useState({
+    pointALocalX: '0',
+    pointALocalZ: '0',
+    pointALatitude: '',
+    pointALongitude: '',
+    pointBLocalX: '',
+    pointBLocalZ: '',
+    pointBLatitude: '',
+    pointBLongitude: '',
+  });
   
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>(() => {
     return getStoredExpandedState();
@@ -278,6 +301,20 @@ export default function ProjectDetailPage() {
         description: projectData.data.description || '',
         isPublic: projectData.data.isPublic || false,
         isActive: projectData.data.isActive !== false,
+      });
+      setCalibrationData({
+        pointALocalX: projectData.data.calibrationPointALocalX ?? '0',
+        pointALocalZ: projectData.data.calibrationPointALocalZ ?? '0',
+        pointALatitude: projectData.data.calibrationPointALatitude
+          ?? projectData.data.originLatitude
+          ?? '',
+        pointALongitude: projectData.data.calibrationPointALongitude
+          ?? projectData.data.originLongitude
+          ?? '',
+        pointBLocalX: projectData.data.calibrationPointBLocalX ?? '',
+        pointBLocalZ: projectData.data.calibrationPointBLocalZ ?? '',
+        pointBLatitude: projectData.data.calibrationPointBLatitude ?? '',
+        pointBLongitude: projectData.data.calibrationPointBLongitude ?? '',
       });
 
       const modulesRes = await fetch(`/api/project/modules?projectId=${projectId}`);
@@ -377,6 +414,52 @@ export default function ProjectDetailPage() {
     } catch (error) {
       console.error('Error updating project:', error);
       showToast(error instanceof Error ? error.message : 'Failed to update project', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const calibrateProjectCoordinates = async () => {
+    if (!session?.user?.id) {
+      showToast('You must be signed in', 'error');
+      return;
+    }
+    const rawValues = Object.values(calibrationData);
+    const values = rawValues.map(Number);
+    if (rawValues.some((value) => value.trim() === '') || values.some((value) => !Number.isFinite(value))) {
+      showToast('Both local/GPS reference points are required', 'error');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`/api/project?id=${projectId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          coordinateCalibration: {
+            pointA: {
+              localX: calibrationData.pointALocalX,
+              localZ: calibrationData.pointALocalZ,
+              latitude: calibrationData.pointALatitude,
+              longitude: calibrationData.pointALongitude,
+            },
+            pointB: {
+              localX: calibrationData.pointBLocalX,
+              localZ: calibrationData.pointBLocalZ,
+              latitude: calibrationData.pointBLatitude,
+              longitude: calibrationData.pointBLongitude,
+            },
+          },
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Failed to calibrate Project coordinates');
+      showToast(result.message || 'Project coordinates calibrated', 'success');
+      await fetchProject();
+    } catch (error) {
+      console.error('Error calibrating Project coordinates:', error);
+      showToast(error instanceof Error ? error.message : 'Failed to calibrate Project coordinates', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -672,6 +755,62 @@ export default function ProjectDetailPage() {
                     disabled={isSubmitting}
                   />
                   <Label htmlFor="edit-active" className="text-sm">Active</Label>
+                </div>
+              </div>
+              <div className="space-y-3 rounded-md border p-3">
+                <div>
+                  <h3 className="text-sm font-semibold">Project Coordinate Calibration</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Enter two matching local X/Z and GPS latitude/longitude points. Calibration
+                    preserves local marker positions and refreshes saved marker GPS metadata.
+                  </p>
+                </div>
+                {([
+                  ['A', 'pointALocalX', 'pointALocalZ', 'pointALatitude', 'pointALongitude'],
+                  ['B', 'pointBLocalX', 'pointBLocalZ', 'pointBLatitude', 'pointBLongitude'],
+                ] as const).map(([label, localX, localZ, latitude, longitude]) => (
+                  <div key={label} className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                    {([
+                      [localX, `Point ${label} Local X`, '0.001'],
+                      [localZ, `Point ${label} Local Z`, '0.001'],
+                      [latitude, `Point ${label} Latitude`, '0.0000001'],
+                      [longitude, `Point ${label} Longitude`, '0.0000001'],
+                    ] as const).map(([field, fieldLabel, step]) => (
+                      <div key={field} className="space-y-1">
+                        <Label htmlFor={`calibration-${field}`} className="text-xs">{fieldLabel}</Label>
+                        <Input
+                          id={`calibration-${field}`}
+                          type="number"
+                          step={step}
+                          value={calibrationData[field]}
+                          onChange={(event) => setCalibrationData((current) => ({
+                            ...current,
+                            [field]: event.target.value,
+                          }))}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={calibrateProjectCoordinates}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <MapPin className="mr-2 h-4 w-4" />
+                    )}
+                    Calibrate Coordinates
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
+                    Current: {project.metersPerSceneUnit} m/unit · {project.headingDegrees}°
+                  </span>
                 </div>
               </div>
               <div className="flex gap-2">

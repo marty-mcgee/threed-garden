@@ -406,6 +406,16 @@ export async function GET(request: NextRequest) {
       projectContext: {
         projectId: projectData.id,
         projectName: projectData.name,
+        geographicOrigin: projectData.originLatitude !== null
+          && projectData.originLongitude !== null
+          ? {
+              latitude: Number(projectData.originLatitude),
+              longitude: Number(projectData.originLongitude),
+              altitude: Number(projectData.originAltitude),
+              headingDegrees: Number(projectData.headingDegrees),
+              metersPerSceneUnit: Number(projectData.metersPerSceneUnit),
+            }
+          : null,
         threedModules: projectThreeDModules
           .filter((module) => module.threedId !== null)
           .map((module) => ({ id: module.threedId, name: module.name })),

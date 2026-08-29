@@ -66,6 +66,8 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/markers/project-marker-client-state-core.ts';
 import {
+  DEFAULT_THREED_METERS_PER_SCENE_UNIT,
+  calibrateThreeDGeographicOrigin,
   geographicPositionToProjectLocalPosition,
   mapPositionToProjectPlanPosition,
   projectLocalPositionToGeographicPosition,
@@ -1199,6 +1201,56 @@ assert.throws(
 );
 validationStep('2D map and ThreeD Project positions share one reversible projection');
 
+assert.equal(DEFAULT_THREED_METERS_PER_SCENE_UNIT, 0.3048);
+const oneHundredFeetAboveOrigin = projectLocalPositionToGeographicPosition(
+  { x: 0, y: 100, z: 0 },
+  {
+    latitude: mapCenter.lat,
+    longitude: mapCenter.lng,
+    altitude: 0,
+    headingDegrees: 0,
+    metersPerSceneUnit: DEFAULT_THREED_METERS_PER_SCENE_UNIT,
+  },
+);
+assert.ok(Math.abs(oneHundredFeetAboveOrigin.altitude - 30.48) < 1e-10);
+validationStep('One local Scene unit equals one physical foot');
+
+const expectedCalibrationOrigin = {
+  latitude: 39.514719,
+  longitude: -123.760382,
+  altitude: 12,
+  headingDegrees: 28,
+  metersPerSceneUnit: 0.6096,
+};
+const calibrationLocalA = { x: -18, y: 0, z: 7 };
+const calibrationLocalB = { x: 32, y: 0, z: -11 };
+const calibration = calibrateThreeDGeographicOrigin({
+  pointA: {
+    local: calibrationLocalA,
+    geographic: projectLocalPositionToGeographicPosition(
+      calibrationLocalA,
+      expectedCalibrationOrigin,
+    ),
+  },
+  pointB: {
+    local: calibrationLocalB,
+    geographic: projectLocalPositionToGeographicPosition(
+      calibrationLocalB,
+      expectedCalibrationOrigin,
+    ),
+  },
+  originAltitude: expectedCalibrationOrigin.altitude,
+});
+assert.ok(Math.abs(calibration.latitude - expectedCalibrationOrigin.latitude) < 1e-8);
+assert.ok(Math.abs(calibration.longitude - expectedCalibrationOrigin.longitude) < 1e-8);
+assert.ok(Math.abs(calibration.headingDegrees - expectedCalibrationOrigin.headingDegrees) < 2e-5);
+assert.ok(Math.abs(calibration.metersPerSceneUnit - expectedCalibrationOrigin.metersPerSceneUnit) < 1e-5);
+assert.throws(() => calibrateThreeDGeographicOrigin({
+  pointA: { local: { x: 1, z: 1 }, geographic: { latitude: 1, longitude: 1 } },
+  pointB: { local: { x: 1, z: 1 }, geographic: { latitude: 2, longitude: 2 } },
+}), ThreeDMapCoordinateError);
+validationStep('Two local/GPS references solve Project origin, heading, and scale');
+
 const geographicOrigins = [
   {
     latitude: 0,
@@ -1238,7 +1290,7 @@ const tenMetresEast = projectLocalPositionToGeographicPosition(
   northAlignedOrigin,
 );
 const tenMetresNorth = projectLocalPositionToGeographicPosition(
-  { x: 0, y: 0, z: 10 },
+  { x: 0, y: 0, z: -10 },
   northAlignedOrigin,
 );
 assert.equal(tenMetresEast.latitude, northAlignedOrigin.latitude);

@@ -84,6 +84,7 @@ import {
   getThreeDLabel,
 } from '@/lib/utils/map-helpers';
 import { applyThreeDProjectClientTransaction } from '@/lib/services/threed/markers/project-marker-client-state-core';
+import type { ThreeDGeographicOrigin } from '@/lib/services/threed/markers/map-coordinate-core';
 
 // ✅ Project Selector Dialog Component
 function ProjectSelectorDialog({ 
@@ -934,6 +935,28 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     if (px != null && pz != null) {
       metaRows.push({ label: 'Position', value: `X:${Number(px).toFixed(1)} Y:${Number(py).toFixed(1)} Z:${Number(pz).toFixed(1)}` });
     }
+    const geographic = selected.metadata?.geographicPosition;
+    const latitude = geographic?.latitude ?? d.latitude;
+    const longitude = geographic?.longitude ?? d.longitude;
+    const altitude = geographic?.altitude ?? d.altitude;
+    if (
+      latitude !== null
+      && latitude !== undefined
+      && longitude !== null
+      && longitude !== undefined
+      && Number.isFinite(Number(latitude))
+      && Number.isFinite(Number(longitude))
+    ) {
+      const altitudeLabel = altitude !== null
+        && altitude !== undefined
+        && Number.isFinite(Number(altitude))
+        ? ` Alt:${Number(altitude).toFixed(2)}m`
+        : '';
+      metaRows.push({
+        label: 'GPS',
+        value: `Lat:${Number(latitude).toFixed(7)} Lng:${Number(longitude).toFixed(7)}${altitudeLabel}`,
+      });
+    }
   }
 
   // Incident fields
@@ -1610,6 +1633,7 @@ function UnifiedMapPageInner() {
     id: number;
     name: string;
   }>>([]);
+  const [projectGeographicOrigin, setProjectGeographicOrigin] = useState<ThreeDGeographicOrigin | null>(null);
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
   const [isCharacterLibraryOpen, setIsCharacterLibraryOpen] = useState(false);
   const [isFarmBotLibraryOpen, setIsFarmBotLibraryOpen] = useState(false);
@@ -2132,6 +2156,7 @@ function UnifiedMapPageInner() {
     setOrchestrationStatus(null);
     setLiveControlledCharacterPosition(null);
     setProjectThreeDModules([]);
+    setProjectGeographicOrigin(null);
     setPlacementThreedId(null);
     setPlacementModel(null);
     setPlacementCharacter(null);
@@ -2423,6 +2448,23 @@ function UnifiedMapPageInner() {
               }))
             : [];
           setProjectThreeDModules(threedModules);
+          const rawOrigin = result.projectContext?.geographicOrigin;
+          setProjectGeographicOrigin(
+            rawOrigin
+            && Number.isFinite(Number(rawOrigin.latitude))
+            && Number.isFinite(Number(rawOrigin.longitude))
+            && Number.isFinite(Number(rawOrigin.altitude))
+            && Number.isFinite(Number(rawOrigin.headingDegrees))
+            && Number.isFinite(Number(rawOrigin.metersPerSceneUnit))
+              ? {
+                  latitude: Number(rawOrigin.latitude),
+                  longitude: Number(rawOrigin.longitude),
+                  altitude: Number(rawOrigin.altitude),
+                  headingDegrees: Number(rawOrigin.headingDegrees),
+                  metersPerSceneUnit: Number(rawOrigin.metersPerSceneUnit),
+                }
+              : null,
+          );
           setPlacementThreedId((current) => (
             current && threedModules.some((module: { id: number }) => module.id === current)
               ? current
@@ -4657,6 +4699,7 @@ function UnifiedMapPageInner() {
                   <div className="relative w-full h-full rounded-t-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
                       projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                      geographicOrigin={projectGeographicOrigin}
                       data={data}
                       layers={layers}
                       viewMode="3d"
@@ -4714,6 +4757,7 @@ function UnifiedMapPageInner() {
                   <div className="relative w-full h-full rounded-b-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
                       projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                      geographicOrigin={projectGeographicOrigin}
                       data={data}
                       layers={layers}
                       viewMode="2d"
@@ -4740,6 +4784,7 @@ function UnifiedMapPageInner() {
             {viewMode === '3d' && (
               <UnifiedMapView
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                geographicOrigin={projectGeographicOrigin}
                 data={data}
                 layers={layers}
                 viewMode="3d"
@@ -4784,6 +4829,7 @@ function UnifiedMapPageInner() {
             {viewMode === '2d' && (
               <UnifiedMapView
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                geographicOrigin={projectGeographicOrigin}
                 data={data}
                 layers={layers}
                 viewMode="2d"

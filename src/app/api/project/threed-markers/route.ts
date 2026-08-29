@@ -48,6 +48,10 @@ import {
   ProjectMarkerSnapshotError,
 } from '@/lib/services/threed/markers/project-marker-snapshot-core';
 import {
+  projectLocalPositionToGeographicPosition,
+  type ThreeDGeographicOrigin,
+} from '@/lib/services/threed/markers/map-coordinate-core';
+import {
   parseCreateProjectModelInstance,
   parseUpdateProjectModelInstance,
   ProjectModelInstanceInputError,
@@ -83,7 +87,14 @@ function getSafeDatabaseError(error: unknown) {
 
 async function requireOwnedProject(userId: string, projectId: number) {
   const [ownedProject] = await db
-    .select({ id: project.id })
+    .select({
+      id: project.id,
+      originLatitude: project.originLatitude,
+      originLongitude: project.originLongitude,
+      originAltitude: project.originAltitude,
+      headingDegrees: project.headingDegrees,
+      metersPerSceneUnit: project.metersPerSceneUnit,
+    })
     .from(project)
     .where(and(eq(project.id, projectId), eq(project.userId, userId)))
     .limit(1);
@@ -111,6 +122,41 @@ async function requireActiveThreeDAssignment(
     ))
     .limit(1);
   return assignment ?? null;
+}
+
+type OwnedProject = NonNullable<Awaited<
+  ReturnType<typeof requireOwnedProject>
+>>;
+
+function getProjectOrigin(
+  ownedProject: OwnedProject,
+): ThreeDGeographicOrigin | null {
+  if (ownedProject.originLatitude === null || ownedProject.originLongitude === null) return null;
+  return {
+    latitude: Number(ownedProject.originLatitude),
+    longitude: Number(ownedProject.originLongitude),
+    altitude: Number(ownedProject.originAltitude),
+    headingDegrees: Number(ownedProject.headingDegrees),
+    metersPerSceneUnit: Number(ownedProject.metersPerSceneUnit),
+  };
+}
+
+function getMarkerGeographicValues(
+  position: { x: number; y: number; z: number },
+  ownedProject: OwnedProject | null,
+): {
+  latitude: string | null;
+  longitude: string | null;
+  altitude: string | null;
+} {
+  const origin = ownedProject ? getProjectOrigin(ownedProject) : null;
+  if (!origin) return { latitude: null, longitude: null, altitude: null };
+  const geographic = projectLocalPositionToGeographicPosition(position, origin);
+  return {
+    latitude: geographic.latitude.toFixed(7),
+    longitude: geographic.longitude.toFixed(7),
+    altitude: geographic.altitude.toFixed(3),
+  };
 }
 
 async function readEligibleModel(userId: string, modelId: number) {
@@ -295,7 +341,8 @@ async function saveSnapshot(request: NextRequest) {
     }
     const markers = parseProjectThreeDMarkerSnapshot(requestBody.markers);
 
-    if (!await requireOwnedProject(userId, projectId)) {
+    const ownedProject = await requireOwnedProject(userId, projectId);
+    if (!ownedProject) {
       return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
 
@@ -342,6 +389,7 @@ async function saveSnapshot(request: NextRequest) {
         throw new ProjectMarkerSnapshotError('invalid_snapshot');
       }
       const [threedId] = moduleIds;
+      const geographic = getMarkerGeographicValues(marker.position, ownedProject);
       return {
         userId,
         projectId,
@@ -353,6 +401,7 @@ async function saveSnapshot(request: NextRequest) {
         positionX: marker.position.x.toFixed(3),
         positionY: marker.position.y.toFixed(3),
         positionZ: marker.position.z.toFixed(3),
+        ...geographic,
         positionSource: marker.positionSource,
         color: marker.color,
         icon: marker.icon,
@@ -391,6 +440,9 @@ async function saveSnapshot(request: NextRequest) {
             positionX: sql`excluded.position_x`,
             positionY: sql`excluded.position_y`,
             positionZ: sql`excluded.position_z`,
+            latitude: sql`excluded.latitude`,
+            longitude: sql`excluded.longitude`,
+            altitude: sql`excluded.altitude`,
             positionSource: sql`excluded.position_source`,
             color: sql`excluded.color`,
             icon: sql`excluded.icon`,
@@ -455,15 +507,22 @@ export async function POST(request: NextRequest) {
     ) {
       const input = parseCreateProjectBedPlacement(body);
       const userId = session.user.id;
-      if (!await requireOwnedProject(userId, input.projectId)) {
+      const ownedProject = await requireOwnedProject(userId, input.projectId);
+      if (!ownedProject) {
         return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
       }
-      if (!await requireActiveThreeDAssignment(userId, input.projectId, input.threedId)) {
+      const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+      if (!assignment) {
         return NextResponse.json(
           { success: false, error: 'Active ThreeD Project assignment not found' },
           { status: 404 },
         );
       }
+      const geographic = getMarkerGeographicValues({
+        x: input.positionX,
+        y: input.positionY,
+        z: input.positionZ,
+      }, ownedProject);
 
       await ensureTableSequence('threed_beds');
       const created = await db.transaction(async (tx) => {
@@ -511,6 +570,7 @@ export async function POST(request: NextRequest) {
           positionX: input.positionX.toFixed(3),
           positionY: input.positionY.toFixed(3),
           positionZ: input.positionZ.toFixed(3),
+          ...geographic,
           positionSource: 'asset',
           color: input.color,
           icon: '🧑‍🌾',
@@ -538,15 +598,22 @@ export async function POST(request: NextRequest) {
     ) {
       const input = parseCreateProjectFarmBotPlacement(body);
       const userId = session.user.id;
-      if (!await requireOwnedProject(userId, input.projectId)) {
+      const ownedProject = await requireOwnedProject(userId, input.projectId);
+      if (!ownedProject) {
         return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
       }
-      if (!await requireActiveThreeDAssignment(userId, input.projectId, input.threedId)) {
+      const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+      if (!assignment) {
         return NextResponse.json(
           { success: false, error: 'Active ThreeD Project assignment not found' },
           { status: 404 },
         );
       }
+      const geographic = getMarkerGeographicValues({
+        x: input.positionX,
+        y: input.positionY,
+        z: input.positionZ,
+      }, ownedProject);
       const [farmbot] = await db.select().from(threedFarmbots).where(and(
         eq(threedFarmbots.id, input.farmbotId),
         eq(threedFarmbots.userId, userId),
@@ -631,6 +698,7 @@ export async function POST(request: NextRequest) {
           positionX: input.positionX.toFixed(3),
           positionY: input.positionY.toFixed(3),
           positionZ: input.positionZ.toFixed(3),
+          ...geographic,
           positionSource: 'asset',
           color: input.color,
           icon: '🤖',
@@ -657,10 +725,12 @@ export async function POST(request: NextRequest) {
     ) {
       const input = parseCreateProjectPlantingPlacement(body);
       const userId = session.user.id;
-      if (!await requireOwnedProject(userId, input.projectId)) {
+      const ownedProject = await requireOwnedProject(userId, input.projectId);
+      if (!ownedProject) {
         return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
       }
-      if (!await requireActiveThreeDAssignment(userId, input.projectId, input.threedId)) {
+      const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+      if (!assignment) {
         return NextResponse.json(
           { success: false, error: 'Active ThreeD Project assignment not found' },
           { status: 404 },
@@ -706,6 +776,7 @@ export async function POST(request: NextRequest) {
           const positionX = position.x;
           const positionY = position.y;
           const positionZ = position.z;
+          const geographic = getMarkerGeographicValues(position, ownedProject);
           const [planting] = await tx.insert(threedPlantings).values({
             userId,
             plantingId: `PLANTING-${crypto.randomUUID()}`,
@@ -757,6 +828,7 @@ export async function POST(request: NextRequest) {
             positionX: positionX.toFixed(3),
             positionY: positionY.toFixed(3),
             positionZ: positionZ.toFixed(3),
+            ...geographic,
             positionSource: 'asset',
             color: '#22c55e',
             icon: '🌱',
@@ -783,15 +855,22 @@ export async function POST(request: NextRequest) {
     ) {
       const input = parseCreateProjectCharacterPlacement(body);
       const userId = session.user.id;
-      if (!await requireOwnedProject(userId, input.projectId)) {
+      const ownedProject = await requireOwnedProject(userId, input.projectId);
+      if (!ownedProject) {
         return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
       }
-      if (!await requireActiveThreeDAssignment(userId, input.projectId, input.threedId)) {
+      const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+      if (!assignment) {
         return NextResponse.json(
           { success: false, error: 'Active ThreeD Project assignment not found' },
           { status: 404 },
         );
       }
+      const geographic = getMarkerGeographicValues({
+        x: input.positionX,
+        y: input.positionY,
+        z: input.positionZ,
+      }, ownedProject);
       const eligible = await readEligibleCharacter(userId, input.characterId);
       if (!eligible) {
         return NextResponse.json(
@@ -890,6 +969,7 @@ export async function POST(request: NextRequest) {
           positionX,
           positionY,
           positionZ,
+          ...geographic,
           positionSource: 'asset',
           color: '#8b5cf6',
           icon: '🧚',
@@ -915,15 +995,22 @@ export async function POST(request: NextRequest) {
 
     const input = parseCreateProjectModelInstance(body);
     const userId = session.user.id;
-    if (!await requireOwnedProject(userId, input.projectId)) {
+    const ownedProject = await requireOwnedProject(userId, input.projectId);
+    if (!ownedProject) {
       return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
-    if (!await requireActiveThreeDAssignment(userId, input.projectId, input.threedId)) {
+    const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+    if (!assignment) {
       return NextResponse.json(
         { success: false, error: 'Active ThreeD Project assignment not found' },
         { status: 404 },
       );
     }
+    const geographic = getMarkerGeographicValues({
+      x: input.positionX,
+      y: input.positionY,
+      z: input.positionZ,
+    }, ownedProject);
     const model = await readEligibleModel(userId, input.modelId);
     if (!model) {
       return NextResponse.json(
@@ -973,6 +1060,7 @@ export async function POST(request: NextRequest) {
         positionX: input.positionX.toFixed(3),
         positionY: input.positionY.toFixed(3),
         positionZ: input.positionZ.toFixed(3),
+        ...geographic,
         positionSource: 'asset',
         color: '#06b6d4',
         icon: '🧊',
@@ -1026,6 +1114,10 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     if (!marker) {
       return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
     }
+    const ownedProject = await requireOwnedProject(ownerId, marker.projectId);
+    if (!ownedProject) {
+      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+    }
     const currentData = marker.data && typeof marker.data === 'object' ? marker.data : {};
 
     if (marker.markerType === 'characters') {
@@ -1042,6 +1134,11 @@ async function updateProjectMarker(request: NextRequest, id: number) {
       const positionX = update.positionX.toFixed(3);
       const positionY = update.positionY.toFixed(3);
       const positionZ = update.positionZ.toFixed(3);
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX,
+        y: update.positionY,
+        z: update.positionZ,
+      }, ownedProject);
       const updated = await db.transaction(async (tx) => {
         await tx.execute(
           sql`select pg_advisory_xact_lock(hashtext(${`project-threed-characters:${marker.projectId}`}))`,
@@ -1068,6 +1165,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
           positionX,
           positionY,
           positionZ,
+          ...geographic,
           positionSource: 'asset',
           data: {
             ...currentData,
@@ -1090,10 +1188,16 @@ async function updateProjectMarker(request: NextRequest, id: number) {
 
     if (marker.markerType === 'beds') {
       const update = parseUpdateProjectBedPlacement(body);
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX,
+        y: update.positionY,
+        z: update.positionZ,
+      }, ownedProject);
       const [updated] = await db.update(projectThreedMarkers).set({
         positionX: update.positionX.toFixed(3),
         positionY: update.positionY.toFixed(3),
         positionZ: update.positionZ.toFixed(3),
+        ...geographic,
         positionSource: 'asset',
         color: update.color,
         data: {
@@ -1119,10 +1223,16 @@ async function updateProjectMarker(request: NextRequest, id: number) {
 
     if (marker.markerType === 'plantings') {
       const update = parseUpdateProjectPlantingPlacement(body);
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX,
+        y: update.positionY,
+        z: update.positionZ,
+      }, ownedProject);
       const [updated] = await db.update(projectThreedMarkers).set({
         positionX: update.positionX.toFixed(3),
         positionY: update.positionY.toFixed(3),
         positionZ: update.positionZ.toFixed(3),
+        ...geographic,
         positionSource: 'asset',
         data: {
           ...currentData,
@@ -1143,10 +1253,16 @@ async function updateProjectMarker(request: NextRequest, id: number) {
 
     if (marker.markerType === 'farmbots') {
       const update = parseUpdateProjectFarmBotPlacement(body);
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX,
+        y: update.positionY,
+        z: update.positionZ,
+      }, ownedProject);
       const [updated] = await db.update(projectThreedMarkers).set({
         positionX: update.positionX.toFixed(3),
         positionY: update.positionY.toFixed(3),
         positionZ: update.positionZ.toFixed(3),
+        ...geographic,
         positionSource: 'asset',
         color: update.color,
         data: {
@@ -1186,6 +1302,20 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     if (update.positionX !== undefined) values.positionX = update.positionX.toFixed(3);
     if (update.positionY !== undefined) values.positionY = update.positionY.toFixed(3);
     if (update.positionZ !== undefined) values.positionZ = update.positionZ.toFixed(3);
+    if (
+      update.positionX !== undefined
+      || update.positionY !== undefined
+      || update.positionZ !== undefined
+    ) {
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX ?? Number(marker.positionX),
+        y: update.positionY ?? Number(marker.positionY),
+        z: update.positionZ ?? Number(marker.positionZ),
+      }, ownedProject);
+      values.latitude = geographic.latitude;
+      values.longitude = geographic.longitude;
+      values.altitude = geographic.altitude;
+    }
     if (update.isVisible !== undefined) values.isVisible = update.isVisible;
     if (update.isActive !== undefined) values.isActive = update.isActive;
     if (update.metadata !== undefined) values.metadata = update.metadata;

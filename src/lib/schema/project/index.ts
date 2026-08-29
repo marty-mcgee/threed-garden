@@ -69,6 +69,28 @@ export const project = pgTable('project', {
   slug: text('slug').unique().notNull(),
   isActive: boolean('is_active').default(true),
   isPublic: boolean('is_public').default(false),
+  // One WGS84 origin anchors every ThreeD module and Project marker rendered
+  // together in this Project's persistent Scene.
+  originLatitude: decimal('origin_latitude', { precision: 10, scale: 7 }),
+  originLongitude: decimal('origin_longitude', { precision: 10, scale: 7 }),
+  originAltitude: decimal('origin_altitude', { precision: 12, scale: 3 })
+    .notNull()
+    .default('0'),
+  headingDegrees: decimal('heading_degrees', { precision: 8, scale: 3 })
+    .notNull()
+    .default('0'),
+  metersPerSceneUnit: decimal('meters_per_scene_unit', { precision: 12, scale: 6 })
+    .notNull()
+    .default('0.304800'),
+  // Exact surveyed pairs used to solve the current geographic transform.
+  calibrationPointALocalX: decimal('calibration_point_a_local_x', { precision: 12, scale: 3 }),
+  calibrationPointALocalZ: decimal('calibration_point_a_local_z', { precision: 12, scale: 3 }),
+  calibrationPointALatitude: decimal('calibration_point_a_latitude', { precision: 10, scale: 7 }),
+  calibrationPointALongitude: decimal('calibration_point_a_longitude', { precision: 10, scale: 7 }),
+  calibrationPointBLocalX: decimal('calibration_point_b_local_x', { precision: 12, scale: 3 }),
+  calibrationPointBLocalZ: decimal('calibration_point_b_local_z', { precision: 12, scale: 3 }),
+  calibrationPointBLatitude: decimal('calibration_point_b_latitude', { precision: 10, scale: 7 }),
+  calibrationPointBLongitude: decimal('calibration_point_b_longitude', { precision: 10, scale: 7 }),
   config: jsonb('config').default({}),
   metadata: jsonb('metadata').default({}),
   createdAt: timestamp('created_at').defaultNow(),
@@ -184,6 +206,12 @@ export const projectThreedMarkers = pgTable('project_threed_markers', {
   positionX: decimal('position_x', { precision: 12, scale: 3 }).notNull(),
   positionY: decimal('position_y', { precision: 12, scale: 3 }).notNull(),
   positionZ: decimal('position_z', { precision: 12, scale: 3 }).notNull(),
+  // Geographic representation synchronized from the owning Project ThreeD
+  // origin. These remain nullable until existing Project origins are configured
+  // and their marker rows are backfilled.
+  latitude: decimal('latitude', { precision: 10, scale: 7 }),
+  longitude: decimal('longitude', { precision: 10, scale: 7 }),
+  altitude: decimal('altitude', { precision: 12, scale: 3 }),
   positionSource: projectThreeDMarkerPositionSourceEnum('position_source')
     .notNull()
     .default('asset'),

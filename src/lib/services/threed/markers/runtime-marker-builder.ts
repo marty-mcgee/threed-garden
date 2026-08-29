@@ -160,6 +160,9 @@ function buildSavedProjectMarkers(
         positionX: position.x,
         positionY: position.y,
         positionZ: position.z,
+        latitude: record.latitude,
+        longitude: record.longitude,
+        altitude: record.altitude,
       },
       metadata: {
         ...record.metadata,
