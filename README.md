@@ -7,9 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.0c "Calibrated ThreeD Geographic Positioning"` (`package.json` version `0.19.0-centaur`)
+> **Current production version:** `v0.19.0d "Precision ThreeD Coordinate Calibration"` (`package.json` version `0.19.0-delta`)
 
-The v0.19.0c production release synchronizes Project-local X/Y/Z with WGS84 coordinates through a measured two-reference calibration. Projects retain their submitted reference pairs, Leaflet and the ThreeD Scene share physical scale and cardinal orientation, North-Up View reflects true north, and closer Leaflet zoom remains available without changing marker or Rapier authority.
+The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 
 The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.
 
