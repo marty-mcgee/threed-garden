@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.1c — ThreeD Project Rendering Authority](v0.19.1c.md)
 - [v0.19.1a — ThreeD Project View State Persistence](v0.19.1a.md)
 - [v0.19.0d — Precision ThreeD Coordinate Calibration](v0.19.0d.md)
 - [v0.19.0c — Calibrated ThreeD Geographic Positioning](v0.19.0c.md)
