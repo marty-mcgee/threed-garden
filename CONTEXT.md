@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.0b — Shared ThreeD Model Repositioning** |
-| Current release candidate | **v0.19.0c — Calibrated ThreeD Geographic Positioning** (`package.json` version `0.19.0-centaur`) |
-| Current development milestone | **v0.19.0c release gate passed: parent-Project WGS84 positioning, two-reference calibration, saved calibration inputs, expanded Leaflet zoom, and north-up Scene/Map parity** |
-| Previous checkpoint | **v0.19.0a — Shared ThreeD Model Library Placement** |
+| Current stable version | **v0.19.0c — Calibrated ThreeD Geographic Positioning** (`package.json` version `0.19.0-centaur`) |
+| Current release candidate | **v0.19.0d — Precision ThreeD Coordinate Calibration** (`package.json` version `0.19.0-delta`) |
+| Current development milestone | **v0.19.0d manual verification passed: WGS84 ellipsoidal positioning, calibration diagnostics, and exact Leaflet anchors without artificial coordinate spreading** |
+| Previous checkpoint | **v0.19.0b — Shared ThreeD Model Repositioning** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -389,6 +389,7 @@ API (/api/map/threed)
 | **v0.18.9d** | **2026-08-27** | **Production release — persistent marker selection, Stationary Take Control camera, and user-owned zoom behavior** |
 | **v0.19.0a** | **2026-08-27** | **Production release — shared Model Library click and drag placement across the existing Leaflet 2D Map and R3F ThreeD Scene through one Project-marker transaction** |
 | **v0.19.0b** | **2026-08-28** | **Production release — existing Project Model repositioning through the Leaflet 2D Map and explicit ThreeD Scene Move Model mode** |
+| **v0.19.0c** | **2026-08-29** | **Production release — calibrated Project-local/WGS84 positioning, saved two-point references, north-up Scene/Map parity, and expanded Leaflet zoom** |
 
 ---
 

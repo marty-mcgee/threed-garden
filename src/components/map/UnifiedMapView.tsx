@@ -321,37 +321,6 @@ export function UnifiedMapView({
     return () => onRuntimeMarkerPositionResolverChange(null);
   }, [onRuntimeMarkerPositionResolverChange, resolveRuntimeMarkerPosition]);
 
-  const spreadOverlappingMarkers = (markers: RuntimeMarker[], spreadDistance: number = 1.5): RuntimeMarker[] => {
-    if (markers.length === 0) return markers;
-    const positionGroups: Record<string, RuntimeMarker[]> = {};
-    markers.forEach(marker => {
-      const key = `${Math.round(marker.position.x * 10) / 10},${Math.round(marker.position.y * 10) / 10},${Math.round(marker.position.z * 10) / 10}`;
-      if (!positionGroups[key]) positionGroups[key] = [];
-      positionGroups[key].push(marker);
-    });
-    const spreadMarkers: RuntimeMarker[] = [];
-    Object.values(positionGroups).forEach(group => {
-      if (group.length === 1) {
-        spreadMarkers.push(group[0]);
-      } else {
-        const basePos = group[0].position;
-        group.forEach((marker, index) => {
-          const angle = (index / group.length) * 2 * Math.PI;
-          const radius = spreadDistance * (0.5 + index * 0.3);
-          spreadMarkers.push({
-            ...marker,
-            position: {
-              x: basePos.x + Math.cos(angle) * radius,
-              y: basePos.y + 0.5 + index * 0.3,
-              z: basePos.z + Math.sin(angle) * radius,
-            }
-          });
-        });
-      }
-    });
-    return spreadMarkers;
-  };
-
   // ✅ v0.13.0-beta: Apply text, active-only, and asset-type filters
   const filteredMarkers = useMemo(() => {
     return runtimeMarkers.filter((marker) => {
@@ -437,9 +406,6 @@ export function UnifiedMapView({
     });
   }, [data.traffic.raw, filterText, filterAssetType]);
 
-  // ✅ Spread markers for 3D scene (prevents visual overlap of markers at same position)
-  const spreadMarkers = useMemo(() => spreadOverlappingMarkers(filteredMarkers, 1.0), [filteredMarkers]);
-
   const handleIncidentClick = useCallback((incident: TrafficIncident) => {
     // Use composite key for uniqueness across traffic collections
     if (onIncidentSelect) onIncidentSelect((selectedIncident as any)?.key === (incident as any).key ? null : incident);
@@ -482,7 +448,7 @@ export function UnifiedMapView({
   // ThreeD markers use the shared Project-plan ↔ map projection so the 2D
   // placement path can later reverse the exact display calculation.
   const leafletMarkers = useMemo(() => {
-    const markers = spreadMarkers
+    return filteredMarkers
       .filter((m) => m.position && m.position.x !== undefined && m.position.z !== undefined)
       .map((m) => {
         const rawLatitude = (m.data as Record<string, unknown>)?.latitude;
@@ -532,27 +498,7 @@ export function UnifiedMapView({
           },
         };
       });
-
-    // De-duplicate exact-GPS overlaps with a tiny spread
-    const groups: Record<string, typeof markers> = {};
-    markers.forEach((m) => {
-      const key = `${m.lat.toFixed(5)},${m.lng.toFixed(5)}`;
-      (groups[key] ??= []).push(m);
-    });
-    const result: typeof markers = [];
-    Object.values(groups).forEach((grp) => {
-      if (grp.length === 1) { result.push(grp[0]); return; }
-      grp.forEach((m, i) => {
-        const a = (i / grp.length) * 2 * Math.PI;
-        result.push({
-          ...m,
-          lat: m.lat + Math.sin(a) * 0.00001 * (i + 1),
-          lng: m.lng + Math.cos(a) * 0.00001 * (i + 1),
-        });
-      });
-    });
-    return result;
-  }, [spreadMarkers, geographicOrigin, gpsCenter]);
+  }, [filteredMarkers, geographicOrigin, gpsCenter]);
 
   // The persistent ThreeD Scene receives every validated Project marker.
   // Presentation filters are passed separately so hiding one marker suspends
@@ -579,7 +525,7 @@ export function UnifiedMapView({
     instanceId: number,
     position: { lat: number; lng: number },
   ) => {
-    const currentMarker = spreadMarkers.find((marker) => (
+    const currentMarker = filteredMarkers.find((marker) => (
       Number((marker.data as Record<string, unknown>)?.instanceId) === instanceId
       || Number((marker.data as Record<string, unknown>)?.projectMarkerId) === instanceId
     ));
@@ -595,7 +541,7 @@ export function UnifiedMapView({
           }, geographicOrigin)
         : mapPositionToProjectPlanPosition(position, gpsCenter),
     ) ?? Promise.resolve(false);
-  }, [geographicOrigin, gpsCenter, onModelMove, spreadMarkers]);
+  }, [filteredMarkers, geographicOrigin, gpsCenter, onModelMove]);
 
   const render2DView = () => (
     <LeafletMap

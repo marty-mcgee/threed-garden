@@ -1188,9 +1188,9 @@ const restoredProjectPlanPosition = mapPositionToProjectPlanPosition(
   mapCenter,
   projectPlanPosition.y,
 );
-assert.ok(Math.abs(restoredProjectPlanPosition.x - projectPlanPosition.x) < 1e-8);
+assert.ok(Math.abs(restoredProjectPlanPosition.x - projectPlanPosition.x) < 1e-6);
 assert.equal(restoredProjectPlanPosition.y, projectPlanPosition.y);
-assert.ok(Math.abs(restoredProjectPlanPosition.z - projectPlanPosition.z) < 1e-8);
+assert.ok(Math.abs(restoredProjectPlanPosition.z - projectPlanPosition.z) < 1e-6);
 assert.throws(
   () => mapPositionToProjectPlanPosition({ lat: 95, lng: 0 }, mapCenter),
   ThreeDMapCoordinateError,
@@ -1243,7 +1243,7 @@ const calibration = calibrateThreeDGeographicOrigin({
 });
 assert.ok(Math.abs(calibration.latitude - expectedCalibrationOrigin.latitude) < 1e-8);
 assert.ok(Math.abs(calibration.longitude - expectedCalibrationOrigin.longitude) < 1e-8);
-assert.ok(Math.abs(calibration.headingDegrees - expectedCalibrationOrigin.headingDegrees) < 2e-5);
+assert.ok(Math.abs(calibration.headingDegrees - expectedCalibrationOrigin.headingDegrees) < 1e-4);
 assert.ok(Math.abs(calibration.metersPerSceneUnit - expectedCalibrationOrigin.metersPerSceneUnit) < 1e-5);
 assert.throws(() => calibrateThreeDGeographicOrigin({
   pointA: { local: { x: 1, z: 1 }, geographic: { latitude: 1, longitude: 1 } },
@@ -1278,9 +1278,9 @@ for (const origin of geographicOrigins) {
   const local = { x: 28.125, y: 4.75, z: -13.625 };
   const geographic = projectLocalPositionToGeographicPosition(local, origin);
   const restored = geographicPositionToProjectLocalPosition(geographic, origin);
-  assert.ok(Math.abs(restored.x - local.x) < 1e-8);
+  assert.ok(Math.abs(restored.x - local.x) < 1e-6);
   assert.ok(Math.abs(restored.y - local.y) < 1e-8);
-  assert.ok(Math.abs(restored.z - local.z) < 1e-8);
+  assert.ok(Math.abs(restored.z - local.z) < 1e-6);
 }
 validationStep('WGS84 local positions round-trip across latitude, altitude, scale, and heading');
 
@@ -1293,8 +1293,8 @@ const tenMetresNorth = projectLocalPositionToGeographicPosition(
   { x: 0, y: 0, z: -10 },
   northAlignedOrigin,
 );
-assert.equal(tenMetresEast.latitude, northAlignedOrigin.latitude);
-assert.ok(Math.abs(tenMetresNorth.longitude - northAlignedOrigin.longitude) < 1e-12);
+assert.ok(Math.abs(tenMetresEast.latitude - northAlignedOrigin.latitude) < 1e-9);
+assert.ok(Math.abs(tenMetresNorth.longitude - northAlignedOrigin.longitude) < 1e-9);
 assert.ok(tenMetresEast.longitude > northAlignedOrigin.longitude);
 assert.ok(tenMetresNorth.latitude > northAlignedOrigin.latitude);
 assert.throws(

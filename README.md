@@ -7,9 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.0b "Shared ThreeD Model Repositioning"` (`package.json` version `0.19.0-beta`)
+> **Current production version:** `v0.19.0c "Calibrated ThreeD Geographic Positioning"` (`package.json` version `0.19.0-centaur`)
 
-The v0.19.0b production release lets users reposition an existing Project Model through either the Leaflet 2D Map or an explicit ThreeD Scene **Move Model** mode. Both surfaces use the same position-only authenticated Project-marker update, preserve stable marker identity, and synchronize the existing visual, fixed collider, and Physics Debug outline without reloading the Project. The reusable Model record and other ThreeD Sub-Modules remain unchanged.
+The v0.19.0c production release synchronizes Project-local X/Y/Z with WGS84 coordinates through a measured two-reference calibration. Projects retain their submitted reference pairs, Leaflet and the ThreeD Scene share physical scale and cardinal orientation, North-Up View reflects true north, and closer Leaflet zoom remains available without changing marker or Rapier authority.
 
 The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.
 

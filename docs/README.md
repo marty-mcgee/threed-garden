@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.0b **Shared ThreeD Model Repositioning**, using package version `0.19.0-beta`. Existing Project Models can be moved through the Leaflet 2D Map or explicit ThreeD Scene Move Model mode through one position-only Project-marker update. Manual verification, build, deployment, and production checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.19.0c **Calibrated ThreeD Geographic Positioning**, using package version `0.19.0-centaur`. Project-local X/Y/Z and WGS84 positions now share a measured two-reference calibration, persisted reference inputs, physical scale, cardinal parity, and expanded Leaflet zoom. Manual verification, schema application, build, deployment, and production checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -47,6 +47,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.0c production checkpoint](releases/v0.19.0c.md)
 - [v0.19.0b production checkpoint](releases/v0.19.0b.md)
 - [v0.19.0a production checkpoint](releases/v0.19.0a.md)
 - [v0.18.9d production checkpoint](releases/v0.18.9d.md)

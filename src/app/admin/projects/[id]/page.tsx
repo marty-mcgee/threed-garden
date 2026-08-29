@@ -51,6 +51,10 @@ import { TrafficCalfireCRUD } from '@/components/admin/traffic/calfire/TrafficCa
 import { TrafficBayArea511CRUD } from '@/components/admin/traffic/bay-area-511/TrafficBayArea511CRUD';
 
 import { ProjectAssetManager } from '@/components/admin/projects/ProjectAssetManager';
+import {
+  calibrateThreeDGeographicOrigin,
+  type ThreeDCoordinateCalibrationResult,
+} from '@/lib/services/threed/markers/map-coordinate-core';
 
 interface Project {
   id: number;
@@ -87,6 +91,48 @@ interface Module {
 }
 
 type ModuleType = 'threed' | 'traffic' | 'music';
+type CalibrationDiagnostics = ThreeDCoordinateCalibrationResult['diagnostics'];
+
+function getStoredCalibrationDiagnostics(projectData: Project): CalibrationDiagnostics | null {
+  const values = [
+    projectData.calibrationPointALocalX,
+    projectData.calibrationPointALocalZ,
+    projectData.calibrationPointALatitude,
+    projectData.calibrationPointALongitude,
+    projectData.calibrationPointBLocalX,
+    projectData.calibrationPointBLocalZ,
+    projectData.calibrationPointBLatitude,
+    projectData.calibrationPointBLongitude,
+  ];
+  if (values.some((value) => value === null || !Number.isFinite(Number(value)))) return null;
+  try {
+    return calibrateThreeDGeographicOrigin({
+      pointA: {
+        local: {
+          x: Number(projectData.calibrationPointALocalX),
+          z: Number(projectData.calibrationPointALocalZ),
+        },
+        geographic: {
+          latitude: Number(projectData.calibrationPointALatitude),
+          longitude: Number(projectData.calibrationPointALongitude),
+        },
+      },
+      pointB: {
+        local: {
+          x: Number(projectData.calibrationPointBLocalX),
+          z: Number(projectData.calibrationPointBLocalZ),
+        },
+        geographic: {
+          latitude: Number(projectData.calibrationPointBLatitude),
+          longitude: Number(projectData.calibrationPointBLongitude),
+        },
+      },
+      originAltitude: Number(projectData.originAltitude),
+    }).diagnostics;
+  } catch {
+    return null;
+  }
+}
 
 // ✅ Module configuration with ALL CRUD components listed
 const moduleConfig: Record<ModuleType, { 
@@ -233,6 +279,7 @@ export default function ProjectDetailPage() {
     pointBLatitude: '',
     pointBLongitude: '',
   });
+  const [calibrationDiagnostics, setCalibrationDiagnostics] = useState<CalibrationDiagnostics | null>(null);
   
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>(() => {
     return getStoredExpandedState();
@@ -296,6 +343,7 @@ export default function ProjectDetailPage() {
       }
 
       setProject(projectData.data);
+      setCalibrationDiagnostics(getStoredCalibrationDiagnostics(projectData.data));
       setFormData({
         name: projectData.data.name || '',
         description: projectData.data.description || '',
@@ -455,6 +503,7 @@ export default function ProjectDetailPage() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Failed to calibrate Project coordinates');
+      setCalibrationDiagnostics(result.calibrationDiagnostics ?? null);
       showToast(result.message || 'Project coordinates calibrated', 'success');
       await fetchProject();
     } catch (error) {
@@ -812,6 +861,14 @@ export default function ProjectDetailPage() {
                     Current: {project.metersPerSceneUnit} m/unit · {project.headingDegrees}°
                   </span>
                 </div>
+                {calibrationDiagnostics && (
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-1 rounded bg-muted/40 px-2 py-1.5 text-[11px] text-muted-foreground md:grid-cols-4">
+                    <span>Local span: {calibrationDiagnostics.localDistanceUnits.toFixed(3)} units</span>
+                    <span>GPS span: {calibrationDiagnostics.geographicDistanceMeters.toFixed(3)} m</span>
+                    <span>Scale: {(calibrationDiagnostics.geographicDistanceMeters / calibrationDiagnostics.localDistanceUnits).toFixed(6)} m/unit</span>
+                    <span>Endpoint residual: {calibrationDiagnostics.referenceErrorMeters.toFixed(4)} m</span>
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
                 <Button onClick={updateProject} disabled={isSubmitting} size="sm">

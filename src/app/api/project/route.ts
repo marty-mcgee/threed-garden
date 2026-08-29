@@ -289,6 +289,7 @@ export async function PATCH(request: NextRequest) {
       success: true,
       data: result.updatedProject,
       markerCount: result.markerCount,
+      calibrationDiagnostics: calibration?.diagnostics ?? null,
       message: calibration
         ? `Project coordinates calibrated; ${result.markerCount} marker GPS records refreshed`
         : 'Project updated successfully',

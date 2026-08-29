@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.0c — Calibrated ThreeD Geographic Positioning](v0.19.0c.md)
 - [v0.19.0b — Shared ThreeD Model Repositioning](v0.19.0b.md)
 - [v0.19.0a — Shared ThreeD Model Library Placement](v0.19.0a.md)
 - [v0.18.9d — ThreeD Scene Navigation UX](v0.18.9d.md)

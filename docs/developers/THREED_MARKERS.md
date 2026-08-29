@@ -319,7 +319,7 @@ Project-local X/Y/Z ↔ WGS84 latitude/longitude/altitude
 R3F + Rapier                 Leaflet Map
 ```
 
-The axes are explicit: local +X is geographic east when heading is zero, +Y is elevation, and -Z is geographic north. `heading_degrees` rotates Scene -Z clockwise from north. This preserves the Three.js ground-plane handedness: in a north-up overhead view, east is screen-right and north is screen-up rather than a reflected Map image. The established Bed dimensions and Planting spacing define one local Scene unit as one foot, so `meters_per_scene_unit` is `0.3048`. The WGS84 conversion uses a Project-local tangent plane, so east/west distance changes correctly with latitude and local coordinates round-trip without using a fixed degrees-per-unit value.
+The axes are explicit: local +X is geographic east when heading is zero, +Y is elevation, and -Z is geographic north. `heading_degrees` rotates Scene -Z clockwise from north. This preserves the Three.js ground-plane handedness: in a north-up overhead view, east is screen-right and north is screen-up rather than a reflected Map image. The established Bed dimensions and Planting spacing define one local Scene unit as one foot, so `meters_per_scene_unit` is `0.3048`. Beginning with the post-v0.19.0c precision milestone, horizontal distance, bearing, and forward/reverse projection use iterative WGS84 ellipsoidal geodesics rather than a latitude-dependent tangent approximation. Local Y remains a linear altitude offset because the two approved calibration references contain latitude/longitude only.
 
 Local X/Y/Z remains the R3F and Rapier transform authority. Geographic latitude/longitude/altitude is the synchronized Map representation. A client may submit either a local edit or a geographic edit, but the authenticated server must calculate the other representation from the same Project origin in one transaction. Clients must not submit two independently authoritative positions.
 
@@ -349,6 +349,8 @@ The authenticated marker POST, PATCH, and explicit Project-save routes now deriv
 
 Marker selection preserves the same authority split. Clicking a marker in either the ThreeD Scene or Leaflet supplies local X/Y/Z to DetailsCard form controls. Leaflet latitude/longitude/altitude is carried separately as read-only GPS metadata; display-only spreading of overlapping Leaflet icons must not alter that stored/derived geographic value.
 
+Leaflet marker anchors are exact projections of authoritative local XYZ. The Dashboard must not pre-spread local Runtime Markers, round GPS coordinates into overlap groups, or add latitude/longitude offsets to make icons easier to see; those presentation mutations create false positions at garden scale. Truly co-located markers may visually overlap. Future overlap handling must retain the geographic anchor and use a cluster or temporary click-only spiderfy presentation.
+
 ## Two-point Project coordinate calibration
 
 An owned Project can be calibrated from **Edit Project → Project Coordinate Calibration** using two surveyed reference pairs. Each pair contains one local Scene X/Z position and the latitude/longitude of that same real-world point. The points must be distinct in both coordinate systems.
@@ -363,4 +365,12 @@ This replaces guessed scale correction with a measured Project transform. The au
 
 The same successful transaction stores all eight submitted reference values on the Project. Returning to **Edit Project** therefore reloads the exact saved local/GPS pairs instead of presenting an empty Point B or attempting to reconstruct inputs from the calculated result. Legacy Projects retain nullable references and use the Project origin only as the initial Point A fallback until their first saved calibration.
 
+The calibration form also reports the local reference span, ellipsoidal GPS span, solved metres-per-unit scale, and Point B endpoint residual. The residual describes how closely the solved two-point transform reproduces the submitted endpoint; it is not an independent GPS accuracy estimate. Survey/device accuracy still limits the result.
+
 The ThreeD Scene receives the calibrated Project heading as view context. Its true-north compass projects geographic north through the active camera, so it remains accurate while the user orbits. **North-Up View** places the camera above the current OrbitControls target with geographic north at the top of the display. This is a camera operation only; it does not rotate the Scene, markers, or Rapier world.
+
+## v0.19.0d precision checkpoint boundary
+
+The v0.19.0d candidate replaces horizontal tangent approximations with shared iterative WGS84 ellipsoidal forward/inverse calculations, exposes calibration span/scale/residual diagnostics, and removes both local-coordinate and latitude/longitude overlap spreading from Leaflet input. Manual comparison confirms the north-up ThreeD and 2D layouts now closely match.
+
+The release does not claim that two consumer GPS observations provide survey-grade accuracy. It preserves local XYZ as the R3F/Rapier authority, preserves Project altitude because the reference pairs contain no elevation, and does not move co-located markers merely to expose their icons. Future clustering or spiderfying must be temporary presentation behavior around the exact geographic anchor.
