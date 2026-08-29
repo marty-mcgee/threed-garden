@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.0d — Precision ThreeD Coordinate Calibration** (`package.json` version `0.19.0-delta`) |
-| Current release candidate | **v0.19.1a — ThreeD Project View State Persistence** (`package.json` version `0.19.1-alpha`) |
-| Current development milestone | **Explicit Save ThreeD Project now persists bounded Project presentation state with the Runtime Marker snapshot; UI and Project interaction improvements remain staged for later v0.19.1 checkpoints** |
-| Previous checkpoint | **v0.19.0c — Calibrated ThreeD Geographic Positioning** |
+| Current stable version | **v0.19.1a — ThreeD Project View State Persistence** (`package.json` version `0.19.1-alpha`) |
+| Current release candidate | **None designated** |
+| Current development milestone | **User Interface and Project Interaction improvements are planned for later v0.19.1 checkpoints; scope not yet designated** |
+| Previous checkpoint | **v0.19.0d — Precision ThreeD Coordinate Calibration** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -391,7 +391,7 @@ API (/api/map/threed)
 | **v0.19.0b** | **2026-08-28** | **Production release — existing Project Model repositioning through the Leaflet 2D Map and explicit ThreeD Scene Move Model mode** |
 | **v0.19.0c** | **2026-08-29** | **Production release — calibrated Project-local/WGS84 positioning, saved two-point references, north-up Scene/Map parity, and expanded Leaflet zoom** |
 | **v0.19.0d** | **2026-08-29** | **Production release — WGS84 ellipsoidal precision, calibration diagnostics, and exact Leaflet anchors matching authoritative local XYZ** |
-| **v0.19.1a** | **2026-08-29** | **Release candidate — transactional Project marker and view-state persistence with safe ThreeD camera, Leaflet, view-mode, panel, Layer, and display restoration** |
+| **v0.19.1a** | **2026-08-29** | **Production release — transactional Project marker and view-state persistence with safe ThreeD camera, Leaflet, view-mode, panel, Layer, and display restoration** |
 
 ---
 

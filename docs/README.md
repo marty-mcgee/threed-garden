@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.0d **Precision ThreeD Coordinate Calibration**, using package version `0.19.0-delta`. Project-local X/Y/Z and WGS84 positions use shared ellipsoidal calculations, calibration diagnostics, and exact Leaflet anchors without artificial coordinate spreading. Manual verification, build, deployment, and production checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.19.1a **ThreeD Project View State Persistence**, using package version `0.19.1-alpha`. Explicit Project saves now persist bounded ThreeD camera, Leaflet, view-mode, panel, Scene Layer, and display state alongside the complete Runtime Marker snapshot while leaving transient interaction and Physics Debug state session-only. Manual verification, release validation, deployment, and production checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -47,6 +47,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.1a production checkpoint](releases/v0.19.1a.md)
 - [v0.19.0d production checkpoint](releases/v0.19.0d.md)
 - [v0.19.0c production checkpoint](releases/v0.19.0c.md)
 - [v0.19.0b production checkpoint](releases/v0.19.0b.md)
