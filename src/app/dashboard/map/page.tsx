@@ -1645,6 +1645,7 @@ function UnifiedMapPageInner() {
   const [isFarmBotLibraryOpen, setIsFarmBotLibraryOpen] = useState(false);
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
+  const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
   const [libraryFarmBots, setLibraryFarmBots] = useState<any[]>([]);
@@ -1709,6 +1710,40 @@ function UnifiedMapPageInner() {
   const placingFarmBotRef = useRef(false);
   const placingBedRef = useRef(false);
   const placingPlantingRef = useRef(false);
+  const activeSceneOperation = movingModelInstance
+    ? { kind: 'move' as const, label: `Moving ${movingModelInstance.name}` }
+    : placementModel
+      ? { kind: 'model' as const, label: `Placing ${placementModel.modelName}` }
+      : placementCharacter
+        ? { kind: 'character' as const, label: `Placing ${placementCharacter.name}` }
+        : placementFarmBot
+          ? { kind: 'farmbot' as const, label: `Placing ${placementFarmBot.name}` }
+          : bedPlacementActive
+            ? { kind: 'bed' as const, label: `Placing ${bedPlacementDraft.name || 'Bed'}` }
+            : plantingPlacementActive
+              ? {
+                  kind: 'planting' as const,
+                  label: `Placing ${plantingOptions.find(
+                    (plant) => String(plant.id) === plantingPlacementDraft.plantId,
+                  )?.commonName ?? 'Planting'}`,
+                }
+              : null;
+  const sceneOperationPending = placingModel
+    || placingCharacter
+    || placingFarmBot
+    || placingBed
+    || placingPlanting;
+
+  const cancelActiveSceneOperation = useCallback(() => {
+    if (sceneOperationPending) return;
+    setMovingModelInstance(null);
+    setPlacementModel(null);
+    setPlacementScaleMultiplier('1');
+    setPlacementCharacter(null);
+    setPlacementFarmBot(null);
+    setBedPlacementActive(false);
+    setPlantingPlacementActive(false);
+  }, [sceneOperationPending]);
   
   // ✅ Live Data Status Indicator
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -1875,6 +1910,7 @@ function UnifiedMapPageInner() {
   ) => runtimeMarkerPositionResolverRef.current?.(moduleType, assetId) ?? null, []);
 
   const openModelLibrary = useCallback(async () => {
+    setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
     setIsCharacterLibraryOpen(false);
@@ -1910,6 +1946,7 @@ function UnifiedMapPageInner() {
   }, [libraryModels.length, loadingLibraryModels]);
 
   const openCharacterLibrary = useCallback(async () => {
+    setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
     setIsModelLibraryOpen(false);
@@ -1946,6 +1983,7 @@ function UnifiedMapPageInner() {
   }, [libraryCharacters.length, loadingLibraryCharacters]);
 
   const openFarmBotLibrary = useCallback(async () => {
+    setIsSceneAddMenuOpen(false);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
     setIsCharacterLibraryOpen(false);
@@ -1981,6 +2019,7 @@ function UnifiedMapPageInner() {
   }, [libraryFarmBots.length, loadingLibraryFarmBots]);
 
   const openPlantingPlacement = useCallback(async () => {
+    setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
     setIsCharacterLibraryOpen(false);
@@ -2019,6 +2058,21 @@ function UnifiedMapPageInner() {
       setLoadingPlantingOptions(false);
     }
   }, [loadingPlantingOptions, plantingOptions.length]);
+
+  const openBedPlacement = useCallback(() => {
+    setIsSceneAddMenuOpen(false);
+    setIsFarmBotLibraryOpen(false);
+    setPlacementFarmBot(null);
+    setIsCharacterLibraryOpen(false);
+    setPlacementCharacter(null);
+    setIsModelLibraryOpen(false);
+    setPlacementModel(null);
+    setIsPlantingPlacementOpen(false);
+    setPlantingPlacementActive(false);
+    setIsBedPlacementOpen(true);
+    setIsProjectSummaryOpen(false);
+    setSelectedMarker(null);
+  }, []);
 
   const handleSaveThreeDProject = useCallback(async () => {
     if (!selectedProjectId || savingProjectMarkers) return;
@@ -3718,6 +3772,7 @@ function UnifiedMapPageInner() {
             className="h-7 gap-1 px-2 text-xs font-medium"
             aria-expanded={selectedProjectId ? isProjectSummaryOpen : undefined}
             onClick={() => {
+              setIsSceneAddMenuOpen(false);
               if (selectedProjectId) {
                 setIsProjectSummaryOpen((open) => !open);
               } else {
@@ -3823,79 +3878,6 @@ function UnifiedMapPageInner() {
                 </div>
               </div>
 
-              <div className="space-y-1.5 border-t pt-2.5">
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Add to Scene
-                </div>
-                <div className="grid grid-cols-2 gap-1.5">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                  disabled={projectThreeDModules.length === 0}
-                  onClick={() => void openModelLibrary()}
-                >
-                  <Box className="h-3.5 w-3.5" />
-                  Models
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                  disabled={projectThreeDModules.length === 0}
-                  onClick={() => void openCharacterLibrary()}
-                >
-                  <User className="h-3.5 w-3.5" />
-                  Characters
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                  disabled={projectThreeDModules.length === 0}
-                  onClick={() => void openFarmBotLibrary()}
-                >
-                  <Settings className="h-3.5 w-3.5" />
-                  FarmBots
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                  disabled={projectThreeDModules.length === 0}
-                  onClick={() => {
-                    setIsFarmBotLibraryOpen(false);
-                    setPlacementFarmBot(null);
-                    setIsCharacterLibraryOpen(false);
-                    setPlacementCharacter(null);
-                    setIsModelLibraryOpen(false);
-                    setPlacementModel(null);
-                    setIsPlantingPlacementOpen(false);
-                    setPlantingPlacementActive(false);
-                    setIsBedPlacementOpen(true);
-                    setIsProjectSummaryOpen(false);
-                  }}
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  Bed
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 justify-start text-xs"
-                  disabled={projectThreeDModules.length === 0}
-                  onClick={() => void openPlantingPlacement()}
-                >
-                  <Sprout className="h-3.5 w-3.5" />
-                  Planting
-                </Button>
-                </div>
-              </div>
             </div>
           )}
         </div>
@@ -3917,7 +3899,10 @@ function UnifiedMapPageInner() {
               variant={viewMode === '2d' ? 'secondary' : 'ghost'}
               size="icon"
               className="h-7 w-7"
-              onClick={() => setViewMode('2d')}
+              onClick={() => {
+                setIsSceneAddMenuOpen(false);
+                setViewMode('2d');
+              }}
               title="2D View"
             >
               <Car className={`w-3.5 h-3.5 ${viewMode === '2d' ? '' : 'text-muted-foreground'}`} />
@@ -3932,6 +3917,109 @@ function UnifiedMapPageInner() {
               <Box className={`w-3.5 h-3.5 ${viewMode === '3d' ? '' : 'text-muted-foreground'}`} />
             </Button>
           </div>
+
+          {selectedProjectId && viewMode !== '2d' && (
+            <div className="relative">
+              <Button
+                type="button"
+                variant={isSceneAddMenuOpen ? 'secondary' : 'outline'}
+                size="sm"
+                className="h-7 gap-1 px-2 text-xs"
+                disabled={projectThreeDModules.length === 0}
+                aria-expanded={isSceneAddMenuOpen}
+                title="Add a ThreeD Marker to the Scene"
+                onClick={() => {
+                  setIsProjectSummaryOpen(false);
+                  setIsSceneAddMenuOpen((open) => !open);
+                }}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Add to Scene
+                {isSceneAddMenuOpen
+                  ? <ChevronUp className="h-3.5 w-3.5" />
+                  : <ChevronDown className="h-3.5 w-3.5" />}
+              </Button>
+
+              {isSceneAddMenuOpen && (
+                <div className="absolute right-0 top-full z-[2000] mt-1 w-52 rounded-lg border bg-background/95 p-1.5 shadow-xl backdrop-blur-sm">
+                  <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    ThreeD Marker Type
+                  </div>
+                  <div className="grid grid-cols-2 gap-1">
+                    <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={() => void openModelLibrary()}>
+                      <Box className="h-3.5 w-3.5" /> Models
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={() => void openCharacterLibrary()}>
+                      <User className="h-3.5 w-3.5" /> Characters
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={() => void openFarmBotLibrary()}>
+                      <Settings className="h-3.5 w-3.5" /> FarmBots
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={openBedPlacement}>
+                      <Plus className="h-3.5 w-3.5" /> Bed
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" className="col-span-2 h-8 justify-start text-xs" onClick={() => void openPlantingPlacement()}>
+                      <Sprout className="h-3.5 w-3.5" /> Planting
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {selectedProjectId && viewMode === '2d' && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 gap-1 px-2 text-xs"
+              disabled={projectThreeDModules.length === 0}
+              title="Add a Model through the supporting 2D Map"
+              onClick={() => void openModelLibrary()}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add Model
+            </Button>
+          )}
+
+          {activeSceneOperation && (
+            <div className="flex h-7 max-w-52 items-center gap-1 rounded-md border border-cyan-500/30 bg-cyan-500/10 pl-2 text-[11px] text-cyan-700 dark:text-cyan-200">
+              <span className="truncate" title={activeSceneOperation.label}>
+                {activeSceneOperation.label}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 shrink-0 text-current hover:bg-cyan-500/15 hover:text-current"
+                disabled={sceneOperationPending}
+                aria-label={`Cancel ${activeSceneOperation.label}`}
+                title={`Cancel ${activeSceneOperation.label}`}
+                onClick={cancelActiveSceneOperation}
+              >
+                {sceneOperationPending
+                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  : <X className="h-3.5 w-3.5" />}
+              </Button>
+            </div>
+          )}
+
+          {selectedProjectId && (
+            <Button
+              type="button"
+              variant={savingProjectMarkers ? 'secondary' : 'outline'}
+              size="icon"
+              className="h-7 w-7"
+              disabled={savingProjectMarkers}
+              aria-label="Save ThreeD Project"
+              title="Save ThreeD Project markers and current view"
+              onClick={handleSaveThreeDProject}
+            >
+              {savingProjectMarkers
+                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                : <Save className="h-3.5 w-3.5 text-muted-foreground" />}
+            </Button>
+          )}
 
           {/* Filter Toggle - Icon Only */}
           <Button

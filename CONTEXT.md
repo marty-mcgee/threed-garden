@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.1a — ThreeD Project View State Persistence** (`package.json` version `0.19.1-alpha`) |
-| Current release candidate | **None designated** |
-| Current development milestone | **User Interface and Project Interaction improvements are planned for later v0.19.1 checkpoints; scope not yet designated** |
+| Current release candidate | **v0.19.1b — ThreeD Scene Interaction Toolbar** (`package.json` version `0.19.1-beta`) |
+| Current development milestone | **The Dashboard header separates Project management, Scene creation, active placement/movement, saving, filtering, and refresh while retaining established CRUD and Scene authority** |
 | Previous checkpoint | **v0.19.0d — Precision ThreeD Coordinate Calibration** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -392,6 +392,7 @@ API (/api/map/threed)
 | **v0.19.0c** | **2026-08-29** | **Production release — calibrated Project-local/WGS84 positioning, saved two-point references, north-up Scene/Map parity, and expanded Leaflet zoom** |
 | **v0.19.0d** | **2026-08-29** | **Production release — WGS84 ellipsoidal precision, calibration diagnostics, and exact Leaflet anchors matching authoritative local XYZ** |
 | **v0.19.1a** | **2026-08-29** | **Production release — transactional Project marker and view-state persistence with safe ThreeD camera, Leaflet, view-mode, panel, Layer, and display restoration** |
+| **v0.19.1b** | **2026-08-29** | **Release candidate — ThreeD-first workspace toolbar, Project-menu separation, quick Save, and authoritative active Scene-operation cancellation** |
 
 ---
 

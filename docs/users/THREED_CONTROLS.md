@@ -2,6 +2,17 @@
 
 Open `/dashboard/map`, choose a project, and select a ThreeD marker to open its Details Card.
 
+## Dashboard workspace header
+
+- Select the Project name to view status, save the complete Project, change Projects, or open its Admin page.
+- Use the view buttons to switch between Combined, 2D, and 3D modes.
+- In 3D or Combined mode, select **Add to Scene** to open the existing Model, Character, FarmBot, Bed, or Planting placement workflow.
+- In 2D-only mode, **Add Model** retains the Map-supported Model placement workflow.
+- While a marker is awaiting placement or a Model is awaiting repositioning, the header shows the active operation. Select its X button to cancel that complete Scene operation.
+- Use the Save icon for quick access to the same **Save ThreeD Project** transaction available in the Project menu. Filter and Refresh remain separate header actions.
+
+The Scene **Controls** menu remains responsible for camera presentation, Layers, environment, legend, grid, gizmo, and Physics Debug. The Details Card remains responsible for the selected marker's actions and editing.
+
 ## Characters
 
 - Autonomous `GardenCharacter` characters use their configured NPC movement behavior, which may include wandering, patrol, circle, follow, teleport, or stationary behavior.
