@@ -186,13 +186,9 @@ function extractPosition(
   const x = typeof rawX === 'string' ? parseFloat(rawX) : (rawX ?? 0);
   const y = typeof rawY === 'string' ? parseFloat(rawY) : (rawY ?? 0);
   const z = typeof rawZ === 'string' ? parseFloat(rawZ) : (rawZ ?? 0);
-  if (isNaN(x) && isNaN(y) && isNaN(z)) return null;
+  if (![x, y, z].every(Number.isFinite)) return null;
 
-  return {
-    x: isNaN(x) ? 0 : x,
-    y: isNaN(y) ? 0 : y,
-    z: isNaN(z) ? 0 : z,
-  };
+  return { x, y, z };
 }
 
 function extractName(
@@ -245,6 +241,10 @@ function createMarker(
       positive: true,
       max: MAX_MARKER_DIMENSION,
     });
+    if (reason) reasons.push(reason);
+  }
+  for (const field of ['rotation', 'rotationX', 'rotationY', 'rotationZ']) {
+    const reason = validateOptionalNumber(item, field, { max: 1_000_000 });
     if (reason) reasons.push(reason);
   }
   if (!position || reasons.length > 0) {
@@ -345,7 +345,21 @@ export function buildThreeDRuntimeMarkerResult(
   const issues: ThreeDRuntimeMarkerIssue[] = [];
   const markerIds = new Set<string>();
   const appendMarker = (marker: RuntimeMarker | null) => {
-    if (!marker || markerIds.has(marker.id)) return;
+    if (!marker) return;
+    if (markerIds.has(marker.id)) {
+      issues.push({
+        source: marker.metadata?.source === 'project-snapshot'
+          ? 'project_threed_markers'
+          : 'threed_sub_module',
+        recordId: Number.isSafeInteger(Number(marker.data?.projectMarkerId ?? marker.data?.id))
+          ? Number(marker.data?.projectMarkerId ?? marker.data?.id)
+          : null,
+        markerId: marker.id,
+        markerType: marker.type,
+        reasons: ['duplicate marker ID in the Project payload'],
+      });
+      return;
+    }
     markerIds.add(marker.id);
     markers.push(marker);
   };

@@ -95,6 +95,11 @@ interface ThreeDSceneProps {
     assetId: number,
     pos: { x: number; y: number; z: number },
   ) => void;
+  /** Resolves the registry-authoritative current position for marker reads. */
+  resolveRuntimeMarkerPosition?: (
+    moduleType: string,
+    assetId: number,
+  ) => { x: number; y: number; z: number } | null;
   /** Override camera view mode (selected by user in DetailsCard) */
   cameraMode?: CameraViewMode;
   /** Reports an explicit user-driven camera mode change to the Dashboard owner. */
@@ -1302,6 +1307,7 @@ export function ThreeDScene({
   controlledCharacterId,
   onControlChange,
   onRuntimeMarkerPositionChange,
+  resolveRuntimeMarkerPosition,
   cameraMode,
   onCameraModeChange,
   focusRequest = 0,
@@ -1329,11 +1335,9 @@ export function ThreeDScene({
     || null;
   // v0.16.0-delta: Shared ref for camera follow — character writes position here each frame
   const cameraFollowRef = useRef<THREE.Vector3 | null>(null);
-  // v0.16.2-beta: Persistent store of each ecctrl character's live physics position,
-  // keyed by marker id — so re-selecting a moved character focuses its current spot.
+  // Ecctrl retains this internal bridge for its complete runtime unit. Shared
+  // position reads are resolved through the Runtime Marker registry instead.
   const livePositionsRef = useRef<Map<string, { x: number; y: number; z: number }>>(new Map());
-  const selectedMarkerRef = useRef(selectedMarker);
-  selectedMarkerRef.current = selectedMarker;
   const controlsRef = useRef<any>(null);
   const restoredProjectViewKeyRef = useRef<string | null>(null);
   const compassNeedleRef = useRef<HTMLDivElement | null>(null);
@@ -1707,14 +1711,30 @@ export function ThreeDScene({
     onControlChange?.(markerId, pos);
   }, [onControlChange, onRuntimeMarkerPositionChange]);
 
-  // ✅ Enhanced marker click handler
-  const handleMarkerClick = useCallback((marker: any) => {
-    // v0.16.2-beta: Prefer the tracked live position (if any) so camera focus and the
-    // DetailsCard reflect where the ecctrl character actually is, not its DB origin.
-    const livePos = livePositionsRef.current.get(marker.id);
-    const currentMarker = livePos
-      ? { ...marker, position: { x: livePos.x, y: livePos.y, z: livePos.z } }
+  const markerWithCurrentPosition = useCallback((marker: any) => {
+    const assetId = Number(marker?.data?.id);
+    const currentPosition = Number.isSafeInteger(assetId) && assetId > 0
+      ? resolveRuntimeMarkerPosition?.(marker.type, assetId)
+      : null;
+    return currentPosition
+      ? { ...marker, position: { ...currentPosition } }
       : marker;
+  }, [resolveRuntimeMarkerPosition]);
+
+  // Marker identity selection belongs to the Dashboard owner. The Scene only
+  // forwards a registry-current presentation of that marker.
+  const handleMarkerClick = useCallback((marker: any) => {
+    const currentMarker = markerWithCurrentPosition(marker);
+
+    if (onMarkerClick) onMarkerClick(currentMarker);
+  }, [markerWithCurrentPosition, onMarkerClick]);
+
+  useEffect(() => {
+    if (!selectedMarker) {
+      if (!selectedIncident) setSelectedDetails(null);
+      return;
+    }
+    const currentMarker = markerWithCurrentPosition(selectedMarker);
 
     const metadata: any = {
       ...currentMarker.metadata,
@@ -1749,17 +1769,13 @@ export function ThreeDScene({
       metadata.interactable = currentMarker.data.interactable || false;
     }
     
-    const isAlreadySelected = selectedMarkerRef.current?.id === currentMarker.id
-      && selectedMarkerRef.current?.type === currentMarker.type;
-    setSelectedDetails(isAlreadySelected ? null : {
+    setSelectedDetails({
       name: currentMarker.name || currentMarker.label || 'Unknown',
       type: currentMarker.type,
       position: currentMarker.position,
       metadata: metadata,
     });
-    
-    if (onMarkerClick) onMarkerClick(currentMarker);
-  }, [onMarkerClick]);
+  }, [markerWithCurrentPosition, selectedIncident, selectedMarker]);
 
   const handleIncidentClick = (incident: any) => {
     const isAlreadySelected = (selectedIncident as any)?.key === incident.key;

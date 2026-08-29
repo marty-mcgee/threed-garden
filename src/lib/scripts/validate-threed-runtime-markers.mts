@@ -735,7 +735,7 @@ const builtMarkers = buildThreeDRuntimeMarkers({
     id: 1,
     name: 'Farmer',
     positionX: '5',
-    positionY: 'invalid',
+    positionY: '0',
     positionZ: '6',
     isActive: false,
   }],
@@ -1116,7 +1116,7 @@ const rejectedMarkerResult = buildThreeDRuntimeMarkerResult({
 assert.deepEqual(rejectedMarkerResult.markers.map((marker) => marker.id), ['models-placement-41']);
 assert.equal(rejectedMarkerResult.issues.length, 3);
 assert.equal(rejectedMarkerResult.issues[0].source, 'threed_sub_module');
-assert.match(rejectedMarkerResult.issues[0].reasons.join(' '), /Scene boundary/);
+assert.match(rejectedMarkerResult.issues[0].reasons.join(' '), /finite X, Y, and Z/);
 assert.equal(rejectedMarkerResult.issues[1].recordId, 42);
 assert.match(rejectedMarkerResult.issues[1].reasons.join(' '), /scaleMultiplier must be greater than zero/);
 assert.equal(rejectedMarkerResult.issues[2].recordId, 43);

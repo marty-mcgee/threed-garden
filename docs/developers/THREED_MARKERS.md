@@ -400,3 +400,29 @@ Transient interaction state is deliberately excluded: selected markers, DetailsC
 5. Refresh `/dashboard/map` and confirm the view mode, panel split, ThreeD camera position/target, Leaflet center/zoom, camera mode, and saved display settings return.
 6. Confirm no Character is automatically controlled, no marker or Action Target is selected, no DetailsCard or placement form opens, and Physics Debug remains off.
 7. Confirm marker positions, Ecctrl Take/Release Control, WASD, collisions, Layer authority, and Project marker CRUD remain unchanged.
+
+## Post-v0.19.1b authority-driven rendering boundary
+
+The ThreeD Project uses separate, one-directional authorities rather than allowing UI surfaces or Sub-Modules to maintain competing Project state:
+
+```text
+project_threed_markers (saved Project-instance authority)
+        ↓
+Dashboard Project state (current client transaction)
+        ↓
+ThreeD Runtime Marker registry (identity and current-position reads)
+        ↓
+ThreeD Scene Sub-Module owner (visual and Rapier runtime)
+        ↓
+DetailsCard, camera, Layers, and 2D Map presentation
+```
+
+All marker Add/Edit/Delete responses now enter Dashboard state through `applyThreeDProjectClientTransaction`. The transaction updates the saved-marker collection and any returned Sub-Module source rows together while preserving unrelated collection and marker object identity. Marker CRUD must not reload the Project, Canvas, or Rapier world.
+
+Ecctrl remains the Character movement and RigidBody authority. It reports live movement to the Runtime Marker registry; marker selection and Scene focus now resolve the registry-current position instead of treating the Scene-local Ecctrl bridge as a second shared position store. Dashboard `selectedMarker` owns marker selection identity. `ThreeDScene` derives Details/focus presentation from that selection and must not independently toggle a competing marker selection.
+
+Project loading is a full-replacement boundary. A newer Project load aborts the previous request, and a stale response cannot overwrite the newly selected Project. Explicit Refresh uses that same boundary. Ordinary marker CRUD remains a targeted client transaction, while **Save ThreeD Project** remains the only operation that persists the complete registry snapshot.
+
+Before any marker reaches React Three Fiber or Rapier, the Runtime Marker builder rejects unsafe identities, duplicate marker IDs, partial or non-finite XYZ positions, out-of-range transforms, non-positive scales/dimensions, and overlapping movable Ecctrl spawns. Rejected records produce bounded user-facing diagnostics while valid siblings continue rendering. This safety boundary does not mutate or delete database records automatically.
+
+Scene Layers remain presentation/runtime-participation controls only. They may enable or disable a matching Sub-Module visual, pointer handling, RigidBody participation, and Physics Debug outline, but they do not own Project membership, marker identity, saved transforms, or the Runtime Marker collection.

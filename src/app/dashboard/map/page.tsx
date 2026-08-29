@@ -1627,6 +1627,8 @@ function UnifiedMapPageInner() {
   
   // ✅ State
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
+  const projectLoadSequenceRef = useRef(0);
+  const projectLoadAbortRef = useRef<AbortController | null>(null);
   const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(!projectIdParam);
   const [isProjectSummaryOpen, setIsProjectSummaryOpen] = useState(false);
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
@@ -1787,29 +1789,6 @@ function UnifiedMapPageInner() {
     lastProjectMapViewStateRef.current = initialProjectViewState.map;
   }, [initialProjectViewState]);
 
-  const updateProjectThreeDMarkers = useCallback((
-    update: (markers: ProjectThreeDMarkerRecord[]) => ProjectThreeDMarkerRecord[],
-  ) => {
-    setData((current) => {
-      const raw = current.threed.raw;
-      if (!raw) return current;
-      const markers = raw.projectThreedMarkers ?? [];
-      const nextMarkers = update(markers);
-      if (nextMarkers === markers) return current;
-      return {
-        ...current,
-        threed: {
-          ...current.threed,
-          raw: {
-            ...raw,
-            projectThreedMarkers: nextMarkers,
-          },
-          markersCount: nextMarkers.length,
-        },
-      };
-    });
-  }, []);
-
   const handleRejectedProjectMarkerDelete = useCallback(async (recordId: number) => {
     try {
       const response = await fetch(
@@ -1820,9 +1799,9 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Saved marker removal failed (${response.status})`);
       }
-      updateProjectThreeDMarkers((markers) => markers.filter(
-        (marker) => Number(marker.id) !== recordId,
-      ));
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { removeRecordIds: [recordId] },
+      }));
       showToastRef.current('Invalid saved ThreeD marker removed; source asset preserved', 'success');
     } catch (error) {
       showToastRef.current(
@@ -1830,7 +1809,7 @@ function UnifiedMapPageInner() {
         'error',
       );
     }
-  }, [updateProjectThreeDMarkers]);
+  }, []);
 
   const handleRejectedCharacterMarkerRepair = useCallback(async (recordId: number) => {
     const raw = data.threed.raw;
@@ -1862,9 +1841,9 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Character position repair failed (${response.status})`);
       }
-      updateProjectThreeDMarkers((markers) => markers.map(
-        (candidate) => Number(candidate.id) === recordId ? result.data : candidate,
-      ));
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
+      }));
       showToastRef.current('Character restored to its source position', 'success');
     } catch (error) {
       showToastRef.current(
@@ -1872,7 +1851,7 @@ function UnifiedMapPageInner() {
         'error',
       );
     }
-  }, [data.threed.raw, updateProjectThreeDMarkers]);
+  }, [data.threed.raw]);
 
   const handleProjectMarkerSnapshotProviderChange = useCallback((
     provider: ProjectThreeDMarkerSnapshotProvider | null,
@@ -2526,6 +2505,11 @@ function UnifiedMapPageInner() {
 
   // ✅ Load data from API route
   const loadData = useCallback(async () => {
+    const loadSequence = projectLoadSequenceRef.current + 1;
+    projectLoadSequenceRef.current = loadSequence;
+    projectLoadAbortRef.current?.abort();
+    const abortController = new AbortController();
+    projectLoadAbortRef.current = abortController;
     setLoading(true);
     
     try {
@@ -2540,8 +2524,11 @@ function UnifiedMapPageInner() {
       }
 
       try {
-        const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`);
+        const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`, {
+          signal: abortController.signal,
+        });
         const result = await response.json();
+        if (projectLoadSequenceRef.current !== loadSequence) return;
 
         if (result.success) {
           const savedViewState = result.projectContext?.viewState as ThreeDProjectViewState | null;
@@ -2689,6 +2676,9 @@ function UnifiedMapPageInner() {
           showToastRef.current(result.error || 'Failed to load data', 'error');
         }
       } catch (fetchError) {
+        if (abortController.signal.aborted || projectLoadSequenceRef.current !== loadSequence) {
+          return;
+        }
         console.warn('API fetch failed:', fetchError);
         const emptyData = getDefaultMapData();
         setData(emptyData);
@@ -2702,10 +2692,17 @@ function UnifiedMapPageInner() {
       setData(emptyData);
       showToastRef.current('Failed to load data', 'error');
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (projectLoadSequenceRef.current === loadSequence) {
+        projectLoadAbortRef.current = null;
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   }, [selectedProjectId]);
+
+  useEffect(() => () => {
+    projectLoadAbortRef.current?.abort();
+  }, []);
 
   const handleModelPlacement = useCallback(async (
     position: { x: number; y: number; z: number },
@@ -2759,7 +2756,9 @@ function UnifiedMapPageInner() {
           modelId: placementModel.id,
         },
       };
-      updateProjectThreeDMarkers((markers) => [...markers, createdMarker]);
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [createdMarker] },
+      }));
 
       setPlacementModel(null);
       setPlacementScaleMultiplier('1');
@@ -2781,7 +2780,6 @@ function UnifiedMapPageInner() {
     placementScaleMultiplier,
     placementThreedId,
     selectedProjectId,
-    updateProjectThreeDMarkers,
   ]);
 
   const handleCharacterPlacement = useCallback(async (
@@ -2817,26 +2815,10 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Character placement failed (${response.status})`);
       }
 
-      setData((current) => {
-        const raw = current.threed.raw;
-        if (!raw) return current;
-        const projectThreedMarkers = [
-          ...(raw.projectThreedMarkers ?? []),
-          result.data.marker as ProjectThreeDMarkerRecord,
-        ];
-        return {
-          ...current,
-          threed: {
-            ...current.threed,
-            raw: {
-              ...raw,
-              characters: [...(raw.characters ?? []), result.data.character],
-              projectThreedMarkers,
-            },
-            markersCount: projectThreedMarkers.length,
-          },
-        };
-      });
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data.marker as ProjectThreeDMarkerRecord] },
+        sources: { characters: { upsert: [result.data.character] } },
+      }));
       setPlacementCharacter(null);
       showToastRef.current(
         `${placementCharacter.name} placed with ${placementCharacter.libraryAccess.runtime} runtime`,
@@ -2954,26 +2936,10 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Bed placement failed (${response.status})`);
       }
 
-      setData((current) => {
-        const raw = current.threed.raw;
-        if (!raw) return current;
-        const projectThreedMarkers = [
-          ...(raw.projectThreedMarkers ?? []),
-          result.data.marker as ProjectThreeDMarkerRecord,
-        ];
-        return {
-          ...current,
-          threed: {
-            ...current.threed,
-            raw: {
-              ...raw,
-              beds: [...(raw.beds ?? []), result.data.bed],
-              projectThreedMarkers,
-            },
-            markersCount: projectThreedMarkers.length,
-          },
-        };
-      });
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data.marker as ProjectThreeDMarkerRecord] },
+        sources: { beds: { upsert: [result.data.bed] } },
+      }));
 
       setBedPlacementActive(false);
       setIsBedPlacementOpen(false);
@@ -3104,22 +3070,9 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Model placement update failed (${response.status})`);
       }
 
-      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
-        Number(marker.id) === instanceId
-          ? {
-              ...marker,
-              ...result.data,
-              data: {
-                ...marker.data,
-                ...(result.data?.data ?? {}),
-              },
-              metadata: {
-                ...marker.metadata,
-                ...(result.data?.metadata ?? {}),
-              },
-            }
-          : marker
-      )));
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
+      }));
 
       setSelectedMarker(null);
       setActionTarget((current) => current
@@ -3145,7 +3098,7 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingModelInstanceId(null);
     }
-  }, [deletingModelInstanceId, updateProjectThreeDMarkers, updatingModelInstanceId]);
+  }, [deletingModelInstanceId, updatingModelInstanceId]);
 
   const handleMoveModelInstance = useCallback(async (
     instanceId: number,
@@ -3168,22 +3121,9 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Model position update failed (${response.status})`);
       }
 
-      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
-        Number(marker.id) === instanceId
-          ? {
-              ...marker,
-              ...result.data,
-              data: {
-                ...marker.data,
-                ...(result.data?.data ?? {}),
-              },
-              metadata: {
-                ...marker.metadata,
-                ...(result.data?.metadata ?? {}),
-              },
-            }
-          : marker
-      )));
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
+      }));
       setSelectedMarker((current: any) => (
         Number(current?.data?.instanceId ?? current?.data?.projectMarkerId) === instanceId
           ? {
@@ -3212,7 +3152,7 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingModelInstanceId(null);
     }
-  }, [deletingModelInstanceId, updateProjectThreeDMarkers, updatingModelInstanceId]);
+  }, [deletingModelInstanceId, updatingModelInstanceId]);
 
   const handleMoveModelToggle = useCallback((instanceId: number, name: string) => {
     setMovingModelInstance((current) => (
@@ -3249,22 +3189,9 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Character position update failed (${response.status})`);
       }
-      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
-        Number(marker.id) === markerId
-          ? {
-              ...marker,
-              ...result.data,
-              data: {
-                ...marker.data,
-                ...(result.data?.data ?? {}),
-              },
-              metadata: {
-                ...marker.metadata,
-                ...(result.data?.metadata ?? {}),
-              },
-            }
-          : marker
-      )));
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
+      }));
       setSelectedMarker((current: any) => current ? {
         ...current,
         position: {
@@ -3291,7 +3218,7 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingCharacterMarkerId(null);
     }
-  }, [controlledCharacterId, updateProjectThreeDMarkers, updatingCharacterMarkerId]);
+  }, [controlledCharacterId, updatingCharacterMarkerId]);
 
   const handleDeleteCharacterInstance = useCallback(async (
     markerId: number,
@@ -3368,16 +3295,9 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Bed instance update failed (${response.status})`);
       }
 
-      updateProjectThreeDMarkers((markers) => markers.map((marker) => (
-        Number(marker.id) === markerId
-          ? {
-              ...marker,
-              ...result.data,
-              data: { ...marker.data, ...(result.data?.data ?? {}) },
-              metadata: { ...marker.metadata, ...(result.data?.metadata ?? {}) },
-            }
-          : marker
-      )));
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
+      }));
       setSelectedMarker(null);
       showToastRef.current('Project Bed instance updated', 'success');
     } catch (error) {
@@ -3391,7 +3311,7 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingBedMarkerId(null);
     }
-  }, [deletingBedMarkerId, updateProjectThreeDMarkers, updatingBedMarkerId]);
+  }, [deletingBedMarkerId, updatingBedMarkerId]);
 
   const handleDeleteBedInstance = useCallback(async (
     markerId: number,
@@ -3407,26 +3327,13 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Bed deletion failed (${response.status})`);
       }
-      updateProjectThreeDMarkers((markers) => markers.filter(
-        (marker) => Number(marker.id) !== markerId,
-      ));
       const deletedBedId = Number(result.data?.sourceAssetId);
-      setData((current) => {
-        const raw = current.threed.raw;
-        if (!raw || !Number.isSafeInteger(deletedBedId)) return current;
-        return {
-          ...current,
-          threed: {
-            ...current.threed,
-            raw: {
-              ...raw,
-              beds: (raw.beds ?? []).filter(
-                (bed: any) => Number(bed.id) !== deletedBedId,
-              ),
-            },
-          },
-        };
-      });
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { removeRecordIds: [markerId] },
+        sources: Number.isSafeInteger(deletedBedId) && deletedBedId > 0
+          ? { beds: { removeIds: [deletedBedId] } }
+          : undefined,
+      }));
       setSelectedMarker(null);
       setActionTarget((current) => current
         && isMatchingThreeDActionTarget(current, {
@@ -3448,7 +3355,7 @@ function UnifiedMapPageInner() {
     } finally {
       setDeletingBedMarkerId(null);
     }
-  }, [deletingBedMarkerId, updateProjectThreeDMarkers, updatingBedMarkerId]);
+  }, [deletingBedMarkerId, updatingBedMarkerId]);
 
   const handleUpdateFarmBotInstance = useCallback(async (
     markerId: number,
@@ -3639,9 +3546,9 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Model deletion failed (${response.status})`);
       }
 
-      updateProjectThreeDMarkers((markers) => markers.filter(
-        (marker) => Number(marker.id) !== instanceId,
-      ));
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { removeRecordIds: [instanceId] },
+      }));
 
       setSelectedMarker(null);
       setActionTarget((current) => current
@@ -3664,7 +3571,7 @@ function UnifiedMapPageInner() {
     } finally {
       setDeletingModelInstanceId(null);
     }
-  }, [deletingModelInstanceId, updateProjectThreeDMarkers]);
+  }, [deletingModelInstanceId]);
 
   useEffect(() => {
     loadData();

@@ -611,6 +611,7 @@ export function UnifiedMapView({
         controlledCharacterId={controlledCharacterId}
         onControlChange={onControlChange}
         onRuntimeMarkerPositionChange={handleRuntimeMarkerPositionChange}
+        resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
         cameraMode={cameraMode as any}
         onCameraModeChange={onCameraModeChange}
         focusRequest={focusRequest}
