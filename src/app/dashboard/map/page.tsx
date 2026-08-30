@@ -4716,7 +4716,6 @@ function UnifiedMapPageInner() {
               }
               onClick={() => {
                 setPlantingPlacementActive(true);
-                setViewMode('3d');
               }}
             >
               {placingPlanting ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}

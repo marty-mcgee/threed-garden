@@ -467,3 +467,13 @@ Release validation completed successfully:
 - `git diff --check`;
 - manual Add/Edit/Delete/Move lifecycle verification;
 - manual `npm run build` in the client environment.
+
+### Post-release placement surface continuity
+
+Starting Planting placement uses the ThreeD surface already mounted by the active Dashboard view. In Combined View, **Place Planting** must retain the Combined surface and panel split; it must not switch to standalone 3D, remount `UnifiedMapView`, or reconstruct the Canvas/Rapier Scene merely to accept a ground click. The placement request and resulting Project marker transaction remain unchanged.
+
+## v0.19.1e release-candidate boundary
+
+The v0.19.1e candidate is a narrowly scoped surface-continuity fix. It removes the forced switch from Combined View to standalone 3D when **Place Planting** begins. The already-mounted ThreeD panel remains the placement surface, while Leaflet, the panel split, Runtime Marker registry, Canvas, and Rapier world remain mounted.
+
+Manual interaction verification, `npm run typecheck`, all 37 Runtime Marker validation groups, and `git diff --check` passed. The client-side `npm run build` remains the final release gate.

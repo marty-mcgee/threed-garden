@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.1d — ThreeD Shared-Surface Operation Authority** (`package.json` version `0.19.1-delta`) |
-| Current release candidate | **None designated** |
-| Current development milestone | **Production checkpoint confirmed: shared-surface position parity, selected-marker CRUD reconciliation, and one derived Add/Edit/Delete/Move operation lifecycle** |
+| Current release candidate | **v0.19.1e — ThreeD Planting Placement Surface Continuity** (`package.json` version `0.19.1-echo`) |
+| Current development milestone | **Verified Planting placement preserves the active Combined/3D surface without remounting the Scene; client build gate pending** |
 | Previous checkpoint | **v0.19.1c — ThreeD Project Rendering Authority** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -395,6 +395,7 @@ API (/api/map/threed)
 | **v0.19.1b** | **2026-08-29** | **Release candidate — ThreeD-first workspace toolbar, Project-menu separation, quick Save, and authoritative active Scene-operation cancellation** |
 | **v0.19.1c** | **2026-08-29** | **Production release — unified Project marker transactions, registry-current position reads, Dashboard-owned selection, guarded Project replacement, and pre-physics marker rejection** |
 | **v0.19.1d** | **2026-08-29** | **Production release — shared Runtime Marker positions across ThreeD and Leaflet, selection-preserving marker CRUD, and one visible Add/Edit/Delete/Move operation lifecycle** |
+| **v0.19.1e** | **2026-08-29** | **Release candidate — Planting placement preserves Combined View, its panel split, and the persistent Canvas/Rapier Scene** |
 
 ---
 
