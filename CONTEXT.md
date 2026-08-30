@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.1e — ThreeD Planting Placement Surface Continuity** (`package.json` version `0.19.1-echo`) |
-| Current release candidate | **v0.19.2a — Visual ThreeD Model Library and Cross-Surface Placement** (`package.json` version `0.19.2-alpha`) |
-| Current development milestone | **v0.19.2a–d implementation and manual verification complete; client build gate pending** |
-| Previous checkpoint | **v0.19.1d — ThreeD Shared-Surface Operation Authority** |
+| Current stable version | **v0.19.2a — Visual ThreeD Model Library and Cross-Surface Placement** (`package.json` version `0.19.2-alpha`) |
+| Current release candidate | **None designated** |
+| Current development milestone | **Production checkpoint confirmed: authenticated Model previews, visual Library rail, and bounded cross-surface placement** |
+| Previous checkpoint | **v0.19.1e — ThreeD Planting Placement Surface Continuity** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
@@ -396,7 +396,7 @@ API (/api/map/threed)
 | **v0.19.1c** | **2026-08-29** | **Production release — unified Project marker transactions, registry-current position reads, Dashboard-owned selection, guarded Project replacement, and pre-physics marker rejection** |
 | **v0.19.1d** | **2026-08-29** | **Production release — shared Runtime Marker positions across ThreeD and Leaflet, selection-preserving marker CRUD, and one visible Add/Edit/Delete/Move operation lifecycle** |
 | **v0.19.1e** | **2026-08-29** | **Production release — Planting placement preserves Combined View, its panel split, and the persistent Canvas/Rapier Scene** |
-| **v0.19.2a** | **2026-08-29** | **Release candidate — authenticated Model preview media, a visual sibling Library rail, and bounded click/drag placement across persistent 3D and Leaflet surfaces** |
+| **v0.19.2a** | **2026-08-29** | **Production release — authenticated Model preview media, a visual sibling Library rail, and bounded click/drag placement across persistent 3D and Leaflet surfaces** |
 
 ---
 
