@@ -175,6 +175,16 @@ function resolveIdentity(
  */
 export class ThreeDRuntimeMarkerRegistry {
   private entries = new Map<string, ThreeDRuntimeMarkerEntry>();
+  private listeners = new Set<() => void>();
+
+  private notify(): void {
+    for (const listener of this.listeners) listener();
+  }
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
 
   replaceAssetMarkers(
     registrations: readonly ThreeDRuntimeMarkerRegistration[],
@@ -194,6 +204,7 @@ export class ThreeDRuntimeMarkerRegistry {
     }
 
     this.entries = replacement;
+    this.notify();
     return this.list();
   }
 
@@ -213,7 +224,14 @@ export class ThreeDRuntimeMarkerRegistry {
     if (!identity) return false;
     const entry = this.entries.get(createThreeDRuntimeMarkerKey(identity));
     if (!entry) return false;
-    entry.livePosition = validatePosition(position);
+    const nextPosition = validatePosition(position);
+    if (
+      entry.livePosition?.x === nextPosition.x
+      && entry.livePosition?.y === nextPosition.y
+      && entry.livePosition?.z === nextPosition.z
+    ) return true;
+    entry.livePosition = nextPosition;
+    this.notify();
     return true;
   }
 
@@ -225,19 +243,24 @@ export class ThreeDRuntimeMarkerRegistry {
     if (!identity) return null;
     const entry = this.entries.get(createThreeDRuntimeMarkerKey(identity));
     if (!entry) return null;
+    if (!entry.livePosition) return snapshotEntry(entry);
     entry.livePosition = null;
+    this.notify();
     return snapshotEntry(entry);
   }
 
   remove(moduleType: string, assetId: number): boolean {
     const identity = resolveIdentity(moduleType, assetId);
-    return identity
-      ? this.entries.delete(createThreeDRuntimeMarkerKey(identity))
-      : false;
+    if (!identity) return false;
+    const removed = this.entries.delete(createThreeDRuntimeMarkerKey(identity));
+    if (removed) this.notify();
+    return removed;
   }
 
   clear(): void {
+    if (this.entries.size === 0) return;
     this.entries.clear();
+    this.notify();
   }
 
   list(): readonly ThreeDRuntimeMarkerSnapshot[] {

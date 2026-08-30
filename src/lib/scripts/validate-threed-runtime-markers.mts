@@ -635,6 +635,25 @@ assert.equal(Object.isFrozen(live), true);
 assert.equal(Object.isFrozen(live?.currentPosition), true);
 validationStep('Live positions override asset positions without mutating snapshots');
 
+const observableRegistry = new ThreeDRuntimeMarkerRegistry();
+observableRegistry.replaceAssetMarkers([{
+  moduleType: 'characters',
+  assetId: 44,
+  name: 'Shared Surface Farmer',
+  assetPosition: { x: 0, y: 0, z: 0 },
+}]);
+let registryNotifications = 0;
+const unsubscribeRegistry = observableRegistry.subscribe(() => {
+  registryNotifications += 1;
+});
+observableRegistry.updateLivePosition('characters', 44, { x: 2, y: 0, z: 3 });
+observableRegistry.updateLivePosition('characters', 44, { x: 2, y: 0, z: 3 });
+assert.equal(registryNotifications, 1);
+unsubscribeRegistry();
+observableRegistry.updateLivePosition('characters', 44, { x: 4, y: 0, z: 5 });
+assert.equal(registryNotifications, 1);
+validationStep('Shared 2D and 3D surfaces observe one Runtime Marker registry');
+
 registry.replaceAssetMarkers([
   {
     moduleType: 'farmbots',

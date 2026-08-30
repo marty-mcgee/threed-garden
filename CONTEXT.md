@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.1c — ThreeD Project Rendering Authority** (`package.json` version `0.19.1-centaur`) |
-| Current release candidate | **None designated** |
-| Current development milestone | **Select the next scoped ThreeD Project improvement from the v0.19.1c authority boundary** |
+| Current release candidate | **v0.19.1d — ThreeD Shared-Surface Operation Authority** (`package.json` version `0.19.1-delta`) |
+| Current development milestone | **Release candidate verified: shared-surface position parity, selected-marker CRUD reconciliation, and one derived Add/Edit/Delete/Move operation lifecycle** |
 | Previous checkpoint | **v0.19.1a — ThreeD Project View State Persistence** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -394,6 +394,7 @@ API (/api/map/threed)
 | **v0.19.1a** | **2026-08-29** | **Production release — transactional Project marker and view-state persistence with safe ThreeD camera, Leaflet, view-mode, panel, Layer, and display restoration** |
 | **v0.19.1b** | **2026-08-29** | **Release candidate — ThreeD-first workspace toolbar, Project-menu separation, quick Save, and authoritative active Scene-operation cancellation** |
 | **v0.19.1c** | **2026-08-29** | **Production release — unified Project marker transactions, registry-current position reads, Dashboard-owned selection, guarded Project replacement, and pre-physics marker rejection** |
+| **v0.19.1d** | **2026-08-29** | **Release candidate — shared Runtime Marker positions across ThreeD and Leaflet, selection-preserving marker CRUD, and one visible Add/Edit/Delete/Move operation lifecycle** |
 
 ---
 

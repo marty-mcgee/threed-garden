@@ -426,3 +426,44 @@ Project loading is a full-replacement boundary. A newer Project load aborts the 
 Before any marker reaches React Three Fiber or Rapier, the Runtime Marker builder rejects unsafe identities, duplicate marker IDs, partial or non-finite XYZ positions, out-of-range transforms, non-positive scales/dimensions, and overlapping movable Ecctrl spawns. Rejected records produce bounded user-facing diagnostics while valid siblings continue rendering. This safety boundary does not mutate or delete database records automatically.
 
 Scene Layers remain presentation/runtime-participation controls only. They may enable or disable a matching Sub-Module visual, pointer handling, RigidBody participation, and Physics Debug outline, but they do not own Project membership, marker identity, saved transforms, or the Runtime Marker collection.
+
+### Stage 6 — current-position consumer parity
+
+The Dashboard owns one Project-session Runtime Marker registry and supplies that same instance to separately mounted 3D and Leaflet surfaces. The registry supplies the same current local XYZ position to all established position consumers. ThreeD marker selection and Details/focus presentation, Action Target focus requests, explicit Project-save snapshots, and Leaflet geographic projection no longer independently choose between saved and live positions.
+
+Ecctrl and Rapier remain the movement producers. Their throttled position report updates the shared registry without writing to the database. Registry subscribers notify the separately mounted Map surface, with identical positions producing no redundant notification. In Combined or 2D view, the Leaflet projection refreshes from registry-current XYZ at a maximum of four times per second and always receives a final trailing update; pure 3D view performs no map-projection rerender work. Switching into a Map-bearing view immediately derives marker geography from the latest registry state. **Save ThreeD Project** remains the only complete runtime-position persistence operation.
+
+### Stage 7 — selected-marker identity across CRUD
+
+Dashboard selection is retained by Project marker record identity across targeted updates. A successful Bed, Character, FarmBot, Model, or Planting PATCH reconciles the selected Runtime Marker from the returned authoritative marker record, including its name, presentation fields, local XYZ, instance data, and metadata. The DetailsCard therefore remains open and displays the saved values without requiring the user to reselect the marker.
+
+Deleting a Project marker clears selection only when that exact Project marker record is selected. A CRUD transaction against another marker cannot dismiss or replace the user's active DetailsCard. This selection reconciliation changes no Runtime Marker key, Sub-Module renderer, RigidBody owner, or persistence boundary.
+
+### Stage 8 — shared marker-operation lifecycle
+
+The Dashboard header derives one active marker-operation status from the existing Add, Edit, Delete, and Move request states. Operations waiting for a Scene or Map destination are `ready` and may be cancelled. Once a POST, PATCH, or DELETE request begins, the same status becomes `pending`, displays progress, and cannot be cancelled from the header. An issued database request is allowed to resolve through its existing Sub-Module handler instead of being mistaken for an unfinished placement mode.
+
+This is a presentation-level lifecycle over the established request locks; it is not a new marker authority or persistence service. Each Sub-Module retains its existing request guard, API contract, client transaction, Runtime Marker identity, renderer, and RigidBody owner. Pending mutations take deterministic priority over ready placement/move modes so the header never claims that two marker operations are simultaneously active.
+
+Manual verification:
+
+1. Start each Model, Character, FarmBot, Bed, and Planting placement mode. Confirm the header identifies the active placement and its X button cancels before a destination is chosen.
+2. Start **Move Model** and confirm the header identifies the Model and allows cancellation before choosing a destination.
+3. Complete one placement or move. While its request is running, confirm the header shows a spinner and disables cancellation; after success it clears.
+4. Edit and delete disposable saved markers. Confirm the header reports the pending update or deletion, then clears after success or failure.
+5. Confirm selection retention, DetailsCard pending buttons, targeted client-state updates, Leaflet current-position synchronization, Ecctrl Take/Release Control, and Rapier physics remain unchanged.
+
+## v0.19.1d release-candidate boundary
+
+The v0.19.1d candidate combines Stages 6–8 as **ThreeD Shared-Surface Operation Authority**. One Project-session Runtime Marker registry supplies current local positions to the ThreeD and Leaflet surfaces; Project marker updates retain DetailsCard selection by record identity; and the header exposes one deterministic Add/Edit/Delete/Move lifecycle without replacing the established Sub-Module request guards.
+
+The candidate adds no schema, automatic persistence, Scene reload, secondary marker authority, or cross-Sub-Module RigidBody owner. Ecctrl remains authoritative for controlled Character movement, Rapier remains authoritative for runtime physics, and **Save ThreeD Project** remains the explicit complete-snapshot persistence boundary.
+
+Release validation completed successfully:
+
+- `npm run typecheck`;
+- `npm run validate:threed-runtime-markers` — 37 groups;
+- `npm run validate:threed-orchestration` — 18 groups;
+- `git diff --check`;
+- manual Add/Edit/Delete/Move lifecycle verification;
+- manual `npm run build` in the client environment.

@@ -50,6 +50,8 @@ const ThreeDScene = dynamic(
 interface UnifiedMapViewProps {
   /** Active Project identity; changing it starts a separate marker collection. */
   projectId?: number | null;
+  /** Shared Project-session registry; required when 2D and 3D mount separately. */
+  runtimeMarkerRegistry?: ThreeDRuntimeMarkerRegistry;
   data: UnifiedMapData;
   layers: MapLayerConfig;
   viewMode: MapViewMode;
@@ -168,6 +170,7 @@ function isSameRuntimeMarker(left: RuntimeMarker, right: RuntimeMarker): boolean
 
 export function UnifiedMapView({
   projectId,
+  runtimeMarkerRegistry,
   data,
   layers,
   viewMode,
@@ -216,11 +219,15 @@ export function UnifiedMapView({
   selectedMarkerRef.current = selectedMarker;
   const stableMarkersRef = useRef<Map<string, RuntimeMarker>>(new Map());
   const markerProjectIdRef = useRef<number | null | undefined>(projectId);
+  const ownsRuntimeMarkerRegistryRef = useRef(!runtimeMarkerRegistry);
   const runtimeMarkerRegistryRef = useRef<ThreeDRuntimeMarkerRegistry | null>(null);
   if (!runtimeMarkerRegistryRef.current) {
-    runtimeMarkerRegistryRef.current = new ThreeDRuntimeMarkerRegistry();
+    runtimeMarkerRegistryRef.current = runtimeMarkerRegistry ?? new ThreeDRuntimeMarkerRegistry();
   }
   const [autoRotate, setAutoRotate] = useState(false);
+  const [runtimePositionRevision, setRuntimePositionRevision] = useState(0);
+  const lastMapRuntimeRevisionAtRef = useRef(0);
+  const pendingMapRuntimeRevisionTimerRef = useRef<number | null>(null);
   const [deletingRejectedMarkerId, setDeletingRejectedMarkerId] = useState<number | null>(null);
   const [repairingRejectedMarkerId, setRepairingRejectedMarkerId] = useState<number | null>(null);
 
@@ -268,19 +275,60 @@ export function UnifiedMapView({
   }, [runtimeMarkers]);
 
   useEffect(() => () => {
-    runtimeMarkerRegistryRef.current?.clear();
+    if (ownsRuntimeMarkerRegistryRef.current) {
+      runtimeMarkerRegistryRef.current?.clear();
+    }
+    if (pendingMapRuntimeRevisionTimerRef.current !== null) {
+      window.clearTimeout(pendingMapRuntimeRevisionTimerRef.current);
+      pendingMapRuntimeRevisionTimerRef.current = null;
+    }
   }, []);
+
+  useEffect(() => {
+    const registry = runtimeMarkerRegistryRef.current;
+    if (!registry || viewMode === '3d') return;
+    return registry.subscribe(() => {
+      const now = Date.now();
+      const elapsed = now - lastMapRuntimeRevisionAtRef.current;
+      const publishRevision = () => {
+        pendingMapRuntimeRevisionTimerRef.current = null;
+        lastMapRuntimeRevisionAtRef.current = Date.now();
+        setRuntimePositionRevision((current) => current + 1);
+      };
+      if (elapsed >= 250) {
+        if (pendingMapRuntimeRevisionTimerRef.current !== null) {
+          window.clearTimeout(pendingMapRuntimeRevisionTimerRef.current);
+        }
+        publishRevision();
+        return;
+      }
+      if (pendingMapRuntimeRevisionTimerRef.current !== null) {
+        window.clearTimeout(pendingMapRuntimeRevisionTimerRef.current);
+      }
+      pendingMapRuntimeRevisionTimerRef.current = window.setTimeout(
+        publishRevision,
+        250 - elapsed,
+      );
+    });
+  }, [viewMode]);
 
   const handleRuntimeMarkerPositionChange = useCallback((
     moduleType: string,
     assetId: number,
     position: { x: number; y: number; z: number },
   ) => {
-    runtimeMarkerRegistryRef.current?.updateLivePosition(
+    const updated = runtimeMarkerRegistryRef.current?.updateLivePosition(
       moduleType,
       assetId,
       position,
     );
+    if (!updated) {
+      console.debug('[ThreeD Runtime Position] Registry identity was unavailable', {
+        moduleType,
+        assetId,
+      });
+      return;
+    }
   }, []);
 
   const getProjectMarkerSnapshot = useCallback((): ProjectThreeDMarkerSnapshotInput[] => {
@@ -325,6 +373,17 @@ export function UnifiedMapView({
       ?.currentPosition;
     return position ? { ...position } : null;
   }, []);
+
+  const actionTargetWithCurrentPosition = useMemo(() => {
+    if (!actionTarget) return actionTarget;
+    const position = resolveRuntimeMarkerPosition(actionTarget.type, actionTarget.id);
+    return position ? { ...actionTarget, position } : actionTarget;
+  }, [
+    actionTarget,
+    actionTargetFocusRequest,
+    resolveRuntimeMarkerPosition,
+    runtimePositionRevision,
+  ]);
 
   useEffect(() => {
     if (!onProjectMarkerSnapshotProviderChange) return;
@@ -468,6 +527,11 @@ export function UnifiedMapView({
     return filteredMarkers
       .filter((m) => m.position && m.position.x !== undefined && m.position.z !== undefined)
       .map((m) => {
+        const assetId = Number((m.data as Record<string, unknown>)?.id);
+        const runtimePosition = Number.isSafeInteger(assetId) && assetId > 0
+          ? resolveRuntimeMarkerPosition(m.type, assetId)
+          : null;
+        const currentPosition = runtimePosition ?? m.position;
         const rawLatitude = (m.data as Record<string, unknown>)?.latitude;
         const rawLongitude = (m.data as Record<string, unknown>)?.longitude;
         const rawAltitude = (m.data as Record<string, unknown>)?.altitude;
@@ -481,7 +545,7 @@ export function UnifiedMapView({
         // always derives the Map position, avoiding stale persisted GPS after
         // an origin, heading, or physical-scale correction.
         const geographic = geographicOrigin
-          ? projectLocalPositionToGeographicPosition(m.position, geographicOrigin)
+          ? projectLocalPositionToGeographicPosition(currentPosition, geographicOrigin)
           : storedLatitude !== null
             && storedLongitude !== null
             && Number.isFinite(storedLatitude)
@@ -490,12 +554,12 @@ export function UnifiedMapView({
             : null;
         const fallback = geographic
           ? { lat: geographic.latitude, lng: geographic.longitude }
-          : projectPlanPositionToMapPosition(m.position, gpsCenter);
+          : projectPlanPositionToMapPosition(currentPosition, gpsCenter);
         const storedAltitude = rawAltitude === null || rawAltitude === undefined
           ? null
           : Number(rawAltitude);
         const altitude = geographicOrigin
-          ? geographicOrigin.altitude + (m.position.y * geographicOrigin.metersPerSceneUnit)
+          ? geographicOrigin.altitude + (currentPosition.y * geographicOrigin.metersPerSceneUnit)
           : storedAltitude !== null && Number.isFinite(storedAltitude)
             ? storedAltitude
             : null;
@@ -505,7 +569,7 @@ export function UnifiedMapView({
           color: m.color, size: 'medium',
           metadata: {
             ...m.metadata,
-            position: m.position,
+            position: currentPosition,
             data: m.data,
             geographicPosition: {
               latitude: fallback.lat,
@@ -515,7 +579,14 @@ export function UnifiedMapView({
           },
         };
       });
-  }, [filteredMarkers, geographicOrigin, gpsCenter]);
+  }, [
+    filteredMarkers,
+    geographicOrigin,
+    gpsCenter,
+    resolveRuntimeMarkerPosition,
+    runtimePositionRevision,
+    viewMode,
+  ]);
 
   // The persistent ThreeD Scene receives every validated Project marker.
   // Presentation filters are passed separately so hiding one marker suspends
@@ -615,7 +686,7 @@ export function UnifiedMapView({
         cameraMode={cameraMode as any}
         onCameraModeChange={onCameraModeChange}
         focusRequest={focusRequest}
-        actionTarget={actionTarget}
+        actionTarget={actionTargetWithCurrentPosition}
         actionTargetFocusRequest={actionTargetFocusRequest}
         placementModel={placementModel}
         onModelPlacement={onModelPlacement}

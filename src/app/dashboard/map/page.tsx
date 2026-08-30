@@ -2,7 +2,7 @@
 // Features: Rich Popups + Admin Links, Advanced Filtering, Interactive Stats, Live Data Indicator
 'use client';
 
-import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { 
   Layers, 
@@ -86,6 +86,7 @@ import {
   getThreeDLabel,
 } from '@/lib/utils/map-helpers';
 import { applyThreeDProjectClientTransaction } from '@/lib/services/threed/markers/project-marker-client-state-core';
+import { ThreeDRuntimeMarkerRegistry } from '@/lib/services/threed/markers/runtime-marker-core';
 import type { ThreeDGeographicOrigin } from '@/lib/services/threed/markers/map-coordinate-core';
 import {
   PROJECT_VIEW_STATE_VERSION,
@@ -228,6 +229,50 @@ interface FarmBotProjectMqttRuntime {
 
 function formatMqttDate(value: string | null): string {
   return value ? new Date(value).toLocaleString() : 'Never';
+}
+
+function selectedProjectMarkerRecordId(selected: any): number | null {
+  const id = Number(selected?.data?.projectMarkerId ?? selected?.data?.instanceId);
+  return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
+function reconcileSelectedProjectMarker(
+  selected: any,
+  recordId: number,
+  record: ProjectThreeDMarkerRecord,
+): any {
+  if (selectedProjectMarkerRecordId(selected) !== recordId) return selected;
+  const position = {
+    x: Number(record.positionX),
+    y: Number(record.positionY),
+    z: Number(record.positionZ),
+  };
+  const hasPosition = Object.values(position).every(Number.isFinite);
+  return {
+    ...selected,
+    name: record.name ?? selected.name,
+    label: record.label ?? selected.label,
+    color: record.color ?? selected.color,
+    position: hasPosition ? position : selected.position,
+    data: {
+      ...(selected.data ?? {}),
+      ...(record.data ?? {}),
+      projectMarkerId: recordId,
+      ...(hasPosition ? {
+        positionX: position.x,
+        positionY: position.y,
+        positionZ: position.z,
+      } : {}),
+    },
+    metadata: {
+      ...(selected.metadata ?? {}),
+      ...(record.metadata ?? {}),
+    },
+  };
+}
+
+function clearSelectedProjectMarker(selected: any, recordId: number): any {
+  return selectedProjectMarkerRecordId(selected) === recordId ? null : selected;
 }
 
 function FarmBotMqttStatusSummary({
@@ -1624,6 +1669,13 @@ function UnifiedMapPageInner() {
   const { showToast, ToastComponent } = useToast();
   const searchParams = useSearchParams();
   const projectIdParam = searchParams.get('projectId');
+  const projectRuntimeMarkerRegistryRef = useRef<ThreeDRuntimeMarkerRegistry | null>(null);
+  if (!projectRuntimeMarkerRegistryRef.current) {
+    projectRuntimeMarkerRegistryRef.current = new ThreeDRuntimeMarkerRegistry();
+  }
+  useEffect(() => () => {
+    projectRuntimeMarkerRegistryRef.current?.clear();
+  }, []);
   
   // ✅ State
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
@@ -1712,32 +1764,89 @@ function UnifiedMapPageInner() {
   const placingFarmBotRef = useRef(false);
   const placingBedRef = useRef(false);
   const placingPlantingRef = useRef(false);
-  const activeSceneOperation = movingModelInstance
-    ? { kind: 'move' as const, label: `Moving ${movingModelInstance.name}` }
-    : placementModel
-      ? { kind: 'model' as const, label: `Placing ${placementModel.modelName}` }
-      : placementCharacter
-        ? { kind: 'character' as const, label: `Placing ${placementCharacter.name}` }
-        : placementFarmBot
-          ? { kind: 'farmbot' as const, label: `Placing ${placementFarmBot.name}` }
-          : bedPlacementActive
-            ? { kind: 'bed' as const, label: `Placing ${bedPlacementDraft.name || 'Bed'}` }
-            : plantingPlacementActive
-              ? {
-                  kind: 'planting' as const,
-                  label: `Placing ${plantingOptions.find(
+  const activeSceneOperation = useMemo(() => {
+    const pendingOperation = [
+      deletingModelInstanceId != null && 'Deleting Model',
+      deletingCharacterMarkerId != null && 'Deleting Character',
+      deletingFarmBotMarkerId != null && 'Deleting FarmBot',
+      deletingBedMarkerId != null && 'Deleting Bed',
+      deletingPlantingMarkerId != null && 'Deleting Planting',
+      updatingModelInstanceId != null && (movingModelInstance
+        ? `Moving ${movingModelInstance.name}`
+        : 'Updating Model'),
+      updatingCharacterMarkerId != null && 'Updating Character',
+      updatingFarmBotMarkerId != null && 'Updating FarmBot',
+      updatingBedMarkerId != null && 'Updating Bed',
+      updatingPlantingMarkerId != null && 'Updating Planting',
+      placingModel && `Placing ${placementModel?.modelName ?? 'Model'}`,
+      placingCharacter && `Placing ${placementCharacter?.name ?? 'Character'}`,
+      placingFarmBot && `Placing ${placementFarmBot?.name ?? 'FarmBot'}`,
+      placingBed && `Placing ${bedPlacementDraft.name || 'Bed'}`,
+      placingPlanting && `Placing ${plantingOptions.find(
+        (plant) => String(plant.id) === plantingPlacementDraft.plantId,
+      )?.commonName ?? 'Planting'}`,
+    ].find((operation): operation is string => Boolean(operation));
+
+    if (pendingOperation) {
+      return {
+        phase: 'pending' as const,
+        label: pendingOperation,
+        cancellable: false,
+      };
+    }
+
+    const readyOperation = movingModelInstance
+      ? `Moving ${movingModelInstance.name}`
+      : placementModel
+        ? `Placing ${placementModel.modelName}`
+        : placementCharacter
+          ? `Placing ${placementCharacter.name}`
+          : placementFarmBot
+            ? `Placing ${placementFarmBot.name}`
+            : bedPlacementActive
+              ? `Placing ${bedPlacementDraft.name || 'Bed'}`
+              : plantingPlacementActive
+                ? `Placing ${plantingOptions.find(
                     (plant) => String(plant.id) === plantingPlacementDraft.plantId,
-                  )?.commonName ?? 'Planting'}`,
-                }
-              : null;
-  const sceneOperationPending = placingModel
-    || placingCharacter
-    || placingFarmBot
-    || placingBed
-    || placingPlanting;
+                  )?.commonName ?? 'Planting'}`
+                : null;
+
+    return readyOperation
+      ? {
+          phase: 'ready' as const,
+          label: readyOperation,
+          cancellable: true,
+        }
+      : null;
+  }, [
+    bedPlacementActive,
+    bedPlacementDraft.name,
+    deletingBedMarkerId,
+    deletingCharacterMarkerId,
+    deletingFarmBotMarkerId,
+    deletingModelInstanceId,
+    deletingPlantingMarkerId,
+    movingModelInstance,
+    placementCharacter,
+    placementFarmBot,
+    placementModel,
+    placingBed,
+    placingCharacter,
+    placingFarmBot,
+    placingModel,
+    placingPlanting,
+    plantingOptions,
+    plantingPlacementActive,
+    plantingPlacementDraft.plantId,
+    updatingBedMarkerId,
+    updatingCharacterMarkerId,
+    updatingFarmBotMarkerId,
+    updatingModelInstanceId,
+    updatingPlantingMarkerId,
+  ]);
 
   const cancelActiveSceneOperation = useCallback(() => {
-    if (sceneOperationPending) return;
+    if (!activeSceneOperation?.cancellable) return;
     setMovingModelInstance(null);
     setPlacementModel(null);
     setPlacementScaleMultiplier('1');
@@ -1745,7 +1854,7 @@ function UnifiedMapPageInner() {
     setPlacementFarmBot(null);
     setBedPlacementActive(false);
     setPlantingPlacementActive(false);
-  }, [sceneOperationPending]);
+  }, [activeSceneOperation]);
   
   // ✅ Live Data Status Indicator
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -3074,7 +3183,11 @@ function UnifiedMapPageInner() {
         markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
       }));
 
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => reconcileSelectedProjectMarker(
+        current,
+        instanceId,
+        result.data as ProjectThreeDMarkerRecord,
+      ));
       setActionTarget((current) => current
         && isMatchingThreeDActionTarget(current, {
           markerType: 'models',
@@ -3124,19 +3237,10 @@ function UnifiedMapPageInner() {
       setData((current) => applyThreeDProjectClientTransaction(current, {
         markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
       }));
-      setSelectedMarker((current: any) => (
-        Number(current?.data?.instanceId ?? current?.data?.projectMarkerId) === instanceId
-          ? {
-              ...current,
-              position,
-              data: {
-                ...(current.data ?? {}),
-                positionX: position.x,
-                positionY: position.y,
-                positionZ: position.z,
-              },
-            }
-          : current
+      setSelectedMarker((current: any) => reconcileSelectedProjectMarker(
+        current,
+        instanceId,
+        result.data as ProjectThreeDMarkerRecord,
       ));
       showToastRef.current('Model position updated', 'success');
       return true;
@@ -3192,20 +3296,11 @@ function UnifiedMapPageInner() {
       setData((current) => applyThreeDProjectClientTransaction(current, {
         markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
       }));
-      setSelectedMarker((current: any) => current ? {
-        ...current,
-        position: {
-          x: position.positionX,
-          y: position.positionY,
-          z: position.positionZ,
-        },
-        data: {
-          ...(current.data ?? {}),
-          positionX: position.positionX,
-          positionY: position.positionY,
-          positionZ: position.positionZ,
-        },
-      } : current);
+      setSelectedMarker((current: any) => reconcileSelectedProjectMarker(
+        current,
+        markerId,
+        result.data as ProjectThreeDMarkerRecord,
+      ));
       showToastRef.current('Character position updated', 'success');
     } catch (error) {
       console.error('Failed to update Project Character position', {
@@ -3245,7 +3340,7 @@ function UnifiedMapPageInner() {
           ? { characters: { removeIds: [sourceAssetId] } }
           : undefined,
       }));
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => clearSelectedProjectMarker(current, markerId));
       setActionTarget((current) => current
         && isMatchingThreeDActionTarget(current, {
           markerType: 'characters',
@@ -3298,7 +3393,11 @@ function UnifiedMapPageInner() {
       setData((current) => applyThreeDProjectClientTransaction(current, {
         markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
       }));
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => reconcileSelectedProjectMarker(
+        current,
+        markerId,
+        result.data as ProjectThreeDMarkerRecord,
+      ));
       showToastRef.current('Project Bed instance updated', 'success');
     } catch (error) {
       console.error('Failed to update Project Bed instance', {
@@ -3334,7 +3433,7 @@ function UnifiedMapPageInner() {
           ? { beds: { removeIds: [deletedBedId] } }
           : undefined,
       }));
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => clearSelectedProjectMarker(current, markerId));
       setActionTarget((current) => current
         && isMatchingThreeDActionTarget(current, {
           markerType: 'beds',
@@ -3386,7 +3485,11 @@ function UnifiedMapPageInner() {
       setData((current) => applyThreeDProjectClientTransaction(current, {
         markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
       }));
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => reconcileSelectedProjectMarker(
+        current,
+        markerId,
+        result.data as ProjectThreeDMarkerRecord,
+      ));
       showToastRef.current('Project FarmBot instance updated', 'success');
     } catch (error) {
       console.error('Failed to update Project FarmBot instance', {
@@ -3422,7 +3525,7 @@ function UnifiedMapPageInner() {
           ? { farmbots: { removeIds: [sourceAssetId] } }
           : undefined,
       }));
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => clearSelectedProjectMarker(current, markerId));
       setActionTarget((current) => current
         && isMatchingThreeDActionTarget(current, {
           markerType: 'farmbots',
@@ -3471,7 +3574,11 @@ function UnifiedMapPageInner() {
           upsert: [result.data as ProjectThreeDMarkerRecord],
         },
       }));
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => reconcileSelectedProjectMarker(
+        current,
+        markerId,
+        result.data as ProjectThreeDMarkerRecord,
+      ));
       showToastRef.current('Project Planting instance updated', 'success');
     } catch (error) {
       console.error('Failed to update Project Planting instance', {
@@ -3507,7 +3614,7 @@ function UnifiedMapPageInner() {
           ? { plantings: { removeIds: [deletedPlantingId] } }
           : undefined,
       }));
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => clearSelectedProjectMarker(current, markerId));
       setActionTarget((current) => current
         && isMatchingThreeDActionTarget(current, {
           markerType: 'plantings',
@@ -3550,7 +3657,7 @@ function UnifiedMapPageInner() {
         markers: { removeRecordIds: [instanceId] },
       }));
 
-      setSelectedMarker(null);
+      setSelectedMarker((current: any) => clearSelectedProjectMarker(current, instanceId));
       setActionTarget((current) => current
         && isMatchingThreeDActionTarget(current, {
           markerType: 'models',
@@ -3899,12 +4006,12 @@ function UnifiedMapPageInner() {
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 shrink-0 text-current hover:bg-cyan-500/15 hover:text-current"
-                disabled={sceneOperationPending}
+                disabled={!activeSceneOperation.cancellable}
                 aria-label={`Cancel ${activeSceneOperation.label}`}
                 title={`Cancel ${activeSceneOperation.label}`}
                 onClick={cancelActiveSceneOperation}
               >
-                {sceneOperationPending
+                {activeSceneOperation.phase === 'pending'
                   ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   : <X className="h-3.5 w-3.5" />}
               </Button>
@@ -4761,6 +4868,7 @@ function UnifiedMapPageInner() {
                   <div className="relative w-full h-full rounded-t-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
                       projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                      runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                       geographicOrigin={projectGeographicOrigin}
                       data={data}
                       layers={layers}
@@ -4776,6 +4884,7 @@ function UnifiedMapPageInner() {
                       filterActiveOnly={filterActiveOnly}
                       filterAssetType={filterAssetType}
                       controlledCharacterId={controlledCharacterId}
+                      onControlChange={handleControlChange}
                       cameraMode={cameraMode}
                       onCameraModeChange={setCameraMode}
                       focusRequest={focusRequest}
@@ -4821,6 +4930,7 @@ function UnifiedMapPageInner() {
                   <div className="relative w-full h-full rounded-b-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
                       projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                      runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                       geographicOrigin={projectGeographicOrigin}
                       data={data}
                       layers={layers}
@@ -4850,6 +4960,7 @@ function UnifiedMapPageInner() {
             {viewMode === '3d' && (
               <UnifiedMapView
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                 geographicOrigin={projectGeographicOrigin}
                 data={data}
                 layers={layers}
@@ -4897,6 +5008,7 @@ function UnifiedMapPageInner() {
             {viewMode === '2d' && (
               <UnifiedMapView
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                 geographicOrigin={projectGeographicOrigin}
                 data={data}
                 layers={layers}
