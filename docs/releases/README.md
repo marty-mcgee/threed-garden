@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.1e — ThreeD Planting Placement Surface Continuity](v0.19.1e.md)
 - [v0.19.1d — ThreeD Shared-Surface Operation Authority](v0.19.1d.md)
 - [v0.19.1c — ThreeD Project Rendering Authority](v0.19.1c.md)
 - [v0.19.1a — ThreeD Project View State Persistence](v0.19.1a.md)

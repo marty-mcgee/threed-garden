@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.1d **ThreeD Shared-Surface Operation Authority**, using package version `0.19.1-delta`. One Project-session Runtime Marker registry supplies current positions to ThreeD and Leaflet, targeted CRUD retains DetailsCard selection, and the header presents one deterministic Add/Edit/Delete/Move lifecycle. Manual verification, release validation, deployment, and production checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.19.1e **ThreeD Planting Placement Surface Continuity**, using package version `0.19.1-echo`. Starting Planting placement now preserves Combined View, its panel split, and the already-mounted ThreeD Canvas/Rapier Scene. Manual verification, release validation, deployment, and production checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -47,6 +47,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.1e production checkpoint](releases/v0.19.1e.md)
 - [v0.19.1d production checkpoint](releases/v0.19.1d.md)
 - [v0.19.1c production checkpoint](releases/v0.19.1c.md)
 - [v0.19.1a production checkpoint](releases/v0.19.1a.md)
