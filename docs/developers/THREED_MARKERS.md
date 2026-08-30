@@ -477,3 +477,87 @@ Starting Planting placement uses the ThreeD surface already mounted by the activ
 The v0.19.1e candidate is a narrowly scoped surface-continuity fix. It removes the forced switch from Combined View to standalone 3D when **Place Planting** begins. The already-mounted ThreeD panel remains the placement surface, while Leaflet, the panel split, Runtime Marker registry, Canvas, and Rapier world remain mounted.
 
 Manual interaction verification, `npm run typecheck`, all 37 Runtime Marker validation groups, and `git diff --check` passed. The client-side `npm run build` remains the final release gate.
+
+## v0.19.2a Model Library preview-media boundary
+
+The first v0.19.2 milestone reuses the existing nullable `threed_models.thumbnail_url` column as the canonical flat Model Library preview. It introduces no Drizzle or Neon schema change. Admin Model Create and Edit forms can upload, preview, replace, clear, or manually supply the image URL before saving the Model record.
+
+Preview uploads use the authenticated existing Model upload route with an explicit `purpose=thumbnail` form field. Only JPG/JPEG, PNG, and WebP files from 1 byte through 5 MB are accepted. The server checks the extension, declared MIME type, and matching file signature before writing to the owner-scoped Vercel Blob `models/{userId}/previews/` path. Model POST, PUT, and PATCH normalize an empty preview to `null` and accept only HTTPS URLs whose paths end in a supported image extension.
+
+This milestone does not yet add the Dashboard Model Library panel, drag-and-drop, Project marker creation, Scene rendering, or physics behavior. Removing or replacing the form value only changes the URL saved with the Model; it does not delete an earlier Blob object automatically.
+
+### Manual verification
+
+1. In Admin ThreeD Models, open **Add ThreeD Model** and upload a JPG, PNG, or WebP preview smaller than 5 MB.
+2. Confirm the image preview appears, then save the Model and reopen Edit. Confirm the same preview is populated.
+3. Upload a replacement image, save, reopen, and confirm the replacement URL and image persist.
+4. Choose **Remove**, save, reopen, and confirm `thumbnail_url` is null and no preview appears.
+5. Confirm an SVG, renamed non-image, mismatched image signature, or file larger than 5 MB is rejected without changing the form URL.
+6. Set the Model active, public, and available as a Library item; confirm `GET /api/threed/models?scope=library` includes `thumbnailUrl`.
+7. Confirm the existing GLB/GLTF/FBX/OBJ/USDZ primary upload and existing Model Library placement still work.
+
+## v0.19.2b visual Model Library panel
+
+The Dashboard Model Library is now a collapsible vertical workspace rail rather than a temporary overlay over the active surface. Opening it reserves horizontal workspace beside 3D, 2D, or Combined View. The active `UnifiedMapView`, R3F Canvas, Rapier world, Leaflet map, and Combined panel split keep their existing React identities and respond only to the available-size change.
+
+Eligible Models render in a two-column image grid using the canonical `thumbnailUrl`. A Model without a preview receives a bounded Box placeholder. Selecting a card highlights it and displays Model type, base scale, Y rotation, and file size in a compact inspector. **Place** retains the established click-placement state, while dragging retains the existing Model ID payload; neither selection nor inspection writes Project data.
+
+This milestone does not yet introduce a new cross-surface drag contract, drop preview, coordinate calculation, marker API, or Scene renderer. Completed placement continues through the established authenticated Project Model marker transaction.
+
+### Manual verification
+
+1. Open an owned Project in 3D, 2D, and Combined View and open the Model Library from the existing Add action.
+2. Confirm the Library occupies a vertical rail beside the active workspace instead of covering it.
+3. Toggle the Library closed and open; confirm the ThreeD camera, Leaflet location, Combined split, marker selection, and Ecctrl state remain intact.
+4. Confirm uploaded previews render in a two-column grid and Models without previews show the Box placeholder.
+5. Select several cards and confirm the highlight and metadata inspector follow the selected Model without starting placement.
+6. Choose **Place**, click a valid destination, and confirm the existing one-marker Project transaction still succeeds.
+7. Drag a Model using the existing behavior and confirm no Project write occurs until a valid drop is completed.
+
+## v0.19.2c selected-Model click placement
+
+Grid-card **Place**, inspector **Place Selected**, and Model drag-start now enter one Dashboard-owned Model Library placement-selection function. That function records the selected reusable Model and resets only its instance-scale draft. It does not switch view mode, calculate a destination, write Project data, or create another placement authority.
+
+The currently mounted surface remains responsible for the destination: R3F supplies local XYZ from a ThreeD ground click, while Leaflet supplies a geographic click that the established Project coordinate transform converts to local XYZ. Combined View retains both surfaces and accepts the destination from the one the user clicks. All three routes then call the same authenticated Project Model marker POST and targeted client transaction.
+
+### Manual verification
+
+1. In 3D View, select a Model card, choose **Place Selected in 3D Scene**, and click the ground. Confirm one Model marker appears without a view change or Project reload.
+2. In 2D View, select a different reusable Model, choose **Place Selected in 2D Map**, and click the map. Confirm the marker appears at matching local/GPS coordinates.
+3. In Combined View, repeat once using the ThreeD panel and once using Leaflet. Confirm the view and split remain unchanged and each completed click creates exactly one marker.
+4. Start placement and choose Cancel from either the header operation status or Library placement status. Confirm no POST occurs.
+5. Enter an invalid instance scale and confirm placement is rejected before a request.
+6. Confirm selecting and inspecting cards alone creates no network request and does not clear existing Scene marker selection.
+
+## v0.19.2d bounded cross-surface Model drag
+
+Model Library drag-and-drop now uses one versioned MIME payload containing exactly `version`, `kind`, and the reusable positive integer `modelId`. It carries no Project ID, ThreeD module ID, instance transform, local position, geographic coordinate, file path, URL, metadata, or persistence instruction. Both destination surfaces parse the payload independently and require its Model ID to match the Dashboard's currently selected placement Model.
+
+During drag-over, the ThreeD Canvas or Leaflet container displays cyan boundary feedback for the expected Model Library MIME type and red feedback for an invalid drag. Invalid, malformed, mismatched, oversized, extra-field, or unsupported-version payloads cannot reach the placement callback. Leaving or dropping clears the feedback. A valid drop derives its position from the receiving surface and calls the same established Model placement handler exactly once.
+
+### Manual verification
+
+1. In 3D View, drag a preview card over the Scene. Confirm the Canvas boundary turns cyan, then drop and confirm exactly one POST and one new marker.
+2. In 2D View, drag a different card over Leaflet. Confirm cyan feedback and one marker at the matching calibrated local/GPS position.
+3. In Combined View, drag once onto each panel. Confirm only the receiving panel highlights and each completed drop creates one marker without changing the view or split.
+4. Drag an ordinary browser image, text selection, or file over either surface. Confirm red feedback and no marker POST.
+5. Begin dragging one Model, then select a different Model before completing a synthetic/manual drop if the browser permits it. Confirm the mismatched Model ID is rejected.
+6. Drag outside all valid destinations or press Escape. Confirm feedback clears and no Project write occurs.
+7. Recheck click placement, cancellation, invalid instance scale, repeated Model instances, DetailsCard CRUD, and explicit **Save ThreeD Project**.
+
+## v0.19.2a release-candidate boundary
+
+The v0.19.2a candidate combines the preview-media, visual Library panel, selected-Model click placement, and bounded cross-surface drag milestones as **Visual ThreeD Model Library and Cross-Surface Placement**.
+
+The release reuses `threed_models.thumbnail_url`, adds authenticated owner-scoped JPG/PNG/WebP Vercel Blob uploads, and presents eligible non-Character Models in a selectable image grid beside the persistent 3D, 2D, or Combined workspace. Click placement and versioned identity-only drag payloads both resolve destinations through the receiving surface and finish through the established authenticated `project_threed_markers` Model transaction.
+
+It adds no schema, replacement Model table, drag-supplied coordinates, secondary placement API, automatic persistence, Canvas/Rapier remount, or Character Model placement. Manual verification confirms preview create/edit/remove behavior, Library surface continuity, click placement, valid/invalid drag feedback, cancellation, and exactly one marker transaction per successful destination.
+
+Release validation completed successfully:
+
+- `npm run typecheck`;
+- `npm run validate:threed-runtime-markers` — 38 groups;
+- `git diff --check`;
+- documented v0.19.2a–d manual verification.
+
+The client-side `npm run build` remains the final release gate.

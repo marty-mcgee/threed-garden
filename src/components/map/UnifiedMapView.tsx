@@ -647,6 +647,7 @@ export function UnifiedMapView({
       initialViewState={initialProjectViewState?.map}
       onViewStateProviderChange={onProjectMapViewStateProviderChange}
       placementActive={Boolean(placementModel)}
+      placementModelId={placementModel?.id ?? null}
       onPlacement={handleMapModelPlacement}
       onModelMove={handleMapModelMove}
     />

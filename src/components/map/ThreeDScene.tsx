@@ -62,6 +62,10 @@ import {
 import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
 import type { ThreeDActionTarget } from '@/lib/types/map';
 import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+import {
+  isMatchingThreeDModelLibraryDragPayload,
+  THREED_MODEL_LIBRARY_DRAG_MIME,
+} from '@/lib/services/threed/markers/model-library-drag-core';
 import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orchestration/interaction-core';
 import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestration/action-target-core';
 import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers/model-visual-fit-core';
@@ -1233,12 +1237,14 @@ function InteractiveGround({
 
 function SceneModelDropTarget({
   active,
+  expectedModelId,
   size,
   centerX,
   centerZ,
   onDrop,
 }: {
   active: boolean;
+  expectedModelId: number | null;
   size: number;
   centerX: number;
   centerZ: number;
@@ -1255,12 +1261,31 @@ function SceneModelDropTarget({
     const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     const intersection = new THREE.Vector3();
 
+    const setDropFeedback = (valid: boolean | null) => {
+      canvas.style.outline = valid === null
+        ? ''
+        : `2px solid ${valid ? 'rgb(34 211 238)' : 'rgb(239 68 68)'}`;
+      canvas.style.outlineOffset = valid === null ? '' : '-2px';
+    };
+
     const handleDragOver = (event: DragEvent) => {
       event.preventDefault();
-      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+      const hasExpectedType = Array.from(event.dataTransfer?.types ?? [])
+        .includes(THREED_MODEL_LIBRARY_DRAG_MIME);
+      setDropFeedback(hasExpectedType);
+      if (event.dataTransfer) event.dataTransfer.dropEffect = hasExpectedType ? 'copy' : 'none';
+    };
+    const handleDragLeave = (event: DragEvent) => {
+      if (!canvas.contains(event.relatedTarget as Node | null)) setDropFeedback(null);
     };
     const handleDrop = (event: DragEvent) => {
       event.preventDefault();
+      setDropFeedback(null);
+      const serialized = event.dataTransfer?.getData(THREED_MODEL_LIBRARY_DRAG_MIME) ?? '';
+      if (
+        expectedModelId == null
+        || !isMatchingThreeDModelLibraryDragPayload(serialized, expectedModelId)
+      ) return;
       const bounds = canvas.getBoundingClientRect();
       pointer.set(
         ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
@@ -1279,12 +1304,15 @@ function SceneModelDropTarget({
     };
 
     canvas.addEventListener('dragover', handleDragOver);
+    canvas.addEventListener('dragleave', handleDragLeave);
     canvas.addEventListener('drop', handleDrop);
     return () => {
+      setDropFeedback(null);
       canvas.removeEventListener('dragover', handleDragOver);
+      canvas.removeEventListener('dragleave', handleDragLeave);
       canvas.removeEventListener('drop', handleDrop);
     };
-  }, [active, camera, centerX, centerZ, gl, onDrop, size]);
+  }, [active, camera, centerX, centerZ, expectedModelId, gl, onDrop, size]);
 
   return null;
 }
@@ -2261,6 +2289,7 @@ export function ThreeDScene({
 
         <SceneModelDropTarget
           active={Boolean(placementModel)}
+          expectedModelId={placementModel?.id ?? null}
           size={groundSize}
           centerX={centerX}
           centerZ={centerZ}

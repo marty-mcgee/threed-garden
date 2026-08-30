@@ -209,6 +209,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
 
   // v0.16.4-alpha/beta: Vercel Blob upload state
   const [uploadingPrimary, setUploadingPrimary] = useState(false);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const [fileCategory, setFileCategory] = useState<string>('auto');
   const [deletingFileId, setDeletingFileId] = useState<number | null>(null);
@@ -326,6 +327,29 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       showToast('Failed to upload model file', 'error');
     } finally {
       setUploadingPrimary(false);
+    }
+  }
+
+  async function handleThumbnailUpload(file: File) {
+    if (!file) return;
+    setUploadingThumbnail(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('purpose', 'thumbnail');
+      const response = await fetch('/api/threed/models/upload', { method: 'POST', body: fd });
+      const data = await response.json();
+      if (data.success) {
+        setFormData((current) => ({ ...current, thumbnailUrl: data.data.url }));
+        showToast('Library preview image uploaded', 'success');
+      } else {
+        showToast(data.error || 'Failed to upload preview image', 'error');
+      }
+    } catch (error) {
+      console.error('Error uploading Model preview image:', error);
+      showToast('Failed to upload preview image', 'error');
+    } finally {
+      setUploadingThumbnail(false);
     }
   }
 
@@ -591,17 +615,41 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                   </Button>
                   {formData.filePath && <span className="text-xs text-muted-foreground truncate">✓ uploaded</span>}
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label htmlFor="fileSize" className="text-xs">File Size (bytes)</Label>
+                  <Input id="fileSize" type="number" min="0" value={formData.fileSize}
+                    onChange={(e) => setFormData({ ...formData, fileSize: e.target.value })} disabled={isSubmitting} />
+                </div>
+                <div className="space-y-2 rounded border p-2">
                   <div>
-                    <Label htmlFor="fileSize" className="text-xs">File Size (bytes)</Label>
-                    <Input id="fileSize" type="number" min="0" value={formData.fileSize}
-                      onChange={(e) => setFormData({ ...formData, fileSize: e.target.value })} disabled={isSubmitting} />
-                  </div>
-                  <div>
-                    <Label htmlFor="thumbnailUrl" className="text-xs">Thumbnail URL</Label>
+                    <Label htmlFor="thumbnailUrl" className="text-xs">Library Preview Image</Label>
                     <Input id="thumbnailUrl" value={formData.thumbnailUrl}
+                      placeholder="HTTPS JPG, PNG, or WebP URL"
                       onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })} disabled={isSubmitting} />
                   </div>
+                  {formData.thumbnailUrl && (
+                    <img src={formData.thumbnailUrl} alt="Model Library preview" className="h-28 w-full rounded border bg-muted object-contain" />
+                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input id="model-thumbnail-upload" type="file" className="hidden"
+                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleThumbnailUpload(f); e.target.value = ''; }}
+                      disabled={uploadingThumbnail || isSubmitting} />
+                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs"
+                      onClick={() => document.getElementById('model-thumbnail-upload')?.click()}
+                      disabled={uploadingThumbnail || isSubmitting}>
+                      {uploadingThumbnail ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
+                      {formData.thumbnailUrl ? 'Replace Preview' : 'Upload Preview'}
+                    </Button>
+                    {formData.thumbnailUrl && (
+                      <Button type="button" variant="ghost" size="sm" className="h-8 text-xs"
+                        onClick={() => setFormData((current) => ({ ...current, thumbnailUrl: '' }))}
+                        disabled={uploadingThumbnail || isSubmitting}>
+                        <X className="mr-1 h-4 w-4" /> Remove
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">JPG, PNG, or WebP up to 5 MB. A square top-view image is recommended.</p>
                 </div>
                 <p className="text-[10px] text-muted-foreground">
                   Add textures and supportive media after creating the model (via the Files dialog).
@@ -862,17 +910,41 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
               <p className="text-[10px] text-muted-foreground">
                 Uploading updates this form. Click Update Model to save the replacement file URL.
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label htmlFor="edit-fileSize" className="text-xs">File Size (bytes)</Label>
+                <Input id="edit-fileSize" type="number" min="0" value={formData.fileSize}
+                  onChange={(e) => setFormData({ ...formData, fileSize: e.target.value })} disabled={isSubmitting} />
+              </div>
+              <div className="space-y-2 rounded border p-2">
                 <div>
-                  <Label htmlFor="edit-fileSize" className="text-xs">File Size (bytes)</Label>
-                  <Input id="edit-fileSize" type="number" min="0" value={formData.fileSize}
-                    onChange={(e) => setFormData({ ...formData, fileSize: e.target.value })} disabled={isSubmitting} />
-                </div>
-                <div>
-                  <Label htmlFor="edit-thumbnailUrl" className="text-xs">Thumbnail URL</Label>
+                  <Label htmlFor="edit-thumbnailUrl" className="text-xs">Library Preview Image</Label>
                   <Input id="edit-thumbnailUrl" value={formData.thumbnailUrl}
+                    placeholder="HTTPS JPG, PNG, or WebP URL"
                     onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })} disabled={isSubmitting} />
                 </div>
+                {formData.thumbnailUrl && (
+                  <img src={formData.thumbnailUrl} alt="Model Library preview" className="h-28 w-full rounded border bg-muted object-contain" />
+                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <input id="edit-model-thumbnail-upload" type="file" className="hidden"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleThumbnailUpload(f); e.target.value = ''; }}
+                    disabled={uploadingThumbnail || isSubmitting} />
+                  <Button type="button" variant="outline" size="sm" className="h-8 text-xs"
+                    onClick={() => document.getElementById('edit-model-thumbnail-upload')?.click()}
+                    disabled={uploadingThumbnail || isSubmitting}>
+                    {uploadingThumbnail ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
+                    {formData.thumbnailUrl ? 'Replace Preview' : 'Upload Preview'}
+                  </Button>
+                  {formData.thumbnailUrl && (
+                    <Button type="button" variant="ghost" size="sm" className="h-8 text-xs"
+                      onClick={() => setFormData((current) => ({ ...current, thumbnailUrl: '' }))}
+                      disabled={uploadingThumbnail || isSubmitting}>
+                      <X className="mr-1 h-4 w-4" /> Remove
+                    </Button>
+                  )}
+                </div>
+                <p className="text-[10px] text-muted-foreground">JPG, PNG, or WebP up to 5 MB. A square top-view image is recommended.</p>
               </div>
             </Section>
 

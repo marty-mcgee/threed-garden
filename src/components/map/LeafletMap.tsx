@@ -7,6 +7,10 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { TrafficIncident, RuntimeMarker as ThreeDMarker } from '@/lib/types/map';
 import type { ProjectMapViewState } from '@/lib/services/threed/markers/project-view-state-core';
+import {
+  isMatchingThreeDModelLibraryDragPayload,
+  THREED_MODEL_LIBRARY_DRAG_MIME,
+} from '@/lib/services/threed/markers/model-library-drag-core';
 import { 
   getTrafficColor, 
   getTrafficLabel,
@@ -45,6 +49,8 @@ interface LeafletMapProps {
   gpsCenter?: { lat: number; lng: number };
   /** Enables one pending Project Model placement on the map surface. */
   placementActive?: boolean;
+  /** Model identity required by the active Library drag contract. */
+  placementModelId?: number | null;
   /** Reports the geographic point selected for the pending placement. */
   onPlacement?: (position: { lat: number; lng: number }) => void;
   /** Persists a dragged Project Model marker at its new map position. */
@@ -100,6 +106,7 @@ function LeafletMapComponent({
   height = '100%',
   gpsCenter = { lat: 39.514719, lng: -123.760382 },
   placementActive = false,
+  placementModelId = null,
   onPlacement,
   onModelMove,
   initialViewState,
@@ -118,6 +125,7 @@ function LeafletMapComponent({
   const placementActiveRef = useRef(placementActive);
   const onPlacementRef = useRef(onPlacement);
   const onModelMoveRef = useRef(onModelMove);
+  const placementModelIdRef = useRef(placementModelId);
 
   useEffect(() => {
     onIncidentClickRef.current = onIncidentClick;
@@ -126,7 +134,8 @@ function LeafletMapComponent({
     placementActiveRef.current = placementActive;
     onPlacementRef.current = onPlacement;
     onModelMoveRef.current = onModelMove;
-  }, [onIncidentClick, onMarkerClick, onFocusMarker, onModelMove, onPlacement, placementActive]);
+    placementModelIdRef.current = placementModelId;
+  }, [onIncidentClick, onMarkerClick, onFocusMarker, onModelMove, onPlacement, placementActive, placementModelId]);
 
   // Initialize map once
   useEffect(() => {
@@ -203,12 +212,32 @@ function LeafletMapComponent({
     const container = map?.getContainer();
     if (!map || !container || !placementActive) return;
 
+    const setDropFeedback = (valid: boolean | null) => {
+      container.style.outline = valid === null
+        ? ''
+        : `2px solid ${valid ? 'rgb(34 211 238)' : 'rgb(239 68 68)'}`;
+      container.style.outlineOffset = valid === null ? '' : '-2px';
+    };
+
     const handleDragOver = (event: DragEvent) => {
       event.preventDefault();
-      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+      const hasExpectedType = Array.from(event.dataTransfer?.types ?? [])
+        .includes(THREED_MODEL_LIBRARY_DRAG_MIME);
+      setDropFeedback(hasExpectedType);
+      if (event.dataTransfer) event.dataTransfer.dropEffect = hasExpectedType ? 'copy' : 'none';
+    };
+    const handleDragLeave = (event: DragEvent) => {
+      if (!container.contains(event.relatedTarget as Node | null)) setDropFeedback(null);
     };
     const handleDrop = (event: DragEvent) => {
       event.preventDefault();
+      setDropFeedback(null);
+      const expectedModelId = placementModelIdRef.current;
+      const serialized = event.dataTransfer?.getData(THREED_MODEL_LIBRARY_DRAG_MIME) ?? '';
+      if (
+        expectedModelId == null
+        || !isMatchingThreeDModelLibraryDragPayload(serialized, expectedModelId)
+      ) return;
       const bounds = container.getBoundingClientRect();
       const point = L.point(event.clientX - bounds.left, event.clientY - bounds.top);
       const latLng = map.containerPointToLatLng(point);
@@ -216,9 +245,12 @@ function LeafletMapComponent({
     };
 
     container.addEventListener('dragover', handleDragOver);
+    container.addEventListener('dragleave', handleDragLeave);
     container.addEventListener('drop', handleDrop);
     return () => {
+      setDropFeedback(null);
       container.removeEventListener('dragover', handleDragOver);
+      container.removeEventListener('dragleave', handleDragLeave);
       container.removeEventListener('drop', handleDrop);
     };
   }, [placementActive]);

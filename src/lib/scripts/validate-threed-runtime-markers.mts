@@ -66,6 +66,12 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/markers/project-marker-client-state-core.ts';
 import {
+  createThreeDModelLibraryDragPayload,
+  isMatchingThreeDModelLibraryDragPayload,
+  parseThreeDModelLibraryDragPayload,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/markers/model-library-drag-core.ts';
+import {
   DEFAULT_THREED_METERS_PER_SCENE_UNIT,
   calibrateThreeDGeographicOrigin,
   geographicPositionToProjectLocalPosition,
@@ -84,6 +90,24 @@ function validationStep(label: string): void {
 
 console.log('\nThreeD Runtime Marker registry validation');
 console.log('─'.repeat(42));
+
+const modelLibraryDragPayload = createThreeDModelLibraryDragPayload(17);
+assert.deepEqual(parseThreeDModelLibraryDragPayload(modelLibraryDragPayload), {
+  version: 1,
+  kind: 'threed-model-library-item',
+  modelId: 17,
+});
+assert.equal(isMatchingThreeDModelLibraryDragPayload(modelLibraryDragPayload, 17), true);
+assert.equal(isMatchingThreeDModelLibraryDragPayload(modelLibraryDragPayload, 18), false);
+assert.equal(parseThreeDModelLibraryDragPayload(JSON.stringify({
+  version: 1,
+  kind: 'threed-model-library-item',
+  modelId: 17,
+  position: { x: 1, y: 2, z: 3 },
+})), null);
+assert.equal(parseThreeDModelLibraryDragPayload('{"version":2}'), null);
+assert.throws(() => createThreeDModelLibraryDragPayload(0));
+validationStep('Model Library drag payload is bounded, versioned, and identity-only');
 
 assert.deepEqual(parseCreateProjectCharacterPlacement({
   markerType: 'characters',

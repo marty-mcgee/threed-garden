@@ -13,6 +13,20 @@ type ModelWithFiles = typeof threedModels.$inferSelect & {
   files: Array<typeof threedModelFiles.$inferSelect>;
 };
 
+function normalizeThumbnailUrl(value: unknown): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null || value === '') return null;
+  if (typeof value !== 'string' || value.length > 2000) return undefined;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:') return undefined;
+    if (!/\.(?:jpe?g|png|webp)$/i.test(url.pathname)) return undefined;
+    return url.toString();
+  } catch {
+    return undefined;
+  }
+}
+
 function serializeLibraryModel(model: ModelWithFiles) {
   return {
     id: model.id,
@@ -281,6 +295,13 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id;
+    const normalizedThumbnailUrl = normalizeThumbnailUrl(thumbnailUrl);
+    if (thumbnailUrl !== undefined && normalizedThumbnailUrl === undefined) {
+      return NextResponse.json(
+        { success: false, error: 'Thumbnail URL must be an HTTPS JPG, PNG, or WebP image' },
+        { status: 400 },
+      );
+    }
 
     await ensureTableSequence('threed_models');
 
@@ -292,7 +313,7 @@ export async function POST(request: NextRequest) {
         modelType,
         filePath,
         fileSize: fileSize || null,
-        thumbnailUrl: thumbnailUrl || null,
+        thumbnailUrl: normalizedThumbnailUrl ?? null,
         usedByPlants: usedByPlants ?? false,
         usedByCharacters: usedByCharacters ?? false,
         scale: scale || '1.0',
@@ -475,6 +496,16 @@ export async function PUT(request: NextRequest) {
     }
 
     const { id: _bodyId, userId: _bodyUserId, createdAt: _createdAt, ...updates } = body;
+    if (Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl')) {
+      const normalizedThumbnailUrl = normalizeThumbnailUrl(updates.thumbnailUrl);
+      if (normalizedThumbnailUrl === undefined) {
+        return NextResponse.json(
+          { success: false, error: 'Thumbnail URL must be an HTTPS JPG, PNG, or WebP image' },
+          { status: 400 },
+        );
+      }
+      updates.thumbnailUrl = normalizedThumbnailUrl;
+    }
     const [updated] = await db
       .update(threedModels)
       .set({
@@ -556,6 +587,16 @@ export async function PATCH(request: NextRequest) {
     }
 
     const { id: _bodyId, userId: _bodyUserId, createdAt: _createdAt, ...updates } = body;
+    if (Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl')) {
+      const normalizedThumbnailUrl = normalizeThumbnailUrl(updates.thumbnailUrl);
+      if (normalizedThumbnailUrl === undefined) {
+        return NextResponse.json(
+          { success: false, error: 'Thumbnail URL must be an HTTPS JPG, PNG, or WebP image' },
+          { status: 400 },
+        );
+      }
+      updates.thumbnailUrl = normalizedThumbnailUrl;
+    }
     const [updated] = await db
       .update(threedModels)
       .set({

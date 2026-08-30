@@ -86,6 +86,10 @@ import {
   getThreeDLabel,
 } from '@/lib/utils/map-helpers';
 import { applyThreeDProjectClientTransaction } from '@/lib/services/threed/markers/project-marker-client-state-core';
+import {
+  createThreeDModelLibraryDragPayload,
+  THREED_MODEL_LIBRARY_DRAG_MIME,
+} from '@/lib/services/threed/markers/model-library-drag-core';
 import { ThreeDRuntimeMarkerRegistry } from '@/lib/services/threed/markers/runtime-marker-core';
 import type { ThreeDGeographicOrigin } from '@/lib/services/threed/markers/map-coordinate-core';
 import {
@@ -1701,6 +1705,7 @@ function UnifiedMapPageInner() {
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
+  const [inspectedLibraryModelId, setInspectedLibraryModelId] = useState<number | null>(null);
   const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
   const [libraryFarmBots, setLibraryFarmBots] = useState<any[]>([]);
   const [loadingLibraryModels, setLoadingLibraryModels] = useState(false);
@@ -2032,6 +2037,13 @@ function UnifiedMapPageInner() {
       setLoadingLibraryModels(false);
     }
   }, [libraryModels.length, loadingLibraryModels]);
+
+  const beginModelLibraryPlacement = useCallback((model: ThreeDModelLibraryItem) => {
+    if (!placementThreedId || placingModel) return;
+    setInspectedLibraryModelId(model.id);
+    setPlacementModel(model);
+    setPlacementScaleMultiplier('1');
+  }, [placementThreedId, placingModel]);
 
   const openCharacterLibrary = useCallback(async () => {
     setIsSceneAddMenuOpen(false);
@@ -3763,6 +3775,9 @@ function UnifiedMapPageInner() {
   }
 
   const hasRealData = data ? (data.traffic.total > 0 || data.threed.total > 0) : false;
+  const inspectedLibraryModel = libraryModels.find(
+    (model) => model.id === inspectedLibraryModelId,
+  ) ?? null;
 
   return (
     <div className="relative space-y-1.5">
@@ -4063,8 +4078,8 @@ function UnifiedMapPageInner() {
         </div>
       </div>
 
-      {selectedProjectId && isModelLibraryOpen && (
-        <div className="absolute left-1 top-9 z-40 w-[min(24rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
+      {selectedProjectId && isModelLibraryOpen && !isFullscreen && (
+        <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 flex-col overflow-hidden rounded-md border bg-background p-3 shadow-xl">
           <div className="mb-2 flex items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-semibold">ThreeD Model Library</h2>
@@ -4081,6 +4096,7 @@ function UnifiedMapPageInner() {
               onClick={() => {
                 setPlacementModel(null);
                 setPlacementScaleMultiplier('1');
+                setInspectedLibraryModelId(null);
                 setIsModelLibraryOpen(false);
               }}
             >
@@ -4101,6 +4117,42 @@ function UnifiedMapPageInner() {
                 ))}
               </select>
             </label>
+          )}
+
+          {inspectedLibraryModel && (
+            <div className="mb-2 space-y-1 rounded border bg-muted/30 p-2 text-[10px]">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="truncate text-xs font-medium">{inspectedLibraryModel.modelName}</div>
+                  <div className="uppercase text-muted-foreground">{inspectedLibraryModel.modelType}</div>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-5 w-5 shrink-0"
+                  aria-label="Close Model metadata"
+                  title="Close Model metadata"
+                  onClick={() => setInspectedLibraryModelId(null)}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-x-2 text-muted-foreground">
+                <span>Base scale</span><span className="text-right text-foreground">{Number(inspectedLibraryModel.scale ?? 1)}</span>
+                <span>Y rotation</span><span className="text-right text-foreground">{Number(inspectedLibraryModel.rotationY ?? 0)}°</span>
+                <span>File size</span><span className="text-right text-foreground">{inspectedLibraryModel.fileSize ? `${(inspectedLibraryModel.fileSize / 1024 / 1024).toFixed(1)} MB` : '—'}</span>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                className="mt-1 h-6 w-full text-[10px]"
+                disabled={!placementThreedId || placingModel}
+                onClick={() => beginModelLibraryPlacement(inspectedLibraryModel)}
+              >
+                Place Selected in {viewMode === 'combined' ? 'Combined View' : viewMode === '2d' ? '2D Map' : '3D Scene'}
+              </Button>
+            </div>
           )}
 
           {placementModel && (
@@ -4146,7 +4198,7 @@ function UnifiedMapPageInner() {
             </div>
           )}
 
-          <div className="max-h-72 space-y-1 overflow-y-auto pr-1">
+          <div className="min-h-0 flex-1 overflow-y-auto pr-1">
             {loadingLibraryModels ? (
               <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" /> Loading models…
@@ -4155,41 +4207,67 @@ function UnifiedMapPageInner() {
               <p className="py-6 text-center text-xs text-muted-foreground">
                 No active public Library models are available.
               </p>
-            ) : libraryModels.map((model) => (
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+              {libraryModels.map((model) => (
               <div
                 key={model.id}
                 draggable={Boolean(placementThreedId) && !placingModel}
                 onDragStart={(event) => {
-                  setPlacementModel(model);
-                  setPlacementScaleMultiplier('1');
+                  beginModelLibraryPlacement(model);
                   event.dataTransfer.effectAllowed = 'copy';
-                  event.dataTransfer.setData('application/x-threed-model-id', String(model.id));
+                  event.dataTransfer.setData(
+                    THREED_MODEL_LIBRARY_DRAG_MIME,
+                    createThreeDModelLibraryDragPayload(model.id),
+                  );
                   event.dataTransfer.setData('text/plain', model.modelName);
                 }}
-                className="flex cursor-grab items-center gap-2 rounded border p-2 active:cursor-grabbing"
+                role="button"
+                tabIndex={0}
+                aria-label={`Inspect ${model.modelName}`}
+                onClick={() => setInspectedLibraryModelId(model.id)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setInspectedLibraryModelId(model.id);
+                  }
+                }}
+                className={`group cursor-grab overflow-hidden rounded border bg-card text-left active:cursor-grabbing ${
+                  inspectedLibraryModelId === model.id ? 'border-cyan-500 ring-1 ring-cyan-500/40' : ''
+                }`}
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded bg-cyan-500/10 text-cyan-600">
-                  <Box className="h-4 w-4" />
+                <div className="flex aspect-square w-full items-center justify-center overflow-hidden bg-muted/40">
+                  {model.thumbnailUrl ? (
+                    <img
+                      src={model.thumbnailUrl}
+                      alt={`${model.modelName} top-view preview`}
+                      className="h-full w-full object-contain transition-transform group-hover:scale-105"
+                    />
+                  ) : (
+                    <Box className="h-8 w-8 text-cyan-600/60" />
+                  )}
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 p-2">
                   <div className="truncate text-xs font-medium">{model.modelName}</div>
                   <div className="text-[10px] uppercase text-muted-foreground">{model.modelType}</div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="mt-1.5 h-6 w-full text-[10px]"
+                    disabled={!placementThreedId || placingModel}
+                    draggable={false}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      beginModelLibraryPlacement(model);
+                    }}
+                  >
+                    Place
+                  </Button>
                 </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  className="h-7 text-xs"
-                  disabled={!placementThreedId || placingModel}
-                  draggable={false}
-                  onClick={() => {
-                    setPlacementModel(model);
-                    setPlacementScaleMultiplier('1');
-                  }}
-                >
-                  Place
-                </Button>
               </div>
-            ))}
+              ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -4850,7 +4928,7 @@ function UnifiedMapPageInner() {
       )}
 
       {/* ✅ Map Container */}
-      <Card className={isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''}>
+      <Card className={`${isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''} ${isModelLibraryOpen && !isFullscreen ? 'ml-[18.5rem]' : ''} transition-[margin]`}>
         <CardContent className="p-0 overflow-hidden">
           <div style={{ height: isFullscreen ? '100vh' : 'calc(100vh - 122px)' }}>
             
