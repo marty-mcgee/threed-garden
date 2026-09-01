@@ -561,3 +561,54 @@ Release validation completed successfully:
 - documented v0.19.2a–d manual verification.
 
 The client-side `npm run build` remains the final release gate.
+
+## v0.19.3a ThreeD Model taxonomy boundary
+
+The Model Library taxonomy is owner-scoped and normalized through `threed_model_categories` plus the `threed_model_category_assignments` junction. Categories may form a parent/child hierarchy, while a reusable `threed_models` record may have multiple category assignments. Category ownership is administrative metadata; it does not replace Model visibility, Library eligibility, Plant/Character routing, Project marker identity, rendering, or physics authority.
+
+The authenticated `/api/threed/model-categories?id=X` route follows the App's consolidated CRUD convention. Category slugs are unique per owner, parent changes reject cross-owner references and hierarchy cycles, and deletion requires child categories to be moved or removed first. Deleting a category removes only junction assignments; it never deletes a Model, stored file, Blob object, or Project marker.
+
+Model create and update transactions validate every requested category against the Model owner and update Model/category assignments together. Public Library responses expose only bounded category identity, name, slug, and parent identity. The visual Library derives its category filter from returned eligible Models; filtering does not remount the Canvas, Rapier world, Leaflet map, or persistent marker collection.
+
+## v0.19.3b dry-run Model manifest boundary
+
+The version-1 ThreeD Model import manifest is metadata-only. It contains relative references to existing local Model and preview files but never embeds binary data, database IDs, owner IDs, Project IDs, marker transforms, storage credentials, Blob destinations, or persistence instructions. A stable `importKey` is the future idempotency identity; it is not a `threed_models.id`.
+
+`npm run threed:models:import:check -- --file <manifest.json>` parses the strict contract, verifies bounded entries and supported relative file references, resolves real paths beneath the manifest directory, checks file existence and size, and prints a summary. OBJ material files, textures, GLTF buffers, and other required sidecars are declared explicitly in the bounded `supportingFiles` array so the eventual importer cannot mistake a primary OBJ or GLTF file for a complete renderable asset. It imports nothing, opens no database connection, and performs no upload. `npm run validate:threed-model-import` exercises the pure contract offline.
+
+The dry-run boundary rejects unsupported versions and fields, duplicate or malformed import keys, absolute and escaping paths, unsupported Model/preview extensions, mismatched concrete Model types, invalid category slugs, unsafe transforms, oversized metadata, more than 500 Models, or more than 20 categories per Model. Write behavior remains deferred to separately approved v0.19.3c.
+
+Executable import, extraction, generation, and validation code belongs under the tracked App-owned `src/lib/scripts` and `src/lib/services/threed/models` boundaries. Ignored `reference/` directories are read-only source inputs and generated local output only; package commands must never execute scripts stored there. The tracked legacy pilot generator accepts explicit `--source` and `--output` paths, validates its generated manifest through the same contract core, and writes no database or storage data.
+
+## v0.19.3c reviewed Model import boundary
+
+The App-owned `npm run threed:models:import` command is the only bulk Model write boundary. It requires explicit `--file`, `--report`, `--user-id`, and `--apply` arguments. Omitting `--apply` fails closed. Every manifest entry must also carry `metadata.importReviewStatus: "approved"`; the generated legacy pilot intentionally remains `pre-import` until its dimensions, unit interpretation, scale, metadata, and category assignments have been reviewed. The importer checks the entire local file plan before opening its write workflow and requires the target user plus every referenced active owner-scoped category to exist before uploading an asset.
+
+```bash
+npm run threed:models:import:check -- --file <manifest.json>
+npm run threed:models:import -- \
+  --file <reviewed-manifest.json> \
+  --report <import-report.json> \
+  --user-id <owner-user-id> \
+  --apply
+```
+
+Each approved entry uploads its primary Model, optional preview, and declared sidecars into one stable owner/import-key Blob bundle. The importer creates or updates the owner-scoped `threed_models` row by `metadata.importKey`, adds missing category assignments, and creates or updates importer-owned `threed_model_files` sidecar records. It processes entries sequentially, records created/updated/failed outcomes in bounded JSON, and never creates categories, Projects, Project assets, `project_threed_markers`, Scene objects, or runtime physics bodies. It also does not delete Models, assignments, file records, or Blob objects. A database failure after an upload may leave an unreferenced object at that entry's stable Blob path; rerunning the same reviewed manifest reuses that path and import identity.
+
+The ignored `reference/` tree remains non-authoritative test input. Generation, validation, containment checks, Blob path construction, ownership checks, and persistence orchestration all execute from tracked App source under `src/lib`. No import command executes code from a reference asset bundle.
+
+The authenticated Admin Model workflow remains the existing `ThreeDModelsCRUD`; it is not manifest-driven. **Add Model** accepts one deliberate primary Model upload, an optional Library preview, taxonomy, transforms, usage flags, and metadata before creating one `threed_models` record. **Edit Model** supports a deliberate replacement primary upload and preview while retaining the same Model identity. After creation, **Model Files** attaches explicitly selected textures, buffers, or other supporting files through the existing `threed_model_files` relationship. The Admin UI does not unzip archives, scan directories, infer bundles, create multiple Models from one upload, or create Project markers. Manifest-based bulk import remains a separate Super Admin package-script boundary.
+
+**Bulk Add** is a bounded queue in front of that same Admin Add Model contract. The user explicitly selects up to 100 primary FBX, GLB, GLTF, or OBJ files, reviews the proposed name and scale for every row, and selects shared taxonomy and visibility/usage flags. Primary files are inspected locally without fetching remote resources: OBJ `mtllib` references, MTL texture maps, GLTF external buffers/images, GLB JSON-chunk URIs, and detectable FBX texture filenames become exact companion-file requirements. The Admin selects those files deliberately per Model and may also attach additional support files and one JPG, PNG, or WebP Library preview. No archive is extracted and no directory is scanned.
+
+The client processes Models sequentially through the existing authenticated APIs. It uploads the primary and optional preview, creates one independent `threed_models` record as pending/inactive, uploads each companion through the existing `threed_model_files` relationship, then activates the Model only after those operations succeed. A failed row remains visible and retryable; a Model already created during a partial failure remains inactive and available for repair rather than being presented as a complete Library item. The queue never creates categories, Projects, Project assets, Project markers, Scene objects, or physics bodies. This milestone records complete Model file relationships; resolving those relationships in each runtime loader remains a separate rendering milestone.
+
+Every `threed_model_files` attachment also records a model-relative logical path independently from its Blob storage URL. Bulk Add proposes paths discovered from OBJ, MTL, FBX, GLTF, and GLB references, while the Admin may deliberately replace each proposed path before upload. Paths use normalized forward slashes, preserve nested bundle structure such as `materials/chair.mtl` and `textures/chair.png`, and must be unique within a Model. Absolute paths, URL schemes, null bytes, and paths that escape the Model root are rejected. Existing attachment workflows default to the uploaded filename, preserving backward behavior. The new `relative_path` column requires the normal reviewed `db:generate` and `db:push` workflow before runtime verification.
+
+## v0.19.3a release-candidate boundary
+
+The v0.19.3a candidate combines the completed taxonomy, manifest validation, reviewed script import, and Admin Bulk Add stages as **ThreeD Model Taxonomy and Bundle Import**. It establishes `threed_models` as the reusable Model authority, owner-scoped categories as its filtering taxonomy, and `threed_model_files.relative_path` as the logical bundle-path authority distinct from physical Blob URLs. Bulk records remain pending/inactive until their explicitly selected companions persist successfully.
+
+This checkpoint does not claim runtime resolution of companion-file URLs, Character placement through general Model rules, automatic Project population, or a Project Asset inventory panel. Those belong to the next staged work: begin with a blank Project, expose which reusable Models and Characters are eligible for placement, place them only through their correct Sub-Module runtime, and add a sibling Project Assets panel for finding, selecting, focusing, and managing every assigned or placed Project asset without remounting the Scene.
+
+Release validation requires the importer contract validation, TypeScript, diff checks, manual Admin import verification for at least one external-file bundle, the client-run production build, and confirmation that existing Model/Character placement and persistent Canvas/Rapier behavior remain unchanged.

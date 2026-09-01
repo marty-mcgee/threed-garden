@@ -5,13 +5,89 @@ import { db } from '@/lib/db/client';
 import { 
   threedModels,
   threedModelFiles,
+  threedModelCategories,
+  threedModelCategoryAssignments,
 } from '@/lib/schema/threed';
-import { eq, and, or, desc, sql, type SQL } from 'drizzle-orm';
+import { eq, and, or, desc, sql, inArray, asc, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 type ModelWithFiles = typeof threedModels.$inferSelect & {
   files: Array<typeof threedModelFiles.$inferSelect>;
+  categories: Array<Pick<typeof threedModelCategories.$inferSelect, 'id' | 'name' | 'slug' | 'parentId'>>;
 };
+
+type ModelCategory = ModelWithFiles['categories'][number];
+
+function normalizeCategoryIds(value: unknown): number[] | null | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value) || value.length > 50) return null;
+  const ids = [...new Set(value.map(Number))];
+  return ids.every((id) => Number.isInteger(id) && id > 0) ? ids : null;
+}
+
+async function validateOwnedCategoryIds(userId: string, value: unknown): Promise<number[] | null | undefined> {
+  const ids = normalizeCategoryIds(value);
+  if (ids === undefined || ids === null || ids.length === 0) return ids;
+  const rows = await db.select({ id: threedModelCategories.id }).from(threedModelCategories).where(and(
+    eq(threedModelCategories.userId, userId),
+    inArray(threedModelCategories.id, ids),
+  ));
+  return rows.length === ids.length ? ids : null;
+}
+
+async function loadCategoriesByModelIds(modelIds: number[]): Promise<Map<number, ModelCategory[]>> {
+  const byModel = new Map<number, ModelCategory[]>();
+  if (modelIds.length === 0) return byModel;
+  const rows = await db
+    .select({
+      modelId: threedModelCategoryAssignments.modelId,
+      id: threedModelCategories.id,
+      name: threedModelCategories.name,
+      slug: threedModelCategories.slug,
+      parentId: threedModelCategories.parentId,
+    })
+    .from(threedModelCategoryAssignments)
+    .innerJoin(threedModelCategories, eq(threedModelCategoryAssignments.categoryId, threedModelCategories.id))
+    .where(inArray(threedModelCategoryAssignments.modelId, modelIds))
+    .orderBy(asc(threedModelCategories.sortOrder), asc(threedModelCategories.name));
+  for (const row of rows) {
+    const categories = byModel.get(row.modelId) ?? [];
+    categories.push({ id: row.id, name: row.name, slug: row.slug, parentId: row.parentId });
+    byModel.set(row.modelId, categories);
+  }
+  return byModel;
+}
+
+async function updateModelAndCategories(
+  userId: string,
+  modelId: number,
+  updates: Partial<typeof threedModels.$inferInsert>,
+  categoryIds: number[] | undefined,
+) {
+  return db.transaction(async (tx) => {
+    const [updated] = await tx.update(threedModels).set({
+      ...updates,
+      updatedAt: new Date(),
+    }).where(and(
+      eq(threedModels.id, modelId),
+      eq(threedModels.userId, userId),
+    )).returning();
+    if (categoryIds !== undefined) {
+      await tx.delete(threedModelCategoryAssignments).where(and(
+        eq(threedModelCategoryAssignments.userId, userId),
+        eq(threedModelCategoryAssignments.modelId, modelId),
+      ));
+      if (categoryIds.length > 0) {
+        await tx.insert(threedModelCategoryAssignments).values(categoryIds.map((categoryId) => ({
+          userId,
+          modelId,
+          categoryId,
+        })));
+      }
+    }
+    return updated;
+  });
+}
 
 function normalizeThumbnailUrl(value: unknown): string | null | undefined {
   if (value === undefined) return undefined;
@@ -54,9 +130,11 @@ function serializeLibraryModel(model: ModelWithFiles) {
     isDefault: model.isDefault,
     isPublic: model.isPublic,
     isLibraryItem: model.isLibraryItem,
+    categories: model.categories,
     files: model.files.map((file) => ({
       id: file.id,
       fileName: file.fileName,
+      relativePath: file.relativePath || file.fileName,
       fileType: file.fileType,
       textureType: file.textureType,
       filePath: file.filePath,
@@ -75,6 +153,7 @@ function serializeLibraryModel(model: ModelWithFiles) {
 //   - status (optional): Filter by model status
 //   - isActive (optional): Filter by active status
 //   - scope=library: Public non-Character models eligible for direct placement
+//   - category (optional): Filter by assigned category slug
 //   - search (optional): Search by modelName or modelType
 //   - limit (optional): Number of records (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
@@ -93,6 +172,7 @@ export async function GET(request: NextRequest) {
     const isActive = searchParams.get('isActive');
     const search = searchParams.get('search');
     const scope = searchParams.get('scope');
+    const category = searchParams.get('category')?.trim().toLowerCase();
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -133,7 +213,8 @@ export async function GET(request: NextRequest) {
         .where(eq(threedModelFiles.modelId, model.id))
         .orderBy(threedModelFiles.loadOrder);
 
-      const modelWithFiles = { ...model, files: files || [] };
+      const categoriesByModel = await loadCategoriesByModelIds([model.id]);
+      const modelWithFiles = { ...model, files: files || [], categories: categoriesByModel.get(model.id) ?? [] };
       const canManage = model.userId === userId;
       return NextResponse.json({
         success: true,
@@ -175,6 +256,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    if (category) {
+      conditions.push(sql`exists (
+        select 1
+        from ${threedModelCategoryAssignments}
+        inner join ${threedModelCategories}
+          on ${threedModelCategories.id} = ${threedModelCategoryAssignments.categoryId}
+        where ${threedModelCategoryAssignments.modelId} = ${threedModels.id}
+          and ${threedModelCategories.slug} = ${category}
+          and ${threedModelCategories.isActive} = true
+      )`);
+    }
+
     const where = and(...conditions);
 
     // ✅ Get total count for pagination
@@ -194,6 +287,8 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .offset(offset);
 
+    const categoriesByModel = await loadCategoriesByModelIds(results.map((model) => model.id));
+
     // ✅ Fetch related model files for each model
     const modelsWithFiles = await Promise.all(
       results.map(async (model) => {
@@ -206,6 +301,7 @@ export async function GET(request: NextRequest) {
         return {
           ...model,
           files: files || [],
+          categories: categoriesByModel.get(model.id) ?? [],
         };
       })
     );
@@ -270,6 +366,7 @@ export async function POST(request: NextRequest) {
       isLibraryItem,
       uploadedBy,
       metadata,
+      categoryIds: requestedCategoryIds,
     } = body;
 
     // ✅ Validate required fields
@@ -295,6 +392,13 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id;
+    const categoryIds = await validateOwnedCategoryIds(userId, requestedCategoryIds);
+    if (categoryIds === null) {
+      return NextResponse.json(
+        { success: false, error: 'One or more Model categories are invalid' },
+        { status: 400 },
+      );
+    }
     const normalizedThumbnailUrl = normalizeThumbnailUrl(thumbnailUrl);
     if (thumbnailUrl !== undefined && normalizedThumbnailUrl === undefined) {
       return NextResponse.json(
@@ -305,9 +409,8 @@ export async function POST(request: NextRequest) {
 
     await ensureTableSequence('threed_models');
 
-    const [newModel] = await db
-      .insert(threedModels)
-      .values({
+    const newModel = await db.transaction(async (tx) => {
+      const [createdModel] = await tx.insert(threedModels).values({
         userId,
         modelName,
         modelType,
@@ -335,25 +438,33 @@ export async function POST(request: NextRequest) {
         isLibraryItem: isLibraryItem ?? false,
         uploadedBy: uploadedBy || null,
         metadata: metadata || {},
-      })
-      .returning();
+      }).returning();
 
-    // ✅ If there are files associated with this model, add them
-    if (body.files && body.files.length > 0) {
-      for (const file of body.files) {
-        await db.insert(threedModelFiles).values({
+      if (categoryIds && categoryIds.length > 0) {
+        await tx.insert(threedModelCategoryAssignments).values(categoryIds.map((categoryId) => ({
           userId,
-          modelId: newModel.id,
-          fileName: file.fileName,
-          fileType: file.fileType,
-          textureType: file.textureType || null,
-          filePath: file.filePath,
-          fileSize: file.fileSize || null,
-          isBinaryBuffer: file.isBinaryBuffer || false,
-          loadOrder: file.loadOrder || 0,
-        });
+          modelId: createdModel.id,
+          categoryId,
+        })));
       }
-    }
+
+      if (Array.isArray(body.files) && body.files.length > 0) {
+        for (const file of body.files) {
+          await tx.insert(threedModelFiles).values({
+            userId,
+            modelId: createdModel.id,
+            fileName: file.fileName,
+            fileType: file.fileType,
+            textureType: file.textureType || null,
+            filePath: file.filePath,
+            fileSize: file.fileSize || null,
+            isBinaryBuffer: file.isBinaryBuffer || false,
+            loadOrder: file.loadOrder || 0,
+          });
+        }
+      }
+      return createdModel;
+    });
 
     console.log('✅ ThreeD model created:', newModel);
 
@@ -495,7 +606,19 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { id: _bodyId, userId: _bodyUserId, createdAt: _createdAt, ...updates } = body;
+    const {
+      id: _bodyId,
+      userId: _bodyUserId,
+      createdAt: _createdAt,
+      categories: _categories,
+      categoryIds: requestedCategoryIds,
+      files: _files,
+      ...updates
+    } = body;
+    const categoryIds = await validateOwnedCategoryIds(userId, requestedCategoryIds);
+    if (categoryIds === null) {
+      return NextResponse.json({ success: false, error: 'One or more Model categories are invalid' }, { status: 400 });
+    }
     if (Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl')) {
       const normalizedThumbnailUrl = normalizeThumbnailUrl(updates.thumbnailUrl);
       if (normalizedThumbnailUrl === undefined) {
@@ -506,19 +629,7 @@ export async function PUT(request: NextRequest) {
       }
       updates.thumbnailUrl = normalizedThumbnailUrl;
     }
-    const [updated] = await db
-      .update(threedModels)
-      .set({
-        ...updates,
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(threedModels.id, parsedId),
-          eq(threedModels.userId, userId)
-        )
-      )
-      .returning();
+    const updated = await updateModelAndCategories(userId, parsedId, updates, categoryIds);
 
     console.log('✅ ThreeD model updated:', updated);
 
@@ -586,7 +697,19 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const { id: _bodyId, userId: _bodyUserId, createdAt: _createdAt, ...updates } = body;
+    const {
+      id: _bodyId,
+      userId: _bodyUserId,
+      createdAt: _createdAt,
+      categories: _categories,
+      categoryIds: requestedCategoryIds,
+      files: _files,
+      ...updates
+    } = body;
+    const categoryIds = await validateOwnedCategoryIds(userId, requestedCategoryIds);
+    if (categoryIds === null) {
+      return NextResponse.json({ success: false, error: 'One or more Model categories are invalid' }, { status: 400 });
+    }
     if (Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl')) {
       const normalizedThumbnailUrl = normalizeThumbnailUrl(updates.thumbnailUrl);
       if (normalizedThumbnailUrl === undefined) {
@@ -597,19 +720,7 @@ export async function PATCH(request: NextRequest) {
       }
       updates.thumbnailUrl = normalizedThumbnailUrl;
     }
-    const [updated] = await db
-      .update(threedModels)
-      .set({
-        ...updates,
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(threedModels.id, parsedId),
-          eq(threedModels.userId, userId)
-        )
-      )
-      .returning();
+    const updated = await updateModelAndCategories(userId, parsedId, updates, categoryIds);
 
     console.log('✅ ThreeD model patched:', updated);
 

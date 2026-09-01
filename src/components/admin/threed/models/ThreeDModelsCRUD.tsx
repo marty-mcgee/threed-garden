@@ -27,6 +27,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
+import {
+  ThreeDModelCategoriesManager,
+  type ThreeDModelCategoryOption,
+} from './ThreeDModelCategoriesManager';
+import { ThreeDModelsBulkImport } from './ThreeDModelsBulkImport';
 
 // ============================================
 // TYPES
@@ -34,6 +39,7 @@ import { useToast } from '@/components/ui/toast';
 interface ModelFile {
   id: number;
   fileName: string;
+  relativePath: string;
   fileType: string;
   textureType: string | null;
   filePath: string;
@@ -74,6 +80,7 @@ interface Model {
   createdAt: string;
   updatedAt: string;
   files?: ModelFile[];
+  categories?: ThreeDModelCategoryOption[];
 }
 
 interface FormData {
@@ -101,6 +108,7 @@ interface FormData {
   isLibraryItem: boolean;
   uploadedBy: string;
   metadata: string;
+  categoryIds: number[];
 }
 
 // ============================================
@@ -206,6 +214,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
   const [showFilesDialog, setShowFilesDialog] = useState(false);
   const [filesModel, setFilesModel] = useState<Model | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState<ThreeDModelCategoryOption[]>([]);
 
   // v0.16.4-alpha/beta: Vercel Blob upload state
   const [uploadingPrimary, setUploadingPrimary] = useState(false);
@@ -239,6 +248,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     isLibraryItem: false,
     uploadedBy: '',
     metadata: '{}',
+    categoryIds: [],
   });
 
   // Model files of type "model" (candidates for mainModelFileId) on the model being edited.
@@ -255,8 +265,20 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
 
   useEffect(() => {
     fetchModels();
+    fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function fetchCategories() {
+    try {
+      const response = await fetch('/api/threed/model-categories');
+      const data = await response.json();
+      setCategories(response.ok && data.success && Array.isArray(data.data) ? data.data : []);
+    } catch (error) {
+      console.error('Error fetching Model categories:', error);
+      setCategories([]);
+    }
+  }
 
   async function fetchModels() {
     setLoading(true);
@@ -506,6 +528,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       mainModelFileId: '', isActive: true, status: 'active', isDefault: false,
       isPublic: false, isLibraryItem: false,
       uploadedBy: '', metadata: '{}',
+      categoryIds: [],
     });
   }
 
@@ -536,8 +559,40 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       isLibraryItem: model.isLibraryItem ?? false,
       uploadedBy: model.uploadedBy || '',
       metadata: JSON.stringify(model.metadata || {}),
+      categoryIds: (model.categories ?? []).map((category) => category.id),
     });
   }
+
+  function toggleCategory(categoryId: number) {
+    setFormData((current) => ({
+      ...current,
+      categoryIds: current.categoryIds.includes(categoryId)
+        ? current.categoryIds.filter((id) => id !== categoryId)
+        : [...current.categoryIds, categoryId],
+    }));
+  }
+
+  const categoryAssignmentFields = (
+    <Section title="Categories">
+      {categories.filter((category) => category.isActive).length === 0 ? (
+        <p className="text-xs text-muted-foreground">Create an active Model category before assigning taxonomy.</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-2">
+          {categories.filter((category) => category.isActive).map((category) => (
+            <label key={category.id} className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs">
+              <input
+                type="checkbox"
+                checked={formData.categoryIds.includes(category.id)}
+                onChange={() => toggleCategory(category.id)}
+                disabled={isSubmitting}
+              />
+              <span className="truncate">{category.name}</span>
+            </label>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
 
   if (loading) {
     return (
@@ -567,6 +622,19 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
           <span className="text-sm font-medium">3D Models</span>
           <Badge variant="secondary" className="text-xs">{filteredModels.length}</Badge>
         </div>
+        <div className="flex items-center gap-2">
+        <ThreeDModelCategoriesManager onChanged={() => { void fetchCategories(); void fetchModels(); }} />
+        <ThreeDModelsBulkImport
+          categories={categories}
+          onComplete={async ({ created, failed }) => {
+            await fetchModels();
+            onModuleUpdate?.();
+            showToast(
+              failed > 0 ? `Bulk import created ${created} Model(s); ${failed} failed` : `Bulk import created ${created} Model(s)`,
+              failed > 0 ? 'error' : 'success',
+            );
+          }}
+        />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -766,12 +834,15 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                 </div>
               </Section>
 
+              {categoryAssignmentFields}
+
               <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</> : 'Create Model'}
               </Button>
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Search */}
@@ -820,6 +891,9 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                         {model.isLibraryItem && <Badge variant="outline" className="text-[10px]">Library</Badge>}
                         {model.usedByPlants && <Badge variant="outline" className="text-[10px]">Plants</Badge>}
                         {model.usedByCharacters && <Badge variant="outline" className="text-[10px]">Characters</Badge>}
+                        {(model.categories ?? []).map((category) => (
+                          <Badge key={category.id} variant="secondary" className="text-[10px]">{category.name}</Badge>
+                        ))}
                         {!model.isActive && <Badge variant="secondary" className="text-[10px]">Inactive</Badge>}
                       </div>
                     </TableCell>
@@ -1085,6 +1159,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
               </div>
             </Section>
 
+            {categoryAssignmentFields}
+
             <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
               {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : 'Save Changes'}
             </Button>
@@ -1135,6 +1211,9 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                             <p className="text-sm font-medium truncate">{file.fileName}</p>
                             <p className="text-xs text-muted-foreground">
                               {file.textureType ? `${file.textureType} · ` : ''}{formatFileSize(file.fileSize)}
+                            </p>
+                            <p className="truncate font-mono text-[10px] text-muted-foreground" title={file.relativePath || file.fileName}>
+                              {file.relativePath || file.fileName}
                             </p>
                           </div>
                           <Button variant="ghost" size="icon" className="h-7 w-7"

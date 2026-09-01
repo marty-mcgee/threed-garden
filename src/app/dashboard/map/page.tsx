@@ -10,6 +10,8 @@ import {
   MapPin, 
   Box, 
   Car, 
+  TrafficCone,
+  Touchpad,
   FolderOpen,
   Settings,
   ChevronRight,
@@ -1705,6 +1707,7 @@ function UnifiedMapPageInner() {
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
+  const [libraryCategorySlug, setLibraryCategorySlug] = useState('all');
   const [inspectedLibraryModelId, setInspectedLibraryModelId] = useState<number | null>(null);
   const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
   const [libraryFarmBots, setLibraryFarmBots] = useState<any[]>([]);
@@ -3778,6 +3781,14 @@ function UnifiedMapPageInner() {
   const inspectedLibraryModel = libraryModels.find(
     (model) => model.id === inspectedLibraryModelId,
   ) ?? null;
+  const libraryCategories = Array.from(
+    new Map(
+      libraryModels.flatMap((model) => model.categories ?? []).map((category) => [category.slug, category]),
+    ).values(),
+  ).sort((left, right) => left.name.localeCompare(right.name));
+  const visibleLibraryModels = libraryCategorySlug === 'all'
+    ? libraryModels
+    : libraryModels.filter((model) => model.categories?.some((category) => category.slug === libraryCategorySlug));
 
   return (
     <div className="relative space-y-1.5">
@@ -3916,13 +3927,13 @@ function UnifiedMapPageInner() {
           {/* View Mode Toggle - Icon Only */}
           <div className="flex items-center gap-1 border rounded-lg p-0">
             <Button
-              variant={viewMode === 'combined' ? 'secondary' : 'ghost'}
+              variant={viewMode === '3d' ? 'secondary' : 'ghost'}
               size="icon"
               className="h-7 w-7"
-              onClick={() => setViewMode('combined')}
-              title="Combined View"
+              onClick={() => setViewMode('3d')}
+              title="3D View"
             >
-              <Layers className={`w-3.5 h-3.5 ${viewMode === 'combined' ? '' : 'text-muted-foreground'}`} />
+              <Box className={`w-3.5 h-3.5 ${viewMode === '3d' ? '' : 'text-muted-foreground'}`} />
             </Button>
             <Button
               variant={viewMode === '2d' ? 'secondary' : 'ghost'}
@@ -3934,16 +3945,16 @@ function UnifiedMapPageInner() {
               }}
               title="2D View"
             >
-              <Car className={`w-3.5 h-3.5 ${viewMode === '2d' ? '' : 'text-muted-foreground'}`} />
+              <Touchpad className={`w-3.5 h-3.5 ${viewMode === '2d' ? '' : 'text-muted-foreground'}`} />
             </Button>
             <Button
-              variant={viewMode === '3d' ? 'secondary' : 'ghost'}
+              variant={viewMode === 'combined' ? 'secondary' : 'ghost'}
               size="icon"
               className="h-7 w-7"
-              onClick={() => setViewMode('3d')}
-              title="3D View"
+              onClick={() => setViewMode('combined')}
+              title="Combined View"
             >
-              <Box className={`w-3.5 h-3.5 ${viewMode === '3d' ? '' : 'text-muted-foreground'}`} />
+              <Layers className={`w-3.5 h-3.5 ${viewMode === 'combined' ? '' : 'text-muted-foreground'}`} />
             </Button>
           </div>
 
@@ -4119,6 +4130,25 @@ function UnifiedMapPageInner() {
             </label>
           )}
 
+          {libraryCategories.length > 0 && (
+            <label className="mb-2 block text-xs">
+              <span className="mb-1 block text-muted-foreground">Category</span>
+              <select
+                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+                value={libraryCategorySlug}
+                onChange={(event) => {
+                  setLibraryCategorySlug(event.target.value);
+                  setInspectedLibraryModelId(null);
+                }}
+              >
+                <option value="all">All Models</option>
+                {libraryCategories.map((category) => (
+                  <option key={category.slug} value={category.slug}>{category.name}</option>
+                ))}
+              </select>
+            </label>
+          )}
+
           {inspectedLibraryModel && (
             <div className="mb-2 space-y-1 rounded border bg-muted/30 p-2 text-[10px]">
               <div className="flex items-start justify-between gap-2">
@@ -4143,6 +4173,13 @@ function UnifiedMapPageInner() {
                 <span>Y rotation</span><span className="text-right text-foreground">{Number(inspectedLibraryModel.rotationY ?? 0)}°</span>
                 <span>File size</span><span className="text-right text-foreground">{inspectedLibraryModel.fileSize ? `${(inspectedLibraryModel.fileSize / 1024 / 1024).toFixed(1)} MB` : '—'}</span>
               </div>
+              {inspectedLibraryModel.categories?.length > 0 && (
+                <div className="flex flex-wrap gap-1 pt-1">
+                  {inspectedLibraryModel.categories.map((category) => (
+                    <span key={category.id} className="rounded bg-muted px-1.5 py-0.5 text-[9px]">{category.name}</span>
+                  ))}
+                </div>
+              )}
               <Button
                 type="button"
                 size="sm"
@@ -4203,13 +4240,15 @@ function UnifiedMapPageInner() {
               <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" /> Loading models…
               </div>
-            ) : libraryModels.length === 0 ? (
+            ) : visibleLibraryModels.length === 0 ? (
               <p className="py-6 text-center text-xs text-muted-foreground">
-                No active public Library models are available.
+                {libraryModels.length === 0
+                  ? 'No active public Library models are available.'
+                  : 'No Library models match this category.'}
               </p>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-              {libraryModels.map((model) => (
+              {visibleLibraryModels.map((model) => (
               <div
                 key={model.id}
                 draggable={Boolean(placementThreedId) && !placingModel}

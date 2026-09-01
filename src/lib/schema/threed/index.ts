@@ -287,6 +287,51 @@ export const threedModels = pgTable('threed_models', {
 }));
 
 // ============================================
+// 1b-i. threed_model_categories - Owner-scoped Model taxonomy
+// ============================================
+export const threedModelCategories = pgTable('threed_model_categories', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  parentId: integer('parent_id').references((): AnyPgColumn => threedModelCategories.id, { onDelete: 'restrict' }),
+  name: varchar('name', { length: 120 }).notNull(),
+  slug: varchar('slug', { length: 120 }).notNull(),
+  description: text('description'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  ownerSlugIdx: uniqueIndex('idx_threed_model_categories_owner_slug').on(table.userId, table.slug),
+  ownerIdx: index('idx_threed_model_categories_owner').on(table.userId),
+  parentIdx: index('idx_threed_model_categories_parent').on(table.parentId),
+  ownerActiveSortIdx: index('idx_threed_model_categories_owner_active_sort').on(
+    table.userId,
+    table.isActive,
+    table.sortOrder,
+  ),
+}));
+
+// ============================================
+// 1b-ii. threed_model_category_assignments - Model/category junction
+// ============================================
+export const threedModelCategoryAssignments = pgTable('threed_model_category_assignments', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  modelId: integer('model_id').notNull().references(() => threedModels.id, { onDelete: 'cascade' }),
+  categoryId: integer('category_id').notNull().references(() => threedModelCategories.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  modelCategoryIdx: uniqueIndex('idx_threed_model_category_assignments_model_category').on(
+    table.modelId,
+    table.categoryId,
+  ),
+  ownerIdx: index('idx_threed_model_category_assignments_owner').on(table.userId),
+  modelIdx: index('idx_threed_model_category_assignments_model').on(table.modelId),
+  categoryIdx: index('idx_threed_model_category_assignments_category').on(table.categoryId),
+}));
+
+// ============================================
 // 1c. threed_model_files - Associated files for 3D models
 // ============================================
 export const threedModelFiles = pgTable('threed_model_files', {
@@ -296,6 +341,7 @@ export const threedModelFiles = pgTable('threed_model_files', {
   
   // File information
   fileName: varchar('file_name', { length: 255 }).notNull(),
+  relativePath: varchar('relative_path', { length: 500 }).notNull().default(''),
   fileType: varchar('file_type', { length: 50 }).notNull(), // 'model', 'texture', 'binary', 'other', 'animation'
   textureType: varchar('texture_type', { length: 50 }), // 'baseColor', 'normalMap', 'roughness', 'metallic', 'emissive', 'occlusion'
   filePath: varchar('file_path', { length: 500 }).notNull(),
@@ -1508,6 +1554,28 @@ export const threedModelsRelations = relations(threedModels, ({ one, many }) => 
     references: [threedCharacters.modelId],
   }),
   modelFiles: many(threedModelFiles),
+  categoryAssignments: many(threedModelCategoryAssignments),
+}));
+
+export const threedModelCategoriesRelations = relations(threedModelCategories, ({ one, many }) => ({
+  parent: one(threedModelCategories, {
+    fields: [threedModelCategories.parentId],
+    references: [threedModelCategories.id],
+    relationName: 'modelCategoryHierarchy',
+  }),
+  children: many(threedModelCategories, { relationName: 'modelCategoryHierarchy' }),
+  assignments: many(threedModelCategoryAssignments),
+}));
+
+export const threedModelCategoryAssignmentsRelations = relations(threedModelCategoryAssignments, ({ one }) => ({
+  model: one(threedModels, {
+    fields: [threedModelCategoryAssignments.modelId],
+    references: [threedModels.id],
+  }),
+  category: one(threedModelCategories, {
+    fields: [threedModelCategoryAssignments.categoryId],
+    references: [threedModelCategories.id],
+  }),
 }));
 
 export const threedBedsRelations = relations(threedBeds, ({ one, many }) => ({
@@ -1693,6 +1761,12 @@ export type NewThreedPlant = typeof threedPlants.$inferInsert;
 
 export type ThreedModel = typeof threedModels.$inferSelect;
 export type NewThreedModel = typeof threedModels.$inferInsert;
+
+export type ThreedModelCategory = typeof threedModelCategories.$inferSelect;
+export type NewThreedModelCategory = typeof threedModelCategories.$inferInsert;
+
+export type ThreedModelCategoryAssignment = typeof threedModelCategoryAssignments.$inferSelect;
+export type NewThreedModelCategoryAssignment = typeof threedModelCategoryAssignments.$inferInsert;
 
 export type ThreedModelFile = typeof threedModelFiles.$inferSelect;
 export type NewThreedModelFile = typeof threedModelFiles.$inferInsert;

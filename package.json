@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.2-alpha",
+  "version": "0.19.3-alpha",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -20,7 +20,11 @@
     "db:migrate": "echo 'Use db:push for development'",
     "db:push": "drizzle-kit push --force",
     "db:studio": "drizzle-kit studio",
-    "music:import": "bun run src/lib/data/music/seed.ts"
+    "music:import": "bun run src/lib/data/music/seed.ts",
+    "threed:models:manifest:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/generate-legacy-threed-model-manifest.mts",
+    "threed:models:import:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-import.mts",
+    "threed:models:import": "node --import tsx src/lib/scripts/import-threed-models.ts",
+    "validate:threed-model-import": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-import-contract.mts"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",

@@ -174,6 +174,7 @@ export interface ThreeDModelFile {
   id: number
   modelId: number
   fileName: string
+  relativePath: string
   fileType: ThreeDModelFileType
   textureType: string | null
   filePath: string
@@ -237,6 +238,12 @@ export interface ThreeDModelLibraryItem {
   defaultAnimation: string | null;
   isPublic: boolean;
   isLibraryItem: boolean;
+  categories: Array<{
+    id: number;
+    name: string;
+    slug: string;
+    parentId: number | null;
+  }>;
 }
 
 /** Owner-scoped Character record eligible for Garden/Ecctrl Project placement. */
@@ -1381,6 +1388,4 @@ export const HARVEST_UNIT_OPTIONS: ThreeDSelectOption[] = [
   { value: HarvestUnit.BUNCHES, label: 'Bunches' },
   { value: HarvestUnit.POUNDS, label: 'Pounds' },
 ];
-
-
 
