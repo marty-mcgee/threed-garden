@@ -112,6 +112,8 @@ The environment Model forwards placement pointer coordinates into that existing 
 
 The Ecctrl halo uses the same capsule-relative ground reference as the action-target ring. It renders as interaction UI above environment geometry so a large environment mesh cannot depth-occlude it. Selection retains the established timed fade, while **Take Control** keeps the halo visible until control is released. The halo remains a child of the same Ecctrl owner and therefore follows WASD movement without creating another physics or position authority.
 
+This checkpoint was released successfully to production through GitHub and Vercel on August 31, 2026.
+
 ### Release verification
 
 1. Open an owned Project containing a visible Model marked **Project environment / base map**.
