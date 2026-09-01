@@ -20,9 +20,9 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.3c — ThreeD Character Environment Runtime** |
-| Current release candidate | **v0.19.3d — ThreeD Model Runtime Inspection API** (`package.json` version `0.19.3-delta`) |
-| Current development milestone | **Authenticated, read-only JSON inspection of GLB, GLTF, and FBX Model structure for reviewed Runtime Adapter and future collision-policy development** |
-| Previous checkpoint | **v0.19.3b — ThreeD Project Environment Models** |
+| Current release candidate | **v0.19.4a — Reviewed Environment Component Mapping Preview** (`package.json` version `0.19.4-alpha`) |
+| Current development milestone | **Offline, deterministic preview of reviewed source-component mappings before any API association, database write, collider description, or Rapier activation** |
+| Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |

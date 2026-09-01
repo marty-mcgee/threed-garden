@@ -52,6 +52,12 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/models/gltf-runtime-inspection-core.ts';
 import {
+  parseThreeDEnvironmentComponentMapping,
+  previewThreeDEnvironmentComponentMapping,
+  ThreeDEnvironmentComponentMappingError,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/environment-component-mapping-core.ts';
+import {
   parseCreateProjectBedPlacement,
   parseUpdateProjectBedPlacement,
   ProjectBedPlacementInputError,
@@ -718,6 +724,67 @@ assert.deepEqual(sourceComponentPage, {
   items: [{ sourcePath: 'Scene/Structure-B', meshType: 'Mesh', triangleCount: 12 }],
 });
 validationStep('Model source components remain exact, searchable, and paginated without family inference');
+
+const reviewedEnvironmentMapping = {
+  version: 1,
+  rules: [
+    {
+      id: 'farm-terrain',
+      role: 'terrain',
+      selector: { kind: 'source-path-exact', value: 'Scene/Ground' },
+      constructionStrategy: 'simplified-trimesh',
+    },
+    {
+      id: 'farm-barriers',
+      role: 'barrier',
+      selector: { kind: 'source-path-prefix', value: 'Scene/Fence' },
+      constructionStrategy: 'spatially-merged-bounds',
+    },
+    {
+      id: 'farm-decoration',
+      role: 'decoration',
+      selector: { kind: 'source-path-prefix', value: 'Scene/Fence/Post' },
+      constructionStrategy: 'visual-only',
+    },
+  ],
+} as const;
+assert.deepEqual(parseThreeDEnvironmentComponentMapping(reviewedEnvironmentMapping), reviewedEnvironmentMapping);
+const mappingPreview = previewThreeDEnvironmentComponentMapping(reviewedEnvironmentMapping, [
+  { sourcePath: 'Scene/Ground', meshType: 'Mesh', triangleCount: 900 },
+  { sourcePath: 'Scene/Fence/Section-1', meshType: 'Mesh', triangleCount: 104 },
+  { sourcePath: 'Scene/Fence/Post-1', meshType: 'Mesh', triangleCount: 66 },
+  { sourcePath: 'Scene/Tree', meshType: 'Mesh', triangleCount: 240 },
+]);
+assert.deepEqual({
+  sourceComponentCount: mappingPreview.sourceComponentCount,
+  sourceTriangleCount: mappingPreview.sourceTriangleCount,
+  matchedComponentCount: mappingPreview.matchedComponentCount,
+  unmatchedComponentCount: mappingPreview.unmatchedComponentCount,
+  conflictingComponentCount: mappingPreview.conflictingComponentCount,
+  collisionCandidateComponentCount: mappingPreview.collisionCandidateComponentCount,
+}, {
+  sourceComponentCount: 4,
+  sourceTriangleCount: 1310,
+  matchedComponentCount: 2,
+  unmatchedComponentCount: 1,
+  conflictingComponentCount: 1,
+  collisionCandidateComponentCount: 2,
+});
+assert.equal(mappingPreview.rules[1].componentCount, 1);
+assert.deepEqual(mappingPreview.representativeConflictPaths, ['Scene/Fence/Post-1']);
+assert.throws(
+  () => parseThreeDEnvironmentComponentMapping({
+    version: 1,
+    rules: [{
+      id: 'unsafe',
+      role: 'barrier',
+      selector: { kind: 'source-path-prefix', value: 'Scene', extra: true },
+      constructionStrategy: 'spatially-merged-bounds',
+    }],
+  }),
+  ThreeDEnvironmentComponentMappingError,
+);
+validationStep('Reviewed environment mappings preview exact matches and fail closed on conflicts');
 
 const gltfInspectionDocument = {
   scene: 0,

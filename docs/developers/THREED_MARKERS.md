@@ -731,3 +731,11 @@ This example is a proposed review contract, not an implemented database field or
 8. **Scene-owned Rapier activation:** only after manual approval and performance verification may the persistent marker owner create fixed colliders from the reviewed plan. The Runtime Adapter still creates no RigidBody. Layer visibility, marker transforms, Physics Debug, Character spawn safety, Take/Release Control, and Ecctrl movement remain release-blocking regressions.
 
 Each stage is a separate proof, implementation, validation, and approval boundary. No stage authorizes the next stage, schema changes, automatic database mutation, arbitrary uploaded JSX/TSX execution, or environment collision activation.
+
+## v0.19.4a reviewed component mapping preview
+
+The first v0.19.4 stage implements the offline mathematical boundary behind stage 2 above. `environment-component-mapping-core.ts` strictly parses a versioned mapping containing 1–64 reviewed rules. Rules use only generic semantic roles, exact or prefix source-path selectors, and bounded construction-strategy names. Extra fields, unsupported versions, malformed identifiers, unknown roles or strategies, control characters, duplicate rule IDs, and duplicate selectors fail closed.
+
+The pure preview evaluates at most 100,000 source components. It returns source, matched, unmatched, conflicting, and collision-candidate component and triangle totals, bounded representative paths, and per-rule aggregates. A component matching more than one rule is reported as a conflict and remains unassigned. `visual-only` matches are counted as reviewed but never as collision candidates.
+
+This step provides no API handler, database association, Runtime Adapter selection, geometry buffers, collider descriptions, R3F objects, or Rapier activation. Its acceptance criterion is deterministic offline proof that a proposed mapping can account for imported source evidence without silently resolving overlaps or inferring meaning from asset names.
