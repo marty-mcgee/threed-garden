@@ -38,7 +38,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.19.0b "Shared ThreeD Model Repositioning" (`package.json` version `0.19.0-beta`).
+Current production version: v0.19.3a "ThreeD Model Taxonomy and Bundle Import" (`package.json` version `0.19.3-alpha`).
 
 No later release candidate is currently designated. v0.19.0b preserves the authenticated `project_threed_markers` create/update paths, stable Runtime Marker ownership, persistent Canvas/Rapier world, synchronized Model visuals and fixed colliders, and Character runtime separation. Existing Project Models may be repositioned through the Leaflet 2D Map or explicit ThreeD Scene Move Model mode; this does not authorize free-form R3F dragging or other Sub-Module movement changes. The developer-local `reference/` directory remains ignored and is not production source or a deployed asset path.
 

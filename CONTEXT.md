@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.2a — Visual ThreeD Model Library and Cross-Surface Placement** (`package.json` version `0.19.2-alpha`) |
-| Current release candidate | **v0.19.3a — ThreeD Model Taxonomy and Bundle Import** (`package.json` version `0.19.3-alpha`) |
-| Current development milestone | **Release candidate: owner-scoped Model taxonomy, reviewed bulk ingestion, previews, companion discovery, and customizable bundle-relative attachment paths** |
+| Current stable version | **v0.19.3a — ThreeD Model Taxonomy and Bundle Import** (`package.json` version `0.19.3-alpha`) |
+| Current release candidate | **None designated** |
+| Current development milestone | **Production checkpoint confirmed: owner-scoped Model taxonomy, reviewed bulk ingestion, previews, companion discovery, and customizable bundle-relative attachment paths** |
 | Previous checkpoint | **v0.19.1e — ThreeD Planting Placement Surface Continuity** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -397,6 +397,7 @@ API (/api/map/threed)
 | **v0.19.1d** | **2026-08-29** | **Production release — shared Runtime Marker positions across ThreeD and Leaflet, selection-preserving marker CRUD, and one visible Add/Edit/Delete/Move operation lifecycle** |
 | **v0.19.1e** | **2026-08-29** | **Production release — Planting placement preserves Combined View, its panel split, and the persistent Canvas/Rapier Scene** |
 | **v0.19.2a** | **2026-08-29** | **Production release — authenticated Model preview media, a visual sibling Library rail, and bounded click/drag placement across persistent 3D and Leaflet surfaces** |
+| **v0.19.3a** | **2026-08-31** | **Production release — owner-scoped Model taxonomy, reviewed bulk ingestion, format-aware companion discovery, and customizable bundle-relative attachment paths** |
 
 ---
 

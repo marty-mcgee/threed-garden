@@ -609,6 +609,8 @@ Every `threed_model_files` attachment also records a model-relative logical path
 
 The v0.19.3a candidate combines the completed taxonomy, manifest validation, reviewed script import, and Admin Bulk Add stages as **ThreeD Model Taxonomy and Bundle Import**. It establishes `threed_models` as the reusable Model authority, owner-scoped categories as its filtering taxonomy, and `threed_model_files.relative_path` as the logical bundle-path authority distinct from physical Blob URLs. Bulk records remain pending/inactive until their explicitly selected companions persist successfully.
 
+This checkpoint was released successfully to production through GitHub and Vercel on August 31, 2026.
+
 This checkpoint does not claim runtime resolution of companion-file URLs, Character placement through general Model rules, automatic Project population, or a Project Asset inventory panel. Those belong to the next staged work: begin with a blank Project, expose which reusable Models and Characters are eligible for placement, place them only through their correct Sub-Module runtime, and add a sibling Project Assets panel for finding, selecting, focusing, and managing every assigned or placed Project asset without remounting the Scene.
 
 Release validation requires the importer contract validation, TypeScript, diff checks, manual Admin import verification for at least one external-file bundle, the client-run production build, and confirmation that existing Model/Character placement and persistent Canvas/Rapier behavior remain unchanged.
