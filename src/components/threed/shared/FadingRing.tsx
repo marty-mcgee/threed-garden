@@ -18,6 +18,10 @@ interface FadingRingProps {
   color?: string;
   /** Opacity the ring starts at before fading. */
   initialOpacity?: number;
+  /** Keeps the ring visible while its owning interaction remains active. */
+  persistent?: boolean;
+  /** Renders the ring as UI above environment geometry. */
+  alwaysVisible?: boolean;
 }
 
 /**
@@ -34,6 +38,8 @@ export function FadingRing({
   duration = 1,
   color = '#3b82f6',
   initialOpacity = 0.6,
+  persistent = false,
+  alwaysVisible = false,
 }: FadingRingProps) {
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
   const elapsedRef = useRef(0);
@@ -45,6 +51,10 @@ export function FadingRing({
   useFrame((_, delta) => {
     const mat = matRef.current;
     if (!mat) return;
+    if (persistent) {
+      if (mat.opacity !== initialOpacity) mat.opacity = initialOpacity;
+      return;
+    }
     elapsedRef.current += delta;
     // Hold at full opacity for the delay period before fading.
     if (elapsedRef.current < fadeDelay) {
@@ -56,7 +66,11 @@ export function FadingRing({
   });
 
   return (
-    <mesh position={position} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh
+      position={position}
+      rotation={[-Math.PI / 2, 0, 0]}
+      renderOrder={alwaysVisible ? 1000 : 0}
+    >
       <ringGeometry args={[innerRadius, outerRadius, segments]} />
       <meshBasicMaterial
         ref={matRef}
@@ -65,6 +79,7 @@ export function FadingRing({
         opacity={initialOpacity}
         side={THREE.DoubleSide}
         depthWrite={false}
+        depthTest={!alwaysVisible}
       />
     </mesh>
   );

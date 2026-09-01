@@ -2353,7 +2353,7 @@ export function EcctrlCharacter({
         <FadingRing
           position={[
             0,
-            -0.35,
+            -GROUND_OFFSET + 0.025,
             0,
           ]}
           innerRadius={
@@ -2362,6 +2362,10 @@ export function EcctrlCharacter({
           outerRadius={
             1.15
           }
+          persistent={
+            isControlled
+          }
+          alwaysVisible
         />
       )}
     </>

@@ -103,3 +103,24 @@ The Dashboard uses the same plural marker type identity from Runtime Marker crea
 Phase 5E adds one provider-independent constructor at the Runtime Marker-to-Action Target boundary. It normalizes the supported singular/plural marker aliases and requires a non-empty runtime marker identity, a positive safe asset ID, a non-empty display name, and finite ThreeD scene coordinates. The resulting target and position are immutable. Invalid or unsupported marker data fails before entering orchestration state; this adds no API call, persistence, MQTT behavior, or physical-device authority.
 
 Phase 5F uses one shared identity matcher in the DetailsCard, refreshed-project reconciliation, and ThreeD scene highlighting. It normalizes singular/plural marker aliases and requires the same supported marker module and positive asset ID. The derived runtime marker string is display and scene metadata rather than source identity. This prevents the UI, refresh lifecycle, and scene from applying different target rules. Unsupported modules and mismatched asset identities fail closed.
+
+## v0.19.3c Character environment release-candidate boundary
+
+A Project environment Model remains a Model Runtime Marker and does not become the Character's parent, movement authority, or physics owner. Character placement over that visible environment continues through the authenticated Character placement transaction: the Character record owns Garden-versus-Ecctrl routing, its linked Character Model supplies the visual, and the resulting `project_threed_markers` instance supplies the Project position.
+
+The environment Model forwards placement pointer coordinates into that existing transaction instead of swallowing the click. A successfully placed movable Character immediately mounts one Ecctrl unit containing its Character Model, Rapier capsule, camera/control behavior, live-position reporting, and selection/control halo. The environment milestone does not route a Character Model through generic Model rules or add terrain-mesh grounding.
+
+The Ecctrl halo uses the same capsule-relative ground reference as the action-target ring. It renders as interaction UI above environment geometry so a large environment mesh cannot depth-occlude it. Selection retains the established timed fade, while **Take Control** keeps the halo visible until control is released. The halo remains a child of the same Ecctrl owner and therefore follows WASD movement without creating another physics or position authority.
+
+### Release verification
+
+1. Open an owned Project containing a visible Model marked **Project environment / base map**.
+2. Open the Character Library and place one eligible movable Character at a unique environment position.
+3. Confirm the Character Model, Ecctrl capsule, interaction behavior, and Project position begin together.
+4. Select the Character and confirm the blue halo appears at its feet above the environment geometry.
+5. Choose **Take Control** and confirm the Character Model, capsule, halo, camera, and WASD movement remain one unit.
+6. Confirm the halo stays visible while controlled and normal selection behavior returns after **Release Control**.
+7. Refresh the Project and confirm the Character restores at its saved position with the same runtime routing.
+8. Confirm the environment remains visible and the procedural ground remains hidden throughout the Character interaction.
+
+Automated release checks require `npm run validate:threed-orchestration`, `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` remains the final production release gate.

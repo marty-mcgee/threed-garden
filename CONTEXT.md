@@ -19,10 +19,10 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.3a — ThreeD Model Taxonomy and Bundle Import** (`package.json` version `0.19.3-alpha`) |
-| Current release candidate | **None designated** |
-| Current development milestone | **Production checkpoint confirmed: owner-scoped Model taxonomy, reviewed bulk ingestion, previews, companion discovery, and customizable bundle-relative attachment paths** |
-| Previous checkpoint | **v0.19.1e — ThreeD Planting Placement Surface Continuity** |
+| Current stable version | **v0.19.3b — ThreeD Project Environment Models** |
+| Current release candidate | **v0.19.3c — ThreeD Character Environment Runtime** (`package.json` version `0.19.3-centaur`) |
+| Current development milestone | **Verified Character placement and Garden/Ecctrl runtime continuity on a Project environment, including an environment-safe Ecctrl selection/control halo** |
+| Previous checkpoint | **v0.19.3a — ThreeD Model Taxonomy and Bundle Import** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
 | Semantic action mapping | ✅ Working |
