@@ -1094,7 +1094,11 @@ export async function POST(request: NextRequest) {
           rotationZ: input.rotationZ,
           scaleMultiplier: input.scaleMultiplier,
         },
-        metadata: { ...input.metadata, source: 'project-marker' },
+        metadata: {
+          ...input.metadata,
+          source: 'project-marker',
+          placementRole: input.placementRole,
+        },
       }).returning();
       return created;
     });
@@ -1338,7 +1342,17 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     }
     if (update.isVisible !== undefined) values.isVisible = update.isVisible;
     if (update.isActive !== undefined) values.isActive = update.isActive;
-    if (update.metadata !== undefined) values.metadata = update.metadata;
+    if (update.metadata !== undefined || update.placementRole !== undefined) {
+      const currentMetadata = marker.metadata && typeof marker.metadata === 'object' && !Array.isArray(marker.metadata)
+        ? marker.metadata as Record<string, unknown>
+        : {};
+      values.metadata = {
+        ...currentMetadata,
+        ...(update.metadata ?? {}),
+        ...(update.placementRole !== undefined ? { placementRole: update.placementRole } : {}),
+        source: 'project-marker',
+      };
+    }
     values.data = {
       ...currentData,
       ...(update.rotationX !== undefined ? { rotationX: update.rotationX } : {}),

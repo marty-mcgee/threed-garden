@@ -614,3 +614,25 @@ This checkpoint was released successfully to production through GitHub and Verce
 This checkpoint does not claim runtime resolution of companion-file URLs, Character placement through general Model rules, automatic Project population, or a Project Asset inventory panel. Those belong to the next staged work: begin with a blank Project, expose which reusable Models and Characters are eligible for placement, place them only through their correct Sub-Module runtime, and add a sibling Project Assets panel for finding, selecting, focusing, and managing every assigned or placed Project asset without remounting the Scene.
 
 Release validation requires the importer contract validation, TypeScript, diff checks, manual Admin import verification for at least one external-file bundle, the client-run production build, and confirmation that existing Model/Character placement and persistent Canvas/Rapier behavior remain unchanged.
+
+## v0.19.3b Project environment release-candidate boundary
+
+A Project Model marker may carry the bounded metadata role `placementRole: "environment"`; ordinary placements default to `"object"`. This role remains part of the existing `project_threed_markers` Model-instance authority and does not introduce another Model, terrain, Scene, or Project table. The Add Model placement panel and existing Model DetailsCard can set or change the role.
+
+When at least one active, visible environment Model is present on the visible Models Layer, the Scene hides only the procedural grass material. Its invisible placement plane and fixed Rapier floor remain mounted at the established Scene origin. Environment Models deliberately omit the ordinary whole-asset cuboid collider because one farm-scale axis-aligned box would turn the entire environment volume into an obstacle. Ordinary Project Models retain their established loaded-boundary collider behavior.
+
+During an active Add/Move placement operation, pointer events on a visible Project Model—including an environment Model—resolve the clicked world position into the existing placement callback instead of selecting that Model and swallowing the transaction. This establishes a safe flat-floor environment milestone; detailed mesh/terrain colliders and elevation-aware navigation remain separately gated because they require explicit performance and Character-grounding decisions.
+
+The v0.19.3b candidate packages this boundary as **ThreeD Project Environment Models**. It changes no database schema and does not route Character Models through general Model rules, alter GardenCharacter/EcctrlCharacter ownership, add terrain-mesh physics, or remount the persistent Canvas/Rapier world.
+
+### Release verification
+
+1. Open an owned blank Project with its ThreeD module and place a farm-scale Model at local `0,0,0`.
+2. Mark that Project Model as **Project environment / base map** and save its placement.
+3. Confirm the procedural grass and shadow surfaces disappear immediately while the environment Model remains visible.
+4. Start another Model placement and confirm pointer interaction over the environment reaches the existing placement operation.
+5. Change the Model role back to an ordinary object and confirm the procedural ground returns.
+6. Confirm ordinary Project Models retain their established whole-rendered-asset fixed colliders.
+7. Confirm Project refresh restores the saved environment role without a Scene or Project reload during the edit transaction.
+
+Automated release checks require `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` and a final Character placement regression remain the production release gate.

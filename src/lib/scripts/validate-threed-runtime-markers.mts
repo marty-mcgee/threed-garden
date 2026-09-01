@@ -29,6 +29,7 @@ import {
   parseCreateProjectModelInstance,
   parseUpdateProjectModelInstance,
   ProjectModelInstanceInputError,
+  isProjectModelEnvironment,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/models/project-model-instance-core.ts';
 import {
@@ -580,15 +581,18 @@ assert.deepEqual(parseCreateProjectModelInstance({
   isVisible: true,
   isActive: true,
   metadata: {},
+  placementRole: 'object',
 });
 assert.deepEqual(parseUpdateProjectModelInstance({
   rotationY: 1.57,
   scaleMultiplier: 0.75,
   isVisible: false,
+  placementRole: 'environment',
 }), {
   rotationY: 1.57,
   scaleMultiplier: 0.75,
   isVisible: false,
+  placementRole: 'environment',
 });
 assert.throws(
   () => parseCreateProjectModelInstance({ projectId: 2, threedId: 3, modelId: 4, positionX: Infinity }),
@@ -602,7 +606,13 @@ assert.throws(
   () => parseUpdateProjectModelInstance({ projectId: 99 }),
   ProjectModelInstanceInputError,
 );
-validationStep('Project Model marker inputs allow bounded transforms and reject unsafe updates');
+assert.throws(
+  () => parseUpdateProjectModelInstance({ placementRole: 'terrain-ish' }),
+  ProjectModelInstanceInputError,
+);
+assert.equal(isProjectModelEnvironment({ placementRole: 'environment' }), true);
+assert.equal(isProjectModelEnvironment({ placementRole: 'object' }), false);
+validationStep('Project Model marker inputs allow bounded transforms and explicit environment roles');
 
 assert.deepEqual(THREED_RUNTIME_MARKER_MODULE_TYPES, [
   'plantings',

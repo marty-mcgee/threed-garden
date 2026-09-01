@@ -364,6 +364,7 @@ function ModelInstancePlacementEditor({
   initialScaleMultiplier,
   initialRotationY,
   initialPosition,
+  initialPlacementRole,
   baseModelScale,
   updating,
   deleting,
@@ -377,6 +378,7 @@ function ModelInstancePlacementEditor({
   initialScaleMultiplier: number;
   initialRotationY: number;
   initialPosition: { x: number; y: number; z: number };
+  initialPlacementRole: 'object' | 'environment';
   baseModelScale: number;
   updating: boolean;
   deleting: boolean;
@@ -388,6 +390,7 @@ function ModelInstancePlacementEditor({
     positionX: number;
     positionY: number;
     positionZ: number;
+    placementRole: 'object' | 'environment';
   }) => void;
   onDelete: (instanceId: number, name: string) => void;
   onMoveToggle: (instanceId: number, name: string) => void;
@@ -400,6 +403,7 @@ function ModelInstancePlacementEditor({
   const [positionX, setPositionX] = useState(String(initialPosition.x));
   const [positionY, setPositionY] = useState(String(initialPosition.y));
   const [positionZ, setPositionZ] = useState(String(initialPosition.z));
+  const [placementRole, setPlacementRole] = useState<'object' | 'environment'>(initialPlacementRole);
   const parsedScale = Number(scaleMultiplier);
   const parsedRotationDegrees = Number(rotationYDegrees);
   const parsedPosition = [Number(positionX), Number(positionY), Number(positionZ)];
@@ -475,6 +479,14 @@ function ModelInstancePlacementEditor({
       <div className="text-[9px] text-white/35">
         Effective scale: {(baseModelScale * (Number.isFinite(parsedScale) ? parsedScale : 0)).toLocaleString()}
       </div>
+      <label className="flex items-center justify-between gap-2 rounded bg-white/[0.035] px-2 py-1.5">
+        <span className="text-[10px] text-white/60">Project environment / base map</span>
+        <Switch
+          checked={placementRole === 'environment'}
+          disabled={busy}
+          onCheckedChange={(checked) => setPlacementRole(checked ? 'environment' : 'object')}
+        />
+      </label>
       <div className="grid grid-cols-3 gap-1.5">
         <button
           type="button"
@@ -488,6 +500,7 @@ function ModelInstancePlacementEditor({
               positionX: parsedPosition[0],
               positionY: parsedPosition[1],
               positionZ: parsedPosition[2],
+              placementRole,
             });
           }}
           className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
@@ -921,6 +934,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
     positionX: number;
     positionY: number;
     positionZ: number;
+    placementRole: 'object' | 'environment';
   }) => void;
   updatingModelInstanceId?: number | null;
   onDeleteModelInstance?: (instanceId: number, name: string) => void;
@@ -1521,6 +1535,7 @@ function DetailsCard({ selected, projectId, onClose, controlledCharacterId, live
             y: Number(selected.position?.y ?? d.positionY ?? 0),
             z: Number(selected.position?.z ?? d.positionZ ?? 0),
           }}
+          initialPlacementRole={selected.metadata?.placementRole === 'environment' ? 'environment' : 'object'}
           baseModelScale={Number(d.scale ?? 1)}
           updating={updatingModelInstanceId === modelInstanceId}
           deleting={deletingModelInstanceId === modelInstanceId}
@@ -1719,6 +1734,7 @@ function UnifiedMapPageInner() {
   const [placementFarmBot, setPlacementFarmBot] = useState<any | null>(null);
   const [placementThreedId, setPlacementThreedId] = useState<number | null>(null);
   const [placementScaleMultiplier, setPlacementScaleMultiplier] = useState('1');
+  const [placementModelRole, setPlacementModelRole] = useState<'object' | 'environment'>('object');
   const [placingModel, setPlacingModel] = useState(false);
   const [placingCharacter, setPlacingCharacter] = useState(false);
   const [placingFarmBot, setPlacingFarmBot] = useState(false);
@@ -1858,6 +1874,7 @@ function UnifiedMapPageInner() {
     setMovingModelInstance(null);
     setPlacementModel(null);
     setPlacementScaleMultiplier('1');
+    setPlacementModelRole('object');
     setPlacementCharacter(null);
     setPlacementFarmBot(null);
     setBedPlacementActive(false);
@@ -2046,6 +2063,7 @@ function UnifiedMapPageInner() {
     setInspectedLibraryModelId(model.id);
     setPlacementModel(model);
     setPlacementScaleMultiplier('1');
+    setPlacementModelRole('object');
   }, [placementThreedId, placingModel]);
 
   const openCharacterLibrary = useCallback(async () => {
@@ -2865,6 +2883,7 @@ function UnifiedMapPageInner() {
           positionY: position.y,
           positionZ: position.z,
           scaleMultiplier,
+          placementRole: placementModelRole,
         }),
       });
       const result = await response.json().catch(() => null);
@@ -2886,6 +2905,7 @@ function UnifiedMapPageInner() {
 
       setPlacementModel(null);
       setPlacementScaleMultiplier('1');
+      setPlacementModelRole('object');
       showToastRef.current(`${placementModel.modelName} placed in the ThreeD Scene`, 'success');
     } catch (error) {
       console.error('Failed to place ThreeD Model Library item', {
@@ -2902,6 +2922,7 @@ function UnifiedMapPageInner() {
   }, [
     placementModel,
     placementScaleMultiplier,
+    placementModelRole,
     placementThreedId,
     selectedProjectId,
   ]);
@@ -3176,6 +3197,7 @@ function UnifiedMapPageInner() {
       positionX: number;
       positionY: number;
       positionZ: number;
+      placementRole: 'object' | 'environment';
     },
   ) => {
     if (updatingModelInstanceId != null || deletingModelInstanceId != null) return;
@@ -4208,6 +4230,7 @@ function UnifiedMapPageInner() {
                   onClick={() => {
                     setPlacementModel(null);
                     setPlacementScaleMultiplier('1');
+                    setPlacementModelRole('object');
                   }}
                 >
                   Cancel
@@ -4230,6 +4253,17 @@ function UnifiedMapPageInner() {
                   onChange={(event) => setPlacementScaleMultiplier(event.target.value)}
                   className="h-7 px-2 text-xs"
                   aria-label="Model instance scale multiplier"
+                />
+              </label>
+              <label className="flex items-center justify-between gap-2 rounded border bg-background/60 px-2 py-1.5">
+                <span>
+                  <span className="block text-xs">Project environment / base map</span>
+                  <span className="block text-[10px] text-muted-foreground">Hides only the procedural grass and does not create a giant obstacle collider.</span>
+                </span>
+                <Switch
+                  checked={placementModelRole === 'environment'}
+                  disabled={placingModel}
+                  onCheckedChange={(checked) => setPlacementModelRole(checked ? 'environment' : 'object')}
                 />
               </label>
             </div>

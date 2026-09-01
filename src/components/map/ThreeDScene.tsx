@@ -69,6 +69,7 @@ import {
 import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orchestration/interaction-core';
 import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestration/action-target-core';
 import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers/model-visual-fit-core';
+import { isProjectModelEnvironment } from '@/lib/services/threed/models/project-model-instance-core';
 import type { ProjectThreeDViewState } from '@/lib/services/threed/markers/project-view-state-core';
 
 interface ThreeDSceneProps {
@@ -642,6 +643,9 @@ function ProjectModelMarkerBody({
   isActionTarget,
   isLayerEnabled,
   physicsDebug,
+  placementActive,
+  onPlacementHover,
+  onPlacementClick,
 }: {
   marker: any;
   position: [number, number, number];
@@ -652,7 +656,11 @@ function ProjectModelMarkerBody({
   isActionTarget: boolean;
   isLayerEnabled: boolean;
   physicsDebug: boolean;
+  placementActive: boolean;
+  onPlacementHover?: (position: { x: number; y: number; z: number }) => void;
+  onPlacementClick?: (position: { x: number; y: number; z: number }) => void;
 }) {
+  const isEnvironment = isProjectModelEnvironment(marker.metadata);
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
   const handleCollisionBoundsChange = useCallback((bounds: ModelCollisionBounds | null) => {
     setCollisionBounds(bounds);
@@ -683,7 +691,7 @@ function ProjectModelMarkerBody({
       position={position}
       rotation={rotation}
     >
-      {collisionBounds && colliderKey && (
+      {!isEnvironment && collisionBounds && colliderKey && (
         <CuboidCollider
           key={colliderKey}
           args={collisionBounds.halfExtents}
@@ -692,9 +700,18 @@ function ProjectModelMarkerBody({
       )}
       <group
         visible={isLayerEnabled}
+        onPointerMove={(event) => {
+          if (!isLayerEnabled || !placementActive) return;
+          event.stopPropagation();
+          onPlacementHover?.({ x: event.point.x, y: event.point.y, z: event.point.z });
+        }}
         onClick={(event) => {
           if (!isLayerEnabled) return;
           event.stopPropagation();
+          if (placementActive) {
+            onPlacementClick?.({ x: event.point.x, y: event.point.y, z: event.point.z });
+            return;
+          }
           onClick?.();
         }}
       >
@@ -992,6 +1009,9 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
       isActionTarget={isActionTarget}
       isLayerEnabled={isLayerEnabled}
       physicsDebug={physicsDebug}
+      placementActive={placementActive}
+      onPlacementHover={onPlacementHover}
+      onPlacementClick={onPlacementClick}
     />;
   }
 
@@ -1176,6 +1196,7 @@ function InteractiveGround({
   onPlacementHover,
   onPlacementLeave,
   onPlacementClick,
+  showVisualGround = true,
 }: any) {
   const grassTexture = useMemo(() => {
     const tex = createGrassTexture();
@@ -1187,16 +1208,16 @@ function InteractiveGround({
   return (
     <group>
       {/* Shadow catching plane (transparent, catches shadows) */}
-      <Plane
+      {showVisualGround && <Plane
         args={[size, size]}
         rotation={[-Math.PI / 2, 0, 0]}
         position={[centerX, -0.05, centerZ]}
         receiveShadow
       >
         <shadowMaterial transparent opacity={0.35} />
-      </Plane>
+      </Plane>}
       {/* Visual ground plane with grass texture */}
-      <Plane
+      {showVisualGround && <Plane
         args={[size, size]}
         rotation={[-Math.PI / 2, 0, 0]}
         position={[centerX, -0.1, centerZ]}
@@ -1208,7 +1229,7 @@ function InteractiveGround({
           metalness={0}
           color="#ffffff"
         />
-      </Plane>
+      </Plane>}
 
       {/* ✅ v0.15.3: Invisible click target for left-click deselect */}
       <Plane
@@ -1577,6 +1598,11 @@ export function ThreeDScene({
     return activeLayers.has(normalizeSceneLayerType(marker.type))
       && (visibleMarkerIds?.has(String(marker.id)) ?? true);
   });
+  const hasVisibleEnvironmentModel = visibleMarkers.some((marker: any) =>
+    normalizeSceneLayerType(marker.type) === 'models'
+    && marker.isVisible !== false
+    && marker.isActive !== false
+    && isProjectModelEnvironment(marker.metadata));
 
   const visibleIncidents = showIncidents ? incidents : [];
   const allPositions = [
@@ -2318,6 +2344,7 @@ export function ThreeDScene({
                   : placementBedName
                     ? onBedPlacement
                     : onModelPlacement}
+              showVisualGround={!hasVisibleEnvironmentModel}
             />
           </RigidBody>
 

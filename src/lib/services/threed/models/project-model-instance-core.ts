@@ -3,6 +3,14 @@ const MAX_POSITION = 1_000_000;
 const MAX_ROTATION = 10_000;
 const MIN_SCALE = 0.0001;
 const MAX_SCALE = 10_000;
+export type ProjectModelPlacementRole = 'object' | 'environment';
+
+export function isProjectModelEnvironment(metadata: unknown): boolean {
+  return typeof metadata === 'object'
+    && metadata !== null
+    && !Array.isArray(metadata)
+    && (metadata as Record<string, unknown>).placementRole === 'environment';
+}
 
 export class ProjectModelInstanceInputError extends Error {
   constructor(message: string) {
@@ -67,6 +75,14 @@ function readOptionalMetadata(value: unknown): Record<string, unknown> | undefin
   return value as Record<string, unknown>;
 }
 
+function readOptionalPlacementRole(value: unknown): ProjectModelPlacementRole | undefined {
+  if (value === undefined) return undefined;
+  if (value !== 'object' && value !== 'environment') {
+    throw new ProjectModelInstanceInputError('Invalid placementRole');
+  }
+  return value;
+}
+
 export interface CreateProjectModelInstanceInput {
   projectId: number;
   threedId: number;
@@ -82,6 +98,7 @@ export interface CreateProjectModelInstanceInput {
   isVisible: boolean;
   isActive: boolean;
   metadata: Record<string, unknown>;
+  placementRole: ProjectModelPlacementRole;
 }
 
 export function parseCreateProjectModelInstance(value: unknown): CreateProjectModelInstanceInput {
@@ -106,6 +123,7 @@ export function parseCreateProjectModelInstance(value: unknown): CreateProjectMo
     isVisible: readOptionalBoolean(body.isVisible, 'isVisible') ?? true,
     isActive: readOptionalBoolean(body.isActive, 'isActive') ?? true,
     metadata: readOptionalMetadata(body.metadata) ?? {},
+    placementRole: readOptionalPlacementRole(body.placementRole) ?? 'object',
   };
 }
 
@@ -121,6 +139,7 @@ export interface UpdateProjectModelInstanceInput {
   isVisible?: boolean;
   isActive?: boolean;
   metadata?: Record<string, unknown>;
+  placementRole?: ProjectModelPlacementRole;
 }
 
 export function parseUpdateProjectModelInstance(value: unknown): UpdateProjectModelInstanceInput {
@@ -138,6 +157,7 @@ export function parseUpdateProjectModelInstance(value: unknown): UpdateProjectMo
   if ('isVisible' in body) update.isVisible = readOptionalBoolean(body.isVisible, 'isVisible');
   if ('isActive' in body) update.isActive = readOptionalBoolean(body.isActive, 'isActive');
   if ('metadata' in body) update.metadata = readOptionalMetadata(body.metadata);
+  if ('placementRole' in body) update.placementRole = readOptionalPlacementRole(body.placementRole);
 
   if (Object.keys(update).length === 0) {
     throw new ProjectModelInstanceInputError('No supported fields to update');
