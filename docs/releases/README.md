@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.3b — ThreeD Project Environment Models](v0.19.3b.md)
 - [v0.19.3a — ThreeD Model Taxonomy and Bundle Import](v0.19.3a.md)
 - [v0.19.2a — Visual ThreeD Model Library and Cross-Surface Placement](v0.19.2a.md)
 - [v0.19.1e — ThreeD Planting Placement Surface Continuity](v0.19.1e.md)

@@ -625,6 +625,8 @@ During an active Add/Move placement operation, pointer events on a visible Proje
 
 The v0.19.3b candidate packages this boundary as **ThreeD Project Environment Models**. It changes no database schema and does not route Character Models through general Model rules, alter GardenCharacter/EcctrlCharacter ownership, add terrain-mesh physics, or remount the persistent Canvas/Rapier world.
 
+This checkpoint was released successfully to production through GitHub and Vercel on August 31, 2026.
+
 ### Release verification
 
 1. Open an owned blank Project with its ThreeD module and place a farm-scale Model at local `0,0,0`.
