@@ -18,6 +18,14 @@ API routes live under `src/app/api`. The maintained domain families include:
 
 `/api/threed/world-actions` is an intentional write path used by supported ThreeD actions. Its persistence must remain project-scoped and follow successful animation completion in the client.
 
+## ThreeD Model routes
+
+- `GET /api/threed/models` returns the authenticated owner's reusable Model records, related files, categories, and pagination. `scope=library` returns only eligible public Library Models through a reduced serialization contract.
+- `GET /api/threed/models?id=<modelId>` returns an owned Model's management record or the reduced public-Library representation when the authenticated user is not its owner.
+- `GET /api/threed/models/runtime-inspection?id=<modelId>` returns bounded, read-only structural evidence for an owned or eligible public-Library GLB, GLTF, or FBX Model.
+
+The collection response is a Model management contract and may contain owner-only storage and audit fields. The runtime-inspection response deliberately returns only bounded Model identity and structural measurements. Neither response authorizes Project placement, Runtime Marker mutation, Runtime Adapter selection, or collider creation. See [ThreeD Model runtime API](THREED_MODEL_RUNTIME_API.md) for parameters, response shapes, limits, and sanitized examples.
+
 ## ThreeD FarmBot routes
 
 The v0.18.0+ FarmBot routes are authenticated and owner-scoped:

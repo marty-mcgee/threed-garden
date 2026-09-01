@@ -33,6 +33,25 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/models/project-model-instance-core.ts';
 import {
+  assessThreeDEnvironmentGeometry,
+  createThreeDEnvironmentMeshInventory,
+  createThreeDModelSourceComponentPage,
+  MAX_ENVIRONMENT_COLLIDER_MESHES,
+  MAX_ENVIRONMENT_MESH_INVENTORY_ENTRIES,
+  MAX_ENVIRONMENT_COLLIDER_TRIANGLES,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/environment-collision-core.ts';
+import {
+  readThreeDModelRuntimeAdapterKey,
+  THREED_MODEL_RUNTIME_ADAPTER_METADATA_KEY,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/model-runtime-adapter-core.ts';
+import {
+  inspectThreeDGltfStructure,
+  parseThreeDGlbJsonChunk,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/gltf-runtime-inspection-core.ts';
+import {
   parseCreateProjectBedPlacement,
   parseUpdateProjectBedPlacement,
   ProjectBedPlacementInputError,
@@ -91,6 +110,17 @@ function validationStep(label: string): void {
 
 console.log('\nThreeD Runtime Marker registry validation');
 console.log('─'.repeat(42));
+
+assert.equal(THREED_MODEL_RUNTIME_ADAPTER_METADATA_KEY, 'runtimeAdapterKey');
+assert.equal(
+  readThreeDModelRuntimeAdapterKey({ runtimeAdapterKey: 'farm-environment-v1' }),
+  'farm-environment-v1',
+);
+assert.equal(readThreeDModelRuntimeAdapterKey({ runtimeAdapterKey: '../unsafe' }), null);
+assert.equal(readThreeDModelRuntimeAdapterKey({ runtimeAdapterKey: 'FarmAdapter' }), null);
+assert.equal(readThreeDModelRuntimeAdapterKey({ runtimeAdapterKey: 7 }), null);
+assert.equal(readThreeDModelRuntimeAdapterKey(null), null);
+validationStep('Model Runtime Adapter metadata remains a bounded registry key');
 
 const modelLibraryDragPayload = createThreeDModelLibraryDragPayload(17);
 assert.deepEqual(parseThreeDModelLibraryDragPayload(modelLibraryDragPayload), {
@@ -613,6 +643,121 @@ assert.throws(
 assert.equal(isProjectModelEnvironment({ placementRole: 'environment' }), true);
 assert.equal(isProjectModelEnvironment({ placementRole: 'object' }), false);
 validationStep('Project Model marker inputs allow bounded transforms and explicit environment roles');
+
+assert.deepEqual(assessThreeDEnvironmentGeometry({
+  meshCount: 12,
+  triangleCount: 24_000,
+  skinnedMeshCount: 0,
+  invalidMeshCount: 0,
+  hasFiniteBounds: true,
+}), {
+  status: 'ready',
+  colliderEligible: true,
+  reasons: [],
+});
+assert.equal(assessThreeDEnvironmentGeometry({
+  meshCount: 0,
+  triangleCount: 0,
+  skinnedMeshCount: 0,
+  invalidMeshCount: 0,
+  hasFiniteBounds: false,
+}).status, 'empty');
+assert.equal(assessThreeDEnvironmentGeometry({
+  meshCount: 1,
+  triangleCount: 100,
+  skinnedMeshCount: 1,
+  invalidMeshCount: 0,
+  hasFiniteBounds: true,
+}).status, 'unsupported');
+assert.equal(assessThreeDEnvironmentGeometry({
+  meshCount: MAX_ENVIRONMENT_COLLIDER_MESHES + 1,
+  triangleCount: MAX_ENVIRONMENT_COLLIDER_TRIANGLES + 1,
+  skinnedMeshCount: 0,
+  invalidMeshCount: 0,
+  hasFiniteBounds: true,
+}).status, 'too_complex');
+validationStep('Environment geometry audit fails closed before Rapier collider creation');
+
+const environmentMeshInventory = createThreeDEnvironmentMeshInventory([
+  { path: 'Farm/Foliage', type: 'Mesh', triangleCount: 400 },
+  { path: 'Farm/Terrain', type: 'Mesh', triangleCount: 2_000 },
+  { path: 'Farm/House', type: 'Mesh', triangleCount: 1_000 },
+  { path: '\u0000', type: '', triangleCount: 0 },
+  { path: 'Farm/Invalid', type: 'Mesh', triangleCount: -1 },
+]);
+assert.deepEqual(environmentMeshInventory.entries.slice(0, 3), [
+  { path: 'Farm/Terrain', type: 'Mesh', triangleCount: 2_000 },
+  { path: 'Farm/House', type: 'Mesh', triangleCount: 1_000 },
+  { path: 'Farm/Foliage', type: 'Mesh', triangleCount: 400 },
+]);
+assert.deepEqual(environmentMeshInventory.entries[3], {
+  path: '(unnamed mesh)',
+  type: 'Mesh',
+  triangleCount: 0,
+});
+const oversizedEnvironmentInventory = createThreeDEnvironmentMeshInventory(
+  Array.from({ length: MAX_ENVIRONMENT_MESH_INVENTORY_ENTRIES + 3 }, (_, index) => ({
+    path: `Farm/Mesh-${index}`,
+    type: 'Mesh',
+    triangleCount: index,
+  })),
+);
+assert.equal(oversizedEnvironmentInventory.entries.length, MAX_ENVIRONMENT_MESH_INVENTORY_ENTRIES);
+assert.equal(oversizedEnvironmentInventory.omittedEntryCount, 3);
+validationStep('Environment mesh inventory is deterministic, bounded, and diagnostic-only');
+
+const sourceComponentPage = createThreeDModelSourceComponentPage([
+  { path: 'Scene/Structure-B', type: 'Mesh', triangleCount: 12 },
+  { path: 'Scene/Vegetation-A', type: 'Mesh', triangleCount: 6 },
+  { path: 'Scene/Structure-A', type: 'Mesh', triangleCount: 9 },
+], { offset: 1, limit: 1, search: 'structure' });
+assert.deepEqual(sourceComponentPage, {
+  offset: 1,
+  limit: 1,
+  total: 2,
+  items: [{ sourcePath: 'Scene/Structure-B', meshType: 'Mesh', triangleCount: 12 }],
+});
+validationStep('Model source components remain exact, searchable, and paginated without family inference');
+
+const gltfInspectionDocument = {
+  scene: 0,
+  scenes: [{ nodes: [0] }],
+  nodes: [
+    { name: 'Farm', children: [1, 2] },
+    { name: 'Terrain', mesh: 0 },
+    { name: 'Barn', mesh: 1 },
+  ],
+  meshes: [
+    { name: 'Ground', primitives: [{ indices: 0, attributes: { POSITION: 1 } }] },
+    { name: 'Walls', primitives: [{ attributes: { POSITION: 2 } }] },
+  ],
+  accessors: [
+    { count: 6000 },
+    { count: 3000 },
+    { count: 900 },
+  ],
+};
+const gltfInspection = inspectThreeDGltfStructure(gltfInspectionDocument);
+assert.equal(gltfInspection.meshCount, 2);
+assert.equal(gltfInspection.triangleCount, 2300);
+assert.deepEqual(gltfInspection.meshInventory.entries.map((entry) => entry.path), [
+  'Farm/Terrain/Ground/Primitive-0',
+  'Farm/Barn/Walls/Primitive-0',
+]);
+assert.equal(gltfInspection.sourceComponents.total, 2);
+const encodedGltfInspection = new TextEncoder().encode(JSON.stringify(gltfInspectionDocument));
+const paddedJsonLength = Math.ceil(encodedGltfInspection.byteLength / 4) * 4;
+const glbFixture = new Uint8Array(20 + paddedJsonLength);
+const glbFixtureView = new DataView(glbFixture.buffer);
+glbFixtureView.setUint32(0, 0x46546c67, true);
+glbFixtureView.setUint32(4, 2, true);
+glbFixtureView.setUint32(8, glbFixture.byteLength, true);
+glbFixtureView.setUint32(12, paddedJsonLength, true);
+glbFixtureView.setUint32(16, 0x4e4f534a, true);
+glbFixture.fill(0x20, 20);
+glbFixture.set(encodedGltfInspection, 20);
+assert.deepEqual(parseThreeDGlbJsonChunk(glbFixture), gltfInspectionDocument);
+validationStep('GLB/GLTF Runtime Adapter inspection derives bounded JSON without geometry buffers');
 
 assert.deepEqual(THREED_RUNTIME_MARKER_MODULE_TYPES, [
   'plantings',

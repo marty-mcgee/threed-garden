@@ -638,3 +638,96 @@ This checkpoint was released successfully to production through GitHub and Verce
 7. Confirm Project refresh restores the saved environment role without a Scene or Project reload during the edit transaction.
 
 Automated release checks require `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` and a final Character placement regression remain the production release gate.
+
+## Post-v0.19.3c environment collision audit
+
+Environment collision begins with a read-only geometry audit at the established post-load Model measurement boundary. After R3F has attached the external scene graph and the Model's stored transforms, Project instance scale, grounding, and nested transforms are active, `ModelMarker3D` counts triangle meshes and triangles and reports skinned or invalid geometry. It does not copy vertex buffers, create a Rapier collider, alter the fixed floor, or change Character physics.
+
+The pure audit classifies geometry as `ready`, `empty`, `unsupported`, or `too_complex`. The initial future-collider ceiling is 256 meshes and 250,000 triangles. Skinned meshes fail closed because animated collision requires different ownership rules. When Physics Debug is active, an environment Model's existing `[ThreeD Model Physics]` `console.debug` entry includes the audit and transformed bounds. Ordinary Project Models retain their existing diagnostics and colliders.
+
+This audit is evidence for the next explicit environment collision-mode decision. A `ready` result does not activate collision by itself.
+
+## Model Runtime Adapter support boundary
+
+A reusable `threed_models.metadata.runtimeAdapterKey` may select a source-controlled React Three Fiber visual adapter from the App registry. The key is a bounded lowercase identifier only. It is never evaluated as JSX, interpreted as a module path or URL, or allowed to import code from the database, Blob storage, an upload, or the ignored `reference/` tree. Missing, invalid, or unregistered keys retain the established generic loaded-scene renderer.
+
+`ModelMarker3D` remains the binary-loading and post-transform measurement boundary. A registered adapter receives only that marker-owned, already-loaded and cloned Three.js group plus read-only reusable Model configuration. It may construct a curated visual subtree from named meshes, materials, bones, or groups. It does not receive Project Marker transforms, Runtime Marker identity, selection state, Scene controls, CRUD callbacks, Rapier bodies/colliders, or database access.
+
+The authority order is unchanged: `threed_models` and `threed_model_files` own reusable asset identity and files; `project_threed_markers` owns the Project instance and transform; the persistent Canvas/Rapier marker owner controls Scene lifecycle and physics; the optional TSX adapter is supportive visual construction only. The initial `source-scene-v1` adapter deliberately reproduces the existing `<primitive>` construction and provides a safe registration example. No existing Model selects it automatically, and this support stage introduces no schema or active collision change.
+
+Curated environment adapters may later expose named terrain, structure, fence, foliage, and decoration groups to an explicitly approved collision policy. Generated TSX is starting material for such an adapter, not executable user content and not a replacement for Model Library or Project Marker authority.
+
+Before a curated adapter is authored, the environment geometry audit reports a deterministic inventory of the 64 highest-triangle mesh paths, mesh types, and triangle counts. Remaining meshes are represented only by `omittedEntryCount`; vertex/index buffers and unbounded user metadata never enter the diagnostic. The inventory appears inside the environment Model's existing Physics-Debug-only `geometryAudit.meshInventory` output. It is evidence for naming and grouping the real uploaded asset, not an automatic semantic classifier or collision instruction.
+
+The authenticated read-only `GET /api/threed/models/runtime-inspection?id=<modelId>` route provides the same adapter-authoring evidence as JSON without relying on browser console copying. It authorizes the requested Model through the established owner-or-eligible-public-Library boundary and reads only the stored Model URL. For GLB, it streams the header and declared JSON chunk and cancels before the binary geometry payload; for GLTF, it accepts at most 16 MiB of JSON. FBX inspection accepts at most 256 MiB and uses the installed Three.js parser with a server-only inert texture handler, preserving hierarchy and geometry while preventing DOM use and texture/supporting-file requests. It does not accept caller-supplied URLs, write Model metadata, create a Project Marker, or activate physics. OBJ, USDZ, procedural, and generic Model types fail explicitly until separately reviewed format parsers exist.
+
+The route's `sourceComponents` result exposes exact source paths, mesh types, and triangle counts through `componentOffset` (0–100,000), `componentLimit` (1–200), and an optional bounded `componentSearch`. Results are sorted by exact source path and report the filtered total. The protocol does not derive source-name families, vendor concepts, provider fields, semantic roles, or collision behavior. Source names remain evidence only; a future reviewed mapping must assign only App-generic roles such as terrain, structure, barrier, vehicle, vegetation, decoration, interaction, or unclassified.
+
+The v0.19.3d API response contract, query limits, authorization boundary, and sanitized JSON examples are documented in [ThreeD Model runtime API](THREED_MODEL_RUNTIME_API.md). The captured Model 15 response is release evidence, not a checked-in copy of account identifiers, Blob URLs, or the full source-component inventory.
+
+## v0.19.3d release-candidate boundary
+
+The v0.19.3d candidate packages the Model Runtime Adapter registry, environment geometry audit, and authenticated Model Runtime Inspection route as **ThreeD Model Runtime Inspection API**. It replaces browser-console copying with bounded JSON evidence while preserving `threed_models` and `threed_model_files` as reusable-asset authority, `project_threed_markers` as Project-instance authority, and the persistent ThreeD Scene as rendering and physics authority.
+
+The candidate activates no environment collider and assigns no semantic role from a filename. It adds no schema, accepts no caller-supplied asset URL, evaluates no uploaded JSX/TSX, and does not change Character, Project placement, or Rapier ownership. Production release remains gated on automated validation, a successful build, authenticated API checks, and Scene regression testing.
+
+## Model Runtime Adapter development plan
+
+### Evidence checkpoint
+
+The first production-sized environment inspection proves why runtime construction and physics policy must remain separate. The inspected FBX contains 5,411 meshes and 2,185,617 triangles, with finite bounds, no skinned meshes, and no invalid mesh geometry. It correctly fails the initial whole-environment collider ceiling of 256 meshes and 250,000 triangles. Its top-triangle inventory includes buildings, vehicles, vegetation, and decoration, while a bounded source-component search for one fence-related source prefix returns 768 exact meshes.
+
+Within that 768-component result, repeated source components commonly contain 104-triangle fence sections, 66-triangle poles, 120- or 332-triangle gates, and 156- or 172-triangle gate doors. This is evidence that neither one whole-environment collider nor hundreds of independent per-mesh trimesh colliders is an acceptable default. Triangle count alone is also not a geometry identity and must not be used as one.
+
+### Vocabulary and authority constraints
+
+Runtime Adapter APIs, schemas, TypeScript types, registry identifiers, and collision policies must use App-generic vocabulary. Vendor names, asset-pack names, provider names, Project names, and source filename fragments must not become permanent field names, type names, semantic roles, or collision strategies. Exact imported node paths may appear only as reviewed selector values and diagnostic source evidence.
+
+The generic semantic roles are initially bounded to:
+
+- `terrain`;
+- `structure`;
+- `barrier`;
+- `vehicle`;
+- `vegetation`;
+- `decoration`;
+- `interaction`; and
+- `unclassified`.
+
+An imported name does not assign a role automatically. A source name containing words such as building, fence, tree, road, ground, or vehicle may support a review suggestion, but it remains `unclassified` until an explicit reviewed mapping selects it. Runtime Adapter TSX remains supportive visual construction only. It never owns Model identity, Project placement, Runtime Marker identity, transforms, Layers, selection, CRUD, Canvas lifecycle, Rapier bodies, or persistence.
+
+### Proposed reviewed mapping contract
+
+A future versioned mapping may associate exact or bounded source-path selectors with generic roles and separately reviewed construction strategies. Selector property names remain generic; any source-specific text exists only in the selector value.
+
+```json
+{
+  "version": 1,
+  "adapterKey": "environment-structure-v1",
+  "rules": [
+    {
+      "role": "barrier",
+      "selector": {
+        "kind": "source-path-prefix",
+        "value": "<reviewed source prefix>"
+      },
+      "constructionStrategy": "spatially-merged-bounds"
+    }
+  ]
+}
+```
+
+This example is a proposed review contract, not an implemented database field or active physics instruction. The final parser must reject unsupported versions, extra fields, unknown roles or strategies, unbounded selectors, duplicate rules, empty matches, and rules that exceed component or output limits. Missing mappings and unmatched components remain `unclassified` and visual-only.
+
+### Proposed development stages
+
+1. **Neutral geometry signatures:** extend read-only inspection with bounded structural signatures derived from geometry facts such as vertex/index counts, local bounds, primitive type, and material structure. A signature groups structurally equivalent evidence; it does not assign semantic meaning or physics.
+2. **Reviewed mapping parser:** implement an offline, deterministic, versioned parser for generic roles, selectors, and construction strategies. Add validation fixtures without database access, file uploads, R3F, or Rapier.
+3. **Read-only mapping preview:** apply a proposed mapping to inspection results and return matched/unmatched counts, triangle totals, representative source paths, and limit violations as JSON. Preview performs no Model update and creates no collider.
+4. **Deliberate Model association:** after separate approval, allow an authorized Admin to associate a reviewed mapping/adapter key with reusable Model metadata. This must be an explicit save transaction, never a render-time write or name-derived automatic assignment.
+5. **Visual Runtime Adapter:** register a source-controlled `environment-structure-v1` adapter that consumes the already-loaded marker-owned object and the reviewed mapping. Preserve the imported visual hierarchy unless a measured optimization is approved. Unknown or missing adapters retain the generic renderer.
+6. **Collision-plan preview:** derive proposed generic collider descriptions outside Rapier. Terrain, structures, barriers, vehicles, and vegetation require distinct bounded strategies. Physics Debug must visualize the proposed plan before it becomes active.
+7. **Spatial simplification:** merge or simplify repeated components using world-space evidence and explicit tolerances. Hundreds of fence pieces must not automatically become hundreds of trimesh colliders. Merging must preserve gates, openings, walkable areas, and Character scale.
+8. **Scene-owned Rapier activation:** only after manual approval and performance verification may the persistent marker owner create fixed colliders from the reviewed plan. The Runtime Adapter still creates no RigidBody. Layer visibility, marker transforms, Physics Debug, Character spawn safety, Take/Release Control, and Ecctrl movement remain release-blocking regressions.
+
+Each stage is a separate proof, implementation, validation, and approval boundary. No stage authorizes the next stage, schema changes, automatic database mutation, arbitrary uploaded JSX/TSX execution, or environment collision activation.

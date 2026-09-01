@@ -14,6 +14,14 @@ import {
   calculateThreeDModelFitMultiplier,
   type ThreeDVisualBounds,
 } from '@/lib/services/threed/markers/model-visual-fit-core';
+import {
+  assessThreeDEnvironmentGeometry,
+  createThreeDEnvironmentMeshInventory,
+  type ThreeDEnvironmentGeometryAuditAssessment,
+  type ThreeDEnvironmentMeshInventory,
+} from '@/lib/services/threed/models/environment-collision-core';
+import { readThreeDModelRuntimeAdapterKey } from '@/lib/services/threed/models/model-runtime-adapter-core';
+import { resolveThreeDModelRuntimeAdapter } from '@/components/threed/models/runtime-adapters/registry';
 
 // ============================================
 // TYPES
@@ -31,11 +39,20 @@ export interface ModelData {
   animations?: unknown;
   defaultAnimation?: string | null;
   animationSpeed?: number; // from character wrapper
+  metadata?: unknown;
 }
 
 export interface ModelCollisionBounds {
   center: [number, number, number];
   halfExtents: [number, number, number];
+}
+
+export interface ModelGeometryAudit extends ThreeDEnvironmentGeometryAuditAssessment {
+  meshCount: number;
+  triangleCount: number;
+  skinnedMeshCount: number;
+  invalidMeshCount: number;
+  meshInventory: ThreeDEnvironmentMeshInventory;
 }
 
 interface ModelMarker3DProps {
@@ -50,6 +67,8 @@ interface ModelMarker3DProps {
   applyStoredScale?: boolean;
   /** Reports loaded, grounded geometry bounds for the marker-owned Rapier collider. */
   onCollisionBoundsChange?: (bounds: ModelCollisionBounds | null) => void;
+  /** Reports bounded post-transform geometry diagnostics without creating physics. */
+  onGeometryAuditChange?: (audit: ModelGeometryAudit | null) => void;
 }
 
 // ============================================
@@ -210,8 +229,10 @@ function ModelFallback({ name, position }: { name?: string; position: [number, n
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange }: ModelMarker3DProps) {
+export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange }: ModelMarker3DProps) {
   const { loadedModel, error } = useModelLoad(model, fitBounds, applyStoredScale);
+  const requestedRuntimeAdapterKey = readThreeDModelRuntimeAdapterKey(model.metadata);
+  const RuntimeAdapter = resolveThreeDModelRuntimeAdapter(requestedRuntimeAdapterKey);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const visualGroupRef = useRef<THREE.Group | null>(null);
   const collisionMeasurementRef = useRef({
@@ -229,8 +250,12 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       reported: false,
     };
     onCollisionBoundsChange?.(null);
-    return () => onCollisionBoundsChange?.(null);
-  }, [loadedModel, onCollisionBoundsChange, scale]);
+    onGeometryAuditChange?.(null);
+    return () => {
+      onCollisionBoundsChange?.(null);
+      onGeometryAuditChange?.(null);
+    };
+  }, [loadedModel, onCollisionBoundsChange, onGeometryAuditChange, scale]);
 
   useFrame(() => {
     const measurement = collisionMeasurementRef.current;
@@ -271,6 +296,52 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
     if (box.isEmpty() || !values.every(Number.isFinite)) return;
 
     measurement.reported = true;
+    let meshCount = 0;
+    let triangleCount = 0;
+    let skinnedMeshCount = 0;
+    let invalidMeshCount = 0;
+    const meshInventoryCandidates: Array<{
+      path: string;
+      type: string;
+      triangleCount: number;
+    }> = [];
+    loadedModel.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return;
+      meshCount += 1;
+      if (child instanceof THREE.SkinnedMesh) skinnedMeshCount += 1;
+      const geometry = child.geometry;
+      const positionAttribute = geometry?.getAttribute('position');
+      const elementCount = geometry?.index?.count ?? positionAttribute?.count ?? 0;
+      if (!positionAttribute || elementCount < 3 || elementCount % 3 !== 0) {
+        invalidMeshCount += 1;
+        return;
+      }
+      const meshTriangleCount = elementCount / 3;
+      triangleCount += meshTriangleCount;
+      const pathSegments: string[] = [];
+      let current: THREE.Object3D | null = child;
+      while (current && current !== loadedModel) {
+        pathSegments.unshift(current.name || current.type);
+        current = current.parent;
+      }
+      meshInventoryCandidates.push({
+        path: pathSegments.join('/'),
+        type: child.type,
+        triangleCount: meshTriangleCount,
+      });
+    });
+    const auditInput = {
+      meshCount,
+      triangleCount,
+      skinnedMeshCount,
+      invalidMeshCount,
+      hasFiniteBounds: values.every(Number.isFinite),
+    };
+    onGeometryAuditChange?.({
+      ...auditInput,
+      ...assessThreeDEnvironmentGeometry(auditInput),
+      meshInventory: createThreeDEnvironmentMeshInventory(meshInventoryCandidates),
+    });
     onCollisionBoundsChange?.({
       center: [center.x, center.y, center.z],
       halfExtents: [
@@ -301,6 +372,16 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
     };
   }, [loadedModel, model.defaultAnimation, animationSpeed]);
 
+  useEffect(() => {
+    if (!loadedModel || !requestedRuntimeAdapterKey) return;
+    console.debug('[ThreeD Model Runtime Adapter]', {
+      modelId: model.id,
+      modelName: model.modelName,
+      requestedKey: requestedRuntimeAdapterKey,
+      resolved: RuntimeAdapter !== null,
+    });
+  }, [RuntimeAdapter, loadedModel, model.id, model.modelName, requestedRuntimeAdapterKey]);
+
   // Fallback if no model loaded
   if (!loadedModel || error) {
     return (
@@ -314,7 +395,9 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
 
   return (
     <group ref={visualGroupRef} position={position} scale={[scale, scale, scale]}>
-      <primitive object={loadedModel} />
+      {RuntimeAdapter
+        ? <RuntimeAdapter object={loadedModel} model={model} />
+        : <primitive object={loadedModel} />}
       {name && (
         <Html position={[0, 1.5, 0]} center transform occlude distanceFactor={1}>
           <div className="bg-black/60 text-white px-2 py-0.5 rounded text-[10px] whitespace-nowrap pointer-events-none select-none">

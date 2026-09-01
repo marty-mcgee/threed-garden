@@ -236,6 +236,7 @@ export interface ThreeDModelLibraryItem {
   offsetZ: string | number | null;
   animations: unknown;
   defaultAnimation: string | null;
+  metadata?: unknown;
   isPublic: boolean;
   isLibraryItem: boolean;
   categories: Array<{
@@ -1388,4 +1389,3 @@ export const HARVEST_UNIT_OPTIONS: ThreeDSelectOption[] = [
   { value: HarvestUnit.BUNCHES, label: 'Bunches' },
   { value: HarvestUnit.POUNDS, label: 'Pounds' },
 ];
-

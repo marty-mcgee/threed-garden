@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.3c — ThreeD Character Environment Runtime** (`package.json` version `0.19.3-centaur`) |
-| Current release candidate | **None designated** |
-| Current development milestone | **Production-confirmed Character placement and Garden/Ecctrl runtime continuity on a Project environment, including an environment-safe Ecctrl selection/control halo** |
+| Current stable version | **v0.19.3c — ThreeD Character Environment Runtime** |
+| Current release candidate | **v0.19.3d — ThreeD Model Runtime Inspection API** (`package.json` version `0.19.3-delta`) |
+| Current development milestone | **Authenticated, read-only JSON inspection of GLB, GLTF, and FBX Model structure for reviewed Runtime Adapter and future collision-policy development** |
 | Previous checkpoint | **v0.19.3b — ThreeD Project Environment Models** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

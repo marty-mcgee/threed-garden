@@ -58,6 +58,7 @@ import { FarmBotMarker3D } from '@/components/threed/markers/FarmBotMarker3D';
 import {
   ModelMarker3D,
   type ModelCollisionBounds,
+  type ModelGeometryAudit,
 } from '@/components/threed/markers/ModelMarker3D';
 import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
 import type { ThreeDActionTarget } from '@/lib/types/map';
@@ -662,6 +663,7 @@ function ProjectModelMarkerBody({
 }) {
   const isEnvironment = isProjectModelEnvironment(marker.metadata);
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
+  const [geometryAudit, setGeometryAudit] = useState<ModelGeometryAudit | null>(null);
   const handleCollisionBoundsChange = useCallback((bounds: ModelCollisionBounds | null) => {
     setCollisionBounds(bounds);
   }, []);
@@ -673,9 +675,10 @@ function ProjectModelMarkerBody({
         modelId: marker.data?.modelId,
         scale,
         bounds: collisionBounds,
+        ...(isEnvironment ? { geometryAudit } : {}),
       });
     }
-  }, [collisionBounds, marker.data?.modelId, marker.id, physicsDebug, scale]);
+  }, [collisionBounds, geometryAudit, isEnvironment, marker.data?.modelId, marker.id, physicsDebug, scale]);
 
   const colliderKey = collisionBounds
     ? [...collisionBounds.center, ...collisionBounds.halfExtents]
@@ -723,6 +726,7 @@ function ProjectModelMarkerBody({
           applyStoredScale={false}
           animationSpeed={marker.data?.animationSpeed || 1}
           onCollisionBoundsChange={handleCollisionBoundsChange}
+          onGeometryAuditChange={isEnvironment ? setGeometryAudit : undefined}
         />
         {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
         {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
