@@ -827,4 +827,4 @@ The ranking is computed once from stable Project marker positions; it does not a
 - Environment-first and Character-last loading remains stable across refresh.
 - TypeScript, the 48-group ThreeD Runtime Marker validation suite, and diff integrity pass.
 
-This manually verified checkpoint is designated **v0.19.4c — ThreeD Environment Character Collision** (`package.json` version `0.19.4-centaur`). Full activation of every Environment mesh bound and dynamic collider streaming remain outside this release boundary.
+This manually verified checkpoint was released successfully to production as **v0.19.4c — ThreeD Environment Character Collision** (`package.json` version `0.19.4-centaur`) on September 3, 2026. Full activation of every Environment mesh bound and dynamic collider streaming remain outside this release boundary.
