@@ -93,6 +93,7 @@ import {
   THREED_MODEL_LIBRARY_DRAG_MIME,
 } from '@/lib/services/threed/markers/model-library-drag-core';
 import { ThreeDRuntimeMarkerRegistry } from '@/lib/services/threed/markers/runtime-marker-core';
+import { buildThreeDRuntimeMarkerResult } from '@/lib/services/threed/markers/runtime-marker-builder';
 import type { ThreeDGeographicOrigin } from '@/lib/services/threed/markers/map-coordinate-core';
 import {
   PROJECT_VIEW_STATE_VERSION,
@@ -1716,6 +1717,7 @@ function UnifiedMapPageInner() {
   const projectLoadAbortRef = useRef<AbortController | null>(null);
   const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(!projectIdParam);
   const [isProjectSummaryOpen, setIsProjectSummaryOpen] = useState(false);
+  const projectSummaryRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
   const [isDefaultView, setIsDefaultView] = useState(!projectIdParam);
   const [loading, setLoading] = useState(true);
@@ -3770,6 +3772,33 @@ function UnifiedMapPageInner() {
     };
   }, [isDragging]);
 
+  useEffect(() => {
+    if (!isProjectSummaryOpen) return;
+    const dismissProjectSummary = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Node && projectSummaryRef.current?.contains(target)) return;
+      setIsProjectSummaryOpen(false);
+    };
+    document.addEventListener('pointerdown', dismissProjectSummary);
+    return () => document.removeEventListener('pointerdown', dismissProjectSummary);
+  }, [isProjectSummaryOpen]);
+
+  const projectEnvironmentMarkers = useMemo(
+    () => buildThreeDRuntimeMarkerResult(data.threed.raw).markers.filter(
+      (marker) => marker.type === 'models'
+        && marker.metadata?.placementRole === 'environment',
+    ),
+    [data.threed.raw],
+  );
+  const openEnvironmentDetails = useCallback((marker = projectEnvironmentMarkers[0]) => {
+    if (!marker) return;
+    setSelectedIncident(null);
+    setSelectedMarker(marker);
+    setViewMode('3d');
+    setIsProjectSummaryOpen(false);
+    setIsSceneAddMenuOpen(false);
+  }, [projectEnvironmentMarkers]);
+
   // ✅ Loading state with skeleton UI
   if (loading) {
     return (
@@ -3823,7 +3852,6 @@ function UnifiedMapPageInner() {
   const visibleLibraryModels = libraryCategorySlug === 'all'
     ? libraryModels
     : libraryModels.filter((model) => model.categories?.some((category) => category.slug === libraryCategorySlug));
-
   return (
     <div className="relative space-y-1.5">
       {ToastComponent}
@@ -3838,7 +3866,7 @@ function UnifiedMapPageInner() {
       {/* ✅ Header with Live Data Status Indicator */}
       <div className="m-0 flex flex-wrap items-center justify-between gap-4 px-0.5 py-1">
         
-        <div className="relative flex flex-col items-start">
+        <div ref={projectSummaryRef} className="relative flex flex-col items-start">
           <Button
             type="button"
             variant="ghost"
@@ -3924,6 +3952,22 @@ function UnifiedMapPageInner() {
                     : <Save className="h-3.5 w-3.5" />}
                   Save ThreeD Project
                 </Button>
+                {projectEnvironmentMarkers.map((marker) => (
+                  <Button
+                    key={marker.id}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-full justify-start text-xs"
+                    onClick={() => openEnvironmentDetails(marker)}
+                  >
+                    <ScanSearch className="h-3.5 w-3.5" />
+                    Environment Details
+                    {projectEnvironmentMarkers.length > 1 && (
+                      <span className="min-w-0 truncate text-muted-foreground">— {marker.name}</span>
+                    )}
+                  </Button>
+                ))}
                 <div className="grid grid-cols-2 gap-1.5">
                   <Button
                     type="button"
@@ -4076,6 +4120,22 @@ function UnifiedMapPageInner() {
                   : <X className="h-3.5 w-3.5" />}
               </Button>
             </div>
+          )}
+
+          {selectedProjectId && (
+            projectEnvironmentMarkers.length > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-7 w-7"
+                aria-label="Open Project Environment Details"
+                title="Open Project Environment Details"
+                onClick={() => openEnvironmentDetails()}
+              >
+                <ScanSearch className="h-3.5 w-3.5 text-muted-foreground" />
+              </Button>
+            )
           )}
 
           {selectedProjectId && (

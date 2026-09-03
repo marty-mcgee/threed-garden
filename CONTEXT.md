@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.4a — ThreeD Environment Preview and Character Runtime Safety** (`package.json` version `0.19.4-alpha`) |
-| Current release candidate | None designated |
-| Current development milestone | **Next gated stage: activate a small bounded subset of Scene-owned fixed Environment colliders while preserving the released Character runtime** |
+| Current release candidate | **v0.19.4b — ThreeD Environment Interaction UX** (`package.json` version `0.19.4-beta`) |
+| Current development milestone | **Environment selection authority and Project-menu dismissal; active Environment colliders remain the next separately gated stage** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

@@ -789,3 +789,13 @@ While an Ecctrl Character is controlled, the DetailsCard metadata remains a boun
 The cyan Environment collision boxes remain debug-only descriptions. No internal Environment box is an active Rapier collider in this checkpoint. The next stage must activate a small bounded subset through the persistent Environment marker owner and independently prove Character visibility, idle/walk/run animation, capsule/model alignment, smooth WASD stopping, Layer behavior, and an error-free Rapier frame loop before increasing coverage.
 
 Automated release checks require `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` and final Environment-plus-Character interaction check remain the production release gate.
+
+## v0.19.4b Environment interaction UX boundary
+
+The Environment/Base Map is a stationary Scene surface rather than an ordinary selectable object. Direct clicks on its rendered geometry no longer replace the active marker selection or open the Environment DetailsCard. Its geometry continues to accept deliberate Add/Move placement interactions; this UX restriction does not change Runtime Marker identity, transforms, Model loading, Layers, physics, or CRUD authority.
+
+Environment management remains explicitly accessible through **Project → Environment Details** and the top toolbar's **Open Project Environment Details** action. Both paths select the existing Runtime Marker through Dashboard-owned selection and open the established Model DetailsCard. Projects with multiple Environment Models list each Environment in the Project menu.
+
+The Project dropdown now dismisses when the user presses outside its complete trigger/menu boundary. Pointer actions within the menu remain available to finish before dismissal. This behavior adds no global Scene click handler and does not alter marker selection persistence.
+
+This release keeps internal Environment collision boxes diagnostic-only. Activating a small bounded subset of Scene-owned fixed Environment colliders remains the next separately approved development boundary.

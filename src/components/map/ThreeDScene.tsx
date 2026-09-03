@@ -800,6 +800,11 @@ function ProjectModelMarkerBody({
             onPlacementClick?.({ x: event.point.x, y: event.point.y, z: event.point.z });
             return;
           }
+          // An Environment/Base Map is the Scene's stationary interaction
+          // surface. Direct geometry clicks must not replace the user's active
+          // marker selection or open its DetailsCard; deliberate Project and
+          // toolbar controls retain authority over Environment management.
+          if (isEnvironment) return;
           onClick?.();
         }}
       >
