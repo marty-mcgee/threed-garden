@@ -1,4 +1,5 @@
-const MAX_POSITION = 1_000_000;
+const MAX_HORIZONTAL_POSITION = 10_000;
+const MAX_VERTICAL_POSITION = 1_000;
 const MAX_ROTATION = 10_000;
 const MIN_SCALE = 0.01;
 const MAX_SCALE = 1_000;
@@ -63,9 +64,24 @@ export interface UpdateProjectCharacterPlacementInput {
 
 function transform(body: Record<string, unknown>) {
   return {
-    positionX: boundedNumber(body.positionX, 'positionX', -MAX_POSITION, MAX_POSITION),
-    positionY: boundedNumber(body.positionY, 'positionY', -MAX_POSITION, MAX_POSITION),
-    positionZ: boundedNumber(body.positionZ, 'positionZ', -MAX_POSITION, MAX_POSITION),
+    positionX: boundedNumber(
+      body.positionX,
+      'positionX',
+      -MAX_HORIZONTAL_POSITION,
+      MAX_HORIZONTAL_POSITION,
+    ),
+    positionY: boundedNumber(
+      body.positionY,
+      'positionY',
+      -MAX_VERTICAL_POSITION,
+      MAX_VERTICAL_POSITION,
+    ),
+    positionZ: boundedNumber(
+      body.positionZ,
+      'positionZ',
+      -MAX_HORIZONTAL_POSITION,
+      MAX_HORIZONTAL_POSITION,
+    ),
     rotation: boundedNumber(body.rotation ?? 0, 'rotation', -MAX_ROTATION, MAX_ROTATION),
     scaleMultiplier: boundedNumber(
       body.scaleMultiplier ?? 1,

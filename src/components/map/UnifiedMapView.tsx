@@ -235,6 +235,10 @@ export function UnifiedMapView({
     () => buildThreeDRuntimeMarkerResult(data.threed.raw),
     [data.threed.raw],
   );
+  const recoveredMarkerCount = markerBuildResult.issues.filter(
+    (issue) => issue.outcome === 'recovered',
+  ).length;
+  const skippedMarkerCount = markerBuildResult.issues.length - recoveredMarkerCount;
 
   const runtimeMarkers = useMemo(() => {
     if (markerProjectIdRef.current !== projectId) {
@@ -719,11 +723,15 @@ export function UnifiedMapView({
         <details className="absolute left-3 top-3 z-40 max-w-lg rounded border border-amber-400/40 bg-black/90 text-white shadow-xl">
           <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-xs font-medium text-amber-200">
             <AlertTriangle className="h-4 w-4 shrink-0" />
-            {markerBuildResult.issues.length} ThreeD marker record{markerBuildResult.issues.length === 1 ? '' : 's'} skipped for safety
+            {skippedMarkerCount === 0
+              ? `${recoveredMarkerCount} ThreeD marker snapshot${recoveredMarkerCount === 1 ? '' : 's'} recovered safely`
+              : `${skippedMarkerCount} ThreeD marker record${skippedMarkerCount === 1 ? '' : 's'} skipped for safety${recoveredMarkerCount > 0 ? `; ${recoveredMarkerCount} recovered` : ''}`}
           </summary>
           <div className="max-h-72 space-y-2 overflow-y-auto border-t border-white/10 px-3 py-2 text-[11px]">
             <p className="text-white/65">
-              These records were not sent to the ThreeD Scene or Rapier. Correct or delete the listed records in Admin.
+              {skippedMarkerCount === 0
+                ? 'Unsafe saved transforms were kept out of Rapier. The affected marker was loaded at its valid source position.'
+                : 'Skipped records were not sent to the ThreeD Scene or Rapier. Correct or delete the listed records in Admin.'}
             </p>
             {markerBuildResult.issues.some((issue) => (
               issue.source === 'threed_sub_module' && issue.markerType === 'characters'

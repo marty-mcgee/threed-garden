@@ -21,6 +21,11 @@ import {
   type ThreeDEnvironmentMeshInventory,
 } from '@/lib/services/threed/models/environment-collision-core';
 import { readThreeDModelRuntimeAdapterKey } from '@/lib/services/threed/models/model-runtime-adapter-core';
+import {
+  planThreeDEnvironmentCollisionPreview,
+  type ThreeDEnvironmentCollisionPreviewPlan,
+  type ThreeDEnvironmentCollisionBoxCandidate,
+} from '@/lib/services/threed/models/environment-collision-preview-core';
 import { resolveThreeDModelRuntimeAdapter } from '@/components/threed/models/runtime-adapters/registry';
 
 // ============================================
@@ -69,6 +74,10 @@ interface ModelMarker3DProps {
   onCollisionBoundsChange?: (bounds: ModelCollisionBounds | null) => void;
   /** Reports bounded post-transform geometry diagnostics without creating physics. */
   onGeometryAuditChange?: (audit: ModelGeometryAudit | null) => void;
+  /** Reports bounded marker-local collision boxes for Physics Debug only. */
+  onEnvironmentCollisionPreviewChange?: (plan: ThreeDEnvironmentCollisionPreviewPlan | null) => void;
+  /** Reports that this Model load has either succeeded or failed. */
+  onRuntimeSettled?: () => void;
 }
 
 // ============================================
@@ -229,8 +238,8 @@ function ModelFallback({ name, position }: { name?: string; position: [number, n
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange }: ModelMarker3DProps) {
-  const { loadedModel, error } = useModelLoad(model, fitBounds, applyStoredScale);
+export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onEnvironmentCollisionPreviewChange, onRuntimeSettled }: ModelMarker3DProps) {
+  const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
   const requestedRuntimeAdapterKey = readThreeDModelRuntimeAdapterKey(model.metadata);
   const RuntimeAdapter = resolveThreeDModelRuntimeAdapter(requestedRuntimeAdapterKey);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
@@ -243,6 +252,10 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
   });
 
   useEffect(() => {
+    if (!loading && (loadedModel || error || !model.filePath)) onRuntimeSettled?.();
+  }, [error, loadedModel, loading, model.filePath, onRuntimeSettled]);
+
+  useEffect(() => {
     collisionMeasurementRef.current = {
       model: loadedModel,
       scale,
@@ -251,11 +264,13 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
     };
     onCollisionBoundsChange?.(null);
     onGeometryAuditChange?.(null);
+    onEnvironmentCollisionPreviewChange?.(null);
     return () => {
       onCollisionBoundsChange?.(null);
       onGeometryAuditChange?.(null);
+      onEnvironmentCollisionPreviewChange?.(null);
     };
-  }, [loadedModel, onCollisionBoundsChange, onGeometryAuditChange, scale]);
+  }, [loadedModel, onCollisionBoundsChange, onEnvironmentCollisionPreviewChange, onGeometryAuditChange, scale]);
 
   useFrame(() => {
     const measurement = collisionMeasurementRef.current;
@@ -305,6 +320,7 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       type: string;
       triangleCount: number;
     }> = [];
+    const collisionPreviewCandidates: ThreeDEnvironmentCollisionBoxCandidate[] = [];
     loadedModel.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
       meshCount += 1;
@@ -329,6 +345,20 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
         type: child.type,
         triangleCount: meshTriangleCount,
       });
+      if (onEnvironmentCollisionPreviewChange) {
+        if (!geometry.boundingBox) geometry.computeBoundingBox();
+        if (geometry.boundingBox && !geometry.boundingBox.isEmpty()) {
+          const meshToBody = inverseBodyWorld.clone().multiply(child.matrixWorld);
+          const meshBox = geometry.boundingBox.clone().applyMatrix4(meshToBody);
+          const meshCenter = meshBox.getCenter(new THREE.Vector3());
+          const meshHalfExtents = meshBox.getSize(new THREE.Vector3()).multiplyScalar(0.5);
+          collisionPreviewCandidates.push({
+            sourcePath: pathSegments.join('/'),
+            center: [meshCenter.x, meshCenter.y, meshCenter.z],
+            halfExtents: [meshHalfExtents.x, meshHalfExtents.y, meshHalfExtents.z],
+          });
+        }
+      }
     });
     const auditInput = {
       meshCount,
@@ -342,6 +372,11 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       ...assessThreeDEnvironmentGeometry(auditInput),
       meshInventory: createThreeDEnvironmentMeshInventory(meshInventoryCandidates),
     });
+    if (onEnvironmentCollisionPreviewChange) {
+      onEnvironmentCollisionPreviewChange(
+        planThreeDEnvironmentCollisionPreview(collisionPreviewCandidates),
+      );
+    }
     onCollisionBoundsChange?.({
       center: [center.x, center.y, center.z],
       halfExtents: [

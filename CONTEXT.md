@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.3c — ThreeD Character Environment Runtime** |
-| Current release candidate | **v0.19.4a — Reviewed Environment Component Mapping Preview** (`package.json` version `0.19.4-alpha`) |
-| Current development milestone | **Offline, deterministic preview of reviewed source-component mappings before any API association, database write, collider description, or Rapier activation** |
+| Current release candidate | **v0.19.4a — ThreeD Environment Preview and Character Runtime Safety** (`package.json` version `0.19.4-alpha`) |
+| Current development milestone | **Batched Environment collision preview, Environment-first loading, animated Character-last admission, and corrupt Character-position recovery; internal Environment colliders remain disabled** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

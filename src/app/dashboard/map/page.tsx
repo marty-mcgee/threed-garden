@@ -840,6 +840,18 @@ function CharacterInstancePositionEditor({
   const [positionX, setPositionX] = useState(String(initialPosition.x));
   const [positionY, setPositionY] = useState(String(initialPosition.y));
   const [positionZ, setPositionZ] = useState(String(initialPosition.z));
+  useEffect(() => {
+    // Ecctrl reports full-precision coordinates every physics frame. Feeding
+    // those values directly into three controlled form inputs adds needless
+    // React work to the movement loop. Wait for a brief settled interval and
+    // mirror the same one-decimal precision used by the DetailsCard metadata.
+    const syncTimer = window.setTimeout(() => {
+      setPositionX(initialPosition.x.toFixed(1));
+      setPositionY(initialPosition.y.toFixed(1));
+      setPositionZ(initialPosition.z.toFixed(1));
+    }, disabled ? 180 : 0);
+    return () => window.clearTimeout(syncTimer);
+  }, [disabled, initialPosition.x, initialPosition.y, initialPosition.z]);
   const position = {
     positionX: Number(positionX),
     positionY: Number(positionY),

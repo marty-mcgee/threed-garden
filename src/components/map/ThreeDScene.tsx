@@ -13,7 +13,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, Environment, Html, Plane, Grid, 
   GizmoHelper, GizmoViewcube, GizmoViewport,
-  Text, Sphere, Box, Cylinder, Cone, Ring 
+  Text, Sphere, Cylinder, Cone, Ring,
 } from '@react-three/drei';
 import {
   CuboidCollider,
@@ -71,7 +71,11 @@ import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orches
 import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestration/action-target-core';
 import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers/model-visual-fit-core';
 import { isProjectModelEnvironment } from '@/lib/services/threed/models/project-model-instance-core';
-import type { ProjectThreeDViewState } from '@/lib/services/threed/markers/project-view-state-core';
+import type { ThreeDEnvironmentCollisionPreviewPlan } from '@/lib/services/threed/models/environment-collision-preview-core';
+import {
+  resolveRestoredThreeDActiveLayers,
+  type ProjectThreeDViewState,
+} from '@/lib/services/threed/markers/project-view-state-core';
 
 interface ThreeDSceneProps {
   incidents: any[];
@@ -216,6 +220,28 @@ function calculateBounds(positions: { x: number; z: number }[]) {
     centerX: (minX + maxX) / 2,
     centerZ: (minZ + maxZ) / 2,
   };
+}
+
+function isSavedCameraCompatibleWithScene(
+  view: ProjectThreeDViewState,
+  bounds: ReturnType<typeof calculateBounds>,
+  maximumUsefulDistance: number,
+): boolean {
+  const camera = view.cameraPosition;
+  const target = view.cameraTarget;
+  const targetInsideCurrentScene = target.x >= bounds.minX
+    && target.x <= bounds.maxX
+    && target.z >= bounds.minZ
+    && target.z <= bounds.maxZ;
+  const distance = Math.hypot(
+    camera.x - target.x,
+    camera.y - target.y,
+    camera.z - target.z,
+  );
+  return targetInsideCurrentScene
+    && camera.y > -0.5
+    && distance >= 1
+    && distance <= maximumUsefulDistance;
 }
 
 // ✅ Detects when OrbitControls ref is ready
@@ -634,6 +660,50 @@ function EnabledColliderDebug() {
   );
 }
 
+function EnvironmentCollisionPreview({ plan }: { plan: ThreeDEnvironmentCollisionPreviewPlan }) {
+  const geometry = useMemo(() => {
+    const vertices: number[] = [];
+    const edgePairs = [
+      [0, 1], [1, 3], [3, 2], [2, 0],
+      [4, 5], [5, 7], [7, 6], [6, 4],
+      [0, 4], [1, 5], [2, 6], [3, 7],
+    ];
+    for (const box of plan.boxes) {
+      const [cx, cy, cz] = box.center;
+      const [hx, hy, hz] = box.halfExtents;
+      const corners: Array<[number, number, number]> = [
+        [cx - hx, cy - hy, cz - hz],
+        [cx + hx, cy - hy, cz - hz],
+        [cx - hx, cy + hy, cz - hz],
+        [cx + hx, cy + hy, cz - hz],
+        [cx - hx, cy - hy, cz + hz],
+        [cx + hx, cy - hy, cz + hz],
+        [cx - hx, cy + hy, cz + hz],
+        [cx + hx, cy + hy, cz + hz],
+      ];
+      for (const [start, end] of edgePairs) vertices.push(...corners[start], ...corners[end]);
+    }
+    return new THREE.BufferGeometry().setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(vertices, 3),
+    );
+  }, [plan.boxes]);
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
+
+  return (
+    <lineSegments
+      name="environment-collision-preview"
+      geometry={geometry}
+      frustumCulled={false}
+      renderOrder={1000}
+      raycast={() => null}
+    >
+      <lineBasicMaterial color="#22d3ee" depthTest={false} depthWrite={false} transparent opacity={0.9} />
+    </lineSegments>
+  );
+}
+
 function ProjectModelMarkerBody({
   marker,
   position,
@@ -647,6 +717,7 @@ function ProjectModelMarkerBody({
   placementActive,
   onPlacementHover,
   onPlacementClick,
+  onModelRuntimeSettled,
 }: {
   marker: any;
   position: [number, number, number];
@@ -660,10 +731,12 @@ function ProjectModelMarkerBody({
   placementActive: boolean;
   onPlacementHover?: (position: { x: number; y: number; z: number }) => void;
   onPlacementClick?: (position: { x: number; y: number; z: number }) => void;
+  onModelRuntimeSettled?: (markerId: string) => void;
 }) {
   const isEnvironment = isProjectModelEnvironment(marker.metadata);
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
   const [geometryAudit, setGeometryAudit] = useState<ModelGeometryAudit | null>(null);
+  const [collisionPreview, setCollisionPreview] = useState<ThreeDEnvironmentCollisionPreviewPlan | null>(null);
   const handleCollisionBoundsChange = useCallback((bounds: ModelCollisionBounds | null) => {
     setCollisionBounds(bounds);
   }, []);
@@ -676,9 +749,21 @@ function ProjectModelMarkerBody({
         scale,
         bounds: collisionBounds,
         ...(isEnvironment ? { geometryAudit } : {}),
+        ...(isEnvironment && collisionPreview ? {
+          collisionPreview: {
+            sourceBoxCount: collisionPreview.sourceBoxCount,
+            eligibleBoxCount: collisionPreview.eligibleBoxCount,
+            previewBoxCount: collisionPreview.previewBoxCount,
+            invalidBoxCount: collisionPreview.invalidBoxCount,
+            tinyBoxCount: collisionPreview.tinyBoxCount,
+            floorLikeBoxCount: collisionPreview.floorLikeBoxCount,
+            mergedSourceBoxCount: collisionPreview.mergedSourceBoxCount,
+            omittedBoxCount: collisionPreview.omittedBoxCount,
+          },
+        } : {}),
       });
     }
-  }, [collisionBounds, geometryAudit, isEnvironment, marker.data?.modelId, marker.id, physicsDebug, scale]);
+  }, [collisionBounds, collisionPreview, geometryAudit, isEnvironment, marker.data?.modelId, marker.id, physicsDebug, scale]);
 
   const colliderKey = collisionBounds
     ? [...collisionBounds.center, ...collisionBounds.halfExtents]
@@ -727,7 +812,12 @@ function ProjectModelMarkerBody({
           animationSpeed={marker.data?.animationSpeed || 1}
           onCollisionBoundsChange={handleCollisionBoundsChange}
           onGeometryAuditChange={isEnvironment ? setGeometryAudit : undefined}
+          onEnvironmentCollisionPreviewChange={isEnvironment ? setCollisionPreview : undefined}
+          onRuntimeSettled={() => onModelRuntimeSettled?.(String(marker.id))}
         />
+        {isEnvironment && physicsDebug && collisionPreview && (
+          <EnvironmentCollisionPreview plan={collisionPreview} />
+        )}
         {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
         {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
       </group>
@@ -863,7 +953,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
 ));
 
 // ✅ ThreeD Marker Component
-const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug }: any) {
+const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -1016,6 +1106,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
       placementActive={placementActive}
       onPlacementHover={onPlacementHover}
       onPlacementClick={onPlacementClick}
+      onModelRuntimeSettled={onModelRuntimeSettled}
     />;
   }
 
@@ -1497,6 +1588,26 @@ export function ThreeDScene({
     }
     return filterCharacterRuntime(markers);
   }, [characterIsolation, characterMarkerIsolation, markers, physicsIsolation]);
+  const requiredModelMarkerIds = useMemo(() => sceneMarkers
+    .filter((marker) => normalizeSceneLayerType(marker.type) === 'models')
+    .map((marker) => String(marker.id))
+    .sort(), [sceneMarkers]);
+  const requiredModelMarkerKey = requiredModelMarkerIds.join('|');
+  const [settledModelMarkerIds, setSettledModelMarkerIds] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    setSettledModelMarkerIds(new Set());
+  }, [requiredModelMarkerKey]);
+  const handleModelRuntimeSettled = useCallback((markerId: string) => {
+    setSettledModelMarkerIds((current) => {
+      if (current.has(markerId)) return current;
+      const next = new Set(current);
+      next.add(markerId);
+      return next;
+    });
+  }, []);
+  const sceneEnvironmentReady = requiredModelMarkerIds.every(
+    (markerId) => settledModelMarkerIds.has(markerId),
+  );
 
   useEffect(() => {
     if (physicsIsolation) {
@@ -1618,7 +1729,11 @@ export function ThreeDScene({
   const centerZ = isFinite(bounds.centerZ) ? bounds.centerZ : 0;
   const maxDimension = Math.min(Math.max(bounds.width, bounds.height), 500);
   const cameraDistance = Math.min(Math.max(maxDimension * 1.5, 20), 750);
-  const groundSize = Math.min(Math.max(maxDimension + 10, 30), 500);
+  const groundCenterX = centerX;
+  const groundCenterZ = centerZ;
+  const groundSize = hasVisibleEnvironmentModel
+    ? 500
+    : Math.min(Math.max(maxDimension + 10, 30), 500);
 
   const availableTypeCounts = markers.reduce((acc: Record<string, number>, marker: any) => {
     const type = normalizeSceneLayerType(marker.type);
@@ -1678,6 +1793,7 @@ export function ThreeDScene({
           z: Number(controls?.target?.z ?? 0),
         },
         activeLayers: Array.from(activeLayers),
+        availableLayers,
         environment: envPreset,
         autoRotate: Boolean(autoRotate),
         showGrid,
@@ -1686,32 +1802,44 @@ export function ThreeDScene({
       };
     });
     return () => onViewStateProviderChange(null);
-  }, [activeLayers, autoRotate, controlsReady, envPreset, onViewStateProviderChange, showGizmoCube, showGrid, showLegend]);
+  }, [activeLayers, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, showGizmoCube, showGrid, showLegend]);
 
   useEffect(() => {
     if (!controlsReady || !controlsRef.current || !initialViewState) return;
     const key = JSON.stringify(initialViewState);
     if (restoredProjectViewKeyRef.current === key) return;
     restoredProjectViewKeyRef.current = key;
-    controlsRef.current.object.position.set(
-      initialViewState.cameraPosition.x,
-      initialViewState.cameraPosition.y,
-      initialViewState.cameraPosition.z,
-    );
-    controlsRef.current.target.set(
-      initialViewState.cameraTarget.x,
-      initialViewState.cameraTarget.y,
-      initialViewState.cameraTarget.z,
-    );
-    controlsRef.current.update();
-    setActiveLayers(new Set(initialViewState.activeLayers));
+    if (isSavedCameraCompatibleWithScene(
+      initialViewState,
+      bounds,
+      Math.max(cameraDistance * 4, 50),
+    )) {
+      controlsRef.current.object.position.set(
+        initialViewState.cameraPosition.x,
+        initialViewState.cameraPosition.y,
+        initialViewState.cameraPosition.z,
+      );
+      controlsRef.current.target.set(
+        initialViewState.cameraTarget.x,
+        initialViewState.cameraTarget.y,
+        initialViewState.cameraTarget.z,
+      );
+      controlsRef.current.update();
+    } else {
+      zoomToPosition(centerX, centerZ);
+    }
+    setActiveLayers(new Set(resolveRestoredThreeDActiveLayers(
+      initialViewState.activeLayers,
+      initialViewState.availableLayers,
+      availableLayers,
+    )));
     setEnvPreset(initialViewState.environment);
     setShowGrid(initialViewState.showGrid);
     setShowLegend(initialViewState.showLegend);
     setShowGizmoCube(initialViewState.showGizmo);
     if (Boolean(autoRotate) !== initialViewState.autoRotate) onAutoRotateToggle?.();
     updateGeographicCompass();
-  }, [autoRotate, controlsReady, initialViewState, onAutoRotateToggle, updateGeographicCompass]);
+  }, [autoRotate, availableLayers, bounds, cameraDistance, centerX, centerZ, controlsReady, initialViewState, onAutoRotateToggle, updateGeographicCompass]);
 
   const showNorthUpView = useCallback(() => {
     const controls = controlsRef.current;
@@ -2321,19 +2449,22 @@ export function ThreeDScene({
           active={Boolean(placementModel)}
           expectedModelId={placementModel?.id ?? null}
           size={groundSize}
-          centerX={centerX}
-          centerZ={centerZ}
+          centerX={groundCenterX}
+          centerZ={groundCenterZ}
           onDrop={onModelPlacement}
         />
 
-        <Physics gravity={[0, -9.81, 0]}>
+        <Physics
+          gravity={[0, -9.81, 0]}
+          debug={false}
+        >
           {physicsDebug && <EnabledColliderDebug />}
           {/* v0.16.0-alpha: Interactive ground plane as fixed physics body */}
           <RigidBody type="fixed" colliders="cuboid">
             <InteractiveGround
               size={groundSize}
-              centerX={centerX}
-              centerZ={centerZ}
+              centerX={groundCenterX}
+              centerZ={groundCenterZ}
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
               onPlacementLeave={() => setPlacementPreviewPosition(null)}
@@ -2408,7 +2539,9 @@ export function ThreeDScene({
             />
           ))}
 
-          {sceneMarkers.map((marker, idx) => (
+          {sceneMarkers.filter((marker) => (
+            sceneEnvironmentReady || normalizeSceneLayerType(marker.type) !== 'characters'
+          )).map((marker, idx) => (
             <ThreeDMarkerComponent
               key={`threed-marker-${marker.id ?? `${marker.type}-${idx}`}`}
               marker={marker}
@@ -2416,7 +2549,7 @@ export function ThreeDScene({
               isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
               isLayerEnabled={
                 activeLayers.has(normalizeSceneLayerType(marker.type))
-                && (visibleMarkerIds?.has(String(marker.id)) ?? true)
+                  && (visibleMarkerIds?.has(String(marker.id)) ?? true)
               }
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
@@ -2449,6 +2582,7 @@ export function ThreeDScene({
               cameraFollowRef={cameraFollowRef}
               livePositionsRef={livePositionsRef}
               physicsDebug={physicsDebug}
+              onModelRuntimeSettled={handleModelRuntimeSettled}
             />
           ))}
         </Physics>

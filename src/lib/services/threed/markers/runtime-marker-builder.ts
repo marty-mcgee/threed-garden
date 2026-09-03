@@ -33,6 +33,7 @@ const THREED_NON_PLANTING_MARKER_TYPES = [
 
 export interface ThreeDRuntimeMarkerIssue {
   source: 'project_threed_markers' | 'threed_sub_module';
+  outcome?: 'skipped' | 'recovered';
   recordId: number | null;
   markerId: string;
   markerType: string;
@@ -45,8 +46,33 @@ export interface ThreeDRuntimeMarkerBuildResult {
 }
 
 const MAX_SCENE_COORDINATE = 1_000_000;
+// Ecctrl Characters are dynamic Rapier bodies. Keep their admissible runtime
+// area intentionally narrower than static Environment Models so corrupted
+// persisted coordinates cannot spawn a body far below/outside the Scene.
+const MAX_CHARACTER_HORIZONTAL_COORDINATE = 10_000;
+const MAX_CHARACTER_VERTICAL_COORDINATE = 1_000;
 const MAX_MARKER_SCALE = 1_000;
 const MAX_MARKER_DIMENSION = 100_000;
+
+function validatePositionBoundary(
+  moduleType: ThreeDRuntimeMarkerModuleType | null,
+  position: readonly number[],
+): string | null {
+  if (!position.every(Number.isFinite)) {
+    return 'position must contain finite X, Y, and Z values';
+  }
+  if (position.some((value) => Math.abs(value) > MAX_SCENE_COORDINATE)) {
+    return 'position exceeds the supported Scene boundary';
+  }
+  if (moduleType === 'characters' && (
+    Math.abs(position[0]) > MAX_CHARACTER_HORIZONTAL_COORDINATE
+    || Math.abs(position[2]) > MAX_CHARACTER_HORIZONTAL_COORDINATE
+    || Math.abs(position[1]) > MAX_CHARACTER_VERTICAL_COORDINATE
+  )) {
+    return 'Character position is outside the safe Ecctrl runtime boundary; using its source position';
+  }
+  return null;
+}
 
 function validateOptionalNumber(
   data: Record<string, unknown>,
@@ -81,10 +107,8 @@ function validateSavedProjectMarker(
   if (!Number.isSafeInteger(recordId) || recordId <= 0) reasons.push('database row ID is invalid');
   if (!Number.isSafeInteger(assetId) || assetId <= 0) reasons.push('source asset ID is invalid');
   if (!markerId || markerId.length > 200) reasons.push('marker ID is missing or too long');
-  if (!position.every(Number.isFinite)) reasons.push('position must contain finite X, Y, and Z values');
-  if (position.some((value) => Math.abs(value) > MAX_SCENE_COORDINATE)) {
-    reasons.push('position exceeds the supported Scene boundary');
-  }
+  const positionReason = validatePositionBoundary(moduleType, position);
+  if (positionReason) reasons.push(positionReason);
 
   for (const field of ['scale', 'scaleMultiplier', 'modelScale']) {
     const reason = validateOptionalNumber(data, field, {
@@ -111,6 +135,7 @@ function validateSavedProjectMarker(
 function buildSavedProjectMarkers(
   records: readonly ProjectThreeDMarkerRecord[],
   issues: ThreeDRuntimeMarkerIssue[],
+  sourcePositions: ReadonlyMap<string, RuntimeMarker['position']>,
 ): RuntimeMarker[] {
   const markers: RuntimeMarker[] = [];
   const acceptedMarkerIds = new Set<string>();
@@ -119,7 +144,7 @@ function buildSavedProjectMarkers(
     const moduleType = validation.moduleType;
     const assetId = Number(record.sourceAssetId);
     const markerId = String(record.markerId ?? '').trim();
-    const position = {
+    let position = {
       x: Number(record.positionX),
       y: Number(record.positionY),
       z: Number(record.positionZ),
@@ -127,9 +152,27 @@ function buildSavedProjectMarkers(
     if (acceptedMarkerIds.has(markerId)) {
       validation.reasons.push('duplicate marker ID in the Project payload');
     }
+    const recoverableCharacterPosition = moduleType === 'characters'
+      && validation.reasons.length === 1
+      && validation.reasons[0].includes('safe Ecctrl runtime boundary');
+    if (recoverableCharacterPosition) {
+      position = sourcePositions.get(markerId) ?? { x: 0, y: 0, z: 0 };
+      issues.push({
+        source: 'project_threed_markers',
+        outcome: 'recovered',
+        recordId: Number.isSafeInteger(Number(record.id)) ? Number(record.id) : null,
+        markerId,
+        markerType: moduleType,
+        reasons: [
+          `Unsafe saved Character position rejected; runtime recovered at X:${position.x} Y:${position.y} Z:${position.z}`,
+        ],
+      });
+      validation.reasons.length = 0;
+    }
     if (!moduleType || validation.reasons.length > 0) {
       issues.push({
         source: 'project_threed_markers',
+        outcome: 'skipped',
         recordId: Number.isSafeInteger(Number(record.id)) ? Number(record.id) : null,
         markerId: markerId || '(missing)',
         markerType: String(record.markerType ?? '(missing)'),
@@ -224,10 +267,9 @@ function createMarker(
   if (!Number.isSafeInteger(assetId) || assetId <= 0) reasons.push('source asset ID is invalid');
   if (!position) {
     reasons.push('position must contain finite X, Y, and Z values');
-  } else if (Object.values(position).some(
-    (value) => !Number.isFinite(value) || Math.abs(value) > MAX_SCENE_COORDINATE,
-  )) {
-    reasons.push('position exceeds the supported Scene boundary');
+  } else {
+    const positionReason = validatePositionBoundary(moduleType, Object.values(position));
+    if (positionReason) reasons.push(positionReason);
   }
   for (const field of ['scale', 'scaleMultiplier', 'modelScale']) {
     const reason = validateOptionalNumber(item, field, {
@@ -378,7 +420,11 @@ export function buildThreeDRuntimeMarkerResult(
   }
 
   const savedMarkers = new Map(
-    buildSavedProjectMarkers(raw.projectThreedMarkers, issues)
+    buildSavedProjectMarkers(
+      raw.projectThreedMarkers,
+      issues,
+      new Map(markers.map((marker) => [marker.id, marker.position])),
+    )
       .map((marker) => [marker.id, marker]),
   );
   // A saved Project marker is an instance of its source asset. Once saved,

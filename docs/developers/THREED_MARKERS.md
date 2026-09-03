@@ -739,3 +739,51 @@ The first v0.19.4 stage implements the offline mathematical boundary behind stag
 The pure preview evaluates at most 100,000 source components. It returns source, matched, unmatched, conflicting, and collision-candidate component and triangle totals, bounded representative paths, and per-rule aggregates. A component matching more than one rule is reported as a conflict and remains unassigned. `visual-only` matches are counted as reviewed but never as collision candidates.
 
 This step provides no API handler, database association, Runtime Adapter selection, geometry buffers, collider descriptions, R3F objects, or Rapier activation. Its acceptance criterion is deterministic offline proof that a proposed mapping can account for imported source evidence without silently resolving overlaps or inferring meaning from asset names.
+
+## v0.19.4a Environment collision debug preview
+
+The active v0.19.4a candidate adds a direct Scene-side preview for the actual goal: making Characters collide with visible structures inside a Project Environment Model. After the Environment Model is loaded and attached, `ModelMarker3D` transforms each static mesh geometry bounding box into the owning Environment marker's local coordinates. The pure preview planner rejects invalid and extremely small boxes, excludes broad flat floor-like boxes already covered by the established environment floor, and merges only near-identical duplicate bounds. Adjacent Environment objects remain separate preview candidates.
+
+The planner accepts at most 10,000 source boxes and returns at most 2,048 preview boxes. Eligible boxes alternate between spatial coverage across the Environment footprint and proximity to the geometry dataset's median center before the output limit is applied. This prevents the largest or most distant meshes from consuming the entire preview budget while retaining central structures. It reports source, eligible, invalid, tiny, floor-like, merged, omitted, and final preview counts. Physics Debug batches every proposed cyan box into one line-segment geometry, displayed above normal depth testing and without frustum culling under the existing Environment marker transform. The preview ignores pointer input and does not alter the imported Model's materials or transparency.
+
+This stage creates no Rapier collider for internal Environment meshes. It adds no API, database field, uploaded code, name-based semantic classification, Runtime Adapter selection, or Project Marker mutation. The cyan boxes must be visually reviewed before any box is allowed to become a fixed Scene-owned collider.
+
+The established Scene safety floor remains the only Environment-area collision surface in this preview stage. A visible Environment Model selects a deterministic 500-unit safety-floor footprint at initial Scene render instead of the former minimum footprint derived only from marker origin points. This prevents a controlled Character from falling indefinitely at the former small procedural-ground edge while keeping the visual procedural ground hidden and avoiding any late Rapier collider replacement beneath Ecctrl.
+
+Ecctrl retains ownership of Character movement and stopping. This candidate raises only Ecctrl's supported `decDeltaTime` and `slideGripFactor` inputs for both loaded and fallback Character paths, reducing post-input sliding without imperative velocity writes or animation-state changes.
+
+### Manual approval gate
+
+1. Open a Project containing an Environment Model and a movable Character.
+2. Confirm the Environment and Character load normally with Physics Debug off.
+3. Enable **Physics Debug** and allow the one-time Environment measurement to complete.
+4. Confirm cyan boxes appear around visible structures and remain aligned while orbiting and zooming.
+5. Inspect buildings, fences, barrels, trees, paths, and open walking areas. Record any missing structure or box that blocks an opening.
+6. Confirm the console's bounded `collisionPreview` summary contains no component paths or geometry arrays.
+7. Confirm the Character still uses only the established safety floor and can pass through the cyan boxes; internal Environment boxes are diagnostic-only in this stage.
+8. Walk toward and beyond the former procedural-ground edge. Confirm the Character remains supported throughout the visible Environment footprint instead of falling indefinitely.
+9. Hide and show the Models Layer and confirm the Environment and its cyan preview disappear and return together without remounting the Canvas or moving the Character.
+10. Move, rotate, or scale the Environment Project marker if available and confirm the preview remains aligned with that marker transform.
+11. Confirm no Rapier, Rust/WASM, WebGL, or repeated frame error occurs.
+
+## Deferred Environment cuboid activation experiment
+
+The first attempted activation mounted up to 512 fixed Environment cuboids after the loaded preview became available. Its manual gate failed because the assigned ThreeD Character was not visible or selectable at Project load. Adding Character spawn-clearance filtering did not restore the Character, disproving collider overlap at the saved spawn position as a sufficient explanation.
+
+All internal Environment `CuboidCollider` rendering is therefore disabled. The verified cyan preview, stable Environment safety floor, and pure bounded activation-planning tests remain available, but the Scene creates zero Rapier objects from the internal preview boxes. Character visibility and accessibility are release-blocking and take precedence over Environment collision activation.
+
+The next activation attempt must begin with a substantially smaller isolated collider set and prove Character mount order, visibility, selection, Ecctrl readiness, and Rapier stability before scaling the collider count. The failed 512-collider path is not a release candidate.
+
+## v0.19.4a release-candidate boundary
+
+**ThreeD Environment Preview and Character Runtime Safety** is the stable checkpoint before another Environment-collider activation attempt.
+
+The Scene loads Project Models before admitting Character markers. Each Model explicitly reports that its asset load has either succeeded or failed; only after all Project Models settle may a Character enter the persistent Rapier world. The Character loader likewise publishes its visual hierarchy only after the complete embedded/external animation collection, mixer actions, and semantic animation map are ready. This prevents an arms-out base-pose model or an early Ecctrl body from entering an incomplete Environment.
+
+Saved Character positions have a Character-specific Ecctrl safety envelope distinct from the larger coordinate range supported by static Environment Models. A corrupt saved Character transform is rejected before Runtime Marker registration and Rapier construction. When its source Character remains valid, the Project snapshot is recovered in memory at the source position and the UI reports the recovery rather than claiming that the Character itself was skipped. Project loading does not silently rewrite the database row. New Character placement/update requests enforce the same safety envelope.
+
+While an Ecctrl Character is controlled, the DetailsCard metadata remains a bounded live display. The disabled Project Character Instance XYZ inputs adopt the same concise coordinates after movement settles instead of copying long floating-point values on every physics frame. After Release Control, the final values remain available for the user's explicit **Save Position** transaction. Movement frames do not write to `project_threed_markers`.
+
+The cyan Environment collision boxes remain debug-only descriptions. No internal Environment box is an active Rapier collider in this checkpoint. The next stage must activate a small bounded subset through the persistent Environment marker owner and independently prove Character visibility, idle/walk/run animation, capsule/model alignment, smooth WASD stopping, Layer behavior, and an error-free Rapier frame loop before increasing coverage.
+
+Automated release checks require `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` and final Environment-plus-Character interaction check remain the production release gate.

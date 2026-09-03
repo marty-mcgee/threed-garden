@@ -58,6 +58,15 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/models/environment-component-mapping-core.ts';
 import {
+  planThreeDEnvironmentCollisionPreview,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/environment-collision-preview-core.ts';
+import {
+  createThreeDEnvironmentColliderActivationPlan,
+  MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/environment-collider-activation-core.ts';
+import {
   parseCreateProjectBedPlacement,
   parseUpdateProjectBedPlacement,
   ProjectBedPlacementInputError,
@@ -87,6 +96,10 @@ import {
   resolveThreeDCharacterLibraryAccess,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/characters/character-library-access-core.ts';
+import {
+  resolveRestoredThreeDActiveLayers,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/markers/project-view-state-core.ts';
 import {
   applyThreeDProjectClientTransaction,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
@@ -195,6 +208,15 @@ assert.throws(
     positionX: Number.NaN,
     positionY: 0,
     positionZ: 0,
+  }),
+  ProjectCharacterPlacementInputError,
+);
+assert.throws(
+  () => parseUpdateProjectCharacterPlacement({
+    markerType: 'characters',
+    positionX: -2048.271,
+    positionY: -61767.46,
+    positionZ: -893.644,
   }),
   ProjectCharacterPlacementInputError,
 );
@@ -786,6 +808,55 @@ assert.throws(
 );
 validationStep('Reviewed environment mappings preview exact matches and fail closed on conflicts');
 
+const environmentCollisionPreview = planThreeDEnvironmentCollisionPreview([
+  { sourcePath: 'Environment/Building-A', center: [0, 1, 0], halfExtents: [1, 1, 1] },
+  { sourcePath: 'Environment/Building-B', center: [1.9, 1, 0], halfExtents: [1, 1, 1] },
+  { sourcePath: 'Environment/Barrier', center: [10, 1, 0], halfExtents: [1, 1, 1] },
+  { sourcePath: 'Environment/Ground', center: [0, 0, 0], halfExtents: [20, 0.05, 20] },
+  { sourcePath: 'Environment/Tiny', center: [2, 2, 2], halfExtents: [0.01, 0.01, 0.01] },
+  { sourcePath: 'Environment/Invalid', center: [Number.NaN, 0, 0], halfExtents: [1, 1, 1] },
+]);
+assert.deepEqual({
+  sourceBoxCount: environmentCollisionPreview.sourceBoxCount,
+  eligibleBoxCount: environmentCollisionPreview.eligibleBoxCount,
+  previewBoxCount: environmentCollisionPreview.previewBoxCount,
+  invalidBoxCount: environmentCollisionPreview.invalidBoxCount,
+  tinyBoxCount: environmentCollisionPreview.tinyBoxCount,
+  floorLikeBoxCount: environmentCollisionPreview.floorLikeBoxCount,
+  mergedSourceBoxCount: environmentCollisionPreview.mergedSourceBoxCount,
+  omittedBoxCount: environmentCollisionPreview.omittedBoxCount,
+}, {
+  sourceBoxCount: 6,
+  eligibleBoxCount: 3,
+  previewBoxCount: 3,
+  invalidBoxCount: 1,
+  tinyBoxCount: 1,
+  floorLikeBoxCount: 1,
+  mergedSourceBoxCount: 0,
+  omittedBoxCount: 0,
+});
+assert.equal(environmentCollisionPreview.boxes.every((box) => box.sourceCount === 1), true);
+validationStep('Environment collision preview filters and merges marker-local boxes without creating physics');
+
+const environmentColliderActivation = createThreeDEnvironmentColliderActivationPlan({
+  ...environmentCollisionPreview,
+  previewBoxCount: MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS + 2,
+  boxes: Array.from({ length: MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS + 2 }, (_, index) => ({
+    center: [index, 1, 0] as [number, number, number],
+    halfExtents: [0.5, 1, 0.5] as [number, number, number],
+    sourceCount: 1,
+  })),
+}, [{ min: [-0.49, 0, -0.49], max: [0.49, 2, 0.49] }]);
+assert.equal(environmentColliderActivation.activeColliderCount, MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS);
+assert.equal(environmentColliderActivation.deferredColliderCount, 2);
+assert.equal(environmentColliderActivation.spawnOverlapDeferredCount, 1);
+assert.deepEqual(environmentColliderActivation.boxes[0].center, [1, 1, 0]);
+assert.deepEqual(
+  environmentColliderActivation.boxes[MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS - 1].center,
+  [MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS, 1, 0],
+);
+validationStep('Environment collider activation preserves spawn clearance, preview order, and bounded Rapier output');
+
 const gltfInspectionDocument = {
   scene: 0,
   scenes: [{ nodes: [0] }],
@@ -1094,6 +1165,53 @@ assert.equal(positionFallbackMarkers[0].isVisible, true);
 assert.equal(positionFallbackMarkers[0].data.description, 'Uses fallback name');
 assert.deepEqual(buildThreeDRuntimeMarkers(null, generatedAt), []);
 validationStep('Missing positions are skipped and established fallbacks remain intact');
+
+const corruptedCharacterRecovery = buildThreeDRuntimeMarkerResult({
+  plants: [],
+  plantings: [],
+  beds: [],
+  characters: [{
+    id: 8,
+    name: 'Runtime Test Character',
+    positionX: 0,
+    positionY: 0,
+    positionZ: 0,
+    isMovable: true,
+  }],
+  farmbots: [],
+  models: [],
+  layers: [],
+  tasks: [],
+  harvests: [],
+  weatherLogs: [],
+  projectThreedMarkers: [{
+    id: 197,
+    markerType: 'characters',
+    sourceAssetId: 8,
+    markerId: 'characters-8',
+    name: 'Runtime Test Character',
+    positionX: -2048.271,
+    positionY: -61767.46,
+    positionZ: -893.644,
+    positionSource: 'runtime',
+    color: '#8b5cf6',
+    icon: '🧚',
+    label: 'Runtime Test Character',
+    isVisible: true,
+    isActive: true,
+    data: { isMovable: true },
+    metadata: {},
+  }],
+}, generatedAt);
+assert.equal(corruptedCharacterRecovery.markers.length, 1);
+assert.equal(corruptedCharacterRecovery.markers[0].id, 'characters-8');
+assert.deepEqual(corruptedCharacterRecovery.markers[0].position, { x: 0, y: 0, z: 0 });
+assert.equal(corruptedCharacterRecovery.markers[0].metadata.source, 'project-snapshot');
+assert.equal(corruptedCharacterRecovery.issues.length, 1);
+assert.equal(corruptedCharacterRecovery.issues[0].recordId, 197);
+assert.equal(corruptedCharacterRecovery.issues[0].outcome, 'recovered');
+assert.match(corruptedCharacterRecovery.issues[0].reasons[0], /runtime recovered at X:0 Y:0 Z:0/);
+validationStep('Corrupted saved Character positions recover to the source position before Rapier');
 
 const validSavedSnapshot = parseProjectThreeDMarkerSnapshot([{
   markerId: 'characters-9',
@@ -1548,6 +1666,28 @@ for (const origin of geographicOrigins) {
   assert.ok(Math.abs(restored.z - local.z) < 1e-6);
 }
 validationStep('WGS84 local positions round-trip across latitude, altitude, scale, and heading');
+
+assert.deepEqual(
+  resolveRestoredThreeDActiveLayers(['models'], undefined, ['characters', 'models']),
+  ['models', 'characters'],
+);
+assert.deepEqual(
+  resolveRestoredThreeDActiveLayers(
+    ['models'],
+    ['characters', 'models'],
+    ['characters', 'models'],
+  ),
+  ['models'],
+);
+assert.deepEqual(
+  resolveRestoredThreeDActiveLayers(
+    ['models'],
+    ['models'],
+    ['characters', 'models'],
+  ),
+  ['models', 'characters'],
+);
+validationStep('Saved Scene layers preserve explicit choices while enabling newly available Character layers');
 
 const northAlignedOrigin = geographicOrigins[1];
 const tenMetresEast = projectLocalPositionToGeographicPosition(

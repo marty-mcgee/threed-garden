@@ -751,13 +751,11 @@ function useCharacterModel(
             );
           }
 
-          // ==================================================
-          // FINISH
-          // ==================================================
+          // Publish the complete Character unit only after its mixer, actions,
+          // and semantic animation map are ready. This prevents a base-pose
+          // model from entering the already-running Rapier Scene first.
+          setModel(loadedModel);
 
-          setModel(
-            loadedModel
-          );
         } catch (
           loadError
         ) {
@@ -2442,6 +2440,12 @@ export function EcctrlCharacter({
         maxWalkVel={
           2
         }
+        decDeltaTime={
+          0.5
+        }
+        slideGripFactor={
+          1
+        }
         useCustomForward={
           isControlled && movementTargetPosition != null
         }
@@ -2518,6 +2522,12 @@ export function EcctrlCharacter({
       }
       maxRunVel={
         3.5
+      }
+      decDeltaTime={
+        0.5
+      }
+      slideGripFactor={
+        1
       }
       useCustomForward={
         isControlled && movementTargetPosition != null

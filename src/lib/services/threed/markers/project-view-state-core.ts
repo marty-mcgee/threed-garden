@@ -13,6 +13,8 @@ export interface ProjectThreeDViewState {
   cameraPosition: ProjectVector3;
   cameraTarget: ProjectVector3;
   activeLayers: string[];
+  /** Layers that existed when this view was saved; absent on legacy saves. */
+  availableLayers?: string[];
   environment: string;
   autoRotate: boolean;
   showGrid: boolean;
@@ -78,6 +80,29 @@ function boolean(value: unknown): boolean {
   return value;
 }
 
+function sceneLayers(value: unknown): string[] {
+  if (!Array.isArray(value) || value.length > SCENE_LAYERS.size) throw new ProjectViewStateError();
+  const layers = value.map((layer) => {
+    if (typeof layer !== 'string' || !SCENE_LAYERS.has(layer)) throw new ProjectViewStateError();
+    return layer;
+  });
+  if (new Set(layers).size !== layers.length) throw new ProjectViewStateError();
+  return layers;
+}
+
+export function resolveRestoredThreeDActiveLayers(
+  savedActiveLayers: readonly string[],
+  savedAvailableLayers: readonly string[] | undefined,
+  currentAvailableLayers: readonly string[],
+): string[] {
+  const active = new Set(savedActiveLayers);
+  const knownWhenSaved = savedAvailableLayers ? new Set(savedAvailableLayers) : null;
+  for (const layer of currentAvailableLayers) {
+    if (!knownWhenSaved || !knownWhenSaved.has(layer)) active.add(layer);
+  }
+  return Array.from(active);
+}
+
 export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewState {
   const input = record(value);
   if (!input || input.version !== PROJECT_VIEW_STATE_VERSION) throw new ProjectViewStateError();
@@ -101,14 +126,11 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
 
   if (input.threeD !== undefined) {
     const threeD = record(input.threeD);
-    if (!threeD || !Array.isArray(threeD.activeLayers) || threeD.activeLayers.length > SCENE_LAYERS.size) {
-      throw new ProjectViewStateError();
-    }
-    const activeLayers = threeD.activeLayers.map((layer) => {
-      if (typeof layer !== 'string' || !SCENE_LAYERS.has(layer)) throw new ProjectViewStateError();
-      return layer;
-    });
-    if (new Set(activeLayers).size !== activeLayers.length) throw new ProjectViewStateError();
+    if (!threeD) throw new ProjectViewStateError();
+    const activeLayers = sceneLayers(threeD.activeLayers);
+    const availableLayers = threeD.availableLayers === undefined
+      ? undefined
+      : sceneLayers(threeD.availableLayers);
     if (typeof threeD.environment !== 'string' || !ENVIRONMENTS.has(threeD.environment)) {
       throw new ProjectViewStateError();
     }
@@ -116,6 +138,7 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       cameraPosition: vector(threeD.cameraPosition),
       cameraTarget: vector(threeD.cameraTarget),
       activeLayers,
+      ...(availableLayers ? { availableLayers } : {}),
       environment: threeD.environment,
       autoRotate: boolean(threeD.autoRotate),
       showGrid: boolean(threeD.showGrid),
