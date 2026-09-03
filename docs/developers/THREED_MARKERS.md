@@ -778,6 +778,8 @@ The next activation attempt must begin with a substantially smaller isolated col
 
 **ThreeD Environment Preview and Character Runtime Safety** is the stable checkpoint before another Environment-collider activation attempt.
 
+This checkpoint was released successfully to production on September 3, 2026.
+
 The Scene loads Project Models before admitting Character markers. Each Model explicitly reports that its asset load has either succeeded or failed; only after all Project Models settle may a Character enter the persistent Rapier world. The Character loader likewise publishes its visual hierarchy only after the complete embedded/external animation collection, mixer actions, and semantic animation map are ready. This prevents an arms-out base-pose model or an early Ecctrl body from entering an incomplete Environment.
 
 Saved Character positions have a Character-specific Ecctrl safety envelope distinct from the larger coordinate range supported by static Environment Models. A corrupt saved Character transform is rejected before Runtime Marker registration and Rapier construction. When its source Character remains valid, the Project snapshot is recovered in memory at the source position and the UI reports the recovery rather than claiming that the Character itself was skipped. Project loading does not silently rewrite the database row. New Character placement/update requests enforce the same safety envelope.
