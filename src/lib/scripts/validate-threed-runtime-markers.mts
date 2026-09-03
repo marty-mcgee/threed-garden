@@ -64,6 +64,7 @@ import {
 import {
   createThreeDEnvironmentColliderActivationPlan,
   MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS,
+  MAX_ACTIVE_ENVIRONMENT_CUBOID_SPAN,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/models/environment-collider-activation-core.ts';
 import {
@@ -850,12 +851,36 @@ const environmentColliderActivation = createThreeDEnvironmentColliderActivationP
 assert.equal(environmentColliderActivation.activeColliderCount, MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS);
 assert.equal(environmentColliderActivation.deferredColliderCount, 2);
 assert.equal(environmentColliderActivation.spawnOverlapDeferredCount, 1);
+assert.equal(environmentColliderActivation.oversizedDeferredCount, 0);
+assert.equal(environmentColliderActivation.capacityDeferredCount, 1);
+assert.equal(environmentColliderActivation.priorityPointCount, 0);
 assert.deepEqual(environmentColliderActivation.boxes[0].center, [1, 1, 0]);
 assert.deepEqual(
   environmentColliderActivation.boxes[MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS - 1].center,
   [MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS, 1, 0],
 );
-validationStep('Environment collider activation preserves spawn clearance, preview order, and bounded Rapier output');
+const environmentColliderQualityActivation = createThreeDEnvironmentColliderActivationPlan({
+  ...environmentCollisionPreview,
+  previewBoxCount: 4,
+  boxes: [
+    { center: [50, 1, 0], halfExtents: [1, 1, 1], sourceCount: 1 },
+    { center: [10, 1, 0], halfExtents: [1, 1, 1], sourceCount: 1 },
+    {
+      center: [1, 1, 0],
+      halfExtents: [MAX_ACTIVE_ENVIRONMENT_CUBOID_SPAN, 1, 1],
+      sourceCount: 1,
+    },
+    { center: [2, 1, 0], halfExtents: [1, 1, 1], sourceCount: 1 },
+  ],
+}, [], [{ x: 0, y: 1, z: 0 }]);
+assert.deepEqual(
+  environmentColliderQualityActivation.boxes.map((box) => box.center),
+  [[2, 1, 0], [10, 1, 0], [50, 1, 0]],
+);
+assert.equal(environmentColliderQualityActivation.oversizedDeferredCount, 1);
+assert.equal(environmentColliderQualityActivation.capacityDeferredCount, 0);
+assert.equal(environmentColliderQualityActivation.priorityPointCount, 1);
+validationStep('Environment collider activation prioritizes Character-accessible boxes and defers oversized bounds');
 
 const gltfInspectionDocument = {
   scene: 0,

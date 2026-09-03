@@ -766,13 +766,13 @@ Ecctrl retains ownership of Character movement and stopping. This candidate rais
 10. Move, rotate, or scale the Environment Project marker if available and confirm the preview remains aligned with that marker transform.
 11. Confirm no Rapier, Rust/WASM, WebGL, or repeated frame error occurs.
 
-## Deferred Environment cuboid activation experiment
+## Historical deferred Environment cuboid activation experiment
 
 The first attempted activation mounted up to 512 fixed Environment cuboids after the loaded preview became available. Its manual gate failed because the assigned ThreeD Character was not visible or selectable at Project load. Adding Character spawn-clearance filtering did not restore the Character, disproving collider overlap at the saved spawn position as a sufficient explanation.
 
-All internal Environment `CuboidCollider` rendering is therefore disabled. The verified cyan preview, stable Environment safety floor, and pure bounded activation-planning tests remain available, but the Scene creates zero Rapier objects from the internal preview boxes. Character visibility and accessibility are release-blocking and take precedence over Environment collision activation.
+At that checkpoint all internal Environment `CuboidCollider` rendering was disabled. The verified cyan preview, stable Environment safety floor, and pure bounded activation-planning tests remained available, while the Scene created zero Rapier objects from the internal preview boxes. Character visibility and accessibility remained release-blocking and took precedence over Environment collision activation.
 
-The next activation attempt must begin with a substantially smaller isolated collider set and prove Character mount order, visibility, selection, Ecctrl readiness, and Rapier stability before scaling the collider count. The failed 512-collider path is not a release candidate.
+The next activation attempt was required to begin with a substantially smaller isolated collider set and prove Character mount order, visibility, selection, Ecctrl readiness, and Rapier stability before scaling the collider count. The original failed 512-collider path was not a release candidate.
 
 ## v0.19.4a release-candidate boundary
 
@@ -799,3 +799,32 @@ Environment management remains explicitly accessible through **Project → Envir
 The Project dropdown now dismisses when the user presses outside its complete trigger/menu boundary. Pointer actions within the menu remain available to finish before dismissal. This behavior adds no global Scene click handler and does not alter marker selection persistence.
 
 This release keeps internal Environment collision boxes diagnostic-only. Activating a small bounded subset of Scene-owned fixed Environment colliders remains the next separately approved development boundary.
+
+## v0.19.4c Environment collision activation boundary
+
+The separately approved activation stage now converts a bounded subset of the already reviewed Environment collision descriptions into fixed Rapier `CuboidCollider` instances. The existing Project Environment marker owns the fixed body, transform, Layer participation, and collider lifecycle. Runtime Adapter components remain visual-only and create no physics authority. No API, schema, Project Marker, or uploaded Model file is changed by activation.
+
+Activation was deliberately proven through manual gates of 16, 64, 256, 512, and 1,024 cuboids. At each gate the Environment loaded first, the Character entered last with its model, capsule, animation, selection, camera, and Ecctrl controls intact, and the Character collided with the active Environment boxes without a Rapier frame failure. The 1,024 ceiling remains a hard upper bound; the remaining descriptions are deferred rather than mounted indiscriminately.
+
+Physics Debug now draws cyan outlines only for collider descriptions that actually became active Rapier colliders. The earlier display drew the complete preview set even when only a small prefix was active, which made non-colliding preview descriptions indistinguishable from physics. The bounded `[ThreeD Environment Colliders]` summary reports planned, active, deferred, spawn-overlap, oversized, capacity, and priority-point counts without returning mesh paths or geometry arrays.
+
+Before Rapier construction, the pure activation planner applies these generic rules in order:
+
+1. Defer boxes overlapping a Character's saved admission area so Ecctrl never spawns inside a newly mounted obstacle.
+2. Defer any single box whose width, height, or depth exceeds 128 Scene units. The established coordinate contract defines one Scene unit as one physical foot; these broad aggregate bounds are not useful Character-scale obstacles.
+3. When Character reference positions are available, rank remaining boxes by shortest distance from those points. The already deterministic preview order remains the tie-breaker.
+4. Mount at most 1,024 descriptions and report the remaining capacity deferrals.
+
+The ranking is computed once from stable Project marker positions; it does not add frame-by-frame React state, live-position collider churn, or movement-triggered Rapier reconstruction. The established Environment safety floor remains responsible for continuous support across the Environment footprint.
+
+### Verified acceptance boundary
+
+- Active cyan boxes and mounted Rapier cuboids correspond one-for-one.
+- Nearby Environment structures block controlled Character movement.
+- Oversized Scene-spanning boxes are removed from the active set.
+- Character spawn clearance is preserved.
+- Character idle/walk/run animation, smooth stopping, capsule/model alignment, selection, Take/Release Control, and camera behavior remain working.
+- Environment-first and Character-last loading remains stable across refresh.
+- TypeScript, the 48-group ThreeD Runtime Marker validation suite, and diff integrity pass.
+
+This manually verified checkpoint is designated **v0.19.4c — ThreeD Environment Character Collision** (`package.json` version `0.19.4-centaur`). Full activation of every Environment mesh bound and dynamic collider streaming remain outside this release boundary.

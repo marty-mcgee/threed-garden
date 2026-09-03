@@ -72,6 +72,7 @@ import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestratio
 import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers/model-visual-fit-core';
 import { isProjectModelEnvironment } from '@/lib/services/threed/models/project-model-instance-core';
 import type { ThreeDEnvironmentCollisionPreviewPlan } from '@/lib/services/threed/models/environment-collision-preview-core';
+import { createThreeDEnvironmentColliderActivationPlan } from '@/lib/services/threed/models/environment-collider-activation-core';
 import {
   resolveRestoredThreeDActiveLayers,
   type ProjectThreeDViewState,
@@ -660,7 +661,11 @@ function EnabledColliderDebug() {
   );
 }
 
-function EnvironmentCollisionPreview({ plan }: { plan: ThreeDEnvironmentCollisionPreviewPlan }) {
+function EnvironmentCollisionPreview({
+  boxes,
+}: {
+  boxes: ThreeDEnvironmentCollisionPreviewPlan['boxes'];
+}) {
   const geometry = useMemo(() => {
     const vertices: number[] = [];
     const edgePairs = [
@@ -668,7 +673,7 @@ function EnvironmentCollisionPreview({ plan }: { plan: ThreeDEnvironmentCollisio
       [4, 5], [5, 7], [7, 6], [6, 4],
       [0, 4], [1, 5], [2, 6], [3, 7],
     ];
-    for (const box of plan.boxes) {
+    for (const box of boxes) {
       const [cx, cy, cz] = box.center;
       const [hx, hy, hz] = box.halfExtents;
       const corners: Array<[number, number, number]> = [
@@ -687,7 +692,7 @@ function EnvironmentCollisionPreview({ plan }: { plan: ThreeDEnvironmentCollisio
       'position',
       new THREE.Float32BufferAttribute(vertices, 3),
     );
-  }, [plan.boxes]);
+  }, [boxes]);
 
   useEffect(() => () => geometry.dispose(), [geometry]);
 
@@ -718,6 +723,7 @@ function ProjectModelMarkerBody({
   onPlacementHover,
   onPlacementClick,
   onModelRuntimeSettled,
+  characterSpawnPositions,
 }: {
   marker: any;
   position: [number, number, number];
@@ -732,6 +738,7 @@ function ProjectModelMarkerBody({
   onPlacementHover?: (position: { x: number; y: number; z: number }) => void;
   onPlacementClick?: (position: { x: number; y: number; z: number }) => void;
   onModelRuntimeSettled?: (markerId: string) => void;
+  characterSpawnPositions: Array<{ x: number; y: number; z: number }>;
 }) {
   const isEnvironment = isProjectModelEnvironment(marker.metadata);
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
@@ -770,6 +777,45 @@ function ProjectModelMarkerBody({
         .map((value) => value.toFixed(4))
         .join(':')
     : null;
+  const environmentColliderPlan = useMemo(() => {
+    if (!isEnvironment || !collisionPreview) return null;
+    const inverseRotation = new THREE.Quaternion()
+      .setFromEuler(new THREE.Euler(...rotation))
+      .invert();
+    const localCharacterPositions = characterSpawnPositions.map((spawn) => {
+      const local = new THREE.Vector3(
+        spawn.x - position[0],
+        spawn.y - position[1],
+        spawn.z - position[2],
+      ).applyQuaternion(inverseRotation);
+      return { x: local.x, y: local.y, z: local.z };
+    });
+    const exclusions = localCharacterPositions.map((local) => {
+      return {
+        min: [local.x - 1.25, local.y - 1, local.z - 1.25] as [number, number, number],
+        max: [local.x + 1.25, local.y + 3, local.z + 1.25] as [number, number, number],
+      };
+    });
+    return createThreeDEnvironmentColliderActivationPlan(
+      collisionPreview,
+      exclusions,
+      localCharacterPositions,
+    );
+  }, [characterSpawnPositions, collisionPreview, isEnvironment, position, rotation]);
+
+  useEffect(() => {
+    if (!physicsDebug || !isEnvironment || !environmentColliderPlan) return;
+    console.debug('[ThreeD Environment Colliders]', {
+      markerId: marker.id,
+      plannedBoxCount: environmentColliderPlan.plannedBoxCount,
+      activeColliderCount: environmentColliderPlan.activeColliderCount,
+      deferredColliderCount: environmentColliderPlan.deferredColliderCount,
+      spawnOverlapDeferredCount: environmentColliderPlan.spawnOverlapDeferredCount,
+      oversizedDeferredCount: environmentColliderPlan.oversizedDeferredCount,
+      capacityDeferredCount: environmentColliderPlan.capacityDeferredCount,
+      priorityPointCount: environmentColliderPlan.priorityPointCount,
+    });
+  }, [environmentColliderPlan, isEnvironment, marker.id, physicsDebug]);
 
   return (
     <SceneMarkerRigidBody
@@ -786,6 +832,13 @@ function ProjectModelMarkerBody({
           position={collisionBounds.center}
         />
       )}
+      {isEnvironment && environmentColliderPlan?.boxes.map((box, index) => (
+        <CuboidCollider
+          key={`environment-collider-${index}`}
+          args={box.halfExtents}
+          position={box.center}
+        />
+      ))}
       <group
         visible={isLayerEnabled}
         onPointerMove={(event) => {
@@ -820,8 +873,8 @@ function ProjectModelMarkerBody({
           onEnvironmentCollisionPreviewChange={isEnvironment ? setCollisionPreview : undefined}
           onRuntimeSettled={() => onModelRuntimeSettled?.(String(marker.id))}
         />
-        {isEnvironment && physicsDebug && collisionPreview && (
-          <EnvironmentCollisionPreview plan={collisionPreview} />
+        {isEnvironment && physicsDebug && environmentColliderPlan && (
+          <EnvironmentCollisionPreview boxes={environmentColliderPlan.boxes} />
         )}
         {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
         {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
@@ -958,7 +1011,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
 ));
 
 // ✅ ThreeD Marker Component
-const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled }: any) {
+const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, characterSpawnPositions }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -1112,6 +1165,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
       onPlacementHover={onPlacementHover}
       onPlacementClick={onPlacementClick}
       onModelRuntimeSettled={onModelRuntimeSettled}
+      characterSpawnPositions={characterSpawnPositions}
     />;
   }
 
@@ -1613,6 +1667,13 @@ export function ThreeDScene({
   const sceneEnvironmentReady = requiredModelMarkerIds.every(
     (markerId) => settledModelMarkerIds.has(markerId),
   );
+  const characterSpawnPositions = useMemo(() => sceneMarkers
+    .filter((marker) => normalizeSceneLayerType(marker.type) === 'characters')
+    .map((marker) => ({
+      x: Number(marker.position?.x) || 0,
+      y: Number(marker.position?.y) || 0,
+      z: Number(marker.position?.z) || 0,
+    })), [sceneMarkers]);
 
   useEffect(() => {
     if (physicsIsolation) {
@@ -2588,6 +2649,7 @@ export function ThreeDScene({
               livePositionsRef={livePositionsRef}
               physicsDebug={physicsDebug}
               onModelRuntimeSettled={handleModelRuntimeSettled}
+              characterSpawnPositions={characterSpawnPositions}
             />
           ))}
         </Physics>

@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.4a — ThreeD Environment Preview and Character Runtime Safety** (`package.json` version `0.19.4-alpha`) |
-| Current release candidate | **v0.19.4b — ThreeD Environment Interaction UX** (`package.json` version `0.19.4-beta`) |
-| Current development milestone | **Environment selection authority and Project-menu dismissal; active Environment colliders remain the next separately gated stage** |
+| Current release candidate | **v0.19.4c — ThreeD Environment Character Collision** (`package.json` version `0.19.4-centaur`) |
+| Current development milestone | **Release candidate prepared: explicit Environment management UX plus manually verified Scene-owned Environment collision through a 1,024-cuboid ceiling with Character-priority ordering, spawn clearance, oversized-bound deferral, and exact Physics Debug reporting** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -399,6 +399,7 @@ API (/api/map/threed)
 | **v0.19.2a** | **2026-08-29** | **Production release — authenticated Model preview media, a visual sibling Library rail, and bounded click/drag placement across persistent 3D and Leaflet surfaces** |
 | **v0.19.3a** | **2026-08-31** | **Production release — owner-scoped Model taxonomy, reviewed bulk ingestion, format-aware companion discovery, and customizable bundle-relative attachment paths** |
 | **v0.19.4a** | **2026-09-03** | **Production release — batched Environment collision preview, Environment-first Model settling, animated Character-last admission, corrupt Character-position recovery, and low-churn live position editing** |
+| **v0.19.4c** | **2026-09-03** | **Release candidate — explicit Environment interaction authority and bounded Scene-owned Character collision with quality-filtered fixed cuboids** |
 
 ---
 
