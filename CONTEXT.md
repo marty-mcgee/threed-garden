@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.4c — ThreeD Environment Character Collision** (`package.json` version `0.19.4-centaur`) |
-| Current release candidate | **v0.19.4d — ThreeD Project Asset Navigation and Environment Collision Coverage** (`package.json` version `0.19.4-delta`) |
-| Current development milestone | **Release candidate prepared: searchable Project Runtime Marker navigation plus a stable 1,024-collider budget balanced between Character proximity and map-wide Environment coverage** |
+| Current stable version | **v0.19.4d — ThreeD Project Asset Navigation and Environment Collision Coverage** (`package.json` version `0.19.4-delta`) |
+| Current release candidate | **None — v0.19.4d is deployed** |
+| Current development milestone | **Production checkpoint: searchable Project Runtime Marker navigation plus a stable 1,024-collider budget balanced between Character proximity and map-wide Environment coverage** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -400,7 +400,7 @@ API (/api/map/threed)
 | **v0.19.3a** | **2026-08-31** | **Production release — owner-scoped Model taxonomy, reviewed bulk ingestion, format-aware companion discovery, and customizable bundle-relative attachment paths** |
 | **v0.19.4a** | **2026-09-03** | **Production release — batched Environment collision preview, Environment-first Model settling, animated Character-last admission, corrupt Character-position recovery, and low-churn live position editing** |
 | **v0.19.4c** | **2026-09-03** | **Production release — explicit Environment interaction authority and bounded Scene-owned Character collision with quality-filtered fixed cuboids** |
-| **v0.19.4d** | **2026-09-03** | **Release candidate — searchable Project Asset navigation and balanced Character-near/map-wide Environment collider coverage** |
+| **v0.19.4d** | **2026-09-03** | **Production release — searchable Project Asset navigation and balanced Character-near/map-wide Environment collider coverage** |
 
 ---
 

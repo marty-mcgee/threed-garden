@@ -844,4 +844,4 @@ Duplicate descriptions are removed by identity. This prevents dense nearby geome
 
 Physics Debug adds `prioritySelectedCount` and `coverageSelectedCount` to the bounded Environment summary. Both counts were manually confirmed above zero while active collision remained at or below 1,024. Near and distant cyan structures remained accessible as Character colliders, and Character loading, animation, capsule/model alignment, selection, camera behavior, WASD movement, and stopping remained stable.
 
-This checkpoint is designated **v0.19.4d — ThreeD Project Asset Navigation and Environment Collision Coverage** (`package.json` version `0.19.4-delta`). It adds no schema, API mutation, uploaded executable code, automatic persistence, or full per-mesh collision activation.
+This checkpoint was released successfully to production as **v0.19.4d — ThreeD Project Asset Navigation and Environment Collision Coverage** (`package.json` version `0.19.4-delta`) on September 3, 2026. It adds no schema, API mutation, uploaded executable code, automatic persistence, or full per-mesh collision activation.
