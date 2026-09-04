@@ -1508,6 +1508,7 @@ export function ThreeDScene({
   onAutoRotateToggle,
   initialViewState,
   onViewStateProviderChange,
+  projectId,
   geographicHeadingDegrees = 0,
   controlledCharacterId,
   onControlChange,
@@ -1666,9 +1667,23 @@ export function ThreeDScene({
       return next;
     });
   }, []);
-  const sceneEnvironmentReady = requiredModelMarkerIds.every(
+  const allRequiredModelsSettled = requiredModelMarkerIds.every(
     (markerId) => settledModelMarkerIds.has(markerId),
   );
+  const characterEnvironmentReadyRef = useRef({
+    projectId,
+    ready: false,
+  });
+  if (characterEnvironmentReadyRef.current.projectId !== projectId) {
+    characterEnvironmentReadyRef.current = { projectId, ready: false };
+  }
+  if (allRequiredModelsSettled) {
+    characterEnvironmentReadyRef.current.ready = true;
+  }
+  // Character introduction is a one-way Project-load gate. Incrementally
+  // adding a Model must not remove an already-mounted Character while that
+  // new Model settles; a Project change resets the gate.
+  const sceneEnvironmentReady = characterEnvironmentReadyRef.current.ready;
   const characterSpawnPositions = useMemo(() => sceneMarkers
     .filter((marker) => normalizeSceneLayerType(marker.type) === 'characters')
     .map((marker) => ({

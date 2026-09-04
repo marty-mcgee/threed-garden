@@ -42,12 +42,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { DetailsCard } from '@/components/map/details/DetailsCard';
+import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
+import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
+import { SceneOperationStatus } from '@/components/map/panels/SceneOperationStatus';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import {
   UnifiedMapView,
@@ -102,144 +100,7 @@ import {
   type ThreeDProjectViewState,
 } from '@/lib/services/threed/markers/project-view-state-core';
 
-// ✅ Project Selector Dialog Component
-function ProjectSelectorDialog({ 
-  open, 
-  onOpenChange, 
-  onSelect 
-}: { 
-  open: boolean; 
-  onOpenChange: (open: boolean) => void; 
-  onSelect: (projectId: string) => void;
-}) {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    if (open) {
-      const loadProjects = async () => {
-        try {
-          const response = await fetch('/api/map/projects');
-          const data = await response.json();
-          setProjects(data.projects || []);
-        } catch (error) {
-          console.error('Failed to load projects:', error);
-          setProjects([]);
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadProjects();
-    }
-  }, [open]);
-
-  const filteredProjects = projects.filter((project) =>
-    project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    project.slug?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleSelect = (projectId: string) => {
-    onSelect(projectId);
-    onOpenChange(false);
-    setSearchQuery('');
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>Select a Project</DialogTitle>
-        </DialogHeader>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search projects..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
-          />
-        </div>
-        <div className="flex-1 overflow-y-auto mt-4 space-y-1">
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-            </div>
-          ) : filteredProjects.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p className="text-sm font-medium">
-                {searchQuery ? 'No matching projects' : 'No projects found'}
-              </p>
-            </div>
-          ) : (
-            filteredProjects.map((project) => (
-              <Button
-                key={project.id}
-                variant="ghost"
-                className="w-full justify-start text-left h-auto py-2 px-3"
-                onClick={() => handleSelect(String(project.id))}
-              >
-                <div className="flex items-center gap-3 w-full">
-                  <FolderOpen className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm truncate">{project.name}</div>
-                    {project.description && (
-                      <div className="text-xs text-muted-foreground truncate">
-                        {project.description}
-                      </div>
-                    )}
-                  </div>
-                  <Badge variant="secondary" className="text-[10px]">
-                    {project.assetCount || 0}
-                  </Badge>
-                </div>
-              </Button>
-            ))
-          )}
-        </div>
-        <div className="mt-4 pt-4 border-t">
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={() => window.location.href = '/admin/projects'}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create New Project
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 // ✅ v0.16.0-centaur: Polished Details Card — key-value grid, position coords, clear controls
-function KvRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-start gap-1.5">
-      <span className="text-[10px] text-white/40 shrink-0 w-[52px] text-right">{label}</span>
-      <span className="text-[11px] text-white/80">{value}</span>
-    </div>
-  );
-}
-
-interface FarmBotProjectMqttRuntime {
-  connectionState: string;
-  stateChangedAt: string;
-  lastMessageAt: string | null;
-  lastStatusAt: string | null;
-  positionX: string | null;
-  positionY: string | null;
-  positionZ: string | null;
-  tokenExpiresAt: string;
-  isStale: boolean;
-}
-
-function formatMqttDate(value: string | null): string {
-  return value ? new Date(value).toLocaleString() : 'Never';
-}
-
 function selectedProjectMarkerRecordId(selected: any): number | null {
   const id = Number(selected?.data?.projectMarkerId ?? selected?.data?.instanceId);
   return Number.isSafeInteger(id) && id > 0 ? id : null;
@@ -284,1379 +145,6 @@ function clearSelectedProjectMarker(selected: any, recordId: number): any {
   return selectedProjectMarkerRecordId(selected) === recordId ? null : selected;
 }
 
-function FarmBotMqttStatusSummary({
-  farmbotId,
-  projectId,
-}: {
-  farmbotId: number;
-  projectId: string | null;
-}) {
-  const [runtime, setRuntime] = useState<FarmBotProjectMqttRuntime | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!projectId || !Number.isSafeInteger(farmbotId) || farmbotId < 1) {
-      setRuntime(null);
-      return;
-    }
-
-    const controller = new AbortController();
-    setLoading(true);
-    void fetch(
-      `/api/threed/farmbots/${farmbotId}/mqtt-runtime?projectId=${encodeURIComponent(projectId)}`,
-      { cache: 'no-store', signal: controller.signal }
-    )
-      .then(async (response) => {
-        const result = await response.json();
-        if (!response.ok || !result.success) throw new Error(result.error);
-        setRuntime(result.data as FarmBotProjectMqttRuntime | null);
-      })
-      .catch((error) => {
-        if (error instanceof Error && error.name === 'AbortError') return;
-        setRuntime(null);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-
-    return () => controller.abort();
-  }, [farmbotId, projectId]);
-
-  const hasPosition = runtime
-    && runtime.positionX !== null
-    && runtime.positionY !== null
-    && runtime.positionZ !== null;
-
-  return (
-    <div className="mt-2 rounded bg-white/[0.035] p-2">
-      <div className="mb-1.5 flex items-center justify-between gap-2">
-        <span className="text-[10px] font-medium text-white/60">MQTT Status</span>
-        {loading ? (
-          <Loader2 className="h-3 w-3 animate-spin text-white/40" />
-        ) : runtime ? (
-          <div className="flex items-center gap-1">
-            <span className={`h-1.5 w-1.5 rounded-full ${runtime.connectionState === 'connected' && !runtime.isStale ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-            <span className="text-[10px] capitalize text-white/70">{runtime.connectionState}</span>
-            {runtime.isStale && <span className="text-[10px] text-amber-300">· Stale</span>}
-          </div>
-        ) : (
-          <span className="text-[10px] text-white/35">No recorded status</span>
-        )}
-      </div>
-      {runtime && (
-        <div className="space-y-0.5">
-          <KvRow label="Changed" value={formatMqttDate(runtime.stateChangedAt)} />
-          <KvRow label="Message" value={formatMqttDate(runtime.lastMessageAt)} />
-          <KvRow label="Status" value={formatMqttDate(runtime.lastStatusAt)} />
-          <KvRow
-            label="Device"
-            value={hasPosition
-              ? `X:${Number(runtime.positionX).toFixed(1)} Y:${Number(runtime.positionY).toFixed(1)} Z:${Number(runtime.positionZ).toFixed(1)}`
-              : 'Position not recorded'}
-          />
-          <KvRow label="Token" value={`Expires ${formatMqttDate(runtime.tokenExpiresAt)}`} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ModelInstancePlacementEditor({
-  instanceId,
-  initialName,
-  initialScaleMultiplier,
-  initialRotationY,
-  initialPosition,
-  initialPlacementRole,
-  baseModelScale,
-  updating,
-  deleting,
-  moveActive,
-  onSave,
-  onDelete,
-  onMoveToggle,
-}: {
-  instanceId: number;
-  initialName: string;
-  initialScaleMultiplier: number;
-  initialRotationY: number;
-  initialPosition: { x: number; y: number; z: number };
-  initialPlacementRole: 'object' | 'environment';
-  baseModelScale: number;
-  updating: boolean;
-  deleting: boolean;
-  moveActive: boolean;
-  onSave: (input: {
-    instanceName: string;
-    scaleMultiplier: number;
-    rotationY: number;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-    placementRole: 'object' | 'environment';
-  }) => void;
-  onDelete: (instanceId: number, name: string) => void;
-  onMoveToggle: (instanceId: number, name: string) => void;
-}) {
-  const [instanceName, setInstanceName] = useState(initialName);
-  const [scaleMultiplier, setScaleMultiplier] = useState(String(initialScaleMultiplier));
-  const [rotationYDegrees, setRotationYDegrees] = useState(String(
-    Number((initialRotationY * 180 / Math.PI).toFixed(2)),
-  ));
-  const [positionX, setPositionX] = useState(String(initialPosition.x));
-  const [positionY, setPositionY] = useState(String(initialPosition.y));
-  const [positionZ, setPositionZ] = useState(String(initialPosition.z));
-  const [placementRole, setPlacementRole] = useState<'object' | 'environment'>(initialPlacementRole);
-  const parsedScale = Number(scaleMultiplier);
-  const parsedRotationDegrees = Number(rotationYDegrees);
-  const parsedPosition = [Number(positionX), Number(positionY), Number(positionZ)];
-  const valid = instanceName.trim().length <= 120
-    && Number.isFinite(parsedScale)
-    && parsedScale >= 0.0001
-    && parsedScale <= 10_000
-    && Number.isFinite(parsedRotationDegrees)
-    && parsedPosition.every((value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000);
-  const busy = updating || deleting;
-
-  return (
-    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-cyan-100/75">
-        <Box className="h-3.5 w-3.5" />
-        Project Model Instance
-      </div>
-      <label className="block space-y-1">
-        <span className="text-[10px] text-white/50">Instance name</span>
-        <input
-          value={instanceName}
-          maxLength={120}
-          disabled={busy}
-          onChange={(event) => setInstanceName(event.target.value)}
-          className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-        />
-      </label>
-      <div className="grid grid-cols-2 gap-2">
-        <label className="block space-y-1">
-          <span className="text-[10px] text-white/50">Instance scale</span>
-          <input
-            type="number"
-            min="0.0001"
-            max="10000"
-            step="any"
-            value={scaleMultiplier}
-            disabled={busy}
-            onChange={(event) => setScaleMultiplier(event.target.value)}
-            className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-          />
-        </label>
-        <label className="block space-y-1">
-          <span className="text-[10px] text-white/50">Y rotation (°)</span>
-          <input
-            type="number"
-            step="1"
-            value={rotationYDegrees}
-            disabled={busy}
-            onChange={(event) => setRotationYDegrees(event.target.value)}
-            className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-          />
-        </label>
-      </div>
-      <div className="grid grid-cols-3 gap-1.5">
-        {[
-          ['Position X', positionX, setPositionX],
-          ['Position Y', positionY, setPositionY],
-          ['Position Z', positionZ, setPositionZ],
-        ].map(([label, value, setter]) => (
-          <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">{label as string}</span>
-            <input
-              type="number"
-              step="0.1"
-              value={value as string}
-              disabled={busy}
-              onChange={(event) => (setter as (value: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-            />
-          </label>
-        ))}
-      </div>
-      <div className="text-[9px] text-white/35">
-        Effective scale: {(baseModelScale * (Number.isFinite(parsedScale) ? parsedScale : 0)).toLocaleString()}
-      </div>
-      <label className="flex items-center justify-between gap-2 rounded bg-white/[0.035] px-2 py-1.5">
-        <span className="text-[10px] text-white/60">Project environment / base map</span>
-        <Switch
-          checked={placementRole === 'environment'}
-          disabled={busy}
-          onCheckedChange={(checked) => setPlacementRole(checked ? 'environment' : 'object')}
-        />
-      </label>
-      <div className="grid grid-cols-3 gap-1.5">
-        <button
-          type="button"
-          disabled={!valid || busy}
-          onClick={(event) => {
-            event.stopPropagation();
-            onSave({
-              instanceName: instanceName.trim(),
-              scaleMultiplier: parsedScale,
-              rotationY: parsedRotationDegrees * Math.PI / 180,
-              positionX: parsedPosition[0],
-              positionY: parsedPosition[1],
-              positionZ: parsedPosition[2],
-              placementRole,
-            });
-          }}
-          className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-        >
-          {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          Save Placement
-        </button>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={(event) => {
-            event.stopPropagation();
-            onMoveToggle(instanceId, instanceName.trim() || `Model instance #${instanceId}`);
-          }}
-          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-        >
-          <Crosshair className="h-3.5 w-3.5" />
-          {moveActive ? 'Cancel Move' : 'Move Model'}
-        </button>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={(event) => {
-            event.stopPropagation();
-            const name = instanceName.trim() || `Model instance #${instanceId}`;
-            if (!window.confirm(`Delete "${name}" from this ThreeD Project?`)) return;
-            onDelete(instanceId, name);
-          }}
-          className="flex items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-        >
-          {deleting
-            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            : <Trash2 className="h-3.5 w-3.5" />}
-          Delete Model
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function BedInstanceEditor({
-  markerId,
-  initialWidthFeet,
-  initialLengthFeet,
-  initialHeightFeet,
-  initialScale,
-  initialColor,
-  initialPosition,
-  initialRotation,
-  updating,
-  deleting,
-  onSave,
-  onDelete,
-  entityLabel = 'Bed',
-}: {
-  markerId: number;
-  initialWidthFeet: number;
-  initialLengthFeet: number;
-  initialHeightFeet: number;
-  initialScale: number;
-  initialColor: string;
-  initialPosition: { x: number; y: number; z: number };
-  initialRotation: number;
-  updating: boolean;
-  deleting: boolean;
-  onSave: (markerId: number, input: {
-    widthFeet: number;
-    lengthFeet: number;
-    heightFeet: number;
-    scale: number;
-    color: string;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-    rotation: number;
-  }) => void;
-  onDelete: (markerId: number, name: string) => void;
-  entityLabel?: 'Bed' | 'FarmBot';
-}) {
-  const [widthFeet, setWidthFeet] = useState(String(initialWidthFeet));
-  const [lengthFeet, setLengthFeet] = useState(String(initialLengthFeet));
-  const [heightFeet, setHeightFeet] = useState(String(initialHeightFeet));
-  const [scale, setScale] = useState(String(initialScale));
-  const [color, setColor] = useState(initialColor);
-  const [positionX, setPositionX] = useState(String(initialPosition.x));
-  const [positionY, setPositionY] = useState(String(initialPosition.y));
-  const [positionZ, setPositionZ] = useState(String(initialPosition.z));
-  const [rotationDegrees, setRotationDegrees] = useState(String(initialRotation));
-  const dimensions = [Number(widthFeet), Number(lengthFeet), Number(heightFeet)];
-  const positions = [Number(positionX), Number(positionY), Number(positionZ)];
-  const parsedRotationDegrees = Number(rotationDegrees);
-  const parsedScale = Number(scale);
-  const valid = dimensions.every((value) => (
-    Number.isFinite(value) && value >= 0.1 && value <= 1_000
-  ))
-    && positions.every((value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000)
-    && Number.isFinite(parsedRotationDegrees)
-    && Number.isFinite(parsedScale) && parsedScale >= 0.01 && parsedScale <= 1_000
-    && /^#[0-9a-f]{6}$/i.test(color);
-  const busy = updating || deleting;
-
-  return (
-    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-100/75">
-        {entityLabel === 'FarmBot'
-          ? <Settings className="h-3.5 w-3.5" />
-          : <Layers className="h-3.5 w-3.5" />}
-        Project {entityLabel} Instance
-      </div>
-      <div className="grid grid-cols-3 gap-1.5">
-        {[
-          ['Width (ft)', widthFeet, setWidthFeet],
-          ['Length (ft)', lengthFeet, setLengthFeet],
-          ['Height (ft)', heightFeet, setHeightFeet],
-        ].map(([label, value, setter]) => (
-          <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">{label as string}</span>
-            <input
-              type="number"
-              min="0.1"
-              max="1000"
-              step="0.1"
-              value={value as string}
-              disabled={busy}
-              onChange={(event) => (setter as (value: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-            />
-          </label>
-        ))}
-      </div>
-      <div className="grid grid-cols-3 gap-1.5">
-        {[
-          ['Position X', positionX, setPositionX],
-          ['Position Y', positionY, setPositionY],
-          ['Position Z', positionZ, setPositionZ],
-        ].map(([label, value, setter]) => (
-          <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">{label as string}</span>
-            <input
-              type="number"
-              step="0.1"
-              value={value as string}
-              disabled={busy}
-              onChange={(event) => (setter as (value: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-            />
-          </label>
-        ))}
-      </div>
-      <div className="grid grid-cols-3 gap-1.5">
-        <label className="block space-y-1">
-          <span className="text-[9px] text-white/50">Y rotation (°)</span>
-          <input type="number" step="1" value={rotationDegrees} disabled={busy}
-            onChange={(event) => setRotationDegrees(event.target.value)}
-            className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50" />
-        </label>
-        <label className="block space-y-1">
-          <span className="text-[9px] text-white/50">Scale</span>
-          <input type="number" min="0.01" max="1000" step="0.01" value={scale} disabled={busy}
-            onChange={(event) => setScale(event.target.value)}
-            className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50" />
-        </label>
-        <label className="block space-y-1">
-          <span className="text-[9px] text-white/50">Color</span>
-          <input type="color" value={color} disabled={busy}
-            onChange={(event) => setColor(event.target.value)}
-            className="h-7 w-full cursor-pointer rounded border border-white/10 bg-white/5 p-0.5 disabled:opacity-50" />
-        </label>
-      </div>
-      <div className="grid grid-cols-2 gap-1.5">
-      <button
-        type="button"
-        disabled={!valid || busy}
-        onClick={(event) => {
-          event.stopPropagation();
-          onSave(markerId, {
-            widthFeet: dimensions[0],
-            lengthFeet: dimensions[1],
-            heightFeet: dimensions[2],
-            scale: parsedScale,
-            color,
-            positionX: positions[0],
-            positionY: positions[1],
-            positionZ: positions[2],
-            rotation: parsedRotationDegrees,
-          });
-        }}
-        className="flex w-full items-center justify-center gap-1.5 rounded bg-amber-600/35 px-2 py-1.5 text-[11px] font-medium text-amber-100 transition-colors hover:bg-amber-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-      >
-        {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-        Save {entityLabel} Instance
-      </button>
-      <button
-        type="button"
-        disabled={busy}
-        onClick={(event) => {
-          event.stopPropagation();
-          if (!window.confirm(`Remove this ${entityLabel} from this ThreeD Project?`)) return;
-          onDelete(markerId, entityLabel);
-        }}
-        className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-      >
-        {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-        Remove {entityLabel}
-      </button>
-      </div>
-    </div>
-  );
-}
-
-function PlantingInstanceEditor({
-  markerId,
-  initialModelScale,
-  initialPosition,
-  updating,
-  deleting,
-  onSave,
-  onDelete,
-}: {
-  markerId: number;
-  initialModelScale: number;
-  initialPosition: { x: number; y: number; z: number };
-  updating: boolean;
-  deleting: boolean;
-  onSave: (markerId: number, input: {
-    modelScale: number;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-  }) => void;
-  onDelete: (markerId: number, name: string) => void;
-}) {
-  const [modelScale, setModelScale] = useState(String(initialModelScale));
-  const [positionX, setPositionX] = useState(String(initialPosition.x));
-  const [positionY, setPositionY] = useState(String(initialPosition.y));
-  const [positionZ, setPositionZ] = useState(String(initialPosition.z));
-  const parsed = {
-    modelScale: Number(modelScale),
-    positionX: Number(positionX),
-    positionY: Number(positionY),
-    positionZ: Number(positionZ),
-  };
-  const valid = Number.isFinite(parsed.modelScale)
-    && parsed.modelScale >= 0.01
-    && parsed.modelScale <= 1_000
-    && [parsed.positionX, parsed.positionY, parsed.positionZ].every(
-      (value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000,
-    );
-
-  return (
-    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/75">
-        <Sprout className="h-3.5 w-3.5" />
-        Project Planting Instance
-      </div>
-      <label className="block space-y-1">
-        <span className="text-[9px] text-white/50">Model scale</span>
-        <input
-          type="number"
-          min="0.01"
-          max="1000"
-          step="0.01"
-          value={modelScale}
-          disabled={updating || deleting}
-          onChange={(event) => setModelScale(event.target.value)}
-          className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-        />
-      </label>
-      <div className="grid grid-cols-3 gap-1.5">
-        {[
-          ['Position X', positionX, setPositionX],
-          ['Position Y', positionY, setPositionY],
-          ['Position Z', positionZ, setPositionZ],
-        ].map(([label, value, setter]) => (
-          <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">{label as string}</span>
-            <input
-              type="number"
-              step="0.1"
-              value={value as string}
-              disabled={updating || deleting}
-              onChange={(event) => (setter as (value: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-            />
-          </label>
-        ))}
-      </div>
-      <div className="grid grid-cols-2 gap-1.5">
-        <button
-          type="button"
-          disabled={!valid || updating || deleting}
-          onClick={(event) => {
-            event.stopPropagation();
-            onSave(markerId, parsed);
-          }}
-          className="flex w-full items-center justify-center gap-1.5 rounded bg-emerald-600/35 px-2 py-1.5 text-[11px] font-medium text-emerald-100 transition-colors hover:bg-emerald-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-        >
-          {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          Save Planting
-        </button>
-        <button
-          type="button"
-          disabled={updating || deleting}
-          onClick={(event) => {
-            event.stopPropagation();
-            const name = 'this Planting';
-            if (!window.confirm(`Delete ${name} from this ThreeD Project?`)) return;
-            onDelete(markerId, name);
-          }}
-          className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-        >
-          {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-          Delete Planting
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function CharacterInstancePositionEditor({
-  markerId,
-  initialPosition,
-  disabled,
-  updating,
-  deleting,
-  onSave,
-  onDelete,
-}: {
-  markerId: number;
-  initialPosition: { x: number; y: number; z: number };
-  disabled: boolean;
-  updating: boolean;
-  deleting: boolean;
-  onSave: (markerId: number, position: { positionX: number; positionY: number; positionZ: number }) => void;
-  onDelete: (markerId: number) => void;
-}) {
-  const [positionX, setPositionX] = useState(String(initialPosition.x));
-  const [positionY, setPositionY] = useState(String(initialPosition.y));
-  const [positionZ, setPositionZ] = useState(String(initialPosition.z));
-  useEffect(() => {
-    // Ecctrl reports full-precision coordinates every physics frame. Feeding
-    // those values directly into three controlled form inputs adds needless
-    // React work to the movement loop. Wait for a brief settled interval and
-    // mirror the same one-decimal precision used by the DetailsCard metadata.
-    const syncTimer = window.setTimeout(() => {
-      setPositionX(initialPosition.x.toFixed(1));
-      setPositionY(initialPosition.y.toFixed(1));
-      setPositionZ(initialPosition.z.toFixed(1));
-    }, disabled ? 180 : 0);
-    return () => window.clearTimeout(syncTimer);
-  }, [disabled, initialPosition.x, initialPosition.y, initialPosition.z]);
-  const position = {
-    positionX: Number(positionX),
-    positionY: Number(positionY),
-    positionZ: Number(positionZ),
-  };
-  const valid = Object.values(position).every(
-    (value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000,
-  );
-  return (
-    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-violet-100/75">
-        <User className="h-3.5 w-3.5" />
-        Project Character Instance
-      </div>
-      <div className="grid grid-cols-3 gap-1.5">
-        {[
-          ['X', positionX, setPositionX],
-          ['Y', positionY, setPositionY],
-          ['Z', positionZ, setPositionZ],
-        ].map(([label, value, setter]) => (
-          <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">Position {label as string}</span>
-            <input
-              type="number"
-              step="0.1"
-              value={value as string}
-              disabled={disabled || updating || deleting}
-              onChange={(event) => (setter as (next: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-            />
-          </label>
-        ))}
-      </div>
-      <div className="grid grid-cols-2 gap-1.5">
-      <button
-        type="button"
-        disabled={!valid || disabled || updating || deleting}
-        onClick={(event) => {
-          event.stopPropagation();
-          onSave(markerId, position);
-        }}
-        className="flex w-full items-center justify-center gap-1.5 rounded bg-violet-600/35 px-2 py-1.5 text-[11px] font-medium text-violet-100 transition-colors hover:bg-violet-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-      >
-        {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-        Save Position
-      </button>
-      <button
-        type="button"
-        disabled={disabled || updating || deleting}
-        onClick={(event) => {
-          event.stopPropagation();
-          if (!window.confirm('Remove this Character from the ThreeD Project? The reusable Character will remain available in the Library.')) return;
-          onDelete(markerId);
-        }}
-        className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-      >
-        {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-        Delete Character
-      </button>
-      </div>
-      {disabled && (
-        <p className="text-[9px] text-amber-200/75">Release Control before changing the Character position.</p>
-      )}
-    </div>
-  );
-}
-
-function DetailsCard({ selected, projectId, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
-  selected: any;
-  projectId: string | null;
-  onClose: () => void;
-  controlledCharacterId: number | null;
-  liveControlledCharacterPosition: {
-    characterId: number;
-    position: { x: number; y: number; z: number };
-  } | null;
-  onTakeControl: (id: number) => void;
-  onReleaseControl: () => void;
-  cameraMode?: string;
-  onCameraModeChange?: (mode: string) => void;
-  onZoomCenter?: () => void;
-  actionTarget?: ThreeDActionTarget | null;
-  orchestrationStatus?: ThreeDOrchestrationLifecycleState | null;
-  onSetActionTarget?: (target: ThreeDActionTarget) => void;
-  onClearActionTarget?: () => void;
-  onFocusActionTarget?: () => void;
-  resolveRuntimeMarkerPosition?: ThreeDRuntimeMarkerPositionResolver;
-  onUpdateModelInstance?: (instanceId: number, input: {
-    instanceName: string;
-    scaleMultiplier: number;
-    rotationY: number;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-    placementRole: 'object' | 'environment';
-  }) => void;
-  updatingModelInstanceId?: number | null;
-  onDeleteModelInstance?: (instanceId: number, name: string) => void;
-  deletingModelInstanceId?: number | null;
-  movingModelInstanceId?: number | null;
-  onMoveModelToggle?: (instanceId: number, name: string) => void;
-  onUpdateBedInstance?: (markerId: number, input: {
-    widthFeet: number;
-    lengthFeet: number;
-    heightFeet: number;
-    scale: number;
-    color: string;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-    rotation: number;
-  }) => void;
-  updatingBedMarkerId?: number | null;
-  onDeleteBedInstance?: (markerId: number, name: string) => void;
-  deletingBedMarkerId?: number | null;
-  onUpdateFarmBotInstance?: (markerId: number, input: {
-    widthFeet: number;
-    lengthFeet: number;
-    heightFeet: number;
-    scale: number;
-    color: string;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-    rotation: number;
-  }) => void;
-  updatingFarmBotMarkerId?: number | null;
-  onDeleteFarmBotInstance?: (markerId: number, name: string) => void;
-  deletingFarmBotMarkerId?: number | null;
-  onUpdatePlantingInstance?: (markerId: number, input: {
-    modelScale: number;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-  }) => void;
-  updatingPlantingMarkerId?: number | null;
-  onDeletePlantingInstance?: (markerId: number, name: string) => void;
-  deletingPlantingMarkerId?: number | null;
-  onUpdateCharacterPosition?: (markerId: number, position: {
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-  }) => void;
-  updatingCharacterMarkerId?: number | null;
-  onDeleteCharacterInstance?: (markerId: number, name: string) => void;
-  deletingCharacterMarkerId?: number | null;
-}) {
-  if (!selected) return null;
-  const d = selected.data || selected.metadata?.data || selected.metadata || {};
-  const isIncident = selected.latitude != null || selected.severity || (selected.title && selected.location);
-  const typeLabel = selected.type || (isIncident ? 'Traffic Incident' : 'Marker');
-  // Build key-value metadata rows from the data record
-  const metaRows: { label: string; value: string }[] = [];
-
-  // 3D position — prefer live RuntimeMarker position (updated by ecctrl), fallback to DB columns
-  if (!isIncident) {
-    const live = selected.position; // RuntimeMarker live position
-    const dbX = d.positionX ?? d.position?.x;
-    const dbY = d.positionY ?? d.position?.y;
-    const dbZ = d.positionZ ?? d.position?.z;
-    const px = live?.x != null ? live.x : dbX;
-    const py = live?.y != null ? live.y : (dbY ?? 0);
-    const pz = live?.z != null ? live.z : dbZ;
-    if (px != null && pz != null) {
-      metaRows.push({ label: 'Position', value: `X:${Number(px).toFixed(1)} Y:${Number(py).toFixed(1)} Z:${Number(pz).toFixed(1)}` });
-    }
-    const geographic = selected.metadata?.geographicPosition;
-    const latitude = geographic?.latitude ?? d.latitude;
-    const longitude = geographic?.longitude ?? d.longitude;
-    const altitude = geographic?.altitude ?? d.altitude;
-    if (
-      latitude !== null
-      && latitude !== undefined
-      && longitude !== null
-      && longitude !== undefined
-      && Number.isFinite(Number(latitude))
-      && Number.isFinite(Number(longitude))
-    ) {
-      const altitudeLabel = altitude !== null
-        && altitude !== undefined
-        && Number.isFinite(Number(altitude))
-        ? ` Alt:${Number(altitude).toFixed(2)}m`
-        : '';
-      metaRows.push({
-        label: 'GPS',
-        value: `Lat:${Number(latitude).toFixed(7)} Lng:${Number(longitude).toFixed(7)}${altitudeLabel}`,
-      });
-    }
-  }
-
-  // Incident fields
-  if (isIncident) {
-    if (selected.location) metaRows.push({ label: 'Location', value: selected.location });
-    if (selected.status) metaRows.push({ label: 'Status', value: selected.status });
-  }
-
-  // Marker type-specific
-  const type = selected.type || '';
-  const normalizedType = String(type).trim().toLowerCase();
-  metaRows.unshift({ label: 'Module', value: typeLabel });
-  if (selected.severity) {
-    metaRows.push({ label: 'Severity', value: String(selected.severity) });
-  }
-  const isPlantingMarker = normalizedType === 'planting'
-    || normalizedType === 'plantings'
-    || normalizedType === 'threed_plantings';
-  const isFarmBotMarker = normalizedType === 'farmbot'
-    || normalizedType === 'farmbots'
-    || normalizedType === 'threed_farmbots';
-  const isCharacterMarker = type === 'characters' || type === 'character';
-  const characterMarkerId = Number(d.projectMarkerId);
-  const isProjectCharacterInstance = isCharacterMarker
-    && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
-    && Number.isSafeInteger(characterMarkerId)
-    && characterMarkerId > 0;
-  const modelInstanceId = Number(d.instanceId);
-  const isProjectModelInstance = (
-    normalizedType === 'model' || normalizedType === 'models'
-  ) && selected.metadata?.source === 'project-marker'
-    && Number.isSafeInteger(modelInstanceId)
-    && modelInstanceId > 0;
-  const bedMarkerId = Number(d.projectMarkerId);
-  const isProjectBedInstance = (normalizedType === 'bed' || normalizedType === 'beds')
-    && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
-    && Number.isSafeInteger(bedMarkerId)
-    && bedMarkerId > 0;
-  const plantingMarkerId = Number(d.projectMarkerId);
-  const isProjectPlantingInstance = isPlantingMarker
-    && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
-    && Number.isSafeInteger(plantingMarkerId)
-    && plantingMarkerId > 0;
-  const farmBotMarkerId = Number(d.projectMarkerId);
-  const isProjectFarmBotInstance = isFarmBotMarker
-    && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
-    && Number.isSafeInteger(farmBotMarkerId)
-    && farmBotMarkerId > 0;
-  const selectedTargetCapabilities = getThreeDActionTargetCapabilities(normalizedType);
-  const actionTargetCapabilities = actionTarget
-    ? getThreeDActionTargetCapabilities(actionTarget.type)
-    : null;
-  const currentActionTargetPosition = actionTarget
-    ? resolveRuntimeMarkerPosition?.(actionTarget.type, actionTarget.id)
-      ?? actionTarget.position
-    : null;
-  const isEcctrlCharacter = isCharacterMarker && d.isMovable === true;
-  const characterId = Number(d.id);
-  const isSelectedCharacterControlled = isEcctrlCharacter
-    && controlledCharacterId === characterId;
-  const hasLiveControlledPosition = isSelectedCharacterControlled
-    && liveControlledCharacterPosition?.characterId === characterId;
-  let targetApproachPlan: ReturnType<typeof planThreeDInteractionApproach> | null = null;
-  if (
-    isEcctrlCharacter
-    && hasLiveControlledPosition
-    && actionTarget != null
-    && liveControlledCharacterPosition
-  ) {
-    try {
-      targetApproachPlan = planThreeDInteractionApproach({
-        characterPosition: liveControlledCharacterPosition.position,
-        targetPosition: currentActionTargetPosition ?? actionTarget.position,
-      });
-    } catch {
-      targetApproachPlan = null;
-    }
-  }
-  const targetInteractionReady = !isEcctrlCharacter
-    || actionTarget == null
-    || (
-      hasLiveControlledPosition
-      && targetApproachPlan?.arrived === true
-    );
-  const isCurrentOrchestration = orchestrationStatus
-    && orchestrationStatus.characterId === characterId
-    && orchestrationStatus.targetId === actionTarget?.id;
-  const isOrchestrationRunning = isCurrentOrchestration
-    && orchestrationStatus.phase === 'interacting';
-  if (isPlantingMarker) {
-    if (d.plantName || d.commonName) metaRows.push({ label: 'Plant', value: d.plantName || d.commonName });
-    if (d.growthStage) metaRows.push({ label: 'Stage', value: d.growthStage });
-    if (d.health != null) metaRows.push({ label: 'Health', value: `${d.health}` });
-    if (d.plantedDate) metaRows.push({ label: 'Planted', value: new Date(d.plantedDate).toLocaleDateString() });
-  }
-  if (type === 'beds' || type === 'bed') {
-    const w = d.widthFeet || d.width, l = d.lengthFeet || d.length || d.depth;
-    if (w && l) metaRows.push({ label: 'Size', value: `${w}ft × ${l}ft` });
-    if (d.soilType) metaRows.push({ label: 'Soil', value: d.soilType });
-    if (d.sunExposure) metaRows.push({ label: 'Sun', value: d.sunExposure });
-  }
-  if (isFarmBotMarker) {
-    if (d.status) metaRows.push({ label: 'Status', value: d.status });
-    if (d.batteryLevel != null) metaRows.push({ label: 'Battery', value: `${d.batteryLevel}%` });
-    if (d.assetCode) metaRows.push({ label: 'Asset code', value: d.assetCode });
-    if (d.farmbotDeviceId) {
-      metaRows.push({ label: 'FarmBot device', value: String(d.farmbotDeviceId) });
-    }
-    if (d.brokerDeviceId) metaRows.push({ label: 'Broker identity', value: d.brokerDeviceId });
-    if (d.lastSeen) metaRows.push({ label: 'Last Seen', value: new Date(d.lastSeen).toLocaleString() });
-  }
-  if (type === 'characters' || type === 'character') {
-    if (d.type || d.characterType) metaRows.push({ label: 'Type', value: d.type || d.characterType });
-    if (d.movementType) metaRows.push({ label: 'Movement', value: d.movementType });
-    if (d.movementSpeed != null) metaRows.push({ label: 'Speed', value: `${d.movementSpeed}` });
-    if (d.defaultEmote && d.defaultEmote !== 'none') metaRows.push({ label: 'Emote', value: d.defaultEmote });
-  }
-  if (d.notes || d.description) metaRows.push({ label: 'Notes', value: (d.notes || d.description).slice(0, 80) });
-
-  const selectedMarkerId = String(selected.id || '');
-  const selectedMarkerIdSuffix = selectedMarkerId.match(/(\d+)$/)?.[1];
-  const quickTargetId = Number(d.id ?? selectedMarkerIdSuffix);
-  const quickTargetType = selectedTargetCapabilities?.markerType;
-  const quickTargetName = selected.name || selected.label || d.plantName || d.commonName
-    || (quickTargetType ? `${quickTargetType.replace(/s$/, '')} #${quickTargetId}` : 'Marker');
-  const isQuickActionTarget = actionTarget != null
-    && quickTargetType != null
-    && isMatchingThreeDActionTarget(actionTarget, {
-      markerType: quickTargetType,
-      assetId: quickTargetId,
-    });
-  const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
-  const adminId = isProjectModelInstance ? d.modelId : selected.metadata?.data?.id || selected.id;
-  const adminRouteMap: Record<string, string> = {
-    plantings: '/admin/threed/plantings', planting: '/admin/threed/plantings',
-    beds: '/admin/threed/beds', bed: '/admin/threed/beds',
-    characters: '/admin/threed/characters', character: '/admin/threed/characters',
-    farmbots: '/admin/threed/farmbots', farmbot: '/admin/threed/farmbots',
-    models: '/admin/threed/models', model: '/admin/threed/models',
-    chpCad: '/admin/traffic/chp-cad', chpCadIncidents: '/admin/traffic/chp-cad',
-    chpCases: '/admin/traffic/chp-cases', chpCenters: '/admin/traffic/chp-centers',
-    caltransLaneClosures: '/admin/traffic/caltrans', caltransClosures: '/admin/traffic/caltrans',
-    caltransCctv: '/admin/traffic/caltrans-cctv', caltransDistricts: '/admin/traffic/caltrans-districts',
-    bayArea511: '/admin/traffic/bay-area-511', bayArea511Events: '/admin/traffic/bay-area-511',
-    calfireIncidents: '/admin/traffic/calfire', calfire: '/admin/traffic/calfire',
-  };
-  const adminRoute = adminRouteMap[adminType] || (isIncident ? '/admin/traffic' : '/admin/threed/plantings');
-
-  return (
-    <div className="fixed left-3 top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/10 bg-black/85 p-2 text-white shadow-xl backdrop-blur-sm pointer-events-auto [scrollbar-width:thin]">
-      {/* Header */}
-      <div className="sticky top-0 z-10 -mx-2 -mt-2 flex items-start justify-between gap-2 rounded-t-lg bg-black/95 px-2 pb-2 pt-0.5 backdrop-blur-sm">
-        <div className="min-w-0 pb-1 pt-0.5">
-          <div className="truncate text-sm font-semibold text-white">
-            {selected.name || selected.title || selected.label || 'Unknown'}
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close marker details"
-          title="Close marker details"
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-white/50 transition-colors hover:bg-white/10 hover:text-white"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-
-      <div className="mt-1.5 flex items-center gap-1">
-        {!isIncident && selectedTargetCapabilities && onSetActionTarget && (
-          <button
-            type="button"
-            aria-label={isQuickActionTarget ? 'Clear Action Target' : 'Use as Action Target'}
-            title={isQuickActionTarget ? 'Clear Action Target' : 'Use as Action Target'}
-            aria-pressed={isQuickActionTarget}
-            onClick={(event) => {
-              event.stopPropagation();
-              if (isQuickActionTarget && onClearActionTarget) {
-                onClearActionTarget();
-                return;
-              }
-              if (!quickTargetType || !Number.isFinite(quickTargetId)) return;
-              const targetPosition = resolveRuntimeMarkerPosition?.(quickTargetType, quickTargetId)
-                ?? (selected.position ? {
-                  x: Number(selected.position.x),
-                  y: Number(selected.position.y),
-                  z: Number(selected.position.z),
-                } : null);
-              if (!targetPosition || !Object.values(targetPosition).every(Number.isFinite)) return;
-              onSetActionTarget(createThreeDActionTarget({
-                markerId: selectedMarkerId || `${quickTargetType}-${quickTargetId}`,
-                markerType: quickTargetType,
-                assetId: quickTargetId,
-                name: String(quickTargetName),
-                position: targetPosition,
-              }));
-            }}
-            className={`flex h-7 w-7 items-center justify-center rounded transition-colors ${
-              isQuickActionTarget
-                ? 'bg-emerald-600 text-white'
-                : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-            }`}
-          >
-            <Crosshair className="h-3.5 w-3.5" />
-          </button>
-        )}
-        {!isIncident && onZoomCenter && (
-          <button
-            type="button"
-            aria-label="Zoom and center marker"
-            title="Zoom + Center"
-            onClick={(event) => { event.stopPropagation(); onZoomCenter(); }}
-            className="flex h-7 w-7 items-center justify-center rounded bg-white/5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <ScanSearch className="h-3.5 w-3.5" />
-          </button>
-        )}
-        <a
-          href={`${adminRoute}?id=${adminId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Edit marker in Admin"
-          title="Edit in Admin"
-          className="flex h-7 w-7 items-center justify-center rounded bg-white/5 text-white/60 no-underline transition-colors hover:bg-white/10 hover:text-white"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
-      </div>
-
-      {/* GPS coordinates (incidents) */}
-      {selected.lat != null && selected.lng != null && (
-        <div className="text-[10px] text-white/40 mt-1.5 font-mono">
-          📍 {Number(selected.lat).toFixed(4)}, {Number(selected.lng).toFixed(4)}
-        </div>
-      )}
-
-      {/* Metadata grid */}
-      {metaRows.length > 0 && (
-        <div className="mt-2 space-y-0.5 rounded bg-white/[0.035] p-2">
-          {metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}
-        </div>
-      )}
-
-      {isFarmBotMarker && (
-        <FarmBotMqttStatusSummary
-          farmbotId={Number(d.id)}
-          projectId={projectId}
-        />
-      )}
-
-      {/* Description (incidents) — only if no metaRows covered it */}
-      {isIncident && selected.description && !metaRows.length && (
-        <div className="mt-2 text-[11px] text-white/50">
-          {selected.description.slice(0, 100)}{selected.description.length > 100 ? '...' : ''}
-        </div>
-      )}
-
-      {/* Character Controls — ecctrl runtime take-over (movable characters only) */}
-      {!isIncident && (type === 'characters' || type === 'character') && (() => {
-        if (d.isMovable !== true) return null;
-        const charId = d.id;
-        const isControlling = controlledCharacterId === charId;
-        return (
-          <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
-            {isControlling ? (
-              <>
-                {/* <div className="text-[10px] text-blue-300 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shrink-0" />
-                  <span>WASD / Space / Shift active</span>
-                </div> */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); onReleaseControl(); }}
-                  className="block w-full text-center text-[11px] font-medium bg-amber-600 hover:bg-amber-500 text-white py-1.5 px-2 rounded transition-colors"
-                >
-                  <span className="flex items-center justify-center gap-1.5">
-                    <Pause className="h-3.5 w-3.5" />
-                    Release Control
-                  </span>
-                </button>
-                {onCameraModeChange && (
-                  <div className="space-y-1">
-                    {/* <div className="text-[10px] text-white/50">Camera:</div> */}
-                    <select
-                      value={cameraMode || 'stationary'}
-                      onChange={(e) => { e.stopPropagation(); onCameraModeChange(e.target.value); }}
-                      className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white/80 focus:outline-none focus:border-white/30 appearance-none"
-                    >
-                      <option value="follow" className="bg-gray-800 text-white">🎥 Follow</option>
-                      <option value="topdown" className="bg-gray-800 text-white">🔽 Top-Down</option>
-                      <option value="firstperson" className="bg-gray-800 text-white">👁️ First-Person</option>
-                      <option value="orbit" className="bg-gray-800 text-white">🛰️ Orbit</option>
-                      <option value="stationary" className="bg-gray-800 text-white">📷 Stationary</option>
-                    </select>
-                  </div>
-                )}
-              </>
-            ) : (
-              <button
-                onClick={(e) => { e.stopPropagation(); onTakeControl(charId); }}
-                className="block w-full text-center text-[11px] font-medium bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-2 rounded transition-colors"
-              >
-                <span className="flex items-center justify-center gap-1.5">
-                  <Gamepad2 className="h-3.5 w-3.5" />
-                  Take Control
-                </span>
-              </button>
-            )}
-          </div>
-        );
-      })()}
-
-      {/* Character Actions — shared semantic animation controls */}
-      {!isIncident && (type === 'characters' || type === 'character') && (
-        <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-1.5">
-          {/* <div className="text-[10px] font-medium text-white/60">Character Actions</div> */}
-
-          <div className="rounded bg-white/5 px-2 py-1.5 text-[10px] text-white/55">
-            {actionTarget ? (
-              <>
-                <div>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></div>
-                {actionTarget.type === 'farmbots' && (
-                  <div className="mt-1 text-amber-200/70">
-                    FarmBot interactions are animation-only. Physical commands remain disabled.
-                  </div>
-                )}
-                {isEcctrlCharacter && (
-                  <div className={`mt-1 ${targetInteractionReady ? 'text-emerald-300/80' : 'text-amber-200/80'}`}>
-                    {!isSelectedCharacterControlled
-                      ? 'Take Control to calculate interaction range'
-                      : !hasLiveControlledPosition
-                        ? 'Waiting for live character position'
-                        : targetApproachPlan
-                      ? targetInteractionReady
-                        ? `In interaction range (${targetApproachPlan.distanceToTarget.toFixed(1)} units)`
-                        : `Move closer with WASD (${targetApproachPlan.distanceToTarget.toFixed(1)} units away)`
-                      : 'Unable to calculate interaction range'}
-                  </div>
-                )}
-                {isCurrentOrchestration && (
-                  <div className={`mt-1 ${
-                    orchestrationStatus.phase === 'completed'
-                      ? 'text-emerald-300/80'
-                      : orchestrationStatus.phase === 'cancelled'
-                        ? 'text-amber-200/80'
-                        : 'text-sky-200/80'
-                  }`}>
-                    Simulation: {orchestrationStatus.phase}
-                  </div>
-                )}
-                <div className="mt-1.5 grid grid-cols-2 gap-1.5">
-                  {onFocusActionTarget && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onFocusActionTarget(); }}
-                      className="rounded bg-emerald-600/25 px-2 py-1 text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white"
-                    >
-                      <span className="flex items-center justify-center gap-1.5">
-                        <ScanSearch className="h-3.5 w-3.5" />
-                        Focus Target
-                      </span>
-                    </button>
-                  )}
-                  {onClearActionTarget && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onClearActionTarget(); }}
-                      className="rounded bg-white/5 px-2 py-1 text-white/55 transition-colors hover:bg-white/10 hover:text-white/80"
-                    >
-                      Clear Target
-                    </button>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>🎯 Target: <span className="text-white/35">None — actions remain animation-only</span></>
-            )}
-          </div>
-
-          {(actionTarget && actionTarget.type !== 'plantings' ? [
-            {
-              title: 'Interaction',
-              actions: [
-                { action: 'point', label: '👉 Point' },
-                { action: 'pointGesture', label: '🫵 Point Gesture' },
-                { action: 'talk', label: '💬 Talk' },
-              ],
-            },
-          ] : [
-            {
-              title: 'Planting',
-              actions: [
-                { action: 'watering', label: '💧 Water' },
-                { action: 'digAndPlantSeeds', label: '🪏 Dig + Seeds' },
-                { action: 'plantAPlant', label: '🌱 Plant' },
-                { action: 'plantTree', label: '🌳 Plant Tree' },
-              ],
-            },
-            {
-              title: 'Harvesting',
-              actions: [
-                { action: 'pullPlant', label: '🌿 Pull Plant' },
-                { action: 'pullPlant2', label: '🌿 Pull Plant 2' },
-                { action: 'pickFruit', label: '🍎 Pick Fruit' },
-                { action: 'pickFruit2', label: '🍐 Pick Fruit 2' },
-                { action: 'pickFruit3', label: '🍊 Pick Fruit 3' },
-              ],
-            },
-            {
-              title: 'Animal Care',
-              actions: [
-                { action: 'cowMilking', label: '🥛 Milk Cow' },
-              ],
-            },
-            {
-              title: 'Interaction',
-              actions: [
-                { action: 'point', label: '👉 Point' },
-                { action: 'pointGesture', label: '🫵 Point Gesture' },
-                { action: 'talk', label: '💬 Talk' },
-              ],
-            },
-          ])
-            .map((group) => ({
-              ...group,
-              actions: actionTargetCapabilities
-                ? group.actions.filter(({ action }) => (
-                  actionTargetCapabilities.genericActions.includes(action as any)
-                  || actionTargetCapabilities.moduleActions.includes(action as any)
-                ))
-                : group.actions,
-            }))
-            .filter((group) => group.actions.length > 0)
-            .map((group) => (
-            <div key={group.title} className="space-y-0.5">
-              <div className="text-[9px] uppercase tracking-wide text-white/35">
-                {group.title}
-              </div>
-
-              <div className="grid grid-cols-3 gap-1">
-                {group.actions.map(({ action, label }) => (
-                  <button
-                    key={action}
-                    disabled={
-                      Boolean(isOrchestrationRunning)
-                      || (
-                        actionTarget != null
-                        && THREED_GENERIC_TARGET_ACTIONS.includes(action as any)
-                        && !targetInteractionReady
-                      )
-                    }
-                    onClick={(e) => {
-                      e.stopPropagation();
-
-                      const charId = Number(d.id);
-                      if (!Number.isFinite(charId)) return;
-
-                      if (
-                        actionTarget
-                        && actionTargetCapabilities
-                        && THREED_GENERIC_TARGET_ACTIONS.includes(action as any)
-                      ) {
-                        const request = createThreeDCharacterOrchestrationRequest({
-                          requestId: crypto.randomUUID(),
-                          characterId: charId,
-                          action,
-                          target: currentActionTargetPosition
-                            ? { ...actionTarget, position: currentActionTargetPosition }
-                            : actionTarget,
-                        });
-                        window.dispatchEvent(new CustomEvent(
-                          THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
-                          { detail: request },
-                        ));
-                        return;
-                      }
-
-                      window.dispatchEvent(new CustomEvent('garden-character-action', {
-                        detail: {
-                          characterId: charId,
-                          action,
-                          target: actionTarget
-                            ? { ...actionTarget, actionRequestId: crypto.randomUUID() }
-                            : null,
-                        },
-                      }));
-                    }}
-                    className="min-h-6 w-full rounded bg-emerald-600/25 px-1 py-1 text-center text-[9px] font-medium leading-tight text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {isProjectModelInstance && onUpdateModelInstance && onDeleteModelInstance && onMoveModelToggle && (
-        <ModelInstancePlacementEditor
-          key={modelInstanceId}
-          instanceId={modelInstanceId}
-          initialName={String(d.instanceName || selected.name || '')}
-          initialScaleMultiplier={Number(d.scaleMultiplier ?? 1)}
-          initialRotationY={Number(d.rotationYInstance ?? 0)}
-          initialPosition={{
-            x: Number(selected.position?.x ?? d.positionX ?? 0),
-            y: Number(selected.position?.y ?? d.positionY ?? 0),
-            z: Number(selected.position?.z ?? d.positionZ ?? 0),
-          }}
-          initialPlacementRole={selected.metadata?.placementRole === 'environment' ? 'environment' : 'object'}
-          baseModelScale={Number(d.scale ?? 1)}
-          updating={updatingModelInstanceId === modelInstanceId}
-          deleting={deletingModelInstanceId === modelInstanceId}
-          moveActive={movingModelInstanceId === modelInstanceId}
-          onSave={(input) => onUpdateModelInstance(modelInstanceId, input)}
-          onDelete={onDeleteModelInstance}
-          onMoveToggle={onMoveModelToggle}
-        />
-      )}
-
-      {isProjectBedInstance && onUpdateBedInstance && onDeleteBedInstance && (
-        <BedInstanceEditor
-          key={bedMarkerId}
-          markerId={bedMarkerId}
-          initialWidthFeet={Number(d.widthFeet ?? d.width ?? 4)}
-          initialLengthFeet={Number(d.lengthFeet ?? d.length ?? d.depth ?? 8)}
-          initialHeightFeet={Number(d.heightFeet ?? 1)}
-          initialScale={Number(d.scale ?? 1)}
-          initialColor={String(d.color ?? selected.color ?? '#8B5E3C')}
-          initialPosition={{
-            x: Number(selected.position?.x ?? d.positionX ?? 0),
-            y: Number(selected.position?.y ?? d.positionY ?? 0),
-            z: Number(selected.position?.z ?? d.positionZ ?? 0),
-          }}
-          initialRotation={Number(d.rotation ?? 0)}
-          updating={updatingBedMarkerId === bedMarkerId}
-          deleting={deletingBedMarkerId === bedMarkerId}
-          onSave={onUpdateBedInstance}
-          onDelete={(markerId, name) => onDeleteBedInstance(
-            markerId,
-            String(selected.name || name),
-          )}
-        />
-      )}
-
-      {isProjectFarmBotInstance && onUpdateFarmBotInstance && onDeleteFarmBotInstance && (
-        <BedInstanceEditor
-          key={farmBotMarkerId}
-          markerId={farmBotMarkerId}
-          entityLabel="FarmBot"
-          initialWidthFeet={Number(d.widthFeet ?? 3)}
-          initialLengthFeet={Number(d.lengthFeet ?? 6)}
-          initialHeightFeet={Number(d.heightFeet ?? 3)}
-          initialScale={Number(d.scale ?? 1)}
-          initialColor={String(d.color ?? selected.color ?? '#4B5563')}
-          initialPosition={{
-            x: Number(selected.position?.x ?? d.positionX ?? 0),
-            y: Number(selected.position?.y ?? d.positionY ?? 0),
-            z: Number(selected.position?.z ?? d.positionZ ?? 0),
-          }}
-          initialRotation={Number(d.rotation ?? 0)}
-          updating={updatingFarmBotMarkerId === farmBotMarkerId}
-          deleting={deletingFarmBotMarkerId === farmBotMarkerId}
-          onSave={onUpdateFarmBotInstance}
-          onDelete={(markerId, name) => onDeleteFarmBotInstance(
-            markerId,
-            String(selected.name || name),
-          )}
-        />
-      )}
-
-      {isProjectPlantingInstance && onUpdatePlantingInstance && onDeletePlantingInstance && (
-        <PlantingInstanceEditor
-          key={plantingMarkerId}
-          markerId={plantingMarkerId}
-          initialModelScale={Number(d.modelScale ?? 1)}
-          initialPosition={{
-            x: Number(selected.position?.x ?? d.positionX ?? 0),
-            y: Number(selected.position?.y ?? d.positionY ?? 0),
-            z: Number(selected.position?.z ?? d.positionZ ?? 0),
-          }}
-          updating={updatingPlantingMarkerId === plantingMarkerId}
-          deleting={deletingPlantingMarkerId === plantingMarkerId}
-          onSave={onUpdatePlantingInstance}
-          onDelete={(markerId, name) => onDeletePlantingInstance(
-            markerId,
-            String(selected.name || d.plantName || d.commonName || name),
-          )}
-        />
-      )}
-
-      {isProjectCharacterInstance && onUpdateCharacterPosition && onDeleteCharacterInstance && (
-        <CharacterInstancePositionEditor
-          key={characterMarkerId}
-          markerId={characterMarkerId}
-          initialPosition={{
-            x: Number(selected.position?.x ?? d.positionX ?? 0),
-            y: Number(selected.position?.y ?? d.positionY ?? 0),
-            z: Number(selected.position?.z ?? d.positionZ ?? 0),
-          }}
-          disabled={controlledCharacterId != null}
-          updating={updatingCharacterMarkerId === characterMarkerId}
-          deleting={deletingCharacterMarkerId === characterMarkerId}
-          onSave={onUpdateCharacterPosition}
-          onDelete={(markerId) => onDeleteCharacterInstance(
-            markerId,
-            String(selected.name || d.name || 'Character'),
-          )}
-        />
-      )}
-
-    </div>
-  );
-}
-
-// ✅ Interactive Stats Card (clickable to filter)
 function StatCard({
   label, 
   count, 
@@ -1734,6 +222,9 @@ function UnifiedMapPageInner() {
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
   const [isProjectAssetsOpen, setIsProjectAssetsOpen] = useState(false);
   const [projectAssetSearch, setProjectAssetSearch] = useState('');
+  const [projectAssetType, setProjectAssetType] = useState('all');
+  const projectAssetsTriggerRef = useRef<HTMLButtonElement>(null);
+  const projectAssetSearchRef = useRef<HTMLInputElement>(null);
   const [isCharacterLibraryOpen, setIsCharacterLibraryOpen] = useState(false);
   const [isFarmBotLibraryOpen, setIsFarmBotLibraryOpen] = useState(false);
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
@@ -1833,6 +324,7 @@ function UnifiedMapPageInner() {
       return {
         phase: 'pending' as const,
         label: pendingOperation,
+        instruction: 'Applying the Project change…',
         cancellable: false,
       };
     }
@@ -1857,6 +349,9 @@ function UnifiedMapPageInner() {
       ? {
           phase: 'ready' as const,
           label: readyOperation,
+          instruction: movingModelInstance || placementModel
+            ? 'Choose a destination in the active 3D Scene or 2D Map.'
+            : 'Click the 3D Scene ground to choose its position.',
           cancellable: true,
         }
       : null;
@@ -1907,6 +402,17 @@ function UnifiedMapPageInner() {
   // ✅ Default view ['3d','2d','combined']
   const [viewMode, setViewMode] = useState<MapViewMode>('3d');
   const [panelHeight, setPanelHeight] = useState(50);
+
+  useEffect(() => {
+    if (!activeSceneOperation?.cancellable) return;
+    const cancelWithEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      cancelActiveSceneOperation();
+    };
+    document.addEventListener('keydown', cancelWithEscape);
+    return () => document.removeEventListener('keydown', cancelWithEscape);
+  }, [activeSceneOperation, cancelActiveSceneOperation]);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
@@ -2415,6 +921,7 @@ function UnifiedMapPageInner() {
     setPlacementScaleMultiplier('1');
     setIsProjectAssetsOpen(false);
     setProjectAssetSearch('');
+    setProjectAssetType('all');
     setIsModelLibraryOpen(false);
     setIsCharacterLibraryOpen(false);
     setBedPlacementActive(false);
@@ -3830,6 +2337,32 @@ function UnifiedMapPageInner() {
     setIsProjectAssetsOpen(true);
   }, []);
 
+  const closeProjectAssets = useCallback((restoreTriggerFocus = false) => {
+    setIsProjectAssetsOpen(false);
+    if (restoreTriggerFocus) {
+      window.requestAnimationFrame(() => projectAssetsTriggerRef.current?.focus());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isProjectAssetsOpen) return;
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      projectAssetSearchRef.current?.focus();
+    });
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      closeProjectAssets(true);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [closeProjectAssets, isProjectAssetsOpen]);
+
   const focusProjectAsset = useCallback((marker: RuntimeMarker) => {
     const sourceAssetId = Number(marker.data?.id);
     const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
@@ -3895,10 +2428,20 @@ function UnifiedMapPageInner() {
     ? libraryModels
     : libraryModels.filter((model) => model.categories?.some((category) => category.slug === libraryCategorySlug));
   const normalizedProjectAssetSearch = projectAssetSearch.trim().toLowerCase();
+  const projectAssetTypes = Array.from(new Set(projectRuntimeMarkers.map((marker) => marker.type)))
+    .sort((left, right) => getThreeDLabel(left).localeCompare(getThreeDLabel(right)));
+  const projectAssetTypeCounts = new Map<string, number>();
+  projectRuntimeMarkers.forEach((marker) => {
+    projectAssetTypeCounts.set(marker.type, (projectAssetTypeCounts.get(marker.type) ?? 0) + 1);
+  });
   const visibleProjectAssets = projectRuntimeMarkers
-    .filter((marker) => normalizedProjectAssetSearch.length === 0
+    .filter((marker) => (
+      projectAssetType === 'all' || marker.type === projectAssetType
+    ) && (
+      normalizedProjectAssetSearch.length === 0
       || marker.name.toLowerCase().includes(normalizedProjectAssetSearch)
-      || getThreeDLabel(marker.type).toLowerCase().includes(normalizedProjectAssetSearch))
+      || getThreeDLabel(marker.type).toLowerCase().includes(normalizedProjectAssetSearch)
+    ))
     .sort((left, right) => (
       getThreeDLabel(left.type).localeCompare(getThreeDLabel(right.type))
       || left.name.localeCompare(right.name)
@@ -4009,6 +2552,8 @@ function UnifiedMapPageInner() {
                   variant="outline"
                   size="sm"
                   className="h-8 w-full justify-start text-xs"
+                  aria-controls="project-assets-panel"
+                  aria-expanded={isProjectAssetsOpen}
                   onClick={openProjectAssets}
                 >
                   <ListTree className="h-3.5 w-3.5" />
@@ -4165,46 +2710,33 @@ function UnifiedMapPageInner() {
             </Button>
           )}
 
-          {activeSceneOperation && (
-            <div className="flex h-7 max-w-52 items-center gap-1 rounded-md border border-cyan-500/30 bg-cyan-500/10 pl-2 text-[11px] text-cyan-700 dark:text-cyan-200">
-              <span className="truncate" title={activeSceneOperation.label}>
-                {activeSceneOperation.label}
-              </span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 shrink-0 text-current hover:bg-cyan-500/15 hover:text-current"
-                disabled={!activeSceneOperation.cancellable}
-                aria-label={`Cancel ${activeSceneOperation.label}`}
-                title={`Cancel ${activeSceneOperation.label}`}
-                onClick={cancelActiveSceneOperation}
-              >
-                {activeSceneOperation.phase === 'pending'
-                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  : <X className="h-3.5 w-3.5" />}
-              </Button>
-            </div>
-          )}
+          <SceneOperationStatus
+            operation={activeSceneOperation}
+            viewMode={viewMode}
+            onCancel={cancelActiveSceneOperation}
+          />
 
           {selectedProjectId && (
             <Button
+              ref={projectAssetsTriggerRef}
               type="button"
               variant={isProjectAssetsOpen ? 'secondary' : 'outline'}
               size="sm"
               className="h-7 gap-1 px-2 text-xs"
               aria-expanded={isProjectAssetsOpen}
+              aria-controls="project-assets-panel"
+              aria-label="Project Assets"
               title="Browse and focus Project ThreeD Assets"
               onClick={() => {
                 if (isProjectAssetsOpen) {
-                  setIsProjectAssetsOpen(false);
+                  closeProjectAssets(false);
                 } else {
                   openProjectAssets();
                 }
               }}
             >
               <ListTree className="h-3.5 w-3.5" />
-              Project Assets
+              <span className="hidden sm:inline">Project Assets</span>
               <span className="text-[10px] text-muted-foreground">
                 {projectRuntimeMarkers.length}
               </span>
@@ -4272,99 +2804,24 @@ function UnifiedMapPageInner() {
         </div>
       </div>
 
-      {selectedProjectId && isProjectAssetsOpen && !isFullscreen && (
-        <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 flex-col overflow-hidden rounded-md border bg-background p-3 shadow-xl">
-          <div className="mb-2 flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold">Project Assets</h2>
-              <p className="text-[11px] text-muted-foreground">
-                Select an item to activate and focus its ThreeD Marker.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 shrink-0"
-              aria-label="Close Project Assets"
-              title="Close Project Assets"
-              onClick={() => setIsProjectAssetsOpen(false)}
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-
-          <div className="relative mb-2">
-            <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={projectAssetSearch}
-              onChange={(event) => setProjectAssetSearch(event.target.value)}
-              placeholder="Search name or type"
-              className="h-8 pl-7 pr-8 text-xs"
-              aria-label="Search Project Assets"
-            />
-            {projectAssetSearch && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
-                aria-label="Clear Project Asset search"
-                title="Clear search"
-                onClick={() => setProjectAssetSearch('')}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            )}
-          </div>
-
-          <div className="mb-2 flex items-center justify-between text-[10px] text-muted-foreground">
-            <span>{visibleProjectAssets.length} shown</span>
-            <span>{projectRuntimeMarkers.length} Project items</span>
-          </div>
-
-          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
-            {visibleProjectAssets.length === 0 ? (
-              <p className="py-8 text-center text-xs text-muted-foreground">
-                {projectRuntimeMarkers.length === 0
-                  ? 'This Project has no ThreeD assets.'
-                  : 'No Project assets match this search.'}
-              </p>
-            ) : visibleProjectAssets.map((marker) => {
-              const isSelected = selectedMarker?.id === marker.id;
-              const sourceAssetId = Number(marker.data?.id);
-              const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
-                ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId) ?? marker.position
-                : marker.position;
-              return (
-                <button
-                  key={marker.id}
-                  type="button"
-                  className={`w-full rounded-md border px-2 py-1.5 text-left transition-colors hover:border-cyan-500/60 hover:bg-cyan-500/5 ${
-                    isSelected ? 'border-cyan-500 bg-cyan-500/10 ring-1 ring-cyan-500/30' : 'bg-card'
-                  }`}
-                  aria-pressed={isSelected}
-                  onClick={() => focusProjectAsset(marker)}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-muted text-xs">
-                      {getThreeDIcon(marker.type)}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-xs font-medium">{marker.name}</span>
-                      <span className="block text-[10px] text-muted-foreground">
-                        {getThreeDLabel(marker.type)} · X{currentPosition.x.toFixed(1)} Y{currentPosition.y.toFixed(1)} Z{currentPosition.z.toFixed(1)}
-                      </span>
-                    </span>
-                    <Crosshair className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-cyan-500' : 'text-muted-foreground'}`} />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
+      <ProjectAssetsPanel
+        selectedProjectId={selectedProjectId}
+        isOpen={isProjectAssetsOpen}
+        isFullscreen={isFullscreen}
+        search={projectAssetSearch}
+        setSearch={setProjectAssetSearch}
+        typeFilter={projectAssetType}
+        setTypeFilter={setProjectAssetType}
+        searchInputRef={projectAssetSearchRef}
+        projectRuntimeMarkers={projectRuntimeMarkers}
+        projectAssetTypes={projectAssetTypes}
+        projectAssetTypeCounts={projectAssetTypeCounts}
+        visibleProjectAssets={visibleProjectAssets}
+        selectedMarker={selectedMarker}
+        resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
+        closeProjectAssets={closeProjectAssets}
+        focusProjectAsset={focusProjectAsset}
+      />
       {selectedProjectId && isModelLibraryOpen && !isFullscreen && (
         <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 flex-col overflow-hidden rounded-md border bg-background p-3 shadow-xl">
           <div className="mb-2 flex items-center justify-between gap-2">
@@ -5255,7 +3712,7 @@ function UnifiedMapPageInner() {
       )}
 
       {/* ✅ Map Container */}
-      <Card className={`${isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''} ${(isModelLibraryOpen || isProjectAssetsOpen) && !isFullscreen ? 'ml-[18.5rem]' : ''} transition-[margin]`}>
+      <Card className={`${isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''} ${(isModelLibraryOpen || isProjectAssetsOpen) && !isFullscreen ? 'sm:ml-[18.5rem]' : ''} transition-[margin]`}>
         <CardContent className="p-0 overflow-hidden">
           <div style={{ height: isFullscreen ? '100vh' : 'calc(100vh - 122px)' }}>
             
@@ -5445,6 +3902,15 @@ function UnifiedMapPageInner() {
       <DetailsCard
         selected={selectedMarker || selectedIncident}
         projectId={selectedProjectId}
+        leftOffsetRem={!isFullscreen
+          ? isFarmBotLibraryOpen || isBedPlacementOpen || isPlantingPlacementOpen
+            ? 26.75
+            : isCharacterLibraryOpen
+              ? 24.75
+              : isModelLibraryOpen || isProjectAssetsOpen
+                ? 18.75
+                : 0.75
+          : 0.75}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
         controlledCharacterId={controlledCharacterId}
         liveControlledCharacterPosition={liveControlledCharacterPosition}

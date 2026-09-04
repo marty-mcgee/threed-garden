@@ -112,9 +112,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         
         {/* Footer */}
         <footer className="py-1.5 text-center text-xs text-muted-foreground">
-          <p className="text-muted">
-            Built by Marty McGee w Next.js, Neon, Postgres, Drizzle ORM, shadcn/ui, Three.js, R3F Fiber + Drei
-            @ <a href="https://github.com/marty-mcgee/marty-mcgee-neon" target="_blank">github/threed</a>
+          <p className="text-gray-600">
+            Built by Marty McGee w TypeScript, React, Next.js, Neon, Drizzle ORM, Postgres, radix-ui, Three.js, R3F Fiber, Drei, Rap Physics, 3D Object Libraries
+            @ <a href="https://github.com/marty-mcgee/marty-mcgee-neon" target="_blank" className="text-gray-600">github/threed</a>
           </p>
         </footer>
       </div>

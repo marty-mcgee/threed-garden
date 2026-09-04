@@ -10,7 +10,7 @@ export default function HomePage() {
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
   const [tracks, setTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Player state
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,7 +19,7 @@ export default function HomePage() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
-  
+
   const currentTrack = tracks[currentTrackIndex];
 
   // Fetch first album on mount
@@ -155,41 +155,41 @@ export default function HomePage() {
 
   // Content Links (features)
   const features = [
-  { 
-    icon: "🎵", 
-    title: "Music Streaming", 
-    description: "Full-featured music player with waveform visualization", 
-    href: "/dashboard/music",
-    color: "from-purple-500 to-pink-500", 
-    external: false 
-  },
-  { 
-    icon: "🌱", 
-    title: "ThreeD Garden", 
-    description: "Interactive 3D garden with FarmBot integration", 
-    href: "/dashboard/map?projectId=8",
-    // href: "https://threed-garden-neon.vercel.app/", 
-    color: "from-green-500 to-emerald-500", 
-    external: false 
-  },
-  { 
-    icon: "📻", 
-    title: "Traffic Monitor", 
-    description: "Real-time CHP, Caltrans, and wildfire tracking", 
-    href: "/dashboard/traffic",
-    // href: "https://mendocinocoast.news/traffic/", 
-    color: "from-blue-500 to-cyan-500", 
-    external: false 
-  },
-  { 
-    icon: "💻", 
-    title: "Full-Stack Platform", 
-    description: "Next.js 15, Neon, Drizzle, TypeScript, Three.js, R3F", 
-    href: "https://github.com/marty-mcgee/marty-mcgee-neon", 
-    color: "from-gray-500 to-gray-700", 
-    external: true 
-  },
-];
+    {
+      icon: "🌱",
+      title: "ThreeD Garden",
+      description: "Interactive 3D garden using real Physics, with FarmBot integration",
+      href: "/dashboard/map?projectId=8",
+      // href: "https://threed-garden-neon.vercel.app/", 
+      color: "from-green-500 to-emerald-500",
+      external: false
+    },
+    {
+      icon: "📻",
+      title: "Traffic Monitor",
+      description: "Real-time CHP, Caltrans, Calfire incident tracking",
+      href: "/dashboard/traffic",
+      // href: "https://mendocinocoast.news/traffic/", 
+      color: "from-blue-500 to-cyan-500",
+      external: false
+    },
+    {
+      icon: "🎵",
+      title: "Music Streaming",
+      description: "Full-featured music player with waveform mixing",
+      href: "/dashboard/music",
+      color: "from-purple-500 to-pink-500",
+      external: false
+    },
+    {
+      icon: "💻",
+      title: "Full-Stack Physics Platform",
+      description: "Next.js 16, Neon, Drizzle ORM, Postgres, TypeScript, Three.js, R3F, Physics, ThreeD",
+      href: "https://github.com/marty-mcgee/marty-mcgee-neon",
+      color: "from-gray-500 to-gray-700",
+      external: true
+    },
+  ];
 
   const stats = [
     { value: "8+", label: "Albums", icon: "🎵" },
@@ -217,22 +217,22 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-      
+
       {/* Hero Section with Blurred Background Image */}
       <div className="relative overflow-hidden">
         {/* Background Image with Blur */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 blur-md"
-          style={{ 
+          style={{
             backgroundImage: `url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&h=1080&fit=crop')`,
           }}
         />
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-black/50" />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-pink-600/50" />
-        
+
         {/* Content */}
         <div className="relative w-full px-6 py-16 lg:py-20">
           <div className="max-w-4xl mx-auto text-center">
@@ -252,7 +252,7 @@ export default function HomePage() {
             <p className="text-lg lg:text-xl mb-6 text-white/90">
               Music • Web • 3D Business • Cooking • Gardening • Broadcasting
             </p>
-            
+
             {/* Hero CTA Buttons - Horizontal layout */}
             <div className="flex flex-wrap gap-3 justify-center">
               {features.map((feature, index) => {
@@ -262,7 +262,7 @@ export default function HomePage() {
                     {feature.title}
                   </>
                 );
-                
+
                 if (feature.external) {
                   return (
                     <a
@@ -276,7 +276,7 @@ export default function HomePage() {
                     </a>
                   );
                 }
-                
+
                 return (
                   <Link
                     key={index}
