@@ -33,6 +33,7 @@ import {
   Gamepad2,
   Pause,
   ScanSearch,
+  ListTree,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
@@ -59,6 +60,7 @@ import {
   MapLayerConfig,
   MapViewMode,
   ProjectThreeDMarkerRecord,
+  RuntimeMarker,
   ThreeDActionTarget,
   ThreeDCharacterOrchestrationRequest,
   UnifiedMapData,
@@ -1730,6 +1732,8 @@ function UnifiedMapPageInner() {
   }>>([]);
   const [projectGeographicOrigin, setProjectGeographicOrigin] = useState<ThreeDGeographicOrigin | null>(null);
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
+  const [isProjectAssetsOpen, setIsProjectAssetsOpen] = useState(false);
+  const [projectAssetSearch, setProjectAssetSearch] = useState('');
   const [isCharacterLibraryOpen, setIsCharacterLibraryOpen] = useState(false);
   const [isFarmBotLibraryOpen, setIsFarmBotLibraryOpen] = useState(false);
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
@@ -2037,6 +2041,7 @@ function UnifiedMapPageInner() {
   ) => runtimeMarkerPositionResolverRef.current?.(moduleType, assetId) ?? null, []);
 
   const openModelLibrary = useCallback(async () => {
+    setIsProjectAssetsOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
@@ -2081,6 +2086,7 @@ function UnifiedMapPageInner() {
   }, [placementThreedId, placingModel]);
 
   const openCharacterLibrary = useCallback(async () => {
+    setIsProjectAssetsOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
@@ -2118,6 +2124,7 @@ function UnifiedMapPageInner() {
   }, [libraryCharacters.length, loadingLibraryCharacters]);
 
   const openFarmBotLibrary = useCallback(async () => {
+    setIsProjectAssetsOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
@@ -2154,6 +2161,7 @@ function UnifiedMapPageInner() {
   }, [libraryFarmBots.length, loadingLibraryFarmBots]);
 
   const openPlantingPlacement = useCallback(async () => {
+    setIsProjectAssetsOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
@@ -2195,6 +2203,7 @@ function UnifiedMapPageInner() {
   }, [loadingPlantingOptions, plantingOptions.length]);
 
   const openBedPlacement = useCallback(() => {
+    setIsProjectAssetsOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
@@ -2404,6 +2413,8 @@ function UnifiedMapPageInner() {
     setPlacementModel(null);
     setPlacementCharacter(null);
     setPlacementScaleMultiplier('1');
+    setIsProjectAssetsOpen(false);
+    setProjectAssetSearch('');
     setIsModelLibraryOpen(false);
     setIsCharacterLibraryOpen(false);
     setBedPlacementActive(false);
@@ -3783,12 +3794,16 @@ function UnifiedMapPageInner() {
     return () => document.removeEventListener('pointerdown', dismissProjectSummary);
   }, [isProjectSummaryOpen]);
 
+  const projectRuntimeMarkers = useMemo(
+    () => buildThreeDRuntimeMarkerResult(data.threed.raw).markers,
+    [data.threed.raw],
+  );
   const projectEnvironmentMarkers = useMemo(
-    () => buildThreeDRuntimeMarkerResult(data.threed.raw).markers.filter(
+    () => projectRuntimeMarkers.filter(
       (marker) => marker.type === 'models'
         && marker.metadata?.placementRole === 'environment',
     ),
-    [data.threed.raw],
+    [projectRuntimeMarkers],
   );
   const openEnvironmentDetails = useCallback((marker = projectEnvironmentMarkers[0]) => {
     if (!marker) return;
@@ -3798,6 +3813,33 @@ function UnifiedMapPageInner() {
     setIsProjectSummaryOpen(false);
     setIsSceneAddMenuOpen(false);
   }, [projectEnvironmentMarkers]);
+
+  const openProjectAssets = useCallback(() => {
+    setIsModelLibraryOpen(false);
+    setPlacementModel(null);
+    setIsCharacterLibraryOpen(false);
+    setPlacementCharacter(null);
+    setIsFarmBotLibraryOpen(false);
+    setPlacementFarmBot(null);
+    setIsBedPlacementOpen(false);
+    setBedPlacementActive(false);
+    setIsPlantingPlacementOpen(false);
+    setPlantingPlacementActive(false);
+    setIsSceneAddMenuOpen(false);
+    setIsProjectSummaryOpen(false);
+    setIsProjectAssetsOpen(true);
+  }, []);
+
+  const focusProjectAsset = useCallback((marker: RuntimeMarker) => {
+    const sourceAssetId = Number(marker.data?.id);
+    const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
+      ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId)
+      : null;
+    setSelectedIncident(null);
+    setSelectedMarker(currentPosition ? { ...marker, position: currentPosition } : marker);
+    setViewMode('3d');
+    window.requestAnimationFrame(() => setFocusRequest((request) => request + 1));
+  }, [resolveRuntimeMarkerPosition]);
 
   // ✅ Loading state with skeleton UI
   if (loading) {
@@ -3852,6 +3894,16 @@ function UnifiedMapPageInner() {
   const visibleLibraryModels = libraryCategorySlug === 'all'
     ? libraryModels
     : libraryModels.filter((model) => model.categories?.some((category) => category.slug === libraryCategorySlug));
+  const normalizedProjectAssetSearch = projectAssetSearch.trim().toLowerCase();
+  const visibleProjectAssets = projectRuntimeMarkers
+    .filter((marker) => normalizedProjectAssetSearch.length === 0
+      || marker.name.toLowerCase().includes(normalizedProjectAssetSearch)
+      || getThreeDLabel(marker.type).toLowerCase().includes(normalizedProjectAssetSearch))
+    .sort((left, right) => (
+      getThreeDLabel(left.type).localeCompare(getThreeDLabel(right.type))
+      || left.name.localeCompare(right.name)
+      || left.id.localeCompare(right.id)
+    ));
   return (
     <div className="relative space-y-1.5">
       {ToastComponent}
@@ -3951,6 +4003,19 @@ function UnifiedMapPageInner() {
                     ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     : <Save className="h-3.5 w-3.5" />}
                   Save ThreeD Project
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-full justify-start text-xs"
+                  onClick={openProjectAssets}
+                >
+                  <ListTree className="h-3.5 w-3.5" />
+                  Project Assets
+                  <span className="ml-auto text-[10px] text-muted-foreground">
+                    {projectRuntimeMarkers.length}
+                  </span>
                 </Button>
                 {projectEnvironmentMarkers.map((marker) => (
                   <Button
@@ -4123,6 +4188,30 @@ function UnifiedMapPageInner() {
           )}
 
           {selectedProjectId && (
+            <Button
+              type="button"
+              variant={isProjectAssetsOpen ? 'secondary' : 'outline'}
+              size="sm"
+              className="h-7 gap-1 px-2 text-xs"
+              aria-expanded={isProjectAssetsOpen}
+              title="Browse and focus Project ThreeD Assets"
+              onClick={() => {
+                if (isProjectAssetsOpen) {
+                  setIsProjectAssetsOpen(false);
+                } else {
+                  openProjectAssets();
+                }
+              }}
+            >
+              <ListTree className="h-3.5 w-3.5" />
+              Project Assets
+              <span className="text-[10px] text-muted-foreground">
+                {projectRuntimeMarkers.length}
+              </span>
+            </Button>
+          )}
+
+          {selectedProjectId && (
             projectEnvironmentMarkers.length > 0 && (
               <Button
                 type="button"
@@ -4182,6 +4271,99 @@ function UnifiedMapPageInner() {
           </Button>
         </div>
       </div>
+
+      {selectedProjectId && isProjectAssetsOpen && !isFullscreen && (
+        <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 flex-col overflow-hidden rounded-md border bg-background p-3 shadow-xl">
+          <div className="mb-2 flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold">Project Assets</h2>
+              <p className="text-[11px] text-muted-foreground">
+                Select an item to activate and focus its ThreeD Marker.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              aria-label="Close Project Assets"
+              title="Close Project Assets"
+              onClick={() => setIsProjectAssetsOpen(false)}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+
+          <div className="relative mb-2">
+            <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={projectAssetSearch}
+              onChange={(event) => setProjectAssetSearch(event.target.value)}
+              placeholder="Search name or type"
+              className="h-8 pl-7 pr-8 text-xs"
+              aria-label="Search Project Assets"
+            />
+            {projectAssetSearch && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
+                aria-label="Clear Project Asset search"
+                title="Clear search"
+                onClick={() => setProjectAssetSearch('')}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+
+          <div className="mb-2 flex items-center justify-between text-[10px] text-muted-foreground">
+            <span>{visibleProjectAssets.length} shown</span>
+            <span>{projectRuntimeMarkers.length} Project items</span>
+          </div>
+
+          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
+            {visibleProjectAssets.length === 0 ? (
+              <p className="py-8 text-center text-xs text-muted-foreground">
+                {projectRuntimeMarkers.length === 0
+                  ? 'This Project has no ThreeD assets.'
+                  : 'No Project assets match this search.'}
+              </p>
+            ) : visibleProjectAssets.map((marker) => {
+              const isSelected = selectedMarker?.id === marker.id;
+              const sourceAssetId = Number(marker.data?.id);
+              const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
+                ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId) ?? marker.position
+                : marker.position;
+              return (
+                <button
+                  key={marker.id}
+                  type="button"
+                  className={`w-full rounded-md border px-2 py-1.5 text-left transition-colors hover:border-cyan-500/60 hover:bg-cyan-500/5 ${
+                    isSelected ? 'border-cyan-500 bg-cyan-500/10 ring-1 ring-cyan-500/30' : 'bg-card'
+                  }`}
+                  aria-pressed={isSelected}
+                  onClick={() => focusProjectAsset(marker)}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-muted text-xs">
+                      {getThreeDIcon(marker.type)}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-xs font-medium">{marker.name}</span>
+                      <span className="block text-[10px] text-muted-foreground">
+                        {getThreeDLabel(marker.type)} · X{currentPosition.x.toFixed(1)} Y{currentPosition.y.toFixed(1)} Z{currentPosition.z.toFixed(1)}
+                      </span>
+                    </span>
+                    <Crosshair className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-cyan-500' : 'text-muted-foreground'}`} />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {selectedProjectId && isModelLibraryOpen && !isFullscreen && (
         <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 flex-col overflow-hidden rounded-md border bg-background p-3 shadow-xl">
@@ -5073,7 +5255,7 @@ function UnifiedMapPageInner() {
       )}
 
       {/* ✅ Map Container */}
-      <Card className={`${isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''} ${isModelLibraryOpen && !isFullscreen ? 'ml-[18.5rem]' : ''} transition-[margin]`}>
+      <Card className={`${isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''} ${(isModelLibraryOpen || isProjectAssetsOpen) && !isFullscreen ? 'ml-[18.5rem]' : ''} transition-[margin]`}>
         <CardContent className="p-0 overflow-hidden">
           <div style={{ height: isFullscreen ? '100vh' : 'calc(100vh - 122px)' }}>
             

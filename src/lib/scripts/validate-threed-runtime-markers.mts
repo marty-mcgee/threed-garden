@@ -854,6 +854,8 @@ assert.equal(environmentColliderActivation.spawnOverlapDeferredCount, 1);
 assert.equal(environmentColliderActivation.oversizedDeferredCount, 0);
 assert.equal(environmentColliderActivation.capacityDeferredCount, 1);
 assert.equal(environmentColliderActivation.priorityPointCount, 0);
+assert.equal(environmentColliderActivation.prioritySelectedCount, 0);
+assert.equal(environmentColliderActivation.coverageSelectedCount, MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS);
 assert.deepEqual(environmentColliderActivation.boxes[0].center, [1, 1, 0]);
 assert.deepEqual(
   environmentColliderActivation.boxes[MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS - 1].center,
@@ -875,12 +877,14 @@ const environmentColliderQualityActivation = createThreeDEnvironmentColliderActi
 }, [], [{ x: 0, y: 1, z: 0 }]);
 assert.deepEqual(
   environmentColliderQualityActivation.boxes.map((box) => box.center),
-  [[2, 1, 0], [10, 1, 0], [50, 1, 0]],
+  [[2, 1, 0], [50, 1, 0], [10, 1, 0]],
 );
 assert.equal(environmentColliderQualityActivation.oversizedDeferredCount, 1);
 assert.equal(environmentColliderQualityActivation.capacityDeferredCount, 0);
 assert.equal(environmentColliderQualityActivation.priorityPointCount, 1);
-validationStep('Environment collider activation prioritizes Character-accessible boxes and defers oversized bounds');
+assert.equal(environmentColliderQualityActivation.prioritySelectedCount, 2);
+assert.equal(environmentColliderQualityActivation.coverageSelectedCount, 1);
+validationStep('Environment collider activation balances Character proximity, map coverage, and oversized deferral');
 
 const gltfInspectionDocument = {
   scene: 0,

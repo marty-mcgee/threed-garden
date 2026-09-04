@@ -814,6 +814,8 @@ function ProjectModelMarkerBody({
       oversizedDeferredCount: environmentColliderPlan.oversizedDeferredCount,
       capacityDeferredCount: environmentColliderPlan.capacityDeferredCount,
       priorityPointCount: environmentColliderPlan.priorityPointCount,
+      prioritySelectedCount: environmentColliderPlan.prioritySelectedCount,
+      coverageSelectedCount: environmentColliderPlan.coverageSelectedCount,
     });
   }, [environmentColliderPlan, isEnvironment, marker.id, physicsDebug]);
 

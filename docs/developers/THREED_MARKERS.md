@@ -828,3 +828,20 @@ The ranking is computed once from stable Project marker positions; it does not a
 - TypeScript, the 48-group ThreeD Runtime Marker validation suite, and diff integrity pass.
 
 This manually verified checkpoint was released successfully to production as **v0.19.4c — ThreeD Environment Character Collision** (`package.json` version `0.19.4-centaur`) on September 3, 2026. Full activation of every Environment mesh bound and dynamic collider streaming remain outside this release boundary.
+
+## v0.19.4d Project Asset navigation and collision coverage boundary
+
+The Dashboard now exposes a **Project Assets** panel as a navigation surface over the complete unfiltered Project Runtime Marker collection. It creates no second inventory and performs no new API request. The panel lists the existing valid Beds, Characters, FarmBots, Models, and Plantings, supports name/type search, resolves current positions through the Runtime Marker registry, and remains open while the user navigates between entries.
+
+Selecting a row is one deliberate Dashboard operation: clear any Incident selection, select the existing Runtime Marker, switch to the authoritative ThreeD surface, and issue the established camera-focus request after selection is committed. The same marker therefore owns the Scene highlight and DetailsCard. The panel is mutually exclusive with Add-to-Scene Library and placement panels, resets on Project change, and shifts the Scene horizontally rather than obscuring it. Project Marker identity, CRUD, Layers, physics, and persistence remain unchanged.
+
+The Environment activation planner continues to mount no more than 1,024 fixed cuboids, defer Character-spawn overlaps and bounds wider, taller, or deeper than 128 Scene units, and create all Rapier objects through the Environment marker owner. Within that fixed budget, selection now alternates between two deterministic orders:
+
+1. shortest collision-box distance from the stable Project positions of available Characters;
+2. the preview planner's existing map-wide spatial coverage order.
+
+Duplicate descriptions are removed by identity. This prevents dense nearby geometry, such as repeated crop meshes, from consuming the complete collider budget while preserving Character-relevant obstacles near admission points. Selection is computed once from stable Project state; it introduces no movement subscription, frame-level React state, dynamic collider streaming, or Rapier remount cycle.
+
+Physics Debug adds `prioritySelectedCount` and `coverageSelectedCount` to the bounded Environment summary. Both counts were manually confirmed above zero while active collision remained at or below 1,024. Near and distant cyan structures remained accessible as Character colliders, and Character loading, animation, capsule/model alignment, selection, camera behavior, WASD movement, and stopping remained stable.
+
+This checkpoint is designated **v0.19.4d — ThreeD Project Asset Navigation and Environment Collision Coverage** (`package.json` version `0.19.4-delta`). It adds no schema, API mutation, uploaded executable code, automatic persistence, or full per-mesh collision activation.

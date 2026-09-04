@@ -27,6 +27,8 @@ export interface ThreeDEnvironmentColliderActivationPlan {
   oversizedDeferredCount: number;
   capacityDeferredCount: number;
   priorityPointCount: number;
+  prioritySelectedCount: number;
+  coverageSelectedCount: number;
   boxes: ThreeDEnvironmentCollisionPreviewBox[];
 }
 
@@ -87,20 +89,41 @@ export function createThreeDEnvironmentColliderActivationPlan(
   const validPriorityPoints = priorityPoints.filter(
     (point) => [point.x, point.y, point.z].every(Number.isFinite),
   );
-  const rankedBoxes = validPriorityPoints.length === 0
-    ? safeBoxes
+  const priorityOrder = validPriorityPoints.length === 0
+    ? []
     : safeBoxes
-        .map((box, index) => ({
-          box,
-          index,
-          distance: Math.min(
-            ...validPriorityPoints.map((point) => squaredDistanceToBox(box, point)),
-          ),
-        }))
-        .sort((left, right) => left.distance - right.distance || left.index - right.index)
-        .map(({ box }) => box);
-  const boxes = rankedBoxes.slice(0, MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS);
-  const capacityDeferredCount = Math.max(0, rankedBoxes.length - boxes.length);
+      .map((box, index) => ({
+        box,
+        index,
+        distance: Math.min(
+          ...validPriorityPoints.map((point) => squaredDistanceToBox(box, point)),
+        ),
+      }))
+      .sort((left, right) => left.distance - right.distance || left.index - right.index)
+      .map(({ box }) => box);
+  const boxes: ThreeDEnvironmentCollisionPreviewBox[] = [];
+  const selected = new Set<ThreeDEnvironmentCollisionPreviewBox>();
+  let prioritySelectedCount = 0;
+  let coverageSelectedCount = 0;
+  const append = (
+    box: ThreeDEnvironmentCollisionPreviewBox | undefined,
+    source: 'priority' | 'coverage',
+  ) => {
+    if (!box || selected.has(box) || boxes.length >= MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS) return;
+    selected.add(box);
+    boxes.push(box);
+    if (source === 'priority') prioritySelectedCount += 1;
+    else coverageSelectedCount += 1;
+  };
+  if (priorityOrder.length === 0) {
+    for (const box of safeBoxes) append(box, 'coverage');
+  } else {
+    for (let index = 0; boxes.length < Math.min(safeBoxes.length, MAX_ACTIVE_ENVIRONMENT_CUBOID_COLLIDERS); index += 1) {
+      append(priorityOrder[index], 'priority');
+      append(safeBoxes[index], 'coverage');
+    }
+  }
+  const capacityDeferredCount = Math.max(0, safeBoxes.length - boxes.length);
   return {
     plannedBoxCount: preview?.boxes.length ?? 0,
     activeColliderCount: boxes.length,
@@ -109,6 +132,8 @@ export function createThreeDEnvironmentColliderActivationPlan(
     oversizedDeferredCount,
     capacityDeferredCount,
     priorityPointCount: validPriorityPoints.length,
+    prioritySelectedCount,
+    coverageSelectedCount,
     boxes,
   };
 }
