@@ -24,7 +24,7 @@ export function SceneOperationStatus({
 
   return (
     <div
-      className={`flex min-h-8 max-w-[32rem] items-center gap-2 rounded-md border py-1 pl-2 text-[11px] ${
+      className={`absolute right-2 top-10 z-[60] flex min-h-8 w-[min(32rem,calc(100vw-1rem))] items-center gap-2 rounded-md border py-1 pl-2 text-[11px] shadow-lg backdrop-blur-sm ${
         operation.phase === 'pending'
           ? 'border-amber-500/35 bg-amber-500/10 text-amber-800 dark:text-amber-200'
           : 'border-cyan-500/35 bg-cyan-500/10 text-cyan-800 dark:text-cyan-200'

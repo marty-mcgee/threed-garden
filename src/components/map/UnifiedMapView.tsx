@@ -3,7 +3,7 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
 import { LeafletMap } from '@/components/map/LeafletMap';
 import {
@@ -25,6 +25,7 @@ import type {
   ProjectThreeDViewState,
   ThreeDProjectViewState,
 } from '@/lib/services/threed/markers/project-view-state-core';
+import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 
 export type ProjectThreeDMarkerSnapshotProvider = () => ProjectThreeDMarkerSnapshotInput[];
 export type ProjectThreeDViewStateProvider = () => ProjectThreeDViewState;
@@ -40,9 +41,11 @@ const ThreeDScene = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center h-full bg-muted/20">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
+      <ThreeDProjectLoadingPresentation
+        progress={30}
+        label="Loading ThreeD Scene runtime…"
+        className="h-full"
+      />
     ),
   }
 );

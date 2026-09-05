@@ -46,6 +46,7 @@ import { DetailsCard } from '@/components/map/details/DetailsCard';
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
 import { SceneOperationStatus } from '@/components/map/panels/SceneOperationStatus';
+import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import {
   UnifiedMapView,
@@ -180,9 +181,12 @@ function StatCard({
 export default function UnifiedMapPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center h-[600px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
+      <ThreeDProjectLoadingPresentation
+        progress={5}
+        label="Starting Project workspace…"
+        className="h-[calc(100dvh-86px)]"
+        showProjectHeader
+      />
     }>
       <UnifiedMapPageInner />
     </Suspense>
@@ -906,6 +910,20 @@ function UnifiedMapPageInner() {
 
   // ✅ Handle project selection
   const handleProjectSelect = (projectId: string) => {
+    // Enter the load boundary in the same React event transaction as the
+    // Project identity change. Otherwise a transient Canvas can mount with
+    // the new Project ID and previous Project data, then unmount when the
+    // load effect starts. R3F may still be asynchronously connecting that
+    // Canvas's DOM events after its target has been removed.
+    setLoading(true);
+    // Selection, Character control, and ready-to-place operations belong to
+    // the current Project. Clear them before changing identity so no
+    // DetailsCard or Scene operation can carry into the incoming Project.
+    setSelectedMarker(null);
+    setSelectedIncident(null);
+    setControlledCharacterId(null);
+    setMovingModelInstance(null);
+    setCameraMode('stationary');
     setSelectedProjectId(projectId);
     setIsProjectSummaryOpen(false);
     setIsDefaultView(false);
@@ -918,12 +936,16 @@ function UnifiedMapPageInner() {
     setPlacementThreedId(null);
     setPlacementModel(null);
     setPlacementCharacter(null);
+    setPlacementFarmBot(null);
     setPlacementScaleMultiplier('1');
+    setPlacementModelRole('object');
     setIsProjectAssetsOpen(false);
     setProjectAssetSearch('');
     setProjectAssetType('all');
     setIsModelLibraryOpen(false);
     setIsCharacterLibraryOpen(false);
+    setIsFarmBotLibraryOpen(false);
+    setIsSceneAddMenuOpen(false);
     setBedPlacementActive(false);
     setIsBedPlacementOpen(false);
     setPlantingPlacementActive(false);
@@ -2374,44 +2396,16 @@ function UnifiedMapPageInner() {
     window.requestAnimationFrame(() => setFocusRequest((request) => request + 1));
   }, [resolveRuntimeMarkerPosition]);
 
-  // ✅ Loading state with skeleton UI
+  // Keep Project data loading visually continuous with the ThreeD Scene
+  // presentation that follows it.
   if (loading) {
     return (
-      <div className="space-y-2">
-        <div className="flex flex-wrap justify-between items-center gap-4 animate-pulse">
-          <div>
-            <div className="h-7 w-48 bg-muted rounded mb-2" />
-            <div className="h-4 w-64 bg-muted rounded" />
-          </div>
-          <div className="flex gap-2">
-            <div className="h-8 w-24 bg-muted rounded-lg" />
-            <div className="h-8 w-16 bg-muted rounded-lg" />
-            <div className="h-8 w-20 bg-muted rounded-lg" />
-          </div>
-        </div>
-        {/* <div className="border rounded-lg p-3 animate-pulse">
-          <div className="flex gap-2">
-            <div className="h-6 w-16 bg-muted rounded-full" />
-            <div className="h-6 w-16 bg-muted rounded-full" />
-            <div className="h-6 w-16 bg-muted rounded-full" />
-          </div>
-        </div> */}
-        {/* <div className="border rounded-lg p-3 animate-pulse">
-          <div className="flex gap-2">
-            <div className="h-6 w-20 bg-muted rounded-full" />
-            <div className="h-6 w-20 bg-muted rounded-full" />
-            <div className="h-6 w-20 bg-muted rounded-full" />
-          </div>
-        </div> */}
-        <div className="border rounded-lg animate-pulse">
-          <div className="h-[650px] bg-muted/30 flex items-center justify-center">
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="w-10 h-10 animate-spin text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">Loading map data...</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ThreeDProjectLoadingPresentation
+        progress={20}
+        label="Loading Project data…"
+        className="h-[calc(100dvh-86px)]"
+        showProjectHeader
+      />
     );
   }
 

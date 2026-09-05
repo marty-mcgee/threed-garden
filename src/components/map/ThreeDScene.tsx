@@ -47,6 +47,7 @@ import {
 } from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
+import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { FadingRing } from '@/components/threed/shared/FadingRing';
 import { PulseRing } from '@/components/threed/shared/PulseRing';
 import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
@@ -257,9 +258,23 @@ function ControlsReadyNotifier({ controlsRef, onReady }: { controlsRef: any; onR
   return null;
 }
 
+function SceneFrameReadyNotifier({ onReady }: { onReady: () => void }) {
+  const reportedRef = useRef(false);
+
+  useFrame(() => {
+    if (reportedRef.current) return;
+    reportedRef.current = true;
+    onReady();
+  });
+
+  return null;
+}
+
 // v0.16.1-beta: Camera Controller — supports multiple view modes for selected characters
 // v0.16.2-beta: re-added 'orbit' mode
 type CameraViewMode = 'follow' | 'topdown' | 'firstperson' | 'orbit' | 'stationary';
+type ThreeDScenePresentationPhase = 'pre-production' | 'production' | 'post-production';
+type ThreeDSceneIntro = 'fade';
 
 function CameraController({
   controlsRef,
@@ -925,6 +940,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
   onControlChange,
   cameraFollowRef,
   livePositionsRef,
+  onRuntimeSettled,
 }: any) {
   const signature = characterSceneSignature(marker);
   const characterDataRef = useRef(marker.data);
@@ -974,6 +990,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
             : undefined
         }
         isActionTarget={isActionTarget}
+        onRuntimeSettled={() => onRuntimeSettled?.(String(marker.id))}
       />
     );
   }
@@ -988,7 +1005,11 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
           selectCharacter();
         }}
       >
-        <GardenCharacter character={characterData} positionedByParent />
+        <GardenCharacter
+          character={characterData}
+          positionedByParent
+          onRuntimeSettled={() => onRuntimeSettled?.(String(marker.id))}
+        />
         {isSelected && <FadingRing position={[0, 0.01, 0]} innerRadius={0.7} outerRadius={1.0} />}
         {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.85} />}
       </group>
@@ -1010,10 +1031,11 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
   && previous.onControlChange === next.onControlChange
   && previous.cameraFollowRef === next.cameraFollowRef
   && previous.livePositionsRef === next.livePositionsRef
+  && previous.onRuntimeSettled === next.onRuntimeSettled
 ));
 
 // ✅ ThreeD Marker Component
-const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, characterSpawnPositions }: any) {
+const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -1036,6 +1058,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
         onControlChange={onControlChange}
         cameraFollowRef={cameraFollowRef}
         livePositionsRef={livePositionsRef}
+        onRuntimeSettled={onCharacterRuntimeSettled}
       />
     );
   }
@@ -1655,20 +1678,54 @@ export function ThreeDScene({
     .map((marker) => String(marker.id))
     .sort(), [sceneMarkers]);
   const requiredModelMarkerKey = requiredModelMarkerIds.join('|');
-  const [settledModelMarkerIds, setSettledModelMarkerIds] = useState<Set<string>>(new Set());
-  useEffect(() => {
-    setSettledModelMarkerIds(new Set());
-  }, [requiredModelMarkerKey]);
+  const modelSettlementKey = `${projectId ?? 'none'}:${requiredModelMarkerKey}`;
+  const [modelSettlement, setModelSettlement] = useState<{
+    key: string;
+    markerIds: Set<string>;
+  }>(() => ({ key: modelSettlementKey, markerIds: new Set() }));
   const handleModelRuntimeSettled = useCallback((markerId: string) => {
-    setSettledModelMarkerIds((current) => {
-      if (current.has(markerId)) return current;
-      const next = new Set(current);
-      next.add(markerId);
-      return next;
+    setModelSettlement((current) => {
+      const currentMarkerIds = current.key === modelSettlementKey
+        ? current.markerIds
+        : new Set<string>();
+      if (currentMarkerIds.has(markerId)) return current;
+      const nextMarkerIds = new Set(currentMarkerIds);
+      nextMarkerIds.add(markerId);
+      return { key: modelSettlementKey, markerIds: nextMarkerIds };
     });
-  }, []);
+  }, [modelSettlementKey]);
+  const settledModelMarkerIds = modelSettlement.key === modelSettlementKey
+    ? modelSettlement.markerIds
+    : new Set<string>();
   const allRequiredModelsSettled = requiredModelMarkerIds.every(
     (markerId) => settledModelMarkerIds.has(markerId),
+  );
+  const requiredCharacterMarkerIds = useMemo(() => sceneMarkers
+    .filter((marker) => normalizeSceneLayerType(marker.type) === 'characters')
+    .map((marker) => String(marker.id))
+    .sort(), [sceneMarkers]);
+  const requiredCharacterMarkerKey = requiredCharacterMarkerIds.join('|');
+  const characterSettlementKey = `${projectId ?? 'none'}:${requiredCharacterMarkerKey}`;
+  const [characterSettlement, setCharacterSettlement] = useState<{
+    key: string;
+    markerIds: Set<string>;
+  }>(() => ({ key: characterSettlementKey, markerIds: new Set() }));
+  const handleCharacterRuntimeSettled = useCallback((markerId: string) => {
+    setCharacterSettlement((current) => {
+      const currentMarkerIds = current.key === characterSettlementKey
+        ? current.markerIds
+        : new Set<string>();
+      if (currentMarkerIds.has(markerId)) return current;
+      const nextMarkerIds = new Set(currentMarkerIds);
+      nextMarkerIds.add(markerId);
+      return { key: characterSettlementKey, markerIds: nextMarkerIds };
+    });
+  }, [characterSettlementKey]);
+  const settledCharacterMarkerIds = characterSettlement.key === characterSettlementKey
+    ? characterSettlement.markerIds
+    : new Set<string>();
+  const allRequiredCharactersSettled = requiredCharacterMarkerIds.every(
+    (markerId) => settledCharacterMarkerIds.has(markerId),
   );
   const characterEnvironmentReadyRef = useRef({
     projectId,
@@ -1684,6 +1741,60 @@ export function ThreeDScene({
   // adding a Model must not remove an already-mounted Character while that
   // new Model settles; a Project change resets the gate.
   const sceneEnvironmentReady = characterEnvironmentReadyRef.current.ready;
+  // Presentation is a one-time Project-load boundary. Marker additions after
+  // Production must not replay the opaque loader or hide the running Scene.
+  const presentationKey = String(projectId ?? 'default');
+  const [paintedPresentationKey, setPaintedPresentationKey] = useState<string | null>(null);
+  const [productionSceneKey, setProductionSceneKey] = useState<string | null>(null);
+  const [postProductionSceneKey, setPostProductionSceneKey] = useState<string | null>(null);
+  const sceneFrameReady = paintedPresentationKey === presentationKey;
+  const scenePresentationReady = sceneFrameReady
+    && controlsReady
+    && allRequiredModelsSettled
+    && allRequiredCharactersSettled;
+  const sceneProductionStarted = productionSceneKey === presentationKey;
+  const scenePostProduction = postProductionSceneKey === presentationKey;
+  const scenePresentationPhase: ThreeDScenePresentationPhase = !sceneProductionStarted
+    ? 'pre-production'
+    : scenePostProduction
+      ? 'post-production'
+      : 'production';
+  const sceneIntro: ThreeDSceneIntro = 'fade';
+  const settledModelCount = requiredModelMarkerIds.filter(
+    (markerId) => settledModelMarkerIds.has(markerId),
+  ).length;
+  const modelProgress = requiredModelMarkerIds.length === 0
+    ? 1
+    : settledModelCount / requiredModelMarkerIds.length;
+  const settledCharacterCount = requiredCharacterMarkerIds.filter(
+    (markerId) => settledCharacterMarkerIds.has(markerId),
+  ).length;
+  const characterProgress = requiredCharacterMarkerIds.length === 0
+    ? 1
+    : settledCharacterCount / requiredCharacterMarkerIds.length;
+  const sceneLoadingProgress = Math.round(
+    (sceneFrameReady ? 45 : 35)
+    + (controlsReady ? 15 : 0)
+    + (modelProgress * 25)
+    + (characterProgress * 15),
+  );
+  const sceneLoadingLabel = !sceneFrameReady
+    ? 'Preparing ThreeD Scene…'
+    : !allRequiredModelsSettled
+      ? `Loading Project Models… ${settledModelCount}/${requiredModelMarkerIds.length}`
+      : !allRequiredCharactersSettled
+        ? `Preparing Project Characters… ${settledCharacterCount}/${requiredCharacterMarkerIds.length}`
+        : !controlsReady
+          ? 'Preparing Scene controls…'
+          : 'Presenting Project…';
+
+  useEffect(() => {
+    if (!scenePresentationReady) return;
+    const frame = window.requestAnimationFrame(() => {
+      setProductionSceneKey(presentationKey);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [presentationKey, scenePresentationReady]);
   const characterSpawnPositions = useMemo(() => sceneMarkers
     .filter((marker) => normalizeSceneLayerType(marker.type) === 'characters')
     .map((marker) => ({
@@ -2167,6 +2278,8 @@ export function ThreeDScene({
     <div
       className={`relative w-full ${placementLabel ? 'cursor-crosshair' : ''}`}
       style={{ height, minHeight: '300px' }}
+      data-threed-presentation-phase={scenePresentationPhase}
+      data-threed-scene-intro={sceneIntro}
     >
       {placementLabel && (
         <div className="pointer-events-none absolute left-3 top-3 z-10 rounded border border-cyan-300/40 bg-black/70 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm">
@@ -2431,6 +2544,19 @@ export function ThreeDScene({
           </div>
         </div>
       ) : (
+      <div
+        className={`h-full w-full transition-opacity duration-700 ease-out ${sceneProductionStarted ? 'opacity-100' : 'opacity-0'}`}
+        aria-hidden={!sceneProductionStarted}
+        onTransitionEnd={(event) => {
+          if (
+            event.target === event.currentTarget
+            && event.propertyName === 'opacity'
+            && sceneProductionStarted
+          ) {
+            setPostProductionSceneKey(presentationKey);
+          }
+        }}
+      >
       <Canvas
         onWheel={() => {
           if (cameraMode === 'follow') {
@@ -2447,6 +2573,10 @@ export function ThreeDScene({
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
       >
+        <SceneFrameReadyNotifier
+          key={presentationKey}
+          onReady={() => setPaintedPresentationKey(presentationKey)}
+        />
         <Environment preset={envPreset as any} background blur={0.8} />
 
         <ambientLight intensity={0.6} />
@@ -2666,6 +2796,7 @@ export function ThreeDScene({
               livePositionsRef={livePositionsRef}
               physicsDebug={physicsDebug}
               onModelRuntimeSettled={handleModelRuntimeSettled}
+              onCharacterRuntimeSettled={handleCharacterRuntimeSettled}
               characterSpawnPositions={characterSpawnPositions}
             />
           ))}
@@ -2680,6 +2811,15 @@ export function ThreeDScene({
           </Html>
         )}
       </Canvas>
+      </div>
+      )}
+
+      {!physicsFailed && !sceneProductionStarted && (
+        <ThreeDProjectLoadingPresentation
+          progress={sceneLoadingProgress}
+          label={sceneLoadingLabel}
+          className="absolute inset-0 z-50"
+        />
       )}
     </div>
   );

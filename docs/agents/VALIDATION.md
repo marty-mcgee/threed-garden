@@ -199,6 +199,19 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 
 `npm run typecheck` is the canonical full TypeScript command and expands to `tsc --noEmit --pretty false`.
 
+## v0.19.5b ThreeD Scene loading presentation checks
+
+- Open `/dashboard/map?projectId=N` through a direct browser navigation. Confirm the request does not return HTTP 500 or evaluate the browser-only ThreeD runtime on the server.
+- Confirm one opaque **Loading ThreeD Project** presentation remains visible while the Dashboard, Project data, dynamic ThreeD runtime, first Scene frame, controls, and Project Models initialize.
+- Confirm the complete ThreeD surface fades in together. Environment/Models must settle before Characters are admitted; no partial marker sequence, black Canvas, or transient bind pose should be presented.
+- Confirm the Project toolbar skeleton and loading presentation retain the same vertical position through each progress stage, then hand off without a visible jump to the real 36-pixel Project toolbar and 6-pixel Scene gap.
+- Hard-refresh with Dark selected and confirm no Light first-paint flash. Toggle Light, refresh again, and confirm the explicit selection is restored without an inline-script warning.
+- Add a Model to an already running Scene and confirm the existing Character remains visible, animated, selectable, and controllable without replaying the full Project startup presentation.
+- Select a marker and open its DetailsCard, optionally Take Control or begin a cancellable placement/move operation, then change Projects. Confirm the outgoing DetailsCard, selection, Character control, live position, and operation panels disappear before the new Project loads.
+- Recheck Project changes for the R3F null event-target error and server logs for `window is not defined`.
+- Delete a disposable marker and confirm the pending operation notification remains visible below the Project toolbar without changing the toolbar or Scene height.
+- Run `npm run typecheck`, `npm run validate:threed-runtime-markers`, and `git diff --check`. The client-run production build remains the release gate.
+
 ## v0.18.6b release-candidate checks
 
 - Run `npm run validate:threed-runtime-markers` and confirm all registry, builder, snapshot validation, and saved-position merge groups pass.

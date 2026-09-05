@@ -177,6 +177,9 @@ interface EcctrlCharacterProps {
   };
 
   isActionTarget?: boolean;
+
+  /** Reports that the complete visual runtime or its safe fallback is ready. */
+  onRuntimeSettled?: () => void;
 }
 
 // ========================================================
@@ -1039,6 +1042,8 @@ export function EcctrlCharacter({
   movementTargetPosition,
 
   isActionTarget = false,
+
+  onRuntimeSettled,
 }: EcctrlCharacterProps) {
   const ecctrlRef =
     useRef<EcctrlHandle>(
@@ -1109,6 +1114,20 @@ export function EcctrlCharacter({
         'active' &&
         character.visible
     );
+
+  const runtimeSettlementReportedRef = useRef(false);
+  const runtimeSettlementKey = `${character.id}:${character.model?.filePath ?? 'fallback'}`;
+
+  useEffect(() => {
+    runtimeSettlementReportedRef.current = false;
+  }, [runtimeSettlementKey]);
+
+  useEffect(() => {
+    const hasSafeFallback = !character.model?.filePath || error != null;
+    if ((!model && !hasSafeFallback) || runtimeSettlementReportedRef.current) return;
+    runtimeSettlementReportedRef.current = true;
+    onRuntimeSettled?.();
+  }, [character.model?.filePath, error, model, onRuntimeSettled]);
 
   useEffect(() => {
     if (previousLayerEnabledRef.current === layerEnabled) return;

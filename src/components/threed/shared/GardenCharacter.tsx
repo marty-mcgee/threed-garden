@@ -139,6 +139,9 @@ interface GardenCharacterProps {
    * already provides the world position.
    */
   positionedByParent?: boolean;
+
+  /** Reports that the complete visual runtime or its safe fallback is ready. */
+  onRuntimeSettled?: () => void;
 }
 
 // ========================================================
@@ -315,6 +318,8 @@ export function GardenCharacter({
   currentHour = 12,
 
   positionedByParent = false,
+
+  onRuntimeSettled,
 }: GardenCharacterProps) {
   /**
    * currentWeather remains part of the component API,
@@ -430,6 +435,20 @@ export function GardenCharacter({
     setLoadingModel,
   ] =
     useState(false);
+
+  const runtimeSettlementReportedRef = useRef(false);
+  const runtimeSettlementKey = `${character.id}:${character.model?.filePath ?? 'fallback'}`;
+
+  useEffect(() => {
+    runtimeSettlementReportedRef.current = false;
+  }, [runtimeSettlementKey]);
+
+  useEffect(() => {
+    const hasSafeFallback = !character.model?.filePath || modelError != null;
+    if ((!model && !hasSafeFallback) || runtimeSettlementReportedRef.current) return;
+    runtimeSettlementReportedRef.current = true;
+    onRuntimeSettled?.();
+  }, [character.model?.filePath, model, modelError, onRuntimeSettled]);
 
   // ======================================================
   // UI STATE

@@ -4,7 +4,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/components/themes/provider';
+import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { 
   Sun, Moon, Sprout, Carrot, Settings, Radio, ExternalLink
 } from 'lucide-react';
@@ -13,16 +14,12 @@ import NavDropdown from '@/components/navigation/NavDropdown';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
+  const [isClientMounted, setIsClientMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    setIsClientMounted(true);
   }, []);
-
-  if (!mounted) {
-    return <div className="min-h-screen bg-background" />;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
@@ -89,10 +86,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
                 className="rounded-full"
               >
-                {theme === 'dark' ? (
+                {resolvedTheme === 'dark' ? (
                   <Sun className="w-3 h-3 text-yellow-500" />
                 ) : (
                   <Moon className="w-3 h-3" />
@@ -107,7 +104,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="w-full px-0 md:px-0.5 lg:px-1 py-0">
         {/* Page Content */}
         <div className="bg-background/50 backdrop-blur-sm">
-          {children}
+          {isClientMounted ? children : (
+            <ThreeDProjectLoadingPresentation
+              progress={5}
+              label="Starting Project workspace…"
+              className="h-[calc(100dvh-86px)]"
+              showProjectHeader
+            />
+          )}
         </div>
         
         {/* Footer */}

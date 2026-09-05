@@ -2,16 +2,23 @@
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
-import { ThemeProvider } from "@/components/themes/provider";
+import {
+  ThemeProvider,
+  type ThreeDResolvedTheme,
+  type ThreeDTheme,
+} from '@/components/themes/provider';
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({
+  children,
+  initialTheme,
+  initialResolvedTheme,
+}: {
+  children: React.ReactNode;
+  initialTheme: ThreeDTheme;
+  initialResolvedTheme: ThreeDResolvedTheme;
+}) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <ThemeProvider initialTheme={initialTheme} initialResolvedTheme={initialResolvedTheme}>
       <SessionProvider>
         {children}
       </SessionProvider>
