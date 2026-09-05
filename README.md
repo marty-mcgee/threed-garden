@@ -7,9 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.5b "ThreeD Scene Loading Presentation"` (`package.json` version `0.19.5-beta`)
+> **Current production version:** `v0.19.5c "ThreeD Project Guidance and Environment Presentation"` (`package.json` version `0.19.5-centaur`)
 
-The v0.19.5b production release presents Project startup as one stable lifecycle: Dashboard and Project-header skeletons reserve the final layout, Models and Characters report readiness in their established runtime order, and the complete ThreeD Scene fades in without exposing partial construction. Direct server requests retain a safe client boundary for browser-only runtimes, Project switching clears outgoing interaction authority, Dark mode has a server-owned first paint, and operation feedback no longer resizes the Project header.
+The v0.19.5c production release adds a post-load Project Tour for empty Projects, deterministic default ground and camera presentation, and shared validated Environment presets including lightweight Default Daylight and optional Sunset Forest HD. Authenticated owners can reopen active Projects before they contain assets, while anonymous discovery retains its public-and-populated boundary. Existing Runtime Marker, Canvas/Rapier, Character, and Project persistence authority remains unchanged.
 
 The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 

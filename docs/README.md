@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.5b **ThreeD Scene Loading Presentation**, using package version `0.19.5-beta`. One stable loading lifecycle covers the Dashboard, Project data, ThreeD runtime, Models, and Characters before the complete Scene fades in. App-owned theme initialization, Project-switch cleanup, stable skeleton geometry, and overlay-only operation feedback prevent startup flashes and layout movement. Manual verification, release validation, deployment, and production checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.19.5c **ThreeD Project Guidance and Environment Presentation**, using package version `0.19.5-centaur`. Empty Projects receive post-load setup guidance through existing asset controls; default ground, camera, and Environment presentation are deterministic; saved Environment choices share one client/server allowlist; and authenticated owners can reopen active Projects before adding assets. Manual verification, release validation, deployment, and production checks passed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -48,6 +48,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.5c production checkpoint](releases/v0.19.5c.md)
 - [v0.19.5b production checkpoint](releases/v0.19.5b.md)
 - [v0.19.2a production checkpoint](releases/v0.19.2a.md)
 - [v0.19.1e production checkpoint](releases/v0.19.1e.md)

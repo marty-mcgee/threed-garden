@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.5c — ThreeD Project Guidance and Environment Presentation](v0.19.5c.md)
 - [v0.19.5b — ThreeD Scene Loading Presentation](v0.19.5b.md)
 - [v0.19.3c — ThreeD Character Environment Runtime](v0.19.3c.md)
 - [v0.19.3b — ThreeD Project Environment Models](v0.19.3b.md)
