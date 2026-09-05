@@ -859,3 +859,5 @@ Project selection enters the loading boundary in the same event transaction as t
 The App-owned theme provider removes the third-party client script boundary and supports explicit light, dark, and system choices. Dark is the safe first-request default. A non-sensitive `threed-theme` cookie lets the server apply a previously selected explicit theme to the root HTML before hydration, while local storage retains client compatibility. No authentication data or inline executable theme script is used.
 
 Pre-loading reserves the established Dashboard chrome, a 36-pixel Project toolbar skeleton, its 6-pixel Scene gap, and the final viewport height. All progress stages reuse the same bounded presentation geometry so labels and percentages do not move or resize the loader. The Scene operation status is an overlay below the Project toolbar; pending deletion/update feedback therefore cannot increase the toolbar height or move the Scene.
+
+This checkpoint was released successfully to production as **v0.19.5b — ThreeD Scene Loading Presentation** (`package.json` version `0.19.5-beta`) on September 4, 2026.
