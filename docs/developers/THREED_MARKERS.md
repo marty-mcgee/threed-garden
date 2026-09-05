@@ -884,4 +884,4 @@ A transient Project-scoped onboarding session keeps the Project Tour active thro
 
 The registered **Default Daylight** key is now the sole fallback for Projects without saved ThreeD view state. Browser-wide Environment inheritance was removed so a prior Project's unsaved selection cannot leak into a new Project. An explicitly saved Project Environment remains authoritative and restores normally.
 
-This boundary is prepared as **v0.19.6 — ThreeD Dashboard Project Templates and Onboarding** (`package.json` version `0.19.6`). It adds no database schema, automatic asset placement, copied content, new marker ownership, or changes to the persistent Canvas/Rapier and Character runtime boundaries. It becomes a production checkpoint only after the client-run build, deployment, and production verification are confirmed.
+This checkpoint was released successfully to production as **v0.19.6 — ThreeD Dashboard Project Templates and Onboarding** (`package.json` version `0.19.6`) on September 4, 2026. It adds no database schema, automatic asset placement, copied content, new marker ownership, or changes to the persistent Canvas/Rapier and Character runtime boundaries.

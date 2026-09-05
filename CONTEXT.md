@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.5c — ThreeD Project Guidance and Environment Presentation** (`package.json` version `0.19.5-centaur`) |
-| Current release candidate | **v0.19.6 — ThreeD Dashboard Project Templates and Onboarding** (`package.json` version `0.19.6`) |
-| Current development milestone | **Release candidate: atomic Dashboard Project templates, direct Project navigation, persistent setup progress, and Project-scoped Default Daylight** |
+| Current stable version | **v0.19.6 — ThreeD Dashboard Project Templates and Onboarding** (`package.json` version `0.19.6`) |
+| Current release candidate | **None — v0.19.6 is deployed** |
+| Current development milestone | **Production checkpoint: atomic Dashboard Project templates, direct Project navigation, persistent setup progress, and Project-scoped Default Daylight** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
