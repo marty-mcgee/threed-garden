@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.6 — ThreeD Dashboard Project Templates and Onboarding** (`package.json` version `0.19.6`) |
-| Current release candidate | **None — v0.19.6 is deployed** |
-| Current development milestone | **Production checkpoint: atomic Dashboard Project templates, direct Project navigation, persistent setup progress, and Project-scoped Default Daylight** |
+| Current stable version | **v0.19.7 — ThreeD Dashboard Pages** (`package.json` version `0.19.7`) |
+| Current release candidate | **None — v0.19.7 is deployed** |
+| Current development milestone | **Production checkpoint: Dashboard Scene Coordinator with extracted Project Header, Scene Toolbar, Character Library, and FarmBot Library presentation boundaries** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -110,7 +110,8 @@ The harvest row and its project association are created transactionally. The ser
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Physics/WASD character locomotion and task actions |
 | `src/components/map/ThreeDScene.tsx` | 3D marker routing, physics scene, character request routing |
 | `src/components/map/UnifiedMapView.tsx` | Runtime marker/data bridge into ThreeDScene |
-| `src/app/dashboard/map/page.tsx` | Selection, DetailsCard, control state, action target, world-action completion handling |
+| `src/app/dashboard/map/page.tsx` | Dashboard Scene Coordinator for Project-session state and cross-surface user intent |
+| `docs/developers/THREED_DASHBOARD_COORDINATOR.md` | Dashboard coordinator, workspace presentation, Scene bridge, and runtime ownership boundaries |
 | `src/app/api/threed/world-actions/route.ts` | Authenticated semantic world-action endpoint for targeted Water and Pick Fruit persistence |
 | `src/lib/schema/threed/*` | ThreeD Drizzle schema; inspect before any persistence change |
 

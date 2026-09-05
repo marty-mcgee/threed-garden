@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.7 — ThreeD Dashboard Pages](v0.19.7.md)
 - [v0.19.6 — ThreeD Dashboard Project Templates and Onboarding](v0.19.6.md)
 - [v0.19.5c — ThreeD Project Guidance and Environment Presentation](v0.19.5c.md)
 - [v0.19.5b — ThreeD Scene Loading Presentation](v0.19.5b.md)
