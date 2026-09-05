@@ -46,6 +46,7 @@ import { Label } from '@/components/ui/label';
 import { DetailsCard } from '@/components/map/details/DetailsCard';
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
+import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
 import { SceneOperationStatus } from '@/components/map/panels/SceneOperationStatus';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
@@ -212,6 +213,7 @@ function UnifiedMapPageInner() {
   const projectLoadSequenceRef = useRef(0);
   const projectLoadAbortRef = useRef<AbortController | null>(null);
   const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(!projectIdParam);
+  const [isProjectTemplateDialogOpen, setIsProjectTemplateDialogOpen] = useState(false);
   const [isProjectSummaryOpen, setIsProjectSummaryOpen] = useState(false);
   const projectSummaryRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
@@ -228,6 +230,8 @@ function UnifiedMapPageInner() {
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
   const [isProjectAssetsOpen, setIsProjectAssetsOpen] = useState(false);
   const [isProjectSetupOpen, setIsProjectSetupOpen] = useState(false);
+  const [projectSetupSessionProjectId, setProjectSetupSessionProjectId] = useState<string | null>(null);
+  const [dismissedProjectSetupProjectId, setDismissedProjectSetupProjectId] = useState<string | null>(null);
   const [isThreeDPresentationComplete, setIsThreeDPresentationComplete] = useState(false);
   const [projectAssetSearch, setProjectAssetSearch] = useState('');
   const [projectAssetType, setProjectAssetType] = useState('all');
@@ -944,6 +948,7 @@ function UnifiedMapPageInner() {
     setLiveControlledCharacterPosition(null);
     setProjectThreeDModules([]);
     setProjectGeographicOrigin(null);
+    setInitialProjectViewState(null);
     setPlacementThreedId(null);
     setPlacementModel(null);
     setPlacementCharacter(null);
@@ -952,6 +957,8 @@ function UnifiedMapPageInner() {
     setPlacementModelRole('object');
     setIsProjectAssetsOpen(false);
     setIsProjectSetupOpen(false);
+    setProjectSetupSessionProjectId(null);
+    setDismissedProjectSetupProjectId(null);
     setIsThreeDPresentationComplete(false);
     setProjectAssetSearch('');
     setProjectAssetType('all');
@@ -1473,6 +1480,10 @@ function UnifiedMapPageInner() {
       setPlacementModel(null);
       setPlacementScaleMultiplier('1');
       setPlacementModelRole('object');
+      if (projectSetupSessionProjectId === selectedProjectId) {
+        setIsModelLibraryOpen(false);
+        setIsProjectSetupOpen(true);
+      }
       showToastRef.current(`${placementModel.modelName} placed in the ThreeD Scene`, 'success');
     } catch (error) {
       console.error('Failed to place ThreeD Model Library item', {
@@ -1491,6 +1502,7 @@ function UnifiedMapPageInner() {
     placementScaleMultiplier,
     placementModelRole,
     placementThreedId,
+    projectSetupSessionProjectId,
     selectedProjectId,
   ]);
 
@@ -1532,6 +1544,10 @@ function UnifiedMapPageInner() {
         sources: { characters: { upsert: [result.data.character] } },
       }));
       setPlacementCharacter(null);
+      if (projectSetupSessionProjectId === selectedProjectId) {
+        setIsCharacterLibraryOpen(false);
+        setIsProjectSetupOpen(true);
+      }
       showToastRef.current(
         `${placementCharacter.name} placed with ${placementCharacter.libraryAccess.runtime} runtime`,
         'success',
@@ -1551,6 +1567,7 @@ function UnifiedMapPageInner() {
   }, [
     placementCharacter,
     placementThreedId,
+    projectSetupSessionProjectId,
     selectedProjectId,
   ]);
 
@@ -2345,8 +2362,22 @@ function UnifiedMapPageInner() {
       setIsProjectSetupOpen(false);
       return;
     }
-    setIsProjectSetupOpen(projectRuntimeMarkers.length === 0);
-  }, [isThreeDPresentationComplete, projectRuntimeMarkers.length, selectedProjectId]);
+    if (dismissedProjectSetupProjectId === selectedProjectId) return;
+    if (projectRuntimeMarkers.length === 0) {
+      setProjectSetupSessionProjectId(selectedProjectId);
+      setIsProjectSetupOpen(true);
+      return;
+    }
+    if (projectSetupSessionProjectId === selectedProjectId) {
+      setIsProjectSetupOpen(true);
+    }
+  }, [
+    isThreeDPresentationComplete,
+    dismissedProjectSetupProjectId,
+    projectRuntimeMarkers.length,
+    projectSetupSessionProjectId,
+    selectedProjectId,
+  ]);
   const handleThreeDPresentationComplete = useCallback(() => {
     setIsThreeDPresentationComplete(true);
   }, []);
@@ -2491,6 +2522,16 @@ function UnifiedMapPageInner() {
         open={isProjectSelectorOpen}
         onOpenChange={setIsProjectSelectorOpen}
         onSelect={handleProjectSelect}
+        onCreateNew={() => setIsProjectTemplateDialogOpen(true)}
+      />
+      <ProjectTemplateDialog
+        open={isProjectTemplateDialogOpen}
+        onOpenChange={setIsProjectTemplateDialogOpen}
+        onCreated={(projectId) => {
+          handleProjectSelect(projectId);
+          setDismissedProjectSetupProjectId(null);
+          setProjectSetupSessionProjectId(projectId);
+        }}
       />
 
       {/* ✅ Header with Live Data Status Indicator */}
@@ -2522,8 +2563,8 @@ function UnifiedMapPageInner() {
           </Button>
 
           {selectedProjectId && isProjectSummaryOpen && (
-            <div className="absolute left-0 top-full z-[2000] mt-1 w-80 space-y-3 rounded-lg border bg-background/95 p-3 shadow-xl backdrop-blur-sm">
-              <div className="space-y-2">
+            <div className="absolute left-0 top-full z-[2000] mt-1 w-72 space-y-2 rounded-lg border bg-background/80 p-2.5 shadow-xl backdrop-blur-md">
+              <div className="space-y-1.5 px-1">
                 <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                   <FolderOpen className="h-3 w-3" />
                   Project Status
@@ -2542,7 +2583,7 @@ function UnifiedMapPageInner() {
                 )}
                 </div>
 
-                <div className="flex items-center gap-1.5 rounded-md bg-muted/40 px-2 py-1.5">
+                <div className="flex items-center gap-1.5 py-0.5">
                 <Clock className={`h-3 w-3 ${
                   isStale
                     ? 'text-amber-600'
@@ -2565,15 +2606,48 @@ function UnifiedMapPageInner() {
                 </div>
               </div>
 
-              <div className="space-y-1.5 border-t pt-2.5">
+              <div className="border-t pt-2">
                 <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Project Actions
+                  Project Navigation
+                </div>
+                <div className="mt-1 grid grid-cols-2 gap-1.5">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="h-8 justify-start px-2 text-xs"
+                    onClick={() => {
+                      setIsProjectSummaryOpen(false);
+                      setIsProjectSelectorOpen(true);
+                    }}
+                  >
+                    <FolderOpen className="h-3.5 w-3.5" />
+                    Choose Project
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 justify-start bg-cyan-600 px-2 text-xs text-white hover:bg-cyan-500"
+                    onClick={() => {
+                      setIsProjectSummaryOpen(false);
+                      setIsProjectTemplateDialogOpen(true);
+                    }}
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    New Project
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-0.5 border-t pt-2">
+                <div className="px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Scene Workspace
                 </div>
                 <Button
                   type="button"
-                  variant="default"
+                  variant="ghost"
                   size="sm"
-                  className="h-8 w-full justify-start text-xs"
+                  className="h-7 w-full justify-start px-2 text-xs"
                   disabled={savingProjectMarkers}
                   onClick={handleSaveThreeDProject}
                 >
@@ -2584,9 +2658,9 @@ function UnifiedMapPageInner() {
                 </Button>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="h-8 w-full justify-start text-xs"
+                  className="h-7 w-full justify-start px-2 text-xs"
                   aria-controls="project-assets-panel"
                   aria-expanded={isProjectAssetsOpen}
                   onClick={openProjectAssets}
@@ -2601,9 +2675,9 @@ function UnifiedMapPageInner() {
                   <Button
                     key={marker.id}
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="h-8 w-full justify-start text-xs"
+                    className="h-7 w-full justify-start px-2 text-xs"
                     onClick={() => openEnvironmentDetails(marker)}
                   >
                     <ScanSearch className="h-3.5 w-3.5" />
@@ -2613,22 +2687,14 @@ function UnifiedMapPageInner() {
                     )}
                   </Button>
                 ))}
-                <div className="grid grid-cols-2 gap-1.5">
-                  <Button
+              </div>
+
+              <div className="border-t pt-2">
+                <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="h-8 justify-start text-xs"
-                    onClick={() => setIsProjectSelectorOpen(true)}
-                  >
-                    <FolderOpen className="h-3.5 w-3.5" />
-                    Change
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-8 justify-start text-xs"
+                    className="h-7 w-full justify-start px-2 text-xs text-muted-foreground"
                     onClick={() => window.open(
                       `/admin/projects/${selectedProjectId}`,
                       '_blank',
@@ -2636,9 +2702,8 @@ function UnifiedMapPageInner() {
                     )}
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
-                    Admin
+                    Project Settings &amp; Admin
                   </Button>
-                </div>
               </div>
 
             </div>
@@ -2892,7 +2957,11 @@ function UnifiedMapPageInner() {
             (marker) => marker.type === 'models'
               && marker.metadata?.placementRole !== 'environment',
           )}
-          onClose={() => setIsProjectSetupOpen(false)}
+          onClose={() => {
+            setIsProjectSetupOpen(false);
+            setProjectSetupSessionProjectId(null);
+            setDismissedProjectSetupProjectId(selectedProjectId);
+          }}
           onAddEnvironment={() => {
             setIsProjectSetupOpen(false);
             void openModelLibrary('environment');

@@ -75,6 +75,7 @@ import { isProjectModelEnvironment } from '@/lib/services/threed/models/project-
 import type { ThreeDEnvironmentCollisionPreviewPlan } from '@/lib/services/threed/models/environment-collision-preview-core';
 import { createThreeDEnvironmentColliderActivationPlan } from '@/lib/services/threed/models/environment-collider-activation-core';
 import {
+  DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY,
   resolveThreeDEnvironmentPreset,
   THREE_D_ENVIRONMENT_PRESETS,
 } from '@/lib/services/threed/environment-presets';
@@ -1969,12 +1970,7 @@ export function ThreeDScene({
   const [showPresetDialog, setShowPresetDialog] = useState(false);
   const [newPresetName, setNewPresetName] = useState('');
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
-  const [envPreset, setEnvPreset] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('threed-env-preset') || 'default-daylight';
-    }
-    return 'default-daylight';
-  });
+  const [envPreset, setEnvPreset] = useState<string>(DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY);
   const [showIncidents, setShowIncidents] = useState(false);
   const environmentPreset = resolveThreeDEnvironmentPreset(envPreset);
 
@@ -2010,12 +2006,13 @@ export function ThreeDScene({
     localStorage.setItem('threed-view-presets', JSON.stringify(viewPresets));
   }, [viewPresets]);
 
-  // ✅ Persist environment preset to localStorage
+  // Environment selection is Project-scoped. A Project without saved view
+  // state must not inherit another Project's browser-wide environment choice.
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('threed-env-preset', envPreset);
-    }
-  }, [envPreset]);
+    setEnvPreset(
+      initialViewState?.environment ?? DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY,
+    );
+  }, [initialViewState?.environment, projectId]);
 
   // Scene visibility controls operate on the marker types that are actually
   // present. Database ThreeD Layer records do not currently assign individual

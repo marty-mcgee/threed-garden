@@ -6,9 +6,11 @@ export interface ThreeDEnvironmentPreset {
   proceduralSky?: boolean;
 }
 
+export const DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY = 'default-daylight';
+
 export const THREE_D_ENVIRONMENT_PRESETS: readonly ThreeDEnvironmentPreset[] = [
   {
-    key: 'default-daylight',
+    key: DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY,
     label: 'Default Daylight',
     lightingPreset: 'park',
     proceduralSky: true,
@@ -32,5 +34,7 @@ export const THREE_D_ENVIRONMENT_PRESET_KEYS = THREE_D_ENVIRONMENT_PRESETS
 
 export function resolveThreeDEnvironmentPreset(key: string): ThreeDEnvironmentPreset {
   return THREE_D_ENVIRONMENT_PRESETS.find((preset) => preset.key === key)
-    ?? THREE_D_ENVIRONMENT_PRESETS.find((preset) => preset.key === 'default-daylight')!;
+    ?? THREE_D_ENVIRONMENT_PRESETS.find(
+      (preset) => preset.key === DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY,
+    )!;
 }

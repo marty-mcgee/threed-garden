@@ -873,3 +873,15 @@ Authenticated Project discovery now includes the owner's active Projects before 
 The blank-Project Three.js message was removed because the Project Tour now owns that guidance. Project toolbar and loading-skeleton geometry remain fixed, and Project changes reset the outgoing Tour and transient interaction state. Runtime Marker identity, Project snapshot authority, persistent Canvas/Rapier ownership, Environment collision planning, and separate GardenCharacter/EcctrlCharacter paths are unchanged.
 
 This checkpoint was released successfully to production as **v0.19.5c — ThreeD Project Guidance and Environment Presentation** (`package.json` version `0.19.5-centaur`) on September 4, 2026.
+
+## v0.19.6 ThreeD Dashboard Project templates and onboarding boundary
+
+The Dashboard now creates a new Project without transferring the user to Admin. Three bounded App-defined templates are available: **Blank Project**, **ThreeD Starter**, and **Complete App**. The authenticated server creates the Project, each selected new module foundation, and its established Project junctions in one database transaction. Any failure rolls back the complete template operation. Templates do not clone source assets, Runtime Markers, child records, coordinates, saved views, or another Project's configuration.
+
+The Project Header menu presents an 80%-opaque compact hierarchy for Project navigation, Scene workspace actions, and Project settings. **Choose Project** and **New Project** are primary, deliberate actions; the remaining Save, Asset, Environment Details, and Admin contracts are unchanged.
+
+A transient Project-scoped onboarding session keeps the Project Tour active through Environment, Character, and ordinary Model placement. The Tour yields to the existing Library, returns after a successful placement with progress derived from authoritative Runtime Markers, and can show completion at **3 of 3**. Explicit dismissal ends the session, and Project switching clears it. No onboarding status is stored in the database.
+
+The registered **Default Daylight** key is now the sole fallback for Projects without saved ThreeD view state. Browser-wide Environment inheritance was removed so a prior Project's unsaved selection cannot leak into a new Project. An explicitly saved Project Environment remains authoritative and restores normally.
+
+This boundary is prepared as **v0.19.6 — ThreeD Dashboard Project Templates and Onboarding** (`package.json` version `0.19.6`). It adds no database schema, automatic asset placement, copied content, new marker ownership, or changes to the persistent Canvas/Rapier and Character runtime boundaries. It becomes a production checkpoint only after the client-run build, deployment, and production verification are confirmed.

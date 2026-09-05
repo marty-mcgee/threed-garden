@@ -226,6 +226,18 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Change Projects with the Tour or another Project-scoped panel open. Confirm the outgoing presentation and interaction state do not carry into the incoming Project.
 - Run `npm run typecheck`, `npm run validate:assets`, `npm run validate:threed-runtime-markers`, `npm run validate:threed-orchestration`, and `git diff --check`. The client-run production build remains the release gate.
 
+## v0.19.6 ThreeD Dashboard Project template and onboarding checks
+
+- From the Dashboard Project menu, confirm the 80%-opaque menu presents compact **Choose Project** and **New Project** actions without obscuring the complete Scene.
+- Select **New Project** and confirm the template dialog opens without navigating to Admin. Create a private **ThreeD Starter** and verify the Project plus its new active ThreeD module are created together and the Dashboard opens the new Project directly.
+- Confirm the Project Tour appears only after Scene presentation completes at **0 of 3**. Place an Environment, Character, and ordinary Model in turn; after each successful placement, confirm the Library closes and the Tour returns at **1 of 3**, **2 of 3**, then **3 of 3**.
+- Close the Tour deliberately and confirm it stays closed. Change Projects and confirm no Tour session, selection, placement, or DetailsCard carries into the incoming Project.
+- Create a **Blank Project** and confirm it contains no module. The Tour must show one explicit ThreeD-module prerequisite rather than disabled asset choices.
+- Create a **Complete App** Project and confirm exactly one new ThreeD, Traffic, and Music module foundation is linked to it. Templates must not copy assets, Runtime Markers, coordinates, or child records.
+- Force or simulate a module-creation failure in a disposable development environment and confirm the database transaction rolls back the Project and all template-created module/junction rows together.
+- Confirm a new Project without saved view state starts with **Default Daylight**, even if another Project previously used `sunset`. Confirm an existing Project with an explicitly saved Environment still restores that choice.
+- Run `npm run validate:project-templates`, `npm run typecheck`, `npm run validate:assets`, `npm run validate:threed-runtime-markers`, `npm run validate:threed-orchestration`, and `git diff --check`. The client-run production build remains the release gate.
+
 ## v0.18.6b release-candidate checks
 
 - Run `npm run validate:threed-runtime-markers` and confirm all registry, builder, snapshot validation, and saved-position merge groups pass.

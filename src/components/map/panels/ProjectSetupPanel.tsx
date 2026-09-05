@@ -50,7 +50,9 @@ export function ProjectSetupPanel({
                 Build your ThreeD Project
               </h2>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                {completedStepCount === 0
+                {!hasThreeDModule
+                  ? 'Connect the ThreeD module before adding Scene assets.'
+                  : completedStepCount === 0
                   ? 'Choose a starting point. The guide uses the App\'s existing libraries and Project tools.'
                   : `${completedStepCount} of 3 Scene foundations ready. Continue building or revisit an existing library.`}
               </p>
@@ -63,8 +65,21 @@ export function ProjectSetupPanel({
         </div>
 
         {!hasThreeDModule && (
-          <div className="mt-3 rounded-lg border border-sky-400/25 bg-sky-500/10 px-3 py-2 text-xs text-sky-800 dark:text-sky-200">
-            <span className="font-medium">First step:</span> add an active ThreeD module in Project Settings, then return here to place Scene assets.
+          <div className="mt-4 rounded-lg border border-cyan-400/25 bg-cyan-500/10 p-3">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-300">
+              Step 1 · Project Foundation
+            </div>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              Add or assign an active ThreeD module in Project Settings. The Environment, Character, and Model libraries will become available here afterward.
+            </p>
+            <Button
+              type="button"
+              className="mt-3 h-10 w-full justify-start bg-cyan-600 text-xs text-white hover:bg-cyan-500"
+              onClick={onOpenProjectSettings}
+            >
+              <ExternalLink className="h-4 w-4" />
+              Add ThreeD Module in Project Settings
+            </Button>
           </div>
         )}
 
@@ -88,27 +103,29 @@ export function ProjectSetupPanel({
           </div>
         )}
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <Button type="button" className="h-10 justify-start bg-cyan-600 text-xs text-white hover:bg-cyan-500" disabled={!hasThreeDModule} onClick={onAddEnvironment}>
-            <Map className="h-4 w-4" />
-            {hasEnvironment ? 'Open Environment Library' : 'Add Environment / Base Map'}
-            {hasEnvironment && <CheckCircle2 className="ml-auto h-3.5 w-3.5" aria-hidden="true" />}
-          </Button>
-          <Button type="button" variant="outline" className="h-10 justify-start text-xs hover:border-cyan-400/40 hover:bg-cyan-500/10" disabled={!hasThreeDModule} onClick={onAddCharacter}>
-            <User className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />
-            {hasCharacter ? 'Open Character Library' : 'Add Character'}
-            {hasCharacter && <CheckCircle2 className="ml-auto h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />}
-          </Button>
-          <Button type="button" variant="outline" className="h-10 justify-start text-xs hover:border-cyan-400/40 hover:bg-cyan-500/10" disabled={!hasThreeDModule} onClick={onOpenModelLibrary}>
-            <Box className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />
-            Open Model Library
-            {hasSceneModel && <CheckCircle2 className="ml-auto h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />}
-          </Button>
-          <Button type="button" variant="outline" className="h-10 justify-start text-xs hover:border-cyan-400/40 hover:bg-cyan-500/10" onClick={onOpenProjectSettings}>
-            <ExternalLink className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />
-            Project Settings &amp; Coordinates
-          </Button>
-        </div>
+        {hasThreeDModule && (
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            <Button type="button" className="h-10 justify-start bg-cyan-600 text-xs text-white hover:bg-cyan-500" onClick={onAddEnvironment}>
+              <Map className="h-4 w-4" />
+              {hasEnvironment ? 'Open Environment Library' : 'Add Environment / Base Map'}
+              {hasEnvironment && <CheckCircle2 className="ml-auto h-3.5 w-3.5" aria-hidden="true" />}
+            </Button>
+            <Button type="button" variant="outline" className="h-10 justify-start text-xs hover:border-cyan-400/40 hover:bg-cyan-500/10" onClick={onAddCharacter}>
+              <User className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />
+              {hasCharacter ? 'Open Character Library' : 'Add Character'}
+              {hasCharacter && <CheckCircle2 className="ml-auto h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />}
+            </Button>
+            <Button type="button" variant="outline" className="h-10 justify-start text-xs hover:border-cyan-400/40 hover:bg-cyan-500/10" onClick={onOpenModelLibrary}>
+              <Box className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />
+              Open Model Library
+              {hasSceneModel && <CheckCircle2 className="ml-auto h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />}
+            </Button>
+            <Button type="button" variant="outline" className="h-10 justify-start text-xs hover:border-cyan-400/40 hover:bg-cyan-500/10" onClick={onOpenProjectSettings}>
+              <ExternalLink className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />
+              Project Settings &amp; Coordinates
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

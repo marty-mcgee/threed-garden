@@ -25,12 +25,14 @@ interface ProjectSelectorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelect: (projectId: string) => void;
+  onCreateNew: () => void;
 }
 
 export function ProjectSelectorDialog({
   open,
   onOpenChange,
   onSelect,
+  onCreateNew,
 }: ProjectSelectorDialogProps) {
   const [projects, setProjects] = useState<ProjectSelectorItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,7 +127,10 @@ export function ProjectSelectorDialog({
             variant="outline"
             size="sm"
             className="w-full"
-            onClick={() => { window.location.href = '/admin/projects'; }}
+            onClick={() => {
+              onOpenChange(false);
+              onCreateNew();
+            }}
           >
             <Plus className="mr-2 h-4 w-4" />
             Create New Project
