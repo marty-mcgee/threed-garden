@@ -6,35 +6,23 @@ import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'rea
 import { useSearchParams } from 'next/navigation';
 import { 
   Layers, 
-  RefreshCw, 
   MapPin, 
   Box, 
   Car, 
   TrafficCone,
-  Touchpad,
-  FolderOpen,
   Settings,
-  ChevronRight,
-  ChevronDown,
   ChevronLeft,
-  ChevronUp,
   Search,
   Loader2,
   Plus,
   Filter,
-  Clock,
-  Save,
   Trash2,
   X,
   User,
   Sprout,
-  ExternalLink,
   Crosshair,
   Gamepad2,
   Pause,
-  ScanSearch,
-  ListTree,
-  Sparkles,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
@@ -47,7 +35,13 @@ import { DetailsCard } from '@/components/map/details/DetailsCard';
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
 import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
-import { SceneOperationStatus } from '@/components/map/panels/SceneOperationStatus';
+import { ProjectHeaderMenu } from '@/components/map/header/ProjectHeaderMenu';
+import { ProjectSceneToolbar } from '@/components/map/header/ProjectSceneToolbar';
+import { ThreeDCharacterLibraryPanel } from '@/components/map/panels/ThreeDCharacterLibraryPanel';
+import {
+  ThreeDFarmBotLibraryPanel,
+  type ThreeDFarmBotLibraryItem,
+} from '@/components/map/panels/ThreeDFarmBotLibraryPanel';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
@@ -149,38 +143,6 @@ function clearSelectedProjectMarker(selected: any, recordId: number): any {
   return selectedProjectMarkerRecordId(selected) === recordId ? null : selected;
 }
 
-function StatCard({
-  label, 
-  count, 
-  color, 
-  icon, 
-  isActive, 
-  onClick 
-}: { 
-  label: string; 
-  count: number; 
-  color: string; 
-  icon: string; 
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <div
-      className={`flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer transition-all select-none
-        ${isActive ? 'ring-2 ring-primary bg-primary/5 scale-[1.02]' : 'hover:bg-muted/50'}`}
-      onClick={onClick}
-      title={`Click to ${isActive ? 'clear' : 'filter by'} ${label}`}
-    >
-      <span className={`w-2 h-2 rounded-full ${color}`} />
-      <span className="text-xs">{icon}</span>
-      <span className="text-xs font-medium">{label}</span>
-      <Badge variant={isActive ? 'default' : 'secondary'} className="text-[10px] h-4 px-1 ml-auto">
-        {count}
-      </Badge>
-    </div>
-  );
-}
-
 export default function UnifiedMapPage() {
   return (
     <Suspense fallback={
@@ -246,13 +208,13 @@ function UnifiedMapPageInner() {
   const [libraryCategorySlug, setLibraryCategorySlug] = useState('all');
   const [inspectedLibraryModelId, setInspectedLibraryModelId] = useState<number | null>(null);
   const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
-  const [libraryFarmBots, setLibraryFarmBots] = useState<any[]>([]);
+  const [libraryFarmBots, setLibraryFarmBots] = useState<ThreeDFarmBotLibraryItem[]>([]);
   const [loadingLibraryModels, setLoadingLibraryModels] = useState(false);
   const [loadingLibraryCharacters, setLoadingLibraryCharacters] = useState(false);
   const [loadingLibraryFarmBots, setLoadingLibraryFarmBots] = useState(false);
   const [placementModel, setPlacementModel] = useState<ThreeDModelLibraryItem | null>(null);
   const [placementCharacter, setPlacementCharacter] = useState<ThreeDCharacterLibraryItem | null>(null);
-  const [placementFarmBot, setPlacementFarmBot] = useState<any | null>(null);
+  const [placementFarmBot, setPlacementFarmBot] = useState<ThreeDFarmBotLibraryItem | null>(null);
   const [placementThreedId, setPlacementThreedId] = useState<number | null>(null);
   const [placementScaleMultiplier, setPlacementScaleMultiplier] = useState('1');
   const [placementModelRole, setPlacementModelRole] = useState<'object' | 'environment'>('object');
@@ -2493,6 +2455,18 @@ function UnifiedMapPageInner() {
   const visibleLibraryModels = libraryCategorySlug === 'all'
     ? libraryModels
     : libraryModels.filter((model) => model.categories?.some((category) => category.slug === libraryCategorySlug));
+  const placedCharacterIds = new Set<number>([
+    ...(data.threed.raw?.projectThreedMarkers ?? [])
+      .filter((marker) => marker.markerType === 'characters')
+      .map((marker) => Number(marker.sourceAssetId)),
+    ...(data.threed.raw?.characters ?? []).map((character) => Number(character.id)),
+  ]);
+  const placedFarmBotIds = new Set<number>([
+    ...(data.threed.raw?.projectThreedMarkers ?? [])
+      .filter((marker) => marker.markerType === 'farmbots')
+      .map((marker) => Number(marker.sourceAssetId)),
+    ...(data.threed.raw?.farmbots ?? []).map((farmBot) => Number(farmBot.id)),
+  ]);
   const normalizedProjectAssetSearch = projectAssetSearch.trim().toLowerCase();
   const projectAssetTypes = Array.from(new Set(projectRuntimeMarkers.map((marker) => marker.type)))
     .sort((left, right) => getThreeDLabel(left).localeCompare(getThreeDLabel(right)));
@@ -2537,396 +2511,97 @@ function UnifiedMapPageInner() {
       {/* ✅ Header with Live Data Status Indicator */}
       <div className="m-0 flex flex-wrap items-center justify-between gap-4 px-0.5 py-1">
         
-        <div ref={projectSummaryRef} className="relative flex flex-col items-start">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 gap-1 px-2 text-xs font-medium"
-            aria-expanded={selectedProjectId ? isProjectSummaryOpen : undefined}
-            onClick={() => {
-              setIsSceneAddMenuOpen(false);
-              if (selectedProjectId) {
-                setIsProjectSummaryOpen((open) => !open);
-              } else {
-                setIsProjectSelectorOpen(true);
-              }
-            }}
-          >
-            <FolderOpen className="h-3.5 w-3.5" />
-            {selectedProjectId
-              ? projectInfo?.name || `Project #${selectedProjectId}`
-              : 'Select Project'}
-            {isProjectSummaryOpen && selectedProjectId
-              ? <ChevronDown className="h-3.5 w-3.5" />
-              : <ChevronRight className="h-3.5 w-3.5" />}
-          </Button>
-
-          {selectedProjectId && isProjectSummaryOpen && (
-            <div className="absolute left-0 top-full z-[2000] mt-1 w-72 space-y-2 rounded-lg border bg-background/80 p-2.5 shadow-xl backdrop-blur-md">
-              <div className="space-y-1.5 px-1">
-                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  <FolderOpen className="h-3 w-3" />
-                  Project Status
-                </div>
-                <div className="flex flex-wrap items-center gap-1.5">
-                <Badge variant="outline" className="text-[10px]">
-                  {data.traffic.total || 0} traffic items
-                </Badge>
-                <Badge variant="outline" className="text-[10px]">
-                  {data.threed.total || 0} 3D items
-                </Badge>
-                {!hasRealData && (
-                  <Badge variant="secondary" className="text-[10px] text-muted-foreground">
-                    No Data
-                  </Badge>
-                )}
-                </div>
-
-                <div className="flex items-center gap-1.5 py-0.5">
-                <Clock className={`h-3 w-3 ${
-                  isStale
-                    ? 'text-amber-600'
-                    : dataAge !== '--'
-                      ? 'text-green-600'
-                      : 'text-muted-foreground'
-                }`} />
-                <span
-                  className={`text-xs ${
-                    isStale
-                      ? 'text-amber-600'
-                      : dataAge !== '--'
-                        ? 'text-green-600'
-                        : 'text-muted-foreground'
-                  }`}
-                  title={lastUpdated?.toLocaleString() || 'Unknown'}
-                >
-                  {dataAge !== '--' ? `Updated ${dataAge}` : 'Update time unavailable'}
-                </span>
-                </div>
-              </div>
-
-              <div className="border-t pt-2">
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Project Navigation
-                </div>
-                <div className="mt-1 grid grid-cols-2 gap-1.5">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    className="h-8 justify-start px-2 text-xs"
-                    onClick={() => {
-                      setIsProjectSummaryOpen(false);
-                      setIsProjectSelectorOpen(true);
-                    }}
-                  >
-                    <FolderOpen className="h-3.5 w-3.5" />
-                    Choose Project
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="h-8 justify-start bg-cyan-600 px-2 text-xs text-white hover:bg-cyan-500"
-                    onClick={() => {
-                      setIsProjectSummaryOpen(false);
-                      setIsProjectTemplateDialogOpen(true);
-                    }}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    New Project
-                  </Button>
-                </div>
-              </div>
-
-              <div className="space-y-0.5 border-t pt-2">
-                <div className="px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Scene Workspace
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-full justify-start px-2 text-xs"
-                  disabled={savingProjectMarkers}
-                  onClick={handleSaveThreeDProject}
-                >
-                  {savingProjectMarkers
-                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    : <Save className="h-3.5 w-3.5" />}
-                  Save ThreeD Project
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-full justify-start px-2 text-xs"
-                  aria-controls="project-assets-panel"
-                  aria-expanded={isProjectAssetsOpen}
-                  onClick={openProjectAssets}
-                >
-                  <ListTree className="h-3.5 w-3.5" />
-                  Project Assets
-                  <span className="ml-auto text-[10px] text-muted-foreground">
-                    {projectRuntimeMarkers.length}
-                  </span>
-                </Button>
-                {projectEnvironmentMarkers.map((marker) => (
-                  <Button
-                    key={marker.id}
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-full justify-start px-2 text-xs"
-                    onClick={() => openEnvironmentDetails(marker)}
-                  >
-                    <ScanSearch className="h-3.5 w-3.5" />
-                    Environment Details
-                    {projectEnvironmentMarkers.length > 1 && (
-                      <span className="min-w-0 truncate text-muted-foreground">— {marker.name}</span>
-                    )}
-                  </Button>
-                ))}
-              </div>
-
-              <div className="border-t pt-2">
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-full justify-start px-2 text-xs text-muted-foreground"
-                    onClick={() => window.open(
-                      `/admin/projects/${selectedProjectId}`,
-                      '_blank',
-                      'noopener,noreferrer'
-                    )}
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Project Settings &amp; Admin
-                  </Button>
-              </div>
-
-            </div>
+        <ProjectHeaderMenu
+          containerRef={projectSummaryRef}
+          selectedProjectId={selectedProjectId}
+          projectName={projectInfo?.name}
+          isOpen={isProjectSummaryOpen}
+          trafficItemCount={data.traffic.total || 0}
+          threeDItemCount={data.threed.total || 0}
+          hasRealData={hasRealData}
+          isStale={isStale}
+          dataAge={dataAge}
+          lastUpdated={lastUpdated}
+          savingProject={savingProjectMarkers}
+          projectAssetCount={projectRuntimeMarkers.length}
+          projectAssetsOpen={isProjectAssetsOpen}
+          environments={projectEnvironmentMarkers.map((marker) => ({
+            id: marker.id,
+            name: marker.name,
+          }))}
+          onTrigger={() => {
+            setIsSceneAddMenuOpen(false);
+            if (selectedProjectId) {
+              setIsProjectSummaryOpen((open) => !open);
+            } else {
+              setIsProjectSelectorOpen(true);
+            }
+          }}
+          onChooseProject={() => {
+            setIsProjectSummaryOpen(false);
+            setIsProjectSelectorOpen(true);
+          }}
+          onCreateProject={() => {
+            setIsProjectSummaryOpen(false);
+            setIsProjectTemplateDialogOpen(true);
+          }}
+          onSaveProject={handleSaveThreeDProject}
+          onOpenProjectAssets={openProjectAssets}
+          onOpenEnvironment={(markerId) => {
+            const marker = projectEnvironmentMarkers.find((item) => item.id === markerId);
+            if (marker) openEnvironmentDetails(marker);
+          }}
+          onOpenProjectSettings={() => window.open(
+            `/admin/projects/${selectedProjectId}`,
+            '_blank',
+            'noopener,noreferrer',
           )}
-        </div>
+        />
         
-        
-        <div className="flex flex-wrap items-center gap-2">
-          {/* View Mode Toggle - Icon Only */}
-          <div className="flex items-center gap-1 border rounded-lg p-0">
-            <Button
-              variant={viewMode === '3d' ? 'secondary' : 'ghost'}
-              size="icon"
-              className="h-7 w-7"
-              onClick={() => setViewMode('3d')}
-              title="3D View"
-            >
-              <Box className={`w-3.5 h-3.5 ${viewMode === '3d' ? '' : 'text-muted-foreground'}`} />
-            </Button>
-            <Button
-              variant={viewMode === '2d' ? 'secondary' : 'ghost'}
-              size="icon"
-              className="h-7 w-7"
-              onClick={() => {
-                setIsSceneAddMenuOpen(false);
-                setViewMode('2d');
-              }}
-              title="2D View"
-            >
-              <Touchpad className={`w-3.5 h-3.5 ${viewMode === '2d' ? '' : 'text-muted-foreground'}`} />
-            </Button>
-            <Button
-              variant={viewMode === 'combined' ? 'secondary' : 'ghost'}
-              size="icon"
-              className="h-7 w-7"
-              onClick={() => setViewMode('combined')}
-              title="Combined View"
-            >
-              <Layers className={`w-3.5 h-3.5 ${viewMode === 'combined' ? '' : 'text-muted-foreground'}`} />
-            </Button>
-          </div>
+        <ProjectSceneToolbar
+          selectedProjectId={selectedProjectId}
+          viewMode={viewMode}
+          onViewModeChange={(mode) => {
+            if (mode === '2d') setIsSceneAddMenuOpen(false);
+            setViewMode(mode);
+          }}
+          projectSetupOpen={isProjectSetupOpen}
+          presentationComplete={isThreeDPresentationComplete}
+          onToggleProjectSetup={() => {
+            if (isProjectSetupOpen) setIsProjectSetupOpen(false);
+            else openProjectSetup();
+          }}
+          sceneAddMenuOpen={isSceneAddMenuOpen}
+          hasThreeDModule={projectThreeDModules.length > 0}
+          onToggleSceneAddMenu={() => {
+            setIsProjectSummaryOpen(false);
+            setIsSceneAddMenuOpen((open) => !open);
+          }}
+          onOpenModelLibrary={() => void openModelLibrary()}
+          onOpenCharacterLibrary={() => void openCharacterLibrary()}
+          onOpenFarmBotLibrary={() => void openFarmBotLibrary()}
+          onOpenBedPlacement={openBedPlacement}
+          onOpenPlantingPlacement={() => void openPlantingPlacement()}
+          activeOperation={activeSceneOperation}
+          onCancelOperation={cancelActiveSceneOperation}
+          projectAssetsTriggerRef={projectAssetsTriggerRef}
+          projectAssetsOpen={isProjectAssetsOpen}
+          projectAssetCount={projectRuntimeMarkers.length}
+          onToggleProjectAssets={() => {
+            if (isProjectAssetsOpen) closeProjectAssets(false);
+            else openProjectAssets();
+          }}
+          hasEnvironment={projectEnvironmentMarkers.length > 0}
+          onOpenEnvironment={() => openEnvironmentDetails()}
+          savingProject={savingProjectMarkers}
+          onSaveProject={handleSaveThreeDProject}
+          filterPanelOpen={showFilterPanel}
+          hasAssetTypeFilter={Boolean(filterAssetType)}
+          onToggleFilterPanel={() => setShowFilterPanel((open) => !open)}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
 
-          {selectedProjectId && (
-            <Button
-              type="button"
-              variant={isProjectSetupOpen ? 'secondary' : 'outline'}
-              size="sm"
-              className="h-7 gap-1 px-2 text-xs"
-              disabled={!isThreeDPresentationComplete}
-              aria-expanded={isProjectSetupOpen}
-              aria-controls="project-setup-panel"
-              title={isThreeDPresentationComplete
-                ? 'Open Project setup guidance'
-                : 'Project setup guidance is available after the ThreeD Scene loads'}
-              onClick={() => {
-                if (isProjectSetupOpen) {
-                  setIsProjectSetupOpen(false);
-                } else {
-                  openProjectSetup();
-                }
-              }}
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span className="hidden lg:inline">Setup</span>
-            </Button>
-          )}
-
-          {selectedProjectId && viewMode !== '2d' && (
-            <div className="relative">
-              <Button
-                type="button"
-                variant={isSceneAddMenuOpen ? 'secondary' : 'outline'}
-                size="sm"
-                className="h-7 gap-1 px-2 text-xs"
-                disabled={projectThreeDModules.length === 0}
-                aria-expanded={isSceneAddMenuOpen}
-                title="Add a ThreeD Marker to the Scene"
-                onClick={() => {
-                  setIsProjectSummaryOpen(false);
-                  setIsSceneAddMenuOpen((open) => !open);
-                }}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Add to Scene
-                {isSceneAddMenuOpen
-                  ? <ChevronUp className="h-3.5 w-3.5" />
-                  : <ChevronDown className="h-3.5 w-3.5" />}
-              </Button>
-
-              {isSceneAddMenuOpen && (
-                <div className="absolute right-0 top-full z-[2000] mt-1 w-52 rounded-lg border bg-background/95 p-1.5 shadow-xl backdrop-blur-sm">
-                  <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    ThreeD Marker Type
-                  </div>
-                  <div className="grid grid-cols-2 gap-1">
-                    <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={() => void openModelLibrary()}>
-                      <Box className="h-3.5 w-3.5" /> Models
-                    </Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={() => void openCharacterLibrary()}>
-                      <User className="h-3.5 w-3.5" /> Characters
-                    </Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={() => void openFarmBotLibrary()}>
-                      <Settings className="h-3.5 w-3.5" /> FarmBots
-                    </Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={openBedPlacement}>
-                      <Plus className="h-3.5 w-3.5" /> Bed
-                    </Button>
-                    <Button type="button" variant="ghost" size="sm" className="col-span-2 h-8 justify-start text-xs" onClick={() => void openPlantingPlacement()}>
-                      <Sprout className="h-3.5 w-3.5" /> Planting
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {selectedProjectId && viewMode === '2d' && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-7 gap-1 px-2 text-xs"
-              disabled={projectThreeDModules.length === 0}
-              title="Add a Model through the supporting 2D Map"
-              onClick={() => void openModelLibrary()}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Add Model
-            </Button>
-          )}
-
-          <SceneOperationStatus
-            operation={activeSceneOperation}
-            viewMode={viewMode}
-            onCancel={cancelActiveSceneOperation}
-          />
-
-          {selectedProjectId && (
-            <Button
-              ref={projectAssetsTriggerRef}
-              type="button"
-              variant={isProjectAssetsOpen ? 'secondary' : 'outline'}
-              size="sm"
-              className="h-7 gap-1 px-2 text-xs"
-              aria-expanded={isProjectAssetsOpen}
-              aria-controls="project-assets-panel"
-              aria-label="Project Assets"
-              title="Browse and focus Project ThreeD Assets"
-              onClick={() => {
-                if (isProjectAssetsOpen) {
-                  closeProjectAssets(false);
-                } else {
-                  openProjectAssets();
-                }
-              }}
-            >
-              <ListTree className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Project Assets</span>
-              <span className="text-[10px] text-muted-foreground">
-                {projectRuntimeMarkers.length}
-              </span>
-            </Button>
-          )}
-
-          {selectedProjectId && (
-            projectEnvironmentMarkers.length > 0 && (
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="h-7 w-7"
-                aria-label="Open Project Environment Details"
-                title="Open Project Environment Details"
-                onClick={() => openEnvironmentDetails()}
-              >
-                <ScanSearch className="h-3.5 w-3.5 text-muted-foreground" />
-              </Button>
-            )
-          )}
-
-          {selectedProjectId && (
-            <Button
-              type="button"
-              variant={savingProjectMarkers ? 'secondary' : 'outline'}
-              size="icon"
-              className="h-7 w-7"
-              disabled={savingProjectMarkers}
-              aria-label="Save ThreeD Project"
-              title="Save ThreeD Project markers and current view"
-              onClick={handleSaveThreeDProject}
-            >
-              {savingProjectMarkers
-                ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                : <Save className="h-3.5 w-3.5 text-muted-foreground" />}
-            </Button>
-          )}
-
-          {/* Filter Toggle - Icon Only */}
-          <Button
-            variant={showFilterPanel ? 'secondary' : 'outline'}
-            size="icon"
-            className="h-7 w-7 relative"
-            onClick={() => setShowFilterPanel(!showFilterPanel)}
-            title="Toggle filter panel"
-          >
-            <Filter className={`w-3.5 h-3.5 ${showFilterPanel ? '' : 'text-muted-foreground'}`} />
-            {filterAssetType && (
-              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-primary rounded-full" />
-            )}
-          </Button>
-
-          {/* Refresh - Icon Only */}
-          <Button 
-            variant={refreshing ? 'secondary' : 'outline'}
-            size="icon" 
-            className="h-7 w-7" 
-            onClick={handleRefresh} 
-            disabled={refreshing} 
-            title="Refresh data"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : 'text-muted-foreground'}`} />
-          </Button>
-        </div>
       </div>
 
       <ProjectAssetsPanel
@@ -3218,254 +2893,51 @@ function UnifiedMapPageInner() {
         </div>
       )}
 
-      {selectedProjectId && isCharacterLibraryOpen && (
-        <div className="absolute left-1 top-9 z-40 w-[min(24rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <div>
-              <h2 className="text-sm font-semibold">ThreeD Character Library</h2>
-              <p className="text-[11px] text-muted-foreground">
-                Select a Character, then click its unique spawn location in the ThreeD Scene.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              disabled={placingCharacter}
-              onClick={() => {
-                setPlacementCharacter(null);
-                setIsCharacterLibraryOpen(false);
-              }}
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
+      <ThreeDCharacterLibraryPanel
+        isOpen={Boolean(selectedProjectId) && isCharacterLibraryOpen}
+        projectModules={projectThreeDModules}
+        selectedModuleId={placementThreedId}
+        onSelectedModuleChange={setPlacementThreedId}
+        characters={libraryCharacters}
+        placedCharacterIds={placedCharacterIds}
+        loading={loadingLibraryCharacters}
+        placing={placingCharacter}
+        placementCharacter={placementCharacter}
+        onSelectCharacter={(character) => {
+          setPlacementCharacter(character);
+          setViewMode('3d');
+        }}
+        onCancelPlacement={() => setPlacementCharacter(null)}
+        onClose={() => {
+          setPlacementCharacter(null);
+          setIsCharacterLibraryOpen(false);
+        }}
+      />
 
-          {projectThreeDModules.length > 1 && (
-            <label className="mb-2 block text-xs">
-              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
-              <select
-                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
-                value={placementThreedId ?? ''}
-                disabled={placingCharacter}
-                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
-              >
-                {projectThreeDModules.map((module) => (
-                  <option key={module.id} value={module.id}>{module.name}</option>
-                ))}
-              </select>
-            </label>
-          )}
-
-          {placementCharacter && (
-            <div className="mb-2 flex items-center justify-between gap-2 rounded border border-violet-500/40 bg-violet-500/10 p-2 text-xs">
-              <span>
-                Placing <strong>{placementCharacter.name}</strong>
-                {' '}with {placementCharacter.libraryAccess.runtime} runtime
-                {placingCharacter ? '…' : ' — click the ground'}
-              </span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-6 text-[10px]"
-                disabled={placingCharacter}
-                onClick={() => setPlacementCharacter(null)}
-              >
-                Cancel
-              </Button>
-            </div>
-          )}
-
-          <div className="max-h-72 space-y-1 overflow-y-auto pr-1">
-            {loadingLibraryCharacters ? (
-              <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" /> Loading Characters…
-              </div>
-            ) : libraryCharacters.length === 0 ? (
-              <p className="py-6 text-center text-xs text-muted-foreground">
-                No eligible Character Library items are available. Character models must be active and classified for Character use.
-              </p>
-            ) : libraryCharacters.map((character) => {
-              const isPlaced = (
-                (data.threed.raw?.projectThreedMarkers ?? []).some(
-                  (marker) => marker.markerType === 'characters'
-                    && Number(marker.sourceAssetId) === Number(character.id),
-                )
-                || (data.threed.raw?.characters ?? []).some(
-                  (projectCharacter) => Number(projectCharacter.id) === Number(character.id),
-                )
-              );
-              return (
-              <div key={character.id} className="flex items-center gap-2 rounded border p-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded bg-violet-500/10 text-violet-600">
-                  {character.libraryAccess.runtime === 'ecctrl' ? '🎮' : '🧚'}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-xs font-medium">{character.name}</div>
-                  <div className="text-[10px] uppercase text-muted-foreground">
-                    {character.libraryAccess.runtime} · {character.type ?? 'character'}
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  className="h-7 text-xs"
-                  disabled={!placementThreedId || placingCharacter || isPlaced}
-                  onClick={() => {
-                    setPlacementCharacter(character);
-                    setViewMode('3d');
-                  }}
-                >
-                  {isPlaced ? 'Placed' : 'Place'}
-                </Button>
-              </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {selectedProjectId && isFarmBotLibraryOpen && (
-        <div className="absolute left-1 top-9 z-40 w-[min(26rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <div>
-              <h2 className="text-sm font-semibold">ThreeD FarmBot Library</h2>
-              <p className="text-[11px] text-muted-foreground">
-                Select an existing FarmBot, set its Project dimensions, then click the Scene ground.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              disabled={placingFarmBot}
-              onClick={() => {
-                setPlacementFarmBot(null);
-                setIsFarmBotLibraryOpen(false);
-              }}
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-
-          {projectThreeDModules.length > 1 && (
-            <label className="mb-2 block text-xs">
-              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
-              <select
-                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
-                value={placementThreedId ?? ''}
-                disabled={placingFarmBot}
-                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
-              >
-                {projectThreeDModules.map((module) => (
-                  <option key={module.id} value={module.id}>{module.name}</option>
-                ))}
-              </select>
-            </label>
-          )}
-
-          {placementFarmBot && (
-            <div className="mb-2 grid grid-cols-2 gap-2 rounded border border-slate-500/40 bg-slate-500/10 p-2 text-xs">
-              <div className="col-span-2 font-medium">
-                Placing {placementFarmBot.name}{placingFarmBot ? '…' : ' — click the Scene ground'}
-              </div>
-              {([
-                ['widthFeet', 'Width (ft)', '0.1'],
-                ['lengthFeet', 'Length (ft)', '0.1'],
-                ['heightFeet', 'Height (ft)', '0.1'],
-                ['rotation', 'Y rotation', '0.1'],
-                ['scale', 'Scale', '0.01'],
-              ] as const).map(([field, label, step]) => (
-                <label key={field}>
-                  <span className="mb-1 block text-muted-foreground">{label}</span>
-                  <Input
-                    type="number"
-                    step={step}
-                    value={farmBotPlacementDraft[field]}
-                    disabled={placingFarmBot}
-                    className="h-8 text-xs"
-                    onChange={(event) => setFarmBotPlacementDraft((current) => ({
-                      ...current,
-                      [field]: event.target.value,
-                    }))}
-                  />
-                </label>
-              ))}
-              <label>
-                <span className="mb-1 block text-muted-foreground">Color</span>
-                <Input
-                  type="color"
-                  value={farmBotPlacementDraft.color}
-                  disabled={placingFarmBot}
-                  className="h-8 w-full p-1"
-                  onChange={(event) => setFarmBotPlacementDraft((current) => ({
-                    ...current,
-                    color: event.target.value,
-                  }))}
-                />
-              </label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-7 self-end text-xs"
-                disabled={placingFarmBot}
-                onClick={() => setPlacementFarmBot(null)}
-              >
-                Cancel
-              </Button>
-            </div>
-          )}
-
-          <div className="max-h-64 space-y-1 overflow-y-auto pr-1">
-            {loadingLibraryFarmBots ? (
-              <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" /> Loading FarmBots…
-              </div>
-            ) : libraryFarmBots.length === 0 ? (
-              <p className="py-6 text-center text-xs text-muted-foreground">
-                No active owned FarmBots are available.
-              </p>
-            ) : libraryFarmBots.map((farmbot) => {
-              const isPlaced = (
-                (data.threed.raw?.projectThreedMarkers ?? []).some(
-                  (marker) => marker.markerType === 'farmbots'
-                    && Number(marker.sourceAssetId) === Number(farmbot.id),
-                )
-                || (data.threed.raw?.farmbots ?? []).some(
-                  (projectFarmBot) => Number(projectFarmBot.id) === Number(farmbot.id),
-                )
-              );
-              return (
-                <div key={farmbot.id} className="flex items-center gap-2 rounded border p-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-500/10">🤖</div>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-xs font-medium">{farmbot.name}</div>
-                    <div className="truncate text-[10px] text-muted-foreground">
-                      {farmbot.assetCode} · {farmbot.status ?? 'offline'}
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="h-7 text-xs"
-                    disabled={!placementThreedId || placingFarmBot || isPlaced}
-                    onClick={() => {
-                      setPlacementFarmBot(farmbot);
-                      setViewMode('3d');
-                    }}
-                  >
-                    {isPlaced ? 'Placed' : 'Place'}
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      <ThreeDFarmBotLibraryPanel
+        isOpen={Boolean(selectedProjectId) && isFarmBotLibraryOpen}
+        projectModules={projectThreeDModules}
+        selectedModuleId={placementThreedId}
+        onSelectedModuleChange={setPlacementThreedId}
+        farmBots={libraryFarmBots}
+        placedFarmBotIds={placedFarmBotIds}
+        loading={loadingLibraryFarmBots}
+        placing={placingFarmBot}
+        placementFarmBot={placementFarmBot}
+        placementDraft={farmBotPlacementDraft}
+        onPlacementDraftChange={(field, value) => {
+          setFarmBotPlacementDraft((current) => ({ ...current, [field]: value }));
+        }}
+        onSelectFarmBot={(farmBot) => {
+          setPlacementFarmBot(farmBot);
+          setViewMode('3d');
+        }}
+        onCancelPlacement={() => setPlacementFarmBot(null)}
+        onClose={() => {
+          setPlacementFarmBot(null);
+          setIsFarmBotLibraryOpen(false);
+        }}
+      />
 
       {selectedProjectId && isBedPlacementOpen && (
         <div className="absolute left-1 top-9 z-40 w-[min(26rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
