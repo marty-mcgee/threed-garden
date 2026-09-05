@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.7a — ThreeD Dashboard Library Workspaces** (`package.json` version `0.19.7-alpha`) |
-| Current release candidate | **v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries** (`package.json` version `0.19.7-beta`) |
-| Current development milestone | **Release candidate: Project-session loading, placement/filter presentation, Library collections, Project Assets accessibility, Combined View resizing, and data-freshness timing are isolated behind typed coordinator boundaries** |
+| Current stable version | **v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries** (`package.json` version `0.19.7-beta`) |
+| Current release candidate | **None — v0.19.7b is deployed** |
+| Current development milestone | **Production checkpoint: Project-session loading, placement/filter presentation, Library collections, Project Assets accessibility, Combined View resizing, and data-freshness timing are isolated behind typed coordinator boundaries** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

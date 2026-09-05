@@ -1,6 +1,6 @@
 # ThreeD Dashboard Scene Coordinator
 
-Release candidate: **v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries**.
+Production checkpoint: **v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries**.
 
 The `/dashboard/map` page is the **Dashboard Scene Coordinator**. It coordinates a Project session across Dashboard controls, supporting 2D views, ThreeD Scene presentation, Runtime Markers, and explicit user operations.
 

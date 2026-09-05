@@ -2,9 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.7a **ThreeD Dashboard Library Workspaces**, using package version `0.19.7-alpha`. It completes the Model Library presentation boundary, preserves established typed placement request envelopes, makes Library selection mutually exclusive, and gives Project Assets plus all Add-to-Scene tools one consistent 18rem left Scene workspace. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
-
-Current release candidate is v0.19.7b **ThreeD Dashboard Scene Coordinator Boundaries**, using package version `0.19.7-beta`. It extracts Project-session sequencing and presentation-only Dashboard responsibilities while preserving Runtime Marker, Rapier, Character, marker CRUD, API, and schema authority.
+Current production is v0.19.7b **ThreeD Dashboard Scene Coordinator Boundaries**, using package version `0.19.7-beta`. It extracts Project-session sequencing and presentation-only Dashboard responsibilities while preserving Runtime Marker, Rapier, Character, marker CRUD, API, and schema authority. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -50,6 +48,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.7b production checkpoint](releases/v0.19.7b.md)
 - [v0.19.7a production checkpoint](releases/v0.19.7a.md)
 - [v0.19.7 production checkpoint](releases/v0.19.7.md)
 - [v0.19.6 production checkpoint](releases/v0.19.6.md)
