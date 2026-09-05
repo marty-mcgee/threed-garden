@@ -133,6 +133,8 @@ interface UnifiedMapViewProps {
   onRejectedProjectMarkerDelete?: (recordId: number) => Promise<void>;
   /** Restores a rejected Character snapshot to its source Character position. */
   onRejectedCharacterMarkerRepair?: (recordId: number) => Promise<void>;
+  /** Reports that the ThreeD loader and Scene introduction have completed. */
+  onThreeDPresentationComplete?: () => void;
 }
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
@@ -216,6 +218,7 @@ export function UnifiedMapView({
   onPlantingPlacement,
   onRejectedProjectMarkerDelete,
   onRejectedCharacterMarkerRepair,
+  onThreeDPresentationComplete,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedMarkerRef = useRef<RuntimeMarker | null | undefined>(selectedMarker);
@@ -708,6 +711,7 @@ export function UnifiedMapView({
         onBedPlacement={onBedPlacement}
         placementPlantingName={placementPlantingName}
         onPlantingPlacement={onPlantingPlacement}
+        onPresentationComplete={onThreeDPresentationComplete}
       />
     );
   };

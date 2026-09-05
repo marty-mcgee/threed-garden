@@ -861,3 +861,15 @@ The App-owned theme provider removes the third-party client script boundary and 
 Pre-loading reserves the established Dashboard chrome, a 36-pixel Project toolbar skeleton, its 6-pixel Scene gap, and the final viewport height. All progress stages reuse the same bounded presentation geometry so labels and percentages do not move or resize the loader. The Scene operation status is an overlay below the Project toolbar; pending deletion/update feedback therefore cannot increase the toolbar height or move the Scene.
 
 This checkpoint was released successfully to production as **v0.19.5b — ThreeD Scene Loading Presentation** (`package.json` version `0.19.5-beta`) on September 4, 2026.
+
+## v0.19.5c ThreeD Project guidance and Environment presentation boundary
+
+The release candidate adds a post-load **Project Tour** for an empty ThreeD Project. It appears only after the established Scene loading presentation and whole-surface fade complete, and it reads progress from the existing Runtime Marker collection. Environment/Base Map, Character, and ordinary Scene Model remain independently owned assets; the guide creates no parallel inventory, automatic placement, or persistence path. Its actions open the existing Library and Project controls.
+
+The default Scene presentation now uses a deterministic layered procedural ground texture and a consistent three-quarter camera framing. Environment choices come from one shared preset catalog used by both the Scene and saved-view validation. **Default Daylight** combines lightweight image-based illumination with an App-generated panoramic daylight backdrop. **Sunset Forest HD** uses a separately tracked App-owned panoramic asset for users who deliberately choose the higher-detail presentation. Existing Environment presets remain available, and unknown saved keys continue to fail closed.
+
+Authenticated Project discovery now includes the owner's active Projects before they contain assets, allowing a newly created Project to enter the setup workflow. Anonymous discovery still requires a public Project with at least one active asset. Project coordinates remain optional. This changes no Project ownership, publication, schema, or write authorization rule.
+
+The blank-Project Three.js message was removed because the Project Tour now owns that guidance. Project toolbar and loading-skeleton geometry remain fixed, and Project changes reset the outgoing Tour and transient interaction state. Runtime Marker identity, Project snapshot authority, persistent Canvas/Rapier ownership, Environment collision planning, and separate GardenCharacter/EcctrlCharacter paths are unchanged.
+
+This boundary is prepared as **v0.19.5c — ThreeD Project Guidance and Environment Presentation** (`package.json` version `0.19.5-centaur`). It becomes a production checkpoint only after the client-run build, deployment, and production verification are confirmed.

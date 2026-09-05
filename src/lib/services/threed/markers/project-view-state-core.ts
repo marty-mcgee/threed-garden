@@ -1,3 +1,8 @@
+import {
+  THREE_D_ENVIRONMENT_PRESET_KEYS,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../environment-presets.ts';
+
 export const PROJECT_VIEW_STATE_VERSION = 1 as const;
 
 export type ProjectViewMode = '2d' | '3d' | 'combined';
@@ -49,9 +54,7 @@ const CAMERA_MODES = new Set<ProjectCameraMode>([
 ]);
 const VIEW_MODES = new Set<ProjectViewMode>(['2d', '3d', 'combined']);
 const SCENE_LAYERS = new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
-const ENVIRONMENTS = new Set([
-  'apartment', 'city', 'dawn', 'forest', 'lobby', 'night', 'park', 'studio', 'sunset', 'warehouse',
-]);
+const ENVIRONMENTS = new Set(THREE_D_ENVIRONMENT_PRESET_KEYS);
 
 function record(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null && !Array.isArray(value)

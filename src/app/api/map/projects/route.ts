@@ -29,13 +29,16 @@ export async function GET(request: NextRequest) {
     const projectScope = and(
       userId ? eq(project.userId, userId) : eq(project.isPublic, true),
       includeInactive ? undefined : eq(project.isActive, true),
-      sql`EXISTS (
-        SELECT 1
-        FROM ${projectAssets}
-        WHERE ${projectAssets.projectId} = ${project.id}
-        AND ${projectAssets.userId} = ${project.userId}
-        AND ${projectAssets.isActive} = true
-      )`
+      // Owners must be able to reopen a new, empty Project and use the
+      // Dashboard setup workflow. Anonymous discovery remains limited to
+      // public Projects that already contain at least one active asset.
+      userId ? undefined : sql`EXISTS (
+          SELECT 1
+          FROM ${projectAssets}
+          WHERE ${projectAssets.projectId} = ${project.id}
+          AND ${projectAssets.userId} = ${project.userId}
+          AND ${projectAssets.isActive} = true
+        )`
     );
 
     // ✅ Build base query for projects

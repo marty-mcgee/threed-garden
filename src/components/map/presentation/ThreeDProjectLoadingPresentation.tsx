@@ -20,21 +20,18 @@ export function ThreeDProjectLoadingPresentation({
   return (
     <div className={`bg-slate-950 text-white ${className}`}>
       {showProjectHeader && (
-        <>
-          <div
-            className="flex h-9 items-center justify-between border-b border-white/10 px-2"
-            aria-label="Loading Project header"
-          >
-            <div className="h-5 w-40 animate-pulse rounded bg-white/10" />
-            <div className="flex gap-2">
-              <div className="h-6 w-24 animate-pulse rounded bg-white/10" />
-              <div className="h-6 w-20 animate-pulse rounded bg-white/10" />
-            </div>
+        <div
+          className="flex h-9 items-center justify-between border-b border-white/10 px-2"
+          aria-label="Loading Project header"
+        >
+          <div className="h-5 w-40 animate-pulse rounded bg-white/10" />
+          <div className="flex gap-2">
+            <div className="h-6 w-24 animate-pulse rounded bg-white/10" />
+            <div className="h-6 w-20 animate-pulse rounded bg-white/10" />
           </div>
-          <div className="h-1.5" aria-hidden="true" />
-        </>
+        </div>
       )}
-      <div className={`flex items-center justify-center ${showProjectHeader ? 'h-[calc(100%-2.625rem)]' : 'h-full'}`}>
+      <div className={`flex items-center justify-center ${showProjectHeader ? 'h-[calc(100%-2.25rem)]' : 'h-full'}`}>
         <div className="w-[min(24rem,calc(100%-3rem))] min-h-32 text-center">
         <Box className="mx-auto h-6 w-6 text-cyan-300/80" aria-hidden="true" />
         <div className="mt-3 text-sm font-medium tracking-wide">Loading ThreeD Project</div>

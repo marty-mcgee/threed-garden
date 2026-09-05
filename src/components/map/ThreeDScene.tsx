@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
-  OrbitControls, Environment, Html, Plane, Grid, 
+  OrbitControls, Environment, Html, Plane, Grid, useTexture,
   GizmoHelper, GizmoViewcube, GizmoViewport,
   Text, Sphere, Cylinder, Cone, Ring,
 } from '@react-three/drei';
@@ -74,6 +74,10 @@ import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers
 import { isProjectModelEnvironment } from '@/lib/services/threed/models/project-model-instance-core';
 import type { ThreeDEnvironmentCollisionPreviewPlan } from '@/lib/services/threed/models/environment-collision-preview-core';
 import { createThreeDEnvironmentColliderActivationPlan } from '@/lib/services/threed/models/environment-collider-activation-core';
+import {
+  resolveThreeDEnvironmentPreset,
+  THREE_D_ENVIRONMENT_PRESETS,
+} from '@/lib/services/threed/environment-presets';
 import {
   resolveRestoredThreeDActiveLayers,
   type ProjectThreeDViewState,
@@ -146,6 +150,8 @@ interface ThreeDSceneProps {
   placementPlantingName?: string | null;
   /** Called with the ground point selected for a new Planting. */
   onPlantingPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Reports that the loader and Scene introduction have both completed. */
+  onPresentationComplete?: () => void;
 }
 
 function isRapierFrameError(reason: unknown): boolean {
@@ -1308,28 +1314,139 @@ function createGrassTexture(): THREE.Texture {
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext('2d')!;
-  
-  // Base soil color
-  ctx.fillStyle = '#3d5a1e';
+
+  // A repeatable texture keeps the ground from visibly changing whenever the
+  // persistent Scene remounts. Layer broad turf variation beneath fine blades
+  // so the surface reads naturally at both overview and Character distances.
+  let seed = 0x3d5a1e;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 0x100000000;
+  };
+
+  ctx.fillStyle = '#426b32';
   ctx.fillRect(0, 0, 512, 512);
-  
-  // Random grass blades
-  for (let i = 0; i < 2000; i++) {
-    const x = Math.random() * 512;
-    const y = Math.random() * 512;
-    const shade = 0.4 + Math.random() * 0.6;
-    const r = Math.floor(30 * shade);
-    const g = Math.floor(90 * shade);
-    const b = Math.floor(20 * shade);
-    ctx.fillStyle = `rgb(${r},${g},${b})`;
-    ctx.fillRect(x, y, 2 + Math.random() * 3, 2 + Math.random() * 4);
+
+  for (let i = 0; i < 220; i++) {
+    const x = random() * 512;
+    const y = random() * 512;
+    const radius = 10 + random() * 42;
+    const lightPatch = random() > 0.48;
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    gradient.addColorStop(0, lightPatch ? 'rgba(126, 158, 77, 0.16)' : 'rgba(28, 65, 31, 0.18)');
+    gradient.addColorStop(1, 'rgba(66, 107, 50, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
   }
-  
+
+  for (let i = 0; i < 4200; i++) {
+    const x = random() * 512;
+    const y = random() * 512;
+    const height = 1 + random() * 3;
+    ctx.strokeStyle = random() > 0.45
+      ? `rgba(108, 145, 63, ${0.18 + random() * 0.22})`
+      : `rgba(25, 72, 35, ${0.14 + random() * 0.2})`;
+    ctx.lineWidth = 0.5 + random();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (random() - 0.5) * 1.5, y - height);
+    ctx.stroke();
+  }
+
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
   return texture;
+}
+
+function HighResolutionEnvironmentBackground({ url }: { url: string }) {
+  const scene = useThree((state) => state.scene);
+  const texture = useTexture(url);
+
+  useEffect(() => {
+    const previousBackground = scene.background;
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+    scene.background = texture;
+    return () => {
+      if (scene.background === texture) scene.background = previousBackground;
+    };
+  }, [scene, texture]);
+
+  return null;
+}
+
+function ProceduralDaylightBackground() {
+  const scene = useThree((state) => state.scene);
+  const texture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 2048;
+    canvas.height = 1024;
+    const context = canvas.getContext('2d')!;
+    const sky = context.createLinearGradient(0, 0, 0, canvas.height);
+    sky.addColorStop(0, '#397bb8');
+    sky.addColorStop(0.42, '#78add4');
+    sky.addColorStop(0.72, '#c7d9df');
+    sky.addColorStop(1, '#ead8b9');
+    context.fillStyle = sky;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    const sun = context.createRadialGradient(1510, 525, 4, 1510, 525, 150);
+    sun.addColorStop(0, 'rgba(255, 245, 205, 0.95)');
+    sun.addColorStop(0.16, 'rgba(255, 228, 166, 0.5)');
+    sun.addColorStop(1, 'rgba(255, 218, 155, 0)');
+    context.fillStyle = sun;
+    context.fillRect(1360, 375, 300, 300);
+
+    const cloudBands = [
+      { x: 90, y: 340, width: 470, height: 54, opacity: 0.16 },
+      { x: 640, y: 420, width: 390, height: 38, opacity: 0.12 },
+      { x: 1170, y: 300, width: 520, height: 48, opacity: 0.14 },
+      { x: 1700, y: 455, width: 300, height: 34, opacity: 0.1 },
+    ];
+    for (const cloud of cloudBands) {
+      const cloudGradient = context.createRadialGradient(
+        cloud.x + cloud.width / 2,
+        cloud.y,
+        0,
+        cloud.x + cloud.width / 2,
+        cloud.y,
+        cloud.width / 2,
+      );
+      cloudGradient.addColorStop(0, `rgba(255, 255, 255, ${cloud.opacity})`);
+      cloudGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      context.fillStyle = cloudGradient;
+      context.beginPath();
+      context.ellipse(
+        cloud.x + cloud.width / 2,
+        cloud.y,
+        cloud.width / 2,
+        cloud.height,
+        0,
+        0,
+        Math.PI * 2,
+      );
+      context.fill();
+    }
+
+    const result = new THREE.CanvasTexture(canvas);
+    result.mapping = THREE.EquirectangularReflectionMapping;
+    result.colorSpace = THREE.SRGBColorSpace;
+    return result;
+  }, []);
+
+  useEffect(() => {
+    const previousBackground = scene.background;
+    scene.background = texture;
+    return () => {
+      if (scene.background === texture) scene.background = previousBackground;
+    };
+  }, [scene, texture]);
+
+  return null;
 }
 
 // Shadow light with proper target direction and massive frustum depth
@@ -1554,6 +1671,7 @@ export function ThreeDScene({
   onBedPlacement,
   placementPlantingName,
   onPlantingPlacement,
+  onPresentationComplete,
 }: ThreeDSceneProps) {
   const placementLabel = movingModelName
     || placementCharacterName
@@ -1760,6 +1878,11 @@ export function ThreeDScene({
       ? 'post-production'
       : 'production';
   const sceneIntro: ThreeDSceneIntro = 'fade';
+  useEffect(() => {
+    if (scenePostProduction) {
+      onPresentationComplete?.();
+    }
+  }, [onPresentationComplete, scenePostProduction]);
   const settledModelCount = requiredModelMarkerIds.filter(
     (markerId) => settledModelMarkerIds.has(markerId),
   ).length;
@@ -1848,11 +1971,12 @@ export function ThreeDScene({
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
   const [envPreset, setEnvPreset] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('threed-env-preset') || 'night';
+      return localStorage.getItem('threed-env-preset') || 'default-daylight';
     }
-    return 'night';
+    return 'default-daylight';
   });
   const [showIncidents, setShowIncidents] = useState(false);
+  const environmentPreset = resolveThreeDEnvironmentPreset(envPreset);
 
   useEffect(() => {
     setHasData(incidents.length > 0 || markers.length > 0);
@@ -1949,9 +2073,9 @@ export function ThreeDScene({
       const zoomDistance = Math.max(maxDimension * 0.7, 8);
       controlsRef.current.target.set(x, 0, z);
       controlsRef.current.object.position.set(
-        x + zoomDistance * 0.7,
-        zoomDistance * 0.5,
-        z + zoomDistance * 0.7
+        x + zoomDistance * 0.72,
+        zoomDistance * 0.58,
+        z + zoomDistance * 0.82,
       );
       controlsRef.current.update();
     }
@@ -2346,8 +2470,10 @@ export function ThreeDScene({
               className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white/80 focus:outline-none focus:border-white/30 appearance-none"
               style={{ scrollbarWidth: 'thin' }}
             >
-              {['sunset','dawn','night','city','forest','park','warehouse','apartment','studio','lobby'].map(p => (
-                <option key={p} value={p} className="bg-gray-800 text-white">{p}</option>
+              {THREE_D_ENVIRONMENT_PRESETS.map((preset) => (
+                <option key={preset.key} value={preset.key} className="bg-gray-800 text-white">
+                  {preset.label}
+                </option>
               ))}
             </select>
             <button
@@ -2567,7 +2693,11 @@ export function ThreeDScene({
           stopCanvasFrameLoopRef.current = () => state.setFrameloop('never');
         }}
         camera={{
-          position: [centerX + cameraDistance * 0.4, cameraDistance * 0.5, centerZ + cameraDistance * 0.4],
+          position: [
+            centerX + cameraDistance * 0.72,
+            cameraDistance * 0.58,
+            centerZ + cameraDistance * 0.82,
+          ],
           fov: 45,
         }}
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
@@ -2577,7 +2707,17 @@ export function ThreeDScene({
           key={presentationKey}
           onReady={() => setPaintedPresentationKey(presentationKey)}
         />
-        <Environment preset={envPreset as any} background blur={0.8} />
+        <Environment
+          preset={environmentPreset.lightingPreset as any}
+          background={!environmentPreset.backgroundUrl && !environmentPreset.proceduralSky}
+          blur={0}
+        />
+        {environmentPreset.proceduralSky && (
+          <ProceduralDaylightBackground />
+        )}
+        {environmentPreset.backgroundUrl && (
+          <HighResolutionEnvironmentBackground url={environmentPreset.backgroundUrl} />
+        )}
 
         <ambientLight intensity={0.6} />
         <ShadowLight centerX={centerX} centerZ={centerZ} />
@@ -2802,14 +2942,6 @@ export function ThreeDScene({
           ))}
         </Physics>
 
-        {!hasData && (
-          <Html position={[0, 2, 0]} distanceFactor={10}>
-            <div className="bg-black/60 backdrop-blur-sm text-white px-4 py-3 rounded-lg text-center max-w-xs border border-white/10">
-              <p className="text-sm font-medium">No 3D Data Available</p>
-              <p className="text-xs opacity-70 mt-1">Select a project with 3D assets or add markers to see them here</p>
-            </div>
-          </Html>
-        )}
       </Canvas>
       </div>
       )}

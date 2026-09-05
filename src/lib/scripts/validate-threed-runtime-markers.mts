@@ -98,6 +98,7 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/characters/character-library-access-core.ts';
 import {
+  parseThreeDProjectViewState,
   resolveRestoredThreeDActiveLayers,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/markers/project-view-state-core.ts';
@@ -1717,6 +1718,41 @@ assert.deepEqual(
   ['models', 'characters'],
 );
 validationStep('Saved Scene layers preserve explicit choices while enabling newly available Character layers');
+
+const savedEnvironmentView = {
+  version: 1,
+  savedAt: new Date(0).toISOString(),
+  viewMode: '3d',
+  panelHeight: 50,
+  cameraMode: 'stationary',
+  threeD: {
+    cameraPosition: { x: 12, y: 8, z: 14 },
+    cameraTarget: { x: 0, y: 0, z: 0 },
+    activeLayers: [],
+    availableLayers: [],
+    environment: 'default-daylight',
+    autoRotate: false,
+    showGrid: false,
+    showLegend: false,
+    showGizmo: true,
+  },
+};
+assert.equal(
+  parseThreeDProjectViewState(savedEnvironmentView).threeD?.environment,
+  'default-daylight',
+);
+assert.equal(
+  parseThreeDProjectViewState({
+    ...savedEnvironmentView,
+    threeD: { ...savedEnvironmentView.threeD, environment: 'sunset-forest-hd' },
+  }).threeD?.environment,
+  'sunset-forest-hd',
+);
+assert.throws(() => parseThreeDProjectViewState({
+  ...savedEnvironmentView,
+  threeD: { ...savedEnvironmentView.threeD, environment: 'unregistered-environment' },
+}));
+validationStep('Saved Scene environments share the registered client and server allowlist');
 
 const northAlignedOrigin = geographicOrigins[1];
 const tenMetresEast = projectLocalPositionToGeographicPosition(

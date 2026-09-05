@@ -34,6 +34,7 @@ import {
   Pause,
   ScanSearch,
   ListTree,
+  Sparkles,
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,7 @@ import { DetailsCard } from '@/components/map/details/DetailsCard';
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
 import { SceneOperationStatus } from '@/components/map/panels/SceneOperationStatus';
+import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import {
@@ -225,6 +227,8 @@ function UnifiedMapPageInner() {
   const [projectGeographicOrigin, setProjectGeographicOrigin] = useState<ThreeDGeographicOrigin | null>(null);
   const [isModelLibraryOpen, setIsModelLibraryOpen] = useState(false);
   const [isProjectAssetsOpen, setIsProjectAssetsOpen] = useState(false);
+  const [isProjectSetupOpen, setIsProjectSetupOpen] = useState(false);
+  const [isThreeDPresentationComplete, setIsThreeDPresentationComplete] = useState(false);
   const [projectAssetSearch, setProjectAssetSearch] = useState('');
   const [projectAssetType, setProjectAssetType] = useState('all');
   const projectAssetsTriggerRef = useRef<HTMLButtonElement>(null);
@@ -550,8 +554,11 @@ function UnifiedMapPageInner() {
     assetId,
   ) => runtimeMarkerPositionResolverRef.current?.(moduleType, assetId) ?? null, []);
 
-  const openModelLibrary = useCallback(async () => {
+  const openModelLibrary = useCallback(async (
+    initialRole: 'object' | 'environment' = 'object',
+  ) => {
     setIsProjectAssetsOpen(false);
+    setIsProjectSetupOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
@@ -562,6 +569,7 @@ function UnifiedMapPageInner() {
     setIsPlantingPlacementOpen(false);
     setPlantingPlacementActive(false);
     setIsModelLibraryOpen(true);
+    setPlacementModelRole(initialRole);
     setIsProjectSummaryOpen(false);
     setSelectedMarker(null);
     if (libraryModels.length > 0 || loadingLibraryModels) return;
@@ -592,11 +600,11 @@ function UnifiedMapPageInner() {
     setInspectedLibraryModelId(model.id);
     setPlacementModel(model);
     setPlacementScaleMultiplier('1');
-    setPlacementModelRole('object');
   }, [placementThreedId, placingModel]);
 
   const openCharacterLibrary = useCallback(async () => {
     setIsProjectAssetsOpen(false);
+    setIsProjectSetupOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
@@ -635,6 +643,7 @@ function UnifiedMapPageInner() {
 
   const openFarmBotLibrary = useCallback(async () => {
     setIsProjectAssetsOpen(false);
+    setIsProjectSetupOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
@@ -672,6 +681,7 @@ function UnifiedMapPageInner() {
 
   const openPlantingPlacement = useCallback(async () => {
     setIsProjectAssetsOpen(false);
+    setIsProjectSetupOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
@@ -714,6 +724,7 @@ function UnifiedMapPageInner() {
 
   const openBedPlacement = useCallback(() => {
     setIsProjectAssetsOpen(false);
+    setIsProjectSetupOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
     setPlacementFarmBot(null);
@@ -940,6 +951,8 @@ function UnifiedMapPageInner() {
     setPlacementScaleMultiplier('1');
     setPlacementModelRole('object');
     setIsProjectAssetsOpen(false);
+    setIsProjectSetupOpen(false);
+    setIsThreeDPresentationComplete(false);
     setProjectAssetSearch('');
     setProjectAssetType('all');
     setIsModelLibraryOpen(false);
@@ -2327,6 +2340,16 @@ function UnifiedMapPageInner() {
     () => buildThreeDRuntimeMarkerResult(data.threed.raw).markers,
     [data.threed.raw],
   );
+  useEffect(() => {
+    if (!selectedProjectId || !isThreeDPresentationComplete) {
+      setIsProjectSetupOpen(false);
+      return;
+    }
+    setIsProjectSetupOpen(projectRuntimeMarkers.length === 0);
+  }, [isThreeDPresentationComplete, projectRuntimeMarkers.length, selectedProjectId]);
+  const handleThreeDPresentationComplete = useCallback(() => {
+    setIsThreeDPresentationComplete(true);
+  }, []);
   const projectEnvironmentMarkers = useMemo(
     () => projectRuntimeMarkers.filter(
       (marker) => marker.type === 'models'
@@ -2344,6 +2367,7 @@ function UnifiedMapPageInner() {
   }, [projectEnvironmentMarkers]);
 
   const openProjectAssets = useCallback(() => {
+    setIsProjectSetupOpen(false);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
     setIsCharacterLibraryOpen(false);
@@ -2357,6 +2381,23 @@ function UnifiedMapPageInner() {
     setIsSceneAddMenuOpen(false);
     setIsProjectSummaryOpen(false);
     setIsProjectAssetsOpen(true);
+  }, []);
+
+  const openProjectSetup = useCallback(() => {
+    setIsProjectAssetsOpen(false);
+    setIsModelLibraryOpen(false);
+    setPlacementModel(null);
+    setIsCharacterLibraryOpen(false);
+    setPlacementCharacter(null);
+    setIsFarmBotLibraryOpen(false);
+    setPlacementFarmBot(null);
+    setIsBedPlacementOpen(false);
+    setBedPlacementActive(false);
+    setIsPlantingPlacementOpen(false);
+    setPlantingPlacementActive(false);
+    setIsSceneAddMenuOpen(false);
+    setIsProjectSummaryOpen(false);
+    setIsProjectSetupOpen(true);
   }, []);
 
   const closeProjectAssets = useCallback((restoreTriggerFocus = false) => {
@@ -2442,7 +2483,7 @@ function UnifiedMapPageInner() {
       || left.id.localeCompare(right.id)
     ));
   return (
-    <div className="relative space-y-1.5">
+    <div className="relative">
       {ToastComponent}
 
       {/* Project Selector Dialog */}
@@ -2640,6 +2681,31 @@ function UnifiedMapPageInner() {
             </Button>
           </div>
 
+          {selectedProjectId && (
+            <Button
+              type="button"
+              variant={isProjectSetupOpen ? 'secondary' : 'outline'}
+              size="sm"
+              className="h-7 gap-1 px-2 text-xs"
+              disabled={!isThreeDPresentationComplete}
+              aria-expanded={isProjectSetupOpen}
+              aria-controls="project-setup-panel"
+              title={isThreeDPresentationComplete
+                ? 'Open Project setup guidance'
+                : 'Project setup guidance is available after the ThreeD Scene loads'}
+              onClick={() => {
+                if (isProjectSetupOpen) {
+                  setIsProjectSetupOpen(false);
+                } else {
+                  openProjectSetup();
+                }
+              }}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span className="hidden lg:inline">Setup</span>
+            </Button>
+          )}
+
           {selectedProjectId && viewMode !== '2d' && (
             <div className="relative">
               <Button
@@ -2816,6 +2882,39 @@ function UnifiedMapPageInner() {
         closeProjectAssets={closeProjectAssets}
         focusProjectAsset={focusProjectAsset}
       />
+      <div id="project-setup-panel">
+        <ProjectSetupPanel
+          isOpen={Boolean(selectedProjectId) && isThreeDPresentationComplete && isProjectSetupOpen}
+          hasThreeDModule={projectThreeDModules.length > 0}
+          hasEnvironment={projectEnvironmentMarkers.length > 0}
+          hasCharacter={projectRuntimeMarkers.some((marker) => marker.type === 'characters')}
+          hasSceneModel={projectRuntimeMarkers.some(
+            (marker) => marker.type === 'models'
+              && marker.metadata?.placementRole !== 'environment',
+          )}
+          onClose={() => setIsProjectSetupOpen(false)}
+          onAddEnvironment={() => {
+            setIsProjectSetupOpen(false);
+            void openModelLibrary('environment');
+          }}
+          onAddCharacter={() => {
+            setIsProjectSetupOpen(false);
+            void openCharacterLibrary();
+          }}
+          onOpenModelLibrary={() => {
+            setIsProjectSetupOpen(false);
+            void openModelLibrary('object');
+          }}
+          onOpenProjectSettings={() => {
+            setIsProjectSetupOpen(false);
+            window.open(
+              `/admin/projects/${selectedProjectId}`,
+              '_blank',
+              'noopener,noreferrer',
+            );
+          }}
+        />
+      </div>
       {selectedProjectId && isModelLibraryOpen && !isFullscreen && (
         <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 flex-col overflow-hidden rounded-md border bg-background p-3 shadow-xl">
           <div className="mb-2 flex items-center justify-between gap-2">
@@ -3723,6 +3822,7 @@ function UnifiedMapPageInner() {
                   <div className="relative w-full h-full rounded-t-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
                       projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                      onThreeDPresentationComplete={handleThreeDPresentationComplete}
                       runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                       geographicOrigin={projectGeographicOrigin}
                       data={data}
@@ -3815,6 +3915,7 @@ function UnifiedMapPageInner() {
             {viewMode === '3d' && (
               <UnifiedMapView
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
+                onThreeDPresentationComplete={handleThreeDPresentationComplete}
                 runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                 geographicOrigin={projectGeographicOrigin}
                 data={data}

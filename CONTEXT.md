@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.4d — ThreeD Project Asset Navigation and Environment Collision Coverage** (`package.json` version `0.19.4-delta`) |
-| Current release candidate | **None — v0.19.4d is deployed** |
-| Current development milestone | **Production checkpoint: searchable Project Runtime Marker navigation plus a stable 1,024-collider budget balanced between Character proximity and map-wide Environment coverage** |
+| Current stable version | **v0.19.5b — ThreeD Scene Loading Presentation** |
+| Current release candidate | **v0.19.5c — ThreeD Project Guidance and Environment Presentation** (`package.json` version `0.19.5-centaur`) |
+| Current development milestone | **Release candidate: post-load Project setup guidance, deterministic default Scene presentation, shared Environment presets, and owner access to active empty Projects** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

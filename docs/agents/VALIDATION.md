@@ -212,6 +212,20 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Delete a disposable marker and confirm the pending operation notification remains visible below the Project toolbar without changing the toolbar or Scene height.
 - Run `npm run typecheck`, `npm run validate:threed-runtime-markers`, and `git diff --check`. The client-run production build remains the release gate.
 
+## v0.19.5c ThreeD Project guidance and Environment presentation checks
+
+- Open an owned active Project with no assets through a direct `/dashboard/map?projectId=N` navigation. Confirm the established loading presentation and whole-Scene fade finish before the **Project Tour** appears.
+- Confirm the empty Scene has no centered Three.js **No 3D Data Available** message. The Project Tour must be the only startup guidance surface.
+- Confirm the Project toolbar remains 36 pixels high, with no extra spacer or vertical jump when its loading skeleton hands off to the live toolbar.
+- Confirm the Tour begins at **0 of 3** and independently recognizes an Environment/Base Map, a Character, and an ordinary Scene Model from the existing Runtime Marker collection. It must not create assets or write Project state automatically.
+- Close and reopen the Tour through **Setup**. Confirm its actions reuse the existing Environment, Character, Model Library, and Project settings controls.
+- Open **Change Project** and confirm the authenticated owner can select an active Project with zero assets. Anonymous Project discovery must still require a public Project with at least one active asset. Coordinates are not required for either path.
+- Confirm **Default Daylight** presents the deterministic panoramic daylight backdrop, layered procedural ground, and natural three-quarter camera framing without a white first paint or random texture changes.
+- Select **Sunset Forest HD**, confirm the App-owned panoramic image is sharp and consistently framed, then switch between other existing Environment presets.
+- Save Project view state with each new Environment key and refresh. Confirm the PUT succeeds and the selected Environment restores; an unknown Environment key must still fail validation.
+- Change Projects with the Tour or another Project-scoped panel open. Confirm the outgoing presentation and interaction state do not carry into the incoming Project.
+- Run `npm run typecheck`, `npm run validate:assets`, `npm run validate:threed-runtime-markers`, `npm run validate:threed-orchestration`, and `git diff --check`. The client-run production build remains the release gate.
+
 ## v0.18.6b release-candidate checks
 
 - Run `npm run validate:threed-runtime-markers` and confirm all registry, builder, snapshot validation, and saved-position merge groups pass.

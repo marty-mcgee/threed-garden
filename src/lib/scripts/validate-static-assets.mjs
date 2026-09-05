@@ -67,8 +67,28 @@ if (failures.length > 0) {
 }
 validationStep('Required GLTF DRACO decoder assets exist under public/');
 
+const requiredEnvironmentPaths = [
+  '/assets/environments/sunset-forest-8k.jpg',
+];
+
+for (const filePath of requiredEnvironmentPaths) {
+  const relativePath = `public/${filePath.replace(/^\/+/, '')}`;
+  if (!existsSync(resolve(repositoryRoot, relativePath))) {
+    failures.push(`${filePath} (missing)`);
+  }
+}
+
+if (failures.length > 0) {
+  console.error('Invalid configured ThreeD environment assets:');
+  for (const failure of failures) {
+    console.error(`- ${failure}`);
+  }
+  process.exit(1);
+}
+validationStep('Required high-resolution ThreeD environment assets exist under public/');
+
 console.log('─'.repeat(40));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);
 console.log(
-  `Validated ${configuredPaths.length} animation assets and ${requiredDracoDecoderPaths.length} DRACO decoder assets.\n`,
+  `Validated ${configuredPaths.length} animation assets, ${requiredDracoDecoderPaths.length} DRACO decoder assets, and ${requiredEnvironmentPaths.length} environment asset.\n`,
 );
