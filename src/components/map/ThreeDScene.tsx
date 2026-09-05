@@ -2891,52 +2891,56 @@ export function ThreeDScene({
 
           {sceneMarkers.filter((marker) => (
             sceneEnvironmentReady || normalizeSceneLayerType(marker.type) !== 'characters'
-          )).map((marker, idx) => (
-            <ThreeDMarkerComponent
-              key={`threed-marker-${marker.id ?? `${marker.type}-${idx}`}`}
-              marker={marker}
-              onClick={handleMarkerClick}
-              isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
-              isLayerEnabled={
-                activeLayers.has(normalizeSceneLayerType(marker.type))
-                  && (visibleMarkerIds?.has(String(marker.id)) ?? true)
-              }
-              placementActive={Boolean(placementLabel)}
-              onPlacementHover={setPlacementPreviewPosition}
-              onPlacementClick={movingModelName
-                ? onModelReposition
-                : placementCharacterName
-                ? onCharacterPlacement
-                : placementFarmBotName
-                  ? onFarmBotPlacement
-                : placementPlantingName
-                  ? onPlantingPlacement
-                  : placementBedName
-                    ? onBedPlacement
-                    : onModelPlacement}
-              isActionTarget={
-                actionTarget != null &&
-                isMatchingThreeDActionTarget(actionTarget, {
-                  markerType: String(marker.type ?? ''),
-                  assetId: Number(marker.data?.id),
-                })
-              }
-              actionTarget={actionTarget}
-              controlledCharacterId={
-                normalizeSceneLayerType(marker.type) === 'characters'
-                && Number(marker.data?.id) === controlledCharacterId
-                  ? controlledCharacterId
-                  : null
-              }
-              onControlChange={storeLivePosition}
-              cameraFollowRef={cameraFollowRef}
-              livePositionsRef={livePositionsRef}
-              physicsDebug={physicsDebug}
-              onModelRuntimeSettled={handleModelRuntimeSettled}
-              onCharacterRuntimeSettled={handleCharacterRuntimeSettled}
-              characterSpawnPositions={characterSpawnPositions}
-            />
-          ))}
+          )).map((marker, idx) => {
+            const markerMatchesPresentationFilter = visibleMarkerIds?.has(String(marker.id)) ?? true;
+            return (
+              <group
+                key={`threed-marker-${marker.id ?? `${marker.type}-${idx}`}`}
+                visible={markerMatchesPresentationFilter}
+              >
+                <ThreeDMarkerComponent
+                  marker={marker}
+                  onClick={handleMarkerClick}
+                  isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
+                  isLayerEnabled={activeLayers.has(normalizeSceneLayerType(marker.type))}
+                  placementActive={Boolean(placementLabel)}
+                  onPlacementHover={setPlacementPreviewPosition}
+                  onPlacementClick={movingModelName
+                    ? onModelReposition
+                    : placementCharacterName
+                    ? onCharacterPlacement
+                    : placementFarmBotName
+                      ? onFarmBotPlacement
+                    : placementPlantingName
+                      ? onPlantingPlacement
+                      : placementBedName
+                        ? onBedPlacement
+                        : onModelPlacement}
+                  isActionTarget={
+                    actionTarget != null &&
+                    isMatchingThreeDActionTarget(actionTarget, {
+                      markerType: String(marker.type ?? ''),
+                      assetId: Number(marker.data?.id),
+                    })
+                  }
+                  actionTarget={actionTarget}
+                  controlledCharacterId={
+                    normalizeSceneLayerType(marker.type) === 'characters'
+                    && Number(marker.data?.id) === controlledCharacterId
+                      ? controlledCharacterId
+                      : null
+                  }
+                  onControlChange={storeLivePosition}
+                  cameraFollowRef={cameraFollowRef}
+                  livePositionsRef={livePositionsRef}
+                  physicsDebug={physicsDebug}
+                  onModelRuntimeSettled={handleModelRuntimeSettled}
+                  onCharacterRuntimeSettled={handleCharacterRuntimeSettled}
+                  characterSpawnPositions={characterSpawnPositions}
+                />
+              </group>
+            );
+          })}
         </Physics>
 
       </Canvas>

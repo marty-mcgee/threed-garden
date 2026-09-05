@@ -11,6 +11,10 @@ This is a **Dual-Surface Platform**:
 
 The v0.19.7a production release completes the Model Library presentation boundary, preserves established typed placement requests, makes Library selection mutually exclusive, and presents Project Assets plus all Add-to-Scene tools through one consistent 18rem left Scene workspace. The Dashboard map page remains the Project-session coordinator while extracted panels own presentation only.
 
+> **Current release candidate:** `v0.19.7b "ThreeD Dashboard Scene Coordinator Boundaries"` (`package.json` version `0.19.7-beta`)
+
+The v0.19.7b candidate isolates Project-session request sequencing, Bed and Planting presentation, Scene filtering, Model Library search/category derivation, Project Asset collection and accessibility behavior, Combined View resizing, and freshness timing. Scene filters now preserve persistent Rapier bodies instead of toggling physics participation. Marker CRUD, Runtime Marker authority, Character orchestration, and the separate GardenCharacter/EcctrlCharacter paths remain unchanged.
+
 The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 
 The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.

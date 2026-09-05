@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Loader2, X } from 'lucide-react';
+import { Box, Loader2, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,8 @@ interface ThreeDModelLibraryPanelProps {
   categories: ModelCategory[];
   selectedCategorySlug: string;
   onSelectedCategoryChange: (slug: string) => void;
+  search: string;
+  onSearchChange: (value: string) => void;
   allModelCount: number;
   visibleModels: ThreeDModelLibraryItem[];
   inspectedModel: ThreeDModelLibraryItem | null;
@@ -54,6 +56,8 @@ export function ThreeDModelLibraryPanel({
   categories,
   selectedCategorySlug,
   onSelectedCategoryChange,
+  search,
+  onSearchChange,
   allModelCount,
   visibleModels,
   inspectedModel,
@@ -103,17 +107,55 @@ export function ThreeDModelLibraryPanel({
         </label>
       )}
 
-      {categories.length > 0 && (
-        <label className="mb-2 block text-xs">
-          <span className="mb-1 block text-muted-foreground">Category</span>
-          <select className="h-8 w-full rounded-md border bg-background px-2 text-xs" value={selectedCategorySlug} onChange={(event) => onSelectedCategoryChange(event.target.value)}>
-            <option value="all">All Models</option>
-            {categories.map((category) => (
-              <option key={category.slug} value={category.slug}>{category.name}</option>
-            ))}
-          </select>
-        </label>
-      )}
+      <label className="mb-2 block text-xs">
+        <span className="mb-1 flex items-center justify-between gap-2 text-muted-foreground">
+          <span>Category</span>
+          <span>{categories.length > 0 ? `${categories.length} available` : 'None assigned'}</span>
+        </span>
+        <select
+          className="h-8 w-full rounded-md border bg-background px-2 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+          value={categories.length > 0 ? selectedCategorySlug : 'none'}
+          disabled={categories.length === 0}
+          onChange={(event) => onSelectedCategoryChange(event.target.value)}
+        >
+          {categories.length === 0 ? (
+            <option value="none">No categories assigned</option>
+          ) : (
+            <>
+              <option value="all">All Models</option>
+              {categories.map((category) => (
+                <option key={category.slug} value={category.slug}>{category.name}</option>
+              ))}
+            </>
+          )}
+        </select>
+      </label>
+
+      <label className="mb-2 block text-xs">
+        <span className="mb-1 block text-muted-foreground">Search by name</span>
+        <span className="relative block">
+          <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            value={search}
+            placeholder="Find a Model…"
+            className="h-8 pl-7 pr-8 text-xs"
+            onChange={(event) => onSearchChange(event.target.value)}
+          />
+          {search && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-0.5 top-1/2 h-7 w-7 -translate-y-1/2"
+              aria-label="Clear Model search"
+              onClick={() => onSearchChange('')}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
+        </span>
+      </label>
 
       {inspectedModel && (
         <div className="mb-2 space-y-1 rounded border bg-muted/30 p-2 text-[10px]">
@@ -187,7 +229,7 @@ export function ThreeDModelLibraryPanel({
           </div>
         ) : visibleModels.length === 0 ? (
           <p className="py-6 text-center text-xs text-muted-foreground">
-            {allModelCount === 0 ? 'No active public Library models are available.' : 'No Library models match this category.'}
+            {allModelCount === 0 ? 'No active public Library models are available.' : 'No Library models match these filters.'}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2">

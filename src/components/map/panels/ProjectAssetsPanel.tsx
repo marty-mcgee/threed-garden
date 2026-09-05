@@ -1,6 +1,6 @@
 'use client';
 
-import type { RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 import { Crosshair, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,41 +11,56 @@ import { getThreeDIcon, getThreeDLabel } from '@/lib/utils/map-helpers';
 export function ProjectAssetsPanel({
   selectedProjectId,
   isOpen: isProjectAssetsOpen,
-  isFullscreen,
   search: projectAssetSearch,
   setSearch: setProjectAssetSearch,
   typeFilter: projectAssetType,
   setTypeFilter: setProjectAssetType,
-  searchInputRef: projectAssetSearchRef,
   projectRuntimeMarkers,
   projectAssetTypes,
   projectAssetTypeCounts,
   visibleProjectAssets,
   selectedMarker,
   resolveRuntimeMarkerPosition,
-  closeProjectAssets,
+  onDismiss,
   focusProjectAsset,
 }: {
   selectedProjectId: string | null;
   isOpen: boolean;
-  isFullscreen: boolean;
   search: string;
   setSearch: (value: string) => void;
   typeFilter: string;
   setTypeFilter: (value: string) => void;
-  searchInputRef: RefObject<HTMLInputElement | null>;
   projectRuntimeMarkers: RuntimeMarker[];
   projectAssetTypes: string[];
   projectAssetTypeCounts: ReadonlyMap<string, number>;
   visibleProjectAssets: RuntimeMarker[];
   selectedMarker: RuntimeMarker | null;
   resolveRuntimeMarkerPosition: ThreeDRuntimeMarkerPositionResolver;
-  closeProjectAssets: (restoreTriggerFocus?: boolean) => void;
+  onDismiss: () => void;
   focusProjectAsset: (marker: RuntimeMarker) => void;
 }) {
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const isVisible = Boolean(selectedProjectId) && isProjectAssetsOpen;
+
+  useEffect(() => {
+    if (!isVisible) return;
+    const focusFrame = window.requestAnimationFrame(() => searchInputRef.current?.focus());
+    const dismissWithEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      onDismiss();
+    };
+
+    document.addEventListener('keydown', dismissWithEscape);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener('keydown', dismissWithEscape);
+    };
+  }, [isVisible, onDismiss]);
+
   return (
     <>
-      {selectedProjectId && isProjectAssetsOpen && !isFullscreen && (
+      {isVisible && (
         <div
           id="project-assets-panel"
           role="region"
@@ -66,7 +81,7 @@ export function ProjectAssetsPanel({
               className="h-7 w-7 shrink-0"
               aria-label="Close Project Assets"
               title="Close Project Assets"
-              onClick={() => closeProjectAssets(true)}
+              onClick={onDismiss}
             >
               <X className="h-3.5 w-3.5" />
             </Button>
@@ -75,7 +90,7 @@ export function ProjectAssetsPanel({
           <div className="relative mb-2">
             <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
-              ref={projectAssetSearchRef}
+              ref={searchInputRef}
               autoFocus
               value={projectAssetSearch}
               onChange={(event) => setProjectAssetSearch(event.target.value)}

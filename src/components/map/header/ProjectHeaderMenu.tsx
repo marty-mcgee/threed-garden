@@ -1,6 +1,6 @@
 'use client';
 
-import type { RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   Clock,
   ExternalLink,
@@ -23,7 +23,6 @@ export interface ProjectHeaderEnvironmentItem {
 }
 
 export function ProjectHeaderMenu({
-  containerRef,
   selectedProjectId,
   projectName,
   isOpen,
@@ -38,6 +37,7 @@ export function ProjectHeaderMenu({
   projectAssetsOpen,
   environments,
   onTrigger,
+  onDismiss,
   onChooseProject,
   onCreateProject,
   onSaveProject,
@@ -45,7 +45,6 @@ export function ProjectHeaderMenu({
   onOpenEnvironment,
   onOpenProjectSettings,
 }: {
-  containerRef: RefObject<HTMLDivElement | null>;
   selectedProjectId: string | null;
   projectName?: string | null;
   isOpen: boolean;
@@ -60,6 +59,7 @@ export function ProjectHeaderMenu({
   projectAssetsOpen: boolean;
   environments: ProjectHeaderEnvironmentItem[];
   onTrigger: () => void;
+  onDismiss: () => void;
   onChooseProject: () => void;
   onCreateProject: () => void;
   onSaveProject: () => void;
@@ -67,6 +67,20 @@ export function ProjectHeaderMenu({
   onOpenEnvironment: (id: string) => void;
   onOpenProjectSettings: () => void;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const dismissOutsideMenu = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Node && containerRef.current?.contains(target)) return;
+      onDismiss();
+    };
+
+    document.addEventListener('pointerdown', dismissOutsideMenu);
+    return () => document.removeEventListener('pointerdown', dismissOutsideMenu);
+  }, [isOpen, onDismiss]);
+
   return (
     <div ref={containerRef} className="relative flex flex-col items-start">
       <Button

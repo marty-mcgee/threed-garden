@@ -26,6 +26,7 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 git diff --check
 npm run validate:assets
 npm run validate:threed-library-placement
+npm run validate:threed-project-session
 npm run validate:threed-runtime-markers
 npm run validate:threed-orchestration
 npm run validate:farmbot-crypto
@@ -41,7 +42,13 @@ The ThreeD Runtime Marker validation is offline and provider-independent. It che
 
 The ThreeD Library placement validation is offline and verifies that Model, Character, and FarmBot client request builders preserve the established API envelope, identifiers, transforms, dimensions, scale, placement role, and numeric conversion. It also verifies that the Dashboard Library workspace permits only one active Library and that closing an inactive Library does not close the active one. It must not fetch, write Project state, access the database, initialize Three.js/Rapier, or expand FarmBot command capability.
 
+The ThreeD Project session validation is offline and verifies that the map API response mapper preserves valid Project module summaries, geographic origin, numeric 2D/3D coordinates, saved marker snapshots, aggregate counts, and bounded API failures. It must not fetch the API, access React state, initialize the Scene, or bypass the coordinator's request sequence and AbortController guards.
+
+For the Project-session loader hook, directly load a Project and confirm the loading presentation remains until its session is visibly committed. Rapidly switch across at least three Projects and confirm only the final Project appears, with no stale DetailsCard, Scene assets, saved view, module selector, or geographic origin. Refresh once, navigate away during one load, and confirm cancellation produces no error toast, R3F null event-target error, or late Project replacement.
+
 For the Dashboard left Scene workspace, open Project Assets, Models, Characters, FarmBots, Beds, and Plantings in turn. Confirm each uses the same 18rem full-height translucent left dock, the Scene moves right without resizing vertically, and its navigation or placement controls remain scrollable. Select a Scene marker while each workspace is open and confirm its DetailsCard starts to the right of the workspace instead of covering it. Close the workspace and confirm both the Scene and DetailsCard return to their normal positions.
+
+For the extracted Bed and Planting panels, change every visible draft field before beginning placement and confirm the values remain stable when placement mode activates. Cancel once from the footer and once from the panel close button. Then place one disposable Bed and one disposable Planting, confirming the existing Project marker transaction completes without a Project reload and the normal success status appears. When multiple ThreeD modules are available, confirm the module selector retains its established disabled state during active placement.
 
 When Runtime Marker row validation changes, confirm malformed Project marker and source Sub-Module rows are excluded before Scene physics while valid sibling rows still build. The user-facing warning must identify only the source category, row ID, marker ID, marker type, and bounded field reasons. It must not expose raw JSON, ownership data, credentials, or database connection details, and it must not mutate or delete the rejected row.
 

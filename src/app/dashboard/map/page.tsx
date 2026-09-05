@@ -5,18 +5,11 @@
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { 
-  Layers, 
   MapPin, 
-  Car, 
-  TrafficCone,
   Settings,
   ChevronLeft,
-  Search,
-  Loader2,
   Plus,
-  Filter,
   Trash2,
-  X,
   User,
   Sprout,
   Crosshair,
@@ -26,10 +19,6 @@ import {
 import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { DetailsCard } from '@/components/map/details/DetailsCard';
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
@@ -37,13 +26,29 @@ import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDi
 import { ProjectHeaderMenu } from '@/components/map/header/ProjectHeaderMenu';
 import { ProjectSceneToolbar } from '@/components/map/header/ProjectSceneToolbar';
 import { useThreeDLibraryWorkspace } from '@/components/map/hooks/useThreeDLibraryWorkspace';
+import { useCombinedMapPanelResize } from '@/components/map/hooks/useCombinedMapPanelResize';
+import { useDataFreshness } from '@/components/map/hooks/useDataFreshness';
+import { useThreeDModelLibraryCollection } from '@/components/map/hooks/useThreeDModelLibraryCollection';
+import { useThreeDPlacedLibraryAssets } from '@/components/map/hooks/useThreeDPlacedLibraryAssets';
+import { useProjectAssetCollection } from '@/components/map/hooks/useProjectAssetCollection';
+import { useThreeDProjectSessionLoader } from '@/components/map/hooks/useThreeDProjectSessionLoader';
 import { ThreeDCharacterLibraryPanel } from '@/components/map/panels/ThreeDCharacterLibraryPanel';
 import {
   ThreeDFarmBotLibraryPanel,
   type ThreeDFarmBotLibraryItem,
 } from '@/components/map/panels/ThreeDFarmBotLibraryPanel';
+import {
+  ThreeDBedPlacementPanel,
+  type ThreeDBedPlacementDraft,
+} from '@/components/map/panels/ThreeDBedPlacementPanel';
 import { ThreeDModelLibraryPanel } from '@/components/map/panels/ThreeDModelLibraryPanel';
+import {
+  ThreeDPlantingPlacementPanel,
+  type ThreeDPlantingOption,
+  type ThreeDPlantingPlacementDraft,
+} from '@/components/map/panels/ThreeDPlantingPlacementPanel';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
+import { ThreeDSceneFilterPanel } from '@/components/map/panels/ThreeDSceneFilterPanel';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import {
@@ -80,12 +85,6 @@ import {
   getThreeDActionTargetCapabilities,
   isMatchingThreeDActionTarget,
 } from '@/lib/services/threed/orchestration/action-target-core';
-import {
-  getTrafficIcon,
-  getTrafficLabel,
-  getThreeDIcon,
-  getThreeDLabel,
-} from '@/lib/utils/map-helpers';
 import { applyThreeDProjectClientTransaction } from '@/lib/services/threed/markers/project-marker-client-state-core';
 import {
   createProjectCharacterLibraryPlacementRequest,
@@ -175,16 +174,18 @@ function UnifiedMapPageInner() {
   
   // ✅ State
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
-  const projectLoadSequenceRef = useRef(0);
-  const projectLoadAbortRef = useRef<AbortController | null>(null);
+  const {
+    loading,
+    refreshing,
+    beginProjectTransition,
+    loadProjectSession,
+  } = useThreeDProjectSessionLoader();
   const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(!projectIdParam);
   const [isProjectTemplateDialogOpen, setIsProjectTemplateDialogOpen] = useState(false);
   const [isProjectSummaryOpen, setIsProjectSummaryOpen] = useState(false);
-  const projectSummaryRef = useRef<HTMLDivElement>(null);
+  const dismissProjectSummary = useCallback(() => setIsProjectSummaryOpen(false), []);
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
   const [isDefaultView, setIsDefaultView] = useState(!projectIdParam);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [savingProjectMarkers, setSavingProjectMarkers] = useState(false);
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
   const [projectThreeDModules, setProjectThreeDModules] = useState<Array<{
@@ -208,12 +209,12 @@ function UnifiedMapPageInner() {
   const [projectAssetSearch, setProjectAssetSearch] = useState('');
   const [projectAssetType, setProjectAssetType] = useState('all');
   const projectAssetsTriggerRef = useRef<HTMLButtonElement>(null);
-  const projectAssetSearchRef = useRef<HTMLInputElement>(null);
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [libraryCategorySlug, setLibraryCategorySlug] = useState('all');
+  const [libraryModelSearch, setLibraryModelSearch] = useState('');
   const [inspectedLibraryModelId, setInspectedLibraryModelId] = useState<number | null>(null);
   const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
   const [libraryFarmBots, setLibraryFarmBots] = useState<ThreeDFarmBotLibraryItem[]>([]);
@@ -232,7 +233,7 @@ function UnifiedMapPageInner() {
   const [placingBed, setPlacingBed] = useState(false);
   const [placingPlanting, setPlacingPlanting] = useState(false);
   const [bedPlacementActive, setBedPlacementActive] = useState(false);
-  const [bedPlacementDraft, setBedPlacementDraft] = useState({
+  const [bedPlacementDraft, setBedPlacementDraft] = useState<ThreeDBedPlacementDraft>({
     name: 'New Garden Bed',
     shape: 'rectangle',
     widthFeet: '4',
@@ -242,10 +243,10 @@ function UnifiedMapPageInner() {
     rotation: '0',
     scale: '1',
   });
-  const [plantingOptions, setPlantingOptions] = useState<any[]>([]);
+  const [plantingOptions, setPlantingOptions] = useState<ThreeDPlantingOption[]>([]);
   const [loadingPlantingOptions, setLoadingPlantingOptions] = useState(false);
   const [plantingPlacementActive, setPlantingPlacementActive] = useState(false);
-  const [plantingPlacementDraft, setPlantingPlacementDraft] = useState({
+  const [plantingPlacementDraft, setPlantingPlacementDraft] = useState<ThreeDPlantingPlacementDraft>({
     plantId: '',
     bedId: '',
     quantity: '1',
@@ -378,12 +379,16 @@ function UnifiedMapPageInner() {
   
   // ✅ Live Data Status Indicator
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [dataAge, setDataAge] = useState<string>('--');
-  const [isStale, setIsStale] = useState(false);
+  const { dataAge, isStale } = useDataFreshness(lastUpdated);
   
   // ✅ Default view ['3d','2d','combined']
   const [viewMode, setViewMode] = useState<MapViewMode>('3d');
-  const [panelHeight, setPanelHeight] = useState(50);
+  const {
+    containerRef,
+    panelHeight,
+    setPanelHeight,
+    beginResize: handleMouseDown,
+  } = useCombinedMapPanelResize();
 
   useEffect(() => {
     if (!activeSceneOperation?.cancellable) return;
@@ -396,7 +401,6 @@ function UnifiedMapPageInner() {
     return () => document.removeEventListener('keydown', cancelWithEscape);
   }, [activeSceneOperation, cancelActiveSceneOperation]);
 
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
@@ -411,7 +415,7 @@ function UnifiedMapPageInner() {
   const [actionTargetFocusRequest, setActionTargetFocusRequest] = useState(0);
   const [orchestrationStatus, setOrchestrationStatus] =
     useState<ThreeDOrchestrationLifecycleState | null>(null);
-  const [layers, setLayers] = useState<MapLayerConfig>(getDefaultLayers());
+  const [layers] = useState<MapLayerConfig>(getDefaultLayers());
   const projectMarkerSnapshotProviderRef =
     useRef<ProjectThreeDMarkerSnapshotProvider | null>(null);
   const projectThreeDViewStateProviderRef = useRef<ProjectThreeDViewStateProvider | null>(null);
@@ -677,7 +681,7 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Plant list failed (${response.status})`);
       }
-      const plants = Array.isArray(result.data) ? result.data : [];
+      const plants = Array.isArray(result.data) ? result.data as ThreeDPlantingOption[] : [];
       setPlantingOptions(plants);
       setPlantingPlacementDraft((current) => ({
         ...current,
@@ -863,35 +867,10 @@ function UnifiedMapPageInner() {
   const [filterActiveOnly, setFilterActiveOnly] = useState(false);
   const [filterAssetType, setFilterAssetType] = useState<string | null>(null); // Single type filter from stat card clicks
 
-  // ✅ Panel resize state
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-
   // ✅ Asset type visibility state
   const [visibleAssetTypes] = useState<Set<string>>(
     new Set(['plantings', 'beds', 'characters', 'farmbots', 'models'])
   );
-
-  // ✅ Live data age updater
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (lastUpdated) {
-        const diffMs = Date.now() - lastUpdated.getTime();
-        const diffSec = Math.floor(diffMs / 1000);
-        if (diffSec < 60) {
-          setDataAge(`${diffSec}s ago`);
-          setIsStale(false);
-        } else if (diffSec < 3600) {
-          setDataAge(`${Math.floor(diffSec / 60)}m ago`);
-          setIsStale(diffSec > 300); // Stale after 5 minutes
-        } else {
-          setDataAge(`${Math.floor(diffSec / 3600)}h ago`);
-          setIsStale(true);
-        }
-      }
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [lastUpdated]);
 
   // ✅ Handle project selection
   const handleProjectSelect = (projectId: string) => {
@@ -900,7 +879,7 @@ function UnifiedMapPageInner() {
     // the new Project ID and previous Project data, then unmount when the
     // load effect starts. R3F may still be asynchronously connecting that
     // Canvas's DOM events after its target has been removed.
-    setLoading(true);
+    beginProjectTransition();
     // Selection, Character control, and ready-to-place operations belong to
     // the current Project. Clear them before changing identity so no
     // DetailsCard or Scene operation can carry into the incoming Project.
@@ -943,34 +922,6 @@ function UnifiedMapPageInner() {
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
     window.history.pushState({}, '', url.toString());
-  };
-
-  // ✅ Toggle layer enable/disable
-  const toggleLayer = (category: 'traffic' | 'threed', layerId: string) => {
-    setLayers(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [layerId]: {
-          ...prev[category][layerId as keyof typeof prev.traffic],
-          enabled: !prev[category][layerId as keyof typeof prev.traffic]?.enabled
-        }
-      }
-    }));
-  };
-
-  // ✅ Toggle layer visibility
-  const toggleVisibility = (category: 'traffic' | 'threed', layerId: string) => {
-    setLayers(prev => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [layerId]: {
-          ...prev[category][layerId as keyof typeof prev.traffic],
-          visible: !prev[category][layerId as keyof typeof prev.traffic]?.visible
-        }
-      }
-    }));
   };
 
   // ✅ Handle focus on marker
@@ -1189,206 +1140,63 @@ function UnifiedMapPageInner() {
     return () => window.removeEventListener('garden-character-action-complete', handleActionComplete);
   }, [selectedProjectId]);
 
-  // ✅ Load data from API route
-  const loadData = useCallback(async () => {
-    const loadSequence = projectLoadSequenceRef.current + 1;
-    projectLoadSequenceRef.current = loadSequence;
-    projectLoadAbortRef.current?.abort();
-    const abortController = new AbortController();
-    projectLoadAbortRef.current = abortController;
-    setLoading(true);
-    
-    try {
-      if (!selectedProjectId) {
-        const defaultData = getDefaultMapData();
+  // ✅ Load the active Project through the sequenced session boundary.
+  const loadData = useCallback(async (options?: { refresh?: boolean }) => {
+    await loadProjectSession(selectedProjectId, (outcome) => {
+      try {
+      if (outcome.status === 'default') {
         setInitialProjectViewState(null);
-        setData(defaultData);
+        setData(getDefaultMapData());
         setProjectInfo({ name: 'No Project Selected', hasData: false });
         setIsDefaultView(true);
-        setLoading(false);
         return;
       }
 
-      try {
-        const response = await fetch(`/api/map/threed?projectId=${selectedProjectId}`, {
-          signal: abortController.signal,
-        });
-        const result = await response.json();
-        if (projectLoadSequenceRef.current !== loadSequence) return;
-
-        if (result.success) {
-          const savedViewState = result.projectContext?.viewState as ThreeDProjectViewState | null;
-          setInitialProjectViewState(savedViewState ?? null);
-          if (savedViewState) {
-            setViewMode(savedViewState.viewMode);
-            setPanelHeight(savedViewState.panelHeight);
-            setCameraMode(savedViewState.cameraMode);
-            lastProjectThreeDViewStateRef.current = savedViewState.threeD;
-            lastProjectMapViewStateRef.current = savedViewState.map;
-          } else {
-            lastProjectThreeDViewStateRef.current = undefined;
-            lastProjectMapViewStateRef.current = undefined;
-          }
-          // ✅ Split combined API response into separate threed vs traffic data
-          const resultData = result.data || {};
-          const threedModules = Array.isArray(result.projectContext?.threedModules)
-            ? result.projectContext.threedModules.filter((module: any) => (
-                Number.isSafeInteger(Number(module?.id))
-                && Number(module.id) > 0
-                && typeof module?.name === 'string'
-              )).map((module: any) => ({
-                id: Number(module.id),
-                name: module.name,
-              }))
-            : [];
-          setProjectThreeDModules(threedModules);
-          const rawOrigin = result.projectContext?.geographicOrigin;
-          setProjectGeographicOrigin(
-            rawOrigin
-            && Number.isFinite(Number(rawOrigin.latitude))
-            && Number.isFinite(Number(rawOrigin.longitude))
-            && Number.isFinite(Number(rawOrigin.altitude))
-            && Number.isFinite(Number(rawOrigin.headingDegrees))
-            && Number.isFinite(Number(rawOrigin.metersPerSceneUnit))
-              ? {
-                  latitude: Number(rawOrigin.latitude),
-                  longitude: Number(rawOrigin.longitude),
-                  altitude: Number(rawOrigin.altitude),
-                  headingDegrees: Number(rawOrigin.headingDegrees),
-                  metersPerSceneUnit: Number(rawOrigin.metersPerSceneUnit),
-                }
-              : null,
-          );
-          setPlacementThreedId((current) => (
-            current && threedModules.some((module: { id: number }) => module.id === current)
-              ? current
-              : threedModules[0]?.id ?? null
-          ));
-          
-          const trafficRaw = {
-            chpCadIncidents: (resultData.chpCadIncidents || []) as any[],
-            chpCases: (resultData.chpCases || []) as any[],
-            chpCenters: (resultData.chpCenters || []) as any[],
-            caltransLaneClosures: (resultData.caltransLaneClosures || []) as any[],
-            caltransCctvCameras: (resultData.caltransCctvCameras || []) as any[],
-            caltransDistricts: (resultData.caltransDistricts || []) as any[],
-            bayArea511Events: (resultData.bayArea511Events || []) as any[],
-            calfireIncidents: (resultData.calfireIncidents || []) as any[],
-          };
-          
-          const threedRaw = {
-            plants: (resultData.plants || []) as any[],
-            beds: (resultData.beds || []) as any[],
-            characters: (resultData.characters || []) as any[],
-            layers: (resultData.layers || []) as any[],
-            farmbots: (resultData.farmbots || []) as any[],
-            plantings: (resultData.plantings || []) as any[],
-            tasks: (resultData.tasks || []) as any[],
-            harvests: (resultData.harvests || []) as any[],
-            weatherLogs: (resultData.weatherLogs || []) as any[],
-            models: (resultData.models || []) as any[],
-            projectThreedMarkers: (result.markerSnapshot || []) as any[],
-          };
-          
-          const trafficTotal = Object.values(trafficRaw).reduce((sum, arr) => sum + arr.length, 0);
-          const threedTotal = Object.values(threedRaw).reduce((sum, arr) => sum + arr.length, 0);
-
-          // ✅ Pre-process: normalize position values (DB returns decimals as strings)
-          const normalizePositions = <T extends Record<string, any[]>>(records: T): T => {
-            const normalized: Record<string, any[]> = {};
-            for (const [key, items] of Object.entries(records)) {
-              normalized[key] = items.map((item: any) => {
-                const n = { ...item };
-                // Normalize traffic GPS columns
-                if ('latitude' in n && n.latitude !== null) n.latitude = Number(n.latitude);
-                if ('longitude' in n && n.longitude !== null) n.longitude = Number(n.longitude);
-                if ('lat' in n && n.lat !== null) n.lat = Number(n.lat);
-                if ('lng' in n && n.lng !== null) n.lng = Number(n.lng);
-                // Normalize 3D position columns
-                if ('positionX' in n && n.positionX !== null) n.positionX = Number(n.positionX);
-                if ('positionY' in n && n.positionY !== null) n.positionY = Number(n.positionY);
-                if ('positionZ' in n && n.positionZ !== null) n.positionZ = Number(n.positionZ);
-                return n;
-              });
-            }
-            return normalized as T;
-          };
-
-          const normalizedTraffic = normalizePositions(trafficRaw);
-          const normalizedThreed = normalizePositions(threedRaw);
-
-          const unifiedData: UnifiedMapData = {
-            traffic: {
-              raw: normalizedTraffic,
-              total: trafficTotal,
-              chpCadCount: normalizedTraffic.chpCadIncidents.length,
-              chpCasesCount: normalizedTraffic.chpCases.length,
-              chpCentersCount: normalizedTraffic.chpCenters.length,
-              caltransClosuresCount: normalizedTraffic.caltransLaneClosures.length,
-              caltransCctvCount: normalizedTraffic.caltransCctvCameras.length,
-              caltransDistrictsCount: normalizedTraffic.caltransDistricts.length,
-              bayArea511Count: normalizedTraffic.bayArea511Events.length,
-              calfireIncidentsCount: normalizedTraffic.calfireIncidents.length,
-            },
-            threed: {
-              raw: normalizedThreed,
-              total: threedTotal,
-              plantsCount: normalizedThreed.plants.length,
-              bedsCount: normalizedThreed.beds.length,
-              charactersCount: normalizedThreed.characters.length,
-              markersCount: 0,
-              layersCount: normalizedThreed.layers.length,
-              farmbotsCount: normalizedThreed.farmbots.length,
-              plantingsCount: normalizedThreed.plantings.length,
-              tasksCount: normalizedThreed.tasks.length,
-              harvestsCount: normalizedThreed.harvests.length,
-              weatherLogsCount: normalizedThreed.weatherLogs.length,
-              layers: [],
-            },
-          };
-
-          setData(unifiedData);
-          setLastUpdated(new Date());
-          setProjectInfo({
-            name: result.projectContext?.projectName || `Project #${selectedProjectId}`,
-            hasData: result.total > 0,
-          });
-          setIsDefaultView(false);
+      if (outcome.status === 'loaded') {
+        const { session } = outcome;
+        setInitialProjectViewState(session.savedViewState);
+        if (session.savedViewState) {
+          setViewMode(session.savedViewState.viewMode);
+          setPanelHeight(session.savedViewState.panelHeight);
+          setCameraMode(session.savedViewState.cameraMode);
+          lastProjectThreeDViewStateRef.current = session.savedViewState.threeD;
+          lastProjectMapViewStateRef.current = session.savedViewState.map;
         } else {
-          const emptyData = getDefaultMapData();
-          setData(emptyData);
-          setProjectInfo({ name: 'Error Loading Data', hasData: false });
-          setIsDefaultView(true);
-          showToastRef.current(result.error || 'Failed to load data', 'error');
+          lastProjectThreeDViewStateRef.current = undefined;
+          lastProjectMapViewStateRef.current = undefined;
         }
-      } catch (fetchError) {
-        if (abortController.signal.aborted || projectLoadSequenceRef.current !== loadSequence) {
-          return;
-        }
-        console.warn('API fetch failed:', fetchError);
-        const emptyData = getDefaultMapData();
-        setData(emptyData);
-        setProjectInfo({ name: 'Error Loading Data', hasData: false });
-        setIsDefaultView(true);
+
+        setProjectThreeDModules(session.threedModules);
+        setProjectGeographicOrigin(session.geographicOrigin);
+        setPlacementThreedId((current) => (
+          current && session.threedModules.some((module) => module.id === current)
+            ? current
+            : session.threedModules[0]?.id ?? null
+        ));
+        setData(session.data);
+        setLastUpdated(new Date());
+        setProjectInfo({ name: session.projectName, hasData: session.hasData });
+        setIsDefaultView(false);
+        return;
+      }
+
+      if (outcome.status === 'network-error') {
+        console.warn('API fetch failed:', outcome.error);
+      }
+      setData(getDefaultMapData());
+      setProjectInfo({ name: 'Error Loading Data', hasData: false });
+      setIsDefaultView(true);
+      showToastRef.current(
+        outcome.status === 'api-error' ? outcome.error : 'Failed to load data',
+        'error',
+      );
+      } catch (error) {
+        console.error('Failed to apply map data:', error);
+        setData(getDefaultMapData());
         showToastRef.current('Failed to load data', 'error');
       }
-    } catch (error) {
-      console.error('Failed to load map data:', error);
-      const emptyData = getDefaultMapData();
-      setData(emptyData);
-      showToastRef.current('Failed to load data', 'error');
-    } finally {
-      if (projectLoadSequenceRef.current === loadSequence) {
-        projectLoadAbortRef.current = null;
-        setLoading(false);
-        setRefreshing(false);
-      }
-    }
-  }, [selectedProjectId]);
-
-  useEffect(() => () => {
-    projectLoadAbortRef.current?.abort();
-  }, []);
+    }, options);
+  }, [loadProjectSession, selectedProjectId]);
 
   const handleModelPlacement = useCallback(async (
     position: ThreeDScenePlacementPosition,
@@ -2260,52 +2068,10 @@ function UnifiedMapPageInner() {
   }, [loadData]);
 
   const handleRefresh = async () => {
-    setRefreshing(true);
-    await loadData();
+    await loadData({ refresh: true });
     setLastUpdated(new Date());
     showToast('Data refreshed', 'success');
   };
-
-  // ✅ Drag handlers for panel resize
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    e.preventDefault();
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !containerRef.current) return;
-      const container = containerRef.current;
-      const rect = container.getBoundingClientRect();
-      const percentage = ((e.clientY - rect.top) / rect.height) * 100;
-      setPanelHeight(Math.min(Math.max(percentage, 20), 80));
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
-
-  useEffect(() => {
-    if (!isProjectSummaryOpen) return;
-    const dismissProjectSummary = (event: PointerEvent) => {
-      const target = event.target;
-      if (target instanceof Node && projectSummaryRef.current?.contains(target)) return;
-      setIsProjectSummaryOpen(false);
-    };
-    document.addEventListener('pointerdown', dismissProjectSummary);
-    return () => document.removeEventListener('pointerdown', dismissProjectSummary);
-  }, [isProjectSummaryOpen]);
 
   const projectRuntimeMarkers = useMemo(
     () => buildThreeDRuntimeMarkerResult(data.threed.raw).markers,
@@ -2342,6 +2108,22 @@ function UnifiedMapPageInner() {
     ),
     [projectRuntimeMarkers],
   );
+  const {
+    assetTypes: projectAssetTypes,
+    assetTypeCounts: projectAssetTypeCounts,
+    visibleAssets: visibleProjectAssets,
+  } = useProjectAssetCollection(projectRuntimeMarkers, projectAssetSearch, projectAssetType);
+  const {
+    categories: libraryCategories,
+    inspectedModel: inspectedLibraryModel,
+    visibleModels: visibleLibraryModels,
+  } = useThreeDModelLibraryCollection(
+    libraryModels,
+    libraryCategorySlug,
+    inspectedLibraryModelId,
+    libraryModelSearch,
+  );
+  const { placedCharacterIds, placedFarmBotIds } = useThreeDPlacedLibraryAssets(data.threed.raw);
   const openEnvironmentDetails = useCallback((marker = projectEnvironmentMarkers[0]) => {
     if (!marker) return;
     setSelectedIncident(null);
@@ -2391,25 +2173,7 @@ function UnifiedMapPageInner() {
       window.requestAnimationFrame(() => projectAssetsTriggerRef.current?.focus());
     }
   }, []);
-
-  useEffect(() => {
-    if (!isProjectAssetsOpen) return;
-
-    const focusFrame = window.requestAnimationFrame(() => {
-      projectAssetSearchRef.current?.focus();
-    });
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      event.preventDefault();
-      closeProjectAssets(true);
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.cancelAnimationFrame(focusFrame);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [closeProjectAssets, isProjectAssetsOpen]);
+  const dismissProjectAssets = useCallback(() => closeProjectAssets(true), [closeProjectAssets]);
 
   const focusProjectAsset = useCallback((marker: RuntimeMarker) => {
     const sourceAssetId = Number(marker.data?.id);
@@ -2436,49 +2200,6 @@ function UnifiedMapPageInner() {
   }
 
   const hasRealData = data ? (data.traffic.total > 0 || data.threed.total > 0) : false;
-  const inspectedLibraryModel = libraryModels.find(
-    (model) => model.id === inspectedLibraryModelId,
-  ) ?? null;
-  const libraryCategories = Array.from(
-    new Map(
-      libraryModels.flatMap((model) => model.categories ?? []).map((category) => [category.slug, category]),
-    ).values(),
-  ).sort((left, right) => left.name.localeCompare(right.name));
-  const visibleLibraryModels = libraryCategorySlug === 'all'
-    ? libraryModels
-    : libraryModels.filter((model) => model.categories?.some((category) => category.slug === libraryCategorySlug));
-  const placedCharacterIds = new Set<number>([
-    ...(data.threed.raw?.projectThreedMarkers ?? [])
-      .filter((marker) => marker.markerType === 'characters')
-      .map((marker) => Number(marker.sourceAssetId)),
-    ...(data.threed.raw?.characters ?? []).map((character) => Number(character.id)),
-  ]);
-  const placedFarmBotIds = new Set<number>([
-    ...(data.threed.raw?.projectThreedMarkers ?? [])
-      .filter((marker) => marker.markerType === 'farmbots')
-      .map((marker) => Number(marker.sourceAssetId)),
-    ...(data.threed.raw?.farmbots ?? []).map((farmBot) => Number(farmBot.id)),
-  ]);
-  const normalizedProjectAssetSearch = projectAssetSearch.trim().toLowerCase();
-  const projectAssetTypes = Array.from(new Set(projectRuntimeMarkers.map((marker) => marker.type)))
-    .sort((left, right) => getThreeDLabel(left).localeCompare(getThreeDLabel(right)));
-  const projectAssetTypeCounts = new Map<string, number>();
-  projectRuntimeMarkers.forEach((marker) => {
-    projectAssetTypeCounts.set(marker.type, (projectAssetTypeCounts.get(marker.type) ?? 0) + 1);
-  });
-  const visibleProjectAssets = projectRuntimeMarkers
-    .filter((marker) => (
-      projectAssetType === 'all' || marker.type === projectAssetType
-    ) && (
-      normalizedProjectAssetSearch.length === 0
-      || marker.name.toLowerCase().includes(normalizedProjectAssetSearch)
-      || getThreeDLabel(marker.type).toLowerCase().includes(normalizedProjectAssetSearch)
-    ))
-    .sort((left, right) => (
-      getThreeDLabel(left.type).localeCompare(getThreeDLabel(right.type))
-      || left.name.localeCompare(right.name)
-      || left.id.localeCompare(right.id)
-    ));
   const isLeftSceneWorkspaceOpen = isProjectAssetsOpen
     || isModelLibraryOpen
     || isCharacterLibraryOpen
@@ -2511,7 +2232,6 @@ function UnifiedMapPageInner() {
       <div className="m-0 flex flex-wrap items-center justify-between gap-4 px-0.5 py-1">
         
         <ProjectHeaderMenu
-          containerRef={projectSummaryRef}
           selectedProjectId={selectedProjectId}
           projectName={projectInfo?.name}
           isOpen={isProjectSummaryOpen}
@@ -2536,6 +2256,7 @@ function UnifiedMapPageInner() {
               setIsProjectSelectorOpen(true);
             }
           }}
+          onDismiss={dismissProjectSummary}
           onChooseProject={() => {
             setIsProjectSummaryOpen(false);
             setIsProjectSelectorOpen(true);
@@ -2606,19 +2327,17 @@ function UnifiedMapPageInner() {
       <ProjectAssetsPanel
         selectedProjectId={selectedProjectId}
         isOpen={isProjectAssetsOpen}
-        isFullscreen={isFullscreen}
         search={projectAssetSearch}
         setSearch={setProjectAssetSearch}
         typeFilter={projectAssetType}
         setTypeFilter={setProjectAssetType}
-        searchInputRef={projectAssetSearchRef}
         projectRuntimeMarkers={projectRuntimeMarkers}
         projectAssetTypes={projectAssetTypes}
         projectAssetTypeCounts={projectAssetTypeCounts}
         visibleProjectAssets={visibleProjectAssets}
         selectedMarker={selectedMarker}
         resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
-        closeProjectAssets={closeProjectAssets}
+        onDismiss={dismissProjectAssets}
         focusProjectAsset={focusProjectAsset}
       />
       <div id="project-setup-panel">
@@ -2659,7 +2378,7 @@ function UnifiedMapPageInner() {
         />
       </div>
       <ThreeDModelLibraryPanel
-        isOpen={Boolean(selectedProjectId) && isModelLibraryOpen && !isFullscreen}
+        isOpen={Boolean(selectedProjectId) && isModelLibraryOpen}
         viewMode={viewMode}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -2668,6 +2387,11 @@ function UnifiedMapPageInner() {
         selectedCategorySlug={libraryCategorySlug}
         onSelectedCategoryChange={(slug) => {
           setLibraryCategorySlug(slug);
+          setInspectedLibraryModelId(null);
+        }}
+        search={libraryModelSearch}
+        onSearchChange={(value) => {
+          setLibraryModelSearch(value);
           setInspectedLibraryModelId(null);
         }}
         allModelCount={libraryModels.length}
@@ -2742,416 +2466,79 @@ function UnifiedMapPageInner() {
         }}
       />
 
-      {selectedProjectId && isBedPlacementOpen && (
-        <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto rounded-md border bg-background/90 p-3 shadow-xl backdrop-blur-md">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <div>
-              <h2 className="text-sm font-semibold">Add ThreeD Bed</h2>
-              <p className="text-[11px] text-muted-foreground">
-                Set the Bed parameters, then choose its location in the ThreeD Scene.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              disabled={placingBed}
-              onClick={() => {
-                setBedPlacementActive(false);
-                setIsBedPlacementOpen(false);
-              }}
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
+      <ThreeDBedPlacementPanel
+        isOpen={Boolean(selectedProjectId) && isBedPlacementOpen}
+        projectModules={projectThreeDModules}
+        selectedModuleId={placementThreedId}
+        draft={bedPlacementDraft}
+        placementActive={bedPlacementActive}
+        placing={placingBed}
+        onSelectedModuleChange={setPlacementThreedId}
+        onDraftChange={(field, value) => {
+          setBedPlacementDraft((current) => ({ ...current, [field]: value }));
+        }}
+        onBeginPlacement={() => {
+          setBedPlacementActive(true);
+          setViewMode('3d');
+        }}
+        onCancelPlacement={() => setBedPlacementActive(false)}
+        onClose={() => {
+          setBedPlacementActive(false);
+          setIsBedPlacementOpen(false);
+        }}
+      />
 
-          {projectThreeDModules.length > 1 && (
-            <label className="mb-2 block text-xs">
-              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
-              <select
-                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
-                value={placementThreedId ?? ''}
-                disabled={bedPlacementActive || placingBed}
-                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
-              >
-                {projectThreeDModules.map((module) => (
-                  <option key={module.id} value={module.id}>{module.name}</option>
-                ))}
-              </select>
-            </label>
-          )}
-
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <label className="col-span-2">
-              <span className="mb-1 block text-muted-foreground">Bed name</span>
-              <Input
-                value={bedPlacementDraft.name}
-                disabled={bedPlacementActive || placingBed}
-                maxLength={100}
-                className="h-8 text-xs"
-                onChange={(event) => setBedPlacementDraft((current) => ({
-                  ...current,
-                  name: event.target.value,
-                }))}
-              />
-            </label>
-            <label>
-              <span className="mb-1 block text-muted-foreground">Shape</span>
-              <select
-                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
-                value={bedPlacementDraft.shape}
-                disabled
-                onChange={(event) => setBedPlacementDraft((current) => ({
-                  ...current,
-                  shape: event.target.value,
-                }))}
-              >
-                <option value="rectangle">rectangle</option>
-              </select>
-            </label>
-            <label>
-              <span className="mb-1 block text-muted-foreground">Color</span>
-              <Input
-                type="color"
-                value={bedPlacementDraft.color}
-                disabled={bedPlacementActive || placingBed}
-                className="h-8 w-full p-1"
-                onChange={(event) => setBedPlacementDraft((current) => ({
-                  ...current,
-                  color: event.target.value,
-                }))}
-              />
-            </label>
-            {([
-              ['widthFeet', 'Width (ft)', '0.1'],
-              ['lengthFeet', 'Length (ft)', '0.1'],
-              ['heightFeet', 'Height (ft)', '0.1'],
-              ['rotation', 'Y rotation', '0.1'],
-              ['scale', 'Scale', '0.01'],
-            ] as const).map(([field, label, step]) => (
-              <label key={field}>
-                <span className="mb-1 block text-muted-foreground">{label}</span>
-                <Input
-                  type="number"
-                  step={step}
-                  value={bedPlacementDraft[field]}
-                  disabled={bedPlacementActive || placingBed}
-                  className="h-8 text-xs"
-                  onChange={(event) => setBedPlacementDraft((current) => ({
-                    ...current,
-                    [field]: event.target.value,
-                  }))}
-                />
-              </label>
-            ))}
-          </div>
-
-          <div className="mt-3 flex items-center justify-end gap-2 border-t pt-3">
-            {bedPlacementActive && (
-              <span className="mr-auto text-[11px] text-cyan-600">
-                Click the Scene ground to place the Bed.
-              </span>
-            )}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-7 text-xs"
-              disabled={placingBed}
-              onClick={() => setBedPlacementActive(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              className="h-7 text-xs"
-              disabled={
-                !placementThreedId
-                || !bedPlacementDraft.name.trim()
-                || bedPlacementActive
-                || placingBed
-              }
-              onClick={() => {
-                setBedPlacementActive(true);
-                setViewMode('3d');
-              }}
-            >
-              {placingBed ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
-              Place Bed
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {selectedProjectId && isPlantingPlacementOpen && (
-        <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto rounded-md border bg-background/90 p-3 shadow-xl backdrop-blur-md">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <div>
-              <h2 className="text-sm font-semibold">Add ThreeD Planting</h2>
-              <p className="text-[11px] text-muted-foreground">
-                Select a Plant, then choose its location in the ThreeD Scene.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              disabled={placingPlanting}
-              onClick={() => {
-                setPlantingPlacementActive(false);
-                setIsPlantingPlacementOpen(false);
-              }}
-            >
-              <X className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-
-          {projectThreeDModules.length > 1 && (
-            <label className="mb-2 block text-xs">
-              <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
-              <select
-                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
-                value={placementThreedId ?? ''}
-                disabled={plantingPlacementActive || placingPlanting}
-                onChange={(event) => setPlacementThreedId(Number(event.target.value))}
-              >
-                {projectThreeDModules.map((module) => (
-                  <option key={module.id} value={module.id}>{module.name}</option>
-                ))}
-              </select>
-            </label>
-          )}
-
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <label className="col-span-2">
-              <span className="mb-1 block text-muted-foreground">Plant</span>
-              <select
-                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
-                value={plantingPlacementDraft.plantId}
-                disabled={plantingPlacementActive || placingPlanting || loadingPlantingOptions}
-                onChange={(event) => setPlantingPlacementDraft((current) => ({
-                  ...current,
-                  plantId: event.target.value,
-                }))}
-              >
-                {loadingPlantingOptions && <option value="">Loading Plants…</option>}
-                {!loadingPlantingOptions && plantingOptions.length === 0 && (
-                  <option value="">No active Plants available</option>
-                )}
-                {plantingOptions.map((plant) => (
-                  <option key={plant.id} value={plant.id}>
-                    {plant.commonName}{plant.variety ? ` — ${plant.variety}` : ''}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="col-span-2">
-              <span className="mb-1 block text-muted-foreground">Project Bed (optional)</span>
-              <select
-                className="h-8 w-full rounded-md border bg-background px-2 text-xs"
-                value={plantingPlacementDraft.bedId}
-                disabled={plantingPlacementActive || placingPlanting}
-                onChange={(event) => setPlantingPlacementDraft((current) => ({
-                  ...current,
-                  bedId: event.target.value,
-                }))}
-              >
-                <option value="">No Bed</option>
-                {(data.threed.raw?.beds ?? []).map((bed: any) => (
-                  <option key={bed.id} value={bed.id}>{bed.name || `Bed #${bed.id}`}</option>
-                ))}
-              </select>
-            </label>
-            {([
-              ['quantity', 'Quantity', '1'],
-              ['spacingInches', 'Spacing (in)', '1'],
-              ['modelScale', 'Model scale', '0.01'],
-            ] as const).map(([field, label, step]) => (
-              <label key={field}>
-                <span className="mb-1 block text-muted-foreground">{label}</span>
-                <Input
-                  type="number"
-                  step={step}
-                  value={plantingPlacementDraft[field]}
-                  disabled={plantingPlacementActive || placingPlanting}
-                  className="h-8 text-xs"
-                  onChange={(event) => setPlantingPlacementDraft((current) => ({
-                    ...current,
-                    [field]: event.target.value,
-                  }))}
-                />
-              </label>
-            ))}
-          </div>
-
-          <div className="mt-3 flex items-center justify-end gap-2 border-t pt-3">
-            {plantingPlacementActive && (
-              <span className="mr-auto text-[11px] text-emerald-600">
-                Click the Scene ground to place the Planting.
-              </span>
-            )}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-7 text-xs"
-              disabled={placingPlanting}
-              onClick={() => setPlantingPlacementActive(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              className="h-7 text-xs"
-              disabled={
-                !placementThreedId
-                || !plantingPlacementDraft.plantId
-                || plantingPlacementActive
-                || placingPlanting
-              }
-              onClick={() => {
-                setPlantingPlacementActive(true);
-              }}
-            >
-              {placingPlanting ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : null}
-              Place Planting
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* ✅ v0.13.0-beta: Advanced Filtering Panel */}
-      {showFilterPanel && (
-        <Card className="border-primary/20">
-          <CardContent className="p-3">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Filters</span>
-              </div>
-
-              {/* Search/Text Filter */}
-              <div className="flex items-center gap-2">
-                <Search className="w-3.5 h-3.5 text-muted-foreground" />
-                <Input
-                  placeholder="Search markers by name..."
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                  className="h-7 text-xs w-44"
-                />
-                {filterText && (
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setFilterText('')}>
-                    <X className="w-3 h-3" />
-                  </Button>
-                )}
-              </div>
-
-              <div className="w-px h-6 bg-border" />
-
-              {/* Active Only Toggle */}
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={filterActiveOnly}
-                  onCheckedChange={setFilterActiveOnly}
-                  id="active-only"
-                  className="scale-75"
-                />
-                <Label htmlFor="active-only" className="text-xs cursor-pointer">Active Only</Label>
-              </div>
-
-              <div className="w-px h-6 bg-border" />
-
-              {/* Asset Type Quick Filters */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-muted-foreground">Type:</span>
-                {['Plantings', 'Beds', 'Characters', 'FarmBots', 'Models', 'CHP CAD', 'CalFire'].map((type) => (
-                  <Badge
-                    key={type}
-                    variant={filterAssetType === type ? 'default' : 'outline'}
-                    className="text-[10px] cursor-pointer hover:bg-muted"
-                    onClick={() => handleStatCardClick(type)}
-                  >
-                    {type}
-                    {filterAssetType === type && <X className="w-2.5 h-2.5 ml-1" />}
-                  </Badge>
-                ))}
-              </div>
-
-              {/* Clear All */}
-              {(filterText || filterActiveOnly || filterAssetType) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs text-muted-foreground ml-auto"
-                  onClick={() => {
-                    setFilterText('');
-                    setFilterActiveOnly(false);
-                    setFilterAssetType(null);
-                  }}
-                >
-                  Clear All Filters
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* ✅ Layer Controls */}
-      {false && (
-        <Card>
-          <CardContent className="p-3">
-            <div className="flex flex-wrap items-center gap-4">
-              {/* Traffic Layers */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">Traffic:</span>
-                {Object.entries(layers.traffic).map(([id, config]) => (
-                  <div key={id} className="flex items-center gap-1">
-                    <Button
-                      variant={config.enabled ? 'default' : 'outline'}
-                      size="sm"
-                      className="h-6 px-2 text-[10px]"
-                      onClick={() => toggleLayer('traffic', id)}
-                    >
-                      {getTrafficIcon(id)}
-                      <span className="ml-1">{getTrafficLabel(id)}</span>
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="w-px h-6 bg-border" />
-
-              {/* ThreeD Layers */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground">ThreeD:</span>
-                {Object.entries(layers.threed).map(([id, config]) => (
-                  <div key={id} className="flex items-center gap-1">
-                    <Button
-                      variant={config.enabled ? 'default' : 'outline'}
-                      size="sm"
-                      className="h-6 px-2 text-[10px]"
-                      onClick={() => toggleLayer('threed', id)}
-                    >
-                      {getThreeDIcon(id)}
-                      <span className="ml-1">{getThreeDLabel(id)}</span>
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <ThreeDPlantingPlacementPanel
+        isOpen={Boolean(selectedProjectId) && isPlantingPlacementOpen}
+        projectModules={projectThreeDModules}
+        selectedModuleId={placementThreedId}
+        plants={plantingOptions}
+        beds={(data.threed.raw?.beds ?? []).map((bed: any) => ({
+          id: Number(bed.id),
+          name: typeof bed.name === 'string' ? bed.name : null,
+        }))}
+        draft={plantingPlacementDraft}
+        loadingPlants={loadingPlantingOptions}
+        placementActive={plantingPlacementActive}
+        placing={placingPlanting}
+        onSelectedModuleChange={setPlacementThreedId}
+        onDraftChange={(field, value) => {
+          setPlantingPlacementDraft((current) => ({ ...current, [field]: value }));
+        }}
+        onBeginPlacement={() => setPlantingPlacementActive(true)}
+        onCancelPlacement={() => setPlantingPlacementActive(false)}
+        onClose={() => {
+          setPlantingPlacementActive(false);
+          setIsPlantingPlacementOpen(false);
+        }}
+      />
+      <div
+        className={
+          isLeftSceneWorkspaceOpen
+            ? 'sm:ml-[18.5rem] transition-[margin]'
+            : 'transition-[margin]'
+        }
+      >
+        <ThreeDSceneFilterPanel
+          isOpen={showFilterPanel}
+          text={filterText}
+          activeOnly={filterActiveOnly}
+          assetType={filterAssetType}
+          onTextChange={setFilterText}
+          onActiveOnlyChange={setFilterActiveOnly}
+          onAssetTypeChange={handleStatCardClick}
+          onClear={() => {
+            setFilterText('');
+            setFilterActiveOnly(false);
+            setFilterAssetType(null);
+          }}
+        />
+      </div>
 
       {/* ✅ Map Container */}
-      <Card className={`${isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''} ${!isFullscreen && isLeftSceneWorkspaceOpen ? 'sm:ml-[18.5rem]' : ''} transition-[margin]`}>
+      <Card className={`${isLeftSceneWorkspaceOpen ? 'sm:ml-[18.5rem]' : ''} transition-[margin]`}>
         <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: isFullscreen ? '100vh' : 'calc(100vh - 122px)' }}>
+          <div style={{ height: 'calc(100vh - 122px)' }}>
             
             {/* Pass cameraMode to combined view's 3D UnifiedMapView */}
             {viewMode === 'combined' && (
@@ -3341,11 +2728,7 @@ function UnifiedMapPageInner() {
       <DetailsCard
         selected={selectedMarker || selectedIncident}
         projectId={selectedProjectId}
-        leftOffsetRem={!isFullscreen
-          ? isLeftSceneWorkspaceOpen
-            ? 18.75
-            : 0.75
-          : 0.75}
+        leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
         controlledCharacterId={controlledCharacterId}
         liveControlledCharacterPosition={liveControlledCharacterPosition}

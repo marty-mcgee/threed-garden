@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.7-alpha",
+  "version": "0.19.7-beta",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -10,6 +10,7 @@
     "validate:threed-orchestration": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-orchestration.mts",
     "validate:project-templates": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-project-templates.mts",
     "validate:threed-library-placement": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-library-placement.mts",
+    "validate:threed-project-session": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-project-session.mts",
     "validate:farmbot-crypto": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --conditions=react-server --experimental-strip-types src/lib/scripts/validate-farmbot-credential-crypto.mts",
     "validate:threed-mqtt": "bun run src/lib/services/threed/mqtt/validate.mts",
     "validate:farmbot-worker": "bun run src/lib/services/threed/mqtt/integrations/farmbot/validate.mts",
