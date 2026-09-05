@@ -42,6 +42,10 @@ Character approach + semantic action lifecycle
 
 Workspace components must not fetch Project data, mutate Runtime Markers, write marker snapshots, control Rapier, or manipulate Character animations.
 
+The Model, Character, and FarmBot Libraries share one typed, mutually exclusive workspace state. Their existing open/close callbacks are adapters over that state so opening one Library cannot leave another Library active underneath it.
+
+Project Assets, Models, Characters, FarmBots, Beds, and Plantings share one visual **left Scene workspace** boundary. Each opens as the same translucent 18rem dock beneath the Project toolbar. While that workspace is open, the Scene and any marker DetailsCard move to its right together. Project Assets remains navigation-only and does not inherit placement behavior.
+
 ## Scene bridge and runtime ownership
 
 - `UnifiedMapView` adapts coordinator state and callbacks to the 2D/3D surfaces and Runtime Marker providers.
@@ -53,8 +57,8 @@ Workspace components must not fetch Project data, mutate Runtime Markers, write 
 
 Continue with one independently verifiable boundary at a time:
 
-1. Extract remaining large presentation panels, beginning with the Model Library.
-2. Introduce typed placement controllers only after presentation extraction is stable.
+1. Keep the extracted Model, Character, and FarmBot Library panels presentation-only.
+2. Route their established API envelopes through the pure typed Library placement client core before introducing stateful controllers.
 3. Isolate Project-session loading only after placement behavior is independently represented.
 4. Leave `page.tsx` as the readable composition root and coordinator.
 

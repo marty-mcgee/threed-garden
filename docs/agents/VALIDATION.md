@@ -8,22 +8,24 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 2. Run `npm run validate:assets` when character animation assets, their manifest, or the local Three.js DRACO decoder assets change.
 3. Run `npm run validate:farmbot-crypto` when FarmBot credential cryptography changes.
 4. Run `npm run typecheck`; TypeScript errors are release-blocking.
-5. Run `npm run validate:threed-runtime-markers` when ThreeD Marker identity, registry, position resolution, or marker adapters change.
-6. Run `npm run validate:threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
-7. Run `npm run validate:threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
-8. Run `npm run validate:farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
-9. Run `npm run validate:farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
-10. Run `npm run validate:farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
-11. Run a file-scoped lint command only when an ESLint executable/configuration is available.
-12. Run targeted tests when a matching test exists.
-13. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
-14. Perform the relevant manual regression checklist for interactive ThreeD behavior.
+5. Run `npm run validate:threed-library-placement` when Dashboard Model, Character, or FarmBot Library placement request construction changes.
+6. Run `npm run validate:threed-runtime-markers` when ThreeD Marker identity, registry, position resolution, or marker adapters change.
+7. Run `npm run validate:threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
+8. Run `npm run validate:threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
+9. Run `npm run validate:farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
+10. Run `npm run validate:farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
+11. Run `npm run validate:farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
+12. Run a file-scoped lint command only when an ESLint executable/configuration is available.
+13. Run targeted tests when a matching test exists.
+14. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
+15. Perform the relevant manual regression checklist for interactive ThreeD behavior.
 
 ## Commands
 
 ```bash
 git diff --check
 npm run validate:assets
+npm run validate:threed-library-placement
 npm run validate:threed-runtime-markers
 npm run validate:threed-orchestration
 npm run validate:farmbot-crypto
@@ -36,6 +38,10 @@ npm run build
 ```
 
 The ThreeD Runtime Marker validation is offline and provider-independent. It checks supported Sub-Module normalization, canonical identity keys, overlapping numeric IDs across modules, immutable snapshots, saved/asset and live position selection, refresh preservation, removal, atomic duplicate rejection, invalid input, and Project-scoped clearing. The registry is an in-memory mirror; database-driven Project assignments, source assets, Layers, and the explicit `project_threed_markers` saved snapshot remain the Project-session authority. The validator must not access React, Three.js, physics, APIs, persistence, MQTT, workers, FarmBot services, or physical devices.
+
+The ThreeD Library placement validation is offline and verifies that Model, Character, and FarmBot client request builders preserve the established API envelope, identifiers, transforms, dimensions, scale, placement role, and numeric conversion. It also verifies that the Dashboard Library workspace permits only one active Library and that closing an inactive Library does not close the active one. It must not fetch, write Project state, access the database, initialize Three.js/Rapier, or expand FarmBot command capability.
+
+For the Dashboard left Scene workspace, open Project Assets, Models, Characters, FarmBots, Beds, and Plantings in turn. Confirm each uses the same 18rem full-height translucent left dock, the Scene moves right without resizing vertically, and its navigation or placement controls remain scrollable. Select a Scene marker while each workspace is open and confirm its DetailsCard starts to the right of the workspace instead of covering it. Close the workspace and confirm both the Scene and DetailsCard return to their normal positions.
 
 When Runtime Marker row validation changes, confirm malformed Project marker and source Sub-Module rows are excluded before Scene physics while valid sibling rows still build. The user-facing warning must identify only the source category, row ID, marker ID, marker type, and bounded field reasons. It must not expose raw JSON, ownership data, credentials, or database connection details, and it must not mutate or delete the rejected row.
 

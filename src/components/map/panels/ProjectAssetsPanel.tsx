@@ -50,7 +50,7 @@ export function ProjectAssetsPanel({
           id="project-assets-panel"
           role="region"
           aria-label="Project Assets"
-          className="absolute bottom-1 left-1 top-10 z-40 flex w-[min(18rem,calc(100vw-0.5rem))] flex-col overflow-hidden rounded-md border bg-background p-3 shadow-xl"
+          className="absolute bottom-0 left-0 top-10 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border bg-background/90 p-3 shadow-xl backdrop-blur-md"
         >
           <div className="mb-2 flex items-start justify-between gap-2">
             <div className="min-w-0">
@@ -194,4 +194,3 @@ export function ProjectAssetsPanel({
     </>
   );
 }
-

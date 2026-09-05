@@ -7,9 +7,10 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.6 "ThreeD Dashboard Project Templates and Onboarding"` (`package.json` version `0.19.6`)
+> **Current production version:** `v0.19.7 "ThreeD Dashboard Pages"`<br>
+> **Prepared release candidate:** `v0.19.7a "ThreeD Dashboard Library Workspaces"` (`package.json` version `0.19.7-alpha`)
 
-The v0.19.6 production release keeps initial Project creation inside the Dashboard through bounded Blank, ThreeD Starter, and Complete App templates. Project and module foundations are created atomically, the Project Tour follows Runtime Marker progress through the first Environment, Character, and Model placements, and new Projects begin with Project-scoped Default Daylight. The refined Project menu makes choosing and creating Projects direct while preserving existing Scene and Admin actions.
+The v0.19.7 production release establishes the Dashboard Scene Coordinator with extracted Project Header, Scene Toolbar, Character Library, and FarmBot Library presentation boundaries. The v0.19.7a candidate completes the Model Library presentation boundary, preserves established typed placement requests, makes Library selection mutually exclusive, and presents Project Assets plus all Add-to-Scene tools through one consistent 18rem left Scene workspace.
 
 The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 

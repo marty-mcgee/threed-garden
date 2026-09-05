@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.7 — ThreeD Dashboard Pages** (`package.json` version `0.19.7`) |
-| Current release candidate | **None — v0.19.7 is deployed** |
-| Current development milestone | **Production checkpoint: Dashboard Scene Coordinator with extracted Project Header, Scene Toolbar, Character Library, and FarmBot Library presentation boundaries** |
+| Current stable version | **v0.19.7 — ThreeD Dashboard Pages** (deployed) |
+| Current release candidate | **v0.19.7a — ThreeD Dashboard Library Workspaces** (`package.json` version `0.19.7-alpha`) |
+| Current development milestone | **Release-ready checkpoint: extracted Model Library presentation, typed Library placement request adapters, mutually exclusive Library state, and one consistent Project Assets/Add-to-Scene left workspace** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

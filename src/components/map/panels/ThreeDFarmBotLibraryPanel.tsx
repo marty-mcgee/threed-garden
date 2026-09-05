@@ -4,21 +4,13 @@ import { Loader2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import type { FarmBotPlacementDraft } from '@/lib/services/threed/markers/library-placement-client-core';
 
 export interface ThreeDFarmBotLibraryItem {
   id: number;
   name: string;
   assetCode: string;
   status?: string | null;
-}
-
-export interface FarmBotPlacementDraft {
-  widthFeet: string;
-  lengthFeet: string;
-  heightFeet: string;
-  color: string;
-  rotation: string;
-  scale: string;
 }
 
 interface ThreeDModuleOption {
@@ -70,7 +62,7 @@ export function ThreeDFarmBotLibraryPanel({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute left-1 top-9 z-40 w-[min(26rem,calc(100vw-1rem))] rounded-md border bg-background p-3 shadow-xl">
+    <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border bg-background/90 p-3 shadow-xl backdrop-blur-md">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold">ThreeD FarmBot Library</h2>
@@ -133,7 +125,7 @@ export function ThreeDFarmBotLibraryPanel({
         </div>
       )}
 
-      <div className="max-h-64 space-y-1 overflow-y-auto pr-1">
+      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading FarmBots…
