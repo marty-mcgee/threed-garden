@@ -1,8 +1,6 @@
 # ThreeD Model Administration
 
-Production checkpoint: **v0.19.8a — ThreeD Model Administration and File Management** (`package.json` version `0.19.8-alpha`), released September 6, 2026.
-
-Prepared release candidate: **v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies** (`package.json` version `0.19.8-beta`).
+Production checkpoint: **v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies** (`package.json` version `0.19.8-beta`), released September 6, 2026.
 
 The initial v0.19.8a workflow deliberately manages one reusable ThreeD Model at a time. Bulk import remains implemented for future work, but it is not exposed from the primary Model administration surface during this development boundary.
 
@@ -134,11 +132,11 @@ Deleting a complete Model transactionally removes its attachment records and Mod
 
 The v0.19.8a production release includes the manually approved one-at-a-time Model workspace, shared Create/Edit configuration form, pre-storage structural analysis, transactional primary-file creation and replacement, recoverable staged-upload cleanup, and attachment integrity rules described above.
 
-Bulk Model import remains intentionally outside this release. The candidate introduces no schema change and makes no change to Dashboard Scene rendering, Project Marker placement, Character runtimes, Rapier physics, or Model Runtime Adapter authority.
+Bulk Model import remains intentionally outside this release. v0.19.8a introduced no schema change and made no change to Dashboard Scene rendering, Project Marker placement, Character runtimes, Rapier physics, or Model Runtime Adapter authority.
 
-The v0.19.8b candidate continues this work through the Models-family workspace and texture-dependency boundary documented below.
+The v0.19.8b production release continues this work through the Models-family workspace and texture-dependency boundary documented below.
 
-## v0.19.8b release candidate
+## v0.19.8b production checkpoint
 
 Release title: **ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies**.
 
@@ -157,7 +155,7 @@ The runtime resolver is deliberately limited to reusable Models. It does not mod
 
 The next isolated stage is a requirement-level **Upload Needed File** action that preselects the missing dependency path. It is intentionally not part of this checkpoint; attachments continue to use the verified required-directory upload workflow.
 
-Release-candidate validation:
+Release validation:
 
 - `npm run typecheck`
 - `git diff --check`

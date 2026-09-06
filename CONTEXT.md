@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.8a — ThreeD Model Administration and File Management** (`package.json` version `0.19.8-alpha`) |
-| Current release candidate | **v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies** (`package.json` version `0.19.8-beta`) |
-| Current development milestone | **Release candidate: unified Models-family workspaces, required attachment directories, dependency inspection, and Model-owned runtime texture resolution** |
+| Current stable version | **v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies** (`package.json` version `0.19.8-beta`) |
+| Current release candidate | **None — v0.19.8b is deployed** |
+| Current development milestone | **Production checkpoint: unified Models-family workspaces, required attachment directories, dependency inspection, and Model-owned runtime texture resolution** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

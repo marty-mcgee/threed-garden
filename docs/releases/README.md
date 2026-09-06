@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies](v0.19.8b.md)
 - [v0.19.8a — ThreeD Model Administration and File Management](v0.19.8a.md)
 - [v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries](v0.19.7b.md)
 - [v0.19.7a — ThreeD Dashboard Library Workspaces](v0.19.7a.md)

@@ -7,13 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.8a "ThreeD Model Administration and File Management"` (`package.json` version `0.19.8-alpha`)
+> **Current production version:** `v0.19.8b "ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies"` (`package.json` version `0.19.8-beta`)
 
-The v0.19.8a production release establishes a focused, one-at-a-time Models administration workflow with shared Create/Edit validation, structural upload analysis, synchronized primary-file records, recoverable staged uploads, owner-scoped Blob cleanup, and consolidated Models navigation. It introduces no schema change and preserves Dashboard Scene, Runtime Marker, Character, and Rapier authority.
-
-> **Prepared release candidate:** `v0.19.8b "ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies"` (`package.json` version `0.19.8-beta`)
-
-The v0.19.8b candidate unifies Models, Model Categories, Model Animations, and Model Files as one Admin workspace family. It adds required User-defined attachment directories, primary-file dependency inspection, and Model-owned runtime resolution of attached textures and buffers. It does not change database schema, Character runtimes, Project Marker authority, or Rapier physics.
+The v0.19.8b production release unifies Models, Model Categories, Model Animations, and Model Files as one Admin workspace family. It adds required User-defined attachment directories, primary-file dependency inspection, and Model-owned runtime resolution of attached textures and buffers. It introduces no database schema change and preserves Character runtimes, Project Marker authority, and Rapier physics.
 
 The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 
