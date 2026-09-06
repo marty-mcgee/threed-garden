@@ -1,6 +1,6 @@
 # ThreeD Model Administration
 
-Release candidate: **v0.19.8a — ThreeD Model Administration and File Management** (`package.json` version `0.19.8-alpha`).
+Production checkpoint: **v0.19.8a — ThreeD Model Administration and File Management** (`package.json` version `0.19.8-alpha`), released September 6, 2026.
 
 The initial v0.19.8a workflow deliberately manages one reusable ThreeD Model at a time. Bulk import remains implemented for future work, but it is not exposed from the primary Model administration surface during this development boundary.
 
@@ -102,9 +102,9 @@ Deleting a complete Model transactionally removes its attachment records and Mod
 5. Delete a non-primary disposable attachment. Confirm its record disappears and an owned, unshared Vercel Blob is cleaned up without changing the primary runtime file.
 6. Delete a disposable complete Model and confirm its Model and attachment records disappear. Confirm external URLs and URLs still referenced by another record are retained.
 
-## Release-candidate boundary
+## Production boundary
 
-The v0.19.8a candidate includes the manually approved one-at-a-time Model workspace, shared Create/Edit configuration form, pre-storage structural analysis, transactional primary-file creation and replacement, recoverable staged-upload cleanup, and attachment integrity rules described above.
+The v0.19.8a production release includes the manually approved one-at-a-time Model workspace, shared Create/Edit configuration form, pre-storage structural analysis, transactional primary-file creation and replacement, recoverable staged-upload cleanup, and attachment integrity rules described above.
 
 Bulk Model import remains intentionally outside this release. The candidate introduces no schema change and makes no change to Dashboard Scene rendering, Project Marker placement, Character runtimes, Rapier physics, or Model Runtime Adapter authority.
 
@@ -115,4 +115,4 @@ Release preparation validation:
 - `npm run typecheck`
 - `git diff --check`
 - User-confirmed manual completion of Stages 1–4
-- Production build and deployment confirmation remain the release gate
+- User-confirmed successful production build and deployment

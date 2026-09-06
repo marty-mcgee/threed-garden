@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries** (`package.json` version `0.19.7-beta`) |
-| Current release candidate | **None — v0.19.7b is deployed** |
-| Current development milestone | **Production checkpoint: Project-session loading, placement/filter presentation, Library collections, Project Assets accessibility, Combined View resizing, and data-freshness timing are isolated behind typed coordinator boundaries** |
+| Current stable version | **v0.19.8a — ThreeD Model Administration and File Management** (`package.json` version `0.19.8-alpha`) |
+| Current release candidate | **None — v0.19.8a is deployed** |
+| Current development milestone | **Production checkpoint: owner-scoped manual Model CRUD, structural upload analysis, synchronized primary attachments, safe Blob cleanup, and compact Models navigation** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

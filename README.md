@@ -7,9 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.7b "ThreeD Dashboard Scene Coordinator Boundaries"` (`package.json` version `0.19.7-beta`)
+> **Current production version:** `v0.19.8a "ThreeD Model Administration and File Management"` (`package.json` version `0.19.8-alpha`)
 
-The v0.19.7b production release isolates Project-session request sequencing, Bed and Planting presentation, Scene filtering, Model Library search/category derivation, Project Asset collection and accessibility behavior, Combined View resizing, and freshness timing. Scene filters preserve persistent Rapier bodies instead of toggling physics participation. Marker CRUD, Runtime Marker authority, Character orchestration, and the separate GardenCharacter/EcctrlCharacter paths remain unchanged.
+The v0.19.8a production release establishes a focused, one-at-a-time Models administration workflow with shared Create/Edit validation, structural upload analysis, synchronized primary-file records, recoverable staged uploads, owner-scoped Blob cleanup, and consolidated Models navigation. It introduces no schema change and preserves Dashboard Scene, Runtime Marker, Character, and Rapier authority.
 
 The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 
